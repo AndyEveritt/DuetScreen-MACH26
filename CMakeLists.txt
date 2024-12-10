@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
-project(lvgl C CXX)
+project(DuetScreen C CXX)
 
 # Set the correct FreeRTOS port for your system (e.g., Posix for WSL)
 set(FREERTOS_PORT GCC_POSIX CACHE STRING "Port for FreeRTOS on Posix environment")
 
-unset(USE_FREERTOS CACHE)
+# unset(USE_FREERTOS CACHE)
 
 option(USE_FREERTOS "Enable FreeRTOS" OFF) # Turn this on to enable FreeRTOS
 
@@ -51,7 +51,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set the output path for the executable
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+# set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 # Find and include SDL2 library
@@ -66,6 +66,7 @@ add_compile_definitions($<$<BOOL:${LV_USE_DRAW_SDL}>:LV_USE_DRAW_SDL=1>)
 add_compile_definitions($<$<BOOL:${LV_USE_LIBPNG}>:LV_USE_LIBPNG=1>)
 add_compile_definitions($<$<BOOL:${LV_USE_LIBJPEG_TURBO}>:LV_USE_LIBJPEG_TURBO=1>)
 add_compile_definitions($<$<BOOL:${LV_USE_FFMPEG}>:LV_USE_FFMPEG=1>)
+add_compile_definitions($<$<BOOL:${USE_FREERTOS}>:LV_USE_OS=2>)
 
 # Add LVGL subdirectory
 add_subdirectory(lvgl)
@@ -81,7 +82,7 @@ if(USE_FREERTOS)
         ${FREERTOS_SOURCES}  # Add only if USE_FREERTOS is enabled
     )
     # Link FreeRTOS libraries
-    target_link_libraries(main freertos_config FreeRTOS)
+    target_link_libraries(main freertos_config freertos_kernel)
 else()
     add_executable(main
         ${PROJECT_SOURCE_DIR}/main/src/main.c

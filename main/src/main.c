@@ -73,11 +73,12 @@ int main(int argc, char **argv)
   lv_init();
 
   /*Initialize the HAL (display, input devices, tick) for LVGL*/
-  hal_init(320, 480);
+  hal_init(1024, 600);
 
-  #if LV_USE_OS == LV_OS_NONE
- 
+#if LV_USE_OS == LV_OS_NONE
+
   lv_demo_widgets();
+  // lv_demo_benchmark();
 
   while(1) {
     /* Periodically call the lv_task handler.
@@ -86,12 +87,12 @@ int main(int argc, char **argv)
     usleep(5 * 1000);
   }
 
-  #elif LV_USE_OS == LV_OS_FREERTOS
+#elif LV_USE_OS == LV_OS_FREERTOS
 
   /* Run FreeRTOS and create lvgl task */
-  freertos_main();  
+  freertos_main();
 
-  #endif
+#endif
 
   return 0;
 }
