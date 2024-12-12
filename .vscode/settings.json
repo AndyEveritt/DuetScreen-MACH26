@@ -1,0 +1,33 @@
+{
+    "files.associations": {
+        "*.nc": "gcode",
+        "*.cps": "javascript",
+        "*.h": "cpp",
+        "ssh_config": "ssh_config",
+        "*.g": "gcode",
+        "*.ddl": "sql",
+        "*.html": "html",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "*.tcc": "cpp",
+        "algorithm": "cpp",
+        "functional": "cpp",
+        "utility": "cpp",
+        "cmath": "cpp",
+        "*.tpp": "cpp",
+        "memory": "cpp",
+        "random": "cpp",
+        "unordered_map": "cpp",
+        "streambuf": "cpp",
+        "iosfwd": "cpp",
+        "chrono": "cpp",
+        "exception": "cpp",
+        "fstream": "cpp",
+        "new": "cpp",
+        "sstream": "cpp",
+        "*.touchgfx": "json",
+        "map": "cpp"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.clang_format_fallbackStyle": ""
+}

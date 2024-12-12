@@ -1,0 +1,13 @@
+{
+  BasedOnStyle: Microsoft,
+  PointerAlignment: Left,
+  NamespaceIndentation: All,
+  AllowShortBlocksOnASingleLine: Empty,
+  AllowShortFunctionsOnASingleLine: Inline,
+  UseTab: Always,
+  AlwaysBreakTemplateDeclarations: Yes,
+  BinPackArguments: false,
+  BinPackParameters: false,
+  BreakBeforeBraces: Allman,
+  BreakConstructorInitializers: BeforeComma,
+}
