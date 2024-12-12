@@ -6,6 +6,7 @@
  * @license MIT License
  */
 
+#include "lvgl/demos/lv_demos.h"
 #include "lvgl/src/osal/lv_os.h"
 
 #if LV_USE_OS == LV_OS_FREERTOS
@@ -120,12 +121,16 @@ void create_hello_world_screen()
 void lvgl_task(void *pvParameters)
 {
     /* Show simple hello world screen */
-    create_hello_world_screen();
+	// create_hello_world_screen();
 
-    while (true){
-        lv_timer_handler(); /* Handle LVGL tasks */
-        vTaskDelay(pdMS_TO_TICKS(5)); /* Short delay for the RTOS scheduler */
-    }
+	lv_demo_widgets();
+
+	while (true)
+	{
+		printf("%lu\n", lv_tick_get());
+		lv_timer_handler();			  /* Handle LVGL tasks */
+		vTaskDelay(pdMS_TO_TICKS(5)); /* Short delay for the RTOS scheduler */
+	}
 }
 
 // ........................................................................................................
@@ -161,19 +166,20 @@ extern "C" void freertos_main()
     /* Initialize LVGL (Light and Versatile Graphics Library) and other resources */
 
     /* Create the LVGL task */
-    if (xTaskCreate(lvgl_task, "LVGL Task", 4096, nullptr, 1, nullptr) != pdPASS) {
-        printf("Error creating LVGL task\n");
-        /* Error handling */
-    }
+	if (xTaskCreate(lvgl_task, "LVGL Task", 40960, nullptr, 1, nullptr) != pdPASS)
+	{
+		printf("Error creating LVGL task\n");
+		/* Error handling */
+	}
 
-    /* Create another task */
-    if (xTaskCreate(another_task, "Another Task", 1024, nullptr, 1, nullptr) != pdPASS) {
-        printf("Error creating another task\n");
-        /* Error handling */
-    }
+	/* Create another task */
+	// if (xTaskCreate(another_task, "Another Task", 1024, nullptr, 1, nullptr) != pdPASS) {
+	//     printf("Error creating another task\n");
+	//     /* Error handling */
+	// }
 
-    /* Start the scheduler */
-    vTaskStartScheduler();
+	/* Start the scheduler */
+	vTaskStartScheduler();
 }
 
 #endif

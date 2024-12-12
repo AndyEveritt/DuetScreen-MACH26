@@ -1,49 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 project(DuetScreen C CXX)
 
-# Set the correct FreeRTOS port for your system (e.g., Posix for WSL)
-set(FREERTOS_PORT GCC_POSIX CACHE STRING "Port for FreeRTOS on Posix environment")
+set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(LIBRARIES_DIR ${PROJECT_SOURCE_DIR}/libraries)
 
-# unset(USE_FREERTOS CACHE)
-
-option(USE_FREERTOS "Enable FreeRTOS" OFF) # Turn this on to enable FreeRTOS
-
-if(USE_FREERTOS)
-    message(STATUS "FreeRTOS is enabled")
-
-    # FreeRTOS integration when USE_FREERTOS is enabled
-    add_library(freertos_config INTERFACE)
-    target_include_directories(freertos_config SYSTEM INTERFACE ${PROJECT_SOURCE_DIR}/config)
-    target_compile_definitions(freertos_config INTERFACE projCOVERAGE_TEST=0)
-
-    # Add FreeRTOS as a subdirectory
-    add_subdirectory(FreeRTOS)
-
-    # FreeRTOS-specific include directories
-    include_directories(${PROJECT_SOURCE_DIR}/FreeRTOS/include)
-    include_directories(${PROJECT_SOURCE_DIR}/FreeRTOS/portable/ThirdParty/GCC/Posix)
-    include_directories(${PROJECT_SOURCE_DIR}/config)
-
-    # Add FreeRTOS sources
-    file(GLOB FREERTOS_SOURCES
-        "${PROJECT_SOURCE_DIR}/FreeRTOS/*.c"
-        "${PROJECT_SOURCE_DIR}/FreeRTOS/portable/MemMang/heap_4.c"
-        "${PROJECT_SOURCE_DIR}/FreeRTOS/portable/ThirdParty/GCC/Posix/*.c"
-    )
-else()
-    message(STATUS "FreeRTOS is disabled")
-    set(FREERTOS_SOURCES "")  # No FreeRTOS sources if FreeRTOS is disabled
-endif()
+include(${LIBRARIES_DIR}/FreeRTOS.cmake)
+include(${LIBRARIES_DIR}/lvgl.cmake)
 
 # Main include files of the project
-include_directories(${PROJECT_SOURCE_DIR}/main/inc)
-
-# Define options for LVGL with default values (OFF)
-option(LV_USE_DRAW_SDL "Use SDL draw unit" OFF)
-option(LV_USE_LIBPNG "Use libpng to decode PNG" OFF)
-option(LV_USE_LIBJPEG_TURBO "Use libjpeg turbo to decode JPEG" OFF)
-option(LV_USE_FFMPEG "Use libffmpeg to display video using lv_ffmpeg" OFF)
-option(LV_USE_FREETYPE "Use freetype library" OFF)
+include_directories(${SRC_DIR})
+set(MAIN_SOURCES "")
 
 # Set C and C++ standards
 set(CMAKE_C_STANDARD 99)
@@ -61,34 +27,29 @@ find_package(SDL2 REQUIRED)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
-# Add compile definitions based on the selected options
-add_compile_definitions($<$<BOOL:${LV_USE_DRAW_SDL}>:LV_USE_DRAW_SDL=1>)
-add_compile_definitions($<$<BOOL:${LV_USE_LIBPNG}>:LV_USE_LIBPNG=1>)
-add_compile_definitions($<$<BOOL:${LV_USE_LIBJPEG_TURBO}>:LV_USE_LIBJPEG_TURBO=1>)
-add_compile_definitions($<$<BOOL:${LV_USE_FFMPEG}>:LV_USE_FFMPEG=1>)
-add_compile_definitions($<$<BOOL:${USE_FREERTOS}>:LV_USE_OS=2>)
 
-# Add LVGL subdirectory
-add_subdirectory(lvgl)
-target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR} ${SDL2_INCLUDE_DIRS})
-
-# Create the main executable, depending on the FreeRTOS option
+# Set source files for executable
 if(USE_FREERTOS)
-    add_executable(main
-        ${PROJECT_SOURCE_DIR}/main/src/main.c
-        ${PROJECT_SOURCE_DIR}/main/src/freertos_main.cpp
-        ${PROJECT_SOURCE_DIR}/main/src/mouse_cursor_icon.c
-        ${PROJECT_SOURCE_DIR}/main/src/FreeRTOS_Posix_Port.c
+    list(APPEND MAIN_SOURCES
+        ${SRC_DIR}/main.c
+        ${SRC_DIR}/freertos_main.cpp
+        ${SRC_DIR}/mouse_cursor_icon.c
+        ${SRC_DIR}/FreeRTOS_Posix_Port.c
         ${FREERTOS_SOURCES}  # Add only if USE_FREERTOS is enabled
     )
-    # Link FreeRTOS libraries
-    target_link_libraries(main freertos_config freertos_kernel)
 else()
-    add_executable(main
-        ${PROJECT_SOURCE_DIR}/main/src/main.c
-        ${PROJECT_SOURCE_DIR}/main/src/mouse_cursor_icon.c
+    list(APPEND MAIN_SOURCES
+        ${SRC_DIR}/main.c
+        ${SRC_DIR}/mouse_cursor_icon.c
     )
 endif()
+
+file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/*.c ${SRC_DIR}/UI/*.cpp)
+list(APPEND MAIN_SOURCES
+    ${UI_SOURCES}
+)
+
+add_executable(main ${MAIN_SOURCES})
 
 # Define LVGL configuration as a simple include
 target_compile_definitions(main PRIVATE LV_CONF_INCLUDE_SIMPLE)
@@ -96,7 +57,7 @@ target_link_libraries(main lvgl lvgl::examples lvgl::demos lvgl::thorvg ${SDL2_L
 
 # Only link freertos_config if the FreeRTOS directory exists
 if(USE_FREERTOS)
-    target_link_libraries(main freertos_config)
+    target_link_libraries(main freertos_config freertos_kernel)
 endif()
 
 # Custom target to run the executable
