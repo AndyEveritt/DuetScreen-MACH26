@@ -39,11 +39,13 @@ else()
   list(APPEND MAIN_SOURCES ${SRC_DIR}/main.cpp ${SRC_DIR}/mouse_cursor_icon.c)
 endif()
 
-# Add UI source files
-file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/*.c ${SRC_DIR}/UI/*.cpp) # Add UI
-                                                                    # source
-                                                                    # files
-list(APPEND MAIN_SOURCES ${UI_SOURCES})
+# Add source files
+file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/*.c ${SRC_DIR}/Comm/*.cpp) # Comm
+file(GLOB_RECURSE HW_SOURCES ${SRC_DIR}/Hardware/*.c ${SRC_DIR}/Hardware/*.cpp) # Hardware
+file(GLOB_RECURSE OM_SOURCES ${SRC_DIR}/ObjectModel/*.c ${SRC_DIR}/ObjectModel/*.cpp) # ObjectModel
+file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/*.c ${SRC_DIR}/UI/*.cpp) # UI
+file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/Utils/*.c ${SRC_DIR}/Utils/*.cpp) # Utils
+list(APPEND MAIN_SOURCES ${COMM_SOURCES} ${HW_SOURCES} ${OM_SOURCES} ${UI_SOURCES} ${UTILS_SOURCES})
 
 add_executable(main ${MAIN_SOURCES})
 target_include_directories(main PUBLIC ${SRC_DIR})
