@@ -8,9 +8,9 @@
 #ifndef SRC_OBJECTMODEL_SPINDLE_HPP_
 #define SRC_OBJECTMODEL_SPINDLE_HPP_
 
-//#include <cstdint>
-#include <sys/types.h>
 #include <Duet3D/General/FreelistManager.h>
+#include <cstdint>
+#include <sys/types.h>
 
 namespace OM
 {

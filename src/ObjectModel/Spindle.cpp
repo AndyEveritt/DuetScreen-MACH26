@@ -9,7 +9,7 @@
 #include "Configuration.h"
 #include "ListHelpers.h"
 #include "ObjectModel/Utils.h"
-#include "uart/CommDef.h"
+#include "utils/utils.h"
 #include <Duet3D/General/Vector.h>
 
 typedef Vector<OM::Spindle*, MAX_SLOTS> SpindleList;

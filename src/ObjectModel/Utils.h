@@ -11,6 +11,7 @@
 //#include <cstdint>
 #include "Configuration.h"
 #include <Duet3D/General/Vector.h>
+#include <cstring>
 #include <string>
 #include <sys/types.h>
 

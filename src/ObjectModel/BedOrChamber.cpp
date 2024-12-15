@@ -5,9 +5,6 @@
  *      Author: manuel
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
-
 #include "BedOrChamber.h"
 #include "Configuration.h"
 #include "Hardware/Duet.h"

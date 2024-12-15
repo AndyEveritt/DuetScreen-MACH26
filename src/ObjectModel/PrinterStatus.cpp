@@ -10,7 +10,6 @@
 #include "Hardware/Duet.h"
 #include "ObjectModel/Utils.h"
 #include "PrinterStatus.h"
-#include "uart/CommDef.h"
 #include <string>
 
 namespace OM

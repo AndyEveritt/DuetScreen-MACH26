@@ -1,7 +1,5 @@
 #include "Debug.h"
 
-#include "UI/UserInterface.h"
-
 #include "DebugCommands.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
@@ -11,13 +9,15 @@ namespace Debug
 {
 	static std::map<const char*, DebugCommand*> commandsMap;
 
+// TODO reenable log files
+#if 0
 	static DebugCommand s_verboseLog("dbg_verbose_log",
 									 []()
 									 {
 										 // Create a log file and send it to the Duet
 										 system("logcat -v threadtime -d *:V > /tmp/DuetScreen_log.txt");
 										 std::string logs;
-										 USB::ReadFileContents("/tmp/DuetScreen_log.txt", logs);
+										 //  USB::ReadFileContents("/tmp/DuetScreen_log.txt", logs);
 										 Comm::DUET.UploadFile("/sys/DuetScreen_log.txt", logs);
 										 system("rm /tmp/DuetScreen_log.txt");
 									 });
@@ -32,13 +32,16 @@ namespace Debug
 									   Comm::DUET.UploadFile("/sys/DuetScreen_error_log.txt", logs);
 									   system("rm /tmp/DuetScreen_log.txt");
 								   });
+#endif
 
-	void CreateCommand(const char* id, function<void(void)> callback)
+	void CreateCommand(const char* id, debugCb_t callback)
 	{
 		new DebugCommand(id, callback);
 	}
 
-	DebugCommand::DebugCommand(const char* id, function<void(void)> callback) : id(id), callback(callback)
+	DebugCommand::DebugCommand(const char* id, debugCb_t callback)
+		: id(id)
+		, callback(callback)
 	{
 		commandsMap[id] = this;
 	}

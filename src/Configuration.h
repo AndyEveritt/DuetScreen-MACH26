@@ -8,6 +8,7 @@
 #ifndef JNI_CONFIGURATION_H_
 #define JNI_CONFIGURATION_H_
 
+#include <stdint.h>
 #include <sys/types.h>
 
 constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";

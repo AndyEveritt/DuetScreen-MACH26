@@ -5,13 +5,11 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
-#include "Configuration.h"
 #include "Heat.h"
+#include "Configuration.h"
 #include "ListHelpers.h"
 #include "ObjectModel/Utils.h"
-#include "uart/CommDef.h"
+#include "utils/utils.h"
 #include <Duet3D/General/Vector.h>
 
 #include "Debug.h"

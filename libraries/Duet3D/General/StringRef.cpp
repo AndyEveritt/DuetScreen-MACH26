@@ -21,7 +21,7 @@ size_t StringRef::strlen() const noexcept
 	return Strnlen(p, len - 1);
 }
 
-int StringRef::printf(const char *_ecv_array fmt, ...) const noexcept
+int StringRef::printf(const char* fmt, ...) const noexcept
 {
 	va_list vargs;
 	va_start(vargs, fmt);
@@ -30,12 +30,12 @@ int StringRef::printf(const char *_ecv_array fmt, ...) const noexcept
 	return ret;
 }
 
-int StringRef::vprintf(const char *_ecv_array fmt, va_list vargs) const noexcept
+int StringRef::vprintf(const char* fmt, va_list vargs) const noexcept
 {
 	return SafeVsnprintf(p, len, fmt, vargs);
 }
 
-int StringRef::catf(const char *_ecv_array fmt, ...) const noexcept
+int StringRef::catf(const char* fmt, ...) const noexcept
 {
 	const size_t n = strlen();
 	if (n + 1 < len)		// if room for at least 1 more character and a null
@@ -50,7 +50,7 @@ int StringRef::catf(const char *_ecv_array fmt, ...) const noexcept
 }
 
 // This is like catf but it adds a newline first if the string being appended to is not empty. Useful for building error messages that may describe more than one error.
-int StringRef::lcatf(const char *_ecv_array fmt, ...) const noexcept
+int StringRef::lcatf(const char* fmt, ...) const noexcept
 {
 	size_t n = strlen();
 	if (n != 0)
@@ -72,7 +72,7 @@ int StringRef::lcatf(const char *_ecv_array fmt, ...) const noexcept
 	return 0;
 }
 
-int StringRef::vcatf(const char *_ecv_array fmt, va_list vargs) const noexcept
+int StringRef::vcatf(const char* fmt, va_list vargs) const noexcept
 {
 	const size_t n = strlen();
 	if (n + 1 < len)		// if room for at least 1 more character and a null
@@ -84,7 +84,7 @@ int StringRef::vcatf(const char *_ecv_array fmt, va_list vargs) const noexcept
 }
 
 // This is quicker than printf for printing constant strings
-bool StringRef::copy(const char *_ecv_array src) const noexcept
+bool StringRef::copy(const char* src) const noexcept
 {
 	const size_t slen = ::strlen(src);
 	const bool overflow = (slen >= len);
@@ -95,7 +95,7 @@ bool StringRef::copy(const char *_ecv_array src) const noexcept
 }
 
 // This is quicker than printf for copying constant strings
-bool StringRef::copy(const char *_ecv_array src, size_t maxlen) const noexcept
+bool StringRef::copy(const char* src, size_t maxlen) const noexcept
 {
 	const size_t slen = Strnlen(src, maxlen);
 	const bool overflow = (slen >= len);
@@ -106,7 +106,7 @@ bool StringRef::copy(const char *_ecv_array src, size_t maxlen) const noexcept
 }
 
 // This is quicker than catf for appending constant strings
-bool StringRef::cat(const char *_ecv_array src) const noexcept
+bool StringRef::cat(const char* src) const noexcept
 {
 	const size_t length = strlen();
 	const size_t slen = ::strlen(src);
@@ -118,7 +118,7 @@ bool StringRef::cat(const char *_ecv_array src) const noexcept
 }
 
 // As cat but add a newline first if the string being appended to is not empty and doesn't end in newline
-bool StringRef::lcat(const char *_ecv_array src) const noexcept
+bool StringRef::lcat(const char* src) const noexcept
 {
 	if (!IsEmpty() && p[strlen() - 1] != '\n')
 	{
@@ -131,7 +131,7 @@ bool StringRef::lcat(const char *_ecv_array src) const noexcept
 }
 
 // Concatenate with a limit on the number of characters read
-bool StringRef::catn(const char *_ecv_array src, size_t n) const noexcept
+bool StringRef::catn(const char* src, size_t n) const noexcept
 {
 	const size_t length = strlen();
 	const size_t slen = Strnlen(src, n);
@@ -143,7 +143,7 @@ bool StringRef::catn(const char *_ecv_array src, size_t n) const noexcept
 }
 
 // As catn but add a newline first if the string being appended to is not empty and doesn't end in newline
-bool StringRef::lcatn(const char *_ecv_array src, size_t n) const noexcept
+bool StringRef::lcatn(const char* src, size_t n) const noexcept
 {
 	if (!IsEmpty() && p[strlen() - 1] != '\n')
 	{
@@ -180,7 +180,7 @@ size_t StringRef::StripTrailingSpaces() const noexcept
 	return slen;
 }
 
-bool StringRef::Prepend(const char *_ecv_array src) const noexcept
+bool StringRef::Prepend(const char* src) const noexcept
 {
 	const size_t slen = ::strlen(src);
 	const size_t dlen = strlen();
@@ -242,7 +242,7 @@ bool StringRef::Insert(size_t pos, char c) const noexcept
 }
 
 // Insert another string, returning true if the string was truncated
-bool StringRef::Insert(size_t pos, const char *_ecv_array s) const noexcept
+bool StringRef::Insert(size_t pos, const char* s) const noexcept
 {
 	const size_t slen = strlen();
 	if (pos > slen)
@@ -278,16 +278,16 @@ bool StringRef::Insert(size_t pos, const char *_ecv_array s) const noexcept
 	return true;
 }
 
-int StringRef::Contains(const char *_ecv_array s) const noexcept
+int StringRef::Contains(const char* s) const noexcept
 {
-	const char *_ecv_array null const r = strstr(p, s);
-	return (r == nullptr) ? -1 : not_null(r) - p;
+	const char* const r = strstr(p, s);
+	return (r == nullptr) ? -1 : r - p;
 }
 
 int StringRef::Contains(char c) const noexcept
 {
-	const char *_ecv_array null const r = strchr(p, (int)c);
-	return (r == nullptr) ? -1 : not_null(r) - p;
+	const char* const r = strchr(p, (int)c);
+	return (r == nullptr) ? -1 : r - p;
 }
 
 // Replace the first instance of oldVal by newVal, returning true if a replacement was done

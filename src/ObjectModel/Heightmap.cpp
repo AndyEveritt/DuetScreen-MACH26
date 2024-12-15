@@ -12,6 +12,7 @@
 #include "Hardware/Duet.h"
 #include "utils/csv.h"
 #include <cmath>
+#include <fstream>
 #include <map>
 #include <sstream>
 

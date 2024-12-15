@@ -9,7 +9,6 @@
 #ifndef SRC_GENERAL_VECTOR_H_
 #define SRC_GENERAL_VECTOR_H_
 
-#include "../ecv_duet3d.h"
 #include <cstddef>					// for size_t
 #include "function_ref.h"
 
@@ -29,21 +28,21 @@ public:
 
 	bool IsEmpty() const noexcept { return filled == 0; }
 
-	const T& operator[](size_t index) const noexcept pre(index < N) { return storage[index]; }
+	const T& operator[](size_t index) const noexcept { return storage[index]; }
 
-	T& operator[](size_t index) noexcept pre(index < N) { return storage[index]; }
+	T& operator[](size_t index) noexcept { return storage[index]; }
 
 	bool Add(const T& x) noexcept;
 
-	bool Add(const T* _ecv_array p, size_t n) noexcept;
+	bool Add(const T* p, size_t n) noexcept;
 
 	void Erase(size_t pos, size_t count = 1) noexcept;
 
-	void Truncate(size_t pos) noexcept pre(pos <= filled);
+	void Truncate(size_t pos) noexcept;
 
 	void Clear() noexcept { filled = 0; }
 
-	const T* _ecv_array c_ptr() noexcept { return storage; }
+	const T* c_ptr() noexcept { return storage; }
 
 	void Sort(function_ref_noexcept<bool(T, T) noexcept> sortfunc) noexcept;
 
@@ -77,7 +76,8 @@ template<class T, size_t N> bool Vector<T, N>::Add(const T& x) noexcept
 	return false;
 }
 
-template<class T, size_t N> bool Vector<T, N>::Add(const T* _ecv_array p, size_t n) noexcept
+template <class T, size_t N>
+bool Vector<T, N>::Add(const T* p, size_t n) noexcept
 {
 	while (n != 0)
 	{

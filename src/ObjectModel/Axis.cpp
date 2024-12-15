@@ -5,8 +5,6 @@
  *      Author: manuel
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
 #include "Axis.h"
 
 #include "Configuration.h"

@@ -8,13 +8,12 @@
 #ifndef SRC_GENERAL_BITMAP_H_
 #define SRC_GENERAL_BITMAP_H_
 
-//#include <cstdint>
-#include <sys/types.h>
-#include <cstddef>
-#include <climits>
+// #include <cstdint>
 #include "function_ref.h"
 #include "gcc_builtins.h"
-#include "../ecv_duet3d.h"
+#include <climits>
+#include <cstddef>
+#include <sys/types.h>
 
 // Some functions can only be defined 'constexpr' if we are using C++14 or later
 #if __cplusplus >=201402L
@@ -258,12 +257,12 @@ public:
 	}
 
 	// Convert an array of unsigned longs to a bit map with overflow checking
-	static Bitmap<BaseType> MakeFromArray(const uint32_t *_ecv_array arr, size_t numEntries) noexcept;
+	static Bitmap<BaseType> MakeFromArray(const uint32_t* arr, size_t numEntries) noexcept;
 
 	// Convert an array of longs to a bit map with overflow checking
-	static Bitmap<BaseType> MakeFromArray(const int32_t *_ecv_array arr, size_t numEntries) noexcept;
+	static Bitmap<BaseType> MakeFromArray(const int32_t* arr, size_t numEntries) noexcept;
 
-private:
+  private:
 	static constexpr uint8_t BitCount[16] = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
 
 	BaseType bits;
@@ -332,7 +331,8 @@ template<class BaseType> bool Bitmap<BaseType>::IterateWhile(function_ref_noexce
 }
 
 // Convert an array of unsigned longs to a bit map with overflow checking
-template<class BaseType> Bitmap<BaseType> Bitmap<BaseType>::MakeFromArray(const uint32_t *_ecv_array arr, size_t numEntries) noexcept
+template <class BaseType>
+Bitmap<BaseType> Bitmap<BaseType>::MakeFromArray(const uint32_t* arr, size_t numEntries) noexcept
 {
 	BaseType res = 0;
 	for (size_t i = 0; i < numEntries; ++i)
@@ -347,7 +347,8 @@ template<class BaseType> Bitmap<BaseType> Bitmap<BaseType>::MakeFromArray(const 
 }
 
 // Convert an array of longs to a bit map with overflow checking
-template<class BaseType> Bitmap<BaseType> Bitmap<BaseType>::MakeFromArray(const int32_t *_ecv_array arr, size_t numEntries) noexcept
+template <class BaseType>
+Bitmap<BaseType> Bitmap<BaseType>::MakeFromArray(const int32_t* arr, size_t numEntries) noexcept
 {
 	BaseType res = 0;
 	for (size_t i = 0; i < numEntries; ++i)

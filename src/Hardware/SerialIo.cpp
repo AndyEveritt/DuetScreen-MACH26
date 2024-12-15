@@ -9,11 +9,7 @@
  *
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_INFO
-
 #include "SerialIo.h"
-#include "uart/UartContext.h"
 #include <string>
 
 #include "Debug.h"
@@ -22,7 +18,9 @@ namespace SerialIo
 {
 	bool Send(const char* data, size_t len)
 	{
-		return UARTCONTEXT->send((unsigned char*)data, len);
+		// TODO Actually send data
+		// return UARTCONTEXT->send((unsigned char*)data, len);
+		return true;
 	}
 
 	size_t Sendf(const char *fmt, ...) {
@@ -36,7 +34,8 @@ namespace SerialIo
 		buf.resize(ret);
 		vsnprintf((char*)buf.data(), buf.capacity(), fmt, vargs);
 		info("Sending %s", buf.c_str());
-		UARTCONTEXT->send((unsigned char*)buf.c_str(), ret);
+		// TODO Actually send data
+		// UARTCONTEXT->send((unsigned char*)buf.c_str(), ret);
 
 		va_end(vargs);
 

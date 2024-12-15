@@ -8,15 +8,14 @@
 #ifndef JNI_HARDWARE_DUET_H_
 #define JNI_HARDWARE_DUET_H_
 
-#include "curl/curl.h"
-#include "restclient-cpp/restclient.h"
+// #include "curl/curl.h"
+// #include "restclient-cpp/restclient.h"
 #include "utils/utils.h"
 
 #include "Comm/Network.h"
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
-#include "manager/ConfigManager.h"
 #include "termio.h"
 
 namespace Comm
@@ -118,7 +117,7 @@ namespace Comm
 		Duet();
 		bool AsyncGet(const char* subUrl,
 					  QueryParameters_t& queryParameters,
-					  function<bool(RestClient::Response&)> callback,
+					  std::function<bool(RestClient::Response&)> callback,
 					  bool queue = false);
 		bool Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters);
 		bool Post(const char* subUrl,

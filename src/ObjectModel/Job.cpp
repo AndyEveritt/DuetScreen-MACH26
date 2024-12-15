@@ -7,8 +7,6 @@
 
 #include "Debug.h"
 
-#include "UI/Logic/ObjectCancel.h"
-
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/Vector.h"
@@ -129,9 +127,6 @@ namespace OM
 		}
 		verbose("Setting current job object index to %d", index);
 		s_currentJobObjectIndex = index;
-		UI::GetUIControl<ZKButton>(ID_MAIN_CancelCurrentObjectBtn)->setInvalid(s_currentJobObjectIndex < 0);
-		UI::GetUIControl<ZKListView>(ID_MAIN_ObjectCancelObjectsList)->refreshListView();
-		UI::ObjectCancel::RenderObjectMap();
 	}
 
 	const int8_t GetCurrentJobObjectIndex()

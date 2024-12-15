@@ -5,13 +5,10 @@
  *      Author: andy
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
-
-#include "UI/UserInterface.h"
 #include "Usb.h"
 #include "sys/stat.h"
 #include "utils/utils.h"
+#include <cstring>
 #include <fstream>
 
 namespace USB
@@ -87,7 +84,7 @@ namespace USB
 
 		if (!file.is_open())
 		{
-			UI::CONSOLE.AddResponse(utils::format("Unable to open file %s", filePath.c_str()).c_str());
+			printf(utils::format("Unable to open file %s", filePath.c_str()).c_str());
 			error("Unable to open file %s", filePath.c_str());
 			return false;
 		}
@@ -98,7 +95,7 @@ namespace USB
 		dbg("Reading %ld bytes", size);
 		if (!file.read(contents.begin(), size))
 		{
-			UI::CONSOLE.AddResponse(utils::format("Failed to read file %s", filePath.c_str()).c_str());
+			printf(utils::format("Failed to read file %s", filePath.c_str()).c_str());
 			error("Failed to read file %s", filePath.c_str());
 			return false;
 		}

@@ -4,24 +4,18 @@
  *  Created on: 26 Jan 2024
  *      Author: Andy Everitt
  */
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
-#include "timer.h"
 
 #include "Comm/Communication.h"
 #include "Comm/FileInfo.h"
 #include "Comm/JsonDecoder.h"
 #include "Debug.h"
+
 #include "Duet.h"
+
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
-#include "UI/Logic/HomeScreen.h"
-#include "UI/UserInterface.h"
-#include "manager/ConfigManager.h"
-#include "storage/StoragePreferences.h"
-#include "uart/UartContext.h"
 #include "utils/TimeHelper.h"
 #include "utils/utils.h"
 #include "json/json.h"
@@ -39,13 +33,13 @@ namespace Comm
 
 	void Duet::Init()
 	{
-		SetPollInterval((uint32_t)StoragePreferences::getInt(ID_DUET_POLL_INTERVAL, DEFAULT_PRINTER_POLL_INTERVAL));
-		SetBaudRate((unsigned int)StoragePreferences::getInt(ID_DUET_BAUD_RATE, CONFIGMANAGER->getUartBaudRate()));
+		// TODO restore from memory
+		SetPollInterval((uint32_t)DEFAULT_PRINTER_POLL_INTERVAL);
+		SetBaudRate((unsigned int)B115200);
 		SetIPAddress("");
-		SetHostname(StoragePreferences::getString(ID_DUET_HOSTNAME, ""));
-		SetPassword(StoragePreferences::getString(ID_DUET_PASSWORD, ""));
-		SetCommunicationType(
-			(CommunicationType)StoragePreferences::getInt(ID_DUET_COMMUNICATION_TYPE, (int)DEFAULT_COMMUNICATION_TYPE));
+		SetHostname("");
+		SetPassword("");
+		SetCommunicationType((CommunicationType)DEFAULT_COMMUNICATION_TYPE);
 	}
 
 	void Duet::Reset()
@@ -59,8 +53,10 @@ namespace Comm
 		ClearIPAddress();
 
 		OM::RemoveAll();
+// TODO reenable this
+#if 0
 		Comm::ResetSeqs();
-		UI::HomeScreen::ClearTemperatureGraph();
+#endif
 	}
 
 	void Duet::Reconnect()
@@ -75,11 +71,13 @@ namespace Comm
 		if (type == m_communicationType)
 			return;
 		info("Setting communication type to %d", (int)type);
-		StoragePreferences::putInt(ID_DUET_COMMUNICATION_TYPE, (int)type);
+		// TODO save communication type
 		Disconnect();
 
 		m_communicationType = type;
+#if 0
 		FILEINFO_CACHE->ClearCache();
+#endif
 		Connect();
 	}
 
@@ -93,9 +91,9 @@ namespace Comm
 		info("Setting poll interval to %u (scaled to %u)",
 			 interval,
 			 static_cast<uint32_t>(interval * m_pollIntervalScale));
-		StoragePreferences::putInt(ID_DUET_POLL_INTERVAL, (int)interval);
+		// TODO Save poll interval
 		m_pollInterval = interval;
-		resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
+		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
 	void Duet::ScalePollIntervalScale(float scale)
@@ -111,14 +109,15 @@ namespace Comm
 			 GetScaledPollInterval(),
 			 static_cast<uint32_t>(m_pollInterval * scale));
 		m_pollIntervalScale = scale;
-		resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
+		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
 	bool Duet::AsyncGet(const char* subUrl,
 						QueryParameters_t& queryParameters,
-						function<bool(RestClient::Response&)> callback,
+						std::function<bool(RestClient::Response&)> callback,
 						bool queue)
 	{
+#if 0
 		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
@@ -133,7 +132,9 @@ namespace Comm
 			warn("Failed to send async get request %s", subUrl);
 			return false;
 		}
+		// TODO set time
 		m_lastRequestTime = TimeHelper::getCurrentTime();
+#endif
 		return true;
 	}
 
@@ -143,6 +144,7 @@ namespace Comm
 	*/
 	bool Duet::Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters)
 	{
+#if 0
 		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
@@ -164,6 +166,7 @@ namespace Comm
 			return false;
 		}
 		m_lastRequestTime = TimeHelper::getCurrentTime();
+#endif
 		return true;
 	}
 
@@ -176,6 +179,7 @@ namespace Comm
 					QueryParameters_t& queryParameters,
 					const std::string& data)
 	{
+#if 0
 		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
@@ -196,6 +200,7 @@ namespace Comm
 			return false;
 		}
 		m_lastRequestTime = TimeHelper::getCurrentTime();
+#endif
 		return true;
 	}
 
@@ -216,8 +221,7 @@ namespace Comm
 				[this, gcode](RestClient::Response& r) {
 					if (r.code != 200)
 					{
-						UI::CONSOLE.AddResponse(
-							utils::format("HTTP error %d: Failed to send gcode: %s", r.code, gcode).c_str());
+						printf("HTTP error %d: Failed to send gcode: %s", r.code, gcode);
 						return false;
 					}
 					RequestReply(r);
@@ -228,7 +232,7 @@ namespace Comm
 			break;
 		}
 		case CommunicationType::usb:
-			// TODO
+			// TODO USB comms
 			break;
 		default:
 			break;
@@ -246,14 +250,7 @@ namespace Comm
 	bool Duet::UploadFile(const char* filename, const std::string& contents)
 	{
 		info("Uploading file %s: %d bytes", filename, contents.size());
-		// TODO work out why the UI doesn't actually get updated in this function
-		UI::POPUP_WINDOW.Open();
-		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("uploading_file").c_str());
-		UI::POPUP_WINDOW.SetText(filename);
-		UI::POPUP_WINDOW.SetTextScrollable(false);
-		UI::POPUP_WINDOW.CancelTimeout();
-		UI::POPUP_WINDOW.PreventClosing(true);
-		Thread::sleep(50);
+		// TODO add sleep
 
 		switch (m_communicationType)
 		{
@@ -262,10 +259,6 @@ namespace Comm
 			if (contents.size() > MAX_UART_UPLOAD_SIZE)
 			{
 				warn("File too large (%u) to upload via UART, limit is %u", contents.size(), MAX_UART_UPLOAD_SIZE);
-				UI::CONSOLE.AddResponse(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
-				UI::POPUP_WINDOW.Open();
-				UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
-				UI::POPUP_WINDOW.SetText(filename);
 				return false;
 			}
 
@@ -279,17 +272,17 @@ namespace Comm
 				prevPosition = position + 1;
 				position = contents.find("\n", position + 1); // Find the next occurrence, if any
 				SendGcode(line.c_str());
-				UI::POPUP_WINDOW.SetProgress((int)((100 * prevPosition / contents.size())));
 			}
 			SendGcode("M29");
 			break;
 		}
 		case CommunicationType::network: {
+			// TODO network upload
+#if 0
 			registerDelayedCallback("upload_file_progress", 1000, []() {
 				static int s_progress = 0;
 				if (s_progress >= 90)
 					return false;
-				UI::POPUP_WINDOW.SetProgress(s_progress);
 				s_progress += 10;
 				return true;
 			});
@@ -298,23 +291,16 @@ namespace Comm
 			query["name"] = filename;
 			if (!Post("/rr_upload", r, query, contents))
 			{
-				UI::CONSOLE.AddResponse(
-					utils::format("HTTP error %d %s: Failed to upload file: %s", r.code, r.body, filename).c_str());
+				printf(utils::format("HTTP error %d %s: Failed to upload file: %s", r.code, r.body, filename).c_str());
 				unregisterDelayedCallback("upload_file_progress");
-				UI::POPUP_WINDOW.Open();
-				UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upload_failed").c_str());
-				UI::POPUP_WINDOW.SetText(r.body.c_str());
 				return false;
 			}
+#endif
 			break;
 		}
 		default:
 			break;
 		}
-		UI::POPUP_WINDOW.Open();
-		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("finished_uploading").c_str());
-		UI::POPUP_WINDOW.SetText(filename);
-		UI::POPUP_WINDOW.SetProgress(100);
 		return true;
 	}
 
@@ -329,8 +315,7 @@ namespace Comm
 			query["name"] = filename;
 			if (!Get("/rr_download", r, query))
 			{
-				UI::CONSOLE.AddResponse(
-					utils::format("HTTP error %d: Failed to download file: %s", r.code, filename).c_str());
+				printf("HTTP error %d: Failed to download file: %s", r.code, filename);
 				return false;
 			}
 			contents = r.body;
@@ -351,6 +336,7 @@ namespace Comm
 			SendGcodef("M409 F\"%s\"\n", flags);
 			break;
 		case CommunicationType::network: {
+#if 0
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["flags"] = flags;
@@ -358,14 +344,13 @@ namespace Comm
 				JsonDecoder decoder;
 				if (r.code != 200)
 				{
-					UI::CONSOLE.AddResponse(
-						utils::format("HTTP error %d: Failed to get model update for flags: %s", r.code, flags)
-							.c_str());
+					printf("HTTP error %d: Failed to get model update for flags: %s", r.code, flags);
 					return false;
 				}
 				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 				return true;
 			});
+#endif
 			break;
 		}
 		default:
@@ -381,6 +366,7 @@ namespace Comm
 			SendGcodef("M409 K\"%s\" F\"%s\"\n", key, flags);
 			break;
 		case CommunicationType::network: {
+#if 0
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["key"] = key;
@@ -389,15 +375,13 @@ namespace Comm
 				JsonDecoder decoder;
 				if (r.code != 200)
 				{
-					UI::CONSOLE.AddResponse(
-						utils::format(
-							"HTTP error %d: Failed to get model update for key: %s, flags: %s", r.code, key, flags)
-							.c_str());
+					printf("HTTP error %d: Failed to get model update for key: %s, flags: %s", r.code, key, flags);
 					return false;
 				}
 				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 				return true;
 			});
+#endif
 			break;
 		}
 		default:
@@ -474,7 +458,7 @@ namespace Comm
 					dbg("Name = %s", filename);
 					if (r.code != 200)
 					{
-						UI::CONSOLE.AddResponse(
+						printf(
 							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
 								.c_str());
 						return false;
@@ -482,7 +466,7 @@ namespace Comm
 					reader.parse(r.body, body);
 					if (body.isMember("err") && body["err"].asInt() != 0)
 					{
-						UI::CONSOLE.AddResponse(
+						printf(
 							utils::format(
 								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
 								.c_str());
@@ -679,10 +663,12 @@ namespace Comm
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart: {
-			info("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
-			return UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
+			// TODO open UART connection
+			info("Opening UART %s at %u", "", m_baudRate.rate);
+			return true;
 		}
 		case CommunicationType::network: {
+#if 0
 			info("Connecting to Duet at %s", GetBaseUrl().c_str());
 
 			RestClient::Response r;
@@ -735,6 +721,9 @@ namespace Comm
 				},
 				0,
 				true);
+#else
+			return true;
+#endif
 		}
 		default:
 			break;
@@ -749,10 +738,10 @@ namespace Comm
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:
-			UARTCONTEXT->closeUart();
-			Thread::sleep(100);
+			// TODO close UART connection
 			break;
 		case CommunicationType::network: {
+#if 0
 			ClearThreadPool();
 			if (m_sessionKey == sm_noSessionKey)
 			{
@@ -768,6 +757,9 @@ namespace Comm
 			}
 			Reset();
 			return r.code;
+#else
+			return 200;
+#endif
 		}
 		default:
 			break;
@@ -802,14 +794,9 @@ namespace Comm
 	void Duet::SetBaudRate(const baudrate_t& baudRate)
 	{
 		info("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
-		StoragePreferences::putInt(ID_DUET_BAUD_RATE, baudRate.internal);
+		// TODO Store baud rate
 		m_baudRate = baudRate;
-		if (UARTCONTEXT->isOpen())
-		{
-			UARTCONTEXT->closeUart();
-			Thread::sleep(50);
-			UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), baudRate.internal);
-		}
+		// TODO set baud rate
 	}
 
 	void Duet::SetIPAddress(const std::string& ipAddress)
@@ -830,7 +817,7 @@ namespace Comm
 	void Duet::SetHostname(const std::string hostname)
 	{
 		dbg("Hostname = %s", hostname.c_str());
-		StoragePreferences::putString(ID_DUET_HOSTNAME, hostname);
+		// TODO store hostname
 		m_hostname.clear();
 
 		if (hostname.find("http://") != 0)
@@ -841,14 +828,15 @@ namespace Comm
 		m_hostname += hostname.c_str();
 		ClearIPAddress();
 		info("Set Duet hostname to %s", m_hostname.c_str());
-		FILEINFO_CACHE->ClearCache();
+		// TODO Clear file info cache
+		// FILEINFO_CACHE->ClearCache();
 		if (m_communicationType == CommunicationType::network)
 			Connect();
 	}
 
 	void Duet::SetPassword(const std::string& password)
 	{
-		StoragePreferences::putString(ID_DUET_PASSWORD, password);
+		// TODO save password
 		m_password = password;
 	}
 

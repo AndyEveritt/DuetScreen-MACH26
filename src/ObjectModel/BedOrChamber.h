@@ -8,11 +8,10 @@
 #ifndef SRC_OBJECTMODEL_BEDORCHAMBER_HPP_
 #define SRC_OBJECTMODEL_BEDORCHAMBER_HPP_
 
-
-//#include <cstdint>
-#include <sys/types.h>
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/function_ref.h>
+#include <cstdint>
+#include <sys/types.h>
 
 namespace OM
 {

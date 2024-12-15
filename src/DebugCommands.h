@@ -8,19 +8,21 @@
 #ifndef JNI_DEBUGCOMMANDS_H_
 #define JNI_DEBUGCOMMANDS_H_
 
-#include "std_fixed/functional.h"
+#include <functional>
 
 namespace Debug
 {
+	typedef std::function<void(void)> debugCb_t;
+
 	struct DebugCommand
 	{
 		const char* id;
-		function<void(void)> callback;
+		debugCb_t callback;
 
-		DebugCommand(const char* id, function<void(void)> callback);
+		DebugCommand(const char* id, debugCb_t callback);
 	};
 
-	void CreateCommand(const char* id, function<void(void)> callback);
+	void CreateCommand(const char* id, debugCb_t callback);
 	DebugCommand* GetCommand(const char* id);
 	DebugCommand* GetCommandByIndex(size_t index);
 	size_t GetCommandCount();

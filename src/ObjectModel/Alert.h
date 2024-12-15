@@ -12,9 +12,9 @@
 #include "Duet3D/General/Bitmap.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/Vector.h"
-#include "uart/CommDef.h"
 #include <cstddef>
 #include <float.h>
+#include <stdint.h>
 
 namespace OM
 {

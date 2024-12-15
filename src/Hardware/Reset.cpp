@@ -8,7 +8,6 @@
 
 #include "Reset.h"
 
-#include <storage/StoragePreferences.h>
 #include <sys/reboot.h>
 #include <unistd.h>
 
@@ -16,18 +15,15 @@
 extern "C" {
 #endif
 
-void Reset() noexcept {
-  // Synchronize data and save cached data to prevent data loss
-  sync();
-  reboot(RB_AUTOBOOT);
-}
+	/**
+	 * @brief Restart the hardware
+	 */
+	void Reset() noexcept {}
 
-void EraseAndReset() noexcept {  // TODO: See if "erase" can be implemented ?
-  // Synchronize data and save cached data to prevent data loss
-  StoragePreferences::clear();
-  sync();
-  reboot(RB_AUTOBOOT);
-}
+	/**
+	 * @brief Reset any user customizations and reset the hardware
+	 */
+	void EraseAndReset() noexcept {}
 
 #ifdef __cplusplus
 }

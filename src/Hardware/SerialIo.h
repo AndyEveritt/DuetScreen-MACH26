@@ -11,14 +11,9 @@
 #ifndef JNI_SERIALIO_HPP_
 #define JNI_SERIALIO_HPP_
 
+#include <Duet3D/General/String.h>
 #include <cstddef>
 #include <sys/types.h>
-#include <Duet3D/General/String.h>
-#include "ecv.h"
-#undef array
-#undef result
-#undef value
-#undef in
 
 namespace SerialIo
 {

@@ -3,7 +3,7 @@ project(DuetScreen C CXX)
 
 # Set C and C++ standards
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
@@ -15,45 +15,77 @@ set(LIBRARIES_DIR ${PROJECT_SOURCE_DIR}/libraries)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
-# Main include files of the project
 set(MAIN_SOURCES "")
+
+# ----------------------------------------------------------------------------
+# Libraries
+# ----------------------------------------------------------------------------
 
 include(${LIBRARIES_DIR}/FreeRTOS.cmake)
 include(${LIBRARIES_DIR}/lvgl.cmake)
 
+# ----------------------------------------------------------------------------
 # Find and include SDL2 library
+# ----------------------------------------------------------------------------
 find_package(SDL2 REQUIRED)
 
+# ----------------------------------------------------------------------------
 # Set source files for executable
+# ----------------------------------------------------------------------------
 if(USE_FREERTOS)
   list(
     APPEND
     MAIN_SOURCES
-    ${SRC_DIR}/main.cpp
     ${SRC_DIR}/freertos_main.cpp
-    ${SRC_DIR}/mouse_cursor_icon.c
     ${SRC_DIR}/FreeRTOS_Posix_Port.c
     ${FREERTOS_SOURCES} # Add only if USE_FREERTOS is enabled
   )
-else()
-  list(APPEND MAIN_SOURCES ${SRC_DIR}/main.cpp ${SRC_DIR}/mouse_cursor_icon.c)
 endif()
 
-# Add source files
-file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/*.c ${SRC_DIR}/Comm/*.cpp) # Comm
-file(GLOB_RECURSE HW_SOURCES ${SRC_DIR}/Hardware/*.c ${SRC_DIR}/Hardware/*.cpp) # Hardware
-file(GLOB_RECURSE OM_SOURCES ${SRC_DIR}/ObjectModel/*.c ${SRC_DIR}/ObjectModel/*.cpp) # ObjectModel
-file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/*.c ${SRC_DIR}/UI/*.cpp) # UI
-file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/Utils/*.c ${SRC_DIR}/Utils/*.cpp) # Utils
-list(APPEND MAIN_SOURCES ${COMM_SOURCES} ${HW_SOURCES} ${OM_SOURCES} ${UI_SOURCES} ${UTILS_SOURCES})
+file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/*.c ${LIBRARIES_DIR}/Duet3D/*.cpp)
+# file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/*.c ${SRC_DIR}/Comm/*.cpp)
+file(GLOB_RECURSE HW_SOURCES ${SRC_DIR}/Hardware/*.c ${SRC_DIR}/Hardware/*.cpp)
+list(REMOVE_ITEM HW_SOURCES ${SRC_DIR}/Hardware/Usb.cpp)
 
-add_executable(main ${MAIN_SOURCES})
-target_include_directories(main PUBLIC ${SRC_DIR})
+file(GLOB_RECURSE OM_SOURCES ${SRC_DIR}/ObjectModel/*.c
+     ${SRC_DIR}/ObjectModel/*.cpp)
+# list(REMOVE_ITEM OM_SOURCES
+#      ${SRC_DIR}/ObjectModel/Job.cpp)
+
+file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/*.c ${SRC_DIR}/UI/*.cpp)
+
+file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/utils/*.c ${SRC_DIR}/utils/*.cpp)
+
+list(
+  APPEND
+  MAIN_SOURCES
+  ${SRC_DIR}/main.cpp
+  ${SRC_DIR}/mouse_cursor_icon.c
+  ${SRC_DIR}/Debug.cpp
+  ${SRC_DIR}/DebugCommands.cpp
+  ${SRC_DIR}/Comm/Commands.cpp
+  ${SRC_DIR}/Comm/Communication.cpp
+  ${SRC_DIR}/Comm/JsonDecoder.cpp
+  ${DUET_LIB_SOURCES}
+  ${COMM_SOURCES}
+  ${HW_SOURCES}
+  ${OM_SOURCES}
+  ${UI_SOURCES}
+  ${UTILS_SOURCES})
+
+add_executable(DuetScreen ${MAIN_SOURCES})
+target_include_directories(DuetScreen PUBLIC ${SRC_DIR})
+
+# ----------------------------------------------------------------------------
+# Add Definitions
+# ----------------------------------------------------------------------------
+target_compile_definitions(DuetScreen PRIVATE DEBUG)
+
 
 # Define LVGL configuration as a simple include
-target_compile_definitions(main PRIVATE LV_CONF_INCLUDE_SIMPLE)
+target_compile_definitions(DuetScreen PRIVATE LV_CONF_INCLUDE_SIMPLE)
 target_link_libraries(
-  main
+  DuetScreen
   lvgl
   lvgl::examples
   lvgl::demos
@@ -64,28 +96,28 @@ target_link_libraries(
 
 # Only link freertos_config if the FreeRTOS directory exists
 if(USE_FREERTOS)
-  target_link_libraries(main freertos_config freertos_kernel)
+  target_link_libraries(DuetScreen freertos_config freertos_kernel)
 endif()
 
 # Custom target to run the executable
 add_custom_target(
   run
-  COMMAND ${EXECUTABLE_OUTPUT_PATH}/main
-  DEPENDS main)
+  COMMAND ${EXECUTABLE_OUTPUT_PATH}/DuetScreen
+  DEPENDS DuetScreen)
 
 # Conditionally include and link SDL2_image if LV_USE_DRAW_SDL is enabled
 if(LV_USE_DRAW_SDL)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
   find_package(SDL2_image REQUIRED)
   target_include_directories(lvgl PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
-  target_link_libraries(main ${SDL2_IMAGE_LIBRARIES})
+  target_link_libraries(DuetScreen ${SDL2_IMAGE_LIBRARIES})
 endif()
 
 # Conditionally include and link libpng if LV_USE_LIBPNG is enabled
 if(LV_USE_LIBPNG)
   find_package(PNG REQUIRED)
   target_include_directories(lvgl PUBLIC ${PNG_INCLUDE_DIRS})
-  target_link_libraries(main ${PNG_LIBRARIES})
+  target_link_libraries(DuetScreen ${PNG_LIBRARIES})
 endif()
 
 # Conditionally include and link libjpeg-turbo if LV_USE_LIBJPEG_TURBO is
@@ -93,19 +125,19 @@ endif()
 if(LV_USE_LIBJPEG_TURBO)
   find_package(JPEG REQUIRED)
   target_include_directories(lvgl PUBLIC ${JPEG_INCLUDE_DIRS})
-  target_link_libraries(main ${JPEG_LIBRARIES})
+  target_link_libraries(DuetScreen ${JPEG_LIBRARIES})
 endif()
 
 # Conditionally include and link FFmpeg libraries if LV_USE_FFMPEG is enabled
 if(LV_USE_FFMPEG)
-  target_link_libraries(main avformat avcodec avutil swscale z)
+  target_link_libraries(DuetScreen avformat avcodec avutil swscale z)
 endif()
 
 # Conditionally include and link FreeType if LV_USE_FREETYPE is enabled
 if(LV_USE_FREETYPE)
   find_package(Freetype REQUIRED)
   target_include_directories(lvgl PUBLIC ${FREETYPE_INCLUDE_DIRS})
-  target_link_libraries(main ${FREETYPE_LIBRARIES})
+  target_link_libraries(DuetScreen ${FREETYPE_LIBRARIES})
 endif()
 
 # Apply additional compile options if the build type is Debug

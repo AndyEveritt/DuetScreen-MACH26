@@ -54,6 +54,7 @@ namespace UI
 		virtual void init() {}
 		virtual void onShow() {}
 		virtual void onHide() {}
+		virtual void refresh() {}
 
 		void show();
 		void hide();

@@ -13,7 +13,6 @@
 extern "C" {
 #endif
 
-// Restart the hardware
 void Reset() noexcept;
 void EraseAndReset() noexcept;
 

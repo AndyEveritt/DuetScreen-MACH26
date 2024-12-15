@@ -26,7 +26,9 @@
         "new": "cpp",
         "sstream": "cpp",
         "*.touchgfx": "json",
-        "map": "cpp"
+        "map": "cpp",
+        "cstdint": "cpp",
+        "string": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.clang_format_fallbackStyle": ""

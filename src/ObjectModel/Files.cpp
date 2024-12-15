@@ -8,7 +8,6 @@
 #include "Debug.h"
 
 #include "Files.h"
-#include "UI/Logic/FileList.h"
 
 #include "Comm/Communication.h"
 #include "Hardware/Duet.h"
@@ -159,20 +158,23 @@ namespace OM::FileSystem
 	{
 		auto first = s_items.begin();
 		auto last = s_items.end();
-		FileSystemItem** temp;
-		--last;
-		while (last - first > 0)
-		{
-			temp = last;
-			while (temp != first)
+		if (first != last)
+		{			// Ensure the range is not empty
+			--last; // Point to the last valid item
+			while (std::distance(first, last) > 0)
 			{
-				if (SortItem(*temp, *(temp - 1)))
+				auto temp = last;
+				while (temp != first)
 				{
-					std::iter_swap(temp - 1, temp);
+					auto prev = std::prev(temp);
+					if (SortItem(*temp, *prev))
+					{
+						std::iter_swap(temp, prev);
+					}
+					--temp;
 				}
-				--temp;
+				++first;
 			}
-			++first;
 		}
 	}
 
@@ -232,6 +234,7 @@ namespace OM::FileSystem
 
 	void RequestUsbFiles(const std::string& path)
 	{
+#if 0
 		ClearFileSystem();
 		s_usbFolder = true;
 		s_currentDirPath = path;
@@ -253,7 +256,7 @@ namespace OM::FileSystem
 			}
 			index++;
 		}
-		UI::FileList::RefreshFileList();
+#endif
 	}
 
 	bool IsMacroFolder()
@@ -281,10 +284,13 @@ namespace OM::FileSystem
 
 	void UploadFile(const File* file)
 	{
+		// TODO upload file
+#if 0
 		std::string contents;
 		if (!USB::ReadUsbFileContents(file->GetPath(), contents))
 			return;
 		Comm::DUET.UploadFile(utils::format("/gcodes/%s", file->GetName().c_str()).c_str(), contents);
+#endif
 	}
 
 	void StartPrint(const std::string& path)
@@ -318,7 +324,6 @@ namespace OM::FileSystem
 			delete item;
 		}
 		s_items.clear();
-		UI::FileList::SetSelectedFile(nullptr);
 	}
 
 	std::string GetFileExtension(const std::string& filename)
