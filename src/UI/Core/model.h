@@ -1,24 +1,30 @@
 #pragma once
 
 #include "subscribers.h"
+#include <list>
 #include <map>
 
 namespace UI
 {
-	class Presenter;
+	class BasePresenter;
 
 	class Model
 	{
 	  public:
-		Model()
-			: m_presenter(0)
-		{
-		}
+		Model() {}
 
-		void bind(Presenter* presenter) { m_presenter = presenter; }
+		/**
+		 * @brief Add a `Presenter` to listen to events
+		 * @param presenter
+		 */
+		void bind(BasePresenter* presenter) { m_presenters.push_back(presenter); }
+		/**
+		 * @brief Remove a `Presenter`
+		 * @param presenter
+		 */
+		void unbind(BasePresenter* presenter) { m_presenters.remove(presenter); }
 
 		void tick();
-		void updateView();
 
 		const std::vector<subscriberCb_t>& getSubscribers(const char* key);
 		size_t getSubscriberCount(const char* key);
@@ -29,6 +35,6 @@ namespace UI
 		bool removeSubscriber(const char* key, size_t index);
 
 		std::map<const char*, std::vector<subscriberCb_t>> m_subscribers;
-		Presenter* m_presenter;
+		std::list<BasePresenter*> m_presenters;
 	};
 } // namespace UI

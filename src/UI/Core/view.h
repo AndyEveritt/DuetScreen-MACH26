@@ -5,6 +5,8 @@
 
 namespace UI
 {
+	class BasePresenter;
+
 	/**
 	 * This is the base View, each screen should inherit from this class. It provides a link
 	 * to the Presenter class.
@@ -16,10 +18,12 @@ namespace UI
 	template <class T>
 	class View
 	{
+		static_assert(std::is_base_of<BasePresenter, T>::value, "T must derive from Presenter");
+
 	  public:
 		View(lv_obj_t* parent, lv_coord_t xPct, lv_coord_t yPct, lv_coord_t widthPct, lv_coord_t heightPct)
 			: m_cont(lv_obj_create(parent))
-			, m_presenter(0)
+		// , m_presenter(this)
 		{
 			lv_obj_set_pos(m_cont, lv_pct(xPct), lv_pct(yPct));
 			lv_obj_set_size(m_cont, lv_pct(widthPct), lv_pct(heightPct));
@@ -35,13 +39,6 @@ namespace UI
 		virtual ~View() {}
 
 		/**
-		 * @brief Binds an instance of a specific Presenter type (subclass) to the View instance. This function is
-		 * called automatically when a new presenter/view pair is activated.
-		 * @param newPresenter The specific Presenter to be associated with the View.
-		 */
-		void bind(T& newPresenter) { m_presenter = &newPresenter; }
-
-		/**
 		 * @brief Get a pointer to the MVP model
 		 */
 		Model* getModel() { return m_presenter->getModel(); }
@@ -51,17 +48,25 @@ namespace UI
 		 */
 		lv_obj_t* getBaseContainer() { return m_cont; }
 
+		void show()
+		{
+			m_presenter.activate();
+			onShow();
+		}
+		void hide()
+		{
+			m_presenter.deactivate();
+			onHide();
+		}
+		void back();
+
+	  protected:
 		virtual void init() {}
 		virtual void onShow() {}
 		virtual void onHide() {}
 		virtual void refresh() {}
 
-		void show();
-		void hide();
-		void back();
-
-	  protected:
 		lv_obj_t* m_cont;
-		T* m_presenter;
+		T m_presenter;
 	};
 } // namespace UI

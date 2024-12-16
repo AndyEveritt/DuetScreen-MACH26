@@ -4,9 +4,9 @@
 
 namespace UI
 {
-	class HomeView;
+	class SubView;
 
-	class HomePresenter : public Presenter<HomeView>
+	class SubPresenter : public Presenter<SubView>
 	{
 	  public:
 		using Presenter::Presenter;

@@ -1,23 +1,20 @@
 #pragma once
 
 #include "UI/Core/view.h"
-#include "UI/Screens/Sub/view.h"
-#include "lvgl/lvgl.h"
 #include "presenter.h"
 
 namespace UI
 {
-	class HomeView : public View<HomePresenter>
+	class SubView : public View<SubPresenter>
 	{
 	  public:
-		HomeView();
+		SubView(lv_obj_t* parent);
 
-		virtual void onShow() { m_subView.show(); }
+		virtual void onShow() {}
 
 	  private:
 		lv_obj_t* tabview;
 		lv_obj_t* main_tab;
 		lv_obj_t* macros_tab;
-		SubView m_subView;
 	};
 } // namespace UI

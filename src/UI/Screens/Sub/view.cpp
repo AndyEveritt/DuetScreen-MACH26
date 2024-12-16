@@ -8,14 +8,12 @@
 
 namespace UI
 {
-	HomeView::HomeView()
-		: View(10, 0, 90, 100)
+	SubView::SubView(lv_obj_t* parent)
+		: View(parent, 25, 25, 50, 50)
 		, tabview(lv_tabview_create(m_cont))
 		, main_tab(lv_tabview_add_tab(tabview, HOME_SYMBOL))
 		, macros_tab(lv_tabview_add_tab(tabview, MACROS_SYMBOL))
-		, m_subView(main_tab)
 	{
-		m_presenter = HomePresenter(this);
 		lv_tabview_set_tab_bar_position(tabview, LV_DIR_LEFT);
 		lv_tabview_set_tab_bar_size(tabview, 60);
 	}
