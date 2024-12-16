@@ -7,6 +7,8 @@
 
 namespace UI
 {
+	class BaseView;
+
 	class BasePresenter : public ModelListener
 	{
 	  public:
@@ -43,6 +45,9 @@ namespace UI
 			: m_view(nullptr)
 		{
 		}
+
+		Presenter(BaseView* view) { m_view = static_cast<V*>(view); }
+
 		Presenter(V* view)
 			: m_view(view)
 		{

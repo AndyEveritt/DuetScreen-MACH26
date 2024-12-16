@@ -15,7 +15,6 @@ namespace UI
 		, macros_tab(lv_tabview_add_tab(tabview, MACROS_SYMBOL))
 		, m_subView(main_tab)
 	{
-		m_presenter = HomePresenter(this);
 		lv_tabview_set_tab_bar_position(tabview, LV_DIR_LEFT);
 		lv_tabview_set_tab_bar_size(tabview, 60);
 	}

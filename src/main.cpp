@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 	// lv_demo_benchmark();
 
 	UI::HomeView home;
-	home.show();
+	// home.show();
 
 	while (1)
 	{
