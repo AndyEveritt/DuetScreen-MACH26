@@ -11,7 +11,14 @@ namespace UI
 	class Model
 	{
 	  public:
-		Model() {}
+		Model(const Model&) = delete;
+		Model& operator=(const Model&) = delete;
+
+		static Model& getInstance()
+		{
+			static Model instance;
+			return instance;
+		}
 
 		/**
 		 * @brief Add a `Presenter` to listen to events
@@ -36,5 +43,8 @@ namespace UI
 
 		std::map<const char*, std::vector<subscriberCb_t>> m_subscribers;
 		std::list<BasePresenter*> m_presenters;
+
+	  private:
+		Model() {}
 	};
 } // namespace UI

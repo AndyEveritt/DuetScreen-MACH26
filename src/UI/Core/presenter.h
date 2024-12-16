@@ -14,12 +14,12 @@ namespace UI
 	  public:
 		void activate()
 		{
-			m_model->bind(this);
+			m_model.bind(this);
 			onActivate();
 		}
 		void deactivate()
 		{
-			m_model->unbind(this);
+			m_model.unbind(this);
 			onDeactivate();
 		}
 

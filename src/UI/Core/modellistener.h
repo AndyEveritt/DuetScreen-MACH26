@@ -7,16 +7,16 @@ namespace UI
 	class ModelListener
 	{
 	  public:
-		ModelListener() : m_model(0) {}
+		ModelListener()
+			: m_model(Model::getInstance())
+		{
+		}
 
 		virtual ~ModelListener() {}
 
-		void bind(Model* m) { m_model = m; }
-		Model* getModel() { return m_model; }
-
-		virtual void newData(float data) {}
+		Model& getModel() { return m_model; }
 
 	  protected:
-		Model* m_model;
+		Model& m_model;
 	};
 } // namespace UI
