@@ -23,6 +23,7 @@ set(MAIN_SOURCES "")
 
 include(${LIBRARIES_DIR}/FreeRTOS.cmake)
 include(${LIBRARIES_DIR}/lvgl.cmake)
+add_subdirectory(${LIBRARIES_DIR}/libhv)
 
 # ----------------------------------------------------------------------------
 # Find and include SDL2 library
@@ -87,12 +88,13 @@ target_compile_definitions(DuetScreen PRIVATE LV_CONF_INCLUDE_SIMPLE)
 target_link_libraries(
   DuetScreen
   lvgl
-  lvgl::examples
-  lvgl::demos
+  # lvgl::examples
+  # lvgl::demos
   lvgl::thorvg
   ${SDL2_LIBRARIES}
   m
-  pthread)
+  pthread
+  hv)
 
 # Only link freertos_config if the FreeRTOS directory exists
 if(USE_FREERTOS)

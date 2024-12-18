@@ -9,6 +9,7 @@
  *********************/
 #define _DEFAULT_SOURCE /* needed for usleep() */
 #include "glob.h"
+#include "hv/requests.h"
 #include "lvgl/demos/lv_demos.h"
 #include "lvgl/examples/lv_examples.h"
 #include "lvgl/lvgl.h"
@@ -18,6 +19,10 @@
 #include <unistd.h>
 
 #include "UI/Screens/Home/view.h"
+
+#if LV_USE_OS == LV_OS_FREERTOS
+#include "freertos_main.h"
+#endif
 
 /*********************
  *      DEFINES
@@ -31,6 +36,7 @@
  *  STATIC PROTOTYPES
  **********************/
 static lv_display_t* hal_init(int32_t w, int32_t h);
+static void http_test(void);
 
 /**********************
  *  STATIC VARIABLES
@@ -44,32 +50,16 @@ static lv_display_t* hal_init(int32_t w, int32_t h);
  *   GLOBAL FUNCTIONS
  **********************/
 
-extern void freertos_main(void);
-
-/*********************
- *      DEFINES
- *********************/
-
-/**********************
- *      TYPEDEFS
- **********************/
-
 /**********************
  *      VARIABLES
- **********************/
-
-/**********************
- *  STATIC PROTOTYPES
- **********************/
-
-/**********************
- *   GLOBAL FUNCTIONS
  **********************/
 
 int main(int argc, char** argv)
 {
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
+
+	http_test();
 
 	/*Initialize LVGL*/
 	lv_init();
@@ -138,4 +128,17 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 	lv_indev_set_group(kb, lv_group_get_default());
 
 	return disp;
+}
+
+static void http_test()
+{
+	auto resp = requests::get("http://192.168.4.87/rr_model?key=move");
+	if (resp == NULL)
+	{
+		printf("request failed!\n");
+	}
+	else
+	{
+		printf("%s\n", resp->body.c_str());
+	}
 }
