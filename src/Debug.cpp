@@ -10,6 +10,11 @@
 
 static DebugLevel s_debugLevel = DebugLevel::Info;
 
+static void __dbg(const char* fmt, va_list args)
+{
+	vprintf(fmt, args);
+}
+
 void SetDebugLevel(DebugLevel level)
 {
 	// TODO save debug level

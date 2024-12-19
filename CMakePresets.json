@@ -25,7 +25,10 @@
             "name": "Simulation",
             "displayName": "Simulation",
             "description": "Configure the project to be run locally on the host machine",
-            "inherits": "Base"
+            "inherits": "Base",
+            "cacheVariables": {
+                "SIMULATION": "ON"
+            }
         },
         {
             "name": "T113-Debug",
