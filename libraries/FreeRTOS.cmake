@@ -12,18 +12,18 @@ if(USE_FREERTOS)
     target_compile_definitions(freertos_config INTERFACE projCOVERAGE_TEST=0)
 
     # Add FreeRTOS as a subdirectory
-    add_subdirectory(FreeRTOS)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/FreeRTOS)
 
     # FreeRTOS-specific include directories
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/include)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/portable/ThirdParty/GCC/Posix)
+    include_directories(${CMAKE_CURRENT_LIST_DIR}/FreeRTOS/include)
+    include_directories(${CMAKE_CURRENT_LIST_DIR}/FreeRTOS/portable/ThirdParty/GCC/Posix)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/config)
 
     # Add FreeRTOS sources
     file(GLOB FREERTOS_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/*.c"
-        "${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/portable/MemMang/heap_4.c"
-        "${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/portable/ThirdParty/GCC/Posix/*.c"
+        "${CMAKE_CURRENT_LIST_DIR}/FreeRTOS/*.c"
+        "${CMAKE_CURRENT_LIST_DIR}/FreeRTOS/portable/MemMang/heap_4.c"
+        "${CMAKE_CURRENT_LIST_DIR}/FreeRTOS/portable/ThirdParty/GCC/Posix/*.c"
     )
 else()
     message(STATUS "FreeRTOS is disabled")
