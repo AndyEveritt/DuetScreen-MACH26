@@ -25,9 +25,11 @@ include(${LIBRARIES_DIR}/FreeRTOS.cmake)
 include(${LIBRARIES_DIR}/lvgl.cmake)
 add_subdirectory(${LIBRARIES_DIR}/libhv)
 
-# ----------------------------------------------------------------------------
+# Find libusb package
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
+
 # Find and include SDL2 library
-# ----------------------------------------------------------------------------
 find_package(SDL2 REQUIRED)
 
 # ----------------------------------------------------------------------------
@@ -77,6 +79,9 @@ list(
 add_executable(DuetScreen ${MAIN_SOURCES})
 target_include_directories(DuetScreen PUBLIC ${SRC_DIR})
 
+# Include libusb headers
+target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})
+
 # ----------------------------------------------------------------------------
 # Add Definitions
 # ----------------------------------------------------------------------------
@@ -92,6 +97,7 @@ target_link_libraries(
   # lvgl::demos
   lvgl::thorvg
   ${SDL2_LIBRARIES}
+  ${LIBUSB_LIBRARIES}  # Link libusb library
   m
   pthread
   hv)
@@ -103,9 +109,11 @@ endif()
 
 # Custom target to run the executable
 add_custom_target(
-  run
-  COMMAND ${EXECUTABLE_OUTPUT_PATH}/DuetScreen
-  DEPENDS DuetScreen)
+  binary_size ALL
+  DEPENDS DuetScreen
+  COMMAND size -A ${PROJECT_BINARY_DIR}/DuetScreen
+  COMMENT "Running size on DuetScreen"
+)
 
 # Conditionally include and link SDL2_image if LV_USE_DRAW_SDL is enabled
 if(LV_USE_DRAW_SDL)

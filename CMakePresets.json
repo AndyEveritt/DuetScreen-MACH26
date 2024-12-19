@@ -2,9 +2,8 @@
     "version": 8,
     "configurePresets": [
         {
-            "name": "Default",
-            "displayName": "No FreeRTOS",
-            "description": "Sets Ninja generator, build and install directory",
+            "name": "Base",
+            "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
@@ -17,12 +16,30 @@
             "name": "FreeRTOS",
             "displayName": "FreeRTOS",
             "description": "Sets Ninja generator, build and install directory",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "inherits": "Base",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "USE_FREERTOS": "ON"
+            }
+        },
+        {
+            "name": "Simulation",
+            "displayName": "Simulation",
+            "description": "Configure the project to be run locally on the host machine",
+            "inherits": "Base"
+        },
+        {
+            "name": "T113-Debug",
+            "displayName": "T113 Debug",
+            "description": "Configure the project to be run on T113 with debug symbols",
+            "inherits": "Base"
+        },
+        {
+            "name": "T113",
+            "displayName": "T113 Release",
+            "description": "Configure the project to be run on T113 without debug symbols",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
             }
         }
     ]
