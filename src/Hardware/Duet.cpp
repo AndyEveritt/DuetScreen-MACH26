@@ -53,10 +53,7 @@ namespace Comm
 		ClearIPAddress();
 
 		OM::RemoveAll();
-// TODO reenable this
-#if 0
 		Comm::ResetSeqs();
-#endif
 	}
 
 	void Duet::Reconnect()

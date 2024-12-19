@@ -8,6 +8,7 @@
  *      INCLUDES
  *********************/
 #define _DEFAULT_SOURCE /* needed for usleep() */
+#include "Comm/Communication.h"
 #include "glob.h"
 #include "hv/requests.h"
 #include "lvgl/demos/lv_demos.h"
@@ -21,7 +22,9 @@
 
 #include "UI/Screens/Home/view.h"
 
-#if LV_USE_OS == LV_OS_FREERTOS
+#if LV_USE_OS == LV_OS_NONE
+#include <thread>
+#elif LV_USE_OS == LV_OS_FREERTOS
 #include "freertos_main.h"
 #endif
 
@@ -37,11 +40,16 @@
  *  STATIC PROTOTYPES
  **********************/
 static lv_display_t* hal_init(int32_t w, int32_t h);
-static void http_test(void);
+static void http_test();
+static int usb_test();
 
 /**********************
  *  STATIC VARIABLES
  **********************/
+#if LV_USE_OS == LV_OS_NONE
+static pthread_t s_responseThread;
+static pthread_t s_requestThread;
+#endif
 
 /**********************
  *      MACROS
@@ -50,105 +58,6 @@ static void http_test(void);
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-static int usb_test()
-{
-
-	libusb_device_handle* handle;
-	libusb_context* ctx = nullptr;
-	int r;
-	unsigned char data[64];			 // Data to send
-	unsigned char received_data[64]; // Buffer to receive data
-	int actual_length;
-
-	// Initialize libusb
-	r = libusb_init(NULL);
-	if (r < 0)
-	{
-		fprintf(stderr, "Failed to initialize libusb\n");
-		return 1;
-	}
-
-	// Open USB device (replace with your device's Vendor ID and Product ID)
-	handle = libusb_open_device_with_vid_pid(NULL, 0x1d50, 0x60ec);
-	if (!handle)
-	{
-		fprintf(stderr, "Cannot open device\n");
-		libusb_exit(NULL);
-		return 1;
-	}
-
-	// Detach the kernel driver if necessary
-	if (libusb_kernel_driver_active(handle, 0) == 1)
-	{
-		r = libusb_detach_kernel_driver(handle, 0);
-		if (r < 0)
-		{
-			fprintf(stderr, "Cannot detach kernel driver: %s\n", libusb_error_name(r));
-			libusb_close(handle);
-			libusb_exit(NULL);
-			return 1;
-		}
-	}
-
-	// Claim interface 0 (replace with your interface number)
-	r = libusb_claim_interface(handle, 0);
-	if (r < 0)
-	{
-		fprintf(stderr, "Cannot claim interface: %s\n", libusb_error_name(r));
-		libusb_close(handle);
-		libusb_exit(NULL);
-		return 1;
-	}
-
-	// Send the M115 command
-	const char* command = "M115\n";
-	r = libusb_bulk_transfer(
-		handle, (2 | LIBUSB_ENDPOINT_OUT), (unsigned char*)command, strlen(command), &actual_length, 0);
-	if (r != 0)
-	{
-		std::cerr << "Error sending command: " << libusb_error_name(r) << std::endl;
-		libusb_release_interface(handle, 0);
-		libusb_close(handle);
-		libusb_exit(ctx);
-		return 1;
-	}
-
-	// Keep receiving data until no more data is available
-	while (true)
-	{
-		r = libusb_bulk_transfer(handle, (1 | LIBUSB_ENDPOINT_IN), data, sizeof(data), &actual_length, 1000);
-		if (r == LIBUSB_ERROR_TIMEOUT)
-		{
-			std::cerr << "No more data received (timeout)" << std::endl;
-			break;
-		}
-		else if (r != 0)
-		{
-			std::cerr << "Error receiving data: " << libusb_error_name(r) << std::endl;
-			break;
-		}
-		// else if (actual_length == 0)
-		// {
-		// 	std::cerr << "No more data received" << std::endl;
-		// 	break;
-		// }
-		else
-		{
-			std::cout << "Received (" << actual_length << "): " << std::string((char*)data, actual_length) << std::endl;
-		}
-	}
-
-	// Release interface
-	libusb_release_interface(handle, 0);
-
-	// Close the device
-	libusb_close(handle);
-
-	// Deinitialize libusb
-	libusb_exit(NULL);
-
-	return 0;
-}
 
 /**********************
  *      VARIABLES
@@ -159,8 +68,8 @@ int main(int argc, char** argv)
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
 
-	http_test();
-	usb_test();
+	// http_test();
+	// usb_test();
 
 	/*Initialize LVGL*/
 	lv_init();
@@ -176,12 +85,39 @@ int main(int argc, char** argv)
 	UI::HomeView home;
 	home.show();
 
+	pthread_create(
+		&s_requestThread,
+		NULL,
+		[](void*) -> void*
+		{
+			while (1)
+			{
+				// Request next section of the OM
+				Comm::sendNext();
+				usleep(1000 * 1000);
+				// std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			}
+			return nullptr;
+		},
+		NULL);
+
+	pthread_create(
+		&s_responseThread,
+		NULL,
+		[](void*) -> void*
+		{
+			while (1)
+			{
+				usleep(1000 * 1000);
+			}
+			return nullptr;
+		},
+		NULL);
+
 	while (1)
 	{
-		/* Periodically call the lv_task handler.
-		 * It could be done in a timer interrupt or an OS task too.*/
 		lv_timer_handler();
-		usleep(5 * 1000);
+		usleep(5 * 1000); // Sleep for 1 second
 	}
 
 #elif LV_USE_OS == LV_OS_FREERTOS
@@ -242,4 +178,104 @@ static void http_test()
 	{
 		printf("%s\n", resp->body.c_str());
 	}
+}
+
+static int usb_test()
+{
+
+	libusb_device_handle* handle;
+	libusb_context* ctx = nullptr;
+	int r;
+	unsigned char data[64];			 // Data to send
+	unsigned char received_data[64]; // Buffer to receive data
+	int actual_length;
+
+	// Initialize libusb
+	r = libusb_init(NULL);
+	if (r < 0)
+	{
+		fprintf(stderr, "Failed to initialize libusb\n");
+		return 1;
+	}
+
+	// Open USB device (replace with your device's Vendor ID and Product ID)
+	handle = libusb_open_device_with_vid_pid(NULL, 0x1d50, 0x60ec);
+	if (!handle)
+	{
+		fprintf(stderr, "Cannot open device\n");
+		libusb_exit(NULL);
+		return 1;
+	}
+
+	// Detach the kernel driver if necessary
+	if (libusb_kernel_driver_active(handle, 0) == 1)
+	{
+		r = libusb_detach_kernel_driver(handle, 0);
+		if (r < 0)
+		{
+			fprintf(stderr, "Cannot detach kernel driver: %s\n", libusb_error_name(r));
+			libusb_close(handle);
+			libusb_exit(NULL);
+			return 1;
+		}
+	}
+
+	// Claim interface 0 (replace with your interface number)
+	r = libusb_claim_interface(handle, 0);
+	if (r < 0)
+	{
+		fprintf(stderr, "Cannot claim interface: %s\n", libusb_error_name(r));
+		libusb_close(handle);
+		libusb_exit(NULL);
+		return 1;
+	}
+
+	// Send the M115 command
+	const char* command = "M409 K\"move\"\n";
+	r = libusb_bulk_transfer(
+		handle, (2 | LIBUSB_ENDPOINT_OUT), (unsigned char*)command, strlen(command), &actual_length, 0);
+	if (r != 0)
+	{
+		std::cerr << "Error sending command: " << libusb_error_name(r) << std::endl;
+		libusb_release_interface(handle, 0);
+		libusb_close(handle);
+		libusb_exit(ctx);
+		return 1;
+	}
+
+	// Keep receiving data until no more data is available
+	while (true)
+	{
+		r = libusb_bulk_transfer(handle, (1 | LIBUSB_ENDPOINT_IN), data, sizeof(data), &actual_length, 1000);
+		if (r == LIBUSB_ERROR_TIMEOUT)
+		{
+			std::cerr << "No more data received (timeout)" << std::endl;
+			break;
+		}
+		else if (r != 0)
+		{
+			std::cerr << "Error receiving data: " << libusb_error_name(r) << std::endl;
+			break;
+		}
+		// else if (actual_length == 0)
+		// {
+		// 	std::cerr << "No more data received" << std::endl;
+		// 	break;
+		// }
+		else
+		{
+			std::cout << "Received (" << actual_length << "): " << std::string((char*)data, actual_length) << std::endl;
+		}
+	}
+
+	// Release interface
+	libusb_release_interface(handle, 0);
+
+	// Close the device
+	libusb_close(handle);
+
+	// Deinitialize libusb
+	libusb_exit(NULL);
+
+	return 0;
 }
