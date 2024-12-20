@@ -9,11 +9,14 @@
  *********************/
 #define _DEFAULT_SOURCE /* needed for usleep() */
 #include "Comm/Communication.h"
+#include "Debug.h"
+#include "Hardware/Duet.h"
 #include "glob.h"
 #include "hv/requests.h"
 #include "lvgl/demos/lv_demos.h"
 #include "lvgl/examples/lv_examples.h"
 #include "lvgl/lvgl.h"
+#include "utils/StorageHelper.h"
 #include <libusb-1.0/libusb.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -68,6 +71,11 @@ int main(int argc, char** argv)
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
 
+	// Initialise
+	StorageHelper::load();
+	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
+	Comm::DUET.Init();
+
 	// http_test();
 	// usb_test();
 
@@ -84,6 +92,13 @@ int main(int argc, char** argv)
 
 	UI::HomeView home;
 	home.show();
+
+	StorageHelper::getData("key3", 0);
+
+	StorageHelper::getData<float>("key2", 0.0);
+	StorageHelper::setData("key", "string");
+	StorageHelper::setData("key2", 123);
+	StorageHelper::getData<std::string>("key", "default");
 
 	pthread_create(
 		&s_requestThread,

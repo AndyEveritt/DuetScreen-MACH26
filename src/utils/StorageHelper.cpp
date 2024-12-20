@@ -2,7 +2,7 @@
 
 static std::string filename_ = "config.json";
 
-std::map<std::string, nlohmann::json> StorageHelper::data_ = {};
+nlohmann::json StorageHelper::data_ = {};
 
 bool StorageHelper::save()
 {

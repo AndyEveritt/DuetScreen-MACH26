@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Debug.h"
+#include "Storage.h"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -10,8 +12,9 @@ class StorageHelper
 {
   public:
 	template <typename T>
-	static void addData(const std::string& key, const T& value)
+	static void setData(const std::string& key, const T& value)
 	{
+		verbose("Saving \"%s\" to config.json", key.c_str());
 		data_[key] = value;
 		save();
 	}
@@ -21,11 +24,15 @@ class StorageHelper
 	static bool clear();
 
 	template <typename T>
-	static T getData(const std::string& key)
+	static T getData(const std::string& key, const T& defaultValue)
 	{
+		if (data_.find(key) == data_.end())
+		{
+			return defaultValue;
+		}
 		return data_.at(key).get<T>();
 	}
 
   private:
-	static std::map<std::string, nlohmann::json> data_;
+	static nlohmann::json data_;
 };

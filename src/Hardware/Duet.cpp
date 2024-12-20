@@ -16,6 +16,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
+#include "utils/StorageHelper.h"
 #include "utils/TimeHelper.h"
 #include "utils/utils.h"
 #include <map>
@@ -23,21 +24,45 @@
 
 namespace Comm
 {
+	// void to_json(nlohmann::json& j, const DuetConfig& c)
+	// {
+	// 	j = nlohmann::json{
+	// 		{ID_DUET_HOSTNAME, c.hostname},
+	// 		{ID_DUET_PASSWORD, c.password},
+	// 		{ID_DUET_COMMUNICATION_TYPE, c.communicationType},
+	// 		{ID_DUET_POLL_INTERVAL, c.pollInterval},
+	// 		{ID_DUET_BAUD_RATE, c.baudRate.rate},
+	// 	};
+	// }
+
+	// void from_json(const nlohmann::json& j, DuetConfig& c)
+	// {
+	// 	j.at(ID_DUET_HOSTNAME).get_to(c.hostname);
+	// 	j.at(ID_DUET_PASSWORD).get_to(c.password);
+	// 	j.at(ID_DUET_COMMUNICATION_TYPE).get_to(c.communicationType);
+	// 	j.at(ID_DUET_POLL_INTERVAL).get_to(c.pollInterval);
+	// 	j.at(ID_DUET_BAUD_RATE).get_to(c.baudRate.rate);
+	// }
+
 	Duet::Duet()
-		: m_communicationType(CommunicationType::none), m_hostname(""), m_password(""), m_sessionTimeout(0),
-		  m_lastRequestTime(0), m_sessionKey(sm_noSessionKey), m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL),
-		  m_pollIntervalScale(1.0f)
+		: m_sessionTimeout(0)
+		, m_lastRequestTime(0)
+		, m_sessionKey(sm_noSessionKey)
+		, m_pollIntervalScale(1.0f)
 	{
 	}
 
 	void Duet::Init()
 	{
 		// TODO restore from memory
-		SetPollInterval((uint32_t)DEFAULT_PRINTER_POLL_INTERVAL);
-		SetBaudRate((unsigned int)B115200);
-		SetIPAddress("");
-		SetHostname("");
-		SetPassword("");
+		m_config = StorageHelper::getData<DuetConfig>(ID_DUET, DuetConfig());
+		// Person p = StorageHelper::getData<Person>("person", {"John", 30, 1.8});
+
+		SetPollInterval((uint32_t)m_config.pollInterval);
+		SetBaudRate(m_config.baudRate);
+		SetIPAddress(m_config.ipAddress);
+		SetHostname(m_config.hostname);
+		SetPassword(m_config.password);
 		SetCommunicationType((CommunicationType)DEFAULT_COMMUNICATION_TYPE);
 	}
 
@@ -62,19 +87,30 @@ namespace Comm
 		Connect();
 	}
 
+	void Duet::saveConfig()
+	{
+		StorageHelper::setData(ID_DUET, m_config);
+	}
+
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
-		if (type == m_communicationType)
+		if (type == m_config.communicationType)
 			return;
 		info("Setting communication type to %d", (int)type);
 		// TODO save communication type
 		Disconnect();
 
-		m_communicationType = type;
+		m_config.communicationType = type;
 #if 0
 		FILEINFO_CACHE->ClearCache();
 #endif
 		Connect();
+		saveConfig();
+	}
+
+	const CommunicationType Duet::GetCommunicationType() const
+	{
+		return m_config.communicationType;
 	}
 
 	void Duet::SetPollInterval(uint32_t interval)
@@ -88,7 +124,8 @@ namespace Comm
 			 interval,
 			 static_cast<uint32_t>(interval * m_pollIntervalScale));
 		// TODO Save poll interval
-		m_pollInterval = interval;
+		m_config.pollInterval = interval;
+		saveConfig();
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
@@ -103,9 +140,20 @@ namespace Comm
 		info("Scalling poll interval by %f from %u to %u",
 			 scale,
 			 GetScaledPollInterval(),
-			 static_cast<uint32_t>(m_pollInterval * scale));
+			 static_cast<uint32_t>(m_config.pollInterval * scale));
 		m_pollIntervalScale = scale;
+		saveConfig();
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
+	}
+
+	const uint32_t Duet::GetPollInterval() const
+	{
+		return m_config.pollInterval;
+	}
+
+	const uint32_t Duet::GetScaledPollInterval() const
+	{
+		return static_cast<uint32_t>(m_config.pollInterval * m_pollIntervalScale);
 	}
 
 	bool Duet::AsyncGet(const char* subUrl,
@@ -202,19 +250,21 @@ namespace Comm
 
 	void Duet::SendGcode(const char* gcode)
 	{
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			SerialIo::Sendf("%s\n", gcode);
 			break;
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["gcode"] = gcode;
 			AsyncGet(
 				"/rr_gcode",
 				query,
-				[this, gcode](RestClient::Response& r) {
+				[this, gcode](RestClient::Response& r)
+				{
 					if (r.code != 200)
 					{
 						printf("HTTP error %d: Failed to send gcode: %s", r.code, gcode);
@@ -248,9 +298,10 @@ namespace Comm
 		info("Uploading file %s: %d bytes", filename, contents.size());
 		// TODO add sleep
 
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
-		case CommunicationType::uart: {
+		case CommunicationType::uart:
+		{
 			/* UART is too slow to support uploading files */
 			if (contents.size() > MAX_UART_UPLOAD_SIZE)
 			{
@@ -272,7 +323,8 @@ namespace Comm
 			SendGcode("M29");
 			break;
 		}
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 			// TODO network upload
 #if 0
 			registerDelayedCallback("upload_file_progress", 1000, []() {
@@ -303,9 +355,10 @@ namespace Comm
 	bool Duet::DownloadFile(const char* filename, std::string& contents)
 	{
 		info("Downloading file %s", filename);
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["name"] = filename;
@@ -326,12 +379,13 @@ namespace Comm
 
 	void Duet::RequestModel(const char* flags)
 	{
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			SendGcodef("M409 F\"%s\"\n", flags);
 			break;
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 #if 0
 			RestClient::Response r;
 			QueryParameters_t query;
@@ -356,12 +410,13 @@ namespace Comm
 
 	void Duet::RequestModel(const char* key, const char* flags)
 	{
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			SendGcodef("M409 K\"%s\" F\"%s\"\n", key, flags);
 			break;
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 #if 0
 			RestClient::Response r;
 			QueryParameters_t query;
@@ -388,12 +443,13 @@ namespace Comm
 
 	void Duet::RequestFileList(const char* dir, const size_t first)
 	{
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			SendGcodef("M20 S3 P\"%s\" R%d\n", dir, first);
 			break;
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 			JsonDecoder decoder;
 			RestClient::Response r;
 			QueryParameters_t query;
@@ -412,13 +468,14 @@ namespace Comm
 
 	void Duet::RequestFileInfo(const char* filename)
 	{
-	    dbg("for %s", filename);
-		switch (m_communicationType)
+		dbg("for %s", filename);
+		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			SendGcodef("M36 \"%s\"", filename);
 			break;
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 			JsonDecoder decoder;
 			QueryParameters_t query;
 			query["name"] = filename;
@@ -427,7 +484,8 @@ namespace Comm
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
-				[this](RestClient::Response& r) -> bool {
+				[this](RestClient::Response& r) -> bool
+				{
 					JsonDecoder decoder;
 					if (r.code != 200)
 					{
@@ -568,19 +626,21 @@ namespace Comm
 	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
 	{
 		dbg("for %s, offset=%u", filename, offset);
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			SendGcodef("M36.1 P\"%s\" S%d", filename, offset);
 			break;
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 			QueryParameters_t query;
 			query["name"] = filename;
 			query["offset"] = utils::format("%d", offset);
 			AsyncGet(
 				"/rr_thumbnail",
 				query,
-				[this](RestClient::Response& r) -> bool {
+				[this](RestClient::Response& r) -> bool
+				{
 					JsonDecoder decoder;
 					if (r.code != 200)
 					{
@@ -594,13 +654,13 @@ namespace Comm
 			break;
 		}
 		default:
-		    break;
+			break;
 		}
 	}
 
 	void Duet::ProcessReply(RestClient::Response& reply)
 	{
-		if (m_communicationType != CommunicationType::network)
+		if (m_config.communicationType != CommunicationType::network)
 			return;
 
 		if (reply.body.empty())
@@ -656,14 +716,16 @@ namespace Comm
 		Disconnect();
 		Reset();
 
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
-		case CommunicationType::uart: {
+		case CommunicationType::uart:
+		{
 			// TODO open UART connection
-			info("Opening UART %s at %u", "", m_baudRate.rate);
+			info("Opening UART %s at %u", "", m_baudrate.rate);
 			return true;
 		}
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 #if 0
 			info("Connecting to Duet at %s", GetBaseUrl().c_str());
 
@@ -731,12 +793,13 @@ namespace Comm
 	const Duet::error_code Duet::Disconnect()
 	{
 		SetStatus(OM::PrinterStatus::connecting);
-		switch (m_communicationType)
+		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			// TODO close UART connection
 			break;
-		case CommunicationType::network: {
+		case CommunicationType::network:
+		{
 #if 0
 			ClearThreadPool();
 			if (m_sessionKey == sm_noSessionKey)
@@ -765,13 +828,13 @@ namespace Comm
 
 	const std::string& Duet::GetBaseUrl() const
 	{
-		if (!m_ipAddress.empty())
+		if (!m_config.ipAddress.empty())
 		{
-			dbg("Using IP address %s", m_ipAddress.c_str());
-			return m_ipAddress;
+			dbg("Using IP address %s", m_config.ipAddress.c_str());
+			return m_config.ipAddress;
 		}
-		dbg("Using hostname %s", m_hostname.c_str());
-		return m_hostname;
+		dbg("Using hostname %s", m_config.hostname.c_str());
+		return m_config.hostname;
 	}
 
 	void Duet::SetBaudRate(const unsigned int baudRateCode)
@@ -791,49 +854,71 @@ namespace Comm
 	{
 		info("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
 		// TODO Store baud rate
-		m_baudRate = baudRate;
+		m_baudrate = baudRate;
 		// TODO set baud rate
+	}
+
+	const baudrate_t& Duet::GetBaudRate() const
+	{
+		return m_baudrate;
 	}
 
 	void Duet::SetIPAddress(const std::string& ipAddress)
 	{
-		// if (m_communicationType == CommunicationType::network)
-		// 	Disconnect();
+		if (m_config.communicationType == CommunicationType::network)
+			Disconnect();
 
-		// StoragePreferences::putString("ip_address", ipAddress);
-		m_ipAddress = ipAddress;
+		m_config.ipAddress = ipAddress;
+		saveConfig();
+	}
+
+	const std::string& Duet::GetIPAddress() const
+	{
+		return m_config.ipAddress;
 	}
 
 	void Duet::ClearIPAddress()
 	{
-		m_ipAddress.clear();
-		dbg("IP address cleared \"%s\"", m_ipAddress.c_str());
+		m_config.ipAddress.clear();
+		dbg("IP address cleared \"%s\"", m_config.ipAddress.c_str());
 	}
 
 	void Duet::SetHostname(const std::string hostname)
 	{
 		dbg("Hostname = %s", hostname.c_str());
 		// TODO store hostname
-		m_hostname.clear();
+		m_config.hostname.clear();
 
 		if (hostname.find("http://") != 0)
 		{
-			m_hostname += "http://";
+			m_config.hostname += "http://";
 		}
 
-		m_hostname += hostname.c_str();
+		m_config.hostname += hostname.c_str();
 		ClearIPAddress();
-		info("Set Duet hostname to %s", m_hostname.c_str());
+		info("Set Duet hostname to %s", m_config.hostname.c_str());
 		// TODO Clear file info cache
 		// FILEINFO_CACHE->ClearCache();
-		if (m_communicationType == CommunicationType::network)
+		if (m_config.communicationType == CommunicationType::network)
 			Connect();
+
+		saveConfig();
+	}
+
+	const std::string& Duet::GetHostname() const
+	{
+		return m_config.hostname;
 	}
 
 	void Duet::SetPassword(const std::string& password)
 	{
-		// TODO save password
-		m_password = password;
+		m_config.password = password;
+		saveConfig();
+	}
+
+	const std::string& Duet::GetPassword() const
+	{
+		return m_config.password;
 	}
 
 	void Duet::SetSessionKey(const uint32_t key)

@@ -17,6 +17,7 @@
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "termio.h"
+#include <nlohmann/json.hpp>
 
 namespace Comm
 {
@@ -40,18 +41,31 @@ namespace Comm
 										{460800, B460800},
 										{921600, B921600}};
 
+	enum class CommunicationType
+	{
+		none = -1,
+		uart,
+		network,
+		usb,
+		COUNT
+	};
+
+	struct DuetConfig
+	{
+		std::string ipAddress = DEFAULT_IP_ADDRESS;
+		std::string hostname = "";
+		std::string password = "";
+		uint32_t pollInterval = DEFAULT_PRINTER_POLL_INTERVAL;
+		CommunicationType communicationType = CommunicationType::none;
+		unsigned int baudRate = B115200;
+
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE(
+			DuetConfig, ipAddress, hostname, password, pollInterval, communicationType, baudRate)
+	};
+
 	class Duet
 	{
 	  public:
-		enum class CommunicationType
-		{
-			none = -1,
-			uart,
-			network,
-			usb,
-			COUNT
-		};
-
 		typedef int32_t error_code;
 
 		static Duet& GetInstance()
@@ -65,14 +79,11 @@ namespace Comm
 		void Reconnect();
 
 		void SetCommunicationType(CommunicationType type);
-		const CommunicationType GetCommunicationType() const { return m_communicationType; }
+		const CommunicationType GetCommunicationType() const;
 		void SetPollInterval(uint32_t interval);
 		void ScalePollIntervalScale(float scale);
-		const uint32_t GetPollInterval() const { return m_pollInterval; }
-		const uint32_t GetScaledPollInterval() const
-		{
-			return static_cast<uint32_t>(m_pollInterval * m_pollIntervalScale);
-		}
+		const uint32_t GetPollInterval() const;
+		const uint32_t GetScaledPollInterval() const;
 
 		void SendGcode(const char* gcode);
 		void SendGcodef(const char* fmt, ...);
@@ -91,7 +102,7 @@ namespace Comm
 		// UART methods
 		void SetBaudRate(const unsigned int baudRateCode);
 		void SetBaudRate(const baudrate_t& baudRate);
-		const baudrate_t& GetBaudRate() const { return m_baudRate; }
+		const baudrate_t& GetBaudRate() const;
 
 		// Network methods
 		const bool Connect(bool useSessionKey = true);
@@ -100,14 +111,14 @@ namespace Comm
 		const std::string& GetBaseUrl() const;
 
 		void SetIPAddress(const std::string& ipAddress);
-		const std::string& GetIPAddress() const { return m_ipAddress; }
+		const std::string& GetIPAddress() const;
 		void ClearIPAddress();
 
 		void SetHostname(const std::string hostname);
-		const std::string& GetHostname() const { return m_hostname; }
+		const std::string& GetHostname() const;
 
 		void SetPassword(const std::string& password);
-		const std::string& GetPassword() const { return m_password; }
+		const std::string& GetPassword() const;
 
 		void SetSessionKey(const uint32_t sessionKey);
 
@@ -124,19 +135,16 @@ namespace Comm
 				  RestClient::Response& r,
 				  QueryParameters_t& queryParameters,
 				  const std::string& data);
+		void saveConfig();
 
-		CommunicationType m_communicationType;
-		std::string m_ipAddress;
-		std::string m_hostname;
-		std::string m_password;
+		DuetConfig m_config;
+
+		baudrate_t m_baudrate;
 		int32_t m_sessionTimeout;
 		long long m_lastRequestTime;
 		uint32_t m_sessionKey;
 		bool m_sbcMode;
-
-		uint32_t m_pollInterval;
 		float m_pollIntervalScale;
-		baudrate_t m_baudRate;
 
 		static constexpr uint32_t sm_noSessionKey = 0;
 	};

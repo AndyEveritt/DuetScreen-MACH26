@@ -6,7 +6,7 @@
  */
 
 #include "Debug.h"
-#include "Storage.h"
+#include "utils/StorageHelper.h"
 
 static DebugLevel s_debugLevel = DebugLevel::Info;
 
@@ -19,6 +19,7 @@ void SetDebugLevel(DebugLevel level)
 {
 	// TODO save debug level
 	s_debugLevel = level;
+	StorageHelper::setData(ID_DEBUG_LEVEL, level);
 }
 
 const DebugLevel& GetDebugLevel()

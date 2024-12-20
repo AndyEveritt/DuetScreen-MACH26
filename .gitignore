@@ -119,3 +119,4 @@ bin/
 out/
 body
 libhv*.log
+config.json
