@@ -47,7 +47,7 @@ void fatal_inner(const char* fmt, ...);
 #define verbose(fmt, args...)                                                                                          \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		verbose_inner("%s %s %s(%d): " fmt "\n",                                                                       \
+		verbose_inner("\033[1;37m%s\033[0m \033[3;4;37m%s %s(%d):\033[0m\033[37m " fmt "\033[0m\n",                    \
 					  DebugLevelStrings[(int)DebugLevel::Verbose],                                                     \
 					  __FILE_RELPATH__,                                                                                \
 					  __FUNCTION__,                                                                                    \
@@ -57,7 +57,7 @@ void fatal_inner(const char* fmt, ...);
 #define dbg(fmt, args...)                                                                                              \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		dbg_inner("%s %s %s(%d): " fmt "\n",                                                                           \
+		dbg_inner("\033[1;34m%s\033[0m \033[3;4;34m%s %s(%d):\033[0m\033[34m " fmt "\033[0m\n",                        \
 				  DebugLevelStrings[(int)DebugLevel::Debug],                                                           \
 				  __FILE_RELPATH__,                                                                                    \
 				  __FUNCTION__,                                                                                        \
@@ -72,7 +72,7 @@ void fatal_inner(const char* fmt, ...);
 #define info(fmt, args...)                                                                                             \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		info_inner("%s %s %s(%d): " fmt "\n",                                                                          \
+		info_inner("\033[1;32m%s\033[0m \033[3;4;32m%s %s(%d):\033[0m\033[32m " fmt "\033[0m\n",                       \
 				   DebugLevelStrings[(int)DebugLevel::Info],                                                           \
 				   __FILE_RELPATH__,                                                                                   \
 				   __FUNCTION__,                                                                                       \
@@ -82,7 +82,7 @@ void fatal_inner(const char* fmt, ...);
 #define warn(fmt, args...)                                                                                             \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		warn_inner("%s %s %s(%d): " fmt "\n",                                                                          \
+		warn_inner("\033[1;33m%s\033[0m \033[3;4;33m%s %s(%d):\033[0m\033[33m " fmt "\033[0m\n",                       \
 				   DebugLevelStrings[(int)DebugLevel::Warn],                                                           \
 				   __FILE_RELPATH__,                                                                                   \
 				   __FUNCTION__,                                                                                       \
@@ -92,7 +92,7 @@ void fatal_inner(const char* fmt, ...);
 #define error(fmt, args...)                                                                                            \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		error_inner("%s %s %s(%d): " fmt "\n",                                                                         \
+		error_inner("\033[1;31m%s\033[0m \033[3;4;31m%s %s(%d):\033[0m\033[31m " fmt "\033[0m\n",                      \
 					DebugLevelStrings[(int)DebugLevel::Error],                                                         \
 					__FILE_RELPATH__,                                                                                  \
 					__FUNCTION__,                                                                                      \
@@ -102,7 +102,7 @@ void fatal_inner(const char* fmt, ...);
 #define fatal(fmt, args...)                                                                                            \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		fatal_inner("%s %s %s(%d): " fmt "\n",                                                                         \
+		fatal_inner("\033[1;35m%s\033[0m \033[3;4;35m%s %s(%d):\033[0m\033[35m " fmt "\033[0m\n",                      \
 					DebugLevelStrings[(int)DebugLevel::Fatal],                                                         \
 					__FILE_RELPATH__,                                                                                  \
 					__FUNCTION__,                                                                                      \
