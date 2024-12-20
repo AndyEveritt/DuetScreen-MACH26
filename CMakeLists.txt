@@ -32,6 +32,10 @@ pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 # Find and include SDL2 library
 find_package(SDL2 REQUIRED)
 
+# Find json library
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(${LIBRARIES_DIR}/json)
+
 # ----------------------------------------------------------------------------
 # Set source files for executable
 # ----------------------------------------------------------------------------
@@ -124,6 +128,7 @@ define_file_relpath_for_sources(DuetScreen)
 target_compile_definitions(DuetScreen PRIVATE LV_CONF_INCLUDE_SIMPLE)
 target_link_libraries(
   DuetScreen
+  PRIVATE
   lvgl
   # lvgl::examples
   # lvgl::demos
@@ -132,7 +137,8 @@ target_link_libraries(
   ${LIBUSB_LIBRARIES}  # Link libusb library
   m
   pthread
-  hv)
+  hv
+  nlohmann_json::nlohmann_json)
 
 # Only link freertos_config if the FreeRTOS directory exists
 if(USE_FREERTOS)

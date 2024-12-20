@@ -10,3 +10,6 @@
 [submodule "libraries/libhv"]
 	path = libraries/libhv
 	url = https://github.com/ithewei/libhv.git
+[submodule "libraries/json"]
+	path = libraries/json
+	url = https://github.com/nlohmann/json.git
