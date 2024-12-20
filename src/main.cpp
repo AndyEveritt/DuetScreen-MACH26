@@ -76,7 +76,9 @@ int main(int argc, char** argv)
 	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
 	Comm::DUET.Init();
 
-	// http_test();
+	Comm::DUET.RequestModel("move", "vn");
+
+	http_test();
 	// usb_test();
 
 	/*Initialize LVGL*/
@@ -185,6 +187,7 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 static void http_test()
 {
 	auto resp = requests::get("http://192.168.1.227/rr_model?key=move");
+	// auto resp = requests::get("http://duet2.local/rr_model?key=move");
 	if (resp == NULL)
 	{
 		printf("request failed!\n");

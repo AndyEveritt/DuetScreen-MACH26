@@ -8,7 +8,6 @@
 #ifndef JNI_COMM_NETWORK_H_
 #define JNI_COMM_NETWORK_H_
 
-#include "restclient-cpp/restclient.h"
 #include "sys/types.h"
 #include <functional>
 #include <map>

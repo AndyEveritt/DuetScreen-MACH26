@@ -42,6 +42,7 @@ constexpr size_t MAX_JSON_VALUE_LENGTH = 4096 * 5;
 // Duet 2 seems to only support 3 concurrent connections. We need 1 connection for synchronous requests, so we can
 // only have 2 threads.
 constexpr size_t MAX_THREAD_POOL_SIZE = 2;
+constexpr uint16_t HTTP_TIMEOUT = 5; // seconds
 
 /* Object Model */
 constexpr size_t MAX_TOTAL_AXES = 15; // This needs to be kept in sync with the maximum in RRF

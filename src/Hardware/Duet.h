@@ -8,15 +8,12 @@
 #ifndef JNI_HARDWARE_DUET_H_
 #define JNI_HARDWARE_DUET_H_
 
-// #include "curl/curl.h"
-// #include "restclient-cpp/restclient.h"
-#include "utils/utils.h"
-
-#include "Comm/Network.h"
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "termio.h"
+#include "utils/utils.h"
+#include <hv/requests.h>
 #include <nlohmann/json.hpp>
 
 namespace Comm
@@ -87,8 +84,8 @@ namespace Comm
 
 		void SendGcode(const char* gcode);
 		void SendGcodef(const char* fmt, ...);
-		void RequestReply(RestClient::Response& r);
-		void ProcessReply(RestClient::Response& r);
+		void RequestReply(HttpResponse& r);
+		void ProcessReply(HttpResponse& r);
 
 		bool UploadFile(const char* filename, const std::string& contents);
 		bool DownloadFile(const char* filename, std::string& contents);
@@ -126,25 +123,27 @@ namespace Comm
 
 	  private:
 		Duet();
-		bool AsyncGet(const char* subUrl,
-					  QueryParameters_t& queryParameters,
-					  std::function<bool(RestClient::Response&)> callback,
-					  bool queue = false);
-		bool Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters);
-		bool Post(const char* subUrl,
-				  RestClient::Response& r,
-				  QueryParameters_t& queryParameters,
-				  const std::string& data);
+
+		void PrepareRequest(HttpRequest& req, const char* subUrl, hv::QueryParams& queryParameters);
+		bool AsyncGet(const char* subUrl, hv::QueryParams& queryParameters, HttpResponseCallback callback, bool queue);
+		bool Get(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
+		bool Post(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters, const std::string& data);
 		void saveConfig();
 
 		DuetConfig m_config;
-
-		baudrate_t m_baudrate;
-		int32_t m_sessionTimeout;
 		long long m_lastRequestTime;
-		uint32_t m_sessionKey;
-		bool m_sbcMode;
 		float m_pollIntervalScale;
+
+		// UART
+		baudrate_t m_baudrate;
+
+		// USB
+
+		// Network
+		hv::HttpClient m_cli;
+		uint32_t m_sessionKey;
+		int32_t m_sessionTimeout;
+		bool m_sbcMode;
 
 		static constexpr uint32_t sm_noSessionKey = 0;
 	};

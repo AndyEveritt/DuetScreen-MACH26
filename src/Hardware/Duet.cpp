@@ -45,10 +45,11 @@ namespace Comm
 	// }
 
 	Duet::Duet()
-		: m_sessionTimeout(0)
-		, m_lastRequestTime(0)
-		, m_sessionKey(sm_noSessionKey)
+		: m_lastRequestTime(0)
 		, m_pollIntervalScale(1.0f)
+		, m_sessionKey(sm_noSessionKey)
+		, m_sessionTimeout(0)
+		, m_sbcMode(false)
 	{
 	}
 
@@ -97,7 +98,6 @@ namespace Comm
 		if (type == m_config.communicationType)
 			return;
 		info("Setting communication type to %d", (int)type);
-		// TODO save communication type
 		Disconnect();
 
 		m_config.communicationType = type;
@@ -123,7 +123,7 @@ namespace Comm
 		info("Setting poll interval to %u (scaled to %u)",
 			 interval,
 			 static_cast<uint32_t>(interval * m_pollIntervalScale));
-		// TODO Save poll interval
+
 		m_config.pollInterval = interval;
 		saveConfig();
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
@@ -141,6 +141,7 @@ namespace Comm
 			 scale,
 			 GetScaledPollInterval(),
 			 static_cast<uint32_t>(m_config.pollInterval * scale));
+
 		m_pollIntervalScale = scale;
 		saveConfig();
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
@@ -156,27 +157,59 @@ namespace Comm
 		return static_cast<uint32_t>(m_config.pollInterval * m_pollIntervalScale);
 	}
 
-	bool Duet::AsyncGet(const char* subUrl,
-						QueryParameters_t& queryParameters,
-						std::function<bool(RestClient::Response&)> callback,
-						bool queue)
+	void Duet::PrepareRequest(HttpRequest& req, const char* subUrl, hv::QueryParams& queryParameters)
 	{
-#if 0
-		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
-			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		req.method = HTTP_GET;
+		req.host = GetBaseUrl();
+		req.path = subUrl;
+		req.headers["Connection"] = "keep-alive";
+		req.headers["Accept"] = "application/json";
+		req.headers["Content-Type"] = "application/json";
+		if (m_sessionKey != sm_noSessionKey)
+		{
+			// req.headers["X-Session-Key"] = utils::format("%u", m_sessionKey).c_str();
+		}
+		req.query_params = queryParameters;
+		req.timeout = HTTP_TIMEOUT;
+
+		req.DumpUrl();
+	}
+
+	bool Duet::AsyncGet(const char* path,
+						hv::QueryParams& queryParameters,
+						HttpResponseCallback callback,
+						bool queue = false)
+	{
+#if 1
+		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
+			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
+			(strncmp(path, "/rr_connect", 11) != 0))
 		{
 			if (!Connect())
 			{
-				warn("Failed to connect to Duet, cannot send get request %s", subUrl);
+				warn("Failed to connect to Duet, cannot send get request %s", path);
 				return false;
 			}
 		}
-		if (!Comm::AsyncGet(GetBaseUrl(), subUrl, queryParameters, callback, m_sessionKey, queue))
-		{
-			warn("Failed to send async get request %s", subUrl);
-			return false;
-		}
-		// TODO set time
+
+		auto req = std::make_shared<HttpRequest>();
+		PrepareRequest(*req, path, queryParameters);
+		dbg("Get (async): \"%s\", sessionKey=%u", req->url.c_str(), m_sessionKey);
+
+		m_cli.sendAsync(req,
+						[req, callback](const HttpResponsePtr& resp)
+						{
+							if (resp == NULL)
+							{
+								error("request \"%s\" failed!", req->url.c_str());
+							}
+							else
+							{
+								dbg("Response (async): %s %s", req->url.c_str(), resp->status_message());
+								verbose("%s", resp->body.c_str());
+								callback(resp);
+							}
+						});
 		m_lastRequestTime = TimeHelper::getCurrentTime();
 #endif
 		return true;
@@ -186,29 +219,34 @@ namespace Comm
 	Tries to make a get request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
 	again
 	*/
-	bool Duet::Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters)
+	bool Duet::Get(const char* path, HttpResponse& r, hv::QueryParams& queryParameters)
 	{
-#if 0
-		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
-			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+#if 1
+		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
+			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
+			(strncmp(path, "/rr_connect", 11) != 0))
 		{
 			if (!Connect())
 			{
-				warn("Failed to connect to Duet, cannot send get request %s", subUrl);
-				r.code = -1;
+				warn("Failed to connect to Duet, cannot send get request %s", path);
+				r.status_code = HTTP_STATUS_NOT_FOUND;
 				return false;
 			}
 		}
-		if (!Comm::Get(GetBaseUrl(), subUrl, r, queryParameters, m_sessionKey))
+
+		HttpRequest req;
+		PrepareRequest(req, path, queryParameters);
+		dbg("Get: \"%s\", sessionKey=%u", req.url.c_str(), m_sessionKey);
+		m_cli.send(&req, &r);
+
+		dbg("Response (async): %s %s", req.url.c_str(), r.status_message());
+
+		if (r.status_code != HTTP_STATUS_OK)
 		{
-			if (r.code == 401 || r.code == 403)
-			{
-				error("HTTP error %d: Likely invalid sessionKey %u. Running rr_connect", r.code, m_sessionKey);
-				Connect();
-				return Comm::Get(GetBaseUrl(), subUrl, r, queryParameters, m_sessionKey);
-			}
+			error("HTTP error %d: Likely invalid sessionKey %u.", r.status_code, m_sessionKey);
 			return false;
 		}
+		verbose("%s", r.body.c_str());
 		m_lastRequestTime = TimeHelper::getCurrentTime();
 #endif
 		return true;
@@ -218,10 +256,7 @@ namespace Comm
 	Tries to make a post request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
 	again
 	*/
-	bool Duet::Post(const char* subUrl,
-					RestClient::Response& r,
-					QueryParameters_t& queryParameters,
-					const std::string& data)
+	bool Duet::Post(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters, const std::string& data)
 	{
 #if 0
 		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
@@ -257,13 +292,14 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-			RestClient::Response r;
-			QueryParameters_t query;
+#if 0
+			HttpResponse r;
+			hv::QueryParams query;
 			query["gcode"] = gcode;
 			AsyncGet(
 				"/rr_gcode",
 				query,
-				[this, gcode](RestClient::Response& r)
+				[this, gcode](HttpResponse& r)
 				{
 					if (r.code != 200)
 					{
@@ -275,6 +311,7 @@ namespace Comm
 					return true;
 				},
 				true);
+#endif
 			break;
 		}
 		case CommunicationType::usb:
@@ -334,8 +371,8 @@ namespace Comm
 				s_progress += 10;
 				return true;
 			});
-			RestClient::Response r;
-			QueryParameters_t query;
+			HttpResponse r;
+			hv::QueryParams query;
 			query["name"] = filename;
 			if (!Post("/rr_upload", r, query, contents))
 			{
@@ -359,8 +396,9 @@ namespace Comm
 		{
 		case CommunicationType::network:
 		{
-			RestClient::Response r;
-			QueryParameters_t query;
+#if 0
+			HttpResponse r;
+			hv::QueryParams query;
 			query["name"] = filename;
 			if (!Get("/rr_download", r, query))
 			{
@@ -368,6 +406,7 @@ namespace Comm
 				return false;
 			}
 			contents = r.body;
+#endif
 			break;
 		}
 		default:
@@ -386,20 +425,23 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-#if 0
-			RestClient::Response r;
-			QueryParameters_t query;
+#if 1
+			HttpResponse r;
+			hv::QueryParams query;
 			query["flags"] = flags;
-			AsyncGet("/rr_model", query, [this, flags](RestClient::Response& r) {
-				JsonDecoder decoder;
-				if (r.code != 200)
-				{
-					printf("HTTP error %d: Failed to get model update for flags: %s", r.code, flags);
-					return false;
-				}
-				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
-				return true;
-			});
+			AsyncGet("/rr_model",
+					 query,
+					 [this, flags](const HttpResponsePtr& r)
+					 {
+						 JsonDecoder decoder;
+						 if (r->status_code != HTTP_STATUS_OK)
+						 {
+							 error("HTTP error %d: Failed to get model update for flags: %s", r->status_code, flags);
+							 return false;
+						 }
+						 //  decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
+						 return true;
+					 });
 #endif
 			break;
 		}
@@ -417,21 +459,27 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-#if 0
-			RestClient::Response r;
-			QueryParameters_t query;
+#if 1
+			HttpResponse r;
+			hv::QueryParams query;
 			query["key"] = key;
 			query["flags"] = flags;
-			AsyncGet("/rr_model", query, [this, key, flags](RestClient::Response& r) {
-				JsonDecoder decoder;
-				if (r.code != 200)
-				{
-					printf("HTTP error %d: Failed to get model update for key: %s, flags: %s", r.code, key, flags);
-					return false;
-				}
-				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
-				return true;
-			});
+			AsyncGet("/rr_model",
+					 query,
+					 [this, key, flags](const HttpResponsePtr& r)
+					 {
+						 JsonDecoder decoder;
+						 if (r->status_code != HTTP_STATUS_OK)
+						 {
+							 error("HTTP error %d: Failed to get model update for key: %s, flags: %s",
+								   r->status_code,
+								   key,
+								   flags);
+							 return false;
+						 }
+						 decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
+						 return true;
+					 });
 #endif
 			break;
 		}
@@ -450,14 +498,16 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
+#if 0
 			JsonDecoder decoder;
-			RestClient::Response r;
-			QueryParameters_t query;
+			HttpResponse r;
+			hv::QueryParams query;
 			query["dir"] = dir;
 			query["first"] = utils::format("%d", first);
 			if (!Get("/rr_filelist", r, query))
 				break;
 			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+#endif
 			break;
 		}
 		default:
@@ -477,14 +527,14 @@ namespace Comm
 		case CommunicationType::network:
 		{
 			JsonDecoder decoder;
-			QueryParameters_t query;
+			hv::QueryParams query;
 			query["name"] = filename;
 
-#if 1
+#if 0
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
-				[this](RestClient::Response& r) -> bool
+				[this](HttpResponse& r) -> bool
 				{
 					JsonDecoder decoder;
 					if (r.code != 200)
@@ -505,7 +555,7 @@ namespace Comm
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
-				[this, name](RestClient::Response& r) -> bool {
+				[this, name](HttpResponse& r) -> bool {
 					Json::Reader reader;
 					Json::Value body;
 					const char* filename = name.c_str();
@@ -569,7 +619,7 @@ namespace Comm
 
 						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
 
-						QueryParameters_t query;
+						hv::QueryParams query;
 						query["name"] = filename;
 						while (context.next != 0)
 						{
@@ -633,13 +683,14 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-			QueryParameters_t query;
+#if 0
+			hv::QueryParams query;
 			query["name"] = filename;
 			query["offset"] = utils::format("%d", offset);
 			AsyncGet(
 				"/rr_thumbnail",
 				query,
-				[this](RestClient::Response& r) -> bool
+				[this](HttpResponse& r) -> bool
 				{
 					JsonDecoder decoder;
 					if (r.code != 200)
@@ -651,6 +702,7 @@ namespace Comm
 					return true;
 				},
 				true);
+#endif
 			break;
 		}
 		default:
@@ -658,7 +710,7 @@ namespace Comm
 		}
 	}
 
-	void Duet::ProcessReply(RestClient::Response& reply)
+	void Duet::ProcessReply(HttpResponse& reply)
 	{
 		if (m_config.communicationType != CommunicationType::network)
 			return;
@@ -705,9 +757,9 @@ namespace Comm
 		return;
 	}
 
-	void Duet::RequestReply(RestClient::Response& r)
+	void Duet::RequestReply(HttpResponse& r)
 	{
-		QueryParameters_t query;
+		hv::QueryParams query;
 		Get("/rr_reply", r, query);
 	}
 
@@ -726,59 +778,57 @@ namespace Comm
 		}
 		case CommunicationType::network:
 		{
-#if 0
+#if 1
 			info("Connecting to Duet at %s", GetBaseUrl().c_str());
 
-			RestClient::Response r;
-			QueryParameters_t query;
-			query["password"] = std::string("\"") + m_password + "\"";
+			HttpResponse r;
+			hv::QueryParams query;
+			query["password"] = std::string("\"") + m_config.password + "\"";
 			if (useSessionKey)
 				query["sessionKey"] = "yes";
 
-			return Comm::AsyncGet(
-				GetBaseUrl(),
-				"/rr_connect",
-				query,
-				[this](RestClient::Response& r) {
-					verbose("parsing rr_connect response");
-					Json::Reader reader;
-					Json::Value body;
+			Get("/rr_connect", r, query);
 
-					if (!reader.parse(r.body, body))
-					{
-						error("Failed to parse JSON response from rr_connect");
-						return false;
-					}
+			if (r.status_code != HTTP_STATUS_OK)
+			{
+				error("rr_connect failed, returned response %d", r.status_code);
+				return false;
+			}
 
-					if (body.isMember("err") && body["err"].asInt() != 0)
-					{
-						error("rr_connect failed, returned error %d", body["err"].asInt());
-						return false;
-					}
+			verbose("parsing rr_connect response");
+			auto body = nlohmann::json::parse(r.body, nullptr, false);
+			if (body.is_discarded())
+			{
+				error("Failed to parse JSON response from rr_connect");
+				return false;
+			}
 
-					if (body.isMember("sessionTimeout"))
-					{
-						m_sessionTimeout = body["sessionTimeout"].asInt();
-						m_lastRequestTime = TimeHelper::getCurrentTime();
-						info("Duet session timeout set to %d", m_sessionTimeout);
-					}
+			if (body.contains("err") && body["err"].get<int>() != 0)
+			{
+				error("rr_connect failed, returned error %d", body["err"].get<int>());
+				return false;
+			}
 
-					if (body.isMember("sessionKey"))
-					{
-						m_sessionKey = body["sessionKey"].asUInt();
-						info("Duet session key = %u", m_sessionKey);
-					}
-					if (body.isMember("isEmulated"))
-					{
-						m_sessionKey = sm_noSessionKey;
-						m_sbcMode = true;
-						info("Connected to Duet in SBC mode");
-					}
-					info("rr_connect succeeded");
-					return true;
-				},
-				0,
-				true);
+			if (body.contains("sessionTimeout"))
+			{
+				m_sessionTimeout = body["sessionTimeout"].get<int>();
+				m_lastRequestTime = TimeHelper::getCurrentTime();
+				info("Duet session timeout set to %d", m_sessionTimeout);
+			}
+
+			if (body.contains("sessionKey"))
+			{
+				m_sessionKey = body["sessionKey"].get<unsigned int>();
+				info("Duet session key = %u", m_sessionKey);
+			}
+			if (body.contains("isEmulated"))
+			{
+				m_sessionKey = sm_noSessionKey;
+				m_sbcMode = true;
+				info("Connected to Duet in SBC mode");
+			}
+			info("rr_connect succeeded");
+			return true;
 #else
 			return true;
 #endif
@@ -807,8 +857,8 @@ namespace Comm
 				Reset();
 				return 0;
 			}
-			RestClient::Response r;
-			QueryParameters_t query;
+			HttpResponse r;
+			hv::QueryParams query;
 			if (!Comm::Get(GetBaseUrl(), "/rr_disconnect", r, query, m_sessionKey))
 			{
 				error("rr_disconnect failed, returned response %d", r.code);
@@ -830,10 +880,10 @@ namespace Comm
 	{
 		if (!m_config.ipAddress.empty())
 		{
-			dbg("Using IP address %s", m_config.ipAddress.c_str());
+			verbose("Using IP address %s", m_config.ipAddress.c_str());
 			return m_config.ipAddress;
 		}
-		dbg("Using hostname %s", m_config.hostname.c_str());
+		verbose("Using hostname %s", m_config.hostname.c_str());
 		return m_config.hostname;
 	}
 
@@ -869,6 +919,9 @@ namespace Comm
 			Disconnect();
 
 		m_config.ipAddress = ipAddress;
+
+		if (m_config.communicationType == CommunicationType::network)
+			Connect();
 		saveConfig();
 	}
 
@@ -889,12 +942,19 @@ namespace Comm
 		// TODO store hostname
 		m_config.hostname.clear();
 
-		if (hostname.find("http://") != 0)
+		if (hostname.find("http://") == 0)
 		{
-			m_config.hostname += "http://";
+			m_config.hostname = hostname.substr(7);
+		}
+		else if (hostname.find("https://") == 0)
+		{
+			m_config.hostname = hostname.substr(8);
+		}
+		else
+		{
+			m_config.hostname = hostname;
 		}
 
-		m_config.hostname += hostname.c_str();
 		ClearIPAddress();
 		info("Set Duet hostname to %s", m_config.hostname.c_str());
 		// TODO Clear file info cache

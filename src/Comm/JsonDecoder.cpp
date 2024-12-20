@@ -686,7 +686,7 @@ namespace Comm
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
 		m_nextOut = 0;
-		dbg("CheckInput[%d]: %s", len, rxBuffer);
+		dbg("len=%u: %s", len, rxBuffer);
 		while (len != m_nextOut)
 		{
 			char c = rxBuffer[m_nextOut];
