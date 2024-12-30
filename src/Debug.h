@@ -43,71 +43,29 @@ void warn_inner(const char* fmt, ...);
 void error_inner(const char* fmt, ...);
 void fatal_inner(const char* fmt, ...);
 
+#define LOG_FUNCTION(name, color, level, fmt, args...)                                                                 \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		name##_inner("\033[1;" #color "m%s\033[0m \033[3;4;" #color "m%s:%d %s:\033[0m\033[" #color "m " fmt           \
+					 "\033[0m\n",                                                                                      \
+					 DebugLevelStrings[(int)level],                                                                    \
+					 __FILE_RELPATH__,                                                                                 \
+					 __LINE__,                                                                                         \
+					 __FUNCTION__,                                                                                     \
+					 ##args);                                                                                          \
+	} while (0)
+
 #ifdef DEBUG
-#define verbose(fmt, args...)                                                                                          \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		verbose_inner("\033[1;37m%s\033[0m \033[3;4;37m%s %s(%d):\033[0m\033[37m " fmt "\033[0m\n",                    \
-					  DebugLevelStrings[(int)DebugLevel::Verbose],                                                     \
-					  __FILE_RELPATH__,                                                                                \
-					  __FUNCTION__,                                                                                    \
-					  __LINE__,                                                                                        \
-					  ##args);                                                                                         \
-	} while (0)
-#define dbg(fmt, args...)                                                                                              \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		dbg_inner("\033[1;34m%s\033[0m \033[3;4;34m%s %s(%d):\033[0m\033[34m " fmt "\033[0m\n",                        \
-				  DebugLevelStrings[(int)DebugLevel::Debug],                                                           \
-				  __FILE_RELPATH__,                                                                                    \
-				  __FUNCTION__,                                                                                        \
-				  __LINE__,                                                                                            \
-				  ##args);                                                                                             \
-	} while (0)
+#define verbose(fmt, args...) LOG_FUNCTION(verbose, 37, DebugLevel::Verbose, fmt, ##args)
+#define dbg(fmt, args...) LOG_FUNCTION(dbg, 34, DebugLevel::Debug, fmt, ##args)
 #else
 #define verbose(fmt, args...)
 #define dbg(fmt, args...)
 #endif
 
-#define info(fmt, args...)                                                                                             \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		info_inner("\033[1;32m%s\033[0m \033[3;4;32m%s %s(%d):\033[0m\033[32m " fmt "\033[0m\n",                       \
-				   DebugLevelStrings[(int)DebugLevel::Info],                                                           \
-				   __FILE_RELPATH__,                                                                                   \
-				   __FUNCTION__,                                                                                       \
-				   __LINE__,                                                                                           \
-				   ##args);                                                                                            \
-	} while (0)
-#define warn(fmt, args...)                                                                                             \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		warn_inner("\033[1;33m%s\033[0m \033[3;4;33m%s %s(%d):\033[0m\033[33m " fmt "\033[0m\n",                       \
-				   DebugLevelStrings[(int)DebugLevel::Warn],                                                           \
-				   __FILE_RELPATH__,                                                                                   \
-				   __FUNCTION__,                                                                                       \
-				   __LINE__,                                                                                           \
-				   ##args);                                                                                            \
-	} while (0)
-#define error(fmt, args...)                                                                                            \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		error_inner("\033[1;31m%s\033[0m \033[3;4;31m%s %s(%d):\033[0m\033[31m " fmt "\033[0m\n",                      \
-					DebugLevelStrings[(int)DebugLevel::Error],                                                         \
-					__FILE_RELPATH__,                                                                                  \
-					__FUNCTION__,                                                                                      \
-					__LINE__,                                                                                          \
-					##args);                                                                                           \
-	} while (0)
-#define fatal(fmt, args...)                                                                                            \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		fatal_inner("\033[1;35m%s\033[0m \033[3;4;35m%s %s(%d):\033[0m\033[35m " fmt "\033[0m\n",                      \
-					DebugLevelStrings[(int)DebugLevel::Fatal],                                                         \
-					__FILE_RELPATH__,                                                                                  \
-					__FUNCTION__,                                                                                      \
-					__LINE__,                                                                                          \
-					##args);                                                                                           \
-	} while (0)
+#define info(fmt, args...) LOG_FUNCTION(info, 32, DebugLevel::Info, fmt, ##args)
+#define warn(fmt, args...) LOG_FUNCTION(warn, 33, DebugLevel::Warn, fmt, ##args)
+#define error(fmt, args...) LOG_FUNCTION(error, 31, DebugLevel::Error, fmt, ##args)
+#define fatal(fmt, args...) LOG_FUNCTION(fatal, 35, DebugLevel::Fatal, fmt, ##args)
 
 #endif /* JNI_DEBUG_HPP_ */
