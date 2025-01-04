@@ -11,6 +11,7 @@
 #ifndef JNI_COMM_JSONDECODER_H_
 #define JNI_COMM_JSONDECODER_H_
 
+#include "Comm/Communication.h"
 #include "Comm/FileInfo.h"
 #include "Configuration.h"
 #include <Duet3D/General/String.h>
@@ -97,6 +98,7 @@ namespace Comm
 		bool m_inError;
 		size_t m_arrayIndices[MAX_ARRAY_NESTING];
 		size_t m_arrayDepth;
+		Seq* m_seq = nullptr;
 	};
 } // namespace Comm
 #endif /* JNI_COMM_JSONDECODER_H_ */

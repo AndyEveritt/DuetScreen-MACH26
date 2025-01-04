@@ -74,11 +74,12 @@ int main(int argc, char** argv)
 	// Initialise
 	StorageHelper::load();
 	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
+	Comm::init();
 	Comm::DUET.Init();
 
-	Comm::DUET.RequestModel("move", "vn");
+	// Comm::DUET.RequestModel("move", "vn");
 
-	http_test();
+	// http_test();
 	// usb_test();
 
 	/*Initialize LVGL*/
@@ -95,13 +96,7 @@ int main(int argc, char** argv)
 	UI::HomeView home;
 	home.show();
 
-	StorageHelper::getData("key3", 0);
-
-	StorageHelper::getData<float>("key2", 0.0);
-	StorageHelper::setData("key", "string");
-	StorageHelper::setData("key2", 123);
-	StorageHelper::getData<std::string>("key", "default");
-
+	// Create a thread to handle requesting data from Duet
 	pthread_create(
 		&s_requestThread,
 		NULL,
@@ -118,6 +113,7 @@ int main(int argc, char** argv)
 		},
 		NULL);
 
+	// Create a thread to handle USB responses from Duet
 	pthread_create(
 		&s_responseThread,
 		NULL,

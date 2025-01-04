@@ -18,6 +18,8 @@
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Job.h"
 #include "ObjectModel/Utils.h"
+#include "UI/Core/OmObserver.h"
+#include "UI/Core/model.h"
 #include "utils/utils.h"
 #include <string>
 
@@ -166,11 +168,11 @@ namespace Comm
 	{
 		KickWatchdog();
 
-		if (g_currentRespSeq != nullptr)
+		if (m_seq != nullptr)
 		{
-			g_currentRespSeq->state = SeqStateOk;
-			dbg("seq %s %d DONE", g_currentRespSeq->key, g_currentRespSeq->state);
-			g_currentRespSeq = nullptr;
+			m_seq->state = SeqStateOk;
+			dbg("seq %s %d DONE", m_seq->key, m_seq->state);
+			m_seq = nullptr;
 		}
 
 		// FileManager::EndReceivedMessage();
@@ -280,9 +282,9 @@ namespace Comm
 			// modifier)
 
 			id.Erase(0, 6);
-			if (g_currentRespSeq != nullptr)
+			if (m_seq != nullptr)
 			{
-				id.Prepend(g_currentRespSeq->key);
+				id.Prepend(m_seq->key);
 			}
 			else
 			{
@@ -292,15 +294,15 @@ namespace Comm
 		}
 
 		// search for key in g_observerMap
-		verbose("searching for observers for %s\n", id.c_str());
-#if 0
-		auto observers = UI::g_observerMap.GetObservers(id.c_str());
-		if (observers.size() != 0)
+		verbose("searching for subscribers for '%s'", id.c_str());
+#if 1
+		auto subscribers = Model::getInstance().getSubscribers(id.c_str());
+		if (subscribers.size() != 0)
 		{
-			dbg("found %d observers for %s\n", observers.size(), id.c_str());
-			for (auto& observer : observers)
+			dbg("found %d subscribers for %s\n", subscribers.size(), id.c_str());
+			for (auto& subscriber : subscribers)
 			{
-				observer.Update(this, data, indices);
+				subscriber.run(this, data, indices);
 			}
 		}
 #endif
@@ -313,7 +315,7 @@ namespace Comm
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		verbose("event: %s(%d) data '%s'\n", searchResult->key, searchResult->val, data);
+		verbose("event: %s(%d) data '%s'", searchResult->key, searchResult->val, data);
 		switch (rde)
 		{
 		// M409 section
@@ -323,19 +325,14 @@ namespace Comm
 			// try a quick check otherwise search for key
 			if (g_currentReqSeq && (strcasecmp(data, g_currentReqSeq->key) == 0))
 			{
-				g_currentRespSeq = g_currentReqSeq;
+				m_seq = g_currentReqSeq;
 			}
 			else
 			{
-				g_currentRespSeq = FindSeqByKey(data);
+				m_seq = FindSeqByKey(data);
 			}
-
-			if (g_currentRespSeq == nullptr)
-			{
-				break;
-			}
+			break;
 		}
-		break;
 
 		// Seqs section
 		case rcvSeqsBoards:
@@ -399,12 +396,12 @@ namespace Comm
 	{
 #if 0
 		// search for key in g_observerMap
-		auto observers = UI::g_observerMapArrayEnd.GetObservers(id);
-		if (observers.size() != 0)
+		auto subscribers = UI::g_observerMapArrayEnd.GetSubscribers(id);
+		if (subscribers.size() != 0)
 		{
-			for (auto& observer : observers)
+			for (auto& subscriber : subscribers)
 			{
-				observer.Update(this, indices);
+				subscriber.run(this, indices);
 			}
 		}
 #endif
@@ -418,12 +415,12 @@ namespace Comm
 		{
 			error("Warning: received %d malformed responses for id \"%s\"", errors, id);
 		}
-		if (g_currentRespSeq == nullptr)
+		if (m_seq == nullptr)
 		{
 			return;
 		}
 
-		g_currentRespSeq->state = SeqStateError;
+		m_seq->state = SeqStateError;
 	}
 
 	void JsonDecoder::RemoveLastId()

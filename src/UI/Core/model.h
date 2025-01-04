@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UI/Subscribers/FanSubscribers.h"
 #include "subscribers.h"
 #include <list>
 #include <map>
@@ -7,44 +8,40 @@
 namespace UI
 {
 	class BasePresenter;
+}
 
-	class Model
+class Model
+{
+  public:
+	Model(const Model&) = delete;
+	Model& operator=(const Model&) = delete;
+
+	static Model& getInstance()
 	{
-	  public:
-		Model(const Model&) = delete;
-		Model& operator=(const Model&) = delete;
+		static Model instance;
+		return instance;
+	}
 
-		static Model& getInstance()
-		{
-			static Model instance;
-			return instance;
-		}
+	/**
+	 * @brief Add a `Presenter` to listen to events
+	 * @param presenter
+	 */
+	void bind(UI::BasePresenter* presenter) { m_presenters.push_back(presenter); }
+	/**
+	 * @brief Remove a `Presenter`
+	 * @param presenter
+	 */
+	void unbind(UI::BasePresenter* presenter) { m_presenters.remove(presenter); }
 
-		/**
-		 * @brief Add a `Presenter` to listen to events
-		 * @param presenter
-		 */
-		void bind(BasePresenter* presenter) { m_presenters.push_back(presenter); }
-		/**
-		 * @brief Remove a `Presenter`
-		 * @param presenter
-		 */
-		void unbind(BasePresenter* presenter) { m_presenters.remove(presenter); }
+	void tick();
 
-		void tick();
+	const std::vector<Subscriber>& getSubscribers(const char* key) { return SubscriberMap::getSubscribers(key); }
+	size_t getSubscriberCount(const char* key) { return SubscriberMap::getSubscriberCount(key); }
 
-		const std::vector<subscriberCb_t>& getSubscribers(const char* key);
-		size_t getSubscriberCount(const char* key);
+  private:
+	FanSubscribers m_fanSubscribers;
+	std::list<UI::BasePresenter*> m_presenters;
 
-	  protected:
-		// Add a callback to be run when json matching key is received, if the asociated view is active
-		bool addSubscriber(const char* key, subscriberCb_t cb);
-		bool removeSubscriber(const char* key, size_t index);
-
-		std::map<const char*, std::vector<subscriberCb_t>> m_subscribers;
-		std::list<BasePresenter*> m_presenters;
-
-	  private:
-		Model() {}
-	};
-} // namespace UI
+  private:
+	Model() {}
+};

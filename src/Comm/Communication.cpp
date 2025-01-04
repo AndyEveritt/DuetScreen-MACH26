@@ -152,7 +152,6 @@ namespace Comm
 	};
 
 	Seq* g_currentReqSeq = nullptr;
-	Seq* g_currentRespSeq = nullptr;
 
 	struct Seq* GetNextSeq(struct Seq* current)
 	{
@@ -166,14 +165,14 @@ namespace Comm
 			current = &seqs[i];
 			if (current->state == SeqStateError)
 			{
-				warn("seq %s had an error\n", current->key);
+				warn("seq %s had an error", current->key);
 				// skip and re-init if last request had an error
 				current->state = SeqStateInit;
 				continue;
 			}
 			if (current->state == SeqStateInit || current->state == SeqStateUpdate)
 			{
-				dbg("seq %s\n", current->key);
+				dbg("seq %s", current->key);
 				return current;
 			}
 		}
@@ -299,24 +298,35 @@ namespace Comm
 
 	void KickWatchdog()
 	{
-		s_lastResponseTime = TimeHelper::getCurrentTime();
+		const long long now = TimeHelper::getCurrentTime();
+		if (now > s_lastResponseTime)
+		{
+			s_lastResponseTime = TimeHelper::getCurrentTime();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------------------------
 
 	void sendNext()
 	{
-		long long now = TimeHelper::getCurrentTime();
-		if (now > (s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT))
+		const long long now = TimeHelper::getCurrentTime();
+		const long long expectedResponseBy =
+			s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
+		if (now > expectedResponseBy)
 		{
+			warn("No response from Duet for %d ms", PRINTER_REQUEST_TIMEOUT);
+			verbose("last response=%lld, now=%lld, expected by=%lld, diff=%lld",
+					s_lastResponseTime,
+					now,
+					expectedResponseBy,
+					now - expectedResponseBy);
 			Reconnect();
 		}
 
 		g_currentReqSeq = GetNextSeq(g_currentReqSeq);
 		if (g_currentReqSeq != nullptr)
 		{
-			Comm::DUET.RequestModel("state", "vn"); // Check if state is halted, if so we need to send M999
-			info("requesting %s\n", g_currentReqSeq->key);
+			info("requesting %s", g_currentReqSeq->key);
 			Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
 		}
 		else

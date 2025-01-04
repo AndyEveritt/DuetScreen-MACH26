@@ -69,7 +69,7 @@ namespace Comm
 
 	void Duet::Reset()
 	{
-		verbose("");
+		verbose("Resetting Duet");
 		m_sessionKey = sm_noSessionKey;
 		m_sbcMode = false;
 		m_sessionTimeout = 0;
@@ -167,6 +167,7 @@ namespace Comm
 		req.headers["Content-Type"] = "application/json";
 		if (m_sessionKey != sm_noSessionKey)
 		{
+			// TODO: Determine why session key isn't working
 			// req.headers["X-Session-Key"] = utils::format("%u", m_sessionKey).c_str();
 		}
 		req.query_params = queryParameters;
@@ -236,7 +237,7 @@ namespace Comm
 
 		HttpRequest req;
 		PrepareRequest(req, path, queryParameters);
-		dbg("Get: \"%s\", sessionKey=%u", req.url.c_str(), m_sessionKey);
+		dbg("\"%s\", sessionKey=%u", req.url.c_str(), m_sessionKey);
 		m_cli.send(&req, &r);
 
 		dbg("Response (async): %s %s", req.url.c_str(), r.status_message());
@@ -439,7 +440,7 @@ namespace Comm
 							 error("HTTP error %d: Failed to get model update for flags: %s", r->status_code, flags);
 							 return false;
 						 }
-						 //  decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
+						 decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
 						 return true;
 					 });
 #endif
@@ -818,12 +819,12 @@ namespace Comm
 
 			if (body.contains("sessionKey"))
 			{
-				m_sessionKey = body["sessionKey"].get<unsigned int>();
+				SetSessionKey(body["sessionKey"].get<unsigned int>());
 				info("Duet session key = %u", m_sessionKey);
 			}
 			if (body.contains("isEmulated"))
 			{
-				m_sessionKey = sm_noSessionKey;
+				SetSessionKey(sm_noSessionKey);
 				m_sbcMode = true;
 				info("Connected to Duet in SBC mode");
 			}
