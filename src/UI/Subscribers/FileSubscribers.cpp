@@ -1,0 +1,126 @@
+/*
+ * FanObservers.cpp
+ *
+ *  Created on: 8 Jan 2024
+ *      Author: Andy Everitt
+ */
+#include "Debug.h"
+
+#include "Configuration.h"
+#include "FileSubscribers.h"
+
+#include "Comm/FileInfo.h"
+#include "Configuration.h"
+#include "Hardware/Duet.h"
+#include "utils/utils.h"
+#include <string>
+
+#include "ObjectModel/Files.h"
+
+bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	OM::FileSystem::SetCurrentDir(data);
+	info("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
+	decoder->responseType = Comm::JsonDecoder::ResponseType::filelist;
+	Comm::JsonDecoder::FileListData* fileData =
+		new Comm::JsonDecoder::FileListData(OM::FileSystem::GetCurrentDirPath());
+	decoder->responseData = fileData;
+	return true;
+}
+
+bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first = data;
+	if (data == 0)
+	{
+		OM::FileSystem::ClearFileSystem();
+	}
+	return true;
+}
+
+bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	dbg("Files: type check val=%s", data);
+	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	switch (*data)
+	{
+	case 'd':
+		OM::FileSystem::AddFolderAt(index);
+		dbg("Files: folder at index %d", index);
+		break;
+	case 'f':
+		OM::FileSystem::AddFileAt(index);
+		dbg("Files: file at index %d", index);
+		break;
+	}
+	return true;
+}
+
+bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	dbg("Files: name assignment, val=%s", data);
+	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	if (item == nullptr)
+		return false;
+
+	item->SetName(data);
+	info("Files: item[%d] name=%s", index, item->GetName().c_str());
+	return true;
+}
+
+bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	if (item == nullptr)
+		return false;
+	item->SetSize(data);
+	info("Files: item[%d] size=%d", index, item->GetSize());
+	return true;
+}
+
+bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	if (item == nullptr)
+		return false;
+	item->SetDate(data);
+	info("Files: item[%d] date=%s", index, item->GetDate().c_str());
+	return true;
+}
+
+bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	info("Files: next index = %d", data);
+	if (data == 0)
+		return true;
+	Comm::DUET.RequestFileList(OM::FileSystem::GetCurrentDirPath().c_str(), data);
+	return true;
+}
+
+bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
+{
+	OM::FileSystem::SortFileSystem();
+	for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
+	{
+		OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(i);
+		if (item == nullptr || item->GetType() == OM::FileSystem::FileSystemItemType::folder)
+		{
+			continue;
+		}
+		if (item->GetPath().find("gcodes") == std::string::npos)
+		{
+			continue;
+		}
+#if 0
+		if (FILEINFO_CACHE->IsThumbnailCached(item->GetPath(), item->GetDate().c_str()))
+		{
+			continue;
+		}
+		FILEINFO_CACHE->QueueThumbnailRequest(item->GetPath());
+#endif
+	}
+	return true;
+}

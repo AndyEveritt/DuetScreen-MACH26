@@ -393,12 +393,12 @@ namespace Comm
 	{
 		// search for key in subscribers
 		verbose("searching for array end subscribers for '%s'", id);
-		auto subscribers = Model::getInstance().getSubscribers(id);
+		auto subscribers = Model::getInstance().getArrayEndSubscribers(id);
 		if (subscribers.size() != 0)
 		{
 			for (auto& subscriber : subscribers)
 			{
-				subscriber.run(this, nullptr, indices);
+				subscriber.run(this, indices);
 			}
 		}
 	}

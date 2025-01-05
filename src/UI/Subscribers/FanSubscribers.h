@@ -11,7 +11,7 @@ class FanSubscribers : public SubscriberMap
 		addSubscriber("fans^:requestedValue", requestedValue);
 		addSubscriber("fans^:rpm", rpm);
 
-		addSubscriber("fans^", arrayEnd);
+		addArrayEndSubscriber("fans^", arrayEnd);
 	}
 
   private:
