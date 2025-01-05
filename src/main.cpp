@@ -74,6 +74,9 @@ int main(int argc, char** argv)
 	// Initialise
 	StorageHelper::load();
 	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
+
+	Model::getInstance(); // Initialize the model instance, this creates the subscribers
+
 	Comm::init();
 	Comm::DUET.Init();
 

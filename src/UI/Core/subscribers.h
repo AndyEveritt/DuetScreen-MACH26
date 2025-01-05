@@ -29,14 +29,15 @@ class Subscriber
 
 class SubscriberMap
 {
+	typedef std::map<const char*, std::vector<Subscriber>, ConstCharComparator> SubscriberMap_t;
+
   public:
 	static size_t getSubscriberCount(const char* key);
 	static const std::vector<Subscriber>& getSubscribers(const char* key);
 
-	static void addSubscriber(const char* key, subscriberCb_t cb);
-
-  protected:
 	// Add a callback to be run when json matching key is received
+	static void addSubscriber(const char* key,
+							  bool (*cb)(Comm::JsonDecoder* decoder, const char* val, const size_t indices[]));
 	static void addSubscriber(const char* key,
 							  bool (*cb)(Comm::JsonDecoder* decoder, const float& val, const size_t indices[]));
 	static void addSubscriber(const char* key,
@@ -46,6 +47,10 @@ class SubscriberMap
 	static void addSubscriber(const char* key,
 							  bool (*cb)(Comm::JsonDecoder* decoder, const bool& val, const size_t indices[]));
 
+	static void addSubscriber(const char* key, bool (*cb)(Comm::JsonDecoder* decoder, const size_t indices[]));
+
+  protected:
   private:
-	static std::map<const char*, std::vector<Subscriber>, ConstCharComparator> m_subscribers;
+	static void addSubscriber(const char* key, subscriberCb_t cb);
+	static SubscriberMap_t s_subscribers;
 };

@@ -41,18 +41,10 @@ bool FanSubscribers::rpm(Comm::JsonDecoder* decoder, const int32_t& data, const 
 	return true;
 }
 
-/*
- * These functions are run when the end of an array has been received from the OM
- * The function needs to take in an array containing the indices of the OM key
- */
-// static UI::Observer<UI::ui_array_end_update_cb>
-// 	FanObserversArrayEnd[] = {
-// 		OBSERVER_ARRAY_END("fans^",
-// 						   [](OBSERVER_ARRAY_END_ARGS)
-// 						   {
-// 							   if (OM::RemoveFan(indices[0], true))
-// 							   {
-// 								   //    UI::GetUIControl<ZKListView>(ID_MAIN_PrintFanList)->refreshListView();
-// 							   }
-// 						   }),
-// };
+bool FanSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
+{
+	if (OM::RemoveFan(indices[0], true))
+	{
+	}
+	return true;
+}

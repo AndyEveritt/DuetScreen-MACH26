@@ -1,11 +1,12 @@
 #include "subscribers.h"
+#include "Debug.h"
 
-std::map<const char*, std::vector<Subscriber>, ConstCharComparator> SubscriberMap::m_subscribers;
+SubscriberMap::SubscriberMap_t SubscriberMap::s_subscribers;
 
 size_t SubscriberMap::getSubscriberCount(const char* key)
 {
-	auto it = m_subscribers.find(key);
-	if (it == m_subscribers.end())
+	auto it = s_subscribers.find(key);
+	if (it == s_subscribers.end())
 	{
 		return 0;
 	}
@@ -14,7 +15,7 @@ size_t SubscriberMap::getSubscriberCount(const char* key)
 
 const std::vector<Subscriber>& SubscriberMap::getSubscribers(const char* key)
 {
-	auto it = m_subscribers.find(key);
+	auto it = s_subscribers.find(key);
 	if (it->second.size() == 0)
 	{
 		static std::vector<Subscriber> empty;
@@ -28,9 +29,16 @@ void SubscriberMap::addSubscriber(const char* key, subscriberCb_t cb)
 	if (key == nullptr)
 		return;
 
-	m_subscribers[key].emplace_back(key, cb);
+	verbose("Adding subscriber for key '%s' cb @ %p", key, &cb);
+
+	s_subscribers[key].emplace_back(key, cb);
 }
 
+void SubscriberMap::addSubscriber(const char* key,
+								  bool (*cb)(Comm::JsonDecoder* decoder, const char* val, const size_t indices[]))
+{
+	addSubscriber(key, cb);
+}
 void SubscriberMap::addSubscriber(const char* key,
 								  bool (*cb)(Comm::JsonDecoder* decoder, const float& val, const size_t indices[]))
 {
@@ -88,5 +96,21 @@ void SubscriberMap::addSubscriber(const char* key,
 						  return cb(decoder, val, arrayIndices);
 					  }
 					  return false;
+				  });
+}
+
+void SubscriberMap::addSubscriber(const char* key, bool (*cb)(Comm::JsonDecoder* decoder, const size_t indices[]))
+{
+	// Check key ends with '^', otherwise raise compiler error
+	if (key[strlen(key) - 1] != '^')
+	{
+		error("Key '%s' must end with '^' as it is provided as an array end subscriber");
+		return;
+	}
+	addSubscriber(key,
+				  [cb](Comm::JsonDecoder* decoder, const char* data, const size_t arrayIndices[])
+				  {
+					  // Ignore `data` parameter
+					  return cb(decoder, arrayIndices);
 				  });
 }

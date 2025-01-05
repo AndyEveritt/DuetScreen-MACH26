@@ -18,7 +18,6 @@
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Job.h"
 #include "ObjectModel/Utils.h"
-#include "UI/Core/OmObserver.h"
 #include "UI/Core/model.h"
 #include "utils/utils.h"
 #include <string>
@@ -295,7 +294,6 @@ namespace Comm
 
 		// search for key in g_observerMap
 		verbose("searching for subscribers for '%s'", id.c_str());
-#if 1
 		auto subscribers = Model::getInstance().getSubscribers(id.c_str());
 		if (subscribers.size() != 0)
 		{
@@ -305,7 +303,6 @@ namespace Comm
 				subscriber.run(this, data, indices);
 			}
 		}
-#endif
 
 		const FieldTableEntry* searchResult = SearchFieldTable(id.c_str());
 		// no matching key found
@@ -394,17 +391,16 @@ namespace Comm
 	// Public function called when the serial I/O module finishes receiving an array of values
 	void JsonDecoder::ProcessArrayEnd(const char id[], const size_t indices[])
 	{
-#if 0
-		// search for key in g_observerMap
-		auto subscribers = UI::g_observerMapArrayEnd.GetSubscribers(id);
+		// search for key in subscribers
+		verbose("searching for array end subscribers for '%s'", id);
+		auto subscribers = Model::getInstance().getSubscribers(id);
 		if (subscribers.size() != 0)
 		{
 			for (auto& subscriber : subscribers)
 			{
-				subscriber.run(this, indices);
+				subscriber.run(this, nullptr, indices);
 			}
 		}
-#endif
 	}
 
 	void JsonDecoder::ParserErrorEncountered(int currentState, const char* id, int errors)
