@@ -13,9 +13,10 @@ namespace UI
 		, tabview(lv_tabview_create(m_cont))
 		, main_tab(lv_tabview_add_tab(tabview, HOME_SYMBOL))
 		, macros_tab(lv_tabview_add_tab(tabview, MACROS_SYMBOL))
+		, m_label(lv_label_create(main_tab))
 		, m_subView(main_tab)
 	{
 		lv_tabview_set_tab_bar_position(tabview, LV_DIR_LEFT);
 		lv_tabview_set_tab_bar_size(tabview, 60);
-	}
+		}
 } // namespace UI

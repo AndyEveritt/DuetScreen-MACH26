@@ -12,6 +12,8 @@
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Heat.h"
 
+#include "UI/Core/model.h"
+
 bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::Heat::RemoveHeater(indices[0], false);
@@ -129,6 +131,7 @@ bool HeatSubscribers::heaterArrayEnd(Comm::JsonDecoder* decoder, const size_t in
 	if (OM::Heat::RemoveHeater(indices[0], true))
 	{
 	}
+	Model::getInstance().newHeaterData();
 	return true;
 }
 

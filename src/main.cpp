@@ -25,7 +25,7 @@
 
 #include "UI/Screens/Home/view.h"
 
-#if LV_USE_OS == LV_OS_NONE
+#if LV_USE_OS == LV_OS_PTHREAD
 #include <thread>
 #elif LV_USE_OS == LV_OS_FREERTOS
 #include "freertos_main.h"
@@ -49,7 +49,7 @@ static int usb_test();
 /**********************
  *  STATIC VARIABLES
  **********************/
-#if LV_USE_OS == LV_OS_NONE
+#if LV_USE_OS == LV_OS_PTHREAD
 static pthread_t s_responseThread;
 static pthread_t s_requestThread;
 #endif
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
 	hal_init(1024, 600);
 
-#if LV_USE_OS == LV_OS_NONE
+#if LV_USE_OS == LV_OS_PTHREAD
 
 	// lv_demo_widgets();
 	// lv_demo_benchmark();
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 			{
 				// Request next section of the OM
 				Comm::sendNext();
-				usleep(1000 * 1000);
+				usleep(Comm::DUET.GetScaledPollInterval() * 1000);
 				// std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 			}
 			return nullptr;

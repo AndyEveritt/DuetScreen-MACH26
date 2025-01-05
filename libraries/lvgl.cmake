@@ -13,7 +13,8 @@ add_compile_definitions($<$<BOOL:${LV_USE_DRAW_SDL}>:LV_USE_DRAW_SDL=1>)
 add_compile_definitions($<$<BOOL:${LV_USE_LIBPNG}>:LV_USE_LIBPNG=1>)
 add_compile_definitions($<$<BOOL:${LV_USE_LIBJPEG_TURBO}>:LV_USE_LIBJPEG_TURBO=1>)
 add_compile_definitions($<$<BOOL:${LV_USE_FFMPEG}>:LV_USE_FFMPEG=1>)
-add_compile_definitions($<$<BOOL:${USE_FREERTOS}>:LV_USE_OS=2>)
+add_compile_definitions($<$<BOOL:${USE_FREERTOS}>:LV_USE_OS=LV_OS_FREERTOS>)
+add_compile_definitions($<$<BOOL:${SIMULATION}>:LV_USE_OS=LV_OS_PTHREAD>)
 
 
 # Add LVGL subdirectory

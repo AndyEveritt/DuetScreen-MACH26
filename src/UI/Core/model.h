@@ -35,7 +35,14 @@ class Model
 	 */
 	void unbind(UI::BasePresenter* presenter) { m_presenters.remove(presenter); }
 
+	/**
+	 * @brief Run callback for all presenters
+	 */
+	void newHeaterData();
+
 	void tick();
+
+	/* Subscribers */
 
 	const std::vector<Subscriber>& getSubscribers(const char* key) { return SubscriberMap::getSubscribers(key); }
 	const size_t getSubscriberCount(const char* key) { return SubscriberMap::getSubscriberCount(key); }

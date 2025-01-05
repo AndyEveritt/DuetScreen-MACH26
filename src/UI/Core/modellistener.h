@@ -16,6 +16,8 @@ namespace UI
 
 		Model& getModel() { return m_model; }
 
+		virtual void newHeaterData() {}
+
 	  protected:
 		Model& m_model;
 	};

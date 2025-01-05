@@ -19,7 +19,7 @@ class HeatSubscribers : public SubscriberMap
 		addSubscriber("heat:heaters^:sensor", heaterSensorNum);
 		addSubscriber("heat:heaters^:state", heaterState);
 
-		addArrayEndSubscriber("heaters^", heaterArrayEnd);
+		addArrayEndSubscriber("heat:heaters^", heaterArrayEnd);
 		addArrayEndSubscriber("heat:bedHeaters^", bedHeaterArrayEnd);
 		addArrayEndSubscriber("heat:chamberHeaters^", chamberHeaterArrayEnd);
 	}

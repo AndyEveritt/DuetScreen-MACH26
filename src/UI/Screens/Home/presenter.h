@@ -11,6 +11,8 @@ namespace UI
 	  public:
 		using Presenter::Presenter;
 
+		virtual void newHeaterData() override;
+
 	  protected:
 	};
 } // namespace UI
