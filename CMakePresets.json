@@ -27,7 +27,8 @@
             "description": "Configure the project to be run locally on the host machine",
             "inherits": "Base",
             "cacheVariables": {
-                "SIMULATION": "ON"
+                "SIMULATION": "ON",
+                "ASYNC_RR_MODEL": "OFF"
             }
         },
         {

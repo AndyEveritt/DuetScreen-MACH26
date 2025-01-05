@@ -293,11 +293,11 @@ namespace Comm
 		}
 
 		// search for key in g_observerMap
-		verbose("searching for subscribers for '%s'", id.c_str());
+		// verbose("searching for subscribers for '%s'", id.c_str());
 		auto subscribers = Model::getInstance().getSubscribers(id.c_str());
 		if (subscribers.size() != 0)
 		{
-			dbg("found %d subscribers for %s\n", subscribers.size(), id.c_str());
+			dbg("found %d subscribers for %s", subscribers.size(), id.c_str());
 			for (auto& subscriber : subscribers)
 			{
 				subscriber.run(this, data, indices);
@@ -308,7 +308,6 @@ namespace Comm
 		// no matching key found
 		if (!searchResult)
 		{
-			verbose("no matching key found for %s\n", id.c_str());
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
@@ -392,7 +391,7 @@ namespace Comm
 	void JsonDecoder::ProcessArrayEnd(const char id[], const size_t indices[])
 	{
 		// search for key in subscribers
-		verbose("searching for array end subscribers for '%s'", id);
+		// verbose("searching for array end subscribers for '%s'", id);
 		auto subscribers = Model::getInstance().getArrayEndSubscribers(id);
 		if (subscribers.size() != 0)
 		{
@@ -472,13 +471,6 @@ namespace Comm
 
 		if (m_arrayDepth != 0)
 		{ // should always be true
-			verbose("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
-					m_fieldId.c_str(),
-					m_arrayIndices[0],
-					m_arrayIndices[1],
-					m_arrayIndices[2],
-					m_arrayIndices[3],
-					m_arrayDepth);
 			m_arrayIndices[m_arrayDepth - 1] = 0;
 			--m_arrayDepth;
 			RemoveLastIdChar();

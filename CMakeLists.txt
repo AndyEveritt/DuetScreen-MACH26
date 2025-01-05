@@ -95,6 +95,10 @@ if (SIMULATION)
   target_compile_definitions(DuetScreen PRIVATE SIMULATION=1)
 endif()
 
+if (ASYNC_RR_MODEL)
+  target_compile_definitions(DuetScreen PRIVATE ASYNC_RR_MODEL=1)
+endif()
+
 # Helper function to add preprocesor definition of FILE_BASENAME
 # to pass the filename without directory path for debugging use.
 #

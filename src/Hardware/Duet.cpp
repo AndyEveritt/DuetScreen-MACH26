@@ -426,10 +426,9 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-#if 1
-			HttpResponse r;
 			hv::QueryParams query;
 			query["flags"] = flags;
+#if ASYNC_RR_MODEL
 			AsyncGet("/rr_model",
 					 query,
 					 [this, flags](const HttpResponsePtr& r)
@@ -443,6 +442,16 @@ namespace Comm
 						 decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
 						 return true;
 					 });
+#else
+			HttpResponse r;
+			Get("/rr_model", r, query);
+			JsonDecoder decoder;
+			if (r.status_code != HTTP_STATUS_OK)
+			{
+				error("HTTP error %d: Failed to get model update for flags: %s", r.status_code, flags);
+				break;
+			}
+			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 #endif
 			break;
 		}
@@ -460,11 +469,10 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-#if 1
-			HttpResponse r;
 			hv::QueryParams query;
 			query["key"] = key;
 			query["flags"] = flags;
+#if ASYNC_RR_MODEL
 			AsyncGet("/rr_model",
 					 query,
 					 [this, key, flags](const HttpResponsePtr& r)
@@ -481,6 +489,16 @@ namespace Comm
 						 decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
 						 return true;
 					 });
+#else
+			HttpResponse r;
+			Get("/rr_model", r, query);
+			JsonDecoder decoder;
+			if (r.status_code != HTTP_STATUS_OK)
+			{
+				error("HTTP error %d: Failed to get model update for key: %s, flags: %s", r.status_code, key, flags);
+				break;
+			}
+			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 #endif
 			break;
 		}
