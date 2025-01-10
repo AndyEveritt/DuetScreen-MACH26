@@ -13,6 +13,7 @@
 #include "Hardware/Duet.h"
 #include "glob.h"
 #include "hv/requests.h"
+#include "lv_i18n/lv_i18n.h"
 #include "lvgl/demos/lv_demos.h"
 #include "lvgl/examples/lv_examples.h"
 #include "lvgl/lvgl.h"
@@ -87,6 +88,8 @@ int main(int argc, char** argv)
 
 	/*Initialize LVGL*/
 	lv_init();
+	lv_i18n_init(lv_i18n_language_pack);
+	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());
 
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
 	hal_init(1024, 600);
@@ -189,7 +192,7 @@ static void http_test()
 	// auto resp = requests::get("http://duet2.local/rr_model?key=move");
 	if (resp == NULL)
 	{
-		printf("request failed!\n");
+		error("%s", _("request_failed"));
 	}
 	else
 	{

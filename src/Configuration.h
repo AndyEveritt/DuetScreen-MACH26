@@ -85,7 +85,7 @@ constexpr int32_t MINIMUM_WEBCAM_UPDATE_INTERVAL = 100;
 
 /* Misc UI */
 constexpr bool DEFAULT_SHOW_SETUP_ON_STARTUP = true;
-constexpr const char* DEFAULT_LANGUAGE_CODE = "en_US";
+constexpr const char* DEFAULT_LANGUAGE_CODE = "en-GB";
 
 /* Popup */
 constexpr uint32_t DEFAULT_POPUP_TIMEOUT = 5000;

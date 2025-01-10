@@ -67,6 +67,7 @@ list(
   APPEND
   MAIN_SOURCES
   ${SRC_DIR}/main.cpp
+  ${SRC_DIR}/lv_i18n/lv_i18n.c
   ${SRC_DIR}/mouse_cursor_icon.c
   ${SRC_DIR}/Debug.cpp
   ${SRC_DIR}/DebugCommands.cpp

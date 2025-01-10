@@ -28,5 +28,44 @@
 				"CMake: configure"
 			]
 		},
+		{
+			"type": "shell",
+			"label": "Install npm dependencies",
+			"command": "npm install",
+			"problemMatcher": [],
+			"group": {
+				"kind": "none",
+				"isDefault": false
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Extract i18n phrases",
+			"command": "./node_modules/.bin/lv_i18n extract -s 'src/**/*.+(c|cpp|h|hpp)' -t 'i18n/*.yml'",
+			"problemMatcher": [],
+			"group": {
+				"kind": "none",
+				"isDefault": false
+			},
+			"runOptions": {
+				"instanceLimit": 1
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Compile i18n phrases",
+			"command": "./node_modules/.bin/lv_i18n compile -t 'i18n/*.yml' -o 'src/lv_i18n'",
+			"problemMatcher": [],
+			"group": {
+				"kind": "none",
+				"isDefault": false
+			},
+			"runOptions": {
+				"instanceLimit": 1
+			},
+			"dependsOn": [
+				"Extract i18n phrases"
+			]
+		},
 	]
 }

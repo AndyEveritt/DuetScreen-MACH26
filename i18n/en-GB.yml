@@ -1,0 +1,3 @@
+en-GB:
+  request_failed: Request failed
+  heater: 'Heater: %s'

@@ -46,5 +46,13 @@
                 "CMAKE_BUILD_TYPE": "Release"
             }
         }
+    ],
+    "buildPresets": [
+        {
+            "name": "Simulation",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "Simulation"
+        }
     ]
 }

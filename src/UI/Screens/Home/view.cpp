@@ -1,5 +1,6 @@
 #include "view.h"
 
+#include "lv_i18n/lv_i18n.h"
 #include "utils/utils.h"
 
 namespace UI
@@ -19,6 +20,6 @@ namespace UI
 	void HomeView::setHeaterData(const char* data)
 	{
 		Lock lock;
-		lv_label_set_text(m_label, utils::format("Heater: %s", data).c_str());
+		lv_label_set_text(m_label, utils::format(_("heater"), data).c_str());
 	}
 } // namespace UI
