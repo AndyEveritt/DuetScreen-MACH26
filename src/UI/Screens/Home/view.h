@@ -12,16 +12,16 @@ namespace UI
 	  public:
 		HomeView();
 
-		virtual void onShow() { m_subView.show(); }
-
 		void setHeaterData(const char* data)
 		{
-			lv_lock();
+			Lock lock;
 			lv_label_set_text(m_label, data);
-			lv_unlock();
 		}
 
 	  private:
+		virtual void onShow() { m_subView.show(); }
+		virtual void onHide() { m_subView.hide(); }
+
 		lv_obj_t* tabview;
 		lv_obj_t* main_tab;
 		lv_obj_t* macros_tab;

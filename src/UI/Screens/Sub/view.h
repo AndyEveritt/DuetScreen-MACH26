@@ -10,8 +10,6 @@ namespace UI
 	  public:
 		SubView(lv_obj_t* parent);
 
-		virtual void onShow() {}
-
 	  private:
 		lv_obj_t* tabview;
 		lv_obj_t* main_tab;

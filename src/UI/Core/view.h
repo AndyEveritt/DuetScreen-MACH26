@@ -5,6 +5,13 @@
 
 namespace UI
 {
+	class Lock
+	{
+	  public:
+		Lock() { lv_lock(); }
+		~Lock() { lv_unlock(); }
+	};
+
 	class BasePresenter;
 
 	class BaseView
