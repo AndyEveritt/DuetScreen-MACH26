@@ -2,10 +2,12 @@
 
 #include "ObjectModel/Tool.h"
 #include "ToolSubscribers.h"
+#include "UI/Core/model.h"
 
 bool ToolSubscribers::nullTool(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveTool(indices[0], false);
+	Model::get().newToolData();
 	return true;
 }
 
@@ -124,6 +126,7 @@ bool ToolSubscribers::toolArrayEnd(Comm::JsonDecoder* decoder, const size_t indi
 	if (OM::RemoveTool(indices[0], true))
 	{
 	}
+	Model::get().newToolData();
 	return true;
 }
 

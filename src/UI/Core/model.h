@@ -25,7 +25,7 @@ class Model
 	Model(const Model&) = delete;
 	Model& operator=(const Model&) = delete;
 
-	static Model& getInstance()
+	static Model& get()
 	{
 		static Model instance;
 		return instance;
@@ -42,10 +42,69 @@ class Model
 	 */
 	void unbind(UI::BasePresenter* presenter) { m_presenters.remove(presenter); }
 
-	/**
-	 * @brief Run callback for all presenters
-	 */
+	/* presenter callbacks */
+
+	/* Fan methods */
+
+	void newFanData();
+
+	/* File methods */
+
+	void newFileData();
+
+	/* Heater methods */
+
 	void newHeaterData();
+
+	/* Job methods */
+
+	void newJobFileName();
+	void newJobLastFileName();
+	void newJobPrintTime();
+	void newJobDuration();
+	void newJobTimeLeft();
+	void newJobWarmupDuration();
+	void newJobBuild();
+	void newJobCurrentObject();
+	void newJobObjectData();
+
+	/* Move methods */
+
+	void newAxesData();
+	void newExtruderData();
+	void newKinematicsName();
+	void newSpeedFactor();
+	void newWorkplaceNumber();
+	void newCurrentMoveRequestedSpeed();
+	void newCurrentMoveTopSpeed();
+	void newCurrentMoveExtrusionSpeed();
+	void newCompensationFile();
+
+	/* Response methods */
+
+	void newResponse();
+
+	/* Sensor methods */
+
+	void newAnalogSensorData();
+	void newEndstopData();
+
+	/* Spindle methods */
+
+	void newSpindleData();
+
+	/* State methods */
+
+	void newNetworkName();
+	void newIpAddress();
+	void newStatus();
+	void newCurrentTool();
+	void newMessageBoxData();
+	void newTime();
+
+	/* Tool methods */
+
+	void newToolData();
 
 	void tick();
 

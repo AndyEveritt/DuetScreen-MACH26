@@ -43,24 +43,23 @@ namespace utils
 		return result + "\n" + errorText;
 	}
 
-	std::string format(const char* fmt, ...)
+	std::string format(const char* format, ...)
 	{
 		va_list args;
-		va_start(args, fmt);
-		std::string tmp = format(fmt, args);
-		va_end(args);
-		return tmp;
-	}
+		va_start(args, format);
+		std::vector<char> buffer;
 
-	std::string format(const char* fmt, va_list args)
-	{
-		std::string tmp;
-		int num = vsnprintf(0, 0, fmt, args);
-		if (num >= (int)tmp.capacity())
-			tmp.reserve(num + sizeof(char));
-		tmp.resize(num);
-		vsnprintf((char*)tmp.data(), tmp.capacity(), fmt, args);
-		return tmp;
+		// Copy the va_list to use it twice
+		va_list args_copy;
+		va_copy(args_copy, args);
+		// First call to vsnprintf to get the size
+		size_t size = vsnprintf(nullptr, 0, format, args_copy) + 1;
+		va_end(args_copy);
+
+		buffer.resize(size);
+		vsnprintf(buffer.data(), buffer.size(), format, args);
+		va_end(args);
+		return std::string(buffer.data());
 	}
 
 	size_t removeCharFromString(std::string& nString, char c)

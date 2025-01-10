@@ -2,10 +2,12 @@
 
 #include "ObjectModel/Sensor.h"
 #include "SensorSubscribers.h"
+#include "UI/Core/model.h"
 
 bool SensorSubscribers::nullAnalogSensor(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveAnalogSensor(indices[0], false);
+	Model::get().newAnalogSensorData();
 	return true;
 }
 
@@ -32,6 +34,7 @@ bool SensorSubscribers::analogSensorName(Comm::JsonDecoder* decoder, const char*
 bool SensorSubscribers::nullEndstop(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveEndstop(indices[0], false);
+	Model::get().newEndstopData();
 	return true;
 }
 
@@ -50,6 +53,7 @@ bool SensorSubscribers::analogSensorArrayEnd(Comm::JsonDecoder* decoder, const s
 	if (OM::RemoveAnalogSensor(indices[0], true))
 	{
 	}
+	Model::get().newAnalogSensorData();
 	return true;
 }
 
@@ -58,5 +62,6 @@ bool SensorSubscribers::endstopArrayEnd(Comm::JsonDecoder* decoder, const size_t
 	if (OM::RemoveEndstop(indices[0], true))
 	{
 	}
+	Model::get().newEndstopData();
 	return true;
 }

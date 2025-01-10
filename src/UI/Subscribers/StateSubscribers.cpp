@@ -6,17 +6,20 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Tool.h"
 #include "StateSubscribers.h"
+#include "UI/Core/model.h"
 #include "utils/TimeHelper.h"
 
 bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetPrinterName(data);
+	Model::get().newNetworkName();
 	return true;
 }
 
 bool StateSubscribers::networkActualIP(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	Comm::DUET.SetIPAddress(data);
+	Model::get().newIpAddress();
 	return true;
 }
 
@@ -24,12 +27,14 @@ bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, cons
 {
 	OM::PrinterStatus prevStatus = OM::GetStatus();
 	OM::SetStatus(data);
+	Model::get().newStatus();
 	return true;
 }
 
 bool StateSubscribers::currentTool(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
 	OM::SetCurrentTool(data);
+	Model::get().newCurrentTool();
 	return true;
 }
 
@@ -38,6 +43,7 @@ bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* da
 	if (data[0] != 0)
 		return true;
 	OM::g_currentAlert.Reset();
+	Model::get().newMessageBoxData();
 	return true;
 }
 
@@ -139,5 +145,6 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 	}
 	dbg("Setting system time to %s", data);
 	TimeHelper::setDateTime(data);
+	Model::get().newTime();
 	return true;
 }

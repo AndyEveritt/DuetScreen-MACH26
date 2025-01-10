@@ -2,6 +2,7 @@
 
 #include "Hardware/Duet.h"
 #include "ResponseSubscribers.h"
+#include "UI/Core/model.h"
 
 bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
@@ -11,6 +12,8 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 	size_t substrlen;
 	str = data;
 	// TODO add line to vector of responses
+
+	Model::get().newResponse();
 
 	return true;
 }

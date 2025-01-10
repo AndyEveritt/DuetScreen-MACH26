@@ -2,40 +2,47 @@
 
 #include "JobSubscribers.h"
 #include "ObjectModel/Job.h"
+#include "UI/Core/model.h"
 
 bool JobSubscribers::currentFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetJobName(data);
+	Model::get().newJobFileName();
 	return true;
 }
 
 bool JobSubscribers::lastFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetLastJobName(data);
+	Model::get().newJobLastFileName();
 	return true;
 }
 
 bool JobSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::SetPrintTime(data);
+	Model::get().newJobPrintTime();
 	return true;
 }
 
 bool JobSubscribers::duration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::SetPrintDuration(data);
+	Model::get().newJobDuration();
 	return true;
 }
 
 bool JobSubscribers::slicerTimeLeft(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::SetPrintRemaining(OM::RemainingTimeType::slicer, data);
+	Model::get().newJobTimeLeft();
 	return true;
 }
 
 bool JobSubscribers::warmUpDuration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::SetWarmUpDuration(data);
+	Model::get().newJobWarmupDuration();
 	return true;
 }
 
@@ -43,18 +50,21 @@ bool JobSubscribers::nullBuild(Comm::JsonDecoder* decoder, const char* data, con
 {
 	dbg("Job: build is null");
 	OM::RemoveJobObject(indices[0], true);
+	Model::get().newJobBuild();
 	return true;
 }
 
 bool JobSubscribers::currentObject(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
 	OM::SetCurrentJobObject(data);
+	Model::get().newJobCurrentObject();
 	return true;
 }
 
 bool JobSubscribers::nullObject(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveJobObject(indices[0], false);
+	Model::get().newJobObjectData();
 	return true;
 }
 
@@ -115,5 +125,6 @@ bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, co
 bool JobSubscribers::objectArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	OM::RemoveJobObject(indices[0], true);
+	Model::get().newJobObjectData();
 	return true;
 }

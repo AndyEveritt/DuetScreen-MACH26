@@ -179,7 +179,7 @@ namespace Comm
 		// Open M291 message box if required
 		if (OM::g_currentAlert.mode != OM::Alert::Mode::None && OM::g_currentAlert.seq != OM::g_lastAlertSeq)
 		{
-			// TODO Open message box
+			Model::get().newMessageBoxData();
 			OM::g_lastAlertSeq = OM::g_currentAlert.seq;
 		}
 
@@ -294,7 +294,7 @@ namespace Comm
 
 		// search for key in g_observerMap
 		// verbose("searching for subscribers for '%s'", id.c_str());
-		auto subscribers = Model::getInstance().getSubscribers(id.c_str());
+		auto subscribers = Model::get().getSubscribers(id.c_str());
 		if (subscribers.size() != 0)
 		{
 			dbg("found %d subscribers for %s", subscribers.size(), id.c_str());
@@ -392,7 +392,7 @@ namespace Comm
 	{
 		// search for key in subscribers
 		// verbose("searching for array end subscribers for '%s'", id);
-		auto subscribers = Model::getInstance().getArrayEndSubscribers(id);
+		auto subscribers = Model::get().getArrayEndSubscribers(id);
 		if (subscribers.size() != 0)
 		{
 			for (auto& subscriber : subscribers)

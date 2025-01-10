@@ -7,6 +7,7 @@ class FanSubscribers : public SubscriberMap
   public:
 	FanSubscribers()
 	{
+		addSubscriber("fans^", nullFan);
 		addSubscriber("fans^:actualValue", actualValue);
 		addSubscriber("fans^:requestedValue", requestedValue);
 		addSubscriber("fans^:rpm", rpm);
@@ -15,6 +16,7 @@ class FanSubscribers : public SubscriberMap
 	}
 
   private:
+	static bool nullFan(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool actualValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool requestedValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool rpm(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);

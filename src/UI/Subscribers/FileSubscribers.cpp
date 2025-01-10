@@ -16,6 +16,7 @@
 #include <string>
 
 #include "ObjectModel/Files.h"
+#include "UI/Core/model.h"
 
 bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
@@ -34,6 +35,7 @@ bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& 
 	if (data == 0)
 	{
 		OM::FileSystem::ClearFileSystem();
+		Model::get().newFileData();
 	}
 	return true;
 }
@@ -122,5 +124,6 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 		FILEINFO_CACHE->QueueThumbnailRequest(item->GetPath());
 #endif
 	}
+	Model::get().newFileData();
 	return true;
 }

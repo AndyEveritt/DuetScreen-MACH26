@@ -10,6 +10,13 @@
 #include "FanSubscribers.h"
 
 #include "ObjectModel/Fan.h"
+#include "UI/Core/model.h"
+
+bool FanSubscribers::nullFan(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	OM::RemoveFan(indices[0], false);
+	return true;
+}
 
 bool FanSubscribers::actualValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
@@ -46,5 +53,6 @@ bool FanSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]
 	if (OM::RemoveFan(indices[0], true))
 	{
 	}
+	Model::get().newFanData();
 	return true;
 }

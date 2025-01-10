@@ -12,11 +12,7 @@ namespace UI
 	  public:
 		HomeView();
 
-		void setHeaterData(const char* data)
-		{
-			Lock lock;
-			lv_label_set_text(m_label, data);
-		}
+		void setHeaterData(const char* data);
 
 	  private:
 		virtual void onShow() { m_subView.show(); }
