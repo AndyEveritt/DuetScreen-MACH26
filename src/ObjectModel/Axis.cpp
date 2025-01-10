@@ -25,6 +25,8 @@ namespace OM::Move
 {
 	static float s_extrusionRate = 0.0f;
 	static float s_speedFactor = 100.0f;
+	static float s_currentMoveRequestedSpeed = 0.0f;
+	static float s_currentMoveTopSpeed = 0.0f;
 
 	void Axis::Reset()
 	{
@@ -270,7 +272,7 @@ namespace OM::Move
 		s_extrusionRate = rate;
 	}
 
-	const float& GetExtrusionRate()
+	const float GetExtrusionRate()
 	{
 		return s_extrusionRate;
 	}
@@ -300,7 +302,7 @@ namespace OM::Move
 		return filamentArea * GetExtrusionRate();
 	}
 
-	const float& GetSpeedFactor()
+	const float GetSpeedFactor()
 	{
 		return s_speedFactor;
 	}
@@ -308,5 +310,25 @@ namespace OM::Move
 	void SetSpeedFactor(float factor)
 	{
 		s_speedFactor = factor;
+	}
+
+	const float GetCurrentMoveRequestedSpeed()
+	{
+		return s_currentMoveRequestedSpeed;
+	}
+
+	void SetCurrentMoveRequestedSpeed(float speed)
+	{
+		s_currentMoveRequestedSpeed = speed;
+	}
+
+	const float GetCurrentMoveTopSpeed()
+	{
+		return s_currentMoveTopSpeed;
+	}
+
+	void SetCurrentMoveTopSpeed(float speed)
+	{
+		s_currentMoveTopSpeed = speed;
 	}
 } // namespace OM::Move

@@ -1,0 +1,63 @@
+#pragma once
+
+#include "UI/Core/subscribers.h"
+
+class MoveSubscribers : public SubscriberMap
+{
+  public:
+	MoveSubscribers()
+	{
+		addSubscriber("move:axes^:babystep", babyStep);
+		addSubscriber("move:axes^:homed", axisHomed);
+		addSubscriber("move:axes^:letter", axisLetter);
+		addSubscriber("move:axes^:machinePosition", axisMachinePosition);
+		addSubscriber("move:axes^:min", axisMinPosition);
+		addSubscriber("move:axes^:max", axisMaxPosition);
+		addSubscriber("move:axes^:userPosition", axisUserPosition);
+		addSubscriber("move:axes^:visible", axisVisible);
+		addSubscriber("move:axes^:workplaceOffsets^", axisWorkplaceOffset);
+		addSubscriber("move:extruders^:factor", extrusionFactor);
+		addSubscriber("move:extruders^:filamentDiameter", extruderFilamentDiameter);
+		addSubscriber("move:extruders^:filament", extruderFilamentName);
+		addSubscriber("move:extruders^:position", extruderPosition);
+		addSubscriber("move:extruders^:pressureAdvance", extruderPressureAdvance);
+		addSubscriber("move:extruders^:stepsPerMm", extruderStepsPerMm);
+		addSubscriber("move:kinematics:name", kinematicsName);
+		addSubscriber("move:speedFactor", speedFactor);
+		addSubscriber("move:workplaceNumber", workplaceNumber);
+		addSubscriber("move:currentMove:requestedSpeed", currentMoveRequestedSpeed);
+		addSubscriber("move:currentMove:topSpeed", currentMoveTopSpeed);
+		addSubscriber("move:currentMove:extrusionRate", currentMoveExtrusionRate);
+		addSubscriber("move:compensation:file", compensationFile);
+
+		addArrayEndSubscriber("move:axes^", axesArrayEnd);
+		addArrayEndSubscriber("move:extruders^", extrudersArrayEnd);
+	}
+
+  private:
+	static bool babyStep(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool axisHomed(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[]);
+	static bool axisLetter(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
+	static bool axisMachinePosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool axisMinPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool axisMaxPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool axisUserPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool axisVisible(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[]);
+	static bool axisWorkplaceOffset(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool extrusionFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool extruderFilamentDiameter(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool extruderFilamentName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
+	static bool extruderPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool extruderPressureAdvance(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool extruderStepsPerMm(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool kinematicsName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
+	static bool speedFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool workplaceNumber(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
+	static bool currentMoveRequestedSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool currentMoveTopSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool currentMoveExtrusionRate(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool compensationFile(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
+
+	static bool axesArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]);
+	static bool extrudersArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]);
+};

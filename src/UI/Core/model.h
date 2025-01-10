@@ -3,6 +3,7 @@
 #include "UI/Subscribers/FanSubscribers.h"
 #include "UI/Subscribers/FileSubscribers.h"
 #include "UI/Subscribers/HeatSubscribers.h"
+#include "UI/Subscribers/MoveSubscribers.h"
 #include "subscribers.h"
 #include <list>
 #include <map>
@@ -56,6 +57,7 @@ class Model
 	FanSubscribers m_fanSubscribers;
 	FileSubscribers m_fileSubscribers;
 	HeatSubscribers m_heatSubscribers;
+	MoveSubscribers m_moveSubscribers;
 	std::list<UI::BasePresenter*> m_presenters;
 
   private:
