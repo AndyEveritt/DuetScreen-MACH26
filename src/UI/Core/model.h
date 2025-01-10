@@ -3,8 +3,13 @@
 #include "UI/Subscribers/FanSubscribers.h"
 #include "UI/Subscribers/FileSubscribers.h"
 #include "UI/Subscribers/HeatSubscribers.h"
+#include "UI/Subscribers/JobSubscribers.h"
 #include "UI/Subscribers/MoveSubscribers.h"
 #include "UI/Subscribers/ResponseSubscribers.h"
+#include "UI/Subscribers/SensorSubscribers.h"
+#include "UI/Subscribers/SpindleSubscribers.h"
+#include "UI/Subscribers/StateSubscribers.h"
+#include "UI/Subscribers/ToolSubscribers.h"
 #include "subscribers.h"
 #include <list>
 #include <map>
@@ -58,8 +63,13 @@ class Model
 	FanSubscribers m_fanSubscribers;
 	FileSubscribers m_fileSubscribers;
 	HeatSubscribers m_heatSubscribers;
+	JobSubscribers m_jobSubscribers;
 	MoveSubscribers m_moveSubscribers;
 	ResponseSubscribers m_responseSubscribers;
+	SensorSubscribers m_sensorSubscribers;
+	SpindleSubscribers m_spindleSubscribers;
+	StateSubscribers m_stateSubscribers;
+	ToolSubscribers m_toolSubscribers;
 	std::list<UI::BasePresenter*> m_presenters;
 
   private:

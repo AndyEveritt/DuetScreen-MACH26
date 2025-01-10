@@ -19,4 +19,6 @@ class TimeHelper
 		return 0;
 #endif
 	}
+
+	static bool setDateTime(const char* dateTime) {}
 };

@@ -1,0 +1,143 @@
+#include "Debug.h"
+
+#include "Configuration.h"
+#include "Hardware/Duet.h"
+#include "ObjectModel/Alert.h"
+#include "ObjectModel/PrinterStatus.h"
+#include "ObjectModel/Tool.h"
+#include "StateSubscribers.h"
+#include "utils/TimeHelper.h"
+
+bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	OM::SetPrinterName(data);
+	return true;
+}
+
+bool StateSubscribers::networkActualIP(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	Comm::DUET.SetIPAddress(data);
+	return true;
+}
+
+bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	OM::PrinterStatus prevStatus = OM::GetStatus();
+	OM::SetStatus(data);
+	return true;
+}
+
+bool StateSubscribers::currentTool(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
+{
+	OM::SetCurrentTool(data);
+	return true;
+}
+
+bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	if (data[0] != 0)
+		return true;
+	OM::g_currentAlert.Reset();
+	return true;
+}
+
+bool StateSubscribers::messageBoxAxisControls(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	OM::g_currentAlert.controls = data;
+	OM::g_currentAlert.flags.SetBit(OM::Alert::GotControls);
+	return true;
+}
+
+bool StateSubscribers::messageBoxMessage(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	OM::g_currentAlert.text.copy(data);
+	OM::g_currentAlert.flags.SetBit(OM::Alert::GotText);
+	return true;
+}
+
+bool StateSubscribers::messageBoxMode(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
+{
+	OM::g_currentAlert.mode = static_cast<OM::Alert::Mode>(data);
+	OM::g_currentAlert.flags.SetBit(OM::Alert::GotMode);
+	return true;
+}
+
+bool StateSubscribers::messageBoxSeq(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	OM::g_currentAlert.seq = data;
+	OM::g_currentAlert.flags.SetBit(OM::Alert::GotSeq);
+	return true;
+}
+
+bool StateSubscribers::messageBoxTimeout(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
+{
+	OM::g_currentAlert.timeout = data;
+	OM::g_currentAlert.flags.SetBit(OM::Alert::GotTimeout);
+	return true;
+}
+
+bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	OM::g_currentAlert.title.copy(data);
+	OM::g_currentAlert.flags.SetBit(OM::Alert::GotTitle);
+	return true;
+}
+
+bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	Comm::GetInteger(data, OM::g_currentAlert.limits.numberInt.min);
+	Comm::GetFloat(data, OM::g_currentAlert.limits.numberFloat.min);
+	Comm::GetInteger(data, OM::g_currentAlert.limits.text.min);
+	return true;
+}
+
+bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	Comm::GetInteger(data, OM::g_currentAlert.limits.numberInt.max);
+	Comm::GetFloat(data, OM::g_currentAlert.limits.numberFloat.max);
+	Comm::GetInteger(data, OM::g_currentAlert.limits.text.max);
+	return true;
+}
+
+bool StateSubscribers::messageBoxDefault(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	Comm::GetInteger(data, OM::g_currentAlert.limits.numberInt.valueDefault);
+	Comm::GetFloat(data, OM::g_currentAlert.limits.numberFloat.valueDefault);
+	OM::g_currentAlert.limits.text.valueDefault.copy(data);
+	return true;
+}
+
+bool StateSubscribers::messageBoxCancelButton(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
+{
+	OM::g_currentAlert.cancelButton = data;
+	return true;
+}
+
+bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	if (indices[0] >= ALERT_MAX_CHOICES)
+	{
+		error("Too many choices in message box");
+		return false;
+	}
+	OM::g_currentAlert.choices[indices[0]].copy(data);
+	OM::g_currentAlert.choices_count = indices[0] + 1;
+	return true;
+}
+
+bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	static unsigned long long lastUpdated = 0;
+
+	if (data[0] == 0)
+	{
+		return true;
+	}
+	if (TimeHelper::getCurrentTime() - lastUpdated < TIME_SYNC_INTERVAL)
+	{
+		return true;
+	}
+	dbg("Setting system time to %s", data);
+	TimeHelper::setDateTime(data);
+	return true;
+}
