@@ -293,26 +293,24 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-#if 0
 			HttpResponse r;
 			hv::QueryParams query;
 			query["gcode"] = gcode;
 			AsyncGet(
 				"/rr_gcode",
 				query,
-				[this, gcode](HttpResponse& r)
+				[this, gcode](const HttpResponsePtr& r)
 				{
-					if (r.code != 200)
+					if (r->status_code != HTTP_STATUS_OK)
 					{
-						printf("HTTP error %d: Failed to send gcode: %s", r.code, gcode);
+						printf("HTTP error %d: Failed to send gcode: %s", r->status_code, gcode);
 						return false;
 					}
-					RequestReply(r);
-					ProcessReply(r);
+					RequestReply(*r);
+					ProcessReply(*r);
 					return true;
 				},
 				true);
-#endif
 			break;
 		}
 		case CommunicationType::usb:
