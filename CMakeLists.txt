@@ -74,6 +74,7 @@ list(
   ${SRC_DIR}/Comm/Commands.cpp
   ${SRC_DIR}/Comm/Communication.cpp
   ${SRC_DIR}/Comm/JsonDecoder.cpp
+  ${SRC_DIR}/Comm/Usb.cpp
   ${DUET_LIB_SOURCES}
   ${COMM_SOURCES}
   ${HW_SOURCES}
@@ -94,6 +95,10 @@ target_compile_definitions(DuetScreen PRIVATE DEBUG)
 
 if (SIMULATION)
   target_compile_definitions(DuetScreen PRIVATE SIMULATION=1)
+endif()
+
+if (LOG_TIMESTAMPS)
+  target_compile_definitions(DuetScreen PRIVATE LOG_TIMESTAMPS=1)
 endif()
 
 if (ASYNC_RR_MODEL)

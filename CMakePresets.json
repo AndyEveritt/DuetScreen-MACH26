@@ -28,6 +28,7 @@
             "inherits": "Base",
             "cacheVariables": {
                 "SIMULATION": "ON",
+                "LOG_TIMESTAMPS": "ON",
                 "ASYNC_RR_MODEL": "OFF"
             }
         },

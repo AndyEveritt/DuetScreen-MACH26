@@ -47,6 +47,13 @@ namespace utils
 	{
 		va_list args;
 		va_start(args, format);
+		std::string result = vformat(format, args);
+		va_end(args);
+		return result;
+	}
+
+	std::string vformat(const char* format, va_list args)
+	{
 		std::vector<char> buffer;
 
 		// Copy the va_list to use it twice
@@ -58,7 +65,6 @@ namespace utils
 
 		buffer.resize(size);
 		vsnprintf(buffer.data(), buffer.size(), format, args);
-		va_end(args);
 		return std::string(buffer.data());
 	}
 

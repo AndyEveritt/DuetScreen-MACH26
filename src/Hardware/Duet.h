@@ -53,7 +53,7 @@ namespace Comm
 		std::string hostname = "";
 		std::string password = "";
 		uint32_t pollInterval = DEFAULT_PRINTER_POLL_INTERVAL;
-		CommunicationType communicationType = CommunicationType::none;
+		CommunicationType communicationType = CommunicationType::usb;
 		unsigned int baudRate = B115200;
 
 		NLOHMANN_DEFINE_TYPE_INTRUSIVE(

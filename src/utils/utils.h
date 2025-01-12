@@ -25,6 +25,7 @@ namespace utils
 	}
 	std::string exec(const char* cmd);
 	std::string format(const char* fmt, ...);
+	std::string vformat(const char* fmt, va_list args);
 	size_t removeCharFromString(std::string& nString, char c);
 	void replaceSubstring(std::string& nString, const std::string& target, const std::string& replacement);
 	std::vector<std::string> splitString(const std::string& str, const std::string& delimiter);

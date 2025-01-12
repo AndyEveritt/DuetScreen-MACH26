@@ -55,6 +55,26 @@ void warn_inner(const char* fmt, ...);
 void error_inner(const char* fmt, ...);
 void fatal_inner(const char* fmt, ...);
 
+#if LOG_TIMESTAMPS
+#include "utils/TimeHelper.h"
+#define LOG_FUNCTION(name, color, level, fmt, args...)                                                                 \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		const int colorCode = static_cast<int>(color);                                                                 \
+		name##_inner("%lld \033[1;%dm%s\033[0m \033[3;4;%dm%s:%d\033[0m \033[3;%dm%s():\033[0m\033[%dm " fmt           \
+					 "\033[0m\n",                                                                                      \
+					 TimeHelper::getCurrentTime(),                                                                     \
+					 colorCode,                                                                                        \
+					 DebugLevelStrings[(int)level],                                                                    \
+					 colorCode,                                                                                        \
+					 __FILE_RELPATH__,                                                                                 \
+					 __LINE__,                                                                                         \
+					 colorCode,                                                                                        \
+					 __FUNCTION__,                                                                                     \
+					 colorCode,                                                                                        \
+					 ##args);                                                                                          \
+	} while (0)
+#else
 #define LOG_FUNCTION(name, color, level, fmt, args...)                                                                 \
 	do                                                                                                                 \
 	{                                                                                                                  \
@@ -70,6 +90,7 @@ void fatal_inner(const char* fmt, ...);
 					 colorCode,                                                                                        \
 					 ##args);                                                                                          \
 	} while (0)
+#endif
 
 #ifdef DEBUG
 #define verbose(fmt, args...) LOG_FUNCTION(verbose, LogColors::White, DebugLevel::Verbose, fmt, ##args)

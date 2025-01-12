@@ -8,6 +8,7 @@
 #include "Comm/Communication.h"
 #include "Comm/FileInfo.h"
 #include "Comm/JsonDecoder.h"
+#include "Comm/Usb.h"
 #include "Debug.h"
 
 #include "Duet.h"
@@ -56,15 +57,14 @@ namespace Comm
 	void Duet::Init()
 	{
 		// TODO restore from memory
-		m_config = StorageHelper::getData<DuetConfig>(ID_DUET, DuetConfig());
-		// Person p = StorageHelper::getData<Person>("person", {"John", 30, 1.8});
+		DuetConfig config = StorageHelper::getData<DuetConfig>(ID_DUET, DuetConfig());
 
-		SetPollInterval((uint32_t)m_config.pollInterval);
-		SetBaudRate(m_config.baudRate);
-		SetIPAddress(m_config.ipAddress);
-		SetHostname(m_config.hostname);
-		SetPassword(m_config.password);
-		SetCommunicationType((CommunicationType)DEFAULT_COMMUNICATION_TYPE);
+		SetPollInterval((uint32_t)config.pollInterval);
+		SetBaudRate(config.baudRate);
+		SetIPAddress(config.ipAddress);
+		SetHostname(config.hostname);
+		SetPassword(config.password);
+		SetCommunicationType((CommunicationType)config.communicationType);
 	}
 
 	void Duet::Reset()
@@ -314,8 +314,16 @@ namespace Comm
 			break;
 		}
 		case CommunicationType::usb:
-			// TODO USB comms
+		{
+			UsbDevice& usb = getCurrentUsbDevice();
+			if (!usb.isConnected())
+			{
+				warn("USB device not connected");
+				connectUsbDevice();
+			}
+			usb.send(gcode);
 			break;
+		}
 		default:
 			break;
 		}
@@ -325,7 +333,7 @@ namespace Comm
 	{
 		va_list args;
 		va_start(args, fmt);
-		SendGcode(utils::format(fmt, args).c_str());
+		SendGcode(utils::vformat(fmt, args).c_str());
 		va_end(args);
 	}
 
@@ -420,6 +428,7 @@ namespace Comm
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
+		case CommunicationType::usb:
 			SendGcodef("M409 F\"%s\"\n", flags);
 			break;
 		case CommunicationType::network:
@@ -463,6 +472,7 @@ namespace Comm
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
+		case CommunicationType::usb:
 			SendGcodef("M409 K\"%s\" F\"%s\"\n", key, flags);
 			break;
 		case CommunicationType::network:
@@ -795,7 +805,6 @@ namespace Comm
 		}
 		case CommunicationType::network:
 		{
-#if 1
 			info("Connecting to Duet at %s", GetBaseUrl().c_str());
 
 			HttpResponse r;
@@ -846,9 +855,11 @@ namespace Comm
 			}
 			info("rr_connect succeeded");
 			return true;
-#else
-			return true;
-#endif
+		}
+		case CommunicationType::usb:
+		{
+			connectUsbDevice();
+			break;
 		}
 		default:
 			break;
@@ -886,6 +897,11 @@ namespace Comm
 #else
 			return 200;
 #endif
+		}
+		case CommunicationType::usb:
+		{
+			getCurrentUsbDevice().reset();
+			break;
 		}
 		default:
 			break;
