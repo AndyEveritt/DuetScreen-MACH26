@@ -1,7 +1,11 @@
 #include "Usb.h"
+#include "Comm/JsonDecoder.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
+#include <atomic>
 #include <cstring>
-#include <pthread.h>
+#include <mutex>
+#include <thread>
 
 namespace Comm
 {
@@ -51,7 +55,6 @@ namespace Comm
 
 	void UsbDevice::reset()
 	{
-		pthread_mutex_lock(&s_usbMutex);
 		dbg("Resetting USB device %s", m_name);
 		if (m_handle)
 		{
@@ -63,14 +66,13 @@ namespace Comm
 		if (m_device)
 		{
 			dbg("Unref device");
-			libusb_unref_device(m_device);
+			// libusb_unref_device(m_device);
 			m_device = nullptr;
 		}
 		m_name = "";
 		m_inEndpoint = 0;
 		m_outEndpoint = 0;
 		m_packetSize = 0;
-		pthread_mutex_unlock(&s_usbMutex);
 	}
 
 	bool UsbDevice::connect()
@@ -119,9 +121,11 @@ namespace Comm
 
 	int UsbDevice::send(const char* data)
 	{
+		pthread_mutex_lock(&s_usbMutex);
 		if (!m_handle)
 		{
 			warn("No USB device handle");
+			pthread_mutex_unlock(&s_usbMutex);
 			return -1;
 		}
 		int full_length = 0;
@@ -136,12 +140,14 @@ namespace Comm
 			{
 				error("Error sending data: %s", libusb_error_name(r));
 				reset();
+				pthread_mutex_unlock(&s_usbMutex);
 				return -1;
 			}
 			len -= actual_length;
 			data += actual_length;
 			full_length += actual_length;
 		}
+		pthread_mutex_unlock(&s_usbMutex);
 		return full_length;
 	}
 
@@ -173,11 +179,9 @@ namespace Comm
 			break;
 		case LIBUSB_ERROR_NO_DEVICE:
 			warn("Device disconnected");
-			reset();
 			break;
 		default:
 			error("Error receiving data: %s", libusb_error_name(r));
-			reset();
 			break;
 		}
 
@@ -275,20 +279,16 @@ namespace Comm
 		return false;
 	}
 
+	int usbInit()
+	{
+		libusb_init(nullptr);
+	}
+
 	bool connectUsbDevice()
 	{
 		int r;
 
 		s_currentUsbDevice.reset();
-
-		pthread_mutex_lock(&s_usbMutex);
-		if (s_context != nullptr)
-		{
-			libusb_exit(nullptr);
-			s_context = nullptr;
-		}
-
-		libusb_init(nullptr);
 
 		verbose("Getting usb device list");
 		libusb_device** device_list;
@@ -297,7 +297,6 @@ namespace Comm
 		if (device_count < 0)
 		{
 			error("Failed to get device list: %s", libusb_error_name(device_count));
-			pthread_mutex_unlock(&s_usbMutex);
 			return false;
 		}
 
@@ -305,7 +304,6 @@ namespace Comm
 		{
 			error("Target device not found");
 			libusb_free_device_list(device_list, 1);
-			pthread_mutex_unlock(&s_usbMutex);
 			return false;
 		}
 
@@ -313,11 +311,9 @@ namespace Comm
 		{
 			error("Failed to connect to target device");
 			libusb_free_device_list(device_list, 1);
-			pthread_mutex_unlock(&s_usbMutex);
 			return false;
 		}
 		libusb_free_device_list(device_list, 1);
-		pthread_mutex_unlock(&s_usbMutex);
 
 		return true;
 	}

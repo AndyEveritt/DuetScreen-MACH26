@@ -58,7 +58,7 @@ namespace OM
 
 	size_t RemoveAnalogSensor(const size_t index, const bool allFollowing)
 	{
-		info("Removing analogSensor %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		dbg("Removing analogSensor %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<AnalogSensorList, AnalogSensor>(s_analogSensors, index, allFollowing);
 	}
 

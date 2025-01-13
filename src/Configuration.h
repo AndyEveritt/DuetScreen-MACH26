@@ -15,7 +15,7 @@ constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
 
 /* Duet */
 constexpr uint32_t DEFAULT_PRINTER_POLL_INTERVAL = 500;
-constexpr uint32_t MIN_PRINTER_POLL_INTERVAL = 250;
+constexpr uint32_t MIN_PRINTER_POLL_INTERVAL = 100;
 constexpr uint32_t PRINTER_REQUEST_TIMEOUT = 5000;
 constexpr int DEFAULT_COMMUNICATION_TYPE = 1;
 constexpr const char* DEFAULT_IP_ADDRESS = "192.168.0.";

@@ -179,7 +179,7 @@ namespace OM
 
 		size_t RemoveHeater(const size_t index, const bool allFollowing)
 		{
-			info("Removing heater %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+			dbg("Removing heater %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 			return Remove<HeaterList, Heater>(heaters, index, allFollowing);
 		}
 	} // namespace Heat

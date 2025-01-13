@@ -14,6 +14,7 @@
 #include <stdarg.h>
 
 #include "Comm/JsonDecoder.h"
+#include "Comm/Usb.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
 #include "Hardware/SerialIo.h"
@@ -341,5 +342,6 @@ namespace Comm
 		system("mkdir /tmp/thumbnails");
 		system("mkdir /tmp/heightmaps");
 		SortFieldTable();
+		usbInit();
 	}
 } // namespace Comm
