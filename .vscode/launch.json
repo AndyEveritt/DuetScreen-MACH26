@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug LVGL demo with gdb",
+            "name": "Debug DuetScreen",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/DuetScreen",
@@ -23,7 +23,14 @@
             "windows": {
                 "MIMode": "gdb",
                 "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
-            }
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
         },
     ],
 }

@@ -59,6 +59,7 @@ file(GLOB_RECURSE OM_SOURCES ${SRC_DIR}/ObjectModel/*.c
 # list(REMOVE_ITEM OM_SOURCES
 #      ${SRC_DIR}/ObjectModel/Job.cpp)
 
+file(GLOB_RECURSE SUBSCRIBER_SOURCES ${SRC_DIR}/Subscribers/*.c ${SRC_DIR}/Subscribers/*.cpp)
 file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/*.c ${SRC_DIR}/UI/*.cpp)
 
 file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/utils/*.c ${SRC_DIR}/utils/*.cpp)
@@ -79,6 +80,7 @@ list(
   ${COMM_SOURCES}
   ${HW_SOURCES}
   ${OM_SOURCES}
+  ${SUBSCRIBER_SOURCES}
   ${UI_SOURCES}
   ${UTILS_SOURCES})
 

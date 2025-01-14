@@ -1,16 +1,16 @@
 #pragma once
 
-#include "UI/Subscribers/FanSubscribers.h"
-#include "UI/Subscribers/FileSubscribers.h"
-#include "UI/Subscribers/HeatSubscribers.h"
-#include "UI/Subscribers/JobSubscribers.h"
-#include "UI/Subscribers/MoveSubscribers.h"
-#include "UI/Subscribers/ResponseSubscribers.h"
-#include "UI/Subscribers/SensorSubscribers.h"
-#include "UI/Subscribers/SpindleSubscribers.h"
-#include "UI/Subscribers/StateSubscribers.h"
-#include "UI/Subscribers/ToolSubscribers.h"
-#include "subscribers.h"
+#include "Subscribers/FanSubscribers.h"
+#include "Subscribers/FileSubscribers.h"
+#include "Subscribers/HeatSubscribers.h"
+#include "Subscribers/JobSubscribers.h"
+#include "Subscribers/MoveSubscribers.h"
+#include "Subscribers/ResponseSubscribers.h"
+#include "Subscribers/SensorSubscribers.h"
+#include "Subscribers/SpindleSubscribers.h"
+#include "Subscribers/StateSubscribers.h"
+#include "Subscribers/ToolSubscribers.h"
+#include "Subscribers/subscribers.h"
 #include <list>
 #include <map>
 

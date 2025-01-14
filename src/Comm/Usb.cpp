@@ -281,7 +281,7 @@ namespace Comm
 
 	int usbInit()
 	{
-		libusb_init(nullptr);
+		return libusb_init(nullptr);
 	}
 
 	bool connectUsbDevice()

@@ -42,25 +42,8 @@ static const lv_i18n_lang_t en_gb_lang = {
     .locale_plural_fn = en_gb_plural_fn
 };
 
-static uint8_t fr_plural_fn(int32_t num)
-{
-    uint32_t n = op_n(num); UNUSED(n);
-    uint32_t i = op_i(n); UNUSED(i);
-
-    if ((((i == 0) || (i == 1)))) return LV_I18N_PLURAL_TYPE_ONE;
-    return LV_I18N_PLURAL_TYPE_OTHER;
-}
-
-static const lv_i18n_lang_t fr_lang = {
-    .locale_name = "fr",
-
-
-    .locale_plural_fn = fr_plural_fn
-};
-
 const lv_i18n_language_pack_t lv_i18n_language_pack[] = {
     &en_gb_lang,
-    &fr_lang,
     NULL // End mark
 };
 

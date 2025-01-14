@@ -1,14 +1,14 @@
 #pragma once
 
-#include "component.h"
+#include "UI/Core/view.h"
 #include "lvgl/lvgl.h"
 
 namespace UI
 {
-	class Button : public Component
+	class Button : public BaseView
 	{
 	  public:
-		Button(const char* name, lv_obj_t* parent, const char* text);
+		Button(const char* name, lv_obj_t* parent, const char* text, layout_t layout);
 
 		void setText(const char* text);
 		void setCallback(lv_event_cb_t event_cb, lv_event_code_t filter, void* user_data);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UI/Core/subscribers.h"
+#include "Subscribers/subscribers.h"
 
 class SensorSubscribers : public SubscriberMap
 {
