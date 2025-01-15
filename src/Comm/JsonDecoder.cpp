@@ -293,16 +293,7 @@ namespace Comm
 		}
 
 		// search for key in g_observerMap
-		verbose("searching for subscribers for '%s'", id.c_str());
-		auto subscribers = Model::get().getSubscribers(id.c_str());
-		if (subscribers.size() != 0)
-		{
-			dbg("found %d subscribers for %s", subscribers.size(), id.c_str());
-			for (auto& subscriber : subscribers)
-			{
-				subscriber.run(this, data, indices);
-			}
-		}
+		Model::get().runSubscribers(id.c_str(), this, data, indices);
 
 		const FieldTableEntry* searchResult = SearchFieldTable(id.c_str());
 		// no matching key found
@@ -392,14 +383,7 @@ namespace Comm
 	{
 		// search for key in subscribers
 		// verbose("searching for array end subscribers for '%s'", id);
-		auto subscribers = Model::get().getArrayEndSubscribers(id);
-		if (subscribers.size() != 0)
-		{
-			for (auto& subscriber : subscribers)
-			{
-				subscriber.run(this, indices);
-			}
-		}
+		Model::get().runArrayEndSubscribers(id, this, indices);
 	}
 
 	void JsonDecoder::ParserErrorEncountered(int currentState, const char* id, int errors)

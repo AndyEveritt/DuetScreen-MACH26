@@ -1,4 +1,5 @@
 #include "model.h"
+#include "Debug.h"
 #include "presenter.h"
 
 #define NOTIFY_ALL_PRESENTERS(func)                                                                                    \
@@ -12,6 +13,46 @@
 	{                                                                                                                  \
 		NOTIFY_ALL_PRESENTERS(func);                                                                                   \
 	}
+
+void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	auto subscribers = getSubscribers(key);
+	if (subscribers.size() != 0)
+	{
+		dbg("found %d subscribers for '%s'", subscribers.size(), key);
+		for (auto& subscriber : subscribers)
+		{
+			subscriber.run(decoder, data, indices);
+		}
+	}
+}
+
+void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[])
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	auto subscribers = getArrayEndSubscribers(key);
+	if (subscribers.size() != 0)
+	{
+		dbg("found %d array end subscribers for '%s'", subscribers.size(), key);
+		for (auto& subscriber : subscribers)
+		{
+			subscriber.run(decoder, indices);
+		}
+	}
+}
+
+void Model::lock()
+{
+	dbg("Attempting to lock model");
+	m_mutex.lock();
+}
+
+void Model::unlock()
+{
+	dbg("Unlocking model");
+	m_mutex.unlock();
+}
 
 MODEL_NOTIFICATION(newFanData)
 

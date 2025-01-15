@@ -13,6 +13,7 @@
 #include "Subscribers/subscribers.h"
 #include <list>
 #include <map>
+#include <mutex>
 
 namespace UI
 {
@@ -110,13 +111,19 @@ class Model
 
 	/* Subscribers */
 
+	void runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	const std::vector<Subscriber>& getSubscribers(const char* key) { return SubscriberMap::getSubscribers(key); }
 	const size_t getSubscriberCount(const char* key) { return SubscriberMap::getSubscriberCount(key); }
+
+	void runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[]);
 	const std::vector<ArrayEndSubscriber>& getArrayEndSubscribers(const char* key)
 	{
 		return SubscriberMap::getArrayEndSubscribers(key);
 	}
 	const size_t getArrayEndSubscriberCount(const char* key) { return SubscriberMap::getArrayEndSubscriberCount(key); }
+
+	void lock();
+	void unlock();
 
   private:
 	FanSubscribers m_fanSubscribers;
@@ -130,6 +137,8 @@ class Model
 	StateSubscribers m_stateSubscribers;
 	ToolSubscribers m_toolSubscribers;
 	std::list<UI::BasePresenter*> m_presenters;
+
+	std::mutex m_mutex;
 
   private:
 	Model() {}
