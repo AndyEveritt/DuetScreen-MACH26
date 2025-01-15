@@ -24,7 +24,7 @@
 
 #include "Debug.h"
 
-#define jserror(fmt, args...) error("jsError id=%s @ %d: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
+#define jserror(fmt, args...) error("jsError id='%s' @ %d: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
 
 namespace Comm
 {
@@ -293,7 +293,7 @@ namespace Comm
 		}
 
 		// search for key in g_observerMap
-		// verbose("searching for subscribers for '%s'", id.c_str());
+		verbose("searching for subscribers for '%s'", id.c_str());
 		auto subscribers = Model::get().getSubscribers(id.c_str());
 		if (subscribers.size() != 0)
 		{
@@ -976,7 +976,11 @@ namespace Comm
 						break;
 					}
 
-					if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
+					if ((c == 'e' || c == 'E') && !m_fieldVal.cat(c))
+					{
+						m_state = jsExpValSign;
+					}
+					else if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
 					{
 						m_state = jsError;
 
@@ -984,7 +988,48 @@ namespace Comm
 					}
 					break;
 
-				case jsCharsVal:
+				case jsExpValSign:
+					if (c == '-' || c == '+')
+					{
+						if (m_fieldVal.cat(c))
+						{
+							m_state = jsError;
+							jserror("jsExpValSign, expected '-' or '+' but got '%c'", c);
+							break;
+						}
+
+						m_state = jsExpValFirstDigit;
+						break;
+					}
+					m_state = jsExpValFirstDigit;
+					// no break
+				case jsExpValFirstDigit:
+					if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
+					{
+						m_state = jsError;
+
+						jserror("jsExpValFirstDigit, expected [0-9] but got \"%c\", or failed to append to m_fieldVal",
+								c);
+					}
+					m_state = jsExpValDigits;
+					break;
+
+				case jsExpValDigits:
+					if (CheckValueCompleted(c, true))
+					{
+						break;
+					}
+
+					if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
+					{
+						m_state = jsError;
+
+						jserror("jsExpValFirstDigit, expected [0-9] but got \"%c\", or failed to append to m_fieldVal",
+								c);
+					}
+					break;
+
+								case jsCharsVal:
 					if (CheckValueCompleted(c, true))
 					{
 						break;

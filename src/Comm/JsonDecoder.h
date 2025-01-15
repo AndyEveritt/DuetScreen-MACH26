@@ -60,6 +60,9 @@ namespace Comm
 			jsFracVal,		// receiving a fractional value
 			jsEndVal,		// had the end of a string or _ecv_array value, expecting comma or ] or }
 			jsCharsVal,		// receiving an alphanumeric value such as true, false, null
+			jsExpValSign,	// about to receive an exponent, possible sign coming up
+			jsExpValFirstDigit, // expecting the first digit of an exponent
+			jsExpValDigits,		// expecting remaining digits of an exponent
 			jsError			// something went wrong
 		};
 
