@@ -2,6 +2,7 @@
 
 #include "lvgl/lvgl.h"
 #include "model.h"
+#include <memory>
 
 namespace UI
 {
@@ -28,37 +29,39 @@ namespace UI
 	class BaseView
 	{
 	  public:
-		BaseView(const char* name, lv_obj_t* parent)
-			: m_cont(lv_obj_create(parent))
-			, m_name(name)
-		{
-		}
+		BaseView(const std::string& name, lv_obj_t* parent);
 
-		BaseView(const char* name, lv_obj_t* parent, layout_t layout)
+		BaseView(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: BaseView(name, parent)
 		{
-			lv_obj_set_pos(m_cont, lv_pct(layout.x), lv_pct(layout.y));
-			lv_obj_set_size(m_cont, lv_pct(layout.w), lv_pct(layout.h));
-			lv_obj_set_style_pad_all(m_cont, 5, 0);
+			lv_obj_set_pos(getCont(), lv_pct(layout.x), lv_pct(layout.y));
+			lv_obj_set_width(getCont(), layout.w == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.w));
+			lv_obj_set_height(getCont(), layout.h == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.h));
 		}
 
-		BaseView(const char* name, layout_t layout)
+		BaseView(const std::string& name, layout_t layout)
 			: BaseView(name, lv_scr_act(), layout)
 		{
 		}
 
 		virtual ~BaseView();
 
-		const char* getName() const { return m_name; }
+		inline const char* getName() const { return m_name.c_str(); }
 		/**
 		 * @return Get the base container for the view
 		 */
-		lv_obj_t* getCont() { return m_cont; }
+		inline lv_obj_t* getCont() const { return m_cont; }
 		lv_obj_t* getScreen() const;
 		lv_obj_t* getParent() const;
 		lv_obj_t* getChild(int32_t id) const;
 		uint32_t getChildCnt() const;
 		layout_t getLayout();
+
+		void setLayout(layout_t layout);
+		void setWidth(int widthPct);
+		void setHeight(int heightPct);
+		void setX(int xPct);
+		void setY(int yPct);
 
 		virtual void setStyle(lv_style_t* style, lv_style_selector_t selector);
 
@@ -68,8 +71,12 @@ namespace UI
 		virtual void onHide() {}
 		virtual void refresh() {}
 
+	  private:
 		lv_obj_t* m_cont;
-		const char* m_name;
+		std::string m_name;
+
+	  private:
+		static void deleteCont(lv_obj_t* obj);
 	};
 
 	/**

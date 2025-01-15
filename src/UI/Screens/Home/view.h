@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UI/Components/button.h"
+#include "UI/Components/list.h"
 #include "UI/Core/view.h"
 #include "UI/Screens/Sub/view.h"
 #include "lvgl/lvgl.h"
@@ -28,5 +29,6 @@ namespace UI
 		SubView m_subView;
 		Button m_btn;
 		Button m_btn2;
+		DynamicList m_list;
 	};
 } // namespace UI

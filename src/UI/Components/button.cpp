@@ -4,19 +4,19 @@ namespace UI
 {
 	Button::Button(const char* name, lv_obj_t* parent, const char* text, layout_t layout)
 		: BaseView(name, parent, layout)
-		, m_button(lv_button_create(m_cont))
+		, m_button(lv_button_create(getCont()))
 		, m_label(lv_label_create(m_button))
 		, m_icon(nullptr)
 	{
 		lv_obj_set_user_data(m_button, this);
 		lv_obj_set_user_data(m_label, this);
 
-		lv_obj_set_style_bg_opa(m_cont, LV_OPA_TRANSP, 0);
+		lv_obj_set_style_bg_opa(getCont(), LV_OPA_TRANSP, 0);
 
 		// Initialise the button obj
 		lv_obj_set_pos(m_button, 0, 0);
 		lv_obj_set_size(m_button, LV_PCT(100), LV_PCT(100));
-		lv_obj_set_style_border_width(m_cont, 0, 0);
+		lv_obj_set_style_border_width(getCont(), 0, 0);
 		lv_obj_set_style_border_width(m_button, 0, 0);
 		lv_obj_add_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
 
@@ -72,25 +72,5 @@ namespace UI
 		lv_obj_center(m_icon);
 		lv_obj_set_y(m_icon, lv_pct(-20));
 		lv_obj_set_y(m_label, lv_pct(30));
-	}
-
-	void Button::setWidth(int widthPct)
-	{
-		lv_obj_set_width(m_cont, lv_pct(widthPct));
-	}
-
-	void Button::setHeight(int heightPct)
-	{
-		lv_obj_set_height(m_cont, lv_pct(heightPct));
-	}
-
-	void Button::setX(int xPct)
-	{
-		lv_obj_set_x(m_cont, lv_pct(xPct));
-	}
-
-	void Button::setY(int yPct)
-	{
-		lv_obj_set_y(m_cont, lv_pct(yPct));
 	}
 } // namespace UI

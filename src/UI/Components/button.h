@@ -15,13 +15,6 @@ namespace UI
 		virtual void setStyle(lv_style_t* style, lv_style_selector_t selector) override;
 		void setIcon(lv_img_dsc_t* icon);
 
-		/* Position control */
-
-		void setWidth(int widthPct);
-		void setHeight(int heightPct);
-		void setX(int xPct);
-		void setY(int yPct);
-
 	  private:
 		lv_obj_t* m_button;
 		lv_obj_t* m_label;

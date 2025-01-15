@@ -10,7 +10,7 @@ namespace UI
 {
 	SubView::SubView(lv_obj_t* parent)
 		: View("SubView", parent, layout_t(25, 25, 50, 50))
-		, tabview(lv_tabview_create(m_cont))
+		, tabview(lv_tabview_create(getCont()))
 		, main_tab(lv_tabview_add_tab(tabview, HOME_SYMBOL))
 		, macros_tab(lv_tabview_add_tab(tabview, MACROS_SYMBOL))
 	{

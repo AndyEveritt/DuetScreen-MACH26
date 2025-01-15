@@ -8,13 +8,14 @@ namespace UI
 {
 	HomeView::HomeView()
 		: View("HomeView", layout_t(10, 0, 90, 100))
-		, tabview(lv_tabview_create(m_cont))
+		, tabview(lv_tabview_create(getCont()))
 		, main_tab(lv_tabview_add_tab(tabview, "Main"))
 		, macros_tab(lv_tabview_add_tab(tabview, "Macros"))
 		, m_label(lv_label_create(main_tab))
 		, m_subView(main_tab)
 		, m_btn("button", main_tab, "Click me", layout_t(0, 10, 50, 10))
 		, m_btn2("button2", main_tab, "Button 2", layout_t(10, 30, 10, 10))
+		, m_list("list", macros_tab, layout_t(0, 0, 100, 50))
 	{
 		lv_tabview_set_tab_bar_position(tabview, LV_DIR_LEFT);
 		lv_tabview_set_tab_bar_size(tabview, 60);
@@ -24,6 +25,7 @@ namespace UI
 		m_btn.setCallback(btnCallback, LV_EVENT_CLICKED, this);
 
 		layout_t layout = m_btn.getLayout();
+		m_list.setItemCnt(2);
 
 		lv_obj_set_style_border_width(m_btn.getCont(), 0, 0);
 
@@ -34,6 +36,18 @@ namespace UI
 	{
 		Lock lock;
 		lv_label_set_text(m_label, utils::format(_("heater"), data).c_str());
+
+		static bool add = true;
+		size_t btnCnt = m_list.getItemCnt();
+		if (btnCnt <= 0)
+		{
+			add = true;
+		}
+		if (btnCnt >= 5)
+		{
+			add = false;
+		}
+		m_list.setItemCnt(m_list.getItemCnt() + (add ? 1 : -1));
 	}
 
 	void HomeView::btnCallback(lv_event_t* e)

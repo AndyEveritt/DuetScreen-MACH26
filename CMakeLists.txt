@@ -49,20 +49,20 @@ if(USE_FREERTOS)
   )
 endif()
 
-file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/*.c ${LIBRARIES_DIR}/Duet3D/*.cpp)
-# file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/*.c ${SRC_DIR}/Comm/*.cpp)
-file(GLOB_RECURSE HW_SOURCES ${SRC_DIR}/Hardware/*.c ${SRC_DIR}/Hardware/*.cpp)
+file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c ${LIBRARIES_DIR}/Duet3D/**.cpp)
+# file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/**.c ${SRC_DIR}/Comm/**.cpp)
+file(GLOB_RECURSE HW_SOURCES ${SRC_DIR}/Hardware/**.c ${SRC_DIR}/Hardware/**.cpp)
 list(REMOVE_ITEM HW_SOURCES ${SRC_DIR}/Hardware/Usb.cpp)
 
-file(GLOB_RECURSE OM_SOURCES ${SRC_DIR}/ObjectModel/*.c
-     ${SRC_DIR}/ObjectModel/*.cpp)
+file(GLOB_RECURSE OM_SOURCES ${SRC_DIR}/ObjectModel/**.c
+     ${SRC_DIR}/ObjectModel/**.cpp)
 # list(REMOVE_ITEM OM_SOURCES
 #      ${SRC_DIR}/ObjectModel/Job.cpp)
 
-file(GLOB_RECURSE SUBSCRIBER_SOURCES ${SRC_DIR}/Subscribers/*.c ${SRC_DIR}/Subscribers/*.cpp)
-file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/*.c ${SRC_DIR}/UI/*.cpp)
+file(GLOB_RECURSE SUBSCRIBER_SOURCES ${SRC_DIR}/Subscribers/**.c ${SRC_DIR}/Subscribers/**.cpp)
+file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/**.c ${SRC_DIR}/UI/**.cpp)
 
-file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/utils/*.c ${SRC_DIR}/utils/*.cpp)
+file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/utils/**.c ${SRC_DIR}/utils/**.cpp)
 
 list(
   APPEND
