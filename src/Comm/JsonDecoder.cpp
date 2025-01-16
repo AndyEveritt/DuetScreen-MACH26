@@ -18,7 +18,7 @@
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Job.h"
 #include "ObjectModel/Utils.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 #include "utils/utils.h"
 #include <string>
 

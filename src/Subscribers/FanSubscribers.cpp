@@ -10,7 +10,7 @@
 #include "FanSubscribers.h"
 
 #include "ObjectModel/Fan.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool FanSubscribers::nullFan(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {

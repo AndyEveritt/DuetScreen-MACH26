@@ -2,7 +2,7 @@
 
 #include "ObjectModel/Sensor.h"
 #include "SensorSubscribers.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool SensorSubscribers::nullAnalogSensor(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {

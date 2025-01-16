@@ -1,10 +1,10 @@
 #pragma once
 
 #include "HomePresenter.h"
-#include "UI/Components/button.h"
-#include "UI/Components/list.h"
-#include "UI/Core/view.h"
-#include "UI/Screens/Sub/view.h"
+#include "UI/Components/Button.h"
+#include "UI/Components/List.h"
+#include "UI/Core/View.h"
+#include "UI/Screens/Sub/SubView.h"
 #include "lvgl/lvgl.h"
 
 namespace UI

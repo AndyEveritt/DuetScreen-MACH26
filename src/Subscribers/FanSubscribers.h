@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Subscribers/subscribers.h"
+#include "Subscribers/Subscribers.h"
 
 class FanSubscribers : public SubscriberMap
 {

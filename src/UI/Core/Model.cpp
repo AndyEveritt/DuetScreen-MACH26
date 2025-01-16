@@ -1,6 +1,6 @@
-#include "model.h"
+#include "Model.h"
 #include "Debug.h"
-#include "presenter.h"
+#include "Presenter.h"
 
 #define NOTIFY_ALL_PRESENTERS(func)                                                                                    \
 	for (auto presenter : m_presenters)                                                                                \

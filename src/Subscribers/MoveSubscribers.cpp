@@ -3,7 +3,7 @@
 #include "MoveSubscribers.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/Heightmap.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool MoveSubscribers::babyStep(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {

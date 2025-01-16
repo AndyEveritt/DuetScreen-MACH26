@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UI/Core/view.h"
+#include "UI/Core/View.h"
 #include "lvgl/lvgl.h"
 
 namespace UI

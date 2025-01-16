@@ -12,7 +12,7 @@
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Heat.h"
 
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {

@@ -1,0 +1,14 @@
+{
+    ".*\\.h": [
+        {
+            "label": "C++ Header",
+            "template_path": ".vscode/templates/cpp_header.h"
+        }
+    ],
+    ".*\\.cpp": [
+        {
+            "label": "C++ Source",
+            "template_path": ".vscode/templates/cpp_source.cpp"
+        }
+    ]
+}

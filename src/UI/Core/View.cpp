@@ -1,4 +1,4 @@
-#include "view.h"
+#include "View.h"
 #include "Debug.h"
 
 namespace UI

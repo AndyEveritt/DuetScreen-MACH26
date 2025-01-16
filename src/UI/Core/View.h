@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Model.h"
 #include "lvgl/lvgl.h"
-#include "model.h"
 #include <memory>
 
 namespace UI

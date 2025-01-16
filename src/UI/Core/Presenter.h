@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Subscribers/subscribers.h"
-#include "modellistener.h"
+#include "ModelListener.h"
+#include "Subscribers/Subscribers.h"
 #include <map>
 #include <vector>
 

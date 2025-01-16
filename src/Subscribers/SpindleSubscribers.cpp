@@ -2,7 +2,7 @@
 
 #include "ObjectModel/Spindle.h"
 #include "SpindleSubscribers.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool SpindleSubscribers::nullSpindle(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {

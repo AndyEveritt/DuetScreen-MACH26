@@ -16,7 +16,7 @@
 #include <string>
 
 #include "ObjectModel/Files.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {

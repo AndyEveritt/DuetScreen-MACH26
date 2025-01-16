@@ -1,7 +1,7 @@
 #include "HomeView.h"
 
 #include "Debug.h"
-#include "UI/Core/navigation.h"
+#include "UI/Core/Navigation.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/utils.h"
 

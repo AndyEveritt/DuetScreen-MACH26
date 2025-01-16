@@ -2,7 +2,7 @@
 
 #include "ObjectModel/Tool.h"
 #include "ToolSubscribers.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool ToolSubscribers::nullTool(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {

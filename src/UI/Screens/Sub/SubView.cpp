@@ -1,4 +1,4 @@
-#include "view.h"
+#include "SubView.h"
 
 #define MACROS_SYMBOL "\xF3\xB1\xB2\x83"
 #define CONSOLE_SYMBOL "\xF3\xB0\x86\x8D"

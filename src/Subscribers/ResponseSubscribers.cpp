@@ -2,7 +2,7 @@
 
 #include "Hardware/Duet.h"
 #include "ResponseSubscribers.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 
 bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {

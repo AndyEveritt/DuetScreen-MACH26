@@ -1,6 +1,6 @@
 #pragma once
 
-#include "view.h"
+#include "View.h"
 
 namespace UI
 {

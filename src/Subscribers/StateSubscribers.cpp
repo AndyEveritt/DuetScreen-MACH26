@@ -6,7 +6,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Tool.h"
 #include "StateSubscribers.h"
-#include "UI/Core/model.h"
+#include "UI/Core/Model.h"
 #include "utils/TimeHelper.h"
 
 bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])

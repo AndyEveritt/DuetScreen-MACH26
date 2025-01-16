@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UI/Components/button.h"
-#include "UI/Core/view.h"
+#include "UI/Components/Button.h"
+#include "UI/Core/View.h"
 #include "lvgl/lvgl.h"
 #include "utils/utils.h"
 #include <memory>

@@ -9,8 +9,8 @@
 #include "Subscribers/SensorSubscribers.h"
 #include "Subscribers/SpindleSubscribers.h"
 #include "Subscribers/StateSubscribers.h"
+#include "Subscribers/Subscribers.h"
 #include "Subscribers/ToolSubscribers.h"
-#include "Subscribers/subscribers.h"
 #include <list>
 #include <map>
 #include <mutex>

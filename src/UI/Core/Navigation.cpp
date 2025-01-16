@@ -1,4 +1,4 @@
-#include "navigation.h"
+#include "Navigation.h"
 #include "Debug.h"
 #include <vector>
 
