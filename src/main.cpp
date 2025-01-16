@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "UI/Screens/Home/view.h"
+#include "UI/Screens/Home/HomeView.h"
 
 #if LV_USE_OS == LV_OS_PTHREAD
 #include <thread>

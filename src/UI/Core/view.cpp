@@ -90,4 +90,32 @@ namespace UI
 	{
 		lv_obj_add_style(getCont(), style, selector);
 	}
+
+	void BaseView::show()
+	{
+		onShow();
+		lv_obj_move_foreground(getCont());
+		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
+	}
+
+	void BaseView::hide()
+	{
+		onHide();
+		lv_obj_move_background(getCont());
+		lv_obj_add_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
+	}
+
+	bool BaseView::isVisible()
+	{
+		return !lv_obj_has_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
+	}
+
+	/**
+	 * @brief Handle a back button event
+	 * @return true if the view handled the back event
+	 */
+	bool BaseView::back()
+	{
+		return false;
+	}
 } // namespace UI

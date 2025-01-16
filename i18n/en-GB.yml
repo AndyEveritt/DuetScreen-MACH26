@@ -1,3 +1,5 @@
 en-GB:
   request_failed: Request failed
   heater: 'Heater: %s'
+  back: Back
+  open_sub_view: Open Sub View

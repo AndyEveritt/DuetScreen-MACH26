@@ -1,5 +1,5 @@
-#include "presenter.h"
-#include "view.h"
+#include "HomePresenter.h"
+#include "HomeView.h"
 
 #include "ObjectModel/Heat.h"
 

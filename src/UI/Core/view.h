@@ -64,6 +64,10 @@ namespace UI
 		void setY(int yPct);
 
 		virtual void setStyle(lv_style_t* style, lv_style_selector_t selector);
+		void show();
+		void hide();
+		bool isVisible();
+		virtual bool back();
 
 	  protected:
 		virtual void init() {}
@@ -74,9 +78,6 @@ namespace UI
 	  private:
 		lv_obj_t* m_cont;
 		std::string m_name;
-
-	  private:
-		static void deleteCont(lv_obj_t* obj);
 	};
 
 	/**
@@ -93,17 +94,18 @@ namespace UI
 		static_assert(std::is_base_of<BasePresenter, T>::value, "T must derive from Presenter");
 
 	  public:
-		View(const char* name, lv_obj_t* parent, layout_t layout)
+		View(const std::string& name, lv_obj_t* parent)
+			: BaseView(name, parent)
+			, m_presenter(this)
+		{
+		}
+		View(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: BaseView(name, parent, layout)
 			, m_presenter(this)
 		{
 		}
-		View(const char* name, layout_t layout)
+		View(const std::string& name, layout_t layout)
 			: View(name, lv_scr_act(), layout)
-		{
-		}
-		View(const char* name, lv_obj_t* parent)
-			: View(name, parent, layout_t(0, 0, 100, 100))
 		{
 		}
 
@@ -114,15 +116,18 @@ namespace UI
 		 */
 		Model* getModel() { return m_presenter->getModel(); }
 
+		void activate() { m_presenter.activate(); }
+		void deactivate() { m_presenter.deactivate(); }
+
 		void show()
 		{
-			m_presenter.activate();
-			onShow();
+			activate();
+			BaseView::show();
 		}
 		void hide()
 		{
-			m_presenter.deactivate();
-			onHide();
+			deactivate();
+			BaseView::hide();
 		}
 
 	  protected:
