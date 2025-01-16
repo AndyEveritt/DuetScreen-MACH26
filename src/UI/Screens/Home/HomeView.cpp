@@ -8,7 +8,8 @@
 namespace UI
 {
 	HomeView::HomeView()
-		: View("HomeView", layout_t(10, 0, 90, 100))
+		: View("HomeView", layout_t(0, 0, 100, 100))
+		, m_sideBar("sidebar", getCont())
 		, tabview(lv_tabview_create(getCont()))
 		, main_tab(lv_tabview_add_tab(tabview, "Main"))
 		, macros_tab(lv_tabview_add_tab(tabview, "Macros"))
@@ -30,6 +31,8 @@ namespace UI
 		m_list.setItemCnt(2);
 
 		m_subView.hide();
+
+		lv_obj_add_flag(tabview, LV_OBJ_FLAG_HIDDEN);
 
 		lv_obj_set_style_border_width(m_btn.getCont(), 0, 0);
 

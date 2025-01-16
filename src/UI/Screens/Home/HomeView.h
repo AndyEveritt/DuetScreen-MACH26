@@ -3,6 +3,7 @@
 #include "HomePresenter.h"
 #include "UI/Components/Button.h"
 #include "UI/Components/List.h"
+#include "UI/Components/SideBar.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Sub/SubView.h"
 #include "lvgl/lvgl.h"
@@ -25,6 +26,7 @@ namespace UI
 		static void btnCallback(lv_event_t* e);
 		static void btn2Callback(lv_event_t* e);
 
+		SideBar m_sideBar;
 		lv_obj_t* tabview;
 		lv_obj_t* main_tab;
 		lv_obj_t* macros_tab;
