@@ -19,15 +19,20 @@ namespace UI
 	  public:
 		ToolListItem(const std::string& name, lv_obj_t* parent, layout_t layout);
 
-		void setToolIndex(uint8_t index);
+		void setSlotIndex(uint8_t index);
 		void setLabel(const char* text);
 		void setIcon(lv_img_dsc_t* icon);
 		void setStatus(const char* text);
 		void setCurrentTemp(float value);
 		void setActiveTemp(int32_t value);
+		void setActiveTempText(const char* text);
 		void setStandbyTemp(int32_t value);
+		void setStandbyTempText(const char* text);
+		void showTemps(bool show);
 
 	  private:
+		static void activeTempEvent(lv_event_t* e);
+
 		lv_obj_t* m_label;
 		lv_obj_t* m_icon;
 		lv_obj_t* m_status;

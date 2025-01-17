@@ -182,7 +182,7 @@ namespace OM
 
 	size_t RemoveBed(const size_t index, const bool allFollowing)
 	{
-		info("Removing bed %d allFollowing=%s", index, allFollowing ? "true" : "false");
+		dbg("Removing bed %d allFollowing=%s", index, allFollowing ? "true" : "false");
 		return Remove<BedList, Bed>(s_beds, index, allFollowing);
 	}
 
@@ -234,9 +234,8 @@ namespace OM
 			return false;
 		}
 		bed->heater = heaterNumber;
-		info("Created bed %d, heater number %d", bedIndex, heaterNumber);
+		dbg("Created bed %d, heater number %d", bedIndex, heaterNumber);
 		return true;
-
 	}
 
 	bool SetChamberHeater(const uint8_t chamberIndex, const int8_t heaterNumber)

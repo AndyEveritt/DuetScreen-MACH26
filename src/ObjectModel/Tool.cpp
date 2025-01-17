@@ -598,7 +598,7 @@ namespace OM
 
 	void SetCurrentTool(const int32_t toolIndex)
 	{
-		info("Setting current tool to %d", toolIndex);
+		dbg("Setting current tool to %d", toolIndex);
 		s_currentTool = toolIndex;
 	}
 

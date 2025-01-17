@@ -112,7 +112,7 @@ namespace OM
 
 	size_t RemoveEndstop(const size_t index, const bool allFollowing)
 	{
-		info("Removing endstop %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		dbg("Removing endstop %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<EndstopList, Endstop>(s_endstops, index, allFollowing);
 	}
 

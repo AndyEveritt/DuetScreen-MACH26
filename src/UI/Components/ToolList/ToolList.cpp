@@ -28,11 +28,14 @@ namespace UI
 		lv_obj_set_flex_grow(m_currentTemp, 2);
 		lv_obj_set_flex_grow(m_activeTemp, 2);
 		lv_obj_set_flex_grow(m_standbyTemp, 2);
+
+		lv_obj_add_flag(m_activeTemp, LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_event_cb(m_activeTemp, activeTempEvent, LV_EVENT_PRESSED, this);
 	}
 
-	void ToolListItem::setToolIndex(uint8_t index)
+	void ToolListItem::setSlotIndex(uint8_t index)
 	{
-		m_presenter.setToolIndex(index);
+		m_presenter.setSlotIndex(index);
 	}
 
 	void ToolListItem::setLabel(const char* text)
@@ -70,10 +73,49 @@ namespace UI
 		lv_label_set_text(m_activeTemp, utils::format("%d", value).c_str());
 	}
 
+	void ToolListItem::setActiveTempText(const char* text)
+	{
+		Lock lock;
+		lv_label_set_text(m_activeTemp, text);
+	}
+
 	void ToolListItem::setStandbyTemp(int32_t value)
 	{
 		Lock lock;
 		lv_label_set_text(m_standbyTemp, utils::format("%d", value).c_str());
+	}
+
+	void ToolListItem::setStandbyTempText(const char* text)
+	{
+		Lock lock;
+		lv_label_set_text(m_standbyTemp, text);
+	}
+
+	void ToolListItem::showTemps(bool show)
+	{
+		Lock lock;
+		if (show)
+		{
+			lv_obj_remove_flag(m_status, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_remove_flag(m_currentTemp, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_remove_flag(m_activeTemp, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_remove_flag(m_standbyTemp, LV_OBJ_FLAG_HIDDEN);
+		}
+		else
+		{
+			lv_obj_add_flag(m_status, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(m_currentTemp, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(m_activeTemp, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(m_standbyTemp, LV_OBJ_FLAG_HIDDEN);
+		}
+	}
+
+	void ToolListItem::activeTempEvent(lv_event_t* e)
+	{
+		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
+		// TODO open a dialog to set the active temp
+		int32_t value = 10;
+		view->m_presenter.setActiveTemp(value);
 	}
 
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent, layout_t layout)
@@ -106,6 +148,7 @@ namespace UI
 
 	void ToolList::setItemCnt(size_t cnt)
 	{
+		Lock lock;
 		size_t currentCnt = getItemCnt();
 		if (cnt <= currentCnt)
 		{

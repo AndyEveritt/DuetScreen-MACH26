@@ -32,7 +32,7 @@ namespace OM
 			sensor = nullptr;
 		}
 
-		const char* Heater::GetHeaterStatusStr()
+		const char* Heater::GetHeaterStatusStr() const
 		{
 			const HeaterStatusMapEntry key = {"unknown", status};
 			const HeaterStatusMapEntry* statusFromMap =

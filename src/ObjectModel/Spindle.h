@@ -49,7 +49,7 @@ namespace OM
 		SpindleState state;
 
 		void Reset();
-		const char* GetStateStr();
+		const char* GetStateStr() const;
 	};
 
 	Spindle* GetSpindle(const size_t index);

@@ -28,7 +28,7 @@ namespace OM
 		canReverse = false;
 	}
 
-	const char* Spindle::GetStateStr()
+	const char* Spindle::GetStateStr() const
 	{
 		const SpindleStateMapEntry key = {"unknown", state};
 		const SpindleStateMapEntry* stateFromMap = (SpindleStateMapEntry*)bsearch(&key,

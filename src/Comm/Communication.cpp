@@ -324,6 +324,7 @@ namespace Comm
 			Reconnect();
 		}
 
+		// TODO prevent sending the same request multiple times in a row
 		g_currentReqSeq = GetNextSeq(g_currentReqSeq);
 		if (g_currentReqSeq != nullptr)
 		{
@@ -332,6 +333,7 @@ namespace Comm
 		}
 		else
 		{
+			info("requesting frequently changing data");
 			Comm::DUET.RequestModel("d99f");
 		}
 	}
