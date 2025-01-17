@@ -1,5 +1,13 @@
 en-GB:
-  request_failed: Request failed
   heater: 'Heater: %s'
   back: Back
   open_sub_view: Open Sub View
+  home: ~
+  macros: ~
+  console: ~
+  estop: ~
+  toollist_tool: Tool
+  toollist_status: Status
+  toollist_current: Current
+  toollist_active: Active
+  toollist_standby: Standby

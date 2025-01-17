@@ -18,7 +18,6 @@ namespace UI
 		lv_obj_set_size(m_button, LV_PCT(100), LV_PCT(100));
 		lv_obj_set_style_border_width(getCont(), 0, 0);
 		lv_obj_set_style_border_width(m_button, 0, 0);
-		lv_obj_add_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
 
 		// Initialise the label obj
 		lv_label_set_text(m_label, text);
@@ -72,5 +71,17 @@ namespace UI
 		lv_obj_center(m_icon);
 		lv_obj_set_y(m_icon, lv_pct(-20));
 		lv_obj_set_y(m_label, lv_pct(30));
+	}
+
+	void Button::setCheckable(bool checkable)
+	{
+		if (checkable)
+		{
+			lv_obj_add_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
+		}
+		else
+		{
+			lv_obj_remove_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
+		}
 	}
 } // namespace UI

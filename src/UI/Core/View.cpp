@@ -60,6 +60,12 @@ namespace UI
 		return layout;
 	}
 
+	void BaseView::setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow)
+	{
+		lv_obj_set_layout(getCont(), style);
+		lv_obj_set_flex_flow(getCont(), flow);
+	}
+
 	void BaseView::setLayout(layout_t layout)
 	{
 		lv_obj_set_pos(getCont(), lv_pct(layout.x), lv_pct(layout.y));
@@ -91,6 +97,11 @@ namespace UI
 		lv_obj_add_style(getCont(), style, selector);
 	}
 
+	/**
+	 * @brief Shows the view.
+	 *
+	 * @note This function calls the `onShow()` virtual method before showing the view.
+	 */
 	void BaseView::show()
 	{
 		onShow();
@@ -98,6 +109,11 @@ namespace UI
 		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
 	}
 
+	/**
+	 * @brief Hides the view.
+	 *
+	 * @note This function calls the `onHide()` virtual method before hiding the view.
+	 */
 	void BaseView::hide()
 	{
 		onHide();

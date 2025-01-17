@@ -10,6 +10,8 @@ namespace UI
 	HomeView::HomeView()
 		: View("HomeView", layout_t(0, 0, 100, 100))
 		, m_sideBar("sidebar", getCont())
+		, m_mainWindow(lv_obj_create(getCont()))
+		, m_toolList("home_tool_list", m_mainWindow, layout_t(0, 0, 60, 50))
 		, tabview(lv_tabview_create(getCont()))
 		, main_tab(lv_tabview_add_tab(tabview, "Main"))
 		, macros_tab(lv_tabview_add_tab(tabview, "Macros"))
@@ -19,6 +21,10 @@ namespace UI
 		, m_btn2("button2", main_tab, _("open_sub_view"), layout_t(0, 20, 40, 10))
 		, m_list("list", macros_tab, layout_t(0, 0, 100, 50))
 	{
+		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_grow(m_mainWindow, 1);
+		lv_obj_set_height(m_mainWindow, LV_PCT(100));
+
 		lv_tabview_set_tab_bar_position(tabview, LV_DIR_LEFT);
 		lv_tabview_set_tab_bar_size(tabview, 60);
 

@@ -16,6 +16,8 @@ namespace UI
 
 		Model& getModel() { return m_model; }
 
+		virtual void refresh() {}
+
 		/* Fan methods */
 		virtual void newFanData() {}
 

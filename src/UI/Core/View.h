@@ -57,6 +57,7 @@ namespace UI
 		uint32_t getChildCnt() const;
 		layout_t getLayout();
 
+		void setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow = LV_FLEX_FLOW_ROW);
 		void setLayout(layout_t layout);
 		void setWidth(int widthPct);
 		void setHeight(int heightPct);
@@ -98,11 +99,13 @@ namespace UI
 			: BaseView(name, parent)
 			, m_presenter(this)
 		{
+			show();
 		}
 		View(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: BaseView(name, parent, layout)
 			, m_presenter(this)
 		{
+			show();
 		}
 		View(const std::string& name, layout_t layout)
 			: View(name, lv_scr_act(), layout)
@@ -119,11 +122,22 @@ namespace UI
 		void activate() { m_presenter.activate(); }
 		void deactivate() { m_presenter.deactivate(); }
 
+		/**
+		 * @brief Shows the view by activating its presenter and then showing the view itself.
+		 *
+		 * @note This function calls the `onShow()` virtual method before showing the view.
+		 */
 		void show()
 		{
 			activate();
 			BaseView::show();
 		}
+
+		/**
+		 * @brief Hides the view by deactivating its presenter and then hiding the view itself.
+		 *
+		 * @note This function calls the `onHide()` virtual method before hiding the view.
+		 */
 		void hide()
 		{
 			deactivate();

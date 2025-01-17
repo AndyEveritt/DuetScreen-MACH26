@@ -20,6 +20,7 @@
 #include "PrinterStatus.h"
 #include "Spindle.h"
 #include "Tool.h"
+#include "UI/Core/Model.h"
 #include "Utils.h"
 #include "utils/utils.h"
 
@@ -40,6 +41,8 @@ namespace OM
 		RemoveSpindle(0, true);
 		RemoveTool(0, true);
 		ClearCurrentHeightmap();
+
+		Model::get().refresh();
 	}
 
 	static Debug::DebugCommand s_logOM(

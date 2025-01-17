@@ -18,10 +18,14 @@ static inline uint32_t op_f(uint32_t val) { UNUSED(val); return 0; }
 static inline uint32_t op_t(uint32_t val) { UNUSED(val); return 0; }
 
 static lv_i18n_phrase_t en_gb_singulars[] = {
-    {"request_failed", "Request failed"},
     {"heater", "Heater: %s"},
     {"back", "Back"},
     {"open_sub_view", "Open Sub View"},
+    {"toollist_tool", "Tool"},
+    {"toollist_status", "Status"},
+    {"toollist_current", "Current"},
+    {"toollist_active", "Active"},
+    {"toollist_standby", "Standby"},
     {NULL, NULL} // End mark
 };
 

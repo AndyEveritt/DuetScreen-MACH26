@@ -45,6 +45,8 @@ class Model
 
 	/* presenter callbacks */
 
+	void refresh();
+
 	/* Fan methods */
 
 	void newFanData();

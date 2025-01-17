@@ -54,6 +54,47 @@ void Model::unlock()
 	m_mutex.unlock();
 }
 
+void Model::refresh()
+{
+	for (auto presenter : m_presenters)
+	{
+		presenter->newFanData();
+		presenter->newFileData();
+		presenter->newHeaterData();
+		presenter->newJobFileName();
+		presenter->newJobLastFileName();
+		presenter->newJobPrintTime();
+		presenter->newJobDuration();
+		presenter->newJobTimeLeft();
+		presenter->newJobWarmupDuration();
+		presenter->newJobBuild();
+		presenter->newJobCurrentObject();
+		presenter->newJobObjectData();
+		presenter->newAxesData();
+		presenter->newExtruderData();
+		presenter->newKinematicsName();
+		presenter->newSpeedFactor();
+		presenter->newWorkplaceNumber();
+		presenter->newCurrentMoveRequestedSpeed();
+		presenter->newCurrentMoveTopSpeed();
+		presenter->newCurrentMoveExtrusionSpeed();
+		presenter->newCompensationFile();
+		presenter->newResponse();
+		presenter->newAnalogSensorData();
+		presenter->newEndstopData();
+		presenter->newSpindleData();
+		presenter->newNetworkName();
+		presenter->newIpAddress();
+		presenter->newStatus();
+		presenter->newCurrentTool();
+		presenter->newMessageBoxData();
+		presenter->newTime();
+		presenter->newToolData();
+	}
+}
+
+/* Fan methods */
+
 MODEL_NOTIFICATION(newFanData)
 
 /* File methods */

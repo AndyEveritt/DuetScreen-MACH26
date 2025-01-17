@@ -3,12 +3,20 @@
         {
             "label": "C++ Header",
             "template_path": ".vscode/templates/cpp_header.h"
+        },
+        {
+            "label": "C++ Header - UI",
+            "template_path": ".vscode/templates/cpp_header_ui.h"
         }
     ],
     ".*\\.cpp": [
         {
             "label": "C++ Source",
             "template_path": ".vscode/templates/cpp_source.cpp"
+        },
+        {
+            "label": "C++ Source - UI",
+            "template_path": ".vscode/templates/cpp_source_ui.cpp"
         }
     ]
 }
