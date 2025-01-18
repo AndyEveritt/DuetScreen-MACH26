@@ -3,6 +3,7 @@
 #include "HomePresenter.h"
 #include "UI/Components/Button.h"
 #include "UI/Components/List.h"
+#include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Components/SideBar.h"
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
@@ -30,6 +31,7 @@ namespace UI
 		SideBar m_sideBar;
 		lv_obj_t* m_mainWindow;
 		ToolList m_toolList;
+		NumberPad m_numberPad;
 
 		// Experimental
 		lv_obj_t* tabview;

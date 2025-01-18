@@ -126,12 +126,21 @@ namespace UI
 		, m_headerCurrent(lv_label_create(m_header))
 		, m_headerActive(lv_label_create(m_header))
 		, m_headerStandby(lv_label_create(m_header))
+		, m_list(lv_obj_create(getCont()))
 	{
 		Lock lock;
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_style_pad_row(getCont(), 0, 0);
+		// lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
+		lv_obj_remove_flag(m_header, LV_OBJ_FLAG_SCROLLABLE);
+		lv_obj_add_flag(m_list, LV_OBJ_FLAG_SCROLLABLE);
+
+		lv_obj_set_flex_flow(m_list, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_style_pad_row(m_list, 0, 0);
+		lv_obj_set_style_pad_all(m_list, 0, 0);
 
 		lv_obj_set_size(m_header, LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_size(m_list, LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_flex_flow(m_header, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_grow(m_headerTool, 4);
 		lv_obj_set_flex_grow(m_headerStatus, 3);
@@ -162,7 +171,7 @@ namespace UI
 		for (size_t i = currentCnt; i < cnt; i++)
 		{
 			m_items.emplace_back(std::make_shared<ToolListItem>(
-				utils::format("%s_%u", getName(), i).c_str(), getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+				utils::format("%s_%u", getName(), i).c_str(), m_list, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
 		}
 	}
 

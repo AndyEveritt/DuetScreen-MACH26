@@ -57,6 +57,7 @@ namespace UI
 		lv_obj_t* m_headerCurrent;
 		lv_obj_t* m_headerActive;
 		lv_obj_t* m_headerStandby;
+		lv_obj_t* m_list;
 		std::vector<std::shared_ptr<ToolListItem>> m_items;
 	};
 } // namespace UI

@@ -12,6 +12,7 @@ namespace UI
 		, m_sideBar("sidebar", getCont())
 		, m_mainWindow(lv_obj_create(getCont()))
 		, m_toolList("home_tool_list", m_mainWindow, layout_t(0, 0, 60, 50))
+		, m_numberPad("home_number_pad", m_mainWindow, layout_t(60, 0, 40, 100))
 		, tabview(lv_tabview_create(getCont()))
 		, main_tab(lv_tabview_add_tab(tabview, "Main"))
 		, macros_tab(lv_tabview_add_tab(tabview, "Macros"))
