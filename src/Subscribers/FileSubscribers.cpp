@@ -95,6 +95,11 @@ bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	if (decoder && decoder->GetSeq() != nullptr)
+	{
+		// There is a key collision with `M409 K"boards" F"v"`, so we need to check if the key is part of an OM request
+		return true;
+	}
 	info("Files: next index = %d", data);
 	if (data == 0)
 		return true;

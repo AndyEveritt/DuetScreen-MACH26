@@ -70,6 +70,7 @@ namespace Comm
 		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
 		bool SetPrefix(const char* prefix) { return m_fieldPrefix.copy(prefix); }
+		const Seq* GetSeq() const { return m_seq; }
 
 		// These variables are used for the
 		ResponseType responseType = ResponseType::unknown;
