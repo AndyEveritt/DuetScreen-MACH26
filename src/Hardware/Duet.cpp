@@ -948,13 +948,7 @@ namespace Comm
 
 	void Duet::SetIPAddress(const std::string& ipAddress)
 	{
-		if (m_config.communicationType == CommunicationType::network)
-			Disconnect();
-
 		m_config.ipAddress = ipAddress;
-
-		if (m_config.communicationType == CommunicationType::network)
-			Connect();
 		saveConfig();
 	}
 

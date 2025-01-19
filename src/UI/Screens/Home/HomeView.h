@@ -32,15 +32,5 @@ namespace UI
 		lv_obj_t* m_mainWindow;
 		ToolList m_toolList;
 		NumberPad m_numberPad;
-
-		// Experimental
-		lv_obj_t* tabview;
-		lv_obj_t* main_tab;
-		lv_obj_t* macros_tab;
-		lv_obj_t* m_label;
-		SubView m_subView;
-		Button m_btn;
-		Button m_btn2;
-		DynamicList m_list;
 	};
 } // namespace UI

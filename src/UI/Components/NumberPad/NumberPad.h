@@ -22,11 +22,6 @@ namespace UI
 	  private:
 		static void btnmEventHandler(lv_event_t* e);
 
-		lv_obj_t* m_headerCont;
-		lv_obj_t* m_header;
-		Button m_closeBtn;
-
-		lv_obj_t* m_bodyCont;
 		lv_obj_t* m_textCont;
 		lv_obj_t* m_textArea;
 		Button m_clearBtn;

@@ -13,78 +13,9 @@ namespace UI
 		, m_mainWindow(lv_obj_create(getCont()))
 		, m_toolList("home_tool_list", m_mainWindow, layout_t(0, 0, 60, 50))
 		, m_numberPad("home_number_pad", m_mainWindow, layout_t(60, 0, 40, 100))
-		, tabview(lv_tabview_create(getCont()))
-		, main_tab(lv_tabview_add_tab(tabview, "Main"))
-		, macros_tab(lv_tabview_add_tab(tabview, "Macros"))
-		, m_label(lv_label_create(main_tab))
-		, m_subView(main_tab)
-		, m_btn("button", main_tab, _("back"), layout_t(0, 10, 20, 10))
-		, m_btn2("button2", main_tab, _("open_sub_view"), layout_t(0, 20, 40, 10))
-		, m_list("list", macros_tab, layout_t(0, 0, 100, 50))
 	{
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_grow(m_mainWindow, 1);
 		lv_obj_set_height(m_mainWindow, LV_PCT(100));
-
-		lv_tabview_set_tab_bar_position(tabview, LV_DIR_LEFT);
-		lv_tabview_set_tab_bar_size(tabview, 60);
-
-		lv_obj_get_style_pad_bottom(m_btn.getCont(), LV_PART_MAIN);
-
-		m_btn.setCallback(btnCallback, LV_EVENT_CLICKED, this);
-		m_btn2.setCallback(btn2Callback, LV_EVENT_CLICKED, this);
-
-		layout_t layout = m_btn.getLayout();
-		m_list.setItemCnt(2);
-
-		m_subView.hide();
-
-		lv_obj_add_flag(tabview, LV_OBJ_FLAG_HIDDEN);
-
-		lv_obj_set_style_border_width(m_btn.getCont(), 0, 0);
-
-		// lv_obj_set_size(m_btn.getCont(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	}
-
-	void HomeView::setHeaterData(const char* data)
-	{
-		Lock lock;
-		lv_label_set_text(m_label, utils::format(_("heater"), data).c_str());
-
-		static bool add = true;
-		size_t btnCnt = m_list.getItemCnt();
-		if (btnCnt <= 0)
-		{
-			add = true;
-		}
-		if (btnCnt >= 20)
-		{
-			add = false;
-		}
-		m_list.setItemCnt(m_list.getItemCnt() + (add ? 1 : -1));
-	}
-
-	void HomeView::openSubView()
-	{
-		UI::openScreen(&m_subView);
-	}
-
-	void HomeView::btnCallback(lv_event_t* e)
-	{
-		lv_obj_t* obj = static_cast<lv_obj_t*>(lv_event_get_target(e));
-		HomeView* view = static_cast<HomeView*>(lv_event_get_user_data(e));
-
-		Button* btn = static_cast<Button*>(lv_obj_get_user_data(obj));
-		verbose("Button '%s' clicked", btn->getName());
-
-		UI::back();
-	}
-
-	void HomeView::btn2Callback(lv_event_t* e)
-	{
-		lv_obj_t* obj = static_cast<lv_obj_t*>(lv_event_get_target(e));
-		HomeView* view = static_cast<HomeView*>(lv_event_get_user_data(e));
-
-		view->openSubView();
 	}
 } // namespace UI
