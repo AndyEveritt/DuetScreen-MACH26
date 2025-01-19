@@ -23,6 +23,7 @@ namespace UI
 	{
 
 	  public:
+		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout);
 		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config);
 
 		void clear();
@@ -38,6 +39,7 @@ namespace UI
 		void setConfirmCallback(lv_event_cb_t eventCb, void* userData);
 
 	  private:
+		static void clearBtnEventHandler(lv_event_t* e);
 		static void btnmEventHandler(lv_event_t* e);
 
 		lv_obj_t* m_textCont;
@@ -45,7 +47,7 @@ namespace UI
 		Button m_clearBtn;
 		lv_obj_t* m_btnMatrix;
 
-		int16_t m_minValue;
-		int16_t m_maxValue;
+		int16_t m_minValue = INT16_MIN;
+		int16_t m_maxValue = INT16_MAX;
 	};
 } // namespace UI

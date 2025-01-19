@@ -15,7 +15,7 @@ namespace UI
 	static const char* btnm_map[] = {
 		"1", "2", "3", "\n", "4", "5", "6", "\n", "7", "8", "9", "\n", LV_SYMBOL_BACKSPACE, "0", LV_SYMBOL_OK, ""};
 
-	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config)
+	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: BaseView(name, parent, layout)
 		, m_textCont(lv_obj_create(getCont()))
 		, m_textArea(lv_textarea_create(m_textCont))
@@ -51,6 +51,13 @@ namespace UI
 
 		lv_obj_set_user_data(m_textArea, this);
 
+		m_clearBtn.setCallback(clearBtnEventHandler, LV_EVENT_PRESSED, this);
+
+		validateInput();
+	}
+	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config)
+		: NumberPad(name, parent, layout)
+	{
 		// Configure
 		setMinValue(config.minValue);
 		setMaxValue(config.maxValue);
@@ -59,7 +66,10 @@ namespace UI
 
 	void NumberPad::clear()
 	{
-		lv_textarea_set_text(m_textArea, "");
+		{
+			Lock lock;
+			lv_textarea_set_text(m_textArea, "");
+		}
 		validateInput();
 	}
 
@@ -72,6 +82,7 @@ namespace UI
 	{
 		if (validateInput())
 		{
+			Lock lock;
 			// Call the confirm callback
 			lv_obj_send_event(m_textArea, LV_EVENT_READY, this);
 			// close();
@@ -92,18 +103,22 @@ namespace UI
 
 	void NumberPad::setValue(int16_t value)
 	{
-		lv_textarea_set_text(m_textArea, std::to_string(value).c_str());
+		{
+			Lock lock;
+			lv_textarea_set_text(m_textArea, std::to_string(value).c_str());
+		}
 		validateInput();
 	}
 
 	int16_t NumberPad::getValue() const
 	{
+		Lock lock;
 		return atoi(lv_textarea_get_text(m_textArea));
-		return std::stoi(lv_textarea_get_text(m_textArea));
 	}
 
 	bool NumberPad::validateInput() const
 	{
+		Lock lock;
 		int16_t value = getValue();
 		if (value < m_minValue || value > m_maxValue)
 		{
@@ -119,12 +134,20 @@ namespace UI
 
 	void NumberPad::setValueChangedCallback(lv_event_cb_t eventCb, void* userData)
 	{
+		Lock lock;
 		lv_obj_add_event_cb(m_textArea, eventCb, LV_EVENT_VALUE_CHANGED, userData);
 	}
 
 	void NumberPad::setConfirmCallback(lv_event_cb_t eventCb, void* userData)
 	{
+		Lock lock;
 		lv_obj_add_event_cb(m_textArea, eventCb, LV_EVENT_READY, userData);
+	}
+
+	void NumberPad::clearBtnEventHandler(lv_event_t* e)
+	{
+		NumberPad* np = (NumberPad*)lv_event_get_user_data(e);
+		np->clear();
 	}
 
 	void NumberPad::btnmEventHandler(lv_event_t* e)

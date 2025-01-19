@@ -11,8 +11,9 @@
 
 namespace UI
 {
-	ToolListItem::ToolListItem(const std::string& name, lv_obj_t* parent, layout_t layout)
+	ToolListItem::ToolListItem(ToolList& toolList, const std::string& name, lv_obj_t* parent, layout_t layout)
 		: View<ToolListItemPresenter>(name, parent, layout)
+		, m_toolList(toolList)
 		, m_label(lv_label_create(getCont()))
 		, m_icon(nullptr)
 		, m_status(lv_label_create(getCont()))
@@ -31,6 +32,11 @@ namespace UI
 
 		lv_obj_add_flag(m_activeTemp, LV_OBJ_FLAG_CLICKABLE);
 		lv_obj_add_event_cb(m_activeTemp, activeTempEvent, LV_EVENT_PRESSED, this);
+	}
+
+	uint8_t ToolListItem::getSlotIndex() const
+	{
+		return (uint8_t)m_presenter.getSlotIndex();
 	}
 
 	void ToolListItem::setSlotIndex(uint8_t index)
@@ -113,9 +119,15 @@ namespace UI
 	void ToolListItem::activeTempEvent(lv_event_t* e)
 	{
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
-		// TODO open a dialog to set the active temp
-		int32_t value = 10;
-		view->m_presenter.setActiveTemp(value);
+		if (!view->m_presenter.configureNumberPad())
+		{
+			warn("Failed to configure number pad");
+			view->getToolList().hideNumberPad();
+			return;
+		}
+		view->getToolList().showNumberPad(*view);
+
+		// view->m_presenter.setActiveTemp(value);
 	}
 
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent, layout_t layout)
@@ -127,6 +139,7 @@ namespace UI
 		, m_headerActive(lv_label_create(m_header))
 		, m_headerStandby(lv_label_create(m_header))
 		, m_list(lv_obj_create(getCont()))
+		, m_numberPad("tool_list_number_pad", lv_screen_active(), layout_t(65, 0, 35, 100))
 	{
 		Lock lock;
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);
@@ -153,6 +166,8 @@ namespace UI
 		lv_label_set_text(m_headerCurrent, _("toollist_current"));
 		lv_label_set_text(m_headerActive, _("toollist_active"));
 		lv_label_set_text(m_headerStandby, _("toollist_standby"));
+
+		m_numberPad.show();
 	}
 
 	void ToolList::setItemCnt(size_t cnt)
@@ -171,7 +186,7 @@ namespace UI
 		for (size_t i = currentCnt; i < cnt; i++)
 		{
 			m_items.emplace_back(std::make_shared<ToolListItem>(
-				utils::format("%s_%u", getName(), i).c_str(), m_list, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+				*this, utils::format("%s_%u", getName(), i).c_str(), m_list, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
 		}
 	}
 
@@ -187,6 +202,12 @@ namespace UI
 			return nullptr;
 		}
 		return m_items.at(index);
+	}
+
+	void ToolList::showNumberPad(const ToolListItem& item)
+	{
+		Lock lock;
+		m_numberPad.show();
 	}
 
 } // namespace UI

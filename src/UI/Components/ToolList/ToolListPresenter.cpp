@@ -16,6 +16,11 @@
 
 namespace UI
 {
+	int8_t ToolListItemPresenter::getSlotIndex() const
+	{
+		return m_slotIndex;
+	}
+
 	void ToolListItemPresenter::setSlotIndex(int8_t index)
 	{
 		if (index >= MAX_SLOTS)
@@ -35,10 +40,10 @@ namespace UI
 		}
 
 		uint8_t count = 0;
-		OM::Tool* tool = nullptr;
 		uint8_t tHeaterIndex = 0;
-		OM::ToolHeater* tHeater = nullptr;
-		OM::Spindle* spindle = nullptr;
+		m_tool = nullptr;
+		m_tHeater = nullptr;
+		m_spindle = nullptr;
 
 		OM::IterateToolsWhile(
 			[&](OM::Tool*& toolIter, size_t)
@@ -48,9 +53,9 @@ namespace UI
 
 				if (m_slotIndex < count + toolIter->GetHeaterCount())
 				{
-					tool = toolIter;
+					m_tool = toolIter;
 					tHeaterIndex = m_slotIndex - count;
-					tHeater = tool->GetHeater(tHeaterIndex);
+					m_tHeater = m_tool->GetHeater(tHeaterIndex);
 					return false;
 				}
 				count += toolIter->GetHeaterCount();
@@ -58,8 +63,8 @@ namespace UI
 				// Check if it is a spindle
 				if (m_slotIndex < count + (hasSpindle ? 1u : 0u))
 				{
-					tool = toolIter;
-					spindle = toolIter->spindle;
+					m_tool = toolIter;
+					m_spindle = toolIter->spindle;
 					return false;
 				}
 				count += (hasSpindle ? 1u : 0u);
@@ -68,47 +73,57 @@ namespace UI
 				count += (!hasHeater && !hasSpindle) ? 1u : 0u;
 				if (m_slotIndex < count)
 				{
-					tool = toolIter;
+					m_tool = toolIter;
 					return false;
 				}
 				return true;
 			});
 
-		if (tool != nullptr)
+		if (m_tool != nullptr)
 		{
-			updateView(tool, tHeater, tHeaterIndex, spindle);
+			m_slotType = SlotType::Tool;
+			updateView(m_tool, m_tHeater, tHeaterIndex, m_spindle);
 			return;
 		}
 
 		int8_t bedOrChamberIndex = m_slotIndex - count;
-		OM::BedOrChamber* bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
+		m_bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
 		OM::Heat::Heater* heater;
-		if (bedOrChamber != nullptr)
+		if (m_bedOrChamber != nullptr)
 		{
-			heater = OM::Heat::GetHeater(bedOrChamber->heater);
+			m_slotType = SlotType::Bed;
+			heater = OM::Heat::GetHeater(m_bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				warn("List index %d: Bed %d heater %d is null", m_slotIndex, bedOrChamber->index, bedOrChamber->heater);
+				warn("List index %d: Bed %d heater %d is null",
+					 m_slotIndex,
+					 m_bedOrChamber->index,
+					 m_bedOrChamber->heater);
 				return;
 			}
-			updateView(bedOrChamber, heater, true);
+			updateView(m_bedOrChamber, heater, true);
 			return;
 		}
 
 		bedOrChamberIndex -= OM::GetBedCount();
-		bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
-		if (bedOrChamber != nullptr)
+		m_bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
+		if (m_bedOrChamber != nullptr)
 		{
-			heater = OM::Heat::GetHeater(bedOrChamber->heater);
+			m_slotType = SlotType::Chamber;
+			heater = OM::Heat::GetHeater(m_bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				warn("List index %d: Bed %d heater %d is null", m_slotIndex, bedOrChamber->index, bedOrChamber->heater);
+				warn("List index %d: Bed %d heater %d is null",
+					 m_slotIndex,
+					 m_bedOrChamber->index,
+					 m_bedOrChamber->heater);
 				return;
 			}
-			updateView(bedOrChamber, heater, false);
+			updateView(m_bedOrChamber, heater, false);
 			return;
 		}
 		warn("Unknown index");
+		m_slotType = SlotType::Unknown;
 	}
 
 	bool ToolListItemPresenter::updateView(const OM::Tool* tool,
@@ -212,6 +227,47 @@ namespace UI
 
 		// TODO need to set the tool heater index
 		tool->SetHeaterTemps(0, value, true);
+	}
+
+	bool ToolListItemPresenter::configureNumberPad()
+	{
+		NumberPad& np = m_view->getToolList().m_numberPad;
+		OM::Heat::Heater* heater = nullptr;
+
+		switch (m_slotType)
+		{
+		case SlotType::Tool:
+		{
+			if (m_tHeater == nullptr)
+			{
+				warn("Tool heater is null");
+				return false;
+			}
+
+			heater = m_tHeater->heater;
+			break;
+		}
+		case SlotType::Bed:
+		case SlotType::Chamber:
+		{
+			if (m_bedOrChamber == nullptr)
+			{
+				warn("BedOrChamber is null");
+				return false;
+			}
+
+			heater = OM::Heat::GetHeater(m_bedOrChamber->heater);
+			break;
+		}
+		}
+		if (heater == nullptr)
+		{
+			warn("Heater is null");
+			return false;
+		}
+		np.setMinValue(heater->min);
+		np.setMaxValue(heater->max);
+		return true;
 	}
 
 	void ToolListPresenter::newToolData()

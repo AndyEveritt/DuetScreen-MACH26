@@ -29,6 +29,15 @@ namespace UI
 	class BaseView
 	{
 	  public:
+		BaseView(const std::string& name, BaseView* parent)
+			: BaseView(name, parent->getCont())
+		{
+		}
+		BaseView(const std::string& name, BaseView* parent, layout_t layout)
+			: BaseView(name, parent->getCont(), layout)
+		{
+		}
+
 		BaseView(const std::string& name, lv_obj_t* parent);
 
 		BaseView(const std::string& name, lv_obj_t* parent, layout_t layout)
@@ -95,6 +104,19 @@ namespace UI
 		static_assert(std::is_base_of<BasePresenter, T>::value, "T must derive from Presenter");
 
 	  public:
+		View(const std::string& name, BaseView* parent)
+			: BaseView(name, parent)
+			, m_presenter(this)
+		{
+			show();
+		}
+		View(const std::string& name, BaseView* parent, layout_t layout)
+			: BaseView(name, parent, layout)
+			, m_presenter(this)
+		{
+			show();
+		}
+
 		View(const std::string& name, lv_obj_t* parent)
 			: BaseView(name, parent)
 			, m_presenter(this)
@@ -108,7 +130,7 @@ namespace UI
 			show();
 		}
 		View(const std::string& name, layout_t layout)
-			: View(name, lv_scr_act(), layout)
+			: View(name, lv_screen_active(), layout)
 		{
 		}
 

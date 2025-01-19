@@ -23,6 +23,7 @@ namespace UI
 	  public:
 		using Presenter::Presenter;
 
+		int8_t getSlotIndex() const;
 		void setSlotIndex(int8_t index);
 
 		void newToolData() override;
@@ -30,6 +31,7 @@ namespace UI
 		// Callbacks
 
 		void setActiveTemp(int32_t value);
+		bool configureNumberPad();
 
 	  private:
 		bool updateView(const OM::Tool* tool,
@@ -39,6 +41,19 @@ namespace UI
 		bool updateView(const OM::BedOrChamber* bedOrChamber, const OM::Heat::Heater* heater, const bool bed);
 
 		int8_t m_slotIndex = -1;
+
+		enum class SlotType
+		{
+			Tool,
+			Bed,
+			Chamber,
+			Unknown
+		} m_slotType = SlotType::Unknown;
+
+		OM::Tool* m_tool = nullptr;
+		OM::ToolHeater* m_tHeater = nullptr;
+		OM::Spindle* m_spindle = nullptr;
+		OM::BedOrChamber* m_bedOrChamber = nullptr;
 	};
 
 	class ToolListPresenter : public Presenter<ToolList>

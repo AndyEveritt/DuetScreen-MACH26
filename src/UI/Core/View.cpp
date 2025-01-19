@@ -12,38 +12,45 @@ namespace UI
 		: m_cont(lv_obj_create(parent))
 		, m_name(name)
 	{
+		Lock lock;
 		verbose("Creating view '%s' (%p)", getName(), m_cont);
 		lv_obj_set_style_pad_all(getCont(), 5, 0);
 	}
 
 	BaseView::~BaseView()
 	{
+		Lock lock;
 		verbose("Deleting view '%s' (%p)", getName(), m_cont);
 		lv_obj_delete(getCont());
 	}
 
 	lv_obj_t* BaseView::getScreen() const
 	{
+		Lock lock;
 		return lv_obj_get_screen(getCont());
 	}
 
 	lv_obj_t* BaseView::getParent() const
 	{
+		Lock lock;
 		return lv_obj_get_parent(getCont());
 	}
 
 	lv_obj_t* BaseView::getChild(int32_t id) const
 	{
+		Lock lock;
 		return lv_obj_get_child(getCont(), id);
 	}
 
 	uint32_t BaseView::getChildCnt() const
 	{
+		Lock lock;
 		return lv_obj_get_child_count(getCont());
 	}
 
 	layout_t BaseView::getLayout()
 	{
+		Lock lock;
 		layout_t layout;
 		lv_coord_t x = lv_obj_get_x(getCont());
 		lv_coord_t y = lv_obj_get_y(getCont());
@@ -62,38 +69,45 @@ namespace UI
 
 	void BaseView::setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow)
 	{
+		Lock lock;
 		lv_obj_set_layout(getCont(), style);
 		lv_obj_set_flex_flow(getCont(), flow);
 	}
 
 	void BaseView::setLayout(layout_t layout)
 	{
+		Lock lock;
 		lv_obj_set_pos(getCont(), lv_pct(layout.x), lv_pct(layout.y));
 		lv_obj_set_size(getCont(), lv_pct(layout.w), lv_pct(layout.h));
 	}
 
 	void BaseView::setWidth(int widthPct)
 	{
+		Lock lock;
 		lv_obj_set_width(getCont(), lv_pct(widthPct));
 	}
 
 	void BaseView::setHeight(int heightPct)
 	{
+		Lock lock;
 		lv_obj_set_height(getCont(), lv_pct(heightPct));
 	}
 
 	void BaseView::setX(int xPct)
 	{
+		Lock lock;
 		lv_obj_set_x(getCont(), lv_pct(xPct));
 	}
 
 	void BaseView::setY(int yPct)
 	{
+		Lock lock;
 		lv_obj_set_y(getCont(), lv_pct(yPct));
 	}
 
 	void BaseView::setStyle(lv_style_t* style, lv_style_selector_t selector)
 	{
+		Lock lock;
 		lv_obj_add_style(getCont(), style, selector);
 	}
 
@@ -104,6 +118,7 @@ namespace UI
 	 */
 	void BaseView::show()
 	{
+		Lock lock;
 		onShow();
 		lv_obj_move_foreground(getCont());
 		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
@@ -116,6 +131,7 @@ namespace UI
 	 */
 	void BaseView::hide()
 	{
+		Lock lock;
 		onHide();
 		lv_obj_move_background(getCont());
 		lv_obj_add_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
@@ -123,6 +139,7 @@ namespace UI
 
 	bool BaseView::isVisible()
 	{
+		Lock lock;
 		return !lv_obj_has_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
 	}
 
