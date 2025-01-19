@@ -1,9 +1,9 @@
 /*
- * {{file_name_pascal_case}}.cpp
+ * {{file_name_with_ext}}
  *
  *  Created on: {{date}}
  *      Author: {{author}}
  */
 
 #include "Debug.h"
-#include "{{file_name_pascal_case}}.h"
+#include "{{file_name}}.h"

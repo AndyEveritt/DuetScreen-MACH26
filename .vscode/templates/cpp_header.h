@@ -1,5 +1,5 @@
 /*
- * {{file_name_pascal_case}}.h
+ * {{file_name_with_ext}}
  *
  *  Created on: {{date}}
  *      Author: {{author}}
