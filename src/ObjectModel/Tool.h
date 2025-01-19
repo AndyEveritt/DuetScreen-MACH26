@@ -49,6 +49,7 @@ namespace OM
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<ToolHeater>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<ToolHeater>(p); }
 
+		uint8_t index;
 		int32_t activeTemp;
 		int32_t standbyTemp;
 		Heat::Heater* heater;

@@ -85,7 +85,7 @@ namespace UI
 			Lock lock;
 			// Call the confirm callback
 			lv_obj_send_event(m_textArea, LV_EVENT_READY, this);
-			// close();
+			close();
 		}
 	}
 

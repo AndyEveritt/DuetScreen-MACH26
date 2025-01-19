@@ -12,6 +12,7 @@
 #include "ObjectModel/Spindle.h"
 #include "ObjectModel/Tool.h"
 #include "UI/Core/Presenter.h"
+#include "lvgl/lvgl.h"
 
 namespace UI
 {
@@ -28,12 +29,12 @@ namespace UI
 
 		void newToolData() override;
 
-		// Callbacks
-
 		void setActiveTemp(int32_t value);
 		bool configureNumberPad();
 
 	  private:
+		static void numberPadConfirmCallback(lv_event_t* e);
+
 		bool updateView(const OM::Tool* tool,
 						const OM::ToolHeater* tHeater,
 						const uint8_t tHeaterIndex,

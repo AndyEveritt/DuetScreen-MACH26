@@ -218,15 +218,45 @@ namespace UI
 			warn("Tool index not set");
 			return;
 		}
-		OM::Tool* tool = OM::GetTool(m_slotIndex);
-		if (tool == nullptr)
+		switch (m_slotType)
 		{
-			error("Tool %u not found", m_slotIndex);
-			return;
-		}
+		case SlotType::Tool:
+		{
+			if (m_tool == nullptr)
+			{
+				error("Tool is null");
+				return;
+			}
+			if (m_tHeater == nullptr)
+			{
+				error("Tool heater is null");
+				return;
+			}
 
-		// TODO need to set the tool heater index
-		tool->SetHeaterTemps(0, value, true);
+			m_tool->SetHeaterTemps(m_tHeater->index, value, true);
+			break;
+		}
+		case SlotType::Bed:
+		{
+			if (m_bedOrChamber == nullptr)
+			{
+				error("BedOrChamber is null");
+				return;
+			}
+			m_bedOrChamber->SetBedTemp(value, true);
+			break;
+		}
+		case SlotType::Chamber:
+		{
+			if (m_bedOrChamber == nullptr)
+			{
+				error("BedOrChamber is null");
+				return;
+			}
+			m_bedOrChamber->SetChamberTemp(value, true);
+			break;
+		}
+		}
 	}
 
 	bool ToolListItemPresenter::configureNumberPad()
@@ -267,7 +297,20 @@ namespace UI
 		}
 		np.setMinValue(heater->min);
 		np.setMaxValue(heater->max);
+		np.setConfirmCallback(numberPadConfirmCallback, this);
 		return true;
+	}
+
+	void ToolListItemPresenter::numberPadConfirmCallback(lv_event_t* e)
+	{
+		ToolListItemPresenter* presenter = (ToolListItemPresenter*)lv_event_get_user_data(e);
+		NumberPad* np = (NumberPad*)lv_event_get_param(e);
+		if (presenter == nullptr)
+		{
+			error("Presenter is null");
+			return;
+		}
+		presenter->setActiveTemp(np->getValue());
 	}
 
 	void ToolListPresenter::newToolData()

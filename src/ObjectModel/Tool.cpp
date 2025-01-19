@@ -25,6 +25,7 @@ namespace OM
 
 	void ToolHeater::Reset()
 	{
+		index = 0;
 		activeTemp = 0;
 		standbyTemp = 0;
 	}
@@ -52,14 +53,18 @@ namespace OM
 
 	ToolHeater* Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
 	{
-		ToolHeater* toolHeater = GetHeater(toolHeaterIndex);
-		if (toolHeater != nullptr && toolHeater->heater->index == heaterIndex)
+		ToolHeater* th = GetHeater(toolHeaterIndex);
+		if (th != nullptr && th->heater->index == heaterIndex)
 		{
-			return toolHeater;
+			return th;
 		}
-		ToolHeater* th = new ToolHeater;
+		if (th == nullptr)
+		{
+			th = new ToolHeater;
+		}
 		th->Reset();
 		Heat::Heater* heater = Heat::GetOrCreateHeater(heaterIndex);
+		th->index = toolHeaterIndex;
 		th->heater = heater;
 		dbg("Setting tool %d heater %d=%d", index, toolHeaterIndex, heaterIndex);
 		heaters[toolHeaterIndex] = th;
