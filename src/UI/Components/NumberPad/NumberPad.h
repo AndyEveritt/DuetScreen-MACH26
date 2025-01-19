@@ -13,11 +13,29 @@
 
 namespace UI
 {
+	struct NumberPadConfig
+	{
+		int16_t minValue;
+		int16_t maxValue;
+	};
+
 	class NumberPad : public BaseView
 	{
 
 	  public:
-		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout);
+		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config);
+
+		void clear();
+		void close();
+		void confirm();
+		void setMinValue(int16_t value);
+		void setMaxValue(int16_t value);
+		void setValue(int16_t value);
+		int16_t getValue() const;
+		bool validateInput() const;
+
+		void setValueChangedCallback(lv_event_cb_t eventCb, void* userData);
+		void setConfirmCallback(lv_event_cb_t eventCb, void* userData);
 
 	  private:
 		static void btnmEventHandler(lv_event_t* e);
@@ -26,5 +44,8 @@ namespace UI
 		lv_obj_t* m_textArea;
 		Button m_clearBtn;
 		lv_obj_t* m_btnMatrix;
+
+		int16_t m_minValue;
+		int16_t m_maxValue;
 	};
 } // namespace UI
