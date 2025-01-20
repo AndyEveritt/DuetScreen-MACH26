@@ -31,8 +31,14 @@ namespace UI
 		lv_obj_set_flex_grow(m_activeTemp, 2);
 		lv_obj_set_flex_grow(m_standbyTemp, 2);
 
+		lv_obj_add_flag(m_label, LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_flag(m_status, LV_OBJ_FLAG_CLICKABLE);
 		lv_obj_add_flag(m_activeTemp, LV_OBJ_FLAG_CLICKABLE);
-		lv_obj_add_event_cb(m_activeTemp, activeTempEvent, LV_EVENT_PRESSED, this);
+		lv_obj_add_flag(m_standbyTemp, LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_event_cb(m_label, onNameEvent, LV_EVENT_PRESSED, this);
+		lv_obj_add_event_cb(m_status, onStatusEvent, LV_EVENT_PRESSED, this);
+		lv_obj_add_event_cb(m_activeTemp, onActiveStandbyEvent, LV_EVENT_PRESSED, this);
+		lv_obj_add_event_cb(m_standbyTemp, onActiveStandbyEvent, LV_EVENT_PRESSED, this);
 	}
 
 	uint8_t ToolListItem::getSlotIndex() const
@@ -117,18 +123,57 @@ namespace UI
 		}
 	}
 
-	void ToolListItem::activeTempEvent(lv_event_t* e)
+	void ToolListItem::onNameEvent(lv_event_t* e)
 	{
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
-		if (!view->m_presenter.configureNumberPad())
+		view->m_presenter.toggleState();
+	}
+
+	void ToolListItem::onStatusEvent(lv_event_t* e)
+	{
+		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
+		view->m_presenter.toggleSubState();
+	}
+
+	void ToolListItem::onActiveStandbyEvent(lv_event_t* e)
+	{
+		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
+		lv_obj_t* obj = lv_event_get_target_obj(e);
+
+		if (!view->m_presenter.configureNumberPad(obj == view->m_activeTemp))
 		{
 			warn("Failed to configure number pad");
 			view->getToolList().hideNumberPad();
 			return;
 		}
 		view->getToolList().showNumberPad(*view);
+	}
 
-		// view->m_presenter.setActiveTemp(value);
+	ToolListNumPad::ToolListNumPad(const std::string& name, lv_obj_t* parent, layout_t layout)
+		: BaseView(name, parent, layout)
+		, m_header(lv_label_create(getCont()))
+		, m_numberPad("tool_list_number_pad", getCont(), layout_t(0, 0, 100, 100))
+	{
+		Lock lock;
+
+		// Layout
+		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_grow(m_header, 0);
+		lv_obj_set_flex_grow(m_numberPad.getCont(), 1);
+		lv_obj_set_width(m_header, LV_PCT(100));
+
+		// Header
+		lv_label_set_text(m_header, "");
+
+		// Number Pad
+		m_numberPad.setCloseOnConfirm(false);
+		m_numberPad.setValue(0);
+	}
+
+	bool ToolListNumPad::back()
+	{
+		closeScreen(this, false);
+		return true;
 	}
 
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent, layout_t layout)
@@ -167,6 +212,8 @@ namespace UI
 		lv_label_set_text(m_headerCurrent, _("toollist_current"));
 		lv_label_set_text(m_headerActive, _("toollist_active"));
 		lv_label_set_text(m_headerStandby, _("toollist_standby"));
+
+		// Number Pad
 
 		m_numberPad.hide();
 	}
@@ -208,6 +255,7 @@ namespace UI
 	void ToolList::showNumberPad(const ToolListItem& item)
 	{
 		Lock lock;
+		m_numberPad.clear();
 		openScreen(&m_numberPad, false);
 		// m_numberPad.show();
 	}

@@ -17,20 +17,12 @@ namespace UI
 	  public:
 		HomeView();
 
-		void setHeaterData(const char* data);
-
-		void openSubView();
-
 	  private:
 		virtual void onShow() {}
-		virtual void onHide() {}
-
-		static void btnCallback(lv_event_t* e);
-		static void btn2Callback(lv_event_t* e);
+		virtual void onHide();
 
 		SideBar m_sideBar;
 		lv_obj_t* m_mainWindow;
 		ToolList m_toolList;
-		NumberPad m_numberPad;
 	};
 } // namespace UI

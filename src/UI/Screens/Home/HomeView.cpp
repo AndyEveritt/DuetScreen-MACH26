@@ -12,20 +12,18 @@ namespace UI
 		, m_sideBar("sidebar", getCont())
 		, m_mainWindow(lv_obj_create(getCont()))
 		, m_toolList("home_tool_list", m_mainWindow, layout_t(0, 0, 60, 50))
-		, m_numberPad("home_number_pad", m_mainWindow, layout_t(60, 0, 40, 100))
 	{
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_grow(m_mainWindow, 1);
 		lv_obj_set_height(m_mainWindow, LV_PCT(100));
 
-		m_numberPad.setConfirmCallback(btnCallback, this);
-		m_numberPad.hide();
-		// m_toolList.showNumPad(true);
+		addHomeScreen(this);
 	}
 
-	void HomeView::btnCallback(lv_event_t* e)
+	void HomeView::onHide()
 	{
-		NumberPad* np = (NumberPad*)lv_event_get_param(e);
-		verbose("Button clicked");
+		// Clear the tool list
+		m_toolList.setItemCnt(0);
+		m_toolList.hideNumberPad();
 	}
 } // namespace UI

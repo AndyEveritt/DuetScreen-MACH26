@@ -28,9 +28,14 @@ namespace UI
 		void setSlotIndex(int8_t index);
 
 		void newToolData() override;
+		void newHeaterData() override;
 
-		void setActiveTemp(int32_t value);
-		bool configureNumberPad();
+		void update();
+
+		void setTemp(int32_t value);
+		bool configureNumberPad(const bool active);
+		void toggleState();
+		void toggleSubState();
 
 	  private:
 		static void numberPadConfirmCallback(lv_event_t* e);
@@ -55,6 +60,8 @@ namespace UI
 		OM::ToolHeater* m_tHeater = nullptr;
 		OM::Spindle* m_spindle = nullptr;
 		OM::BedOrChamber* m_bedOrChamber = nullptr;
+
+		bool m_setActiveTemp = true;
 	};
 
 	class ToolListPresenter : public Presenter<ToolList>
@@ -63,6 +70,9 @@ namespace UI
 		using Presenter::Presenter;
 
 		void newToolData() override;
+		void newHeaterData() override;
+
+		void update();
 
 		size_t getTotalHeaterCount(const bool addTools = true,
 								   const bool addBeds = true,

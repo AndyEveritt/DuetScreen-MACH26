@@ -43,7 +43,7 @@ bool ResponseSubscribers::seqReply(Comm::JsonDecoder* decoder, const int32_t& da
 	info("%d", data);
 	if (Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
 	{
-		info("New reply available");
+		info("Requesting reply for seq %d", data);
 		HttpResponse r;
 		Comm::DUET.RequestReply(r);
 		Comm::DUET.ProcessReply(r);

@@ -36,6 +36,9 @@ namespace UI
 		int16_t getValue() const;
 		bool validateInput() const;
 
+		void setCloseOnConfirm(bool closeOnConfirm) { m_closeOnConfirm = closeOnConfirm; }
+		bool getCloseOnConfirm() const { return m_closeOnConfirm; }
+
 		void setValueChangedCallback(lv_event_cb_t eventCb, void* userData);
 		void setConfirmCallback(lv_event_cb_t eventCb, void* userData);
 
@@ -50,5 +53,6 @@ namespace UI
 
 		int16_t m_minValue = INT16_MIN;
 		int16_t m_maxValue = INT16_MAX;
+		bool m_closeOnConfirm = true;
 	};
 } // namespace UI

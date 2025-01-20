@@ -37,7 +37,9 @@ namespace UI
 		ToolList& getToolList() const { return m_toolList; }
 
 	  private:
-		static void activeTempEvent(lv_event_t* e);
+		static void onNameEvent(lv_event_t* e);
+		static void onStatusEvent(lv_event_t* e);
+		static void onActiveStandbyEvent(lv_event_t* e);
 
 		ToolList& m_toolList;
 
@@ -47,6 +49,30 @@ namespace UI
 		lv_obj_t* m_currentTemp;
 		lv_obj_t* m_activeTemp;
 		lv_obj_t* m_standbyTemp;
+	};
+
+	class ToolListNumPad : public BaseView
+	{
+	  public:
+		ToolListNumPad(const std::string& name, lv_obj_t* parent, layout_t layout);
+
+		void clear() { m_numberPad.clear(); }
+		void setMinValue(int16_t value) { m_numberPad.setMinValue(value); }
+		void setMaxValue(int16_t value) { m_numberPad.setMaxValue(value); }
+		void setValue(int16_t value) { m_numberPad.setValue(value); }
+		int16_t getValue() const { return m_numberPad.getValue(); }
+		void setHeader(const char* text) { lv_label_set_text(m_header, text); }
+		const char* getHeader() const { return lv_label_get_text(m_header); }
+
+		void setConfirmCallback(lv_event_cb_t eventCb, void* userData)
+		{
+			m_numberPad.setConfirmCallback(eventCb, userData);
+		}
+		virtual bool back() override;
+
+	  private:
+		lv_obj_t* m_header;
+		NumberPad m_numberPad;
 	};
 
 	class ToolList : public View<ToolListPresenter>
@@ -64,6 +90,8 @@ namespace UI
 		void showNumberPad(const ToolListItem& item);
 		void hideNumberPad() { m_numberPad.hide(); }
 
+		virtual void onHide() override { hideNumberPad(); }
+
 	  private:
 		lv_obj_t* m_header;
 		lv_obj_t* m_headerTool;
@@ -74,6 +102,6 @@ namespace UI
 		lv_obj_t* m_list;
 		std::vector<std::shared_ptr<ToolListItem>> m_items;
 
-		NumberPad m_numberPad;
+		ToolListNumPad m_numberPad;
 	};
 } // namespace UI

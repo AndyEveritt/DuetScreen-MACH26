@@ -39,6 +39,9 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"offline", "Offline"},
     {"standby", "Standby"},
     {"tuning", "Tuning"},
+    {"tool_list_numpad_header_tool_heater", "Tool %d Heater %d %s"},
+    {"tool_list_numpad_header_tool_spindle", "Tool %d Spindle"},
+    {"tool_list_numpad_header_bed_chamber", "%s %d %s"},
     {NULL, NULL} // End mark
 };
 

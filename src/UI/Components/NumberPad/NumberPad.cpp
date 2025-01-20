@@ -51,6 +51,7 @@ namespace UI
 		lv_buttonmatrix_set_map(m_btnMatrix, btnm_map);
 
 		lv_obj_set_user_data(m_textArea, this);
+		lv_textarea_set_text(m_textArea, "");
 
 		m_clearBtn.setCallback(clearBtnEventHandler, LV_EVENT_PRESSED, this);
 
@@ -93,7 +94,10 @@ namespace UI
 			Lock lock;
 			// Call the confirm callback
 			lv_obj_send_event(m_textArea, LV_EVENT_READY, this);
-			close();
+			if (m_closeOnConfirm)
+			{
+				close();
+			}
 		}
 	}
 
