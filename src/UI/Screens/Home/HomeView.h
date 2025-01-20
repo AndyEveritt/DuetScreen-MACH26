@@ -16,6 +16,8 @@ namespace UI
 	class HomeView : public View<HomePresenter>
 	{
 	  public:
+		friend class HomePresenter;
+
 		HomeView();
 
 	  private:

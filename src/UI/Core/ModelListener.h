@@ -18,6 +18,8 @@ namespace UI
 
 		virtual void refresh() {}
 
+		virtual void tick() {}
+
 		/* Fan methods */
 		virtual void newFanData() {}
 

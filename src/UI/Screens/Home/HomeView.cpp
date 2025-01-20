@@ -22,19 +22,7 @@ namespace UI
 
 		m_graph.setXRange({.min = -100, .max = 0});
 		m_graph.setYRange({.min = 0, .max = 300});
-		m_graph.createSeries("series1", {0xff, 0, 0}, "Series 1");
-		m_graph.createSeries("series2", {0, 0xff, 0}, "Series 2");
-		m_graph.createSeries("series3", {0, 0, 0xff}, "Series 3");
-
-		m_graph.setXCount(20);
-
-		for (size_t i = 0; i < 100; i++)
-		{
-			m_graph.addData("series1", rand() % 300);
-			m_graph.addData("series2", rand() % 300);
-			m_graph.addData("series3", rand() % 300);
-		}
-		// m_graph.clear();
+		m_graph.setXCount(-m_graph.getXRange().min);
 	}
 
 	void HomeView::onHide()

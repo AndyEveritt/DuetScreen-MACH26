@@ -11,6 +11,8 @@ namespace UI
 	  public:
 		using Presenter::Presenter;
 
+		void tick();
+
 	  protected:
 	};
 } // namespace UI

@@ -11,6 +11,7 @@
 #include "Subscribers/StateSubscribers.h"
 #include "Subscribers/Subscribers.h"
 #include "Subscribers/ToolSubscribers.h"
+#include "lvgl/lvgl.h"
 #include <list>
 #include <map>
 #include <mutex>
@@ -145,4 +146,6 @@ class Model
 	std::list<UI::BasePresenter*> m_presenters;
 
 	pthread_mutex_t m_mutex;
+
+	lv_timer_t* m_tickTimer;
 };

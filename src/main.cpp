@@ -77,15 +77,15 @@ int main(int argc, char** argv)
 	StorageHelper::load();
 	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
 
-	Model::get(); // Initialize the model instance, this creates the subscribers
-
-	Comm::init();
-	Comm::DUET.Init();
-
 	/*Initialize LVGL*/
 	lv_init();
 	lv_i18n_init(lv_i18n_language_pack);
 	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());
+
+	Model::get(); // Initialize the model instance, this creates the subscribers
+
+	Comm::init();
+	Comm::DUET.Init();
 
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
 	hal_init(1024, 600);

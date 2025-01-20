@@ -16,6 +16,8 @@
 
 Model::Model()
 {
+	m_tickTimer = lv_timer_create(
+		[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->tick(); }, 100, this);
 	if (!initMutex())
 	{
 		fatal("Failed to initialise mutex");
@@ -84,12 +86,14 @@ bool Model::initMutex()
 void Model::lock()
 {
 	dbg("Attempting to lock model");
+	lv_lock();
 	pthread_mutex_lock(&m_mutex);
 }
 
 void Model::unlock()
 {
 	dbg("Unlocking model");
+	lv_unlock();
 	pthread_mutex_unlock(&m_mutex);
 }
 
@@ -130,6 +134,16 @@ void Model::refresh()
 		presenter->newTime();
 		presenter->newToolData();
 	}
+}
+
+void Model::tick()
+{
+	lock();
+	for (auto presenter : m_presenters)
+	{
+		presenter->tick();
+	}
+	unlock();
 }
 
 /* Fan methods */
