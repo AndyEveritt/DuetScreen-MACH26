@@ -39,6 +39,10 @@ namespace UI
 		lv_obj_add_event_cb(m_status, onStatusEvent, LV_EVENT_PRESSED, this);
 		lv_obj_add_event_cb(m_activeTemp, onActiveStandbyEvent, LV_EVENT_PRESSED, this);
 		lv_obj_add_event_cb(m_standbyTemp, onActiveStandbyEvent, LV_EVENT_PRESSED, this);
+
+		// Styles
+		lv_obj_set_style_bg_color(
+			getCont(), lv_color_darken(lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN), 20), LV_STATE_CHECKED);
 	}
 
 	uint8_t ToolListItem::getSlotIndex() const
@@ -66,6 +70,27 @@ namespace UI
 			lv_obj_set_flex_grow(m_icon, 1);
 		}
 		lv_image_set_src(m_icon, icon);
+	}
+
+	void ToolListItem::setSelected(const bool selected)
+	{
+		if (m_selected == selected)
+		{
+			return;
+		}
+		Lock lock;
+		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
+		if (selected)
+		{
+			// lv_obj_set_style_bg_color(getCont(), lv_color_darken(color, 10), LV_PART_MAIN);
+			lv_obj_add_state(getCont(), LV_STATE_CHECKED);
+		}
+		else
+		{
+			// lv_obj_set_style_bg_color(getCont(), lv_color_lighten(color, 10), LV_PART_MAIN);
+			lv_obj_remove_state(getCont(), LV_STATE_CHECKED);
+		}
+		m_selected = selected;
 	}
 
 	void ToolListItem::setStatus(const char* text)

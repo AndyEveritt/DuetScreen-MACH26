@@ -26,6 +26,7 @@ namespace UI
 		void setSlotIndex(uint8_t index);
 		void setLabel(const char* text);
 		void setIcon(lv_img_dsc_t* icon);
+		void setSelected(const bool selected);
 		void setStatus(const char* text);
 		void setCurrentTemp(float value);
 		void setActiveTemp(int32_t value);
@@ -49,6 +50,7 @@ namespace UI
 		lv_obj_t* m_currentTemp;
 		lv_obj_t* m_activeTemp;
 		lv_obj_t* m_standbyTemp;
+		bool m_selected;
 	};
 
 	class ToolListNumPad : public BaseView

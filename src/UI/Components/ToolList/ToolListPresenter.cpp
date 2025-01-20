@@ -146,6 +146,8 @@ namespace UI
 			return false;
 		}
 
+		m_view->setSelected(tool->status == OM::ToolStatus::active);
+
 		// Set tool name
 		std::string toolName = tool->name.IsEmpty()
 								   ? utils::format("%s %d", _("default_tool_name"), tool->index).c_str()
@@ -201,6 +203,8 @@ namespace UI
 			error("Heater is null");
 			return false;
 		}
+
+		m_view->setSelected(false);
 
 		const char* bedOrChamberName = bed ? _("bed") : _("chamber");
 
