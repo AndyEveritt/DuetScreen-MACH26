@@ -7,6 +7,7 @@
 
 #include "ToolList.h"
 #include "Debug.h"
+#include "UI/Core/Navigation.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -167,7 +168,7 @@ namespace UI
 		lv_label_set_text(m_headerActive, _("toollist_active"));
 		lv_label_set_text(m_headerStandby, _("toollist_standby"));
 
-		m_numberPad.show();
+		m_numberPad.hide();
 	}
 
 	void ToolList::setItemCnt(size_t cnt)
@@ -207,7 +208,8 @@ namespace UI
 	void ToolList::showNumberPad(const ToolListItem& item)
 	{
 		Lock lock;
-		m_numberPad.show();
+		openScreen(&m_numberPad, false);
+		// m_numberPad.show();
 	}
 
 } // namespace UI

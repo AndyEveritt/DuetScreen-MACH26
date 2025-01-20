@@ -7,6 +7,7 @@
 
 #include "NumberPad.h"
 #include "Debug.h"
+#include "UI/Core/Navigation.h"
 #include "lv_i18n/lv_i18n.h"
 #include <string>
 
@@ -64,6 +65,13 @@ namespace UI
 		validateInput();
 	}
 
+	bool NumberPad::back()
+	{
+		// This custom back method prevents the previous screen from reopening
+		close();
+		return true;
+	}
+
 	void NumberPad::clear()
 	{
 		{
@@ -75,7 +83,7 @@ namespace UI
 
 	void NumberPad::close()
 	{
-		hide();
+		closeScreen(this, false);
 	}
 
 	void NumberPad::confirm()
@@ -141,6 +149,11 @@ namespace UI
 	void NumberPad::setConfirmCallback(lv_event_cb_t eventCb, void* userData)
 	{
 		Lock lock;
+		uint32_t event_cnt = lv_obj_get_event_count(m_textArea);
+		for (uint32_t i = 0; i < event_cnt; i++)
+		{
+			lv_obj_remove_event(m_textArea, i);
+		}
 		lv_obj_add_event_cb(m_textArea, eventCb, LV_EVENT_READY, userData);
 	}
 

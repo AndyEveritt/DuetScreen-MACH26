@@ -67,11 +67,7 @@ namespace UI
 			return;
 		}
 
-		if (!s_openScreens.empty())
-		{
-			ViewListItem_t lastScreen = s_openScreens.back();
-			closeScreen(lastScreen, false);
-		}
+		closeScreen(currentScreen, false);
 
 		if (!s_returnableScreens.empty())
 		{
@@ -170,10 +166,7 @@ namespace UI
 		}
 
 		info("Opening screen '%s'", view->getName());
-		if (!view->isVisible())
-		{
-			view->show();
-		}
+		view->show();
 		removeFromVector(s_returnableScreens, view);
 		if (!inVector(s_homeScreens, view))
 		{

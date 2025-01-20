@@ -26,6 +26,7 @@ namespace UI
 		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout);
 		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config);
 
+		virtual bool back();
 		void clear();
 		void close();
 		void confirm();
