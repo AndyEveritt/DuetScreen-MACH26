@@ -19,6 +19,9 @@ namespace UI
 		lv_obj_set_height(m_mainWindow, LV_PCT(100));
 
 		addHomeScreen(this);
+
+		m_graph.setXRange({.min = -100, .max = 0});
+		m_graph.setYRange({.min = 0, .max = 300});
 	}
 
 	void HomeView::onHide()

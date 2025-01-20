@@ -15,64 +15,128 @@ namespace UI
 	Graph::Graph(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: BaseView(name, parent, layout)
 		, m_chart(lv_chart_create(getCont()))
-		, m_vCont(lv_obj_create(getCont()))
-		, m_hCont(lv_obj_create(getCont()))
-		, m_vScale(lv_scale_create(m_vCont))
-		, m_hScale(lv_scale_create(m_hCont))
+		, m_vScale(lv_scale_create(getCont()))
+		, m_hScale(lv_scale_create(getCont()))
 	{
 		Lock lock;
 
+		// Layout
+		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
+		m_columnDsc[0] = s_scaleSize;
+		m_columnDsc[1] = LV_GRID_FR(1);
+		m_columnDsc[2] = LV_GRID_TEMPLATE_LAST;
+
+		m_rowDsc[0] = LV_GRID_FR(1);
+		m_rowDsc[1] = s_scaleSize;
+		m_rowDsc[2] = LV_GRID_TEMPLATE_LAST;
+		lv_obj_set_grid_dsc_array(getCont(), m_columnDsc, m_rowDsc);
+		lv_obj_set_grid_cell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		lv_obj_set_grid_cell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		lv_obj_set_grid_cell(m_chart, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+
+		lv_obj_set_style_pad_top(getCont(), 20, LV_PART_MAIN);
+		lv_obj_set_style_pad_right(getCont(), 20, LV_PART_MAIN);
+		lv_obj_set_style_pad_left(getCont(), 10, LV_PART_MAIN);
+		lv_obj_set_style_pad_bottom(getCont(), 5, LV_PART_MAIN);
+
 		// Chart
 		// Horizontal scale
-		lv_obj_set_style_pad_ver(m_hCont, 0, 0);
-		lv_obj_set_style_pad_hor(m_hCont, 10, 0);
-		lv_obj_set_style_border_opa(m_hCont, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_set_flex_flow(m_hCont, LV_FLEX_FLOW_ROW_REVERSE);
-		lv_obj_set_flex_grow(m_hScale, 1);
-		lv_obj_t* hPad = lv_obj_create(m_hCont);
-		lv_obj_set_size(hPad, s_scaleSize - 2 * 10, LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(hPad, 0, 0);
-		lv_obj_remove_flag(hPad, LV_OBJ_FLAG_SCROLLABLE);
-		lv_obj_set_style_border_opa(hPad, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_set_style_bg_opa(m_hCont, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_set_style_opa(hPad, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_align(m_hCont, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-		lv_obj_set_size(m_hCont, LV_PCT(100), LV_SIZE_CONTENT);
 		lv_scale_set_mode(m_hScale, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
-		lv_obj_set_height(m_hScale, s_scaleSize);
-		lv_obj_align(m_hScale, LV_ALIGN_BOTTOM_LEFT, s_scaleSize, 0);
 		lv_scale_set_label_show(m_hScale, true);
-		// lv_scale_set_range(m_hScale, 0, 300);
-		// lv_scale_set_total_tick_count(m_hScale, 21);
-		// lv_scale_set_major_tick_every(m_hScale, 4);
 
 		// Vertical scale
-		lv_obj_set_style_pad_hor(m_vCont, 0, 0);
-		lv_obj_set_style_pad_ver(m_vCont, 10, 0);
-		lv_obj_set_style_border_opa(m_vCont, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_set_flex_flow(m_vCont, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_grow(m_vScale, 1);
-		lv_obj_t* vPad = lv_obj_create(m_vCont);
-		lv_obj_set_size(vPad, LV_SIZE_CONTENT, s_scaleSize - 2 * 10);
-		lv_obj_set_style_pad_all(vPad, 0, 0);
-		lv_obj_remove_flag(vPad, LV_OBJ_FLAG_SCROLLABLE);
-		lv_obj_set_style_border_opa(vPad, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_set_style_bg_opa(m_vCont, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_set_style_opa(vPad, LV_OPA_0, LV_PART_MAIN);
-		lv_obj_align(m_vCont, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-		lv_obj_set_size(m_vCont, LV_SIZE_CONTENT, LV_PCT(100));
 		lv_scale_set_mode(m_vScale, LV_SCALE_MODE_VERTICAL_LEFT);
-		lv_obj_set_width(m_vScale, s_scaleSize);
-		lv_obj_align(m_vScale, LV_ALIGN_BOTTOM_LEFT, 0, -s_scaleSize);
 		lv_scale_set_label_show(m_vScale, true);
-		lv_scale_set_range(m_vScale, 0, 300);
 		lv_scale_set_total_tick_count(m_vScale, 21);
 		lv_scale_set_major_tick_every(m_vScale, 4);
 
 		// Chart
-		lv_obj_align(m_chart, LV_ALIGN_TOP_RIGHT, 0, 0);
-		lv_obj_set_size(m_chart,
-						lv_obj_get_width(getCont()) - lv_obj_get_width(m_vScale),
-						lv_obj_get_height(getCont()) - lv_obj_get_height(m_hScale));
+		lv_obj_set_style_border_width(m_chart, 2, LV_PART_MAIN);
+		lv_obj_set_style_border_color(m_chart, lv_color_hex(0x000000), LV_PART_MAIN);
+		lv_obj_set_style_border_opa(m_chart, LV_OPA_100, LV_PART_MAIN);
+		lv_chart_set_type(m_chart, LV_CHART_TYPE_LINE);
+		lv_chart_set_update_mode(m_chart, LV_CHART_UPDATE_MODE_SHIFT);
+	}
+
+	Graph::range_t Graph::getXRange() const
+	{
+		range_t range;
+		range.min = lv_scale_get_range_min_value(m_hScale);
+		range.max = lv_scale_get_range_max_value(m_hScale);
+		return range;
+	}
+
+	Graph::range_t Graph::getYRange() const
+	{
+		range_t range;
+		range.min = lv_scale_get_range_min_value(m_vScale);
+		range.max = lv_scale_get_range_max_value(m_vScale);
+		return range;
+	}
+
+	void Graph::setXRange(Graph::range_t range)
+	{
+		lv_scale_set_range(m_hScale, range.min, range.max);
+		lv_chart_set_range(m_chart, LV_CHART_AXIS_PRIMARY_X, range.min, range.max);
+	}
+
+	void Graph::setYRange(Graph::range_t range)
+	{
+		lv_scale_set_range(m_vScale, range.min, range.max);
+		lv_chart_set_range(m_chart, LV_CHART_AXIS_PRIMARY_Y, range.min, range.max);
+	}
+
+	lv_chart_series_t* Graph::getSeries(const std::string& name)
+	{
+		auto it = m_series.find(name);
+		if (it != m_series.end())
+		{
+			return it->second;
+		}
+		return nullptr;
+	}
+
+	bool Graph::createSeries(const std::string& name, lv_color_t color)
+	{
+		if (m_series.find(name) != m_series.end())
+		{
+			return false; // Series with this name already exists
+		}
+
+		lv_chart_series_t* series = lv_chart_add_series(m_chart, color, LV_CHART_AXIS_PRIMARY_Y);
+		if (series)
+		{
+			m_series[name] = series;
+			return true;
+		}
+		return false;
+	}
+
+	void Graph::clear()
+	{
+		for (auto& pair : m_series)
+		{
+			lv_chart_remove_series(m_chart, pair.second);
+		}
+		m_series.clear();
+	}
+
+	void Graph::clear(const std::string& seriesName)
+	{
+		lv_chart_series_t* series = getSeries(seriesName);
+		if (series)
+		{
+			lv_chart_remove_series(m_chart, series);
+			m_series.erase(seriesName);
+		}
+	}
+
+	void Graph::addData(const std::string& seriesName, int32_t value)
+	{
+		lv_chart_series_t* series = getSeries(seriesName);
+		if (series)
+		{
+			lv_chart_set_next_value(m_chart, series, value);
+		}
 	}
 } // namespace UI
