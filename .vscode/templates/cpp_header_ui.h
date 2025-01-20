@@ -11,5 +11,10 @@
 
 namespace UI
 {
-
+    class {{file_name}} : public BaseView
+    {
+      public:
+        {{file_name}}(const std::string& name, lv_obj_t* parent, layout_t layout);
+      private:
+    };
 } // namespace UI

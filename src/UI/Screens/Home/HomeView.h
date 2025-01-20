@@ -2,6 +2,7 @@
 
 #include "HomePresenter.h"
 #include "UI/Components/Button.h"
+#include "UI/Components/Graph/Graph.h"
 #include "UI/Components/List.h"
 #include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Components/SideBar.h"
@@ -24,5 +25,6 @@ namespace UI
 		SideBar m_sideBar;
 		lv_obj_t* m_mainWindow;
 		ToolList m_toolList;
+		Graph m_graph;
 	};
 } // namespace UI

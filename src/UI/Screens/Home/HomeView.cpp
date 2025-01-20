@@ -12,6 +12,7 @@ namespace UI
 		, m_sideBar("sidebar", getCont())
 		, m_mainWindow(lv_obj_create(getCont()))
 		, m_toolList("home_tool_list", m_mainWindow, layout_t(0, 0, 60, 50))
+		, m_graph("home_graph", m_mainWindow, layout_t(0, 50, 60, 50))
 	{
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_grow(m_mainWindow, 1);
