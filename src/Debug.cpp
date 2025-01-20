@@ -83,4 +83,5 @@ void fatal_inner(const char* fmt, ...)
 	va_start(args, fmt);
 	__dbg(fmt, args);
 	va_end(args);
+	exit(EXIT_FAILURE);
 }
