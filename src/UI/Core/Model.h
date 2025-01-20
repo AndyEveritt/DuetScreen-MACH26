@@ -14,6 +14,7 @@
 #include <list>
 #include <map>
 #include <mutex>
+#include <pthread.h>
 
 namespace UI
 {
@@ -128,6 +129,9 @@ class Model
 	void unlock();
 
   private:
+	Model();
+	bool initMutex();
+
 	FanSubscribers m_fanSubscribers;
 	FileSubscribers m_fileSubscribers;
 	HeatSubscribers m_heatSubscribers;
@@ -140,8 +144,5 @@ class Model
 	ToolSubscribers m_toolSubscribers;
 	std::list<UI::BasePresenter*> m_presenters;
 
-	std::mutex m_mutex;
-
-  private:
-	Model() {}
+	pthread_mutex_t m_mutex;
 };

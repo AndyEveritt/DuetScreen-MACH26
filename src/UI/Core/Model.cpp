@@ -14,9 +14,17 @@
 		NOTIFY_ALL_PRESENTERS(func);                                                                                   \
 	}
 
+Model::Model()
+{
+	if (!initMutex())
+	{
+		fatal("Failed to initialise mutex");
+	}
+}
+
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+	lock();
 	auto subscribers = getSubscribers(key);
 	if (subscribers.size() != 0)
 	{
@@ -26,11 +34,12 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 			subscriber.run(decoder, data, indices);
 		}
 	}
+	unlock();
 }
 
 void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[])
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+	lock();
 	auto subscribers = getArrayEndSubscribers(key);
 	if (subscribers.size() != 0)
 	{
@@ -40,18 +49,48 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 			subscriber.run(decoder, indices);
 		}
 	}
+	unlock();
+}
+
+/**
+ * @brief Initializes a recursive mutex for the Model class.
+ *
+ * This function sets up a recursive mutex by initializing the mutex attributes,
+ * setting the mutex type to recursive, and then initializing the mutex with these attributes.
+ * If the initialization fails, an error code is logged and the function returns false.
+ *
+ * @return true if the mutex was successfully initialized, false otherwise.
+ */
+bool Model::initMutex()
+{
+	pthread_mutexattr_t attr;
+
+	pthread_mutexattr_init(&attr);
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+	int ret = pthread_mutex_init(&m_mutex, &attr);
+	pthread_mutexattr_destroy(&attr);
+
+	if (ret)
+	{
+		error("%d", ret);
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 void Model::lock()
 {
 	dbg("Attempting to lock model");
-	m_mutex.lock();
+	pthread_mutex_lock(&m_mutex);
 }
 
 void Model::unlock()
 {
 	dbg("Unlocking model");
-	m_mutex.unlock();
+	pthread_mutex_unlock(&m_mutex);
 }
 
 void Model::refresh()

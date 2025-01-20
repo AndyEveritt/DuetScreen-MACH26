@@ -270,7 +270,7 @@ namespace Comm
 	// Public functions called by the SerialIo module
 	void JsonDecoder::ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
-		dbg("%s (indices [%d|%d|%d|%d]) = %s", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
+		dbg("%s (indices [%d|%d|%d|%d]) = '%s'", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
 		if (StringStartsWith(id.c_str(), "result"))
 		{
 			// We might either get something like:
