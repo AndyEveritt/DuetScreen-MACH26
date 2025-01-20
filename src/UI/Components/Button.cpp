@@ -2,7 +2,7 @@
 
 namespace UI
 {
-	Button::Button(const char* name, lv_obj_t* parent, const char* text, layout_t layout)
+	Button::Button(const std::string& name, lv_obj_t* parent, const char* text, layout_t layout)
 		: BaseView(name, parent, layout)
 		, m_button(lv_button_create(getCont()))
 		, m_label(lv_label_create(m_button))
@@ -41,6 +41,16 @@ namespace UI
 	void Button::setCallback(lv_event_cb_t event_cb, lv_event_code_t filter, void* user_data)
 	{
 		lv_obj_add_event_cb(m_button, event_cb, filter, user_data);
+	}
+
+	void Button::setUserData(void* user_data)
+	{
+		lv_obj_set_user_data(m_button, user_data);
+	}
+
+	void* Button::getUserData() const
+	{
+		return lv_obj_get_user_data(m_button);
 	}
 
 	void Button::setStyle(lv_style_t* style, lv_style_selector_t selector)
@@ -83,5 +93,27 @@ namespace UI
 		{
 			lv_obj_remove_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
 		}
+	}
+
+	void Button::setChecked(const bool checked)
+	{
+		if (lv_obj_has_flag(m_button, LV_OBJ_FLAG_CHECKABLE))
+		{
+			lv_obj_set_state(m_button, LV_STATE_CHECKED, checked);
+		}
+	}
+
+	const bool Button::getChecked() const
+	{
+		if (lv_obj_has_flag(m_button, LV_OBJ_FLAG_CHECKABLE))
+		{
+			return lv_obj_has_state(m_button, LV_STATE_CHECKED);
+		}
+		return false;
+	}
+
+	void Button::setBgColor(lv_color_t color, lv_style_selector_t selector)
+	{
+		lv_obj_set_style_bg_color(m_button, color, selector);
 	}
 } // namespace UI
