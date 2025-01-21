@@ -83,6 +83,7 @@ namespace UI
 		friend class ToolListPresenter;
 		friend class ToolListItemPresenter;
 
+		ToolList(const std::string& name, lv_obj_t* parent);
 		ToolList(const std::string& name, lv_obj_t* parent, layout_t layout);
 
 		void setItemCnt(size_t cnt);
@@ -95,6 +96,8 @@ namespace UI
 		virtual void onHide() override { hideNumberPad(); }
 
 	  private:
+		void init();
+
 		lv_obj_t* m_header;
 		lv_obj_t* m_headerTool;
 		lv_obj_t* m_headerStatus;

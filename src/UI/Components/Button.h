@@ -8,6 +8,7 @@ namespace UI
 	class Button : public BaseView
 	{
 	  public:
+		Button(const std::string& name, lv_obj_t* parent, const char* text);
 		Button(const std::string& name, lv_obj_t* parent, const char* text, layout_t layout);
 
 		void setText(const char* text);
@@ -22,6 +23,8 @@ namespace UI
 		void setBgColor(lv_color_t, lv_style_selector_t selector);
 
 	  private:
+		void init(const char* text);
+
 		lv_obj_t* m_button;
 		lv_obj_t* m_label;
 		lv_obj_t* m_icon;

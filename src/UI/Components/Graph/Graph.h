@@ -32,6 +32,7 @@ namespace UI
 			int32_t max;
 		};
 
+		Graph(const std::string& name, lv_obj_t* parent);
 		Graph(const std::string& name, lv_obj_t* parent, layout_t layout);
 
 		void showLegend(const bool show);
@@ -57,6 +58,7 @@ namespace UI
 	  private:
 		static void legendEvent(lv_event_t* e);
 
+		void init();
 		void setSeriesColor(series_t& series, lv_color_t color);
 
 		lv_obj_t* m_chart;

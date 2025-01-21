@@ -12,6 +12,7 @@
 #include "Comm/Usb.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "UI/Styles/Styles.h"
 #include "glob.h"
 #include "hv/requests.h"
 #include "lv_i18n/lv_i18n.h"
@@ -88,14 +89,16 @@ int main(int argc, char** argv)
 	Comm::DUET.Init();
 
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
-	hal_init(1024, 600);
+	lv_display_t* display = hal_init(1024, 600);
+
+	UI::Styles::instance().init(display);
 
 #if LV_USE_OS == LV_OS_PTHREAD
 
 	// lv_demo_widgets();
 	// lv_demo_benchmark();
 
-	UI::HomeView home;
+	UI::HomeView home = UI::HomeView::instance();
 	home.show();
 
 	// Create a thread to handle requesting data from Duet

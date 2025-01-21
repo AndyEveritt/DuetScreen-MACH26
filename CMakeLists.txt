@@ -98,6 +98,7 @@ target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
 
 if (SIMULATION)
   target_compile_definitions(DuetScreen PRIVATE SIMULATION=1)
+  target_compile_definitions(DuetScreen PRIVATE DEBUG_BORDERS=1)
 endif()
 
 if (LOG_TIMESTAMPS)

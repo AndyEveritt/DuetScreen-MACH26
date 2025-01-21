@@ -41,4 +41,8 @@ constexpr const char* ID_EXTRUSION_SELECTED_DISTANCE = "extrusion_selected_dista
 constexpr const char* ID_EXTRUSION_FEEDRATE = "extrusion_feedrate_%d";
 constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "extrusion_selected_feedrate";
 
+#if DEBUG_BORDERS
+constexpr const char* ID_DEBUG_BORDERS = "debug_borders";
+#endif
+
 #endif /* JNI_STORAGE_H_ */

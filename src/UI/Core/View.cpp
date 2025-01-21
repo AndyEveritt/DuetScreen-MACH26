@@ -15,6 +15,11 @@ namespace UI
 		Lock lock;
 		verbose("Creating view '%s' (%p)", getName(), m_cont);
 		lv_obj_set_style_pad_all(getCont(), 5, 0);
+#if DEBUG_BORDERS
+		// lv_obj_set_style_border_color(getCont(), lv_color_black(), LV_PART_MAIN);
+		// lv_obj_set_style_border_width(getCont(), 2, LV_PART_MAIN);
+		// lv_obj_set_style_border_opa(getCont(), LV_OPA_100, LV_PART_MAIN);
+#endif
 	}
 
 	BaseView::~BaseView()

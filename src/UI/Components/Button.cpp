@@ -2,11 +2,25 @@
 
 namespace UI
 {
+	Button::Button(const std::string& name, lv_obj_t* parent, const char* text)
+		: BaseView(name, parent)
+		, m_button(lv_button_create(getCont()))
+		, m_label(lv_label_create(m_button))
+		, m_icon(nullptr)
+	{
+		init(text);
+	}
+
 	Button::Button(const std::string& name, lv_obj_t* parent, const char* text, layout_t layout)
 		: BaseView(name, parent, layout)
 		, m_button(lv_button_create(getCont()))
 		, m_label(lv_label_create(m_button))
 		, m_icon(nullptr)
+	{
+		init(text);
+	}
+
+	void Button::init(const char* text)
 	{
 		lv_obj_set_user_data(m_button, this);
 		lv_obj_set_user_data(m_label, this);

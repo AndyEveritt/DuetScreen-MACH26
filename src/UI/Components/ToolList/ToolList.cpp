@@ -201,6 +201,20 @@ namespace UI
 		return true;
 	}
 
+	ToolList::ToolList(const std::string& name, lv_obj_t* parent)
+		: View<ToolListPresenter>(name, parent)
+		, m_header(lv_obj_create(getCont()))
+		, m_headerTool(lv_label_create(m_header))
+		, m_headerStatus(lv_label_create(m_header))
+		, m_headerCurrent(lv_label_create(m_header))
+		, m_headerActive(lv_label_create(m_header))
+		, m_headerStandby(lv_label_create(m_header))
+		, m_list(lv_obj_create(getCont()))
+		, m_numberPad("tool_list_number_pad", lv_screen_active(), layout_t(65, 0, 35, 100))
+	{
+		init();
+	}
+
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: View<ToolListPresenter>(name, parent, layout)
 		, m_header(lv_obj_create(getCont()))
@@ -211,6 +225,11 @@ namespace UI
 		, m_headerStandby(lv_label_create(m_header))
 		, m_list(lv_obj_create(getCont()))
 		, m_numberPad("tool_list_number_pad", lv_screen_active(), layout_t(65, 0, 35, 100))
+	{
+		init();
+	}
+
+	void ToolList::init()
 	{
 		Lock lock;
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);

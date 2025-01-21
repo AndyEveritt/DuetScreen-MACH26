@@ -14,12 +14,27 @@ namespace UI
 	static constexpr lv_coord_t s_legendSize = 100;
 	static lv_color_t s_hiddenColor = lv_color_darken(lv_color_white(), 50);
 
+	Graph::Graph(const std::string& name, lv_obj_t* parent)
+		: BaseView(name, parent)
+		, m_chart(lv_chart_create(getCont()))
+		, m_vScale(lv_scale_create(getCont()))
+		, m_hScale(lv_scale_create(getCont()))
+		, m_legend(lv_obj_create(getCont()))
+	{
+		init();
+	}
+
 	Graph::Graph(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: BaseView(name, parent, layout)
 		, m_chart(lv_chart_create(getCont()))
 		, m_vScale(lv_scale_create(getCont()))
 		, m_hScale(lv_scale_create(getCont()))
 		, m_legend(lv_obj_create(getCont()))
+	{
+		init();
+	}
+
+	void Graph::init()
 	{
 		Lock lock;
 

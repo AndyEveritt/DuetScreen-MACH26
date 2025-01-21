@@ -42,6 +42,15 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"tool_list_numpad_header_tool_heater", "Tool %d Heater %d %s"},
     {"tool_list_numpad_header_tool_spindle", "Tool %d Spindle"},
     {"tool_list_numpad_header_bed_chamber", "%s %d %s"},
+    {"move", "Move"},
+    {"extrude", "Extrude"},
+    {"status", "Status"},
+    {"fans", "Fans"},
+    {"object_cancel", "Object Cancel"},
+    {"settings", "Settings"},
+    {"settings_debug_level", "Debug Level"},
+    {"settings_debug_borders", "Enable Debug Borders"},
+    {"settings_developer", "Developer"},
     {NULL, NULL} // End mark
 };
 
