@@ -1,5 +1,8 @@
 #include "Model.h"
+#include "Comm/JsonDecoder.h"
+#include "Comm/Usb.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
 #include "Presenter.h"
 
 #define NOTIFY_ALL_PRESENTERS(func)                                                                                    \
@@ -16,12 +19,82 @@
 
 Model::Model()
 {
-	m_tickTimer = lv_timer_create(
+	// Timers
+	m_timers.tick = lv_timer_create(
 		[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->tick(); }, 100, this);
+
+#if !MULTITHREADED
+	m_timers.request =
+		lv_timer_create([](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->requestNewData(); },
+						Comm::DUET.GetScaledPollInterval(),
+						this);
+	m_timers.receive = lv_timer_create(
+		[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->receiveNewUsbData(); }, 5, this);
+#endif
+
 	if (!initMutex())
 	{
 		fatal("Failed to initialise mutex");
 	}
+}
+
+void Model::tick()
+{
+	lock();
+	for (auto presenter : m_presenters)
+	{
+		presenter->tick();
+	}
+	unlock();
+}
+
+void Model::requestNewData()
+{
+	Comm::sendNext();
+}
+
+useconds_t Model::receiveNewUsbData()
+{
+	static constexpr size_t bufferSize = 32768;
+	static Comm::JsonDecoder decoder;
+	static BYTE buffer[bufferSize];
+	static size_t bufferLen = 0;
+
+	if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::usb)
+	{
+		return 500 * 1000;
+	}
+
+	if (!Comm::getCurrentUsbDevice().isConnected())
+	{
+		verbose("USB device disconnected");
+		return 500 * 1000;
+	}
+	int len = Comm::getCurrentUsbDevice().receive(buffer + bufferLen, bufferSize - bufferLen);
+
+	if (len > 0)
+	{
+		bufferLen += len;
+		if (bufferLen >= bufferSize)
+		{
+			error("Buffer overflow");
+			bufferLen = 0;
+			return 5 * 1000;
+		}
+	}
+	else if (len < 0)
+	{
+		error("Error receiving data");
+		bufferLen = 0;
+		return 5 * 1000;
+	}
+	if (buffer[bufferLen - 1] == '\n')
+	{
+		// Process the data
+		decoder.CheckInput(buffer, bufferLen);
+		bufferLen = 0;
+	}
+	return 5 * 1000;
 }
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
@@ -134,16 +207,6 @@ void Model::refresh()
 		presenter->newTime();
 		presenter->newToolData();
 	}
-}
-
-void Model::tick()
-{
-	lock();
-	for (auto presenter : m_presenters)
-	{
-		presenter->tick();
-	}
-	unlock();
 }
 
 /* Fan methods */

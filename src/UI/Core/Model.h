@@ -45,6 +45,12 @@ class Model
 	 */
 	void unbind(UI::BasePresenter* presenter) { m_presenters.remove(presenter); }
 
+	/* tasks */
+
+	void tick();
+	void requestNewData();
+	useconds_t receiveNewUsbData();
+
 	/* presenter callbacks */
 
 	void refresh();
@@ -111,8 +117,6 @@ class Model
 
 	void newToolData();
 
-	void tick();
-
 	/* Subscribers */
 
 	void runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
@@ -147,5 +151,10 @@ class Model
 
 	pthread_mutex_t m_mutex;
 
-	lv_timer_t* m_tickTimer;
+	struct
+	{
+		lv_timer_t* tick;
+		lv_timer_t* request;
+		lv_timer_t* receive;
+	} m_timers;
 };

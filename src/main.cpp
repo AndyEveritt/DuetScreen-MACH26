@@ -99,6 +99,7 @@ int main(int argc, char** argv)
 	home.show();
 
 	// Create a thread to handle requesting data from Duet
+#if MULTITHREADED
 	pthread_create(
 		&s_requestThread,
 		NULL,
@@ -107,9 +108,8 @@ int main(int argc, char** argv)
 			while (1)
 			{
 				// Request next section of the OM
-				Comm::sendNext();
+				Model::get().requestNewData();
 				usleep(Comm::DUET.GetScaledPollInterval() * 1000);
-				// std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 			}
 			return nullptr;
 		},
@@ -121,52 +121,15 @@ int main(int argc, char** argv)
 		NULL,
 		[](void*) -> void*
 		{
-			Comm::JsonDecoder decoder;
-			BYTE buffer[32768];
-			size_t bufferLen = 0;
-
 			while (1)
 			{
-				if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::usb)
-				{
-					// Longer delay if not in usb mode to not use as much CPU
-					usleep(500 * 1000);
-					continue;
-				}
-
-				if (!Comm::getCurrentUsbDevice().isConnected())
-				{
-					verbose("USB device disconnected");
-					usleep(500 * 1000);
-					continue;
-				}
-				int len = Comm::getCurrentUsbDevice().receive(buffer + bufferLen, 32768 - bufferLen);
-
-				if (len > 0)
-				{
-					bufferLen += len;
-					if (bufferLen >= 32768)
-					{
-						error("Buffer overflow");
-						bufferLen = 0;
-					}
-				}
-				else if (len < 0)
-				{
-					error("Error receiving data");
-					bufferLen = 0;
-				}
-				if (buffer[bufferLen - 1] == '\n')
-				{
-					// Process the data
-					decoder.CheckInput(buffer, bufferLen);
-					bufferLen = 0;
-				}
-				usleep(5 * 1000);
+				useconds_t delay = Model::get().receiveNewUsbData();
+				usleep(delay);
 			}
 			return nullptr;
 		},
 		NULL);
+#endif
 
 	while (1)
 	{

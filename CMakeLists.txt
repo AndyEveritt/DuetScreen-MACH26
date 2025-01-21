@@ -94,6 +94,7 @@ target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})
 # Add Definitions
 # ----------------------------------------------------------------------------
 target_compile_definitions(DuetScreen PRIVATE DEBUG)
+target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
 
 if (SIMULATION)
   target_compile_definitions(DuetScreen PRIVATE SIMULATION=1)
