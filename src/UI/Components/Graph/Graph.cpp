@@ -118,86 +118,145 @@ namespace UI
 		lv_chart_set_point_count(m_chart, count);
 	}
 
-	const Graph::series_t* Graph::getSeries(const std::string& name)
+	void Graph::setSeriesCount(size_t count)
 	{
-		auto it = m_series.find(name);
-		if (it != m_series.end())
+		if (count == m_series.size())
 		{
-			return &it->second;
+			return;
 		}
-		return nullptr;
+		if (count < m_series.size())
+		{
+			m_series.resize(count);
+			return;
+		}
+		m_series.reserve(count);
 	}
 
-	bool Graph::createSeries(const std::string& id, lv_color_t color, const std::string& displayName)
+	const Graph::series_t* Graph::getSeries(const size_t index)
 	{
-		if (m_series.find(id) != m_series.end())
+		if (index >= m_series.size())
 		{
-			return false; // Series with this name already exists
+			warn("Series index out of range");
+			return nullptr;
 		}
+		return &m_series[index];
+	}
+
+	bool Graph::createSeries(lv_color_t color, const std::string& displayName)
+	{
 
 		lv_chart_series_t* series = lv_chart_add_series(m_chart, color, LV_CHART_AXIS_PRIMARY_Y);
-		if (series)
+
+		if (series == nullptr)
 		{
-			std::shared_ptr<legend_obj_t> legendObj =
-				std::make_shared<legend_obj_t>(utils::format("%s_%s_legend_obj", getName(), id),
-											   m_legend,
-											   displayName.c_str(),
-											   layout_t(0, 0, 100, 20));
-			legendObj.get()->setBgColor(color, LV_STATE_CHECKED);
-			legendObj.get()->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
-			legendObj.get()->setCheckable(true);
-			legendObj.get()->setChecked(true);
-			legendObj.get()->setCallback(legendEvent, LV_EVENT_PRESSED, this);
-			legendObj.get()->setUserData(new std::string(id));
-			m_series[id] = series_t(series, color, legendObj);
-			return true;
+			error("Failed to create series");
+			return false;
 		}
-		return false;
+
+		size_t index = getSeriesCount();
+
+		std::shared_ptr<legend_obj_t> legendObj =
+			std::make_shared<legend_obj_t>(utils::format("%s_%u_legend_obj", getName(), index),
+										   m_legend,
+										   displayName.c_str(),
+										   layout_t(0, 0, 100, 20));
+		legendObj.get()->setBgColor(color, LV_STATE_CHECKED);
+		legendObj.get()->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
+		legendObj.get()->setCheckable(true);
+		legendObj.get()->setChecked(true);
+		legendObj.get()->setCallback(legendEvent, LV_EVENT_PRESSED, this);
+		legendObj.get()->setUserData(new size_t(index));
+		m_series.push_back(series_t(series, color, legendObj));
+		return true;
 	}
 
-	void Graph::showSeries(const std::string& id, const bool show)
+	bool Graph::updateSeriesColor(const size_t index, lv_color_t color)
 	{
-		const series_t* series = getSeries(id);
-		lv_chart_set_series_color(m_chart, series->series, show ? series->color : s_hiddenColor);
+		series_t* series = (series_t*)getSeries(index);
+		if (series == nullptr)
+		{
+			warn("Cannot update series, series not found");
+			return false;
+		}
+		setSeriesColor(*series, color);
+		return true;
+	}
+
+	bool Graph::updateSeriesName(const size_t index, const std::string& displayName)
+	{
+		series_t* series = (series_t*)getSeries(index);
+		if (series == nullptr)
+		{
+			warn("Cannot update series, series not found");
+			return false;
+		}
+		legend_obj_t* legendObj = series->legendObj.get();
+		legendObj->setText(displayName.c_str());
+		return true;
+	}
+
+	void Graph::showSeries(const size_t index, const bool show)
+	{
+		const series_t* series = getSeries(index);
+		if (series == nullptr)
+		{
+			warn("Cannot show/hide series, series not found");
+			return;
+		}
+		lv_chart_hide_series(m_chart, series->series, !show);
 	}
 
 	void Graph::clear()
 	{
-		for (auto& pair : m_series)
+		for (auto& series : m_series)
 		{
-			lv_chart_remove_series(m_chart, pair.second.series);
-			delete (std::string*)pair.second.legendObj.get()->getUserData();
+			lv_chart_remove_series(m_chart, series.series);
+			delete (size_t*)series.legendObj.get()->getUserData();
 		}
 		m_series.clear();
 	}
 
-	void Graph::clear(const std::string& id)
+	void Graph::clear(const size_t index)
 	{
-		const series_t* series = getSeries(id);
-		if (series)
+		const series_t* series = getSeries(index);
+		if (series == nullptr)
 		{
-			lv_chart_remove_series(m_chart, series->series);
-			delete (std::string*)series->legendObj.get()->getUserData();
-			m_series.erase(id);
+			warn("Cannot clear series, series not found");
+			return;
 		}
+		lv_chart_remove_series(m_chart, series->series);
+		delete (std::string*)series->legendObj.get()->getUserData();
+		m_series.erase(m_series.begin() + index);
 	}
 
-	void Graph::addData(const std::string& id, int32_t value)
+	void Graph::addData(const size_t index, int32_t value)
 	{
-		const series_t* series = getSeries(id);
-		if (series)
+		const series_t* series = getSeries(index);
+		if (series == nullptr)
 		{
-			lv_chart_set_next_value(m_chart, series->series, value);
+			warn("Cannot add data to series, series not found");
+			return;
 		}
+		lv_chart_set_next_value(m_chart, series->series, value);
 	}
 
 	void Graph::legendEvent(lv_event_t* e)
 	{
 		Graph* g = (Graph*)lv_event_get_user_data(e);
 		lv_obj_t* btn = lv_event_get_target_obj(e);
-		std::string* id = (std::string*)lv_obj_get_user_data(btn);
+		size_t* index = (size_t*)lv_obj_get_user_data(btn);
 
 		// checked is inverted since this callback runs before the state is updated
-		g->showSeries(*id, !lv_obj_has_state(btn, LV_STATE_CHECKED));
+		g->showSeries(*index, !lv_obj_has_state(btn, LV_STATE_CHECKED));
+	}
+
+	void Graph::setSeriesColor(series_t& series, lv_color_t color)
+	{
+		lv_chart_set_series_color(m_chart, series.series, color);
+		series.color = color;
+
+		lv_obj_t* legendObj = series.legendObj.get()->getCont();
+		lv_obj_set_style_bg_color(legendObj, color, LV_STATE_CHECKED);
+		lv_obj_set_style_bg_color(legendObj, s_hiddenColor, LV_STATE_DEFAULT);
 	}
 } // namespace UI

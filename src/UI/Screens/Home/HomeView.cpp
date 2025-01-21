@@ -22,12 +22,13 @@ namespace UI
 
 		m_graph.setXRange({.min = -100, .max = 0});
 		m_graph.setYRange({.min = 0, .max = 300});
-		m_graph.setXCount(-m_graph.getXRange().min);
+		m_graph.setXCount(-m_graph.getXRange().min * MODEL_TICK_HZ * 2);
 	}
 
 	void HomeView::onHide()
 	{
 		// Clear the tool list
+		m_graph.clear();
 		m_toolList.setItemCnt(0);
 		m_toolList.hideNumberPad();
 	}

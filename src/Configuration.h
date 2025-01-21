@@ -15,6 +15,7 @@ constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
 
 /* UI */
 constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in milliseconds
+constexpr size_t MODEL_TICK_HZ = 1000 / MODEL_TICK_INTERVAL;
 
 /* Duet */
 constexpr uint32_t DEFAULT_PRINTER_POLL_INTERVAL = 500;

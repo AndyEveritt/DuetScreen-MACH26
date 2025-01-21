@@ -10,16 +10,17 @@ namespace UI
 	{
 		Lock lock;
 		const size_t sensorCount = OM::GetAnalogSensorCount();
+		m_view->m_graph.setSeriesCount(sensorCount);
 		for (size_t i = 0; i < sensorCount; i++)
 		{
 			OM::AnalogSensor* sensor = OM::GetAnalogSensorBySlot(i);
-			if (!m_view->m_graph.getSeries(sensor->name.c_str()))
+			if (!m_view->m_graph.getSeries(i))
 			{
-				m_view->m_graph.createSeries(sensor->name.c_str(),
-											 lv_palette_main((lv_palette_t)m_view->m_graph.getSeriesCount()),
+				m_view->m_graph.createSeries(lv_palette_main((lv_palette_t)m_view->m_graph.getSeriesCount()),
 											 sensor->name.c_str());
 			}
-			m_view->m_graph.addData(sensor->name.c_str(), sensor->lastReading);
+			m_view->m_graph.updateSeriesName(i, sensor->name.c_str());
+			m_view->m_graph.addData(i, sensor->lastReading);
 		}
 	}
 } // namespace UI

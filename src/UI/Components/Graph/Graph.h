@@ -25,7 +25,7 @@ namespace UI
 			lv_color_t color;
 			std::shared_ptr<legend_obj_t> legendObj;
 		};
-		typedef std::map<std::string, series_t> series_map_t;
+		typedef std::vector<series_t> series_list_t;
 		struct range_t
 		{
 			int32_t min;
@@ -42,17 +42,22 @@ namespace UI
 		void setYRange(range_t range);
 		void setXCount(int32_t count);
 
+		void setSeriesCount(size_t count);
 		size_t getSeriesCount() const { return m_series.size(); }
-		const series_t* getSeries(const std::string& id);
-		bool createSeries(const std::string& id, lv_color_t color, const std::string& displayName);
-		void showSeries(const std::string& id, const bool show);
+		const series_t* getSeries(const size_t index);
+		bool createSeries(lv_color_t color, const std::string& displayName);
+		bool updateSeriesColor(const size_t index, lv_color_t color);
+		bool updateSeriesName(const size_t index, const std::string& displayName);
+		void showSeries(const size_t index, const bool show);
 
 		void clear();
-		void clear(const std::string& id);
-		void addData(const std::string& id, int32_t value);
+		void clear(const size_t index);
+		void addData(const size_t index, int32_t value);
 
 	  private:
 		static void legendEvent(lv_event_t* e);
+
+		void setSeriesColor(series_t& series, lv_color_t color);
 
 		lv_obj_t* m_chart;
 		lv_obj_t* m_vScale;
@@ -62,6 +67,6 @@ namespace UI
 		int32_t m_columnDsc[4];
 		int32_t m_rowDsc[3];
 
-		series_map_t m_series;
+		series_list_t m_series;
 	};
 } // namespace UI
