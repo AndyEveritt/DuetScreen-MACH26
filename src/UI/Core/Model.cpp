@@ -20,8 +20,10 @@
 Model::Model()
 {
 	// Timers
-	m_timers.tick = lv_timer_create(
-		[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->tick(); }, 100, this);
+	m_timers.tick =
+		lv_timer_create([](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->tick(); },
+						MODEL_TICK_INTERVAL,
+						this);
 
 #if !MULTITHREADED
 	m_timers.request =
