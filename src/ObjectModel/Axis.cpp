@@ -8,6 +8,7 @@
 #include "Axis.h"
 
 #include "Configuration.h"
+#include "Hardware/Duet.h"
 #include "ObjectModel/Tool.h"
 #include <Duet3D/General/Vector.h>
 #include <math.h>
@@ -42,6 +43,11 @@ namespace OM::Move
 		visible = false;
 	}
 
+	void Axis::Home()
+	{
+		Comm::DUET.SendGcodef("G28 %s\n", letter);
+	}
+
 	Axis* GetAxis(const size_t index)
 	{
 		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);
@@ -49,7 +55,7 @@ namespace OM::Move
 		{
 			return nullptr;
 		}
-		return GetOrCreate<AxisList, Axis>(s_axes, index, false);
+		return GetOrCreate<AxisList, Axis>(s_axes, index, true);
 	}
 
 	Axis* GetAxisBySlot(const size_t slot, const bool includeHidden)

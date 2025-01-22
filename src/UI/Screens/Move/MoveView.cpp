@@ -7,17 +7,20 @@
 
 namespace UI
 {
+	static constexpr float s_relMoveValues[] = {-50.0f, -10.0f, -1.0f, -0.1f, 0.1f, 1.0f, 10.0f, 50.0f};
+
 	AxisItem::AxisItem(const size_t index, lv_obj_t* parent, layout_t layout)
 		: BaseView(utils::format("move_axis_item_%u", index), parent, layout)
-		, m_home(utils::format("move_axis_%u_home", index), getCont(), _("move_axis_home"), layout_t(0, 0, 0, 100))
-		, m_relMove{Button(utils::format("move_axis_%u_rel_move_1", index), getCont(), "-50", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_2", index), getCont(), "-10", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_3", index), getCont(), "-1", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_4", index), getCont(), "-0.1", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_5", index), getCont(), "0.1", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_6", index), getCont(), "1", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_7", index), getCont(), "10", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_8", index), getCont(), "50", layout_t(0, 0, 0, 100))}
+		, m_index(index)
+		, m_home(utils::format("move_axis_%u_home", index), getCont(), "", layout_t(0, 0, 0, 100))
+		, m_relMove{Button(utils::format("move_axis_%u_rel_move_1", index), getCont(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("move_axis_%u_rel_move_2", index), getCont(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("move_axis_%u_rel_move_3", index), getCont(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("move_axis_%u_rel_move_4", index), getCont(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("move_axis_%u_rel_move_5", index), getCont(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("move_axis_%u_rel_move_6", index), getCont(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("move_axis_%u_rel_move_7", index), getCont(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("move_axis_%u_rel_move_8", index), getCont(), "", layout_t(0, 0, 0, 100))}
 		, m_toolPosition(lv_label_create(getCont()))
 		, m_machinePosition(lv_label_create(getCont()))
 	{
@@ -27,37 +30,56 @@ namespace UI
 		lv_obj_set_style_pad_column(getCont(), pad, 0);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_flex_grow(m_home.getCont(), 2);
+		lv_obj_set_flex_grow(m_home.getCont(), 4);
 		for (Button& relMove : m_relMove)
 		{
-			lv_obj_set_flex_grow(relMove.getCont(), 1);
+			relMove.setText(utils::format("%.1f", s_relMoveValues[&relMove - m_relMove]).c_str());
+			lv_obj_set_flex_grow(relMove.getCont(), 2);
 		}
-		lv_obj_set_flex_grow(m_toolPosition, 3);
-		lv_obj_set_flex_grow(m_machinePosition, 3);
+		lv_obj_set_flex_grow(m_toolPosition, 5);
+		lv_obj_set_flex_grow(m_machinePosition, 5);
 		lv_obj_set_style_text_align(m_toolPosition, LV_TEXT_ALIGN_CENTER, 0);
 		lv_obj_set_style_text_align(m_machinePosition, LV_TEXT_ALIGN_CENTER, 0);
 
 		lv_label_set_text(m_toolPosition, "");
 		lv_label_set_text(m_machinePosition, "");
+
+		m_home.setCallback(onHomeEvent, LV_EVENT_CLICKED, this);
+
+		// Styles
+		m_home.setCheckable(true);
+		lv_obj_set_style_bg_color(m_home.getChild(0), lv_color_hex(0xfb9514), LV_STATE_CHECKED);
+	}
+
+	void AxisItem::setAxisLetter(const char* letter)
+	{
+		Lock lock;
+		m_home.setText(utils::format(_("move_axis_home"), letter).c_str());
+	}
+
+	void AxisItem::setHomed(const bool homed)
+	{
+		Lock lock;
+		m_home.setChecked(!homed);
 	}
 
 	void AxisItem::setToolPosition(const float& position)
 	{
 		Lock lock;
-		lv_label_set_text_fmt(m_toolPosition, "%.2f", position);
+		lv_label_set_text(m_toolPosition, utils::format("%.2f", position).c_str());
 	}
 
 	void AxisItem::setMachinePosition(const float& position)
 	{
 		Lock lock;
-		lv_label_set_text_fmt(m_machinePosition, "(%.2f)", position);
+		lv_label_set_text(m_machinePosition, utils::format("(%.2f)", position).c_str());
 	}
 
 	void AxisItem::onHomeEvent(lv_event_t* e)
 	{
 		Lock lock;
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
-		item->getList();
+		item->getList()->m_presenter.homeAxis(item->getIndex());
 	}
 
 	void AxisItem::onRelMoveEvent(lv_event_t* e)
@@ -118,8 +140,8 @@ namespace UI
 		lv_obj_set_style_pad_column(m_listHeader, pad, 0);
 		lv_obj_set_flex_grow(m_listHeaderPadding, 10);
 		lv_obj_set_height(m_listHeaderPadding, LV_PCT(0));
-		lv_obj_set_flex_grow(m_toolPositionLabel, 3);
-		lv_obj_set_flex_grow(m_machinePositionLabel, 3);
+		lv_obj_set_flex_grow(m_toolPositionLabel, 5);
+		lv_obj_set_flex_grow(m_machinePositionLabel, 5);
 		lv_obj_set_height(m_toolPositionLabel, LV_PCT(100));
 		lv_obj_set_height(m_machinePositionLabel, LV_PCT(100));
 		lv_obj_set_style_text_align(m_toolPositionLabel, LV_TEXT_ALIGN_CENTER, 0);
@@ -143,8 +165,6 @@ namespace UI
 		}
 		lv_label_set_text(m_feedRateLabel, _("move_feedrate"));
 		lv_obj_set_style_text_align(m_feedRateLabel, LV_TEXT_ALIGN_RIGHT, 0);
-
-		setAxisCount(5);
 	}
 
 	void MoveView::onShow() {}
@@ -168,5 +188,14 @@ namespace UI
 		{
 			m_axisItems.emplace_back(std::make_unique<AxisItem>(i, m_listCont, layout_t(0, 0, 100, 20)));
 		}
+	}
+
+	std::shared_ptr<AxisItem> MoveView::getAxisItem(size_t index) const
+	{
+		if (index < m_axisItems.size())
+		{
+			return m_axisItems[index];
+		}
+		return nullptr;
 	}
 } // namespace UI

@@ -47,6 +47,7 @@ namespace OM::Move
 		uint8_t homed : 1, visible : 1;
 
 		void Reset();
+		void Home();
 	};
 
 	struct ExtruderAxis

@@ -15,13 +15,18 @@ namespace UI
 		AxisItem(const size_t index, lv_obj_t* parent, layout_t layout);
 		virtual ~AxisItem() {}
 
+		const size_t getIndex() const { return m_index; }
 		MoveView* getList() const { return m_list; }
+		void setAxisLetter(const char* letter);
+		void setHomed(const bool homed);
 		void setToolPosition(const float& position);
 		void setMachinePosition(const float& position);
 
 	  private:
 		static void onHomeEvent(lv_event_t* e);
 		static void onRelMoveEvent(lv_event_t* e);
+
+		size_t m_index;
 
 		MoveView* m_list;
 
@@ -34,6 +39,8 @@ namespace UI
 	class MoveView : public View<MovePresenter>
 	{
 	  public:
+		friend class AxisItem;
+
 		MoveView(lv_obj_t* parent);
 
 		const size_t getAxisCount() const { return m_axisItems.size(); }

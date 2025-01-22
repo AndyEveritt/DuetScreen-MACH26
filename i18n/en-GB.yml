@@ -33,3 +33,17 @@ en-GB:
   settings_debug_level: Debug Level
   settings_debug_borders: Enable Debug Borders
   settings_developer: Developer
+  move_axis_home: Home %s
+  home_all: Home All
+  true_bed_level: True Bed Level
+  mesh_bed_level: Mesh Bed Level
+  heightmap: Heightmap
+  disable_motors: Disable Motors
+  move_tool_position: Tool Pos (mm)
+  move_machine_position: Machine Pos (mm)
+  move_feedrate: Feedrate (mm/s)
+  settings_duet: Duet
+  save: Save
+  settings_duet_hostname: Hostname/IP
+  settings_duet_password: Password
+  settings_duet_poll_interval: Poll Interval (ms)

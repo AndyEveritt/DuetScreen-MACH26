@@ -11,6 +11,12 @@ namespace UI
 	  public:
 		using Presenter::Presenter;
 
+		void homeAxis(size_t axisSlot);
+
+		// oberservers
+
+		virtual void newAxesData() override;
+
 	  protected:
 	};
 } // namespace UI

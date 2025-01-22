@@ -28,7 +28,7 @@ namespace OM
 {
 	void RemoveAll()
 	{
-		Model::get().lock();
+		Model::lock();
 		g_currentAlert.Reset();
 		g_lastAlertSeq = 0;
 		Move::RemoveAxis(0, true);
@@ -44,7 +44,6 @@ namespace OM
 		ClearCurrentHeightmap();
 
 		Model::get().refresh();
-		Model::get().unlock();
 	}
 
 	static Debug::DebugCommand s_logOM(

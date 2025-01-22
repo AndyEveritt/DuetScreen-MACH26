@@ -74,8 +74,8 @@ namespace UI
 		void setY(int yPct);
 
 		virtual void setStyle(lv_style_t* style, lv_style_selector_t selector);
-		void show();
-		void hide();
+		virtual void show();
+		virtual void hide();
 		bool isVisible();
 		virtual bool back();
 
@@ -149,7 +149,7 @@ namespace UI
 		 *
 		 * @note This function calls the `onShow()` virtual method before showing the view.
 		 */
-		void show()
+		void show() override
 		{
 			activate();
 			BaseView::show();
@@ -160,7 +160,7 @@ namespace UI
 		 *
 		 * @note This function calls the `onHide()` virtual method before hiding the view.
 		 */
-		void hide()
+		void hide() override
 		{
 			deactivate();
 			BaseView::hide();

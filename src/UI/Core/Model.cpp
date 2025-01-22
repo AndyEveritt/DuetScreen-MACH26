@@ -47,7 +47,6 @@ void Model::tick()
 	{
 		presenter->tick();
 	}
-	unlock();
 }
 
 void Model::requestNewData()
@@ -111,7 +110,6 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 			subscriber.run(decoder, data, indices);
 		}
 	}
-	unlock();
 }
 
 void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[])
@@ -126,7 +124,6 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 			subscriber.run(decoder, indices);
 		}
 	}
-	unlock();
 }
 
 /**
@@ -158,14 +155,14 @@ bool Model::initMutex()
 	}
 }
 
-void Model::lock()
+void Model::_lock()
 {
 	dbg("Attempting to lock model");
 	lv_lock();
 	pthread_mutex_lock(&m_mutex);
 }
 
-void Model::unlock()
+void Model::_unlock()
 {
 	dbg("Unlocking model");
 	lv_unlock();
