@@ -179,7 +179,7 @@ namespace UI
 		legendObj.get()->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
 		legendObj.get()->setCheckable(true);
 		legendObj.get()->setChecked(true);
-		legendObj.get()->setCallback(legendEvent, LV_EVENT_PRESSED, this);
+		legendObj.get()->setCallback(legendEvent, LV_EVENT_CLICKED, this);
 		legendObj.get()->setUserData(new size_t(index));
 		m_series.push_back(series_t(series, color, legendObj));
 		return true;

@@ -8,6 +8,7 @@
 #include "UI/Components/SideBar.h"
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
+#include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "lvgl/lvgl.h"
 
@@ -50,6 +51,7 @@ namespace UI
 		Button m_settingsWindow;
 
 		// Windows
+		MoveView m_moveView;
 		SettingsView m_settingsView;
 	};
 } // namespace UI

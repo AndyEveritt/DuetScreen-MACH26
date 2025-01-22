@@ -35,10 +35,10 @@ namespace UI
 		lv_obj_add_flag(m_status, LV_OBJ_FLAG_CLICKABLE);
 		lv_obj_add_flag(m_activeTemp, LV_OBJ_FLAG_CLICKABLE);
 		lv_obj_add_flag(m_standbyTemp, LV_OBJ_FLAG_CLICKABLE);
-		lv_obj_add_event_cb(m_label, onNameEvent, LV_EVENT_PRESSED, this);
-		lv_obj_add_event_cb(m_status, onStatusEvent, LV_EVENT_PRESSED, this);
-		lv_obj_add_event_cb(m_activeTemp, onActiveStandbyEvent, LV_EVENT_PRESSED, this);
-		lv_obj_add_event_cb(m_standbyTemp, onActiveStandbyEvent, LV_EVENT_PRESSED, this);
+		lv_obj_add_event_cb(m_label, onNameEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_status, onStatusEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_activeTemp, onActiveStandbyEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_standbyTemp, onActiveStandbyEvent, LV_EVENT_CLICKED, this);
 
 		// Styles
 		lv_obj_set_style_bg_color(

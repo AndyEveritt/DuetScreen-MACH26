@@ -54,6 +54,7 @@ namespace UI
 						   m_windowSelect,
 						   _("settings"),
 						   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
+		, m_moveView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 	{
 		addHomeScreen(this);
@@ -87,7 +88,10 @@ namespace UI
 		lv_obj_set_flex_flow(m_windowSelect, LV_FLEX_FLOW_ROW_WRAP);
 		lv_obj_set_flex_align(m_windowSelect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_PRESSED, &m_settingsView);
+		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_moveView);
+		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
+
+		m_moveView.hide();
 		m_settingsView.hide();
 
 		// Styles::instance().removeTheme(getCont());
