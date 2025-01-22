@@ -46,6 +46,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"extrude", "Extrude"},
     {"status", "Status"},
     {"fans", "Fans"},
+    {"files", "Files"},
     {"object_cancel", "Object Cancel"},
     {"settings", "Settings"},
     {"settings_debug_level", "Debug Level"},

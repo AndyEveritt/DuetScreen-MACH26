@@ -23,4 +23,10 @@ namespace UI
 			m_view->m_graph.addData(i, sensor->lastReading);
 		}
 	}
+
+	void HomePresenter::refresh()
+	{
+		Lock lock;
+		m_view->refresh();
+	}
 } // namespace UI

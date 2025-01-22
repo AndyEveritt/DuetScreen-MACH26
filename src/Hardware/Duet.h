@@ -56,8 +56,8 @@ namespace Comm
 		CommunicationType communicationType = CommunicationType::usb;
 		unsigned int baudRate = B115200;
 
-		NLOHMANN_DEFINE_TYPE_INTRUSIVE(
-			DuetConfig, ipAddress, hostname, password, pollInterval, communicationType, baudRate)
+		// NLOHMANN_DEFINE_TYPE_INTRUSIVE(
+		// 	DuetConfig, ipAddress, hostname, password, pollInterval, communicationType, baudRate)
 	};
 
 	class Duet

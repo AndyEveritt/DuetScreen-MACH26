@@ -25,25 +25,25 @@
 
 namespace Comm
 {
-	// void to_json(nlohmann::json& j, const DuetConfig& c)
-	// {
-	// 	j = nlohmann::json{
-	// 		{ID_DUET_HOSTNAME, c.hostname},
-	// 		{ID_DUET_PASSWORD, c.password},
-	// 		{ID_DUET_COMMUNICATION_TYPE, c.communicationType},
-	// 		{ID_DUET_POLL_INTERVAL, c.pollInterval},
-	// 		{ID_DUET_BAUD_RATE, c.baudRate.rate},
-	// 	};
-	// }
+	void to_json(nlohmann::json& j, const DuetConfig& c)
+	{
+		j = nlohmann::json{
+			{ID_DUET_HOSTNAME, c.hostname},
+			{ID_DUET_PASSWORD, c.password},
+			{ID_DUET_COMMUNICATION_TYPE, c.communicationType},
+			{ID_DUET_POLL_INTERVAL, c.pollInterval},
+			{ID_DUET_BAUD_RATE, c.baudRate},
+		};
+	}
 
-	// void from_json(const nlohmann::json& j, DuetConfig& c)
-	// {
-	// 	j.at(ID_DUET_HOSTNAME).get_to(c.hostname);
-	// 	j.at(ID_DUET_PASSWORD).get_to(c.password);
-	// 	j.at(ID_DUET_COMMUNICATION_TYPE).get_to(c.communicationType);
-	// 	j.at(ID_DUET_POLL_INTERVAL).get_to(c.pollInterval);
-	// 	j.at(ID_DUET_BAUD_RATE).get_to(c.baudRate.rate);
-	// }
+	void from_json(const nlohmann::json& j, DuetConfig& c)
+	{
+		j.at(ID_DUET_HOSTNAME).get_to(c.hostname);
+		j.at(ID_DUET_PASSWORD).get_to(c.password);
+		j.at(ID_DUET_COMMUNICATION_TYPE).get_to(c.communicationType);
+		j.at(ID_DUET_POLL_INTERVAL).get_to(c.pollInterval);
+		j.at(ID_DUET_BAUD_RATE).get_to(c.baudRate);
+	}
 
 	Duet::Duet()
 		: m_lastRequestTime(0)

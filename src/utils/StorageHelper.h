@@ -26,11 +26,20 @@ class StorageHelper
 	template <typename T>
 	static T getData(const std::string& key, const T& defaultValue)
 	{
-		if (data_.find(key) == data_.end())
+		std::istringstream keyStream(key);
+		std::string segment;
+		nlohmann::json* current = &data_;
+
+		while (std::getline(keyStream, segment, ':'))
 		{
-			return defaultValue;
+			if (current->find(segment) == current->end())
+			{
+				return defaultValue;
+			}
+			current = &(*current)[segment];
 		}
-		return data_.at(key).get<T>();
+
+		return current->get<T>();
 	}
 
   private:

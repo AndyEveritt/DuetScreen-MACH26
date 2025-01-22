@@ -12,6 +12,7 @@ namespace UI
 		using Presenter::Presenter;
 
 		void tick();
+		virtual void refresh() override;
 
 	  protected:
 	};

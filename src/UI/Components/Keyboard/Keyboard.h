@@ -1,7 +1,7 @@
 /*
- * NumberPad.h
+ * Keyboard.h
  *
- *  Created on: 2025-01-17
+ *  Created on: 2025-01-22
  *      Author: Andy Everitt
  */
 
@@ -12,18 +12,18 @@
 
 namespace UI
 {
-	struct NumberPadConfig
+	struct KeyboardConfig
 	{
 		int16_t minValue;
 		int16_t maxValue;
 	};
 
-	class NumberPad : public BaseView
+	class Keyboard : public BaseView
 	{
 
 	  public:
-		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout);
-		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config);
+		Keyboard(const std::string& name, lv_obj_t* parent, layout_t layout);
+		Keyboard(const std::string& name, lv_obj_t* parent, layout_t layout, const KeyboardConfig& config);
 
 		virtual bool back();
 		void clear();

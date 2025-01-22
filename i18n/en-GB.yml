@@ -27,6 +27,7 @@ en-GB:
   extrude: Extrude
   status: Status
   fans: Fans
+  files: Files
   object_cancel: Object Cancel
   settings: Settings
   settings_debug_level: Debug Level

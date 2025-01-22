@@ -96,6 +96,11 @@ namespace UI
 		// lv_obj_refresh_style(getCont(), LV_PART_ANY, LV_STYLE_PROP_ANY);
 	}
 
+	void HomeView::refresh()
+	{
+		m_graph.clear();
+	}
+
 	void HomeView::onHide()
 	{
 		// Clear the tool list

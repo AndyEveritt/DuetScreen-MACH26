@@ -13,6 +13,11 @@
 constexpr const char* ID_HEIGHTMAP_RENDER_MODE = "heightmap_render_mode";
 
 constexpr const char* ID_DUET = "duet";
+constexpr const char* ID_DUET_HOSTNAME = "hostname";
+constexpr const char* ID_DUET_PASSWORD = "password";
+constexpr const char* ID_DUET_COMMUNICATION_TYPE = "communication_type";
+constexpr const char* ID_DUET_POLL_INTERVAL = "poll_interval";
+constexpr const char* ID_DUET_BAUD_RATE = "baud_rate";
 
 constexpr const char* ID_THEME = "theme";
 constexpr const char* ID_SHOW_SETUP_ON_STARTUP = "show_setup_on_startup";

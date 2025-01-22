@@ -1,5 +1,6 @@
 #include "SettingsView.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
@@ -9,23 +10,140 @@ namespace UI
 	SettingsView::SettingsView(lv_obj_t* parent)
 		: View("settings_view", parent, layout_t(0, 0, 100, 100))
 		, m_settingsTabView(lv_tabview_create(getCont()))
+		, m_duetSettingsTab(lv_tabview_add_tab(m_settingsTabView, _("settings_duet")))
 		, m_developerSettingsTab(lv_tabview_add_tab(m_settingsTabView, _("settings_developer")))
-		, m_developerSettingsView(m_developerSettingsTab)
+		, m_duetSettingsView(m_duetSettingsTab, this)
+		, m_developerSettingsView(m_developerSettingsTab, this)
+		, m_keyboard(lv_keyboard_create(getCont()))
 	{
-		lv_obj_set_style_border_width(getCont(), 2, LV_PART_MAIN);
-		lv_obj_set_style_border_color(getCont(), lv_color_hex(0x000000), LV_PART_MAIN);
-		lv_obj_set_style_border_opa(getCont(), LV_OPA_100, LV_PART_MAIN);
+		// Layout
+		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
+		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
+		lv_obj_set_grid_cell(m_settingsTabView, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		lv_obj_set_grid_cell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
+		// Tab View
 		lv_tabview_set_tab_bar_position(m_settingsTabView, LV_DIR_LEFT);
+
+		// Keyboard
 	}
+
+	void SettingsView::showKeyboard(bool show, lv_keyboard_mode_t mode)
+	{
+		Lock lock;
+		if (show)
+		{
+			m_layoutRowDsc[1] = LV_GRID_FR(1);
+			lv_keyboard_set_mode(m_keyboard, mode);
+			lv_obj_remove_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
+		}
+		else
+		{
+			m_layoutRowDsc[1] = 0;
+			lv_obj_add_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
+		}
+	}
+
+	void SettingsView::setKeyboardTextArea(lv_obj_t* textArea)
+	{
+		Lock lock;
+		lv_keyboard_set_textarea(m_keyboard, textArea);
+	}
+
+	void SettingsView::onHide() {}
 
 	void SettingsView::onShow()
 	{
-		// m_developerSettingsView.hide();
+		showKeyboard(false);
 	}
 
-	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent)
-		: BaseView("developer_settings_view", parent, layout_t(0, 0, 100, 100))
+	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView* mainSettingsView)
+		: BaseView(name, parent, layout_t(0, 0, 100, 100))
+		, m_mainSettingsView(mainSettingsView)
+	{
+	}
+
+	void SettingsSubView::onTextAreaEvent(lv_event_t* e)
+	{
+		Lock lock;
+		lv_event_code_t code = lv_event_get_code(e);
+		lv_obj_t* ta = (lv_obj_t*)lv_event_get_target(e);
+		SettingsSubView* view = (SettingsSubView*)lv_event_get_user_data(e);
+		lv_keyboard_mode_t mode =
+			lv_textarea_get_accepted_chars(ta) == "0123456789" ? LV_KEYBOARD_MODE_NUMBER : LV_KEYBOARD_MODE_TEXT_LOWER;
+		if (code == LV_EVENT_FOCUSED)
+		{
+			view->getMainSettingsView()->showKeyboard(true, mode);
+			view->getMainSettingsView()->setKeyboardTextArea(ta);
+		}
+
+		if (code == LV_EVENT_DEFOCUSED)
+		{
+			view->getMainSettingsView()->setKeyboardTextArea(NULL);
+			view->getMainSettingsView()->showKeyboard(false);
+		}
+	}
+
+	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
+		: SettingsSubView("duet_settings_view", parent, mainSettingsView)
+		, m_connectionMethod(lv_dropdown_create(getCont()))
+		, m_hostname(lv_textarea_create(getCont()))
+		, m_password(lv_textarea_create(getCont()))
+		, m_pollInterval(lv_textarea_create(getCont()))
+		, m_save("duet_settings_save", getCont(), _("save"))
+	{
+		Lock lock;
+		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
+		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
+		// Connection Method
+		std::string options;
+		for (const auto& method : Comm::duetCommunicationTypeNames)
+		{
+			options += _(method);
+			options += "\n";
+		}
+		lv_dropdown_set_options(m_connectionMethod, options.c_str());
+		lv_dropdown_set_selected(m_connectionMethod, (uint32_t)Comm::DUET.GetCommunicationType());
+
+		// Hostname
+		lv_textarea_set_one_line(m_hostname, true);
+		lv_textarea_set_placeholder_text(m_hostname, _("settings_duet_hostname"));
+		lv_textarea_set_text(m_hostname, Comm::DUET.GetHostname().c_str());
+		lv_obj_add_event_cb(m_hostname, onTextAreaEvent, LV_EVENT_ALL, this);
+
+		// Password
+		lv_textarea_set_one_line(m_password, true);
+		lv_textarea_set_placeholder_text(m_password, _("settings_duet_password"));
+		lv_textarea_set_password_mode(m_password, true);
+		lv_textarea_set_text(m_password, Comm::DUET.GetPassword().c_str());
+		lv_obj_add_event_cb(m_password, onTextAreaEvent, LV_EVENT_ALL, this);
+
+		// Poll Interval
+		lv_textarea_set_one_line(m_pollInterval, true);
+		lv_textarea_set_placeholder_text(m_pollInterval, _("settings_duet_poll_interval"));
+		lv_textarea_set_accepted_chars(m_pollInterval, "0123456789");
+		lv_textarea_set_text(m_pollInterval, utils::format("%u", Comm::DUET.GetPollInterval()).c_str());
+		lv_obj_add_event_cb(m_pollInterval, onTextAreaEvent, LV_EVENT_ALL, this);
+
+		// Save
+		lv_obj_set_height(m_save.getCont(), LV_SIZE_CONTENT);
+		m_save.setCallback(onSaveEvent, LV_EVENT_CLICKED, this);
+	}
+
+	void DuetSettingsView::onSaveEvent(lv_event_t* e)
+	{
+		Lock lock;
+		DuetSettingsView* view = (DuetSettingsView*)lv_event_get_user_data(e);
+
+		Comm::DUET.SetCommunicationType((Comm::CommunicationType)lv_dropdown_get_selected(view->m_connectionMethod));
+		Comm::DUET.SetHostname(lv_textarea_get_text(view->m_hostname));
+		Comm::DUET.SetPassword(lv_textarea_get_text(view->m_password));
+		Comm::DUET.SetPollInterval(atoi(lv_textarea_get_text(view->m_pollInterval)));
+	}
+
+	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
+		: SettingsSubView("developer_settings_view", parent, mainSettingsView)
 		, m_debugLevelCont(lv_obj_create(getCont()))
 		, m_debugLevelLabel(lv_label_create(m_debugLevelCont))
 		, m_debugLevel(lv_dropdown_create(m_debugLevelCont))
@@ -33,6 +151,7 @@ namespace UI
 		, m_debugBorders(lv_checkbox_create(getCont()))
 #endif
 	{
+		Lock lock;
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
 
 		// Debug Level
@@ -62,6 +181,7 @@ namespace UI
 
 	void DeveloperSettingsView::onDebugLevelEvent(lv_event_t* e)
 	{
+		Lock lock;
 		lv_obj_t* dropdown = (lv_obj_t*)lv_event_get_target(e);
 		size_t lvl = lv_dropdown_get_selected(dropdown);
 		SetDebugLevel(static_cast<DebugLevel>(lvl));
@@ -70,6 +190,7 @@ namespace UI
 #if DEBUG_BORDERS
 	void DeveloperSettingsView::onDebugBordersEvent(lv_event_t* e)
 	{
+		Lock lock;
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
 		StorageHelper::setData<bool>(ID_DEBUG_BORDERS, checked);

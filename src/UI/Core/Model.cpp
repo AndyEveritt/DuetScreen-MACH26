@@ -176,6 +176,7 @@ void Model::refresh()
 {
 	for (auto presenter : m_presenters)
 	{
+		presenter->refresh();
 		presenter->newFanData();
 		presenter->newFileData();
 		presenter->newHeaterData();

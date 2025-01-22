@@ -24,6 +24,8 @@ namespace UI
 			return view;
 		}
 
+		virtual void refresh() override;
+
 	  private:
 		HomeView();
 		virtual void onShow() {}
