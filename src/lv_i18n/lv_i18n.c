@@ -66,6 +66,9 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"settings_duet_hostname", "Hostname/IP"},
     {"settings_duet_password", "Password"},
     {"settings_duet_poll_interval", "Poll Interval (ms)"},
+    {"unload", "Unload"},
+    {"retract", "Retract"},
+    {"extrude_feed_dist", "Feed Distance (mm)"},
     {NULL, NULL} // End mark
 };
 
