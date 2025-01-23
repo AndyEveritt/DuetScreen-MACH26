@@ -48,6 +48,12 @@ namespace OM::Move
 		Comm::DUET.SendGcodef("G28 %s\n", letter);
 	}
 
+	void Axis::MoveRelative(float distance, uint32_t feedrate)
+	{
+		feedrate = feedrate * 60;
+		Comm::DUET.SendGcodef("G91\nG1 %s%.2f F%u\nG90\n", letter, distance, feedrate);
+	}
+
 	Axis* GetAxis(const size_t index)
 	{
 		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);

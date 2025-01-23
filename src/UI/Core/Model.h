@@ -28,30 +28,11 @@ class Model
 	Model(const Model&) = delete;
 	Model& operator=(const Model&) = delete;
 
-	struct ModelLock
-	{
-		ModelLock(Model& model)
-			: m_model(model)
-		{
-			m_model._lock();
-		}
-		~ModelLock() { m_model._unlock(); }
-
-	  private:
-		Model& m_model;
-	};
-
 	static Model& get()
 	{
 		static Model instance;
 		return instance;
 	}
-
-	/**
-	 * @brief Creates a scopped lock for the model
-	 * @return Return a `ModelLock` object which calls `_lock()` on construction and `_unlock()` on destruction
-	 */
-	static ModelLock lock() { return ModelLock(get()); }
 
 	/**
 	 * @brief Add a `Presenter` to listen to events
@@ -149,8 +130,8 @@ class Model
 	}
 	const size_t getArrayEndSubscriberCount(const char* key) { return SubscriberMap::getArrayEndSubscriberCount(key); }
 
-	void _lock();
-	void _unlock();
+	void lock();
+	void unlock();
 
   private:
 	Model();
@@ -176,4 +157,22 @@ class Model
 		lv_timer_t* request;
 		lv_timer_t* receive;
 	} m_timers;
+};
+
+/**
+ * @brief Creates a scopped lock for the model
+ * @return Return a `ModelLock` object which calls `Model::get().lock()` on construction and `Model::get().unlock()` on
+ * destruction
+ */
+struct ModelLock
+{
+	ModelLock()
+		: m_model(Model::get())
+	{
+		m_model.lock();
+	}
+	~ModelLock() { m_model.unlock(); }
+
+  private:
+	Model& m_model;
 };

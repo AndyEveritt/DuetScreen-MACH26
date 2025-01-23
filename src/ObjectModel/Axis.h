@@ -48,6 +48,7 @@ namespace OM::Move
 
 		void Reset();
 		void Home();
+		void MoveRelative(float distance, uint32_t feedrate);
 	};
 
 	struct ExtruderAxis

@@ -1,13 +1,39 @@
 #include "MovePresenter.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
 #include "MoveView.h"
 #include "ObjectModel/Axis.h"
 
 namespace UI
 {
+	void MovePresenter::homeAll()
+	{
+		Comm::DUET.SendGcode("G28\n");
+	}
+
+	void MovePresenter::trueBedLevel()
+	{
+		Comm::DUET.SendGcode("G32\n");
+	}
+
+	void MovePresenter::meshBedLevel()
+	{
+		Comm::DUET.SendGcode("G29\n");
+	}
+
+	void MovePresenter::heightmap()
+	{
+		// TODO Open HeightmapView
+	}
+
+	void MovePresenter::disableMotors()
+	{
+		Comm::DUET.SendGcode("M18\n");
+	}
+
 	void MovePresenter::homeAxis(size_t axisSlot)
 	{
-		Model::lock();
+		ModelLock lock;
 		OM::Move::Axis* axis = OM::Move::GetAxisBySlot(axisSlot);
 		if (axis == nullptr)
 		{
@@ -17,9 +43,21 @@ namespace UI
 		axis->Home();
 	}
 
+	void MovePresenter::moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate)
+	{
+		ModelLock lock;
+		OM::Move::Axis* axis = OM::Move::GetAxisBySlot(axisSlot);
+		if (axis == nullptr)
+		{
+			warn("Axis %u not found", axisSlot);
+			return;
+		}
+		axis->MoveRelative(distance, feedrate);
+	}
+
 	void MovePresenter::newAxesData()
 	{
-		Model::lock();
+		ModelLock lock;
 		size_t axisCount = OM::Move::GetAxisCount(false);
 		m_view->setAxisCount(axisCount);
 		for (size_t i = 0; i < axisCount; i++)

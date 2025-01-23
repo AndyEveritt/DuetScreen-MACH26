@@ -28,7 +28,7 @@ namespace OM
 {
 	void RemoveAll()
 	{
-		Model::lock();
+		ModelLock lock;
 		g_currentAlert.Reset();
 		g_lastAlertSeq = 0;
 		Move::RemoveAxis(0, true);

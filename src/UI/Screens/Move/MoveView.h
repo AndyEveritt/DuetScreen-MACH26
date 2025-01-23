@@ -13,7 +13,7 @@ namespace UI
 	{
 	  public:
 		AxisItem(const size_t index, lv_obj_t* parent, layout_t layout);
-		virtual ~AxisItem() {}
+		virtual ~AxisItem();
 
 		const size_t getIndex() const { return m_index; }
 		MoveView* getList() const { return m_list; }
@@ -48,6 +48,13 @@ namespace UI
 		std::shared_ptr<AxisItem> getAxisItem(size_t index) const;
 
 	  private:
+		static void onHomeAllEvent(lv_event_t* e);
+		static void onTrueBedLevelEvent(lv_event_t* e);
+		static void onMeshBedLevelEvent(lv_event_t* e);
+		static void onHeightmapEvent(lv_event_t* e);
+		static void onDisableMotorsEvent(lv_event_t* e);
+		static void onFeedRateEvent(lv_event_t* e);
+
 		virtual void onShow() override;
 		virtual void onHide() override;
 

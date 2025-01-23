@@ -42,7 +42,7 @@ Model::Model()
 
 void Model::tick()
 {
-	lock();
+	ModelLock lock;
 	for (auto presenter : m_presenters)
 	{
 		presenter->tick();
@@ -100,7 +100,7 @@ useconds_t Model::receiveNewUsbData()
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	lock();
+	ModelLock lock;
 	auto subscribers = getSubscribers(key);
 	if (subscribers.size() != 0)
 	{
@@ -114,7 +114,7 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 
 void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[])
 {
-	lock();
+	ModelLock lock;
 	auto subscribers = getArrayEndSubscribers(key);
 	if (subscribers.size() != 0)
 	{
@@ -155,14 +155,14 @@ bool Model::initMutex()
 	}
 }
 
-void Model::_lock()
+void Model::lock()
 {
 	dbg("Attempting to lock model");
 	lv_lock();
 	pthread_mutex_lock(&m_mutex);
 }
 
-void Model::_unlock()
+void Model::unlock()
 {
 	dbg("Unlocking model");
 	lv_unlock();

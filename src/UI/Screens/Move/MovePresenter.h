@@ -11,12 +11,21 @@ namespace UI
 	  public:
 		using Presenter::Presenter;
 
+		// Actions
+		void homeAll();
+		void meshBedLevel();
+		void trueBedLevel();
+		void heightmap();
+		void disableMotors();
+
+		// AxisItem actions
 		void homeAxis(size_t axisSlot);
+		void moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate);
 
-		// oberservers
-
-		virtual void newAxesData() override;
+		// Observers
+		void newAxesData() override;
 
 	  protected:
+		void onActivate() override { newAxesData(); }
 	};
 } // namespace UI
