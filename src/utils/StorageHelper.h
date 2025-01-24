@@ -15,7 +15,15 @@ class StorageHelper
 	static void setData(const std::string& key, const T& value)
 	{
 		verbose("Saving \"%s\" to config.json", key.c_str());
-		data_[key] = value;
+		std::istringstream keyStream(key);
+		std::string segment;
+		nlohmann::json* current = &data_;
+
+		while (std::getline(keyStream, segment, ':'))
+		{
+			current = &(*current)[segment];
+		}
+		*current = value;
 		save();
 	}
 

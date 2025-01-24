@@ -30,24 +30,24 @@ constexpr const char* ID_BUZZER_ENABLED = "buzzer_enabled";
 constexpr const char* ID_SYS_LANG_CODE_KEY = "sys_lang_code_key";
 constexpr const char* ID_SYS_BRIGHTNESS_KEY = "sys_brightness_key";
 
-constexpr const char* ID_WEBCAM_URL = "webcam_url_%d";
-constexpr const char* ID_ACTIVE_WEBCAM_INDEX = "webcam_active_index";
-constexpr const char* ID_WEBCAM_UPADTE_ITERVAL = "webcam_update_interval";
+constexpr const char* ID_WEBCAM_URL = "webcam:url_%d";
+constexpr const char* ID_ACTIVE_WEBCAM_INDEX = "webcam:active_index";
+constexpr const char* ID_WEBCAM_UPADTE_ITERVAL = "webcam:update_interval";
 
 constexpr const char* ID_USB_HOST_MODE = "usb_host_mode";
 constexpr const char* ID_CONSOLE_SYSTEM_COMMANDS = "console_system_commands";
-constexpr const char* ID_DEBUG_LEVEL = "debug_level";
+constexpr const char* ID_DEBUG_LEVEL = "debug:level";
 
 constexpr const char* ID_BABYSTEP_AMOUNT = "baby_step_amount";
-constexpr const char* ID_MOVE_FEEDRATE = "move_feedrate_%d";
-constexpr const char* ID_MOVE_SELECTED_FEEDRATE = "move_selected_feedrate";
-constexpr const char* ID_EXTRUSION_DISTANCE = "extrusion_distance_%d";
-constexpr const char* ID_EXTRUSION_SELECTED_DISTANCE = "extrusion_selected_distance";
-constexpr const char* ID_EXTRUSION_FEEDRATE = "extrusion_feedrate_%d";
-constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "extrusion_selected_feedrate";
+constexpr const char* ID_MOVE_FEEDRATE = "move:feedrate_%d";
+constexpr const char* ID_MOVE_SELECTED_FEEDRATE = "move:selected_feedrate";
+constexpr const char* ID_EXTRUSION_DISTANCE = "extrusion:distance_%d";
+constexpr const char* ID_EXTRUSION_SELECTED_DISTANCE = "extrusion:selected_distance";
+constexpr const char* ID_EXTRUSION_FEEDRATE = "extrusion:feedrate_%d";
+constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "extrusion:selected_feedrate";
 
 #if DEBUG_BORDERS
-constexpr const char* ID_DEBUG_BORDERS = "debug_borders";
+constexpr const char* ID_DEBUG_BORDERS = "debug:borders";
 #endif
 
 #endif /* JNI_STORAGE_H_ */

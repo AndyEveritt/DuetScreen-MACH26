@@ -69,6 +69,8 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"unload", "Unload"},
     {"retract", "Retract"},
     {"extrude_feed_dist", "Feed Distance (mm)"},
+    {"extrude_feed_rate", "Feed Rate (mm/s)"},
+    {"none", "None"},
     {NULL, NULL} // End mark
 };
 

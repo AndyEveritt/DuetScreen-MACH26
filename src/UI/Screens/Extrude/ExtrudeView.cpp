@@ -233,12 +233,14 @@ namespace UI
 			feedDist.setCallback(onFeedDistEvent, LV_EVENT_CLICKED, this);
 			lv_obj_set_flex_grow(feedDist.getCont(), 1);
 		}
+		s_selectedExtrusionFeedDistanceIndex =
+			StorageHelper::getData(ID_EXTRUSION_SELECTED_DISTANCE, s_selectedExtrusionFeedDistanceIndex);
 		m_feedDists[s_selectedExtrusionFeedDistanceIndex].setChecked(true);
 
 		// Feed Rates
 		lv_obj_set_flex_flow(m_feedRateCont, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_grow(m_feedRateListCont, 1);
-		lv_label_set_text(m_feedRateLabel, _("extrude_feed_dist"));
+		lv_label_set_text(m_feedRateLabel, _("extrude_feed_rate"));
 
 		lv_obj_set_width(m_feedRateListCont, LV_PCT(100));
 		lv_obj_set_flex_flow(m_feedRateListCont, LV_FLEX_FLOW_ROW);
@@ -252,6 +254,8 @@ namespace UI
 			feedRate.setCallback(onFeedRateEvent, LV_EVENT_CLICKED, this);
 			lv_obj_set_flex_grow(feedRate.getCont(), 1);
 		}
+		s_selectedExtrusionFeedRateIndex =
+			StorageHelper::getData(ID_EXTRUSION_SELECTED_FEEDRATE, s_selectedExtrusionFeedRateIndex);
 		m_feedRates[s_selectedExtrusionFeedRateIndex].setChecked(true);
 
 		// Extrusion Control
@@ -291,6 +295,7 @@ namespace UI
 		view->m_feedDists[s_selectedExtrusionFeedDistanceIndex].setChecked(false);
 		s_selectedExtrusionFeedDistanceIndex = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
 		view->m_feedDists[s_selectedExtrusionFeedDistanceIndex].setChecked(true);
+		StorageHelper::setData(ID_EXTRUSION_SELECTED_DISTANCE, s_selectedExtrusionFeedDistanceIndex);
 	}
 
 	void ExtrudeView::onFeedRateEvent(lv_event_t* e)
@@ -301,6 +306,7 @@ namespace UI
 		view->m_feedRates[s_selectedExtrusionFeedRateIndex].setChecked(false);
 		s_selectedExtrusionFeedRateIndex = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
 		view->m_feedRates[s_selectedExtrusionFeedRateIndex].setChecked(true);
+		StorageHelper::setData(ID_EXTRUSION_SELECTED_FEEDRATE, s_selectedExtrusionFeedRateIndex);
 	}
 
 	void ExtrudeView::onShow() {}
