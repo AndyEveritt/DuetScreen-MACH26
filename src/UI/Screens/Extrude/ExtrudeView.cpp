@@ -40,9 +40,15 @@ namespace UI
 				continue;
 			}
 			lv_obj_set_flex_grow(obj, s_listGrow[i]);
-			lv_obj_set_height(obj, LV_PCT(100));
+			lv_obj_set_height(obj, LV_SIZE_CONTENT);
 			lv_obj_set_style_text_align(obj, i == 0 ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
 		}
+		lv_textarea_set_one_line(m_activeTemp, true);
+		lv_textarea_set_one_line(m_standbyTemp, true);
+		lv_textarea_set_accepted_chars(m_activeTemp, "0123456789");
+		lv_textarea_set_accepted_chars(m_standbyTemp, "0123456789");
+		lv_textarea_set_max_length(m_activeTemp, 4);
+		lv_textarea_set_max_length(m_standbyTemp, 4);
 
 		m_unload.setCallback(onUnloadEvent, LV_EVENT_CLICKED, this);
 	}
@@ -96,8 +102,12 @@ namespace UI
 		int32_t index = lv_dropdown_get_option_index(m_filament, filament);
 		if (index < 0)
 		{
-			warn("Failed to find filament option");
-			return;
+			if (filament[0] != '\0')
+			{
+				warn("Failed to find filament option");
+				return;
+			}
+			index = 0;
 		}
 		lv_dropdown_set_selected(m_filament, index);
 	}
@@ -151,6 +161,7 @@ namespace UI
 
 		// List Header
 		lv_obj_set_flex_flow(m_listHeader, LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(m_listHeader, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_style_pad_ver(m_listHeader, 0, 0);
 		lv_obj_set_style_pad_column(m_listHeader, 5, 0);
 
@@ -177,13 +188,14 @@ namespace UI
 			}
 			lv_obj_set_flex_grow(obj, s_listGrow[i]);
 			lv_obj_set_style_text_align(obj, i == 0 ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
-			lv_obj_set_height(obj, LV_PCT(100));
+			lv_obj_set_height(obj, LV_SIZE_CONTENT);
 			const char* labelID = headerLabels[i];
 			if (labelID[0] != '\0')
 			{
 				lv_label_set_text(obj, _(labelID));
 			}
 		}
+		lv_obj_set_height(m_headerPad, 0); // effectively hides it
 
 		// List
 		lv_obj_set_flex_flow(m_listCont, LV_FLEX_FLOW_COLUMN);

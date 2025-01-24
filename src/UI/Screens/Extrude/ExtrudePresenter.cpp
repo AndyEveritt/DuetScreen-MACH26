@@ -35,6 +35,7 @@ namespace UI
 			}
 			item->setLabel(tool->name.c_str());
 			item->setFilamentOptions(m_filamentOptions);
+			item->setLoadedFilament(tool->GetFilament().c_str());
 		}
 	}
 
