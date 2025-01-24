@@ -1,6 +1,7 @@
 #include "ExtrudeView.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
@@ -107,7 +108,7 @@ namespace UI
 		{
 			return;
 		}
-		lv_textarea_set_text(heater->active, utils::format("%d", temp).c_str());
+		lv_label_set_text(heater->active, utils::format("%d", temp).c_str());
 	}
 
 	void ToolItem::setStandbyTemperature(size_t index, const int32_t temp)
@@ -118,7 +119,7 @@ namespace UI
 		{
 			return;
 		}
-		lv_textarea_set_text(heater->standby, utils::format("%d", temp).c_str());
+		lv_label_set_text(heater->standby, utils::format("%d", temp).c_str());
 	}
 
 	void ToolItem::setFilamentOptions(const std::vector<std::string>& options)
@@ -211,8 +212,8 @@ namespace UI
 		, label(lv_label_create(labelCont))
 		, status(lv_label_create(labelCont))
 		, current(lv_label_create(getCont()))
-		, active(lv_textarea_create(getCont()))
-		, standby(lv_textarea_create(getCont()))
+		, active(lv_label_create(getCont()))
+		, standby(lv_label_create(getCont()))
 	{
 		Lock lock;
 		lv_obj_set_style_pad_all(getCont(), 2, 0);
@@ -241,16 +242,20 @@ namespace UI
 			lv_obj_set_style_pad_all(obj, 2, 0);
 		}
 
-		lv_textarea_set_one_line(active, true);
-		lv_textarea_set_one_line(standby, true);
-		lv_textarea_set_accepted_chars(active, "0123456789");
-		lv_textarea_set_accepted_chars(standby, "0123456789");
-		lv_textarea_set_max_length(active, 4);
-		lv_textarea_set_max_length(standby, 4);
-
 		// Events
+		lv_obj_add_flag(active, LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_flag(standby, LV_OBJ_FLAG_CLICKABLE);
 		lv_obj_add_event_cb(labelCont, onStatusEvent, LV_EVENT_CLICKED, this);
-		lv_obj_add_event_cb(active, onTemperaturesSetEvent, LV_EVENT_VALUE_CHANGED, &tool);
+		lv_obj_add_event_cb(active, onTemperaturesSetEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(standby, onTemperaturesSetEvent, LV_EVENT_CLICKED, this);
+
+		// Styles
+		lv_style_init(&m_targetTempStyle);
+		lv_style_set_border_color(&m_targetTempStyle, lv_color_hex(0xD3D3D3)); // Light grey color
+		lv_style_set_border_width(&m_targetTempStyle, 2);
+		lv_style_set_radius(&m_targetTempStyle, 5);
+		lv_obj_add_style(active, &m_targetTempStyle, 0);
+		lv_obj_add_style(standby, &m_targetTempStyle, 0);
 	}
 
 	void ToolItem::onLabelEvent(lv_event_t* e)
@@ -267,8 +272,11 @@ namespace UI
 
 	void ToolItem::Heater::onTemperaturesSetEvent(lv_event_t* e)
 	{
-		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
-		// item->getList()->setHeaterTemperatures(item->m_index);
+		ToolItem::Heater* heater = static_cast<ToolItem::Heater*>(lv_event_get_user_data(e));
+		lv_obj_t* obj = lv_event_get_target_obj(e);
+		heater->tool.getList()->m_presenter.configureNumberPad(
+			heater->tool.m_index, heater->index, obj == heater->active);
+		heater->tool.getList()->showNumberPad(true);
 	}
 
 	void ToolItem::onLoadFilamentEvent(lv_event_t* e)
@@ -292,6 +300,8 @@ namespace UI
 
 	ExtrudeView::ExtrudeView(lv_obj_t* parent)
 		: View("move_view", parent, layout_t(0, 0, 100, 100))
+		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST}
+		, m_layoutRowDsc{30, LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_listHeader(lv_obj_create(getCont()))
 		, m_listCont(lv_obj_create(getCont()))
 		, m_bottomBarCont(lv_obj_create(getCont()))
@@ -323,17 +333,17 @@ namespace UI
 					  Button("extrude_feed_rate_5", m_feedRateListCont, "", layout_t(0, 0, 0, 100))}
 		, m_retract("extrude_retract", m_extrudeControlCont, _("retract"), layout_t(0, 0, 100, 0))
 		, m_extrude("extrude_extrude", m_extrudeControlCont, _("extrude"), layout_t(0, 0, 100, 0))
+		, m_numberPad("extrude_number_pad", getCont(), layout_t(65, 0, 35, 100))
 	{
 		Lock lock;
 
 		// Layout
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_flex_grow(m_listCont, 4);
-		lv_obj_set_flex_grow(m_bottomBarCont, 1);
-		lv_obj_set_size(m_listHeader, LV_PCT(100), 30);
-		lv_obj_set_width(m_listCont, LV_PCT(100));
-		lv_obj_set_width(m_bottomBarCont, LV_PCT(100));
+		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
+		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
+		lv_obj_set_grid_cell(m_listHeader, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		lv_obj_set_grid_cell(m_listCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		lv_obj_set_grid_cell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
+		lv_obj_set_grid_cell(m_numberPad.getCont(), LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 3);
 
 		// List Header
 		lv_obj_set_flex_flow(m_listHeader, LV_FLEX_FLOW_ROW);
@@ -496,6 +506,20 @@ namespace UI
 		m_presenter.unloadFilament(index);
 	}
 
+	void ExtrudeView::showNumberPad(bool show)
+	{
+		if (show)
+		{
+			Lock lock;
+			m_numberPad.clear();
+			openScreen(&m_numberPad, false);
+		}
+		else
+		{
+			closeScreen(&m_numberPad);
+		}
+	}
+
 	void ExtrudeView::onRetractEvent(lv_event_t* e)
 	{
 		Lock lock;
@@ -536,6 +560,9 @@ namespace UI
 		StorageHelper::setData(ID_EXTRUSION_SELECTED_FEEDRATE, s_selectedExtrusionFeedRateIndex);
 	}
 
-	void ExtrudeView::onShow() {}
+	void ExtrudeView::onShow()
+	{
+		m_numberPad.hide();
+	}
 	void ExtrudeView::onHide() {}
 } // namespace UI

@@ -118,6 +118,54 @@ namespace UI
 		tool->UnloadFilament();
 	}
 
+	bool ExtrudePresenter::configureNumberPad(const size_t toolIndex, const size_t heaterIndex, const bool active)
+	{
+		ModelLock lock;
+		OM::Tool* tool = OM::GetToolBySlot(toolIndex);
+		if (tool == nullptr)
+		{
+			error("Failed to get tool %d", toolIndex);
+			return false;
+		}
+		OM::ToolHeater* th = tool->GetHeater(heaterIndex);
+		if (th == nullptr)
+		{
+			error("Failed to get tool %d tHeater %d", toolIndex, heaterIndex);
+			return false;
+		}
+		OM::Heat::Heater* heater = th->heater;
+		if (heater == nullptr)
+		{
+			error("Failed to get tool %d heater %d", toolIndex, heaterIndex);
+			return false;
+		}
+
+		ToolListNumPad& np = m_view->m_numberPad;
+		std::string header = utils::format(
+			_("tool_list_numpad_header_tool_heater"), tool->index, th->index, active ? _("active") : _("standby"));
+
+		np.setHeader(header.c_str());
+		np.setMinValue(heater->min);
+		np.setMaxValue(heater->max);
+		m_numberPadData = {toolIndex, heaterIndex, active};
+		np.setConfirmCallback(numberPadConfirmCallback, this);
+		return true;
+	}
+
+	void ExtrudePresenter::numberPadConfirmCallback(lv_event_t* e)
+	{
+		auto presenter = (ExtrudePresenter*)lv_event_get_user_data(e);
+		NumberPad* np = (NumberPad*)lv_event_get_param(e);
+		OM::Tool* tool = OM::GetToolBySlot(presenter->m_numberPadData.toolIndex);
+
+		if (tool == nullptr)
+		{
+			error("Tool is null");
+			return;
+		}
+		tool->SetHeaterTemps(presenter->m_numberPadData.heaterIndex, np->getValue(), presenter->m_numberPadData.active);
+	}
+
 	void ExtrudePresenter::onActivate()
 	{
 		ModelLock lock;

@@ -2,7 +2,7 @@
 
 #include "ExtrudePresenter.h"
 #include "UI/Components/Button.h"
-#include "UI/Components/NumberPad/NumberPad.h"
+#include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -51,6 +51,8 @@ namespace UI
 		  private:
 			static void onStatusEvent(lv_event_t* e);
 			static void onTemperaturesSetEvent(lv_event_t* e);
+
+			lv_style_t m_targetTempStyle;
 		};
 
 		std::shared_ptr<Heater> getHeater(const size_t index);
@@ -71,6 +73,7 @@ namespace UI
 	{
 	  public:
 		friend class ToolItem;
+		friend class ExtrudePresenter;
 
 		ExtrudeView(lv_obj_t* parent);
 
@@ -78,12 +81,14 @@ namespace UI
 		void setToolCount(const size_t count);
 		std::shared_ptr<ToolItem> getExtruderItem(size_t index) const;
 
-		void toggleToolState(size_t index);
+		void toggleToolState(size_t toolIndex);
 		void toggleHeaterState(size_t toolIndex, size_t heaterIndex);
-		void loadFilament(size_t index, const char* filament);
-		void unloadFilament(size_t index);
+		void loadFilament(size_t toolIndex, const char* filament);
+		void unloadFilament(size_t toolIndex);
 
 	  private:
+		void showNumberPad(bool show);
+
 		static void onFeedDistEvent(lv_event_t* e);
 		static void onFeedRateEvent(lv_event_t* e);
 		static void onExtrudeEvent(lv_event_t* e);
@@ -92,7 +97,7 @@ namespace UI
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		int32_t m_layoutColDsc[4];
+		int32_t m_layoutColDsc[2];
 		int32_t m_layoutRowDsc[4];
 
 		lv_obj_t* m_listHeader;
@@ -127,5 +132,8 @@ namespace UI
 		// Extrusion Control
 		Button m_retract;
 		Button m_extrude;
+
+		// Number Pad
+		ToolListNumPad m_numberPad;
 	};
 } // namespace UI
