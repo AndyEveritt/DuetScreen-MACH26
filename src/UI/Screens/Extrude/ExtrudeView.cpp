@@ -49,6 +49,59 @@ namespace UI
 
 	ExtruderItem::~ExtruderItem() {}
 
+	void ExtruderItem::setLabel(const char* txt)
+	{
+		Lock lock;
+		lv_label_set_text(m_label, txt);
+	}
+
+	void ExtruderItem::setStatus(const char* txt)
+	{
+		Lock lock;
+		lv_label_set_text(m_status, txt);
+	}
+
+	void ExtruderItem::setCurrentTemperature(const float& temp)
+	{
+		Lock lock;
+		lv_label_set_text_fmt(m_currentTemp, "%.1f", temp);
+	}
+
+	void ExtruderItem::setActiveTemperature(const float& temp)
+	{
+		Lock lock;
+		lv_textarea_set_text(m_activeTemp, utils::format("%.1f", temp).c_str());
+	}
+
+	void ExtruderItem::setStandbyTemperature(const float& temp)
+	{
+		Lock lock;
+		lv_textarea_set_text(m_standbyTemp, utils::format("%.1f", temp).c_str());
+	}
+
+	void ExtruderItem::setFilamentOptions(const std::vector<std::string>& options)
+	{
+		Lock lock;
+		lv_dropdown_clear_options(m_filament);
+		lv_dropdown_add_option(m_filament, _("none"), LV_DROPDOWN_POS_LAST);
+		for (const auto& option : options)
+		{
+			lv_dropdown_add_option(m_filament, option.c_str(), LV_DROPDOWN_POS_LAST);
+		}
+	}
+
+	void ExtruderItem::setLoadedFilament(const char* filament)
+	{
+		Lock lock;
+		int32_t index = lv_dropdown_get_option_index(m_filament, filament);
+		if (index < 0)
+		{
+			warn("Failed to find filament option");
+			return;
+		}
+		lv_dropdown_set_selected(m_filament, index);
+	}
+
 	void ExtruderItem::onUnloadEvent(lv_event_t* e) {}
 
 	ExtrudeView::ExtrudeView(lv_obj_t* parent)

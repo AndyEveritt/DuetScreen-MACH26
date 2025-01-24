@@ -521,11 +521,11 @@ namespace Comm
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
+		case CommunicationType::usb:
 			SendGcodef("M20 S3 P\"%s\" R%d\n", dir, first);
 			break;
 		case CommunicationType::network:
 		{
-#if 0
 			JsonDecoder decoder;
 			HttpResponse r;
 			hv::QueryParams query;
@@ -534,10 +534,10 @@ namespace Comm
 			if (!Get("/rr_filelist", r, query))
 				break;
 			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
-#endif
 			break;
 		}
 		default:
+			warn("Communication type not supported for requesting file list");
 			break;
 		}
 		return;

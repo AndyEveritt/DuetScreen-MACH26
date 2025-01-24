@@ -417,7 +417,7 @@ namespace OM
 
 	void RequestHeightmapFiles()
 	{
-		FileSystem::RequestFiles("/sys");
+		FileSystem::RequestFiles("/sys", nullptr);
 		ClearHeightmapCache();
 	}
 

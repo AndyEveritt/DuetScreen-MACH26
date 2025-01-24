@@ -102,7 +102,10 @@ bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& d
 	}
 	info("Files: next index = %d", data);
 	if (data == 0)
+	{
+		OM::FileSystem::RunCallback();
 		return true;
+	}
 	Comm::DUET.RequestFileList(OM::FileSystem::GetCurrentDirPath().c_str(), data);
 	return true;
 }

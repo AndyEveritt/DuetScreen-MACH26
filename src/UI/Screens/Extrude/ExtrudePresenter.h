@@ -14,6 +14,7 @@ namespace UI
 		// Actions
 		void retract(uint32_t distance, uint32_t feedrate);
 		void extrude(uint32_t distance, uint32_t feedrate);
+		void updateFilamentList();
 
 		// ExtrudeItem actions
 
@@ -21,6 +22,9 @@ namespace UI
 		void newToolData() override;
 
 	  protected:
-		void onActivate() override { newToolData(); }
+		void onActivate() override;
+
+	  private:
+		std::vector<std::string> m_filamentOptions;
 	};
 } // namespace UI

@@ -8,6 +8,7 @@
 #ifndef JNI_OBJECTMODEL_FILES_HPP_
 #define JNI_OBJECTMODEL_FILES_HPP_
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -71,7 +72,8 @@ namespace OM::FileSystem
 	std::string GetCurrentDirName();
 	std::string& GetCurrentDirPath();
 	bool IsInSubFolder();
-	void RequestFiles(const std::string& path);
+	void RequestFiles(const std::string& path, std::function<void()> callback);
+	void RunCallback();
 	void RequestUsbFiles(const std::string& path);
 	bool IsMacroFolder();
 	bool IsUsbFolder();

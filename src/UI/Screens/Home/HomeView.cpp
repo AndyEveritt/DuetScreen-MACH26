@@ -95,6 +95,7 @@ namespace UI
 		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
 
 		m_moveView.hide();
+		m_extrudeView.hide();
 		m_settingsView.hide();
 
 		// Styles::instance().removeTheme(getCont());

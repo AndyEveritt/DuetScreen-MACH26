@@ -18,6 +18,7 @@ namespace OM::FileSystem
 {
 	static std::string s_currentDirPath;
 	static std::vector<FileSystemItem*> s_items;
+	static std::function<void()> s_callback;
 	static bool s_inMacroFolder = false;
 	static bool s_usbFolder = false;
 
@@ -224,12 +225,23 @@ namespace OM::FileSystem
 		return count > 1;
 	}
 
-	void RequestFiles(const std::string& path)
+	void RequestFiles(const std::string& path, std::function<void()> callback)
 	{
 		ClearFileSystem();
 		s_usbFolder = false;
 		s_inMacroFolder = path.find("macro") != std::string::npos;
+		s_callback = callback;
+		info("Files: requesting files in %s", path.c_str());
 		Comm::DUET.RequestFileList(path.c_str());
+	}
+
+	void RunCallback()
+	{
+		if (s_callback)
+		{
+			s_callback();
+			s_callback = nullptr;
+		}
 	}
 
 	void RequestUsbFiles(const std::string& path)
