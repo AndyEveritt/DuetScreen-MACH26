@@ -391,6 +391,15 @@ namespace OM
 		return GetOrCreate<ToolList, Tool>(s_tools, index, true);
 	}
 
+	Tool* GetToolBySlot(const size_t slot)
+	{
+		if (slot >= s_tools.Size())
+		{
+			return nullptr;
+		}
+		return s_tools[slot];
+	}
+
 	const size_t GetToolCount()
 	{
 		return s_tools.Size();

@@ -108,6 +108,7 @@ namespace OM
 
 	Tool* GetTool(const size_t index);
 	Tool* GetOrCreateTool(const size_t index);
+	Tool* GetToolBySlot(const size_t slot);
 	const size_t GetToolCount();
 	bool IterateToolsWhile(function_ref<bool(Tool*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveTool(const size_t index, const bool allFollowing);

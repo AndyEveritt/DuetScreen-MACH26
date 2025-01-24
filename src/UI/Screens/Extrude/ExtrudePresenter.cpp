@@ -4,17 +4,18 @@
 #include "Hardware/Duet.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "lv_i18n/lv_i18n.h"
 
 namespace UI
 {
 	void ExtrudePresenter::retract(uint32_t distance, uint32_t feedrate)
 	{
-		Comm::DUET.SendGcode("G28\n");
+		Comm::DUET.SendGcodef("G1 E-%u F%u\n", distance, feedrate * 60);
 	}
 
 	void ExtrudePresenter::extrude(uint32_t distance, uint32_t feedrate)
 	{
-		Comm::DUET.SendGcode("G32\n");
+		Comm::DUET.SendGcodef("G1 E%u F%u\n", distance, feedrate * 60);
 	}
 
 	void ExtrudePresenter::newToolData()
@@ -28,12 +29,32 @@ namespace UI
 			{
 				continue;
 			}
-			OM::Tool* tool = OM::GetTool(i);
+			OM::Tool* tool = OM::GetToolBySlot(i);
 			if (tool == nullptr)
 			{
 				continue;
 			}
-			item->setLabel(tool->name.c_str());
+
+			std::string toolName = tool->name.IsEmpty()
+									   ? utils::format("%s %d", _("default_tool_name"), tool->index).c_str()
+									   : tool->name.c_str();
+			item->setLabel(toolName.c_str());
+			item->setHeaterCount(tool->GetHeaterCount());
+			tool->IterateHeaters(
+				[&item](OM::ToolHeater* th, size_t index)
+				{
+					item->setActiveTemperature(index, th->activeTemp);
+					item->setStandbyTemperature(index, th->standbyTemp);
+					OM::Heat::Heater* heater = th->heater;
+					if (heater == nullptr)
+					{
+						warn("Heater is null");
+						return;
+					}
+					item->setHeaterName(index, heater->GetName());
+					item->setStatus(index, heater->GetHeaterStatusStr());
+					item->setCurrentTemperature(index, heater->current);
+				});
 			item->setFilamentOptions(m_filamentOptions);
 			item->setLoadedFilament(tool->GetFilament().c_str());
 		}

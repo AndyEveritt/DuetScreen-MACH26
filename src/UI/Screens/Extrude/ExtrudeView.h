@@ -9,20 +9,23 @@ namespace UI
 {
 	class ExtrudeView;
 
-	class ExtruderItem : public BaseView
+	class ToolItem : public BaseView
 	{
 	  public:
-		ExtruderItem(const size_t index, lv_obj_t* parent, layout_t layout);
-		virtual ~ExtruderItem();
+		ToolItem(const size_t index, lv_obj_t* parent, layout_t layout);
+		virtual ~ToolItem();
 
 		const size_t getIndex() const { return m_index; }
 		ExtrudeView* getList() const { return m_list; }
 		void setLabel(const char* name);
-		void setStatus(const char* status);
 		void setSelected(const bool selected);
-		void setCurrentTemperature(const float& temperature);
-		void setActiveTemperature(const float& temperature);
-		void setStandbyTemperature(const float& temperature);
+		void setHeaterCount(const size_t count);
+		size_t getHeaterCount() const;
+		void setHeaterName(size_t index, const char* name);
+		void setStatus(size_t index, const char* status);
+		void setCurrentTemperature(size_t index, const float temperature);
+		void setActiveTemperature(size_t index, const int32_t temperature);
+		void setStandbyTemperature(size_t index, const int32_t temperature);
 		void setLoadedFilament(const char* filament);
 		void setFilamentOptions(const std::vector<std::string>& options);
 
@@ -33,15 +36,28 @@ namespace UI
 		static void onLoadFilamentEvent(lv_event_t* e);
 		static void onUnloadEvent(lv_event_t* e);
 
+		class Heater : BaseView
+		{
+		  public:
+			Heater(lv_obj_t* parent);
+
+			lv_obj_t* labelCont;
+			lv_obj_t* label;
+			lv_obj_t* status;
+			lv_obj_t* current;
+			lv_obj_t* active;
+			lv_obj_t* standby;
+		};
+
+		std::shared_ptr<Heater> getHeater(const size_t index);
+
 		size_t m_index;
 
 		ExtrudeView* m_list;
 
 		lv_obj_t* m_label;
-		lv_obj_t* m_status;
-		lv_obj_t* m_currentTemp;
-		lv_obj_t* m_activeTemp;
-		lv_obj_t* m_standbyTemp;
+		lv_obj_t* m_heaterList;
+		std::vector<std::shared_ptr<Heater>> m_heaters;
 		lv_obj_t* m_filament;
 		Button m_unload;
 	};
@@ -49,13 +65,13 @@ namespace UI
 	class ExtrudeView : public View<ExtrudePresenter>
 	{
 	  public:
-		friend class ExtruderItem;
+		friend class ToolItem;
 
 		ExtrudeView(lv_obj_t* parent);
 
 		const size_t getToolCount() const { return m_toolItems.size(); }
 		void setToolCount(const size_t count);
-		std::shared_ptr<ExtruderItem> getExtruderItem(size_t index) const;
+		std::shared_ptr<ToolItem> getExtruderItem(size_t index) const;
 
 	  private:
 		static void onFeedDistEvent(lv_event_t* e);
@@ -81,7 +97,7 @@ namespace UI
 		lv_obj_t* m_headerStandby;
 		lv_obj_t* m_headerFilament;
 		lv_obj_t* m_headerPad;
-		std::vector<std::shared_ptr<ExtruderItem>> m_toolItems;
+		std::vector<std::shared_ptr<ToolItem>> m_toolItems;
 
 		// Bottom Container
 		lv_obj_t* m_feedDistCont;

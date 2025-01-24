@@ -12,80 +12,106 @@ namespace UI
 	static uint32_t s_selectedExtrusionFeedRateIndex = 2;
 	static uint32_t s_selectedExtrusionFeedDistanceIndex = 2;
 
-	static uint8_t s_listGrow[] = {2, 1, 1, 1, 1, 2, 1};
-
-	ExtruderItem::ExtruderItem(const size_t index, lv_obj_t* parent, layout_t layout)
+	ToolItem::ToolItem(const size_t index, lv_obj_t* parent, layout_t layout)
 		: BaseView(utils::format("move_axis_item_%u", index), parent, layout)
 		, m_index(index)
 		, m_label(lv_label_create(getCont()))
-		, m_status(lv_label_create(getCont()))
-		, m_currentTemp(lv_label_create(getCont()))
-		, m_activeTemp(lv_textarea_create(getCont()))
-		, m_standbyTemp(lv_textarea_create(getCont()))
+		, m_heaterList(lv_obj_create(getCont()))
 		, m_filament(lv_dropdown_create(getCont()))
 		, m_unload(utils::format("extrude_unload_%u", index), getCont(), _("unload"), layout_t(0, 0, 0, 100))
 	{
 		// Layout
 		constexpr lv_coord_t pad = 2;
+		lv_obj_set_height(getCont(), LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_all(getCont(), pad, 0);
 		lv_obj_set_style_pad_column(getCont(), pad, 0);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < ARRAY_SIZE(s_listGrow); i++)
+		uint8_t grow[] = {2, 5, 2, 1};
+
+		for (size_t i = 0; i < lv_obj_get_child_count(getCont()); i++)
 		{
 			lv_obj_t* obj = lv_obj_get_child(getCont(), i);
 			if (obj == nullptr)
 			{
 				continue;
 			}
-			lv_obj_set_flex_grow(obj, s_listGrow[i]);
+			lv_obj_set_flex_grow(obj, grow[i]);
 			lv_obj_set_height(obj, LV_SIZE_CONTENT);
 			lv_obj_set_style_text_align(obj, i == 0 ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
 		}
-		lv_textarea_set_one_line(m_activeTemp, true);
-		lv_textarea_set_one_line(m_standbyTemp, true);
-		lv_textarea_set_accepted_chars(m_activeTemp, "0123456789");
-		lv_textarea_set_accepted_chars(m_standbyTemp, "0123456789");
-		lv_textarea_set_max_length(m_activeTemp, 4);
-		lv_textarea_set_max_length(m_standbyTemp, 4);
+		lv_obj_set_height(m_heaterList, LV_SIZE_CONTENT);
+		lv_obj_set_style_pad_all(m_heaterList, pad, 0);
+		lv_obj_set_flex_flow(m_heaterList, LV_FLEX_FLOW_COLUMN);
 
 		m_unload.setCallback(onUnloadEvent, LV_EVENT_CLICKED, this);
 	}
 
-	ExtruderItem::~ExtruderItem() {}
+	ToolItem::~ToolItem() {}
 
-	void ExtruderItem::setLabel(const char* txt)
+	void ToolItem::setLabel(const char* txt)
 	{
 		Lock lock;
 		lv_label_set_text(m_label, txt);
 	}
 
-	void ExtruderItem::setStatus(const char* txt)
+	void ToolItem::setHeaterName(size_t index, const char* name)
 	{
 		Lock lock;
-		lv_label_set_text(m_status, txt);
+		auto heater = getHeater(index);
+		if (heater == nullptr)
+		{
+			return;
+		}
+		lv_label_set_text(heater->label, name);
 	}
 
-	void ExtruderItem::setCurrentTemperature(const float& temp)
+	void ToolItem::setStatus(size_t index, const char* txt)
 	{
 		Lock lock;
-		lv_label_set_text_fmt(m_currentTemp, "%.1f", temp);
+		auto heater = getHeater(index);
+		if (heater == nullptr)
+		{
+			return;
+		}
+		lv_label_set_text(heater->status, txt);
 	}
 
-	void ExtruderItem::setActiveTemperature(const float& temp)
+	void ToolItem::setCurrentTemperature(size_t index, const float temp)
 	{
 		Lock lock;
-		lv_textarea_set_text(m_activeTemp, utils::format("%.1f", temp).c_str());
+		auto heater = getHeater(index);
+		if (heater == nullptr)
+		{
+			return;
+		}
+		lv_label_set_text(heater->current, utils::format("%.1f", temp).c_str());
 	}
 
-	void ExtruderItem::setStandbyTemperature(const float& temp)
+	void ToolItem::setActiveTemperature(size_t index, const int32_t temp)
 	{
 		Lock lock;
-		lv_textarea_set_text(m_standbyTemp, utils::format("%.1f", temp).c_str());
+		auto heater = getHeater(index);
+		if (heater == nullptr)
+		{
+			return;
+		}
+		lv_textarea_set_text(heater->active, utils::format("%d", temp).c_str());
 	}
 
-	void ExtruderItem::setFilamentOptions(const std::vector<std::string>& options)
+	void ToolItem::setStandbyTemperature(size_t index, const int32_t temp)
+	{
+		Lock lock;
+		auto heater = getHeater(index);
+		if (heater == nullptr)
+		{
+			return;
+		}
+		lv_textarea_set_text(heater->standby, utils::format("%d", temp).c_str());
+	}
+
+	void ToolItem::setFilamentOptions(const std::vector<std::string>& options)
 	{
 		Lock lock;
 		lv_dropdown_clear_options(m_filament);
@@ -96,7 +122,7 @@ namespace UI
 		}
 	}
 
-	void ExtruderItem::setLoadedFilament(const char* filament)
+	void ToolItem::setLoadedFilament(const char* filament)
 	{
 		Lock lock;
 		int32_t index = lv_dropdown_get_option_index(m_filament, filament);
@@ -112,7 +138,85 @@ namespace UI
 		lv_dropdown_set_selected(m_filament, index);
 	}
 
-	void ExtruderItem::onUnloadEvent(lv_event_t* e) {}
+	size_t ToolItem::getHeaterCount() const
+	{
+		return m_heaters.size();
+	}
+
+	void ToolItem::setHeaterCount(const size_t count)
+	{
+		Lock lock;
+		if (count == getHeaterCount())
+		{
+			return;
+		}
+		if (count < getHeaterCount())
+		{
+			m_heaters.resize(count);
+			return;
+		}
+
+		m_heaters.reserve(count);
+		for (size_t i = getHeaterCount(); i < count; ++i)
+		{
+			m_heaters.emplace_back(std::make_shared<Heater>(m_heaterList));
+		}
+	}
+
+	std::shared_ptr<ToolItem::Heater> ToolItem::getHeater(const size_t index)
+	{
+		if (index >= m_heaters.size())
+		{
+			return nullptr;
+		}
+		return m_heaters[index];
+	}
+
+	ToolItem::Heater::Heater(lv_obj_t* parent)
+		: BaseView("extrude_heater", parent)
+		, labelCont(lv_obj_create(getCont()))
+		, label(lv_label_create(labelCont))
+		, status(lv_label_create(labelCont))
+		, current(lv_label_create(getCont()))
+		, active(lv_textarea_create(getCont()))
+		, standby(lv_textarea_create(getCont()))
+	{
+		Lock lock;
+		lv_obj_set_style_pad_all(getCont(), 2, 0);
+		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		for (size_t i = 0; i < lv_obj_get_child_count(getCont()); i++)
+		{
+			lv_obj_t* obj = lv_obj_get_child(getCont(), i);
+			lv_obj_set_height(obj, LV_SIZE_CONTENT);
+			lv_obj_set_flex_grow(obj, 1);
+			lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, 0);
+		}
+		lv_obj_set_flex_grow(labelCont, 2);
+
+		lv_obj_set_flex_flow(labelCont, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(labelCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_style_pad_all(labelCont, 2, 0);
+		for (size_t i = 0; i < lv_obj_get_child_count(labelCont); i++)
+		{
+			lv_obj_t* obj = lv_obj_get_child(labelCont, i);
+			lv_obj_set_width(obj, LV_SIZE_CONTENT);
+			lv_obj_set_flex_grow(obj, 1);
+			lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, 0);
+			lv_obj_set_style_pad_all(obj, 2, 0);
+		}
+
+		lv_textarea_set_one_line(active, true);
+		lv_textarea_set_one_line(standby, true);
+		lv_textarea_set_accepted_chars(active, "0123456789");
+		lv_textarea_set_accepted_chars(standby, "0123456789");
+		lv_textarea_set_max_length(active, 4);
+		lv_textarea_set_max_length(standby, 4);
+	}
+
+	void ToolItem::onUnloadEvent(lv_event_t* e) {}
 
 	ExtrudeView::ExtrudeView(lv_obj_t* parent)
 		: View("move_view", parent, layout_t(0, 0, 100, 100))
@@ -172,6 +276,8 @@ namespace UI
 											 "toollist_standby",
 											 "toollist_filament",
 											 ""};
+
+		uint8_t s_listGrow[] = {2, 2, 1, 1, 1, 2, 1};
 
 		static_assert(ARRAY_SIZE(s_listGrow) == ARRAY_SIZE(headerLabels), "Invalid array size");
 		if (ARRAY_SIZE(s_listGrow) != lv_obj_get_child_cnt(m_listHeader))
@@ -328,11 +434,11 @@ namespace UI
 		m_toolItems.reserve(count);
 		for (size_t i = getToolCount(); i < count; ++i)
 		{
-			m_toolItems.emplace_back(std::make_unique<ExtruderItem>(i, m_listCont, layout_t(0, 0, 100, 20)));
+			m_toolItems.emplace_back(std::make_unique<ToolItem>(i, m_listCont, layout_t(0, 0, 100, 20)));
 		}
 	}
 
-	std::shared_ptr<ExtruderItem> ExtrudeView::getExtruderItem(size_t index) const
+	std::shared_ptr<ToolItem> ExtrudeView::getExtruderItem(size_t index) const
 	{
 		if (index < m_toolItems.size())
 		{

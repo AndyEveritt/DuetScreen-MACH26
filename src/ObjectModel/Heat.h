@@ -67,6 +67,7 @@ namespace OM
 			void Reset();
 			int32_t GetTemperature();
 			int32_t GetHeaterTarget(const bool active);
+			const char* GetName() const;
 			const char* GetHeaterStatusStr() const;
 			void UpdateTarget(const int32_t temp, const bool active);
 			void UpdateTemp(const float temp) { current = temp; }
