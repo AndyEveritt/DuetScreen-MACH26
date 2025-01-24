@@ -12,9 +12,11 @@ namespace UI
 	static uint32_t s_selectedExtrusionFeedRateIndex = 2;
 	static uint32_t s_selectedExtrusionFeedDistanceIndex = 2;
 
-	ToolItem::ToolItem(const size_t index, lv_obj_t* parent, layout_t layout)
+	ToolItem::ToolItem(const size_t index, ExtrudeView* view, lv_obj_t* parent, layout_t layout)
 		: BaseView(utils::format("move_axis_item_%u", index), parent, layout)
 		, m_index(index)
+		, m_selected(false)
+		, m_list(view)
 		, m_label(lv_label_create(getCont()))
 		, m_heaterList(lv_obj_create(getCont()))
 		, m_filament(lv_dropdown_create(getCont()))
@@ -45,7 +47,15 @@ namespace UI
 		lv_obj_set_style_pad_all(m_heaterList, pad, 0);
 		lv_obj_set_flex_flow(m_heaterList, LV_FLEX_FLOW_COLUMN);
 
+		// Callbacks
+		lv_obj_add_flag(m_label, LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_event_cb(m_label, onLabelEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_filament, onLoadFilamentEvent, LV_EVENT_VALUE_CHANGED, this);
 		m_unload.setCallback(onUnloadEvent, LV_EVENT_CLICKED, this);
+
+		// Styles
+		lv_obj_set_style_bg_color(
+			getCont(), lv_color_darken(lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN), 20), LV_STATE_CHECKED);
 	}
 
 	ToolItem::~ToolItem() {}
@@ -143,6 +153,27 @@ namespace UI
 		return m_heaters.size();
 	}
 
+	void ToolItem::setSelected(const bool selected)
+	{
+		if (m_selected == selected)
+		{
+			return;
+		}
+		Lock lock;
+		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
+		if (selected)
+		{
+			// lv_obj_set_style_bg_color(getCont(), lv_color_darken(color, 10), LV_PART_MAIN);
+			lv_obj_add_state(getCont(), LV_STATE_CHECKED);
+		}
+		else
+		{
+			// lv_obj_set_style_bg_color(getCont(), lv_color_lighten(color, 10), LV_PART_MAIN);
+			lv_obj_remove_state(getCont(), LV_STATE_CHECKED);
+		}
+		m_selected = selected;
+	}
+
 	void ToolItem::setHeaterCount(const size_t count)
 	{
 		Lock lock;
@@ -159,7 +190,7 @@ namespace UI
 		m_heaters.reserve(count);
 		for (size_t i = getHeaterCount(); i < count; ++i)
 		{
-			m_heaters.emplace_back(std::make_shared<Heater>(m_heaterList));
+			m_heaters.emplace_back(std::make_shared<Heater>(i, *this, m_heaterList));
 		}
 	}
 
@@ -172,8 +203,10 @@ namespace UI
 		return m_heaters[index];
 	}
 
-	ToolItem::Heater::Heater(lv_obj_t* parent)
+	ToolItem::Heater::Heater(const size_t index, ToolItem& toolItem, lv_obj_t* parent)
 		: BaseView("extrude_heater", parent)
+		, index(index)
+		, tool(toolItem)
 		, labelCont(lv_obj_create(getCont()))
 		, label(lv_label_create(labelCont))
 		, status(lv_label_create(labelCont))
@@ -214,9 +247,48 @@ namespace UI
 		lv_textarea_set_accepted_chars(standby, "0123456789");
 		lv_textarea_set_max_length(active, 4);
 		lv_textarea_set_max_length(standby, 4);
+
+		// Events
+		lv_obj_add_event_cb(labelCont, onStatusEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(active, onTemperaturesSetEvent, LV_EVENT_VALUE_CHANGED, &tool);
 	}
 
-	void ToolItem::onUnloadEvent(lv_event_t* e) {}
+	void ToolItem::onLabelEvent(lv_event_t* e)
+	{
+		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
+		item->getList()->toggleToolState(item->m_index);
+	}
+
+	void ToolItem::Heater::onStatusEvent(lv_event_t* e)
+	{
+		ToolItem::Heater* heater = static_cast<ToolItem::Heater*>(lv_event_get_user_data(e));
+		heater->tool.getList()->toggleHeaterState(heater->tool.m_index, heater->index);
+	}
+
+	void ToolItem::Heater::onTemperaturesSetEvent(lv_event_t* e)
+	{
+		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
+		// item->getList()->setHeaterTemperatures(item->m_index);
+	}
+
+	void ToolItem::onLoadFilamentEvent(lv_event_t* e)
+	{
+		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
+		char selectedFilament[MAX_FILAMENT_NAME_LENGTH];
+		if (lv_dropdown_get_selected(item->m_filament) == 0)
+		{
+			item->getList()->unloadFilament(item->m_index);
+			return;
+		}
+		lv_dropdown_get_selected_str(item->m_filament, selectedFilament, sizeof(selectedFilament));
+		item->getList()->loadFilament(item->m_index, selectedFilament);
+	}
+
+	void ToolItem::onUnloadEvent(lv_event_t* e)
+	{
+		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
+		item->getList()->unloadFilament(item->m_index);
+	}
 
 	ExtrudeView::ExtrudeView(lv_obj_t* parent)
 		: View("move_view", parent, layout_t(0, 0, 100, 100))
@@ -375,6 +447,55 @@ namespace UI
 		m_extrude.setCallback(onExtrudeEvent, LV_EVENT_CLICKED, this);
 	}
 
+	void ExtrudeView::setToolCount(const size_t count)
+	{
+		Lock lock;
+		if (count == getToolCount())
+		{
+			return;
+		}
+		if (count < getToolCount())
+		{
+			m_toolItems.resize(count);
+			return;
+		}
+
+		m_toolItems.reserve(count);
+		for (size_t i = getToolCount(); i < count; ++i)
+		{
+			m_toolItems.emplace_back(std::make_unique<ToolItem>(i, this, m_listCont, layout_t(0, 0, 100, 20)));
+		}
+	}
+
+	std::shared_ptr<ToolItem> ExtrudeView::getExtruderItem(size_t index) const
+	{
+		if (index < m_toolItems.size())
+		{
+			return m_toolItems[index];
+		}
+		return nullptr;
+	}
+
+	void ExtrudeView::toggleToolState(size_t index)
+	{
+		m_presenter.toggleToolState(index);
+	}
+
+	void ExtrudeView::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
+	{
+		m_presenter.toggleHeaterState(toolIndex, heaterIndex);
+	}
+
+	void ExtrudeView::loadFilament(size_t index, const char* filament)
+	{
+		m_presenter.loadFilament(index, filament);
+	}
+
+	void ExtrudeView::unloadFilament(size_t index)
+	{
+		m_presenter.unloadFilament(index);
+	}
+
 	void ExtrudeView::onRetractEvent(lv_event_t* e)
 	{
 		Lock lock;
@@ -417,33 +538,4 @@ namespace UI
 
 	void ExtrudeView::onShow() {}
 	void ExtrudeView::onHide() {}
-
-	void ExtrudeView::setToolCount(const size_t count)
-	{
-		Lock lock;
-		if (count == getToolCount())
-		{
-			return;
-		}
-		if (count < getToolCount())
-		{
-			m_toolItems.resize(count);
-			return;
-		}
-
-		m_toolItems.reserve(count);
-		for (size_t i = getToolCount(); i < count; ++i)
-		{
-			m_toolItems.emplace_back(std::make_unique<ToolItem>(i, m_listCont, layout_t(0, 0, 100, 20)));
-		}
-	}
-
-	std::shared_ptr<ToolItem> ExtrudeView::getExtruderItem(size_t index) const
-	{
-		if (index < m_toolItems.size())
-		{
-			return m_toolItems[index];
-		}
-		return nullptr;
-	}
 } // namespace UI

@@ -40,6 +40,7 @@ namespace UI
 									   : tool->name.c_str();
 			item->setLabel(toolName.c_str());
 			item->setHeaterCount(tool->GetHeaterCount());
+			item->setSelected(tool->status == OM::ToolStatus::active);
 			tool->IterateHeaters(
 				[&item](OM::ToolHeater* th, size_t index)
 				{
@@ -71,6 +72,50 @@ namespace UI
 			}
 			item->setFilamentOptions(m_filamentOptions);
 		}
+	}
+
+	void ExtrudePresenter::toggleToolState(size_t index)
+	{
+		ModelLock lock;
+		OM::Tool* tool = OM::GetToolBySlot(index);
+		if (tool == nullptr)
+		{
+			return;
+		}
+		tool->ToggleState();
+	}
+
+	void ExtrudePresenter::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
+	{
+		ModelLock lock;
+		OM::Tool* tool = OM::GetToolBySlot(toolIndex);
+		if (tool == nullptr)
+		{
+			return;
+		}
+		tool->ToggleHeaterState(heaterIndex);
+	}
+
+	void ExtrudePresenter::loadFilament(size_t index, const char* filament)
+	{
+		ModelLock lock;
+		OM::Tool* tool = OM::GetToolBySlot(index);
+		if (tool == nullptr)
+		{
+			return;
+		}
+		tool->ChangeFilament(filament);
+	}
+
+	void ExtrudePresenter::unloadFilament(size_t index)
+	{
+		ModelLock lock;
+		OM::Tool* tool = OM::GetToolBySlot(index);
+		if (tool == nullptr)
+		{
+			return;
+		}
+		tool->UnloadFilament();
 	}
 
 	void ExtrudePresenter::onActivate()

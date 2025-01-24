@@ -103,6 +103,10 @@ namespace OM
 		void ToggleSpindleState();
 		void UpdateSpindleTarget(const int32_t rpm);
 
+		void ChangeFilament(const char* filament);
+		void LoadFilament(const char* filament);
+		void UnloadFilament();
+
 		void Reset();
 	};
 

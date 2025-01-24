@@ -351,6 +351,59 @@ namespace OM
 		Comm::DUET.SendGcodef("M568 P%d F%d", index, rpm);
 	}
 
+	void Tool::ChangeFilament(const char* filament)
+	{
+		UnloadFilament();
+		LoadFilament(filament);
+	}
+
+	void Tool::LoadFilament(const char* filament)
+	{
+		if (filamentExtruder < 0)
+		{
+			warn("No filament extruder assigned to tool %d", index);
+			return;
+		}
+		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		if (extruder == nullptr)
+		{
+			warn("Failed to get extruder %d for tool %d", filamentExtruder, index);
+			return;
+		}
+		if (extruder->filamentName.Equals(filament))
+		{
+			return;
+		}
+
+		if (filament[0] == '\0')
+		{
+			return;
+		}
+
+		Comm::DUET.SendGcodef("T%d M701 S\"%s\"\n", index, filament);
+	}
+
+	void Tool::UnloadFilament()
+	{
+		if (filamentExtruder < 0)
+		{
+			warn("No filament extruder assigned to tool %d", index);
+			return;
+		}
+		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		if (extruder == nullptr)
+		{
+			warn("Failed to get extruder %d for tool %d", filamentExtruder, index);
+			return;
+		}
+		if (extruder->filamentName.IsEmpty())
+		{
+			return;
+		}
+
+		Comm::DUET.SendGcodef("T%d M702\n", index);
+	}
+
 	void Tool::Reset()
 	{
 		index = 0;

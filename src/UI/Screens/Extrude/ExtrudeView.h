@@ -12,7 +12,7 @@ namespace UI
 	class ToolItem : public BaseView
 	{
 	  public:
-		ToolItem(const size_t index, lv_obj_t* parent, layout_t layout);
+		ToolItem(const size_t index, ExtrudeView* view, lv_obj_t* parent, layout_t layout);
 		virtual ~ToolItem();
 
 		const size_t getIndex() const { return m_index; }
@@ -31,27 +31,32 @@ namespace UI
 
 	  private:
 		static void onLabelEvent(lv_event_t* e);
-		static void onStatusEvent(lv_event_t* e);
-		static void onTemperaturesSetEvent(lv_event_t* e);
 		static void onLoadFilamentEvent(lv_event_t* e);
 		static void onUnloadEvent(lv_event_t* e);
 
 		class Heater : BaseView
 		{
 		  public:
-			Heater(lv_obj_t* parent);
+			Heater(const size_t index, ToolItem& toolItem, lv_obj_t* parent);
 
+			size_t index;
+			ToolItem& tool;
 			lv_obj_t* labelCont;
 			lv_obj_t* label;
 			lv_obj_t* status;
 			lv_obj_t* current;
 			lv_obj_t* active;
 			lv_obj_t* standby;
+
+		  private:
+			static void onStatusEvent(lv_event_t* e);
+			static void onTemperaturesSetEvent(lv_event_t* e);
 		};
 
 		std::shared_ptr<Heater> getHeater(const size_t index);
 
 		size_t m_index;
+		bool m_selected;
 
 		ExtrudeView* m_list;
 
@@ -72,6 +77,11 @@ namespace UI
 		const size_t getToolCount() const { return m_toolItems.size(); }
 		void setToolCount(const size_t count);
 		std::shared_ptr<ToolItem> getExtruderItem(size_t index) const;
+
+		void toggleToolState(size_t index);
+		void toggleHeaterState(size_t toolIndex, size_t heaterIndex);
+		void loadFilament(size_t index, const char* filament);
+		void unloadFilament(size_t index);
 
 	  private:
 		static void onFeedDistEvent(lv_event_t* e);

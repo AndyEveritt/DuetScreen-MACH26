@@ -16,6 +16,11 @@ namespace UI
 		void extrude(uint32_t distance, uint32_t feedrate);
 		void updateFilamentList();
 
+		void toggleToolState(size_t index);
+		void toggleHeaterState(size_t toolIndex, size_t heaterIndex);
+		void loadFilament(size_t index, const char* filament);
+		void unloadFilament(size_t index);
+
 		// ExtrudeItem actions
 
 		// Observers
