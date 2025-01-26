@@ -56,6 +56,7 @@ namespace UI
 					item->setStatus(index, heater->GetHeaterStatusStr());
 					item->setCurrentTemperature(index, heater->current);
 				});
+			item->showFilamentControls(tool->filamentExtruder >= 0);
 			item->setFilamentOptions(m_filamentOptions);
 			item->setLoadedFilament(tool->GetFilament().c_str());
 		}

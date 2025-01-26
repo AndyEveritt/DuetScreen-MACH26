@@ -20,8 +20,9 @@ namespace UI
 		, m_list(view)
 		, m_label(lv_label_create(getCont()))
 		, m_heaterList(lv_obj_create(getCont()))
-		, m_filament(lv_dropdown_create(getCont()))
-		, m_unload(utils::format("extrude_unload_%u", index), getCont(), _("unload"), layout_t(0, 0, 0, 100))
+		, m_filamentControls(lv_obj_create(getCont()))
+		, m_filament(lv_dropdown_create(m_filamentControls))
+		, m_unload(utils::format("extrude_unload_%u", index), m_filamentControls, _("unload"), layout_t(0, 0, 0, 100))
 	{
 		// Layout
 		constexpr lv_coord_t pad = 2;
@@ -31,7 +32,7 @@ namespace UI
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		uint8_t grow[] = {2, 5, 2, 1};
+		uint8_t grow[] = {2, 5, 3}; // {label, heaters, filament controls}
 
 		for (size_t i = 0; i < lv_obj_get_child_count(getCont()); i++)
 		{
@@ -44,6 +45,17 @@ namespace UI
 			lv_obj_set_height(obj, LV_SIZE_CONTENT);
 			lv_obj_set_style_text_align(obj, i == 0 ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
 		}
+
+		// Filament controls
+		lv_obj_set_flex_flow(m_filamentControls, LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(m_filamentControls, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_style_pad_all(m_filamentControls, pad, 0);
+		lv_obj_set_style_pad_column(m_filamentControls, pad, 0);
+		lv_obj_set_flex_grow(m_filament, 2);
+		lv_obj_set_flex_grow(m_unload.getCont(), 1);
+		lv_obj_set_height(m_filament, LV_SIZE_CONTENT);
+		lv_obj_set_height(m_unload.getCont(), LV_SIZE_CONTENT);
+
 		lv_obj_set_height(m_heaterList, LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_all(m_heaterList, pad, 0);
 		lv_obj_set_flex_flow(m_heaterList, LV_FLEX_FLOW_COLUMN);
@@ -126,10 +138,25 @@ namespace UI
 	{
 		Lock lock;
 		lv_dropdown_clear_options(m_filament);
-		lv_dropdown_add_option(m_filament, _("none"), LV_DROPDOWN_POS_LAST);
+		// lv_dropdown_add_option(m_filament, _("none"), LV_DROPDOWN_POS_LAST);
 		for (const auto& option : options)
 		{
 			lv_dropdown_add_option(m_filament, option.c_str(), LV_DROPDOWN_POS_LAST);
+		}
+	}
+
+	void ToolItem::showFilamentControls(bool show)
+	{
+		Lock lock;
+		if (show)
+		{
+			lv_obj_remove_flag(m_filament, LV_OBJ_FLAG_HIDDEN);
+			m_unload.show();
+		}
+		else
+		{
+			lv_obj_add_flag(m_filament, LV_OBJ_FLAG_HIDDEN);
+			m_unload.hide();
 		}
 	}
 
@@ -142,10 +169,16 @@ namespace UI
 			if (filament[0] != '\0')
 			{
 				warn("Failed to find filament option");
+				lv_dropdown_set_text(m_filament, filament);
+				lv_dropdown_set_selected_highlight(m_filament, false);
 				return;
 			}
-			index = 0;
+			lv_dropdown_set_text(m_filament, _("none"));
+			lv_dropdown_set_selected_highlight(m_filament, false);
+			return;
 		}
+		lv_dropdown_set_text(m_filament, NULL);
+		lv_dropdown_set_selected_highlight(m_filament, true);
 		lv_dropdown_set_selected(m_filament, index);
 	}
 
@@ -283,11 +316,6 @@ namespace UI
 	{
 		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
 		char selectedFilament[MAX_FILAMENT_NAME_LENGTH];
-		if (lv_dropdown_get_selected(item->m_filament) == 0)
-		{
-			item->getList()->unloadFilament(item->m_index);
-			return;
-		}
 		lv_dropdown_get_selected_str(item->m_filament, selectedFilament, sizeof(selectedFilament));
 		item->getList()->loadFilament(item->m_index, selectedFilament);
 	}

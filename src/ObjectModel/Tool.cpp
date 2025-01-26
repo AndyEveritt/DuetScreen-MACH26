@@ -353,8 +353,32 @@ namespace OM
 
 	void Tool::ChangeFilament(const char* filament)
 	{
-		UnloadFilament();
-		LoadFilament(filament);
+		if (filamentExtruder < 0)
+		{
+			warn("No filament extruder assigned to tool %d", index);
+			return;
+		}
+		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		if (extruder == nullptr)
+		{
+			warn("Failed to get extruder %d for tool %d", filamentExtruder, index);
+			return;
+		}
+		if (extruder->filamentName.Equals(filament))
+		{
+			return;
+		}
+
+		if (filament[0] == '\0')
+		{
+			UnloadFilament();
+			return;
+		}
+
+		std::string command = utils::format(
+			"T%u\n%sM701 S\"%s\"\nM703\n", index, extruder->filamentName.IsEmpty() ? "" : "M702\n", filament);
+
+		Comm::DUET.SendGcode(command.c_str());
 	}
 
 	void Tool::LoadFilament(const char* filament)

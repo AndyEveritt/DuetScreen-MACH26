@@ -26,6 +26,7 @@ namespace UI
 		void setCurrentTemperature(size_t index, const float temperature);
 		void setActiveTemperature(size_t index, const int32_t temperature);
 		void setStandbyTemperature(size_t index, const int32_t temperature);
+		void showFilamentControls(bool show);
 		void setLoadedFilament(const char* filament);
 		void setFilamentOptions(const std::vector<std::string>& options);
 
@@ -65,6 +66,7 @@ namespace UI
 		lv_obj_t* m_label;
 		lv_obj_t* m_heaterList;
 		std::vector<std::shared_ptr<Heater>> m_heaters;
+		lv_obj_t* m_filamentControls;
 		lv_obj_t* m_filament;
 		Button m_unload;
 	};
