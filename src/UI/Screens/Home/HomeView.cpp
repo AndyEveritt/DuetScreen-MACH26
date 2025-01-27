@@ -56,6 +56,7 @@ namespace UI
 						   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
 		, m_moveView(m_mainWindow)
 		, m_extrudeView(m_mainWindow)
+		, m_fileView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 	{
 		addHomeScreen(this);
@@ -75,6 +76,9 @@ namespace UI
 		lv_obj_set_grid_cell(m_graph.getCont(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_windowSelect, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 
+		// Tool List
+		m_toolList.show();
+
 		// Graph
 		m_graph.setXRange({.min = -60, .max = 0});
 		m_graph.setYRange({.min = 0, .max = 300});
@@ -92,10 +96,12 @@ namespace UI
 		// Window select buttons
 		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_moveView);
 		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_extrudeView);
+		m_filesWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_fileView);
 		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
 
 		m_moveView.hide();
 		m_extrudeView.hide();
+		m_fileView.hide();
 		m_settingsView.hide();
 
 		// Styles::instance().removeTheme(getCont());

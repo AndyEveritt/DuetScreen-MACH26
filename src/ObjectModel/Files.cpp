@@ -18,7 +18,11 @@ namespace OM::FileSystem
 {
 	static std::string s_currentDirPath;
 	static std::vector<FileSystemItem*> s_items;
-	static std::function<void()> s_callback;
+	static struct
+	{
+		std::function<void()> cb;
+		bool runEveryTime;
+	} s_callback;
 	static bool s_inMacroFolder = false;
 	static bool s_usbFolder = false;
 
@@ -225,22 +229,30 @@ namespace OM::FileSystem
 		return count > 1;
 	}
 
-	void RequestFiles(const std::string& path, std::function<void()> callback)
+	void RequestFiles(const std::string& path, std::function<void()> callback, bool runEveryTime)
 	{
 		ClearFileSystem();
 		s_usbFolder = false;
 		s_inMacroFolder = path.find("macro") != std::string::npos;
-		s_callback = callback;
+		s_callback.cb = callback;
+		s_callback.runEveryTime = runEveryTime;
 		info("Files: requesting files in %s", path.c_str());
 		Comm::DUET.RequestFileList(path.c_str());
 	}
 
-	void RunCallback()
+	void RunCallback(const size_t next)
 	{
-		if (s_callback)
+		if (next > 0 && !s_callback.runEveryTime)
 		{
-			s_callback();
-			s_callback = nullptr;
+			return;
+		}
+		if (s_callback.cb)
+		{
+			s_callback.cb();
+			if (next == 0)
+			{
+				s_callback.cb = nullptr;
+			}
 		}
 	}
 

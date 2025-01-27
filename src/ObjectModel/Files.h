@@ -72,8 +72,8 @@ namespace OM::FileSystem
 	std::string GetCurrentDirName();
 	std::string& GetCurrentDirPath();
 	bool IsInSubFolder();
-	void RequestFiles(const std::string& path, std::function<void()> callback);
-	void RunCallback();
+	void RequestFiles(const std::string& path, std::function<void()> callback, bool runEveryTime = false);
+	void RunCallback(const size_t next);
 	void RequestUsbFiles(const std::string& path);
 	bool IsMacroFolder();
 	bool IsUsbFolder();

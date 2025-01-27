@@ -23,6 +23,8 @@ namespace UI
 		, m_standbyTemp(lv_label_create(getCont()))
 	{
 		Lock lock;
+		activate();
+
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 
 		lv_obj_set_flex_grow(m_label, 4);

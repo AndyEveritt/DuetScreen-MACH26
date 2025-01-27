@@ -72,6 +72,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"extrude_feed_rate", "Feed Rate (mm/s)"},
     {"toollist_filament", "Filament"},
     {"none", "None"},
+    {"file_header", "Folder: %s"},
     {NULL, NULL} // End mark
 };
 

@@ -53,3 +53,5 @@ en-GB:
   extrude_feed_rate: Feed Rate (mm/s)
   toollist_filament: Filament
   none: None
+  file_header: 'Folder: %s'
+  refresh: Refresh

@@ -222,7 +222,6 @@ namespace Comm
 	*/
 	bool Duet::Get(const char* path, HttpResponse& r, hv::QueryParams& queryParameters)
 	{
-#if 1
 		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
 			(strncmp(path, "/rr_connect", 11) != 0))
@@ -249,7 +248,6 @@ namespace Comm
 		}
 		verbose("%s", r.body.c_str());
 		m_lastRequestTime = TimeHelper::getCurrentTime();
-#endif
 		return true;
 	}
 
@@ -532,7 +530,10 @@ namespace Comm
 			query["dir"] = dir;
 			query["first"] = utils::format("%d", first);
 			if (!Get("/rr_filelist", r, query))
+			{
+				error("HTTP error %d (%s): Failed to get file list for %s", r.status_code, r.status_message(), dir);
 				break;
+			}
 			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}

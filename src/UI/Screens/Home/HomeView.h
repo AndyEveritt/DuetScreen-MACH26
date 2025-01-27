@@ -9,6 +9,7 @@
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Extrude/ExtrudeView.h"
+#include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "lvgl/lvgl.h"
@@ -54,6 +55,7 @@ namespace UI
 		// Windows
 		MoveView m_moveView;
 		ExtrudeView m_extrudeView;
+		FileView m_fileView;
 		SettingsView m_settingsView;
 	};
 } // namespace UI

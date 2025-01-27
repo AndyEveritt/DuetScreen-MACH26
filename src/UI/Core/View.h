@@ -108,26 +108,22 @@ namespace UI
 			: BaseView(name, parent)
 			, m_presenter(this)
 		{
-			show();
 		}
 		View(const std::string& name, BaseView* parent, layout_t layout)
 			: BaseView(name, parent, layout)
 			, m_presenter(this)
 		{
-			show();
 		}
 
 		View(const std::string& name, lv_obj_t* parent)
 			: BaseView(name, parent)
 			, m_presenter(this)
 		{
-			show();
 		}
 		View(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: BaseView(name, parent, layout)
 			, m_presenter(this)
 		{
-			show();
 		}
 		View(const std::string& name, layout_t layout)
 			: View(name, lv_screen_active(), layout)
