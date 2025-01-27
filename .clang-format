@@ -10,4 +10,6 @@
   BinPackParameters: false,
   BreakBeforeBraces: Allman,
   BreakConstructorInitializers: BeforeComma,
+  IndentPPDirectives: AfterHash,
+  PPIndentWidth: 2,
 }

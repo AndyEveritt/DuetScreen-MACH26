@@ -21,10 +21,14 @@ set(MAIN_SOURCES "")
 # Libraries
 # ----------------------------------------------------------------------------
 
+# FreeRTOS
 include(${LIBRARIES_DIR}/FreeRTOS.cmake)
+
+# LVGL
 include(${LIBRARIES_DIR}/lvgl.cmake)
+
+# Networking
 add_subdirectory(${LIBRARIES_DIR}/libhv)
-add_subdirectory(${LIBRARIES_DIR}/lv_drivers)
 
 # Find libusb package
 find_package(PkgConfig REQUIRED)
@@ -98,7 +102,8 @@ target_compile_definitions(DuetScreen PRIVATE DEBUG)
 target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
 
 if (PROCESSOR STREQUAL "T113")
-  target_compile_definitions(DuetScreen PRIVATE PROCESSOR_T113=1)
+  target_compile_definitions(lv_drivers PUBLIC T113=1)
+  target_compile_definitions(DuetScreen PUBLIC T113=1)
 elseif(PROCESSOR STREQUAL "Simulation")
   target_compile_definitions(DuetScreen PRIVATE SIMULATION=1)
 endif()

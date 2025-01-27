@@ -101,7 +101,7 @@ static int sunxifb_g2d_blit(int index);
  *   GLOBAL FUNCTIONS
  **********************/
 
-void sunxifb_init(uint32_t rotated)
+void sunxifb_init(lv_display_rotation_t rotated)
 {
     // Open the file for reading and writing
     fbfd = open(SUNXIFB_PATH, O_RDWR);
@@ -273,7 +273,7 @@ void sunxifb_exit(void)
  * @param area an area where to copy `color_p`
  * @param color_p an array of pixel to copy to the `area` part of the screen
  */
-void sunxifb_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p)
+void sunxifb_flush(lv_disp_t* drv, const lv_area_t* area, unsigned char* px_map)
 {
     if(fbp == NULL ||
             area->x2 < 0 ||

@@ -7,54 +7,54 @@
 #define SUNXIFB_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /*********************
  *      INCLUDES
  *********************/
 #ifndef LV_DRV_NO_CONF
-#ifdef LV_CONF_INCLUDE_SIMPLE
-#include "lv_drv_conf.h"
-#else
-#include "../../lv_drv_conf.h"
-#endif
+#  ifdef LV_CONF_INCLUDE_SIMPLE
+#	include "lv_drv_conf.h"
+#  else
+#	include "../../lv_drv_conf.h"
+#  endif
 #endif
 
 #if USE_SUNXIFB
 
-#ifdef LV_LVGL_H_INCLUDE_SIMPLE
-#include "lvgl.h"
-#else
-#include "lvgl/lvgl.h"
-#endif
+#  ifdef LV_LVGL_H_INCLUDE_SIMPLE
+#	include "lvgl.h"
+#  else
+#	include "lvgl/lvgl.h"
+#  endif
 
-/*********************
- *      DEFINES
- *********************/
+	/*********************
+	 *      DEFINES
+	 *********************/
 
-/**********************
- *      TYPEDEFS
- **********************/
+	/**********************
+	 *      TYPEDEFS
+	 **********************/
 
-/**********************
- * GLOBAL PROTOTYPES
- **********************/
-void sunxifb_init(uint32_t rotated);
-void sunxifb_exit(void);
-void sunxifb_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p);
-void sunxifb_get_sizes(uint32_t *width, uint32_t *height);
-#if USE_SUNXIFB_DOUBLE_BUFFER
-bool sunxifb_get_dbuf_en();
-int sunxifb_set_dbuf_en(lv_disp_drv_t * drv, bool dbuf_en);
-#endif
+	/**********************
+	 * GLOBAL PROTOTYPES
+	 **********************/
+	void sunxifb_init(lv_display_rotation_t rotated);
+	void sunxifb_exit(void);
+	void sunxifb_flush(lv_disp_t* drv, const lv_area_t* area, unsigned char* px_map);
+	void sunxifb_get_sizes(uint32_t* width, uint32_t* height);
+#  if USE_SUNXIFB_DOUBLE_BUFFER
+	bool sunxifb_get_dbuf_en();
+	int sunxifb_set_dbuf_en(lv_disp_drv_t* drv, bool dbuf_en);
+#  endif
 
+	/**********************
+	 *      MACROS
+	 **********************/
 
-/**********************
- *      MACROS
- **********************/
-
-#endif  /*USE_SUNXIFB*/
+#endif /*USE_SUNXIFB*/
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -26,14 +26,14 @@
 #include "UI/Screens/Home/HomeView.h"
 
 #if LV_USE_OS == LV_OS_PTHREAD
-#include <pthread.h>
+#  include <pthread.h>
 #elif LV_USE_OS == LV_OS_FREERTOS
-#include "freertos_main.h"
+#  include "freertos_main.h"
 #endif
 
-#if PROCESSOR_T113
-#include "lv_drivers/display/sunxifb.h"
-#include "lv_drivers/indev/evdev.h"
+#if T113
+#  include "lv_drivers/display/sunxifb.h"
+#  include "lv_drivers/indev/evdev.h"
 #elif SIMULATION
 #endif
 
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 	home.show();
 
 	// Create a thread to handle requesting data from Duet
-#if MULTITHREADED
+#  if MULTITHREADED
 	pthread_create(
 		&s_requestThread,
 		NULL,
@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 			return nullptr;
 		},
 		NULL);
-#endif
+#  endif
 
 	while (1)
 	{
@@ -163,7 +163,53 @@ int main(int argc, char** argv)
  */
 static lv_display_t* hal_init(int32_t w, int32_t h)
 {
-#if 1
+#if T113
+	lv_display_rotation_t rotated = LV_DISPLAY_ROTATION_0;
+
+	/*Linux frame buffer device init*/
+	sunxifb_init(rotated);
+
+	/*A buffer for LittlevGL to draw the screen's content*/
+	static uint32_t width, height;
+	sunxifb_get_sizes(&width, &height);
+
+	static lv_color_t* buf;
+	buf = (lv_color_t*)malloc(width * height * sizeof(lv_color_t));
+
+	if (buf == NULL)
+	{
+		sunxifb_exit();
+		printf("malloc draw buffer fail\n");
+		return 0;
+	}
+
+	lv_display_t* disp = lv_display_create(width, height);
+	if (disp == NULL)
+	{
+		fatal("Failed to create display");
+		exit(1);
+	}
+	lv_display_set_flush_cb(disp, sunxifb_flush);
+	lv_display_set_buffers(disp, buf, NULL, sizeof(buf), LV_DISPLAY_RENDER_MODE_DIRECT);
+
+	/*Initialize and register a display driver*/
+	static lv_disp_drv_t disp_drv;
+	lv_disp_drv_init(&disp_drv);
+	disp_drv.draw_buf = &disp_buf;
+	disp_drv.flush_cb = sunxifb_flush;
+	disp_drv.hor_res = width;
+	disp_drv.ver_res = height;
+	disp_drv.rotated = rotated;
+	lv_disp_drv_register(&disp_drv);
+
+	evdev_init();
+	static lv_indev_drv_t indev_drv;
+	lv_indev_drv_init(&indev_drv);			/*Basic initialization*/
+	indev_drv.type = LV_INDEV_TYPE_POINTER; /*See below.*/
+	indev_drv.read_cb = evdev_read;			/*See below.*/
+	/*Register the driver in LVGL and save the created input device object*/
+	lv_indev_t* evdev_indev = lv_indev_drv_register(&indev_drv);
+#elif SIMULATION
 	lv_group_set_default(lv_group_create());
 
 	lv_display_t* disp = lv_sdl_window_create(w, h);
@@ -186,8 +232,9 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 	lv_indev_t* kb = lv_sdl_keyboard_create();
 	lv_indev_set_display(kb, disp);
 	lv_indev_set_group(kb, lv_group_get_default());
-#else
 
+#else
+#  error "No hardware abstraction layer defined"
 #endif
 
 	return disp;
