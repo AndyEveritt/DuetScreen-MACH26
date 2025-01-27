@@ -16,12 +16,9 @@
 #include "glob.h"
 #include "hv/requests.h"
 #include "lv_i18n/lv_i18n.h"
-#include "lvgl/demos/lv_demos.h"
-#include "lvgl/examples/lv_examples.h"
 #include "lvgl/lvgl.h"
 #include "utils/StorageHelper.h"
 #include <libusb-1.0/libusb.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -29,9 +26,15 @@
 #include "UI/Screens/Home/HomeView.h"
 
 #if LV_USE_OS == LV_OS_PTHREAD
-#include <thread>
+#include <pthread.h>
 #elif LV_USE_OS == LV_OS_FREERTOS
 #include "freertos_main.h"
+#endif
+
+#if PROCESSOR_T113
+#include "lv_drivers/display/sunxifb.h"
+#include "lv_drivers/indev/evdev.h"
+#elif SIMULATION
 #endif
 
 /*********************
@@ -160,7 +163,7 @@ int main(int argc, char** argv)
  */
 static lv_display_t* hal_init(int32_t w, int32_t h)
 {
-
+#if 1
 	lv_group_set_default(lv_group_create());
 
 	lv_display_t* disp = lv_sdl_window_create(w, h);
@@ -183,6 +186,9 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 	lv_indev_t* kb = lv_sdl_keyboard_create();
 	lv_indev_set_display(kb, disp);
 	lv_indev_set_group(kb, lv_group_get_default());
+#else
+
+#endif
 
 	return disp;
 }

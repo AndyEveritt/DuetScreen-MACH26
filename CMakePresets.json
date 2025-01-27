@@ -27,7 +27,7 @@
             "description": "Configure the project to be run locally on the host machine",
             "inherits": "Base",
             "cacheVariables": {
-                "SIMULATION": "ON",
+                "PROCESSOR": "Simulation",
                 "LOG_TIMESTAMPS": "ON",
                 "ASYNC_RR_MODEL": "OFF"
             }
@@ -36,7 +36,12 @@
             "name": "T113-Debug",
             "displayName": "T113 Debug",
             "description": "Configure the project to be run on T113 with debug symbols",
-            "inherits": "Base"
+            "inherits": "Base",
+            "cacheVariables": {
+                "PROCESSOR": "T113",
+                "LOG_TIMESTAMPS": "ON",
+                "DEBUG_BORDERS": "ON"
+            }
         },
         {
             "name": "T113",
@@ -44,7 +49,8 @@
             "description": "Configure the project to be run on T113 without debug symbols",
             "inherits": "Base",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Release",
+                "PROCESSOR": "T113"
             }
         }
     ],
