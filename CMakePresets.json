@@ -50,6 +50,18 @@
     ],
     "buildPresets": [
         {
+            "name": "T113-Debug",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "T113=Debug"
+        },
+        {
+            "name": "T113",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "T113"
+        },
+        {
             "name": "Simulation",
             "description": "",
             "displayName": "",
