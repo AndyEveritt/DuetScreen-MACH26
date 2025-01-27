@@ -11,7 +11,7 @@
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
-#include "termio.h"
+#include "termios.h"
 #include "utils/utils.h"
 #include <hv/requests.h>
 #include <nlohmann/json.hpp>

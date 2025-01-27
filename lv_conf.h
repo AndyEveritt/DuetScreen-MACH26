@@ -859,7 +859,9 @@
  *==================*/
 
 /*Use SDL to open window on PC and handle mouse and keyboard*/
-#define LV_USE_SDL              1
+#ifndef LV_USE_SDL
+#define LV_USE_SDL              0
+#endif
 #if LV_USE_SDL
     #define LV_SDL_INCLUDE_PATH     <SDL2/SDL.h>
     #define LV_SDL_RENDER_MODE      LV_DISPLAY_RENDER_MODE_DIRECT   /*LV_DISPLAY_RENDER_MODE_DIRECT is recommended for best performance*/
@@ -881,10 +883,12 @@
 #endif
 
 /*Driver for /dev/fb*/
+#ifndef LV_USE_LINUX_FBDEV
 #define LV_USE_LINUX_FBDEV      0
+#endif
 #if LV_USE_LINUX_FBDEV
     #define LV_LINUX_FBDEV_BSD           0
-    #define LV_LINUX_FBDEV_RENDER_MODE   LV_DISPLAY_RENDER_MODE_PARTIAL
+    #define LV_LINUX_FBDEV_RENDER_MODE   LV_DISPLAY_RENDER_MODE_DIRECT
     #define LV_LINUX_FBDEV_BUFFER_COUNT  0
     #define LV_LINUX_FBDEV_BUFFER_SIZE   60
 #endif
@@ -917,7 +921,9 @@
 #define LV_USE_TFT_ESPI         0
 
 /*Driver for evdev input devices*/
+#ifndef LV_USE_EVDEV
 #define LV_USE_EVDEV    0
+#endif
 
 /*Driver for libinput input devices*/
 #define LV_USE_LIBINPUT    0
@@ -949,7 +955,7 @@
 *==================*/
 
 /*Enable the examples to be built with the library*/
-#define LV_BUILD_EXAMPLES 1
+#define LV_BUILD_EXAMPLES 0
 
 /*===================
  * DEMO USAGE

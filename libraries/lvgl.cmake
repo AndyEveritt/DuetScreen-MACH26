@@ -29,14 +29,13 @@ add_subdirectory(${LIBRARIES_DIR}/lvgl)
 target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
                                        ${SDL2_INCLUDE_DIRS} ${LIBRARIES_DIR})
 
-add_subdirectory(${LIBRARIES_DIR}/lv_drivers)
-
 # Drivers
-target_compile_definitions(
-  lv_drivers
-  PUBLIC $<$<BOOL:${LV_LVGL_H_INCLUDE_SIMPLE}>:LV_LVGL_H_INCLUDE_SIMPLE>
-         $<$<BOOL:${LV_CONF_INCLUDE_SIMPLE}>:LV_CONF_INCLUDE_SIMPLE>
-         USE_SUNXIFB_G2D=1
-         )
+# add_subdirectory(${LIBRARIES_DIR}/lv_drivers)
+# target_compile_definitions(
+#   lv_drivers
+#   PUBLIC $<$<BOOL:${LV_LVGL_H_INCLUDE_SIMPLE}>:LV_LVGL_H_INCLUDE_SIMPLE>
+#          $<$<BOOL:${LV_CONF_INCLUDE_SIMPLE}>:LV_CONF_INCLUDE_SIMPLE>
+#          USE_SUNXIFB_G2D=1)
 
-target_include_directories(lv_drivers PUBLIC ${PROJECT_SOURCE_DIR} ${LIBRARIES_DIR})
+# target_include_directories(lv_drivers PUBLIC ${PROJECT_SOURCE_DIR}
+#                                              ${LIBRARIES_DIR})
