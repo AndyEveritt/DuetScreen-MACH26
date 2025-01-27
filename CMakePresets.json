@@ -53,7 +53,7 @@
             "name": "T113-Debug",
             "description": "",
             "displayName": "",
-            "configurePreset": "T113=Debug"
+            "configurePreset": "T113-Debug"
         },
         {
             "name": "T113",
