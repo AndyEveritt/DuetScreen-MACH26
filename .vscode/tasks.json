@@ -67,5 +67,15 @@
 				"Extract i18n phrases"
 			]
 		},
+		{
+			"type": "shell",
+			"label": "Clang Format",
+			"command": "find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp' -print | xargs clang-format -i",
+			"problemMatcher": [],
+			"group": {
+				"kind": "none",
+				"isDefault": false
+			}
+		},
 	]
 }
