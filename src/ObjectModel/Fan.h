@@ -20,11 +20,11 @@ namespace OM
 {
 	class Fan
 	{
-	public:
+	  public:
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<Fan>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<Fan>(p); }
 
-		uint8_t index;	// This is the fan number
+		uint8_t index; // This is the fan number
 		float actualValue;
 		float requestedValue;
 		int32_t rpm;
@@ -36,11 +36,11 @@ namespace OM
 	Fan* GetFanBySlot(const size_t index);
 	Fan* GetOrCreateFan(const size_t fanIndex);
 	const size_t GetFanCount();
-	bool IterateFansWhile(function_ref<bool(Fan *&, size_t)> func, const size_t startAt = 0);
+	bool IterateFansWhile(function_ref<bool(Fan*&, size_t)> func, const size_t startAt = 0);
 	bool UpdateFanActualVal(const size_t fanIndex, const float val);
 	bool UpdateFanRequestedVal(const size_t fanIndex, const float val);
 	bool UpdateFanRpm(const size_t fanIndex, const int32_t val);
 	size_t RemoveFan(const size_t index, const bool allFollowing);
-}
+} // namespace OM
 
 #endif /* JNI_OBJECTMODEL_FAN_HPP_ */

@@ -10,11 +10,12 @@
 #define RESET_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void Reset() noexcept;
-void EraseAndReset() noexcept;
+	void Reset() noexcept;
+	void EraseAndReset() noexcept;
 
 #ifdef __cplusplus
 }

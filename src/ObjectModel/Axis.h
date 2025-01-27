@@ -91,7 +91,7 @@ namespace OM::Move
 	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot);
 	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index);
 	size_t GetExtruderAxisCount();
-	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt = 0);
+	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveExtruderAxis(const size_t index, const bool allFollowing);
 
 	bool SetExtruderPosition(size_t index, float f);
@@ -111,7 +111,6 @@ namespace OM::Move
 	void SetCurrentMoveRequestedSpeed(float speed);
 	const float GetCurrentMoveTopSpeed();
 	void SetCurrentMoveTopSpeed(float speed);
-}
-
+} // namespace OM::Move
 
 #endif /* SRC_OBJECTMODEL_AXIS_HPP_ */

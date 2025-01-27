@@ -15,14 +15,14 @@
 #include "ListHelpers.h"
 
 #define ATTR_SETTR_GETTR(funcName, type, varName)                                                                      \
-    void Set##funcName(const type value)                                                                               \
-    {                                                                                                                  \
-        varName = value;                                                                                               \
-    }                                                                                                                  \
-    const type Get##funcName()                                                                                         \
-    {                                                                                                                  \
-        return varName;                                                                                                \
-    }
+  void Set##funcName(const type value)                                                                                 \
+  {                                                                                                                    \
+	varName = value;                                                                                                   \
+  }                                                                                                                    \
+  const type Get##funcName()                                                                                           \
+  {                                                                                                                    \
+	return varName;                                                                                                    \
+  }
 
 namespace OM
 {

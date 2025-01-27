@@ -1013,7 +1013,7 @@ namespace Comm
 					}
 					break;
 
-								case jsCharsVal:
+				case jsCharsVal:
 					if (CheckValueCompleted(c, true))
 					{
 						break;

@@ -25,7 +25,6 @@ namespace OM
 		offline
 	};
 
-
 	struct BedOrChamberStatusMapEntry
 	{
 		const char* key;
@@ -33,14 +32,13 @@ namespace OM
 	};
 
 	// This table has to be kept in alphabetical order of the keys
-	const BedOrChamberStatusMapEntry bedOrChamberStatusMap[] =
-	{
-		{ "active",		BedOrChamberStatus::active },
-		{ "fault",		BedOrChamberStatus::fault },
-		{ "off",	 	BedOrChamberStatus::off },
-		{ "offline",	BedOrChamberStatus::offline },
-		{ "standby",	BedOrChamberStatus::standby },
-		{ "tuning",		BedOrChamberStatus::tuning },
+	const BedOrChamberStatusMapEntry bedOrChamberStatusMap[] = {
+		{"active", BedOrChamberStatus::active},
+		{"fault", BedOrChamberStatus::fault},
+		{"off", BedOrChamberStatus::off},
+		{"offline", BedOrChamberStatus::offline},
+		{"standby", BedOrChamberStatus::standby},
+		{"tuning", BedOrChamberStatus::tuning},
 	};
 
 	struct BedOrChamber
@@ -89,6 +87,6 @@ namespace OM
 
 	extern int8_t g_lastBed;
 	extern int8_t g_lastChamber;
-}
+} // namespace OM
 
 #endif /* SRC_OBJECTMODEL_BEDORCHAMBER_HPP_ */

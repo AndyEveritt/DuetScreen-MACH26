@@ -19,11 +19,9 @@ namespace OM
 
 	bool IsPrintingStatus(OM::PrinterStatus status)
 	{
-		return status == OM::PrinterStatus::printing
-				|| status == OM::PrinterStatus::paused
-				|| status == OM::PrinterStatus::pausing
-				|| status == OM::PrinterStatus::resuming
-				|| status == OM::PrinterStatus::simulating;
+		return status == OM::PrinterStatus::printing || status == OM::PrinterStatus::paused ||
+			   status == OM::PrinterStatus::pausing || status == OM::PrinterStatus::resuming ||
+			   status == OM::PrinterStatus::simulating;
 	}
 
 	bool PrintInProgress()
@@ -32,7 +30,8 @@ namespace OM
 	}
 
 	// Return true if sending a command or file list request to the printer now is a good idea.
-	// We don't want to send these when the printer is busy with a previous command, because they will block normal status requests.
+	// We don't want to send these when the printer is busy with a previous command, because they will block normal
+	// status requests.
 	bool OkToSend()
 	{
 		return s_status == OM::PrinterStatus::idle || s_status == OM::PrinterStatus::printing ||
@@ -52,17 +51,17 @@ namespace OM
 		return "unknown";
 	}
 
-	void SetStatus(const char * status)
+	void SetStatus(const char* status)
 	{
 		const PrinterStatusMapEntry key = {status, OM::PrinterStatus::unknown};
-		const PrinterStatusMapEntry * statusFromMap =
-				(OM::PrinterStatusMapEntry *) bsearch(
-						&key,
-						OM::printerStatusMap,
-						ARRAY_SIZE(OM::printerStatusMap),
-						sizeof(OM::PrinterStatusMapEntry),
-						compareKey<OM::PrinterStatusMapEntry>);
-		if (!statusFromMap) {
+		const PrinterStatusMapEntry* statusFromMap =
+			(OM::PrinterStatusMapEntry*)bsearch(&key,
+												OM::printerStatusMap,
+												ARRAY_SIZE(OM::printerStatusMap),
+												sizeof(OM::PrinterStatusMapEntry),
+												compareKey<OM::PrinterStatusMapEntry>);
+		if (!statusFromMap)
+		{
 			error("unknown status %s", status);
 			return;
 		}
@@ -92,4 +91,4 @@ namespace OM
 	{
 		s_printerName = name;
 	}
-}
+} // namespace OM

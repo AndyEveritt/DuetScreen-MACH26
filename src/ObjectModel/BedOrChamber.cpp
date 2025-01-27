@@ -214,8 +214,7 @@ namespace OM
 		return s_chambers.Size();
 	}
 
-	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func,
-			const size_t startAt)
+	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func, const size_t startAt)
 	{
 		return s_chambers.IterateWhile(func, startAt);
 	}

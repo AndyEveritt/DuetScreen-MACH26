@@ -34,7 +34,7 @@ T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent
 		elem->Reset();
 		elem->index = index;
 		list.Add(elem);
-		list.Sort([] (T* e1, T* e2) { return e1->index > e2->index; });
+		list.Sort([](T* e1, T* e2) { return e1->index > e2->index; });
 		return elem;
 	}
 
@@ -43,7 +43,7 @@ T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent
 	return nullptr;
 }
 
-template<typename L, typename T>
+template <typename L, typename T>
 T* Find(L& list, function_ref<bool(T*)> filter)
 {
 	const size_t count = list.Size();
@@ -57,12 +57,12 @@ T* Find(L& list, function_ref<bool(T*)> filter)
 	return nullptr;
 }
 
-template<typename L, typename T>
+template <typename L, typename T>
 size_t Remove(L& list, const size_t index, const bool allFollowing)
 {
 	// Nothing to do on an empty list or
 	// if the last element is already smaller than what we look for
-	if (list.IsEmpty() || list[list.Size()-1]->index < index)
+	if (list.IsEmpty() || list[list.Size() - 1]->index < index)
 	{
 		// dbg("Nothing removed");
 		return 0;

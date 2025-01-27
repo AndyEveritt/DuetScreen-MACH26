@@ -8,8 +8,8 @@
 #ifndef SRC_OBJECTMODEL_PRINTERSTATUS_HPP_
 #define SRC_OBJECTMODEL_PRINTERSTATUS_HPP_
 
-
-namespace OM {
+namespace OM
+{
 	// Status that the printer may report to us.
 	// Must be the same order as printerStatusMap.
 	enum class PrinterStatus
@@ -65,6 +65,6 @@ namespace OM {
 	void SetStatus(const PrinterStatus status);
 	const std::string& GetPrinterName();
 	void SetPrinterName(const char* name);
-}
+} // namespace OM
 
 #endif /* SRC_OBJECTMODEL_PRINTERSTATUS_HPP_ */

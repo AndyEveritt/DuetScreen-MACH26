@@ -75,7 +75,14 @@ namespace OM
 			} text;
 		} limits;
 
-		Alert() : mode(Mode::Info), seq(0), controls(0), timeout(0.0) { Reset(); }
+		Alert()
+			: mode(Mode::Info)
+			, seq(0)
+			, controls(0)
+			, timeout(0.0)
+		{
+			Reset();
+		}
 
 		bool AllFlagsSet() const { return flags.GetRaw() == GotAll; }
 		void Reset();

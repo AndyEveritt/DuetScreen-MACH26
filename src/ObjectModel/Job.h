@@ -74,6 +74,6 @@ namespace OM
 	bool IsJobObjectActive(const size_t index);
 	void SetJobObjectActive(const size_t index, const bool active);
 	void CancelCurrentJobObject();
-}
+} // namespace OM
 
 #endif /* JNI_OBJECTMODEL_JOB_HPP_ */

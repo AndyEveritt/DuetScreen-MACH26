@@ -37,11 +37,10 @@ namespace OM
 	};
 
 	// This table must be kept in case-insensitive alphabetical order of the search string.
-	const ToolStatusMapEntry toolStatusMap[] =
-	{
-		{"active",	ToolStatus::active },
-		{"off",		ToolStatus::off },
-		{"standby",	ToolStatus::standby },
+	const ToolStatusMapEntry toolStatusMap[] = {
+		{"active", ToolStatus::active},
+		{"off", ToolStatus::off},
+		{"standby", ToolStatus::standby},
 	};
 
 	struct ToolHeater
@@ -130,14 +129,14 @@ namespace OM
 	bool UpdateToolFilamentExtruder(const size_t toolIndex, const int8_t extruderIndex);
 
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active);
-	bool UpdateToolName(const size_t toolIndex, const char *name);
-	bool UpdateToolStatus(const size_t toolIndex, const char *statusStr);
+	bool UpdateToolName(const size_t toolIndex, const char* name);
+	bool UpdateToolStatus(const size_t toolIndex, const char* statusStr);
 
 	bool UpdateToolSpindle(const size_t toolIndex, const int8_t spindleIndex);
 	bool UpdateToolSpindleRpm(const size_t toolIndex, const int32_t rpm);
 
 	void SetCurrentTool(const int32_t toolIndex);
 	Tool* GetCurrentTool();
-}
+} // namespace OM
 
 #endif /* SRC_OBJECTMODEL_TOOL_HPP_ */

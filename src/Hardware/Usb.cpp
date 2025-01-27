@@ -64,15 +64,15 @@ namespace USB
 
 	bool ReadUsbFileContents(const std::string& filePath, std::string& contents)
 	{
-	    std::string fullPath;
-	    if (filePath.rfind("/mnt/usb1") == 0)
-	    {
-	        fullPath = filePath;
-	    }
-	    else
-	    {
-	        fullPath = std::string("/mnt/usb1/") + filePath;
-	    }
+		std::string fullPath;
+		if (filePath.rfind("/mnt/usb1") == 0)
+		{
+			fullPath = filePath;
+		}
+		else
+		{
+			fullPath = std::string("/mnt/usb1/") + filePath;
+		}
 
 		return ReadFileContents(fullPath, contents);
 	}

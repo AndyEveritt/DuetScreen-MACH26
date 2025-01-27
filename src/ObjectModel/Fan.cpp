@@ -26,7 +26,7 @@ namespace OM
 		rpm = -1;
 	}
 
-	Fan *GetFan(const size_t index)
+	Fan* GetFan(const size_t index)
 	{
 		return GetOrCreate<FanList, Fan>(s_fans, index, false);
 	}
@@ -39,7 +39,7 @@ namespace OM
 		return s_fans[index];
 	}
 
-	Fan *GetOrCreateFan(const size_t index)
+	Fan* GetOrCreateFan(const size_t index)
 	{
 		return GetOrCreate<FanList, Fan>(s_fans, index, true);
 	}
@@ -49,14 +49,14 @@ namespace OM
 		return s_fans.Size();
 	}
 
-	bool IterateFansWhile(function_ref<bool(Fan *&, size_t)> func, const size_t startAt)
+	bool IterateFansWhile(function_ref<bool(Fan*&, size_t)> func, const size_t startAt)
 	{
 		return s_fans.IterateWhile(func, startAt);
 	}
 
 	bool UpdateFanActualVal(const size_t fanIndex, const float val)
 	{
-		Fan *fan = GetOrCreateFan(fanIndex);
+		Fan* fan = GetOrCreateFan(fanIndex);
 
 		// If we do not handle this fan back off
 		if (fan == nullptr)
@@ -70,7 +70,7 @@ namespace OM
 
 	bool UpdateFanRequestedVal(const size_t fanIndex, const float val)
 	{
-		Fan *fan = GetOrCreateFan(fanIndex);
+		Fan* fan = GetOrCreateFan(fanIndex);
 
 		// If we do not handle this fan back off
 		if (fan == nullptr)
@@ -84,7 +84,7 @@ namespace OM
 
 	bool UpdateFanRpm(const size_t fanIndex, const int32_t val)
 	{
-		Fan *fan = GetOrCreateFan(fanIndex);
+		Fan* fan = GetOrCreateFan(fanIndex);
 
 		// If we do not handle this fan back off
 		if (fan == nullptr)
@@ -101,4 +101,4 @@ namespace OM
 		dbg("Removing fan %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<FanList, Fan>(s_fans, index, allFollowing);
 	}
-}
+} // namespace OM

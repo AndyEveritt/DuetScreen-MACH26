@@ -9,8 +9,8 @@
 #define JNI_COMM_COMMUNICATION_HPP_
 
 #include "Comm/Commands.h"
-#include <stdint.h>
 #include "FileInfo.h"
+#include <stdint.h>
 
 namespace Comm
 {

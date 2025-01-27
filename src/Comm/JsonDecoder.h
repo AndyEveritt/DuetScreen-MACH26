@@ -48,22 +48,22 @@ namespace Comm
 		// (including the current one)
 		enum JsonState
 		{
-			jsBegin,		// initial state, expecting '{'
-			jsExpectId,		// just had '{' so expecting a quoted ID
-			jsId,			// expecting an identifier, or in the middle of one
-			jsHadId,		// had a quoted identifier, expecting ':'
-			jsVal,			// had ':', expecting value
-			jsStringVal,	// had '"' and expecting or in a string value
-			jsStringEscape, // just had backslash in a string
-			jsIntVal,		// receiving an integer value
-			jsNegIntVal,	// had '-' so expecting a integer value
-			jsFracVal,		// receiving a fractional value
-			jsEndVal,		// had the end of a string or _ecv_array value, expecting comma or ] or }
-			jsCharsVal,		// receiving an alphanumeric value such as true, false, null
-			jsExpValSign,	// about to receive an exponent, possible sign coming up
+			jsBegin,			// initial state, expecting '{'
+			jsExpectId,			// just had '{' so expecting a quoted ID
+			jsId,				// expecting an identifier, or in the middle of one
+			jsHadId,			// had a quoted identifier, expecting ':'
+			jsVal,				// had ':', expecting value
+			jsStringVal,		// had '"' and expecting or in a string value
+			jsStringEscape,		// just had backslash in a string
+			jsIntVal,			// receiving an integer value
+			jsNegIntVal,		// had '-' so expecting a integer value
+			jsFracVal,			// receiving a fractional value
+			jsEndVal,			// had the end of a string or _ecv_array value, expecting comma or ] or }
+			jsCharsVal,			// receiving an alphanumeric value such as true, false, null
+			jsExpValSign,		// about to receive an exponent, possible sign coming up
 			jsExpValFirstDigit, // expecting the first digit of an exponent
 			jsExpValDigits,		// expecting remaining digits of an exponent
-			jsError			// something went wrong
+			jsError				// something went wrong
 		};
 
 		JsonDecoder();

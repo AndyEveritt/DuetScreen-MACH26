@@ -39,14 +39,13 @@ namespace OM
 		};
 
 		// This table must be kept in case-insensitive alphabetical order of the search string.
-		const HeaterStatusMapEntry heaterStatusMap[] =
-		{
-			{ "active",		HeaterStatus::active },
-			{ "fault",		HeaterStatus::fault },
-			{ "off",	 	HeaterStatus::off },
-			{ "offline",	HeaterStatus::offline },
-			{ "standby",	HeaterStatus::standby },
-			{ "tuning",		HeaterStatus::tuning },
+		const HeaterStatusMapEntry heaterStatusMap[] = {
+			{"active", HeaterStatus::active},
+			{"fault", HeaterStatus::fault},
+			{"off", HeaterStatus::off},
+			{"offline", HeaterStatus::offline},
+			{"standby", HeaterStatus::standby},
+			{"tuning", HeaterStatus::tuning},
 		};
 
 		struct Heater
@@ -54,7 +53,7 @@ namespace OM
 			void* operator new(size_t) noexcept { return FreelistManager::Allocate<Heater>(); }
 			void operator delete(void* p) noexcept { FreelistManager::Release<Heater>(p); }
 
-			uint8_t index;	// This is the heater number
+			uint8_t index; // This is the heater number
 			int32_t activeTemp;
 			int32_t standbyTemp;
 			float current;
@@ -85,10 +84,10 @@ namespace OM
 		bool UpdateHeaterMin(const size_t heaterIndex, const float min);
 		bool UpdateHeaterMax(const size_t heaterIndex, const float max);
 		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status);
-		bool UpdateHeaterStatus(const size_t heaterIndex, const char *status);
+		bool UpdateHeaterStatus(const size_t heaterIndex, const char* status);
 		bool UpdateHeaterSensor(const size_t heaterIndex, const size_t sensorIndex);
 		size_t RemoveHeater(const size_t index, const bool allFollowing);
-	}
-}
+	} // namespace Heat
+} // namespace OM
 
 #endif /* JNI_OBJECTMODEL_HEAT_HPP_ */

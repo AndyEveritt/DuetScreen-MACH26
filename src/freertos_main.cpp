@@ -11,10 +11,10 @@
 
 #if LV_USE_OS == LV_OS_FREERTOS
 
-#include "UI/Screens/Home/view.h"
-#include "freertos_main.h"
-#include "lvgl.h"
-#include <cstdio> // For printf in C++
+  #include "UI/Screens/Home/view.h"
+  #include "freertos_main.h"
+  #include "lvgl.h"
+  #include <cstdio> // For printf in C++
 
 // ........................................................................................................
 /**
@@ -28,8 +28,9 @@
  */
 extern "C" void vApplicationMallocFailedHook(void)
 {
-    printf("Malloc failed! Available heap: %ld bytes\n", xPortGetFreeHeapSize());
-    for( ;; );
+	printf("Malloc failed! Available heap: %ld bytes\n", xPortGetFreeHeapSize());
+	for (;;)
+		;
 }
 
 // ........................................................................................................
@@ -55,10 +56,11 @@ extern "C" void vApplicationIdleHook(void) {}
  * @param   pcTaskName   Name of the task that caused the stack overflow
  * @return  None
  */
-extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 {
-    printf("Stack overflow in task %s\n", pcTaskName);
-    for(;;);
+	printf("Stack overflow in task %s\n", pcTaskName);
+	for (;;)
+		;
 }
 
 // ........................................................................................................
@@ -84,30 +86,32 @@ extern "C" void vApplicationTickHook(void) {}
  */
 void create_hello_world_screen()
 {
-    /* Create a new screen object */
-    lv_obj_t *screen = lv_obj_create(NULL);
-    if (screen == NULL){
-        printf("Error: Failed to create screen object\n");
-        /* Return if screen creation fails */
-        return;
-    }
+	/* Create a new screen object */
+	lv_obj_t* screen = lv_obj_create(NULL);
+	if (screen == NULL)
+	{
+		printf("Error: Failed to create screen object\n");
+		/* Return if screen creation fails */
+		return;
+	}
 
-    /* Create a new label object on the screen */
-    lv_obj_t *label = lv_label_create(screen);
-    if (label == NULL){
-        printf("Error: Failed to create label object\n");
-        /* Return if label creation fails */
-        return;
-    }
+	/* Create a new label object on the screen */
+	lv_obj_t* label = lv_label_create(screen);
+	if (label == NULL)
+	{
+		printf("Error: Failed to create label object\n");
+		/* Return if label creation fails */
+		return;
+	}
 
-    /* Set the text of the label to "Hello, World!" */
-    lv_label_set_text(label, "Hello, World!");
+	/* Set the text of the label to "Hello, World!" */
+	lv_label_set_text(label, "Hello, World!");
 
-    /* Align the label to the center of the screen */
-    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+	/* Align the label to the center of the screen */
+	lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
-    /* Load the created screen and make it visible */
-    lv_scr_load(screen);
+	/* Load the created screen and make it visible */
+	lv_scr_load(screen);
 }
 
 // ........................................................................................................
@@ -120,9 +124,9 @@ void create_hello_world_screen()
  * @param   pvParameters   Task parameters (not used in this example)
  * @return  None
  */
-void lvgl_task(void *pvParameters)
+void lvgl_task(void* pvParameters)
 {
-    /* Show simple hello world screen */
+	/* Show simple hello world screen */
 	// create_hello_world_screen();
 
 	UI::HomeView home;
@@ -147,14 +151,15 @@ void lvgl_task(void *pvParameters)
  * @param   pvParameters   Task parameters (not used in this example)
  * @return  None
  */
-void another_task(void *pvParameters)
+void another_task(void* pvParameters)
 {
-    /* Create some load in an infinite loop */
-    while (true){
-        printf("Second Task is running :)\n");
-        /* Delay the task for 500 milliseconds */
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
+	/* Create some load in an infinite loop */
+	while (true)
+	{
+		printf("Second Task is running :)\n");
+		/* Delay the task for 500 milliseconds */
+		vTaskDelay(pdMS_TO_TICKS(500));
+	}
 }
 
 // ........................................................................................................
@@ -168,7 +173,7 @@ void another_task(void *pvParameters)
  */
 extern "C" void freertos_main()
 {
-    /* Initialize LVGL (Light and Versatile Graphics Library) and other resources */
+	/* Initialize LVGL (Light and Versatile Graphics Library) and other resources */
 	// lv_tick_set_cb(xTaskGetTickCount);
 
 	/* Create the LVGL task */

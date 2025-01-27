@@ -56,22 +56,22 @@ namespace OM
 	}
 
 #define SPINDLE_SETTER(funcName, valType, varName)                                                                     \
-	bool funcName(size_t index, valType val)                                                                           \
+  bool funcName(size_t index, valType val)                                                                             \
+  {                                                                                                                    \
+	if (index >= MAX_SLOTS)                                                                                            \
 	{                                                                                                                  \
-		if (index >= MAX_SLOTS)                                                                                        \
-		{                                                                                                              \
-			error("spindle[%d] greater than MAX_SLOTS", index);                                                        \
-			return false;                                                                                              \
-		}                                                                                                              \
-		Spindle* spindle = GetOrCreateSpindle(index);                                                                  \
-		if (spindle == nullptr)                                                                                        \
-		{                                                                                                              \
-			error("Could not get or create spindle %d", index);                                                        \
-			return false;                                                                                              \
-		}                                                                                                              \
-		spindle->varName = val;                                                                                        \
-		return true;                                                                                                   \
-	}
+	  error("spindle[%d] greater than MAX_SLOTS", index);                                                              \
+	  return false;                                                                                                    \
+	}                                                                                                                  \
+	Spindle* spindle = GetOrCreateSpindle(index);                                                                      \
+	if (spindle == nullptr)                                                                                            \
+	{                                                                                                                  \
+	  error("Could not get or create spindle %d", index);                                                              \
+	  return false;                                                                                                    \
+	}                                                                                                                  \
+	spindle->varName = val;                                                                                            \
+	return true;                                                                                                       \
+  }
 
 	bool SetSpindleState(size_t index, const char* statusStr)
 	{
@@ -105,4 +105,4 @@ namespace OM
 	SPINDLE_SETTER(SetSpindleCurrent, uint32_t, current)
 	SPINDLE_SETTER(SetSpindleMax, uint32_t, max)
 	SPINDLE_SETTER(SetSpindleMin, uint32_t, min)
-}
+} // namespace OM

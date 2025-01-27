@@ -27,9 +27,9 @@
 #include "UI/Screens/Home/HomeView.h"
 
 #if LV_USE_OS == LV_OS_PTHREAD
-#  include <pthread.h>
+  #include <pthread.h>
 #elif LV_USE_OS == LV_OS_FREERTOS
-#  include "freertos_main.h"
+  #include "freertos_main.h"
 #endif
 
 #if T113
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 	home.show();
 
 	// Create a thread to handle requesting data from Duet
-#  if MULTITHREADED
+  #if MULTITHREADED
 	pthread_create(
 		&s_requestThread,
 		NULL,
@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 			return nullptr;
 		},
 		NULL);
-#  endif
+  #endif
 
 	while (1)
 	{
@@ -206,5 +206,5 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 #else
   #error Unsupported configuration
 #endif
-		return disp;
+	return disp;
 }

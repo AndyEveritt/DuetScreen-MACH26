@@ -18,7 +18,6 @@ enum class ControlCommand
 	eraseAndReset,
 };
 
-
 struct ControlCommandMapEntry
 {
 	const char* key;
@@ -26,10 +25,9 @@ struct ControlCommandMapEntry
 };
 
 // This table has to be kept in alphabetical order of the keys
-const ControlCommandMapEntry controlCommandMap[] =
-{
-	{ "eraseAndReset",	ControlCommand::eraseAndReset },
-	{ "reset",			ControlCommand::reset },
+const ControlCommandMapEntry controlCommandMap[] = {
+	{"eraseAndReset", ControlCommand::eraseAndReset},
+	{"reset", ControlCommand::reset},
 };
 
 #endif /* SRC_CONTROLCOMMANDS_HPP_ */

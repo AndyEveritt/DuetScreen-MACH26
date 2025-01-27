@@ -14,7 +14,8 @@
 
 namespace OM
 {
-	enum SpindleState : uint8_t {
+	enum SpindleState : uint8_t
+	{
 		forward,
 		reverse,
 		stopped,
@@ -27,11 +28,10 @@ namespace OM
 	};
 
 	// This table has to be kept in alphabetical order of the keys
-	const SpindleStateMapEntry spindleStateMap[] =
-	{
-		{ "forward",	SpindleState::forward },
-		{ "reverse",	SpindleState::reverse },
-		{ "stopped",	SpindleState::stopped },
+	const SpindleStateMapEntry spindleStateMap[] = {
+		{"forward", SpindleState::forward},
+		{"reverse", SpindleState::reverse},
+		{"stopped", SpindleState::stopped},
 	};
 
 	struct Spindle
@@ -62,6 +62,6 @@ namespace OM
 	bool SetSpindleMax(size_t index, uint32_t max);
 	bool SetSpindleMin(size_t index, uint32_t min);
 	bool SetSpindleState(size_t index, const char* state);
-}
+} // namespace OM
 
 #endif /* SRC_OBJECTMODEL_SPINDLE_HPP_ */

@@ -23,7 +23,8 @@ namespace SerialIo
 		return true;
 	}
 
-	size_t Sendf(const char *fmt, ...) {
+	size_t Sendf(const char* fmt, ...)
+	{
 		va_list vargs;
 		va_start(vargs, fmt);
 

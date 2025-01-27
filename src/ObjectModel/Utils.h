@@ -18,24 +18,21 @@
 // Custom comparator for string literals at compile time
 struct ConstCharComparator
 {
-	constexpr bool operator()(const char* a, const char* b) const
-	{
-		return strcmp(a, b) < 0;
-	}
+	constexpr bool operator()(const char* a, const char* b) const { return strcmp(a, b) < 0; }
 };
 
 template <typename T>
-int compareKey(const void *lp, const void *rp)
+int compareKey(const void* lp, const void* rp)
 {
-	return strcasecmp(((T *)lp)->key, ((T *)rp)->key);
+	return strcasecmp(((T*)lp)->key, ((T*)rp)->key);
 }
 
 template <typename T>
-int compareValue(const void *lp, const void *rp)
+int compareValue(const void* lp, const void* rp)
 {
-	if (((T *)lp)->val < ((T *)rp)->val)
+	if (((T*)lp)->val < ((T*)rp)->val)
 		return -1;
-	else if (((T *)lp)->val > ((T *)rp)->val)
+	else if (((T*)lp)->val > ((T*)rp)->val)
 		return 1;
 	else
 		return 0;

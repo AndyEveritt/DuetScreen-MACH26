@@ -12,7 +12,8 @@
 
 namespace utils
 {
-	CSV::CSV(const std::string& csvContents, bool hasHeaders) : m_hasHeaders(hasHeaders)
+	CSV::CSV(const std::string& csvContents, bool hasHeaders)
+		: m_hasHeaders(hasHeaders)
 	{
 		size_t col = 0;
 		size_t row = 0;
