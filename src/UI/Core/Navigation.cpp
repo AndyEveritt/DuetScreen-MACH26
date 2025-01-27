@@ -1,5 +1,6 @@
 #include "Navigation.h"
 #include "Debug.h"
+#include <algorithm>
 #include <vector>
 
 namespace UI
