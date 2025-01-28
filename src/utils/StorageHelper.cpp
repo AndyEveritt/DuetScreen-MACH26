@@ -1,6 +1,10 @@
 #include "StorageHelper.h"
 
+#if T113
+static std::string filename_ = "/etc/duetscreen.json";
+#elif SIMULATION
 static std::string filename_ = "config.json";
+#endif
 
 nlohmann::json StorageHelper::data_ = {};
 
