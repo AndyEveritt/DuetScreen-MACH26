@@ -73,6 +73,9 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"toollist_filament", "Filament"},
     {"none", "None"},
     {"file_header", "Folder: %s"},
+    {"refresh", "Refresh"},
+    {"gcode_G0_desc", "Rapid move"},
+    {"gcode_G1_desc", "Controlled linear move"},
     {NULL, NULL} // End mark
 };
 

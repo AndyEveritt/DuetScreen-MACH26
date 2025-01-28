@@ -17,6 +17,8 @@ namespace UI
 	  public:
 		SideBar(const std::string& name, lv_obj_t* parent);
 
+		void setConsoleView(BaseView* view) { m_consoleView = view; }
+
 	  private:
 		static void backBtnEvent(lv_event_t* e);
 		static void homeBtnEvent(lv_event_t* e);
@@ -29,5 +31,7 @@ namespace UI
 		Button m_macrosBtn;
 		Button m_consoleBtn;
 		Button m_eStopBtn;
+
+		BaseView* m_consoleView;
 	};
 } // namespace UI

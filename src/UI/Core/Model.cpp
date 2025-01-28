@@ -5,16 +5,16 @@
 #include "Hardware/Duet.h"
 #include "Presenter.h"
 
-#define NOTIFY_ALL_PRESENTERS(func)                                                                                    \
+#define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
   for (auto presenter : m_presenters)                                                                                  \
   {                                                                                                                    \
-	presenter->func();                                                                                                 \
+	presenter->func(__VA_ARGS__);                                                                                      \
   }
 
-#define MODEL_NOTIFICATION(func)                                                                                       \
-  void Model::func()                                                                                                   \
+#define MODEL_NOTIFICATION(func, ...)                                                                                  \
+  void Model::func(__VA_ARGS__)                                                                                        \
   {                                                                                                                    \
-	NOTIFY_ALL_PRESENTERS(func);                                                                                       \
+	NOTIFY_ALL_PRESENTERS(func, __VA_ARGS__);                                                                          \
   }
 
 Model::Model()
@@ -195,7 +195,6 @@ void Model::refresh()
 		presenter->newCurrentMoveTopSpeed();
 		presenter->newCurrentMoveExtrusionSpeed();
 		presenter->newCompensationFile();
-		presenter->newResponse();
 		presenter->newAnalogSensorData();
 		presenter->newEndstopData();
 		presenter->newSpindleData();
@@ -247,7 +246,10 @@ MODEL_NOTIFICATION(newCompensationFile)
 
 /* Response methods */
 
-MODEL_NOTIFICATION(newResponse)
+void Model::newResponse(const char* resp)
+{
+	NOTIFY_ALL_PRESENTERS(newResponse, resp);
+}
 
 /* Sensor methods */
 

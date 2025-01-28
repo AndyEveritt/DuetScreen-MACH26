@@ -54,6 +54,7 @@ namespace UI
 						   m_windowSelect,
 						   _("settings"),
 						   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
+		, m_consoleView(m_mainWindow)
 		, m_moveView(m_mainWindow)
 		, m_extrudeView(m_mainWindow)
 		, m_fileView(m_mainWindow)
@@ -93,12 +94,16 @@ namespace UI
 		lv_obj_set_flex_flow(m_windowSelect, LV_FLEX_FLOW_ROW_WRAP);
 		lv_obj_set_flex_align(m_windowSelect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
+		// Sidebar
+		m_sideBar.setConsoleView(&m_consoleView);
+
 		// Window select buttons
 		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_moveView);
 		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_extrudeView);
 		m_filesWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_fileView);
 		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
 
+		m_consoleView.hide();
 		m_moveView.hide();
 		m_extrudeView.hide();
 		m_fileView.hide();

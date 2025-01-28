@@ -185,6 +185,7 @@ namespace UI
 	void closeLastScreen()
 	{
 		info("Closing last screen");
+#if 0
 		for (auto screen : s_homeScreens)
 		{
 			if (!screen->isVisible())
@@ -193,6 +194,7 @@ namespace UI
 			}
 			closeScreen(screen);
 		}
+#endif
 		if (s_openScreens.empty())
 		{
 			return;

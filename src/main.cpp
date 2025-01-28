@@ -27,9 +27,9 @@
 #include "UI/Screens/Home/HomeView.h"
 
 #if LV_USE_OS == LV_OS_PTHREAD
-  #include <pthread.h>
+#  include <pthread.h>
 #elif LV_USE_OS == LV_OS_FREERTOS
-  #include "freertos_main.h"
+#  include "freertos_main.h"
 #endif
 
 #if T113
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 	home.show();
 
 	// Create a thread to handle requesting data from Duet
-  #if MULTITHREADED
+#  if MULTITHREADED
 	pthread_create(
 		&s_requestThread,
 		NULL,
@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 			return nullptr;
 		},
 		NULL);
-  #endif
+#  endif
 
 	while (1)
 	{
@@ -172,11 +172,11 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 	lv_display_t* disp = lv_linux_fbdev_create();
 	lv_display_set_resolution(disp, w, h);
 
-  #if LV_USE_EVDEV
+#  if LV_USE_EVDEV
 	const char* input_device = getenv_default("LV_LINUX_EVDEV_POINTER_DEVICE", "/dev/input/event0");
 	lv_indev_t* touch = lv_evdev_create(LV_INDEV_TYPE_POINTER, input_device);
 	lv_indev_set_display(touch, disp);
-  #endif
+#  endif
 
 	lv_linux_fbdev_set_file(disp, device);
 
@@ -206,7 +206,7 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 	lv_indev_set_group(kb, lv_group_get_default());
 
 #else
-  #error Unsupported configuration
+#  error Unsupported configuration
 #endif
 	return disp;
 }

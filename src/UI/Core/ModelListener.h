@@ -52,7 +52,7 @@ namespace UI
 		virtual void newCompensationFile() {}
 
 		/* Response methods */
-		virtual void newResponse() {}
+		virtual void newResponse(const char* resp) {}
 
 		/* Sensor methods */
 		virtual void newAnalogSensorData() {}

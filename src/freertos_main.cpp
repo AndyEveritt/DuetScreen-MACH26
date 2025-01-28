@@ -11,10 +11,10 @@
 
 #if LV_USE_OS == LV_OS_FREERTOS
 
-  #include "UI/Screens/Home/view.h"
-  #include "freertos_main.h"
-  #include "lvgl.h"
-  #include <cstdio> // For printf in C++
+#  include "UI/Screens/Home/view.h"
+#  include "freertos_main.h"
+#  include "lvgl.h"
+#  include <cstdio> // For printf in C++
 
 // ........................................................................................................
 /**

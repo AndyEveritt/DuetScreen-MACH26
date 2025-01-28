@@ -93,7 +93,7 @@ class Model
 
 	/* Response methods */
 
-	void newResponse();
+	void newResponse(const char* resp);
 
 	/* Sensor methods */
 
