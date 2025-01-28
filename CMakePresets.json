@@ -29,6 +29,7 @@
             "cacheVariables": {
                 "PROCESSOR": "Simulation",
                 "LOG_TIMESTAMPS": "ON",
+                "DEBUG_BORDERS": "ON",
                 "ASYNC_RR_MODEL": "OFF"
             }
         },

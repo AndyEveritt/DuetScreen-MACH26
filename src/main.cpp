@@ -173,7 +173,9 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 	lv_display_set_resolution(disp, w, h);
 
   #if LV_USE_EVDEV
-	lv_linux_init_input_pointer(disp);
+	const char* input_device = getenv_default("LV_LINUX_EVDEV_POINTER_DEVICE", "/dev/input/event0");
+	lv_indev_t* touch = lv_evdev_create(LV_INDEV_TYPE_POINTER, input_device);
+	lv_indev_set_display(touch, disp);
   #endif
 
 	lv_linux_fbdev_set_file(disp, device);

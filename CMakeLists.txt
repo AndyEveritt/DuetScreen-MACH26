@@ -107,7 +107,7 @@ target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
 
 if(PROCESSOR STREQUAL "T113")
   target_compile_definitions(lvgl PUBLIC LV_USE_LINUX_FBDEV=1)
-  target_compile_definitions(lvgl PUBLIC LV_USE_EVDEV=0)
+  target_compile_definitions(lvgl PUBLIC LV_USE_EVDEV=1)
   target_compile_definitions(DuetScreen PUBLIC T113=1)
   # add_compile_definitions(T113=1)
 elseif(PROCESSOR STREQUAL "Simulation")
