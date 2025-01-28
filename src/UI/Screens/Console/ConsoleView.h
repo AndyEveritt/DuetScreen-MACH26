@@ -15,11 +15,17 @@ namespace UI
 		ConsoleView(lv_obj_t* parent);
 
 		void clear();
+		void addCommand(const char* resp);
 		void addResponse(const char* resp);
 
 		bool back() override;
 
 	  private:
+		static void onSendEvent(lv_event_t* e);
+		static void onClearEvent(lv_event_t* e);
+		static void onCommandListEvent(lv_event_t* e);
+		static void onKeyboardEvent(lv_event_t* e);
+
 		virtual void onShow() override;
 		virtual void onHide() override;
 

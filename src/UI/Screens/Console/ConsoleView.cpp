@@ -56,6 +56,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_input, 1);
 		lv_textarea_set_one_line(m_input, true);
 		lv_textarea_set_placeholder_text(m_input, _("console_input_placeholder"));
+		lv_textarea_set_align(m_input, LV_TEXT_ALIGN_LEFT);
 		lv_obj_align(m_clear.getCont(), LV_ALIGN_RIGHT_MID, 0, 0);
 		lv_obj_set_height(m_input, LV_SIZE_CONTENT);
 		lv_obj_set_size(m_clear.getCont(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
@@ -67,12 +68,23 @@ namespace UI
 		// Hide keyboard initially
 		lv_keyboard_set_mode(m_kb, LV_KEYBOARD_MODE_TEXT_LOWER);
 		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
+
+		// Callbacks
+		m_clear.setCallback(onClearEvent, LV_EVENT_CLICKED, this);
+		m_enter.setCallback(onSendEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_commandList, onCommandListEvent, LV_EVENT_ALL, this);
+		lv_obj_add_event_cb(m_input, onKeyboardEvent, LV_EVENT_ALL, this);
 	}
 
 	void ConsoleView::clear()
 	{
 		Lock lock;
-		lv_textarea_set_text(m_output, "");
+		lv_textarea_set_text(m_input, "");
+	}
+
+	void ConsoleView::addCommand(const char* resp)
+	{
+		addResponse(utils::format("> %s", resp).c_str());
 	}
 
 	void ConsoleView::addResponse(const char* resp)
@@ -97,6 +109,77 @@ namespace UI
 		}
 
 		lv_textarea_set_text(m_output, currentText.c_str());
+	}
+
+	void ConsoleView::onSendEvent(lv_event_t* e)
+	{
+		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
+		lv_obj_send_event(view->m_input, LV_EVENT_READY, view);
+	}
+
+	void ConsoleView::onClearEvent(lv_event_t* e)
+	{
+		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
+		view->clear();
+	}
+
+	void ConsoleView::onCommandListEvent(lv_event_t* e)
+	{
+		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
+		lv_event_code_t code = lv_event_get_code(e);
+		if (code == LV_EVENT_VALUE_CHANGED)
+		{
+			uint32_t row;
+			uint32_t col;
+			lv_table_get_selected_cell(view->m_commandList, &row, &col);
+
+			const char* gcode = lv_table_get_cell_value(view->m_commandList, row, 0);
+			lv_textarea_set_text(view->m_input, gcode);
+		}
+	}
+
+	void ConsoleView::onKeyboardEvent(lv_event_t* e)
+	{
+		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
+		lv_event_code_t code = lv_event_get_code(e);
+		switch (code)
+		{
+		case LV_EVENT_FOCUSED:
+		{
+			lv_keyboard_set_textarea(view->m_kb, view->m_input);
+			lv_obj_remove_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+			break;
+		}
+		case LV_EVENT_DEFOCUSED:
+		{
+			lv_keyboard_set_textarea(view->m_kb, NULL);
+			lv_obj_add_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+			break;
+		}
+		case LV_EVENT_VALUE_CHANGED:
+		{
+			break;
+		}
+		case LV_EVENT_READY:
+		{
+			const char* text = lv_textarea_get_text(view->m_input);
+			if (strlen(text) > 0)
+			{
+				// Send the command
+				view->addCommand(text);
+				view->m_presenter.sendGcode(text);
+			}
+			break;
+		}
+
+		default:
+			break;
+		}
+
+		if (code == LV_EVENT_CANCEL)
+		{
+			lv_obj_add_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+		}
 	}
 
 	bool ConsoleView::back()

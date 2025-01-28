@@ -14,6 +14,7 @@ namespace UI
 
 		// Actions
 		bool back();
+		void sendGcode(const char* gcode);
 
 		// Observers
 		void newResponse(const char* resp) override;

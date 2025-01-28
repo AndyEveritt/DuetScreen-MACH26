@@ -18,5 +18,10 @@ namespace UI
 		m_view->refresh();
 	}
 
+	void ConsolePresenter::sendGcode(const char* gcode)
+	{
+		Comm::DUET.SendGcode(gcode);
+	}
+
 	void ConsolePresenter::onActivate() {}
 } // namespace UI
