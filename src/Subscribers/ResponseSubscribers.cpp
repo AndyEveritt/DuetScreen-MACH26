@@ -8,12 +8,8 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 {
 	info("resp length=%d", strlen(data));
 	dbg("resp: %s", data);
-	static std::string str;
-	size_t substrlen;
-	str = data;
-	// TODO add line to vector of responses
 
-	Model::get().newResponse();
+	Model::get().newResponse(data);
 
 	return true;
 }

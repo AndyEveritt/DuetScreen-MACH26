@@ -8,6 +8,7 @@
 #include "UI/Components/SideBar.h"
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
+#include "UI/Screens/Console/ConsoleView.h"
 #include "UI/Screens/Extrude/ExtrudeView.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Move/MoveView.h"
@@ -53,6 +54,7 @@ namespace UI
 		Button m_settingsWindow;
 
 		// Windows
+		ConsoleView m_consoleView;
 		MoveView m_moveView;
 		ExtrudeView m_extrudeView;
 		FileView m_fileView;

@@ -22,7 +22,7 @@ namespace UI
 		, m_macrosBtn("Macros", getCont(), _("macros"), layout_t{0, 40, 100, 0})
 		, m_consoleBtn("Console", getCont(), _("console"), layout_t{0, 60, 100, 0})
 		, m_eStopBtn("E-Stop", getCont(), _("estop"), layout_t{0, 80, 100, 2 * 0})
-
+		, m_consoleView(nullptr)
 	{
 		verbose("Creating SideBar");
 
@@ -61,6 +61,13 @@ namespace UI
 	void SideBar::consoleBtnEvent(lv_event_t* e)
 	{
 		info("Console button pressed");
+		SideBar* sb = static_cast<SideBar*>(lv_event_get_user_data(e));
+		if (sb->m_consoleView == nullptr)
+		{
+			error("Console view not set");
+			return;
+		}
+		openScreen(sb->m_consoleView, true);
 	}
 
 	void SideBar::eStopBtnEvent(lv_event_t* e)
