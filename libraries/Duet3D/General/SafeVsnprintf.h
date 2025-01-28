@@ -25,13 +25,4 @@ int uprintf(PutcFunc_t putc_f, const char* format, ...) noexcept __attribute__((
 int SafeVsnprintf(char* buffer, size_t maxLen, const char* format, va_list args) noexcept;
 int SafeSnprintf(char* buffer, size_t maxLen, const char* format, ...) noexcept __attribute__((format(printf, 3, 4)));
 
-extern "C" [[deprecated("use SafeSnprintf instead of snprintf")]] int snprintf(char* s,
-																			   size_t n,
-																			   const char* format,
-																			   ...) noexcept;
-extern "C" [[deprecated("use SafeVsnprintf instead of vsnprintf")]] int vsnprintf(char* s,
-																				  size_t n,
-																				  const char* format,
-																				  va_list arg) noexcept;
-
 #endif /* SRC_GENERAL_SAFEVSNPRINTF_H_ */
