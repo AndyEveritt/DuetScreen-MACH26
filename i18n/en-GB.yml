@@ -122,8 +122,8 @@ en-GB:
   gcode_M114_desc: ~
   gcode_M115_desc: ~
   gcode_M116_desc: ~
-  gcode_M117_desc: ~
-  gcode_M118_desc: ~
+  gcode_M117_desc: Display Message
+  gcode_M118_desc: Send Message to Specific Target
   gcode_M119_desc: ~
   gcode_M120_desc: ~
   gcode_M121_desc: ~

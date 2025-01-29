@@ -214,7 +214,6 @@ namespace UI
 
 	bool ConsoleView::back()
 	{
-		// TODO close keyboard if open
 		return false;
 	}
 
@@ -226,6 +225,7 @@ namespace UI
 
 	void ConsoleView::onHide()
 	{
+		// We want the console output to still update with new replies even when the console is hidden.
 		activate();
 	}
 } // namespace UI

@@ -40,6 +40,19 @@ Model::Model()
 	}
 }
 
+void Model::bind(UI::BasePresenter* presenter)
+{
+	ModelLock lock;
+	unbind(presenter);
+	m_presenters.push_back(presenter);
+}
+
+void Model::unbind(UI::BasePresenter* presenter)
+{
+	ModelLock lock;
+	m_presenters.remove(presenter);
+}
+
 void Model::tick()
 {
 	ModelLock lock;

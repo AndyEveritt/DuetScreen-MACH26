@@ -38,12 +38,13 @@ class Model
 	 * @brief Add a `Presenter` to listen to events
 	 * @param presenter
 	 */
-	void bind(UI::BasePresenter* presenter) { m_presenters.push_back(presenter); }
+	void bind(UI::BasePresenter* presenter);
+
 	/**
 	 * @brief Remove a `Presenter`
 	 * @param presenter
 	 */
-	void unbind(UI::BasePresenter* presenter) { m_presenters.remove(presenter); }
+	void unbind(UI::BasePresenter* presenter);
 
 	/* tasks */
 

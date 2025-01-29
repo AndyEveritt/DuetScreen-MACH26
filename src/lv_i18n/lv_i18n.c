@@ -76,6 +76,8 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"refresh", "Refresh"},
     {"gcode_G0_desc", "Rapid move"},
     {"gcode_G1_desc", "Controlled linear move"},
+    {"gcode_M117_desc", "Display Message"},
+    {"gcode_M118_desc", "Send Message to Specific Target"},
     {NULL, NULL} // End mark
 };
 
