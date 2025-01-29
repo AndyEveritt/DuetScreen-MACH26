@@ -66,7 +66,7 @@ namespace UI
 		lv_obj_set_style_pad_all(m_enter.getCont(), 0, 0);
 
 		// Hide keyboard initially
-		lv_keyboard_set_mode(m_kb, LV_KEYBOARD_MODE_TEXT_LOWER);
+		lv_keyboard_set_mode(m_kb, LV_KEYBOARD_MODE_TEXT_UPPER);
 		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
 
 		// Callbacks
@@ -106,9 +106,8 @@ namespace UI
 				pos = currentText.find('\n', pos) + 1;
 			}
 			currentText = currentText.substr(pos);
+			lv_textarea_set_text(m_output, currentText.c_str());
 		}
-
-		lv_textarea_set_text(m_output, currentText.c_str());
 	}
 
 	void ConsoleView::onSendEvent(lv_event_t* e)
@@ -134,6 +133,11 @@ namespace UI
 			lv_table_get_selected_cell(view->m_commandList, &row, &col);
 
 			const char* gcode = lv_table_get_cell_value(view->m_commandList, row, 0);
+
+			if (gcode[0] == '\0')
+			{
+				return;
+			}
 			lv_textarea_set_text(view->m_input, gcode);
 		}
 	}
@@ -147,6 +151,7 @@ namespace UI
 		case LV_EVENT_FOCUSED:
 		{
 			lv_keyboard_set_textarea(view->m_kb, view->m_input);
+			lv_keyboard_set_mode(view->m_kb, LV_KEYBOARD_MODE_TEXT_UPPER);
 			lv_obj_remove_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
 			break;
 		}
@@ -158,6 +163,31 @@ namespace UI
 		}
 		case LV_EVENT_VALUE_CHANGED:
 		{
+			lv_obj_scroll_to_y(view->m_commandList, 0, LV_ANIM_OFF);
+			std::string cmd = lv_textarea_get_text(view->m_input);
+			if (cmd.find_first_of(' ') == std::string::npos)
+			{
+				std::string upper_cmd;
+				std::transform(cmd.begin(),
+							   cmd.end(),
+							   std::back_inserter(upper_cmd),
+							   [](unsigned char c) { return std::toupper(c); });
+
+				uint16_t index = 0;
+				for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
+				{
+					const gcode* g = Gcodes::getGcode(i);
+					if (std::string(g->gcode).rfind(upper_cmd, 0) == 0)
+					{
+						lv_table_set_cell_value(view->m_commandList, index, 0, g->gcode);
+						lv_table_set_cell_value(view->m_commandList, index, 1, g->helpText);
+						index++;
+					}
+				}
+
+				lv_table_set_row_count(view->m_commandList, index);
+			}
+
 			break;
 		}
 		case LV_EVENT_READY:

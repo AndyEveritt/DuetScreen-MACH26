@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Duet3D/General/CircularBuffer.h"
 #include "UI/Core/Presenter.h"
 
 namespace UI
@@ -21,7 +20,5 @@ namespace UI
 
 	  private:
 		void onActivate() override;
-
-		CircularBuffer<std::string, MAX_RESPONSE_LINES> m_buffer;
 	};
 } // namespace UI

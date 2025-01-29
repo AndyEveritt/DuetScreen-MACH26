@@ -304,8 +304,6 @@ namespace Comm
 						printf("HTTP error %d: Failed to send gcode: %s", r->status_code, gcode);
 						return false;
 					}
-					RequestReply(*r);
-					ProcessReply(*r);
 					return true;
 				},
 				true);

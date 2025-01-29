@@ -14,8 +14,6 @@ namespace UI
 	void ConsolePresenter::newResponse(const char* resp)
 	{
 		m_view->addResponse(resp);
-		m_buffer.Push(resp);
-		m_view->refresh();
 	}
 
 	void ConsolePresenter::sendGcode(const char* gcode)
