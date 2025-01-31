@@ -124,9 +124,9 @@ namespace UI
 	void BaseView::show()
 	{
 		Lock lock;
-		onShow();
 		lv_obj_move_foreground(getCont());
 		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
+		onShow();
 	}
 
 	/**
@@ -137,9 +137,9 @@ namespace UI
 	void BaseView::hide()
 	{
 		Lock lock;
-		onHide();
 		lv_obj_move_background(getCont());
 		lv_obj_add_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
+		onHide();
 	}
 
 	bool BaseView::isVisible()

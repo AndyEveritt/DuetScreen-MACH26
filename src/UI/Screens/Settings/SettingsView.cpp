@@ -1,6 +1,7 @@
 #include "SettingsView.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
@@ -9,26 +10,57 @@ namespace UI
 {
 	SettingsView::SettingsView(lv_obj_t* parent)
 		: View("settings_view", parent, layout_t(0, 0, 100, 100))
-		, m_settingsTabView(lv_tabview_create(getCont()))
-		, m_duetSettingsTab(lv_tabview_add_tab(m_settingsTabView, _("settings_duet")))
-		, m_developerSettingsTab(lv_tabview_add_tab(m_settingsTabView, _("settings_developer")))
-		, m_duetSettingsView(m_duetSettingsTab, this)
-		, m_developerSettingsView(m_developerSettingsTab, this)
+		, m_settingsList(lv_list_create(getCont()))
+		, m_subWindow(lv_obj_create(getCont()))
+		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header")))
+		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet")))
+		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network")))
+		, m_devHeader(lv_list_add_text(m_settingsList, _("settings_dev_header")))
+		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer")))
+		, m_duetSettingsView(m_subWindow, this)
+		, m_networkSettingsView(m_subWindow, this)
+		, m_developerSettingsView(m_subWindow, this)
+		, m_currentSubView(&m_duetSettingsView)
 		, m_keyboard(lv_keyboard_create(getCont()))
 	{
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
-		lv_obj_set_grid_cell(m_settingsTabView, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		lv_obj_set_grid_cell(m_settingsList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		lv_obj_set_grid_cell(m_subWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		lv_obj_set_grid_cell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		// Tab View
-		lv_tabview_set_tab_bar_position(m_settingsTabView, LV_DIR_LEFT);
+		// List
+		lv_obj_set_user_data(m_duetSettings, &m_duetSettingsView);
+		lv_obj_set_user_data(m_networkSettings, &m_networkSettingsView);
+		lv_obj_set_user_data(m_developerSettings, &m_developerSettingsView);
 
-		// Keyboard
+		lv_obj_add_event_cb(m_duetSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_networkSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_developerSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 	}
 
-	void SettingsView::showKeyboard(bool show, lv_keyboard_mode_t mode)
+	void SettingsView::onWindowSelectEvent(lv_event_t* e)
+	{
+		SettingsView* view = (SettingsView*)lv_event_get_user_data(e);
+		BaseView* subView = (BaseView*)lv_obj_get_user_data(lv_event_get_target_obj(e));
+		BaseView* currentSubView = view->m_currentSubView;
+
+		if (currentSubView == subView)
+		{
+			return;
+		}
+
+		if (currentSubView != nullptr)
+		{
+			currentSubView->hide();
+		}
+
+		subView->show();
+		view->m_currentSubView = subView;
+	}
+
+	void SettingsView::showKeyboard(bool show, lv_keyboard_mode_t mode, lv_obj_t* textArea)
 	{
 		Lock lock;
 		if (show)
@@ -36,10 +68,12 @@ namespace UI
 			m_layoutRowDsc[1] = LV_GRID_FR(1);
 			lv_keyboard_set_mode(m_keyboard, mode);
 			lv_obj_remove_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
+			setKeyboardTextArea(textArea);
 		}
 		else
 		{
 			m_layoutRowDsc[1] = 0;
+			setKeyboardTextArea(NULL);
 			lv_obj_add_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
 		}
 	}
@@ -48,6 +82,17 @@ namespace UI
 	{
 		Lock lock;
 		lv_keyboard_set_textarea(m_keyboard, textArea);
+	}
+
+	bool SettingsView::back()
+	{
+		if (!lv_obj_has_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN))
+		{
+			showKeyboard(false);
+			return true;
+		}
+
+		return false;
 	}
 
 	void SettingsView::onHide() {}
@@ -63,6 +108,11 @@ namespace UI
 	{
 	}
 
+	SettingsPresenter& SettingsSubView::getMainSettingsPresenter() const
+	{
+		return m_mainSettingsView->getPresenter();
+	}
+
 	void SettingsSubView::onTextAreaEvent(lv_event_t* e)
 	{
 		Lock lock;
@@ -73,13 +123,11 @@ namespace UI
 			lv_textarea_get_accepted_chars(ta) == "0123456789" ? LV_KEYBOARD_MODE_NUMBER : LV_KEYBOARD_MODE_TEXT_LOWER;
 		if (code == LV_EVENT_FOCUSED)
 		{
-			view->getMainSettingsView()->showKeyboard(true, mode);
-			view->getMainSettingsView()->setKeyboardTextArea(ta);
+			view->getMainSettingsView()->showKeyboard(true, mode, ta);
 		}
 
 		if (code == LV_EVENT_DEFOCUSED)
 		{
-			view->getMainSettingsView()->setKeyboardTextArea(NULL);
 			view->getMainSettingsView()->showKeyboard(false);
 		}
 	}
@@ -140,6 +188,135 @@ namespace UI
 		Comm::DUET.SetHostname(lv_textarea_get_text(view->m_hostname));
 		Comm::DUET.SetPassword(lv_textarea_get_text(view->m_password));
 		Comm::DUET.SetPollInterval(atoi(lv_textarea_get_text(view->m_pollInterval)));
+	}
+
+	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
+		: View("network_settings_view", parent)
+		, m_networkList(lv_table_create(getCont()))
+		, m_passwordWindow(lv_msgbox_create(getCont()))
+		, m_passwordInput(lv_textarea_create(m_passwordWindow))
+		, m_passwordSsid(nullptr)
+	{
+		Lock lock;
+		setMainSettingsView(mainSettingsView);
+
+		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
+		// Network List
+		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(m_networkList, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		lv_obj_set_size(m_networkList, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		lv_obj_set_style_pad_column(m_networkList, 5, 0);
+		lv_obj_set_style_pad_row(m_networkList, 5, 0);
+		lv_obj_set_style_pad_all(m_networkList, 5, 0);
+
+		// Network Selection
+		lv_obj_set_size(m_networkList, LV_PCT(100), LV_PCT(100));
+		lv_table_set_column_count(m_networkList, 4);
+		lv_table_set_cell_value(m_networkList, 0, 0, _("settings_network_ssid"));
+		lv_table_set_cell_value(m_networkList, 0, 1, _("settings_network_signal"));
+		lv_table_set_cell_value(m_networkList, 0, 2, _("settings_network_known"));
+		lv_table_set_cell_value(m_networkList, 0, 3, _("settings_network_forget"));
+
+		// Password Window
+		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_FLOATING);
+		lv_obj_align(m_passwordWindow, LV_ALIGN_CENTER, 0, 0);
+		lv_obj_set_size(m_passwordWindow, LV_PCT(80), LV_SIZE_CONTENT);
+		lv_obj_set_flex_flow(m_passwordWindow, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(m_passwordWindow, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_width(m_passwordInput, LV_PCT(80));
+
+		lv_msgbox_add_title(m_passwordWindow, _("settings_network_password_title"));
+		m_passwordSsid = lv_msgbox_add_text(m_passwordWindow, "");
+		lv_obj_t* closeBtn = lv_msgbox_add_header_button(m_passwordWindow, LV_SYMBOL_CLOSE);
+		lv_obj_t* confirmBtn = lv_msgbox_add_footer_button(m_passwordWindow, LV_SYMBOL_OK);
+		lv_textarea_set_placeholder_text(m_passwordInput, _("settings_network_enter_password"));
+		lv_textarea_set_one_line(m_passwordInput, true);
+		lv_textarea_set_password_mode(m_passwordInput, true);
+
+		// Callbacks
+		lv_obj_add_event_cb(m_networkList, onNetworkSelectionEvent, LV_EVENT_VALUE_CHANGED, this);
+		lv_obj_add_event_cb(closeBtn, onPasswordCloseEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(confirmBtn, onPasswordConfirmEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_passwordWindow, onPasswordCloseEvent, LV_EVENT_DEFOCUSED, this);
+	}
+
+	void NetworkSettingsView::setNetworkCount(size_t count)
+	{
+		lv_table_set_row_count(m_networkList, count + 1);
+	}
+
+	void NetworkSettingsView::setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known)
+	{
+		void* knownPtr = lv_malloc(sizeof(bool));
+		*(bool*)knownPtr = known;
+		lv_table_set_cell_user_data(m_networkList, index + 1, 2, knownPtr);
+		lv_table_set_cell_value(m_networkList, index + 1, 0, ssid.c_str());
+		lv_table_set_cell_value(m_networkList, index + 1, 1, utils::format("%d dBm", signalLevel).c_str());
+		lv_table_set_cell_value(m_networkList, index + 1, 2, known ? LV_SYMBOL_OK : LV_SYMBOL_CLOSE);
+		lv_table_set_cell_value(m_networkList, index + 1, 3, known ? LV_SYMBOL_TRASH : "");
+	}
+
+	void NetworkSettingsView::onNetworkSelectionEvent(lv_event_t* e)
+	{
+		Lock lock;
+
+		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
+		lv_obj_t* table = (lv_obj_t*)lv_event_get_target(e);
+		uint32_t row;
+		uint32_t col;
+		lv_table_get_selected_cell(view->m_networkList, &row, &col);
+
+		view->getMainSettingsView()->showKeyboard(false);
+
+		if (row == 0)
+		{
+			return;
+		}
+
+		if (col == 3)
+		{
+			view->getPresenter().forgetNetwork(lv_table_get_cell_value(table, row, 0));
+			return;
+		}
+
+		const char* ssid = lv_table_get_cell_value(table, row, 0);
+		bool known = *(bool*)lv_table_get_cell_user_data(table, row, 2);
+		if (!known)
+		{
+			lv_textarea_set_text(view->m_passwordInput, "");
+			lv_label_set_text(view->m_passwordSsid, ssid);
+			view->getMainSettingsView()->showKeyboard(true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput);
+			lv_obj_remove_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+			return;
+		}
+
+		view->getPresenter().connectToNetwork(ssid);
+	}
+
+	void NetworkSettingsView::onPasswordCloseEvent(lv_event_t* e)
+	{
+		Lock lock;
+		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
+		view->getMainSettingsView()->showKeyboard(false);
+		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+	}
+
+	void NetworkSettingsView::onPasswordConfirmEvent(lv_event_t* e)
+	{
+		Lock lock;
+		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
+		view->getMainSettingsView()->showKeyboard(false);
+		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+		view->getPresenter().connectToNetwork(lv_label_get_text(view->m_passwordSsid),
+											  lv_textarea_get_text(view->m_passwordInput));
+	}
+
+	void NetworkSettingsView::onShow()
+	{
+		getPresenter().scanWifi();
 	}
 
 	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)

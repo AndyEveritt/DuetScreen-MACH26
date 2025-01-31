@@ -14,7 +14,7 @@ namespace UI
 
 		virtual ~ModelListener() {}
 
-		Model& getModel() { return m_model; }
+		Model& getModel() const { return m_model; }
 
 		virtual void refresh() {}
 

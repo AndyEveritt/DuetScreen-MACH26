@@ -98,30 +98,31 @@ namespace UI
 	 *
 	 * @note All views in the application must be a subclass of this type.
 	 */
-	template <class T>
-	class View : public BaseView
+	template <class T, class BaseViewType = BaseView>
+	class View : public BaseViewType
 	{
+		static_assert(std::is_base_of<BaseView, BaseViewType>::value, "BaseViewType must derive from BaseView");
 		static_assert(std::is_base_of<BasePresenter, T>::value, "T must derive from Presenter");
 
 	  public:
 		View(const std::string& name, BaseView* parent)
-			: BaseView(name, parent)
+			: BaseViewType(name, parent)
 			, m_presenter(this)
 		{
 		}
-		View(const std::string& name, BaseView* parent, layout_t layout)
-			: BaseView(name, parent, layout)
+		View(const std::string& name, BaseViewType* parent, layout_t layout)
+			: BaseViewType(name, parent, layout)
 			, m_presenter(this)
 		{
 		}
 
 		View(const std::string& name, lv_obj_t* parent)
-			: BaseView(name, parent)
+			: BaseViewType(name, parent)
 			, m_presenter(this)
 		{
 		}
 		View(const std::string& name, lv_obj_t* parent, layout_t layout)
-			: BaseView(name, parent, layout)
+			: BaseViewType(name, parent, layout)
 			, m_presenter(this)
 		{
 		}
@@ -135,7 +136,9 @@ namespace UI
 		/**
 		 * @brief Get a pointer to the MVP model
 		 */
-		Model* getModel() { return m_presenter->getModel(); }
+		Model& getModel() const { return m_presenter->getModel(); }
+
+		T& getPresenter() { return m_presenter; }
 
 		void activate() { m_presenter.activate(); }
 		void deactivate() { m_presenter.deactivate(); }
@@ -148,7 +151,7 @@ namespace UI
 		void show() override
 		{
 			activate();
-			BaseView::show();
+			BaseViewType::show();
 		}
 
 		/**
@@ -159,7 +162,7 @@ namespace UI
 		void hide() override
 		{
 			deactivate();
-			BaseView::hide();
+			BaseViewType::hide();
 		}
 
 	  protected:
