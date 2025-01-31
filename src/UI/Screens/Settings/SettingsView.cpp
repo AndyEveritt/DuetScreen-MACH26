@@ -196,6 +196,7 @@ namespace UI
 		, m_passwordWindow(lv_msgbox_create(getCont()))
 		, m_passwordInput(lv_textarea_create(m_passwordWindow))
 		, m_passwordSsid(nullptr)
+		, m_refresh("network_settings_refresh", getCont(), _("refresh"), layout_t{0, 0, 100, 10})
 	{
 		Lock lock;
 		setMainSettingsView(mainSettingsView);
@@ -213,11 +214,12 @@ namespace UI
 
 		// Network Selection
 		lv_obj_set_size(m_networkList, LV_PCT(100), LV_PCT(100));
-		lv_table_set_column_count(m_networkList, 4);
+		lv_table_set_column_count(m_networkList, 5);
 		lv_table_set_cell_value(m_networkList, 0, 0, _("settings_network_ssid"));
 		lv_table_set_cell_value(m_networkList, 0, 1, _("settings_network_signal"));
 		lv_table_set_cell_value(m_networkList, 0, 2, _("settings_network_known"));
 		lv_table_set_cell_value(m_networkList, 0, 3, _("settings_network_forget"));
+		lv_table_set_cell_value(m_networkList, 0, 4, _("settings_network_connected"));
 
 		// Password Window
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
@@ -236,6 +238,9 @@ namespace UI
 		lv_textarea_set_one_line(m_passwordInput, true);
 		lv_textarea_set_password_mode(m_passwordInput, true);
 
+		// Refresh
+		m_refresh.setCallback(onRefreshEvent, LV_EVENT_CLICKED, this);
+
 		// Callbacks
 		lv_obj_add_event_cb(m_networkList, onNetworkSelectionEvent, LV_EVENT_VALUE_CHANGED, this);
 		lv_obj_add_event_cb(closeBtn, onPasswordCloseEvent, LV_EVENT_CLICKED, this);
@@ -248,7 +253,8 @@ namespace UI
 		lv_table_set_row_count(m_networkList, count + 1);
 	}
 
-	void NetworkSettingsView::setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known)
+	void NetworkSettingsView::setNetworkDetails(
+		size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected)
 	{
 		void* knownPtr = lv_malloc(sizeof(bool));
 		*(bool*)knownPtr = known;
@@ -257,6 +263,7 @@ namespace UI
 		lv_table_set_cell_value(m_networkList, index + 1, 1, utils::format("%d dBm", signalLevel).c_str());
 		lv_table_set_cell_value(m_networkList, index + 1, 2, known ? LV_SYMBOL_OK : LV_SYMBOL_CLOSE);
 		lv_table_set_cell_value(m_networkList, index + 1, 3, known ? LV_SYMBOL_TRASH : "");
+		lv_table_set_cell_value(m_networkList, index + 1, 4, connected ? LV_SYMBOL_WIFI : "");
 	}
 
 	void NetworkSettingsView::onNetworkSelectionEvent(lv_event_t* e)
@@ -314,9 +321,23 @@ namespace UI
 											  lv_textarea_get_text(view->m_passwordInput));
 	}
 
+	void NetworkSettingsView::onRefreshEvent(lv_event_t* e)
+	{
+		Lock lock;
+		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
+		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+		view->getPresenter().scanWifi();
+	}
+
 	void NetworkSettingsView::onShow()
 	{
+		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		getPresenter().scanWifi();
+	}
+
+	void NetworkSettingsView::onHide()
+	{
+		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 	}
 
 	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)

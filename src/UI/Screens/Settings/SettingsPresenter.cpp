@@ -7,16 +7,19 @@ namespace UI
 	void NetworkSettingsPresenter::connectToNetwork(const std::string& ssid)
 	{
 		NetworkHelper::connect(ssid);
+		scanWifi();
 	}
 
 	void NetworkSettingsPresenter::connectToNetwork(const std::string& ssid, const std::string& password)
 	{
 		NetworkHelper::connect(ssid, password);
+		scanWifi();
 	}
 
 	void NetworkSettingsPresenter::forgetNetwork(const std::string& ssid)
 	{
 		NetworkHelper::forgetNetwork(ssid);
+		scanWifi();
 	}
 
 	void NetworkSettingsPresenter::scanWifi()
@@ -31,7 +34,8 @@ namespace UI
 		m_view->setNetworkCount(networks.size());
 		for (size_t i = 0; i < networks.size(); ++i)
 		{
-			m_view->setNetworkDetails(i, networks[i].ssid, networks[i].signal_level, networks[i].id != -1);
+			m_view->setNetworkDetails(
+				i, networks[i].ssid, networks[i].signal_level, networks[i].id != -1, networks[i].connected);
 		}
 	}
 

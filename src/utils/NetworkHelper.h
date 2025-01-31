@@ -15,7 +15,16 @@ struct WiFiNetwork
 {
 	std::string ssid;
 	int32_t signal_level;
-	int32_t id;
+	int32_t id = -1;
+	bool connected = false;
+
+	void clear()
+	{
+		ssid.clear();
+		signal_level = 0;
+		id = -1;
+		connected = false;
+	}
 };
 
 namespace NetworkHelper

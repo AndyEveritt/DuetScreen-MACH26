@@ -46,20 +46,22 @@ namespace UI
 		NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView);
 
 		void setNetworkCount(size_t count);
-		void setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known);
+		void setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected);
 
 	  private:
 		static void onNetworkSelectionEvent(lv_event_t* e);
 		static void onPasswordCloseEvent(lv_event_t* e);
 		static void onPasswordConfirmEvent(lv_event_t* e);
+		static void onRefreshEvent(lv_event_t* e);
 
 		void onShow() override;
+		void onHide() override;
 
 		lv_obj_t* m_networkList;
 		lv_obj_t* m_passwordWindow;
 		lv_obj_t* m_passwordInput;
 		lv_obj_t* m_passwordSsid;
-		// Button m_refresh;
+		Button m_refresh;
 	};
 
 	class DeveloperSettingsView : public SettingsSubView
