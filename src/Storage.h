@@ -50,4 +50,6 @@ constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "extrusion:selected_feedr
 constexpr const char* ID_DEBUG_BORDERS = "debug:borders";
 #endif
 
+constexpr const char* ID_SSH_ENABLED = "debug:ssh_enabled";
+
 #endif /* JNI_STORAGE_H_ */

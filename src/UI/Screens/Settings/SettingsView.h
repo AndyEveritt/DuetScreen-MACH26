@@ -74,6 +74,8 @@ namespace UI
 #if DEBUG_BORDERS
 		static void onDebugBordersEvent(lv_event_t* e);
 #endif
+		static void onEnableSSHEvent(lv_event_t* e);
+
 		lv_obj_t* m_debugLevelCont;
 		lv_obj_t* m_debugLevelLabel;
 		lv_obj_t* m_debugLevel;
@@ -81,6 +83,7 @@ namespace UI
 #if DEBUG_BORDERS
 		lv_obj_t* m_debugBorders;
 #endif
+		lv_obj_t* m_enableSSH;
 	};
 
 	/**

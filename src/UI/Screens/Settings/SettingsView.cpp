@@ -56,6 +56,7 @@ namespace UI
 			currentSubView->hide();
 		}
 
+		view->showKeyboard(false);
 		subView->show();
 		view->m_currentSubView = subView;
 	}
@@ -348,6 +349,7 @@ namespace UI
 #if DEBUG_BORDERS
 		, m_debugBorders(lv_checkbox_create(getCont()))
 #endif
+		, m_enableSSH(lv_checkbox_create(getCont()))
 	{
 		Lock lock;
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
@@ -375,6 +377,10 @@ namespace UI
 						 Styles::instance().hasStyle(lv_screen_active(), &Styles::instance().debugBorders.style));
 		lv_obj_add_event_cb(m_debugBorders, onDebugBordersEvent, LV_EVENT_VALUE_CHANGED, this);
 #endif
+
+		lv_checkbox_set_text(m_enableSSH, _("settings_enable_ssh"));
+		lv_obj_set_state(m_enableSSH, LV_STATE_CHECKED, StorageHelper::getData<bool>(ID_SSH_ENABLED, false));
+		lv_obj_add_event_cb(m_enableSSH, onEnableSSHEvent, LV_EVENT_VALUE_CHANGED, this);
 	}
 
 	void DeveloperSettingsView::onDebugLevelEvent(lv_event_t* e)
@@ -395,4 +401,27 @@ namespace UI
 		Styles::instance().showDebugBorders(lv_screen_active(), checked);
 	}
 #endif
+
+	void DeveloperSettingsView::onEnableSSHEvent(lv_event_t* e)
+	{
+		Lock lock;
+		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
+		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
+		info("%s SSH", checked ? "Enabling" : "Disabling");
+		StorageHelper::setData<bool>(ID_SSH_ENABLED, checked);
+		if (checked)
+		{
+#if !SIMULATION
+			system("mv /etc/init.d/50dropbear /etc/init.d/S50dropbear;"
+				   "/etc/init.d/S50dropbear start");
+#endif
+		}
+		else
+		{
+#if !SIMULATION
+			system("/etc/init.d/S50dropbear stop;"
+				   "mv /etc/init.d/S50dropbear /etc/init.d/50dropbear");
+#endif
+		}
+	}
 } // namespace UI
