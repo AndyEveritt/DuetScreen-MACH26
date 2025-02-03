@@ -78,6 +78,19 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"gcode_G1_desc", "Controlled linear move"},
     {"gcode_M117_desc", "Display Message"},
     {"gcode_M118_desc", "Send Message to Specific Target"},
+    {"settings_network_ip_address", "IP Address: %s"},
+    {"settings_connectivity_header", "Connectivity"},
+    {"settings_network", "Network"},
+    {"settings_dev_header", "Developer"},
+    {"settings_network_ssid", "SSID"},
+    {"settings_network_signal", "Signal"},
+    {"settings_network_known", "Known"},
+    {"settings_network_forget", "Forget"},
+    {"settings_network_connected", "Connected"},
+    {"settings_network_password_title", "Password"},
+    {"settings_network_enter_password", "Enter Password"},
+    {"settings_enable_ssh", "Enable SSH"},
+    {"settings_network_enable", "Enable WiFi"},
     {NULL, NULL} // End mark
 };
 

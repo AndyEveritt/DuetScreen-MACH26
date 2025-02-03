@@ -96,11 +96,15 @@ namespace UI
 		return false;
 	}
 
-	void SettingsView::onHide() {}
+	void SettingsView::onHide()
+	{
+		m_currentSubView->hide();
+	}
 
 	void SettingsView::onShow()
 	{
 		showKeyboard(false);
+		m_currentSubView->show();
 	}
 
 	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView* mainSettingsView)
@@ -193,17 +197,31 @@ namespace UI
 
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
 		: View("network_settings_view", parent)
+		, m_topBar(lv_obj_create(getCont()))
+		, m_ipAddress(lv_label_create(m_topBar))
+		, m_enable(lv_checkbox_create(m_topBar))
+		, m_refresh("network_settings_refresh", m_topBar, _("refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
 		, m_networkList(lv_table_create(getCont()))
 		, m_passwordWindow(lv_msgbox_create(getCont()))
 		, m_passwordInput(lv_textarea_create(m_passwordWindow))
 		, m_passwordSsid(nullptr)
-		, m_refresh("network_settings_refresh", getCont(), _("refresh"), layout_t{0, 0, 100, 10})
 	{
 		Lock lock;
 		setMainSettingsView(mainSettingsView);
 
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
+		lv_obj_set_style_pad_all(m_topBar, 2, 0);
+		lv_obj_set_flex_flow(m_topBar, LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(m_topBar, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		lv_obj_set_size(m_topBar, LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_flex_grow(m_ipAddress, 3);
+		lv_obj_set_flex_grow(m_refresh.getCont(), 1);
+		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
+		lv_obj_set_size(m_enable, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address")).c_str());
+		lv_checkbox_set_text(m_enable, _("settings_network_enable"));
 
 		// Network List
 		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
@@ -214,7 +232,8 @@ namespace UI
 		lv_obj_set_style_pad_all(m_networkList, 5, 0);
 
 		// Network Selection
-		lv_obj_set_size(m_networkList, LV_PCT(100), LV_PCT(100));
+		lv_obj_set_flex_grow(m_networkList, 1);
+		lv_obj_set_width(m_networkList, LV_PCT(100));
 		lv_table_set_column_count(m_networkList, 5);
 		lv_table_set_cell_value(m_networkList, 0, 0, _("settings_network_ssid"));
 		lv_table_set_cell_value(m_networkList, 0, 1, _("settings_network_signal"));
@@ -243,10 +262,21 @@ namespace UI
 		m_refresh.setCallback(onRefreshEvent, LV_EVENT_CLICKED, this);
 
 		// Callbacks
+		lv_obj_add_event_cb(m_enable, onEnableEvent, LV_EVENT_VALUE_CHANGED, this);
 		lv_obj_add_event_cb(m_networkList, onNetworkSelectionEvent, LV_EVENT_VALUE_CHANGED, this);
 		lv_obj_add_event_cb(closeBtn, onPasswordCloseEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(confirmBtn, onPasswordConfirmEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_passwordWindow, onPasswordCloseEvent, LV_EVENT_DEFOCUSED, this);
+	}
+
+	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
+	{
+		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), ipAddress.c_str()).c_str());
+	}
+
+	void NetworkSettingsView::setEnabled(bool enabled)
+	{
+		lv_obj_set_state(m_enable, LV_STATE_CHECKED, enabled);
 	}
 
 	void NetworkSettingsView::setNetworkCount(size_t count)
@@ -265,6 +295,13 @@ namespace UI
 		lv_table_set_cell_value(m_networkList, index + 1, 2, known ? LV_SYMBOL_OK : LV_SYMBOL_CLOSE);
 		lv_table_set_cell_value(m_networkList, index + 1, 3, known ? LV_SYMBOL_TRASH : "");
 		lv_table_set_cell_value(m_networkList, index + 1, 4, connected ? LV_SYMBOL_WIFI : "");
+	}
+
+	void NetworkSettingsView::onEnableEvent(lv_event_t* e)
+	{
+		Lock lock;
+		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
+		view->getPresenter().setWifiEnabled(lv_obj_has_state(view->m_enable, LV_STATE_CHECKED));
 	}
 
 	void NetworkSettingsView::onNetworkSelectionEvent(lv_event_t* e)

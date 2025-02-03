@@ -72,6 +72,10 @@ namespace NetworkHelper
 
 	static std::string executeCommandWithOutput(const std::string& command)
 	{
+#if SIMULATION
+		info("Simulating command: %s", command.c_str());
+		return "";
+#else
 		std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
 		if (!pipe)
 		{
@@ -95,6 +99,7 @@ namespace NetworkHelper
 			return "";
 		}
 		return output;
+#endif
 	}
 
 	int executeCommand(const std::string& command, int retries = 3, int delay_ms = 500)
@@ -103,7 +108,12 @@ namespace NetworkHelper
 
 		for (int attempt = 0; attempt < retries; ++attempt)
 		{
+#if SIMULATION
+			info("Simulating command: %s", command.c_str());
+			result = 0;
+#else
 			result = system(command.c_str());
+#endif
 			if (WIFEXITED(result) && WEXITSTATUS(result) == 0)
 			{
 				return 0;
@@ -200,7 +210,7 @@ namespace NetworkHelper
 	{
 		info("Connecting to network id=%d", id);
 		std::string command = "wpa_cli select_network " + std::to_string(id);
-		int32_t errorCode = system(command.c_str());
+		int32_t errorCode = executeCommand(command.c_str());
 		if (errorCode != 0)
 		{
 			error("Failed to connect to network id=%d, code=%d", id, errorCode);
@@ -210,7 +220,7 @@ namespace NetworkHelper
 	static void save()
 	{
 		info("Saving wpa_supplicant configuration");
-		int32_t errorCode = system("wpa_cli save_config");
+		int32_t errorCode = executeCommand("wpa_cli save_config");
 		if (errorCode != 0)
 		{
 			error("Failed to save wpa_supplicant configuration, code=%d", errorCode);
@@ -220,11 +230,18 @@ namespace NetworkHelper
 	void enable(bool enable)
 	{
 		info("%s WiFi", enable ? "Enabling" : "Disabling");
-		int32_t errorCode = system(enable ? "ip link set wlan0 up" : "ip link set wlan0 down");
+		int32_t errorCode = executeCommand("ip link set " + INTERFACE + (enable ? " up" : " down"));
 		if (errorCode != 0)
 		{
 			error("Failed to %s WiFi, code=%d", enable ? "enable" : "disable", errorCode);
 		}
+	}
+
+	bool isEnabled()
+	{
+		std::string command = "ip link show " + INTERFACE + " | grep UP";
+		std::string output = executeCommandWithOutput(command);
+		return output.find("UP") != std::string::npos;
 	}
 
 	void reconfigure()
@@ -235,6 +252,13 @@ namespace NetworkHelper
 		{
 			error("Failed to reconfigure wpa_supplicant, code=%d", errorCode);
 		}
+	}
+
+	std::string getIpAddress()
+	{
+		std::string command = "ip addr show " + INTERFACE + " | awk '/inet / {print $2}' | cut -d/ -f1";
+		std::string output = executeCommandWithOutput(command);
+		return output;
 	}
 
 	std::vector<WiFiNetwork> getKnownWiFiNetworks()
@@ -271,11 +295,11 @@ namespace NetworkHelper
 				}
 			}
 
-			if (fields.size() >= 4)
+			if (fields.size() >= 3)
 			{
 				std::string idStr = fields[0];
 				std::string ssid = fields[1];
-				std::string flags = fields[3];
+				std::string flags = fields.size() >= 4 ? fields[3] : "";
 
 				// Remove quotes from SSID if present
 				if (ssid.size() >= 2 && ssid.front() == '"' && ssid.back() == '"')
@@ -359,6 +383,10 @@ namespace NetworkHelper
 					  {
 						  return a.connected;
 					  }
+					  if (a.id > b.id)
+					  {
+						  return true;
+					  }
 					  return a.signal_level > b.signal_level;
 				  });
 		return networks;
@@ -426,13 +454,13 @@ namespace NetworkHelper
 	void disconnect()
 	{
 		info("Disconnecting from WiFi network");
-		int32_t errorCode = system("wpa_cli disconnect");
+		int32_t errorCode = executeCommand("wpa_cli disconnect");
 	}
 
 	void reconnect()
 	{
 		info("Reconnecting to WiFi network");
-		int32_t errorCode = system("wpa_cli reconnect");
+		int32_t errorCode = executeCommand("wpa_cli reconnect");
 		if (errorCode != 0)
 		{
 			error("Failed to restart wpa_supplicant, code=%d", errorCode);
@@ -449,7 +477,7 @@ namespace NetworkHelper
 			return;
 		}
 		std::string command = "wpa_cli remove_network " + std::to_string(id);
-		int32_t errorCode = system(command.c_str());
+		int32_t errorCode = executeCommand(command.c_str());
 		if (errorCode != 0)
 		{
 			error("Failed to forget network \"%s\", code=%d", ssid.c_str(), errorCode);

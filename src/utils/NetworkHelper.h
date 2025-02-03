@@ -30,7 +30,9 @@ struct WiFiNetwork
 namespace NetworkHelper
 {
 	void enable(bool enable);
+	bool isEnabled();
 	void reconfigure();
+	std::string getIpAddress();
 	std::vector<WiFiNetwork> getKnownWiFiNetworks();
 	std::vector<WiFiNetwork> scanWiFiNetworks();
 	void connect(const std::string& ssid);

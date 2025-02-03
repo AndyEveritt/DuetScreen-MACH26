@@ -4,6 +4,12 @@
 
 namespace UI
 {
+	void NetworkSettingsPresenter::setWifiEnabled(bool enabled)
+	{
+		NetworkHelper::enable(enabled);
+		scanWifi();
+	}
+
 	void NetworkSettingsPresenter::connectToNetwork(const std::string& ssid)
 	{
 		NetworkHelper::connect(ssid);
@@ -37,7 +43,12 @@ namespace UI
 			m_view->setNetworkDetails(
 				i, networks[i].ssid, networks[i].signal_level, networks[i].id != -1, networks[i].connected);
 		}
+		m_view->setIpAddress(NetworkHelper::getIpAddress());
 	}
 
-	void NetworkSettingsPresenter::onActivate() {}
+	void NetworkSettingsPresenter::onActivate()
+	{
+		m_view->setEnabled(NetworkHelper::isEnabled());
+		m_view->setIpAddress(NetworkHelper::getIpAddress());
+	}
 } // namespace UI
