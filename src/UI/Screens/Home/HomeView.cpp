@@ -59,7 +59,9 @@ namespace UI
 		, m_extrudeView(m_mainWindow)
 		, m_fileView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
+		, m_messageBox("home_message_box", getCont(), layout_t(0, 0, 70, 70))
 	{
+		info("Creating UI");
 		addHomeScreen(this);
 
 #if DEBUG_BORDERS
@@ -108,6 +110,10 @@ namespace UI
 		m_extrudeView.hide();
 		m_fileView.hide();
 		m_settingsView.hide();
+
+		// Message box
+		lv_obj_add_flag(m_messageBox.getCont(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_align(m_messageBox.getCont(), LV_ALIGN_CENTER, 0, 0);
 
 		// Styles::instance().removeTheme(getCont());
 		// lv_obj_remove_style(getCont(), &Styles::instance().debugBorders.style, 0);

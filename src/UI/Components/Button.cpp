@@ -26,10 +26,13 @@ namespace UI
 		lv_obj_set_user_data(m_label, this);
 
 		lv_obj_set_style_bg_opa(getCont(), LV_OPA_TRANSP, 0);
+		lv_obj_set_style_min_height(getCont(), 30, 0);
+		lv_obj_set_style_min_width(getCont(), 50, 0);
 
 		// Initialise the button obj
 		lv_obj_set_pos(m_button, 0, 0);
 		lv_obj_set_size(m_button, LV_PCT(100), LV_PCT(100));
+		lv_obj_set_style_pad_all(getCont(), 5, 0);
 		lv_obj_set_style_border_width(getCont(), 0, 0);
 		lv_obj_set_style_border_width(m_button, 0, 0);
 

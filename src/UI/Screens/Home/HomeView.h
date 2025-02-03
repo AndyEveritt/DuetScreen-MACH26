@@ -4,6 +4,7 @@
 #include "UI/Components/Button.h"
 #include "UI/Components/Graph/Graph.h"
 #include "UI/Components/List.h"
+#include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Components/SideBar.h"
 #include "UI/Components/ToolList/ToolList.h"
@@ -59,5 +60,8 @@ namespace UI
 		ExtrudeView m_extrudeView;
 		FileView m_fileView;
 		SettingsView m_settingsView;
+
+		// Message box
+		MessageBox m_messageBox;
 	};
 } // namespace UI
