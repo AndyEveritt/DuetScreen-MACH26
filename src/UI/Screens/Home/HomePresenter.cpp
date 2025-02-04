@@ -46,13 +46,15 @@ namespace UI
 			std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
 			msgBox->setTitle("Response");
 			msgBox->setText(resp);
-			msgBox->setCloseCallback(
+			msgBox->setCancelCallback(
 				[this]()
 				{
 					m_view->popMessageBox();
 					if (m_view->getMessageBoxCount() > 0)
 					{
-						m_view->getMessageBox(0)->show();
+						auto msgBox = m_view->getMessageBox(0);
+						msgBox->show();
+						msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 					}
 				});
 
@@ -65,7 +67,18 @@ namespace UI
 					openScreen(&m_view->m_consoleView);
 				});
 			msgBox->okVisible(true);
-			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, 5000));
+			msgBox->progressVisible(true);
+			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+			msgBox->setProgressCallback(
+				[](MessageBox* msgBox) -> uint32_t
+				{
+					info("Time remaining: %u", msgBox->getTimeRemaining());
+					if (msgBox->getTimeout() == 0)
+					{
+						return 100u;
+					}
+					return 100 * msgBox->getTimeRemaining() / msgBox->getTimeout();
+				});
 		}
 	}
 } // namespace UI

@@ -58,7 +58,7 @@ namespace UI
 		};
 
 		MessageBox(const std::string& name, lv_obj_t* parent, layout_t layout);
-		virtual ~MessageBox() {}
+		virtual ~MessageBox();
 
 		void ok();
 		void cancel();
@@ -77,6 +77,7 @@ namespace UI
 		void setCancelCallback(std::function<void()> cb) { m_cancelCb = cb; }
 		void setChoiceCallback(std::function<void(size_t)> cb) { m_choiceCb = cb; }
 		void setCloseCallback(std::function<void()> cb) { m_closeCb = cb; }
+		void setProgressCallback(std::function<uint32_t(MessageBox*)> cb) { m_progressCb = cb; }
 
 		void setKeyboard(lv_obj_t* keyboard);
 
@@ -119,7 +120,8 @@ namespace UI
 
 		void cancelTimeout();
 		void setTimeout(uint32_t timeout);
-		const uint32_t getTimeout() const { return m_timeout; }
+		uint32_t getTimeout() const { return m_timeout; }
+		uint32_t getTimeRemaining() const;
 
 		bool validateIntegerInput(const char* text);
 		bool validateFloatInput(const char* text);
@@ -131,6 +133,8 @@ namespace UI
 		static void onOkEvent(lv_event_t* e);
 		static void onCancelEvent(lv_event_t* e);
 		static void onChoiceEvent(lv_event_t* e);
+
+		static void onProgressTimer(lv_timer_t* timer);
 
 		void init();
 		bool validateIntegerInputInner(const char* text);
@@ -180,8 +184,14 @@ namespace UI
 		std::function<void()> m_cancelCb;
 		std::function<void(size_t)> m_choiceCb;
 		std::function<void()> m_closeCb;
+		std::function<uint32_t(MessageBox*)> m_progressCb;
 		OM::Alert::Mode m_mode = OM::Alert::Mode::None;
 		uint32_t m_timeout = 0;
-		lv_timer_t* m_timeoutTimer = nullptr;
+
+		struct
+		{
+			lv_timer_t* timeout = nullptr;
+			lv_timer_t* progress = nullptr;
+		} m_timers;
 	};
 } // namespace UI

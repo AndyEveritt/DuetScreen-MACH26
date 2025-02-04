@@ -8,6 +8,7 @@
 #include "MessageBox.h"
 #include "Debug.h"
 #include "lv_i18n/lv_i18n.h"
+#include "lvgl/src/lvgl_private.h"
 
 namespace UI
 {
@@ -37,6 +38,18 @@ namespace UI
 		, m_kb(nullptr)
 	{
 		init();
+	}
+
+	MessageBox::~MessageBox()
+	{
+		if (m_timers.timeout != nullptr)
+		{
+			lv_timer_delete(m_timers.timeout);
+		}
+		if (m_timers.progress != nullptr)
+		{
+			lv_timer_delete(m_timers.progress);
+		}
 	}
 
 	void MessageBox::init()
@@ -123,6 +136,8 @@ namespace UI
 
 		m_okBtn.setCallback(onOkEvent, LV_EVENT_CLICKED, this);
 		m_cancelBtn.setCallback(onCancelEvent, LV_EVENT_CLICKED, this);
+
+		m_timers.progress = lv_timer_create(onProgressTimer, 100, this);
 
 		clear();
 		setMode(OM::Alert::Mode::None);
@@ -492,14 +507,14 @@ namespace UI
 		m_timeout = timeout;
 		if (timeout == 0)
 		{
-			if (m_timeoutTimer)
+			if (m_timers.timeout)
 			{
-				lv_timer_delete(m_timeoutTimer);
-				m_timeoutTimer = nullptr;
+				lv_timer_delete(m_timers.timeout);
+				m_timers.timeout = nullptr;
 			}
 			return;
 		}
-		m_timeoutTimer = lv_timer_create(
+		m_timers.timeout = lv_timer_create(
 			[](lv_timer_t* timer)
 			{
 				MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
@@ -507,7 +522,21 @@ namespace UI
 			},
 			timeout,
 			this);
-		lv_timer_set_repeat_count(m_timeoutTimer, 1);
+		lv_timer_set_repeat_count(m_timers.timeout, 1);
+	}
+
+	uint32_t MessageBox::getTimeRemaining() const
+	{
+		Lock lock;
+		if (m_timers.timeout)
+		{
+			uint32_t elaps = lv_tick_elaps(m_timers.timeout->last_run);
+			if (elaps < m_timeout)
+			{
+				return m_timeout - elaps;
+			}
+		}
+		return 0;
 	}
 
 	void MessageBox::onOkEvent(lv_event_t* e)
@@ -535,6 +564,17 @@ namespace UI
 			msgBox->m_choiceCb(index);
 		}
 		msgBox->close();
+	}
+
+	void MessageBox::onProgressTimer(lv_timer_t* timer)
+	{
+		Lock lock;
+		MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
+		if (msgBox->m_progressCb)
+		{
+			size_t progress = msgBox->m_progressCb(msgBox);
+			lv_bar_set_value(msgBox->m_progress, progress, LV_ANIM_OFF);
+		}
 	}
 
 	MessageBox::AxisJog::AxisJog(const size_t index, lv_obj_t* parent, MessageBox& msgBox)
