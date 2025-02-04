@@ -58,12 +58,10 @@ namespace UI
 		};
 
 		MessageBox(const std::string& name, lv_obj_t* parent, layout_t layout);
+		virtual ~MessageBox() {}
 
-		void open();
-		void open(std::function<void(void)> okCb);
-		void open(std::function<void(void)> okCb, std::function<void(void)> cancelCb);
 		void ok();
-		void cancel(bool close = true);
+		void cancel();
 		void setPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal);
 		void setTitle(const std::string& title);
 		void setText(const std::string& text);
@@ -76,6 +74,18 @@ namespace UI
 		void preventClosing(bool prevent);
 		void close();
 
+		void setOkCallback(std::function<void()> cb) { m_okCb = cb; }
+		void setCancelCallback(std::function<void()> cb) { m_cancelCb = cb; }
+		void setChoiceCallback(std::function<void(size_t)> cb) { m_choiceCb = cb; }
+		void setCloseCallback(std::function<void()> cb) { m_closeCb = cb; }
+
+		void setKeyboard(lv_obj_t* keyboard);
+
+		bool isOpen() const;
+		bool isBlocking() const;
+		bool isResponse() const;
+		void clear();
+
 		void setMinTextf(const char* format, ...);
 		void setMaxTextf(const char* format, ...);
 		void setWarningTextf(const char* format, ...);
@@ -86,8 +96,7 @@ namespace UI
 		void okVisible(bool visible);
 		void cancelVisible(bool visible);
 		void selectionVisible(bool visible);
-		void numberInputVisible(bool visible);
-		void textInputVisible(bool visible);
+		void inputVisible(bool visible);
 		void warningTextVisible(bool visible);
 		void minTextVisible(bool visible);
 		void maxTextVisible(bool visible);
@@ -110,11 +119,6 @@ namespace UI
 		void setTimeout(uint32_t timeout);
 		const uint32_t getTimeout() const;
 
-		bool isOpen() const;
-		bool isBlocking() const;
-		bool isResponse() const;
-		void clear();
-
 		bool validateIntegerInput(const char* text);
 		bool validateFloatInput(const char* text);
 		bool validateTextInput(const char* text);
@@ -122,6 +126,8 @@ namespace UI
 		const OM::Alert::Mode getMode() const { return m_mode; }
 
 	  private:
+		static void onOkEvent(lv_event_t* e);
+		static void onCancelEvent(lv_event_t* e);
 		static void onChoiceEvent(lv_event_t* e);
 
 		void init();
@@ -166,8 +172,12 @@ namespace UI
 		Button m_okBtn;
 		lv_obj_t* m_progress;
 
-		std::function<void(void)> m_okCb;
-		std::function<void(void)> m_cancelCb;
+		lv_obj_t* m_kb; // Keyboard
+
+		std::function<void()> m_okCb;
+		std::function<void()> m_cancelCb;
+		std::function<void(size_t)> m_choiceCb;
+		std::function<void()> m_closeCb;
 		OM::Alert::Mode m_mode;
 		OM::Move::Axis* m_axes[MAX_TOTAL_AXES];
 		uint32_t m_timeout;

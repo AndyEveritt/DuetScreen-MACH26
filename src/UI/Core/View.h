@@ -168,4 +168,7 @@ namespace UI
 	  protected:
 		T m_presenter;
 	};
+
 } // namespace UI
+
+void lv_obj_set_flag(lv_obj_t* obj, lv_obj_flag_t flag, bool enable);

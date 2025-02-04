@@ -15,6 +15,8 @@
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "lvgl/lvgl.h"
+#include <list>
+#include <memory>
 
 namespace UI
 {
@@ -30,6 +32,11 @@ namespace UI
 		}
 
 		virtual void refresh() override;
+
+		std::shared_ptr<MessageBox> createMessageBox();
+		size_t getMessageBoxCount() const { return m_messageBoxList.size(); }
+		std::shared_ptr<MessageBox> getMessageBox(size_t index) const;
+		void popMessageBox();
 
 	  private:
 		HomeView();
@@ -62,6 +69,6 @@ namespace UI
 		SettingsView m_settingsView;
 
 		// Message box
-		MessageBox m_messageBox;
+		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;
 	};
 } // namespace UI

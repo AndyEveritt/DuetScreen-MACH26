@@ -29,4 +29,29 @@ namespace UI
 		Lock lock;
 		m_view->refresh();
 	}
+
+	void HomePresenter::newResponse(const char* resp)
+	{
+		Lock lock;
+		if (m_view->m_consoleView.isVisible())
+		{
+			return;
+		}
+
+		if (resp)
+		{
+			std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
+			msgBox->setTitle("Response");
+			msgBox->setText(resp);
+			msgBox->setCloseCallback(
+				[this]()
+				{
+					m_view->popMessageBox();
+					if (m_view->getMessageBoxCount() > 0)
+					{
+						m_view->getMessageBox(0)->show();
+					}
+				});
+		}
+	}
 } // namespace UI

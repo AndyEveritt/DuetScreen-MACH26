@@ -14,6 +14,8 @@ namespace UI
 		void tick();
 		virtual void refresh() override;
 
+		virtual void newResponse(const char* response) override;
+
 	  protected:
 	};
 } // namespace UI

@@ -34,6 +34,7 @@ namespace UI
 		, m_cancelBtn("msgbox_cancel", m_bottomCont, _("msgbox_cancel"))
 		, m_okBtn("msgbox_ok", m_bottomCont, _("msgbox_ok"))
 		, m_progress(lv_bar_create(lv_msgbox_get_content(m_msgBox)))
+		, m_kb(nullptr)
 	{
 		init();
 		setJogAxisCount(1);
@@ -50,7 +51,6 @@ namespace UI
 		lv_obj_set_style_max_height(m_msgBox, LV_SIZE_CONTENT, 0);
 		lv_obj_set_style_max_height(m_centralCont, LV_SIZE_CONTENT, 0);
 		lv_obj_set_size(m_msgBox, LV_PCT(100), LV_PCT(100));
-		lv_msgbox_add_close_button(m_msgBox);
 
 		for (size_t i = 0; i < lv_obj_get_child_count(lv_msgbox_get_content(m_msgBox)); i++)
 		{
@@ -122,6 +122,41 @@ namespace UI
 			lv_obj_set_flex_grow(child, 1);
 			lv_obj_set_height(child, LV_SIZE_CONTENT);
 		}
+
+		m_okBtn.setCallback(onOkEvent, LV_EVENT_CLICKED, this);
+		m_cancelBtn.setCallback(onCancelEvent, LV_EVENT_CLICKED, this);
+	}
+
+	void MessageBox::ok()
+	{
+		Lock lock;
+		if (m_okCb)
+		{
+			info("Calling ok callback");
+			m_okCb();
+		}
+		close();
+	}
+
+	void MessageBox::cancel()
+	{
+		Lock lock;
+		if (m_cancelCb)
+		{
+			info("Calling cancel callback");
+			m_cancelCb();
+		}
+		close();
+	}
+
+	void MessageBox::close()
+	{
+		Lock lock;
+		if (m_closeCb)
+		{
+			info("Calling close callback");
+			m_closeCb();
+		}
 	}
 
 	void MessageBox::setTitle(const std::string& text)
@@ -146,6 +181,154 @@ namespace UI
 	{
 		Lock lock;
 		m_cancelBtn.setText(text.c_str());
+	}
+
+	void MessageBox::setKeyboard(lv_obj_t* kb)
+	{
+		Lock lock;
+		info("Setting keyboard %p", kb);
+		m_kb = kb;
+	}
+
+	bool MessageBox::isOpen() const
+	{
+		return !lv_obj_has_flag(m_msgBox, LV_OBJ_FLAG_HIDDEN);
+	}
+
+	bool MessageBox::isBlocking() const
+	{
+		switch (m_mode)
+		{
+		case OM::Alert::Mode::InfoConfirm:
+		case OM::Alert::Mode::ConfirmCancel:
+		case OM::Alert::Mode::Choices:
+		case OM::Alert::Mode::NumberInt:
+		case OM::Alert::Mode::NumberFloat:
+		case OM::Alert::Mode::Text:
+			// These alerts are blocking
+			return true;
+		default:
+			break;
+		}
+		return false;
+	}
+
+	bool MessageBox::isResponse() const
+	{
+		return m_mode == OM::Alert::Mode::None;
+	}
+
+	void MessageBox::clear()
+	{
+		Lock lock;
+		m_mode = OM::Alert::Mode::None;
+		lv_label_set_text(m_title, "");
+		lv_label_set_text(m_text, "");
+		lv_label_set_text(m_warningText, "");
+		setTitle("");
+		setText("");
+		setMinTextf("");
+		setMaxTextf("");
+		setWarningTextf("");
+		setOkBtnText(_("msgbox_ok"));
+		setCancelBtnText(_("msgbox_cancel"));
+		warningTextVisible(false);
+		minTextVisible(false);
+		maxTextVisible(false);
+		inputVisible(false);
+		axisJogVisible(false);
+		selectionVisible(false);
+		okVisible(false);
+		cancelVisible(false);
+	}
+
+	void MessageBox::setMode(OM::Alert::Mode mode)
+	{
+		Lock lock;
+		if (mode == m_mode)
+		{
+			return;
+		}
+		info("Seting mode to %u", (uint8_t)mode);
+		m_mode = mode;
+
+		// Hide all containers
+		inputVisible(false);
+		axisJogVisible(false);
+		selectionVisible(false);
+		okVisible(false);
+		cancelVisible(false);
+		warningTextVisible(false);
+
+		switch (mode)
+		{
+		case OM::Alert::Mode::None:
+			break;
+		case OM::Alert::Mode::Info:
+			break;
+		case OM::Alert::Mode::InfoClose:
+			cancelVisible(true);
+			break;
+		case OM::Alert::Mode::InfoConfirm:
+			okVisible(true);
+			break;
+		case OM::Alert::Mode::ConfirmCancel:
+			okVisible(true);
+			cancelVisible(true);
+			break;
+		case OM::Alert::Mode::Choices:
+			selectionVisible(true);
+			break;
+		case OM::Alert::Mode::NumberInt:
+			inputVisible(true);
+			break;
+		case OM::Alert::Mode::NumberFloat:
+			inputVisible(true);
+			break;
+		case OM::Alert::Mode::Text:
+			inputVisible(true);
+			break;
+		}
+	}
+
+	void MessageBox::okVisible(bool visible)
+	{
+		lv_obj_set_flag(m_okBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::cancelVisible(bool visible)
+	{
+		lv_obj_set_flag(m_cancelBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::selectionVisible(bool visible)
+	{
+		lv_obj_set_flag(m_choicesList, LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::inputVisible(bool visible)
+	{
+		lv_obj_set_flag(m_inputCont, LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::warningTextVisible(bool visible)
+	{
+		lv_obj_set_flag(m_warningText, LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::minTextVisible(bool visible)
+	{
+		lv_obj_set_flag(m_minText, LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::maxTextVisible(bool visible)
+	{
+		lv_obj_set_flag(m_maxText, LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::axisJogVisible(bool visible)
+	{
+		lv_obj_set_flag(m_axisJogCont, LV_OBJ_FLAG_HIDDEN, !visible);
 	}
 
 	void MessageBox::setWarningTextf(const char* format, ...)
@@ -256,12 +439,31 @@ namespace UI
 		m_choices[index]->setText(text.c_str());
 	}
 
+	void MessageBox::onOkEvent(lv_event_t* e)
+	{
+		Lock lock;
+		MessageBox* msgBox = static_cast<MessageBox*>(lv_event_get_user_data(e));
+		msgBox->ok();
+	}
+
+	void MessageBox::onCancelEvent(lv_event_t* e)
+	{
+		Lock lock;
+		MessageBox* msgBox = static_cast<MessageBox*>(lv_event_get_user_data(e));
+		msgBox->cancel();
+	}
+
 	void MessageBox::onChoiceEvent(lv_event_t* e)
 	{
 		Lock lock;
 		MessageBox* msgBox = static_cast<MessageBox*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target(e);
 		uintptr_t index = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
+		if (msgBox->m_choiceCb)
+		{
+			msgBox->m_choiceCb(index);
+		}
+		msgBox->close();
 	}
 
 	MessageBox::AxisJog::AxisJog(const size_t index, lv_obj_t* parent, MessageBox& msgBox)
