@@ -3,6 +3,9 @@
 
 #include "ObjectModel/Heat.h"
 #include "ObjectModel/Sensor.h"
+#include "UI/Core/Navigation.h"
+#include "lv_i18n/lv_i18n.h"
+#include "utils/StorageHelper.h"
 
 namespace UI
 {
@@ -52,6 +55,17 @@ namespace UI
 						m_view->getMessageBox(0)->show();
 					}
 				});
+
+			msgBox->setCancelBtnText(_("close"));
+			msgBox->setOkBtnText(_("open_console"));
+			msgBox->setOkCallback(
+				[this]()
+				{
+					m_view->clearMessageBoxes();
+					openScreen(&m_view->m_consoleView);
+				});
+			msgBox->okVisible(true);
+			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, 5000));
 		}
 	}
 } // namespace UI

@@ -140,10 +140,11 @@ namespace UI
 	std::shared_ptr<MessageBox> HomeView::createMessageBox()
 	{
 		m_messageBoxList.emplace_back(
-			std::make_shared<MessageBox>("home_message_box", getCont(), layout_t(0, 0, 70, 70)));
+			std::make_shared<MessageBox>("home_message_box", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
 		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.back();
 		lv_obj_add_flag(msgBox->getCont(), LV_OBJ_FLAG_FLOATING);
 		lv_obj_align(msgBox->getCont(), LV_ALIGN_CENTER, 0, 0);
+		lv_obj_set_style_max_height(msgBox->getCont(), LV_PCT(70), LV_PART_MAIN);
 
 		if (getMessageBoxCount() > 1)
 		{

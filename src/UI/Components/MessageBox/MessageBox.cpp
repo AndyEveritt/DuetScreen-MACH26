@@ -37,9 +37,6 @@ namespace UI
 		, m_kb(nullptr)
 	{
 		init();
-		setJogAxisCount(1);
-		setChoiceCount(10);
-		setChoice(2, "Choice 1");
 	}
 
 	void MessageBox::init()
@@ -47,10 +44,10 @@ namespace UI
 		Lock lock;
 
 		// Layout
-		lv_obj_set_style_max_height(getCont(), LV_SIZE_CONTENT, 0);
-		lv_obj_set_style_max_height(m_msgBox, LV_SIZE_CONTENT, 0);
-		lv_obj_set_style_max_height(m_centralCont, LV_SIZE_CONTENT, 0);
-		lv_obj_set_size(m_msgBox, LV_PCT(100), LV_PCT(100));
+		// lv_obj_set_style_max_height(getCont(), LV_SIZE_CONTENT, 0);
+		// lv_obj_set_style_max_height(m_msgBox, LV_SIZE_CONTENT, 0);
+		// lv_obj_set_style_max_height(m_centralCont, LV_SIZE_CONTENT, 0);
+		lv_obj_set_size(m_msgBox, LV_PCT(100), LV_SIZE_CONTENT);
 
 		for (size_t i = 0; i < lv_obj_get_child_count(lv_msgbox_get_content(m_msgBox)); i++)
 		{
@@ -60,7 +57,8 @@ namespace UI
 			// lv_obj_set_flex_align(child, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 			lv_obj_set_style_pad_all(child, 5, 0);
 		}
-		lv_obj_set_flex_grow(m_centralCont, 1);
+		lv_obj_set_style_max_height(m_centralCont, LV_PCT(70), 0);
+		// lv_obj_set_flex_grow(m_centralCont, 1);
 
 		lv_obj_set_flex_flow(m_topCont, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_flow(m_centralCont, LV_FLEX_FLOW_COLUMN);
@@ -125,6 +123,9 @@ namespace UI
 
 		m_okBtn.setCallback(onOkEvent, LV_EVENT_CLICKED, this);
 		m_cancelBtn.setCallback(onCancelEvent, LV_EVENT_CLICKED, this);
+
+		clear();
+		setMode(OM::Alert::Mode::None);
 	}
 
 	void MessageBox::ok()
@@ -240,15 +241,13 @@ namespace UI
 		selectionVisible(false);
 		okVisible(false);
 		cancelVisible(false);
+		progressVisible(false);
+		imageVisible(false);
 	}
 
 	void MessageBox::setMode(OM::Alert::Mode mode)
 	{
 		Lock lock;
-		if (mode == m_mode)
-		{
-			return;
-		}
 		info("Seting mode to %u", (uint8_t)mode);
 		m_mode = mode;
 
@@ -259,10 +258,13 @@ namespace UI
 		okVisible(false);
 		cancelVisible(false);
 		warningTextVisible(false);
+		progressVisible(false);
+		imageVisible(false);
 
 		switch (mode)
 		{
 		case OM::Alert::Mode::None:
+			cancelVisible(true);
 			break;
 		case OM::Alert::Mode::Info:
 			break;
@@ -291,44 +293,89 @@ namespace UI
 		}
 	}
 
+	void MessageBox::imageVisible(bool visible)
+	{
+		lv_obj_set_flag(m_image, LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
 	void MessageBox::okVisible(bool visible)
 	{
 		lv_obj_set_flag(m_okBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
 	}
 
 	void MessageBox::cancelVisible(bool visible)
 	{
 		lv_obj_set_flag(m_cancelBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
 	}
 
 	void MessageBox::selectionVisible(bool visible)
 	{
 		lv_obj_set_flag(m_choicesList, LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
 	}
 
 	void MessageBox::inputVisible(bool visible)
 	{
 		lv_obj_set_flag(m_inputCont, LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
 	}
 
 	void MessageBox::warningTextVisible(bool visible)
 	{
 		lv_obj_set_flag(m_warningText, LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
 	}
 
 	void MessageBox::minTextVisible(bool visible)
 	{
 		lv_obj_set_flag(m_minText, LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
 	}
 
 	void MessageBox::maxTextVisible(bool visible)
 	{
 		lv_obj_set_flag(m_maxText, LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
 	}
 
 	void MessageBox::axisJogVisible(bool visible)
 	{
 		lv_obj_set_flag(m_axisJogCont, LV_OBJ_FLAG_HIDDEN, !visible);
+		updateVisibility();
+	}
+
+	void MessageBox::progressVisible(bool visible)
+	{
+		lv_obj_set_flag(m_progress, LV_OBJ_FLAG_HIDDEN, !visible);
+	}
+
+	void MessageBox::updateVisibility()
+	{
+		bool visible = false;
+		for (size_t i = 0; i < lv_obj_get_child_count(m_centralCont); i++)
+		{
+			lv_obj_t* child = lv_obj_get_child(m_centralCont, i);
+			if (!lv_obj_has_flag(child, LV_OBJ_FLAG_HIDDEN))
+			{
+				visible = true;
+				break;
+			}
+		}
+		lv_obj_set_flag(m_centralCont, LV_OBJ_FLAG_HIDDEN, !visible);
+
+		visible = false;
+		for (size_t i = 0; i < lv_obj_get_child_count(m_bottomCont); i++)
+		{
+			lv_obj_t* child = lv_obj_get_child(m_bottomCont, i);
+			if (!lv_obj_has_flag(child, LV_OBJ_FLAG_HIDDEN))
+			{
+				visible = true;
+				break;
+			}
+		}
+		lv_obj_set_flag(m_bottomCont, LV_OBJ_FLAG_HIDDEN, !visible);
 	}
 
 	void MessageBox::setWarningTextf(const char* format, ...)
@@ -437,6 +484,30 @@ namespace UI
 			return;
 		}
 		m_choices[index]->setText(text.c_str());
+	}
+
+	void MessageBox::setTimeout(uint32_t timeout)
+	{
+		Lock lock;
+		m_timeout = timeout;
+		if (timeout == 0)
+		{
+			if (m_timeoutTimer)
+			{
+				lv_timer_delete(m_timeoutTimer);
+				m_timeoutTimer = nullptr;
+			}
+			return;
+		}
+		m_timeoutTimer = lv_timer_create(
+			[](lv_timer_t* timer)
+			{
+				MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
+				msgBox->cancel();
+			},
+			timeout,
+			this);
+		lv_timer_set_repeat_count(m_timeoutTimer, 1);
 	}
 
 	void MessageBox::onOkEvent(lv_event_t* e)

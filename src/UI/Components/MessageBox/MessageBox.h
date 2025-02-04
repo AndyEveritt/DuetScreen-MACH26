@@ -68,7 +68,6 @@ namespace UI
 		void setOkBtnText(const std::string& text);
 		void setCancelBtnText(const std::string& text);
 		void setImage(const char* imagePath);
-		void showImage(bool show);
 		void setProgress(int percent);
 		void setMode(OM::Alert::Mode mode);
 		void preventClosing(bool prevent);
@@ -93,6 +92,7 @@ namespace UI
 		void setInput(float val);
 		void setInput(const char* text);
 
+		void imageVisible(bool visible);
 		void okVisible(bool visible);
 		void cancelVisible(bool visible);
 		void selectionVisible(bool visible);
@@ -101,6 +101,8 @@ namespace UI
 		void minTextVisible(bool visible);
 		void maxTextVisible(bool visible);
 		void axisJogVisible(bool visible);
+		void progressVisible(bool visible);
+		void updateVisibility();
 
 		// Axis Jog
 		size_t getJogAxisCount() const;
@@ -117,7 +119,7 @@ namespace UI
 
 		void cancelTimeout();
 		void setTimeout(uint32_t timeout);
-		const uint32_t getTimeout() const;
+		const uint32_t getTimeout() const { return m_timeout; }
 
 		bool validateIntegerInput(const char* text);
 		bool validateFloatInput(const char* text);
@@ -178,9 +180,8 @@ namespace UI
 		std::function<void()> m_cancelCb;
 		std::function<void(size_t)> m_choiceCb;
 		std::function<void()> m_closeCb;
-		OM::Alert::Mode m_mode;
-		OM::Move::Axis* m_axes[MAX_TOTAL_AXES];
-		uint32_t m_timeout;
-		int selectedAxis = 0;
+		OM::Alert::Mode m_mode = OM::Alert::Mode::None;
+		uint32_t m_timeout = 0;
+		lv_timer_t* m_timeoutTimer = nullptr;
 	};
 } // namespace UI

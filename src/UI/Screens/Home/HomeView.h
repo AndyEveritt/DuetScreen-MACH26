@@ -37,6 +37,7 @@ namespace UI
 		size_t getMessageBoxCount() const { return m_messageBoxList.size(); }
 		std::shared_ptr<MessageBox> getMessageBox(size_t index) const;
 		void popMessageBox();
+		void clearMessageBoxes() { m_messageBoxList.clear(); }
 
 	  private:
 		HomeView();
