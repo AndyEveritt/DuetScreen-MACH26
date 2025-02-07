@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Model.h"
+#include "ObjectModel/Alert.h"
 
 namespace UI
 {
@@ -66,7 +67,7 @@ namespace UI
 		virtual void newIpAddress() {}
 		virtual void newStatus() {}
 		virtual void newCurrentTool() {}
-		virtual void newMessageBoxData() {}
+		virtual void newMessageBoxData(const OM::Alert& alert) {}
 		virtual void newTime() {}
 
 		/* Tool methods */

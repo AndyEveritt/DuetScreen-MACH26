@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ObjectModel/Alert.h"
 #include "Subscribers/FanSubscribers.h"
 #include "Subscribers/FileSubscribers.h"
 #include "Subscribers/HeatSubscribers.h"
@@ -111,7 +112,7 @@ class Model
 	void newIpAddress();
 	void newStatus();
 	void newCurrentTool();
-	void newMessageBoxData();
+	void newMessageBoxData(const OM::Alert& alert);
 	void newTime();
 
 	/* Tool methods */

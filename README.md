@@ -16,7 +16,7 @@ Copy below in the Terminal:
 For Ubuntu
 
 ```bash
-sudo apt-get update && sudo apt-get install -y build-essential libsdl2-dev cmake ninja-build
+sudo apt-get update && sudo apt-get install -y build-essential libsdl2-dev cmake ninja-build libusb-1.0-0-dev pkg-config
 ```
 
 For instructions to run the simulator on Linux/WSL2, see [DEVELOPMENT.md](DEVELOPMENT.md).

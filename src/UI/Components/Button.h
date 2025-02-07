@@ -20,6 +20,7 @@ namespace UI
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);
 		const bool getChecked() const;
+		void setInvalid(bool invalid);
 		void setBgColor(lv_color_t, lv_style_selector_t selector);
 
 	  private:

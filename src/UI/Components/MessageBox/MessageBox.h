@@ -20,6 +20,7 @@ namespace UI
 
 	class MessageBox : public BaseView
 	{
+
 	  public:
 		enum class VerticalPosition
 		{
@@ -57,6 +58,8 @@ namespace UI
 			Button m_relMove[6];
 		};
 
+		friend class AxisJog;
+
 		MessageBox(const std::string& name, lv_obj_t* parent, layout_t layout);
 		virtual ~MessageBox();
 
@@ -78,6 +81,8 @@ namespace UI
 		void setChoiceCallback(std::function<void(size_t)> cb) { m_choiceCb = cb; }
 		void setCloseCallback(std::function<void()> cb) { m_closeCb = cb; }
 		void setProgressCallback(std::function<uint32_t(MessageBox*)> cb) { m_progressCb = cb; }
+		void setInputValidationCallback(std::function<bool(const char*)> cb);
+		void setShowKeyboardCallback(std::function<void(bool)> cb) { m_showKeyboardCb = cb; }
 
 		void setKeyboard(lv_obj_t* keyboard);
 
@@ -110,6 +115,8 @@ namespace UI
 		void setJogAxisCount(size_t count);
 		const char* getJogAxisLetter(int index) const;
 		void setJogAxisLetter(size_t index, char letter);
+		void setJogAxisPosition(size_t index, float position);
+		void setJogAxisEnabled(size_t index, bool enabled);
 
 		// Choices
 		size_t getChoiceCount() const;
@@ -122,6 +129,9 @@ namespace UI
 		void setTimeout(uint32_t timeout);
 		uint32_t getTimeout() const { return m_timeout; }
 		uint32_t getTimeRemaining() const;
+		uint32_t getTimeOutPercentage() const;
+
+		bool validate();
 
 		bool validateIntegerInput(const char* text);
 		bool validateFloatInput(const char* text);
@@ -133,6 +143,7 @@ namespace UI
 		static void onOkEvent(lv_event_t* e);
 		static void onCancelEvent(lv_event_t* e);
 		static void onChoiceEvent(lv_event_t* e);
+		static void onInputEvent(lv_event_t* e);
 
 		static void onProgressTimer(lv_timer_t* timer);
 
@@ -185,6 +196,8 @@ namespace UI
 		std::function<void(size_t)> m_choiceCb;
 		std::function<void()> m_closeCb;
 		std::function<uint32_t(MessageBox*)> m_progressCb;
+		std::function<bool(const char*)> m_inputValidationCb;
+		std::function<void(bool)> m_showKeyboardCb;
 		OM::Alert::Mode m_mode = OM::Alert::Mode::None;
 		uint32_t m_timeout = 0;
 

@@ -17,11 +17,11 @@ namespace OM
 		{
 			choices[i].Clear();
 		}
-		limits.numberInt.min = 0;
+		limits.numberInt.min = INT32_MIN;
 		limits.numberInt.max = INT32_MAX;
-		limits.numberFloat.min = 0;
+		limits.numberFloat.min = -FLT_MAX;
 		limits.numberFloat.max = FLT_MAX;
-		limits.text.min = 1;
-		limits.text.max = 10;
+		limits.text.min = 0;
+		limits.text.max = INT32_MAX;
 	}
 } // namespace OM

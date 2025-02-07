@@ -1,14 +1,18 @@
 #include "HomePresenter.h"
 #include "HomeView.h"
 
+#include "Hardware/Duet.h"
 #include "ObjectModel/Heat.h"
 #include "ObjectModel/Sensor.h"
 #include "UI/Core/Navigation.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
+#include <regex>
 
 namespace UI
 {
+	void HomePresenter::init() {}
+
 	void HomePresenter::tick()
 	{
 		Lock lock;
@@ -31,6 +35,20 @@ namespace UI
 	{
 		Lock lock;
 		m_view->refresh();
+		m_alertAxes.clear();
+	}
+
+	void HomePresenter::newAxesData()
+	{
+		// Alert jog axes
+		for (size_t i = 0; i < m_alertAxes.size(); i++)
+		{
+			OM::Move::Axis* axis = OM::Move::GetAxisByLetter(m_alertAxes[i]);
+			if (axis == nullptr)
+				continue;
+			m_view->m_alert.setJogAxisPosition(i, axis->userPosition);
+			m_view->m_alert.setJogAxisEnabled(i, axis->homed);
+		}
 	}
 
 	void HomePresenter::newResponse(const char* resp)
@@ -58,7 +76,7 @@ namespace UI
 					}
 				});
 
-			msgBox->setCancelBtnText(_("close"));
+			msgBox->setCancelBtnText(_("msgbox_close"));
 			msgBox->setOkBtnText(_("open_console"));
 			msgBox->setOkCallback(
 				[this]()
@@ -69,16 +87,250 @@ namespace UI
 			msgBox->okVisible(true);
 			msgBox->progressVisible(true);
 			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
-			msgBox->setProgressCallback(
-				[](MessageBox* msgBox) -> uint32_t
+			msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
+			if (m_view->m_alert.isVisible())
+			{
+				msgBox->hide();
+			}
+		}
+	}
+
+	void HomePresenter::newMessageBoxData(const OM::Alert& alert)
+	{
+		Lock lock;
+		MessageBox& msgBox = m_view->m_alert;
+
+		if (alert.mode == OM::Alert::Mode::None)
+		{
+			m_alertAxes.clear();
+			if (msgBox.isVisible())
+			{
+				msgBox.close();
+				msgBox.hide();
+			}
+			return;
+		}
+
+		msgBox.clear();
+
+		msgBox.setTitle(alert.title.c_str());
+		msgBox.setText(alert.text.c_str());
+		msgBox.setChoiceCount(alert.choices_count);
+		for (size_t i = 0; i < alert.choices_count; i++)
+		{
+			msgBox.setChoice(i, alert.choices[i].c_str());
+		}
+		msgBox.setMode(alert.mode);
+		msgBox.show();
+
+		msgBox.setCloseCallback(
+			[this]()
+			{
+				Lock lock;
+				m_view->m_alert.hide();
+				if (m_view->getMessageBoxCount() > 0)
 				{
-					info("Time remaining: %u", msgBox->getTimeRemaining());
-					if (msgBox->getTimeout() == 0)
-					{
-						return 100u;
-					}
-					return 100 * msgBox->getTimeRemaining() / msgBox->getTimeout();
+					auto msgBox = m_view->getMessageBox(0);
+					msgBox->show();
+					msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+				}
+			});
+
+		// callbacks
+		uint32_t seq = alert.seq;
+		switch (alert.mode)
+		{
+		case OM::Alert::Mode::Info:
+		case OM::Alert::Mode::InfoClose:
+		case OM::Alert::Mode::InfoConfirm:
+		case OM::Alert::Mode::ConfirmCancel:
+			msgBox.setOkBtnText(alert.mode == OM::Alert::Mode::InfoClose ? _("msgbox_close") : _("msgbox_ok"));
+			msgBox.okVisible(true);
+			msgBox.setOkCallback(
+				[seq]()
+				{
+					info("MessageBox OK callback");
+					Comm::DUET.SendGcodef("M292 S%u", seq);
 				});
+			break;
+		case OM::Alert::Mode::Choices:
+			msgBox.setChoiceCallback(
+				[seq](size_t index)
+				{
+					info("MessageBox Choice callback");
+					Comm::DUET.SendGcodef("M292 R{%u} S%u", index, seq);
+				});
+			break;
+		case OM::Alert::Mode::NumberInt:
+			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
+			msgBox.setKeyboard(m_view->m_kb);
+
+			if (alert.limits.numberInt.min > INT32_MIN)
+			{
+				msgBox.setMinTextf("%d", alert.limits.numberInt.min);
+				msgBox.minTextVisible(true);
+			}
+			else
+			{
+				msgBox.minTextVisible(false);
+			}
+
+			if (alert.limits.numberInt.max < INT32_MAX)
+			{
+				msgBox.setMaxTextf("%d", alert.limits.numberInt.max);
+				msgBox.maxTextVisible(true);
+			}
+			else
+			{
+				msgBox.maxTextVisible(false);
+			}
+
+			msgBox.setInput(alert.limits.numberInt.valueDefault);
+			msgBox.setInputValidationCallback(
+				[alert, &msgBox](const char* text) -> bool
+				{
+					Lock lock;
+					int value = std::atoi(text);
+					bool valid = value >= alert.limits.numberInt.min && value <= alert.limits.numberInt.max;
+					msgBox.warningTextVisible(!valid);
+					if (!valid)
+					{
+						msgBox.setWarningTextf(
+							_("msgbox_warning_int_range"), alert.limits.numberInt.min, alert.limits.numberInt.max);
+					}
+					return valid;
+				});
+			msgBox.setOkCallback(
+				[seq, &msgBox]()
+				{
+					int value = std::atoi(msgBox.getInput());
+					Comm::DUET.SendGcodef("M292 R{%d} S%u", value, seq);
+				});
+
+			break;
+		case OM::Alert::Mode::NumberFloat:
+			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
+			msgBox.setKeyboard(m_view->m_kb);
+
+			if (alert.limits.numberFloat.min > -FLT_MAX)
+			{
+				msgBox.setMinTextf("%.1f", alert.limits.numberFloat.min);
+				msgBox.minTextVisible(true);
+			}
+			else
+			{
+				msgBox.minTextVisible(false);
+			}
+
+			if (alert.limits.numberFloat.max < FLT_MAX)
+			{
+				msgBox.setMaxTextf("%.1f", alert.limits.numberFloat.max);
+				msgBox.maxTextVisible(true);
+			}
+			else
+			{
+				msgBox.maxTextVisible(false);
+			}
+
+			msgBox.setInput(alert.limits.numberFloat.valueDefault);
+			msgBox.setInputValidationCallback(
+				[alert, &msgBox](const char* text) -> bool
+				{
+					Lock lock;
+					float value = std::atof(text);
+					bool valid = value >= alert.limits.numberFloat.min && value <= alert.limits.numberFloat.max;
+					msgBox.warningTextVisible(!valid);
+					if (!valid)
+					{
+						msgBox.setWarningTextf(_("msgbox_warning_float_range"),
+											   alert.limits.numberFloat.min,
+											   alert.limits.numberFloat.max);
+					}
+					return valid;
+				});
+			msgBox.setOkCallback(
+				[seq, &msgBox]()
+				{
+					float value = std::atof(msgBox.getInput());
+					Comm::DUET.SendGcodef("M292 R{%.8f} S%u", value, seq);
+				});
+			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
+			break;
+		case OM::Alert::Mode::Text:
+		{
+			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_TEXT_LOWER);
+			msgBox.setKeyboard(m_view->m_kb);
+
+			msgBox.setInput(alert.limits.text.valueDefault.c_str());
+			msgBox.setInputValidationCallback(
+				[alert, &msgBox](const char* text) -> bool
+				{
+					Lock lock;
+					int32_t len = (int32_t)strlen(text);
+					bool valid = len >= alert.limits.text.min && len <= alert.limits.text.max;
+					msgBox.warningTextVisible(!valid);
+					if (!valid)
+					{
+						msgBox.setWarningTextf(
+							_("msgbox_warning_text_length"), alert.limits.text.min, alert.limits.text.max);
+					}
+					return valid;
+				});
+			msgBox.setOkCallback(
+				[seq, &msgBox]()
+				{
+					std::string text = msgBox.getInput();
+					text = std::regex_replace(text, std::regex("\""), "\"\"");
+					text = std::regex_replace(text, std::regex("\'"), "\'\'");
+					Comm::DUET.SendGcodef("M292 R{\"%s\"} S%u", text.c_str(), seq);
+				});
+			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
+			break;
+		}
+		default:
+			warn("Unhandled alert mode %d", alert.mode);
+			break;
+		}
+
+		if (alert.flags.IsBitSet(OM::Alert::GotControls))
+		{
+			size_t count = 0;
+			dbg("axisControl %d", alert.controls);
+			for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
+			{
+				if (!(alert.controls & (1 << i)))
+					continue;
+				OM::Move::Axis* axis = OM::Move::GetAxis(i);
+				if (axis == nullptr)
+					continue;
+				m_alertAxes.push_back(axis->letter[0]);
+				msgBox.setJogAxisLetter(count, axis->letter[0]);
+				count++;
+				dbg("Axis %d, count %d", i, count);
+			}
+			msgBox.axisJogVisible(true);
+		}
+		else
+		{
+			m_alertAxes.clear();
+		}
+
+		if (alert.cancelButton)
+		{
+			msgBox.cancelVisible(true);
+			msgBox.setCancelCallback(
+				[seq]()
+				{
+					info("MessageBox Cancel callback");
+					Comm::DUET.SendGcodef("M292 P1 S%u", seq);
+				});
+		}
+
+		msgBox.setTimeout(alert.timeout);
+		msgBox.progressVisible(alert.timeout > 0);
+		if (alert.timeout > 0)
+		{
+			msgBox.setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
 		}
 	}
 } // namespace UI

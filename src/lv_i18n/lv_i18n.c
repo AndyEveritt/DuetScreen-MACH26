@@ -91,6 +91,13 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"settings_network_enter_password", "Enter Password"},
     {"settings_enable_ssh", "Enable SSH"},
     {"settings_network_enable", "Enable WiFi"},
+    {"msgbox_cancel", "Cancel"},
+    {"msgbox_ok", "Ok"},
+    {"open_console", "Open Console"},
+    {"msgbox_close", "Close"},
+    {"msgbox_warning_int_range", "Value must be between %d and %d"},
+    {"msgbox_warning_float_range", "Value must be between %f and %f"},
+    {"msgbox_warning_text_length", "Input must be between %d and %d characters"},
     {NULL, NULL} // End mark
 };
 

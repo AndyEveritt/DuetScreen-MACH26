@@ -37,7 +37,10 @@ namespace UI
 		{
 		}
 
-		Presenter(BaseView* view) { m_view = static_cast<V*>(view); }
+		Presenter(BaseView* view)
+			: m_view(static_cast<V*>(view))
+		{
+		}
 
 		Presenter(V* view)
 			: m_view(view)

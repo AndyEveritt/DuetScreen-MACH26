@@ -176,13 +176,6 @@ namespace Comm
 
 		// FileManager::EndReceivedMessage();
 
-		// Open M291 message box if required
-		if (OM::g_currentAlert.mode != OM::Alert::Mode::None && OM::g_currentAlert.seq != OM::g_lastAlertSeq)
-		{
-			Model::get().newMessageBoxData();
-			OM::g_lastAlertSeq = OM::g_currentAlert.seq;
-		}
-
 		switch (responseType)
 		{
 		case ResponseType::unknown:

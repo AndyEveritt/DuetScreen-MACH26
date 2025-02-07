@@ -22,7 +22,7 @@ class StateSubscribers : public SubscriberMap
 		addSubscriber("state:messageBox:max", messageBoxMax);
 		addSubscriber("state:messageBox:default", messageBoxDefault);
 		addSubscriber("state:messageBox:cancelButton", messageBoxCancelButton);
-		addSubscriber("state:messageBox:choices", messageBoxChoices);
+		addSubscriber("state:messageBox:choices^", messageBoxChoices);
 		addSubscriber("state:time", time);
 	}
 

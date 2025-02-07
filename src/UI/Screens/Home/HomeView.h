@@ -39,6 +39,10 @@ namespace UI
 		void popMessageBox();
 		void clearMessageBoxes() { m_messageBoxList.clear(); }
 
+		// Keyboard
+		void showKeyboard(bool show);
+		lv_obj_t* getKeyboard() const { return m_kb; }
+
 	  private:
 		HomeView();
 		virtual void onShow() {}
@@ -71,5 +75,8 @@ namespace UI
 
 		// Message box
 		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;
+		MessageBox m_alert;
+
+		lv_obj_t* m_kb;
 	};
 } // namespace UI

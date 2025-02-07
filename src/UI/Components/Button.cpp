@@ -129,6 +129,11 @@ namespace UI
 		return false;
 	}
 
+	void Button::setInvalid(bool invalid)
+	{
+		lv_obj_set_state(m_button, LV_STATE_DISABLED, invalid);
+	}
+
 	void Button::setBgColor(lv_color_t color, lv_style_selector_t selector)
 	{
 		lv_obj_set_style_bg_color(m_button, color, selector);

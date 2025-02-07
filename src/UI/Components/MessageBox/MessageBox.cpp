@@ -7,6 +7,7 @@
 
 #include "MessageBox.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
 #include "lv_i18n/lv_i18n.h"
 #include "lvgl/src/lvgl_private.h"
 
@@ -84,6 +85,7 @@ namespace UI
 			lv_obj_set_flex_grow(child, 1);
 			lv_obj_set_height(child, LV_SIZE_CONTENT);
 		}
+		lv_obj_set_style_text_align(m_text, LV_TEXT_ALIGN_CENTER, 0);
 
 		// Central Container
 
@@ -134,6 +136,8 @@ namespace UI
 			lv_obj_set_height(child, LV_SIZE_CONTENT);
 		}
 
+		// Callbacks
+		lv_obj_add_event_cb(m_input, onInputEvent, LV_EVENT_ALL, this);
 		m_okBtn.setCallback(onOkEvent, LV_EVENT_CLICKED, this);
 		m_cancelBtn.setCallback(onCancelEvent, LV_EVENT_CLICKED, this);
 
@@ -199,11 +203,30 @@ namespace UI
 		m_cancelBtn.setText(text.c_str());
 	}
 
+	void MessageBox::setInputValidationCallback(std::function<bool(const char*)> cb)
+	{
+		Lock lock;
+		m_inputValidationCb = cb;
+		m_okBtn.setInvalid(!validate());
+	}
+
+	bool MessageBox::validate()
+	{
+		Lock lock;
+		if (!m_inputValidationCb)
+		{
+			return true;
+		}
+		const char* text = lv_textarea_get_text(m_input);
+		return m_inputValidationCb(text);
+	}
+
 	void MessageBox::setKeyboard(lv_obj_t* kb)
 	{
 		Lock lock;
 		info("Setting keyboard %p", kb);
 		m_kb = kb;
+		lv_keyboard_set_textarea(m_kb, m_input);
 	}
 
 	bool MessageBox::isOpen() const
@@ -258,6 +281,13 @@ namespace UI
 		cancelVisible(false);
 		progressVisible(false);
 		imageVisible(false);
+
+		setCancelCallback(nullptr);
+		setOkCallback(nullptr);
+		setChoiceCallback(nullptr);
+		setCloseCallback(nullptr);
+		setProgressCallback(nullptr);
+		setInputValidationCallback(nullptr);
 	}
 
 	void MessageBox::setMode(OM::Alert::Mode mode)
@@ -284,8 +314,6 @@ namespace UI
 		case OM::Alert::Mode::Info:
 			break;
 		case OM::Alert::Mode::InfoClose:
-			cancelVisible(true);
-			break;
 		case OM::Alert::Mode::InfoConfirm:
 			okVisible(true);
 			break;
@@ -297,13 +325,19 @@ namespace UI
 			selectionVisible(true);
 			break;
 		case OM::Alert::Mode::NumberInt:
+			lv_textarea_set_accepted_chars(m_input, "+-0123456789");
 			inputVisible(true);
+			okVisible(true);
 			break;
 		case OM::Alert::Mode::NumberFloat:
+			lv_textarea_set_accepted_chars(m_input, "+-0123456789.");
 			inputVisible(true);
+			okVisible(true);
 			break;
 		case OM::Alert::Mode::Text:
+			lv_textarea_set_accepted_chars(m_input, NULL);
 			inputVisible(true);
+			okVisible(true);
 			break;
 		}
 	}
@@ -457,10 +491,27 @@ namespace UI
 	{
 		if (index >= getJogAxisCount())
 		{
-			error("Index %u out of range", index);
-			return;
+			setJogAxisCount(index + 1);
 		}
 		m_axisJogList[index]->setAxisLetter(letter);
+	}
+
+	void MessageBox::setJogAxisPosition(size_t index, float position)
+	{
+		if (index >= getJogAxisCount())
+		{
+			setJogAxisCount(index + 1);
+		}
+		m_axisJogList[index]->setPosition(position);
+	}
+
+	void MessageBox::setJogAxisEnabled(size_t index, bool enabled)
+	{
+		if (index >= getJogAxisCount())
+		{
+			setJogAxisCount(index + 1);
+		}
+		m_axisJogList[index]->setEnabled(enabled);
 	}
 
 	size_t MessageBox::getChoiceCount() const
@@ -501,6 +552,40 @@ namespace UI
 		m_choices[index]->setText(text.c_str());
 	}
 
+	void MessageBox::setProgress(int percent)
+	{
+		Lock lock;
+		lv_bar_set_value(m_progress, percent, LV_ANIM_ON);
+	}
+
+	void MessageBox::setInput(int32_t val)
+	{
+		Lock lock;
+		char buf[32];
+		snprintf(buf, sizeof(buf), "%d", val);
+		lv_textarea_set_text(m_input, buf);
+	}
+
+	void MessageBox::setInput(float val)
+	{
+		Lock lock;
+		char buf[32];
+		snprintf(buf, sizeof(buf), "%.1f", val);
+		lv_textarea_set_text(m_input, buf);
+	}
+
+	void MessageBox::setInput(const char* text)
+	{
+		Lock lock;
+		lv_textarea_set_text(m_input, text);
+	}
+
+	const char* MessageBox::getInput() const
+	{
+		Lock lock;
+		return lv_textarea_get_text(m_input);
+	}
+
 	void MessageBox::setTimeout(uint32_t timeout)
 	{
 		Lock lock;
@@ -539,6 +624,17 @@ namespace UI
 		return 0;
 	}
 
+	uint32_t MessageBox::getTimeOutPercentage() const
+	{
+		Lock lock;
+		if (m_timeout == 0)
+		{
+			return 0u;
+		}
+		verbose("Time remaining: %u", getTimeRemaining());
+		return 100 * getTimeRemaining() / m_timeout;
+	}
+
 	void MessageBox::onOkEvent(lv_event_t* e)
 	{
 		Lock lock;
@@ -566,6 +662,48 @@ namespace UI
 		msgBox->close();
 	}
 
+	void MessageBox::onInputEvent(lv_event_t* e)
+	{
+		Lock lock;
+		MessageBox* msgBox = static_cast<MessageBox*>(lv_event_get_user_data(e));
+		lv_event_code_t code = lv_event_get_code(e);
+
+		switch (code)
+		{
+		case LV_EVENT_READY:
+			if (msgBox->m_showKeyboardCb)
+			{
+				msgBox->m_showKeyboardCb(false);
+			}
+			break;
+		case LV_EVENT_FOCUSED:
+			if (msgBox->m_kb)
+			{
+				lv_keyboard_set_textarea(msgBox->m_kb, msgBox->m_input);
+			}
+			if (msgBox->m_showKeyboardCb)
+			{
+				msgBox->m_showKeyboardCb(true);
+			}
+			break;
+		case LV_EVENT_DEFOCUSED:
+			if (msgBox->m_kb)
+			{
+				lv_keyboard_set_textarea(msgBox->m_kb, nullptr);
+			}
+			if (msgBox->m_showKeyboardCb)
+			{
+				msgBox->m_showKeyboardCb(false);
+			}
+			break;
+		case LV_EVENT_VALUE_CHANGED:
+		{
+			msgBox->m_okBtn.setInvalid(!msgBox->validate());
+			break;
+		}
+		}
+	}
+
 	void MessageBox::onProgressTimer(lv_timer_t* timer)
 	{
 		Lock lock;
@@ -573,7 +711,7 @@ namespace UI
 		if (msgBox->m_progressCb)
 		{
 			size_t progress = msgBox->m_progressCb(msgBox);
-			lv_bar_set_value(msgBox->m_progress, progress, LV_ANIM_OFF);
+			lv_bar_set_value(msgBox->m_progress, progress, LV_ANIM_ON);
 		}
 	}
 
@@ -603,7 +741,9 @@ namespace UI
 			lv_obj_set_style_text_align(btn.getCont(), LV_TEXT_ALIGN_CENTER, 0);
 			lv_obj_set_flex_grow(btn.getCont(), 1);
 			lv_obj_set_height(btn.getCont(), LV_SIZE_CONTENT);
+			lv_obj_set_user_data(btn.getCont(), this);
 			btn.setUserData(reinterpret_cast<void*>(const_cast<float*>(&s_jogAmounts[i])));
+			btn.setCallback(onRelMoveEvent, LV_EVENT_CLICKED, &btn);
 		}
 
 		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
@@ -616,14 +756,35 @@ namespace UI
 		Lock lock;
 		m_axisLetter[0] = letter;
 		m_axisLetter[1] = '\0';
-		lv_label_set_text(m_label, utils::format(_("msgbox_axis_position"), m_axisLetter, m_position).c_str());
+		lv_label_set_text(m_label, utils::format("%s = %.2f", m_axisLetter, m_position).c_str());
 	}
 
 	void MessageBox::AxisJog::setPosition(float position)
 	{
 		Lock lock;
 		m_position = position;
-		lv_label_set_text(m_label, utils::format(_("msgbox_axis_position"), m_axisLetter, m_position).c_str());
+		lv_label_set_text(m_label, utils::format("%s = %.2f", m_axisLetter, m_position).c_str());
+	}
+
+	void MessageBox::AxisJog::setEnabled(bool enabled)
+	{
+		Lock lock;
+		for (size_t i = 0; i < ARRAY_SIZE(m_relMove); i++)
+		{
+			m_relMove[i].setInvalid(!enabled);
+		}
+	}
+
+	void MessageBox::AxisJog::onRelMoveEvent(lv_event_t* e)
+	{
+		Lock lock;
+		Button* btn = static_cast<Button*>(lv_event_get_user_data(e));
+		MessageBox::AxisJog* axisJog = static_cast<MessageBox::AxisJog*>(lv_obj_get_user_data(btn->getCont()));
+		float amount = *reinterpret_cast<float*>(btn->getUserData());
+
+		// TODO: I am breaking the rule of no logic in the view but I'm being lazy. I should create a presenter for the
+		// MessageBox for this.
+		Comm::DUET.SendGcodef("M120\nG91\nG1 %s%.3f F%d\nM121", axisJog->m_axisLetter, amount, 300);
 	}
 
 } // namespace UI

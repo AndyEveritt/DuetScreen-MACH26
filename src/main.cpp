@@ -167,6 +167,7 @@ static const char* getenv_default(const char* name, const char* dflt)
  */
 static lv_display_t* hal_init(int32_t w, int32_t h)
 {
+	info("Initialising display");
 #if LV_USE_LINUX_FBDEV
 	const char* device = getenv_default("LV_LINUX_FBDEV_DEVICE", "/dev/fb0");
 	lv_display_t* disp = lv_linux_fbdev_create();

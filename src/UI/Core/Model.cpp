@@ -215,7 +215,7 @@ void Model::refresh()
 		presenter->newIpAddress();
 		presenter->newStatus();
 		presenter->newCurrentTool();
-		presenter->newMessageBoxData();
+		presenter->newMessageBoxData(OM::g_currentAlert);
 		presenter->newTime();
 		presenter->newToolData();
 	}
@@ -279,7 +279,13 @@ MODEL_NOTIFICATION(newNetworkName)
 MODEL_NOTIFICATION(newIpAddress)
 MODEL_NOTIFICATION(newStatus)
 MODEL_NOTIFICATION(newCurrentTool)
-MODEL_NOTIFICATION(newMessageBoxData)
+
+void Model::newMessageBoxData(const OM::Alert& alert)
+{
+	OM::g_lastAlertSeq = alert.seq;
+	NOTIFY_ALL_PRESENTERS(newMessageBoxData, alert);
+}
+
 MODEL_NOTIFICATION(newTime)
 
 /* Tool methods */

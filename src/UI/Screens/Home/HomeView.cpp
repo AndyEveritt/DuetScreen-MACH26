@@ -59,6 +59,8 @@ namespace UI
 		, m_extrudeView(m_mainWindow)
 		, m_fileView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
+		, m_alert("home_alert", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_kb(lv_keyboard_create(m_mainWindow))
 	{
 		info("Creating UI");
 		addHomeScreen(this);
@@ -110,10 +112,24 @@ namespace UI
 		m_fileView.hide();
 		m_settingsView.hide();
 
+		// Message Box
+		m_alert.hide();
+		lv_obj_add_flag(m_alert.getCont(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_align(m_alert.getCont(), LV_ALIGN_CENTER, 0, 0);
+		lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(70), LV_PART_MAIN);
+
+		// Keyboard
+		showKeyboard(false);
+		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_FLOATING);
+		lv_obj_align(m_kb, LV_ALIGN_BOTTOM_MID, 0, 0);
+		lv_obj_set_size(m_kb, LV_PCT(100), LV_PCT(50));
+
 		// Styles::instance().removeTheme(getCont());
 		// lv_obj_remove_style(getCont(), &Styles::instance().debugBorders.style, 0);
 		// lv_theme_apply(getCont());
 		// lv_obj_refresh_style(getCont(), LV_PART_ANY, LV_STYLE_PROP_ANY);
+
+		m_presenter.init();
 	}
 
 	void HomeView::refresh()
@@ -147,7 +163,7 @@ namespace UI
 			std::make_shared<MessageBox>("home_message_box", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
 		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.front();
 		lv_obj_add_flag(msgBox->getCont(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(msgBox->getCont(), LV_ALIGN_CENTER, 0, 0);
+		lv_obj_align(msgBox->getCont(), LV_ALIGN_TOP_MID, 0, 2);
 		lv_obj_set_style_max_height(msgBox->getCont(), LV_PCT(70), LV_PART_MAIN);
 		return msgBox;
 	}
@@ -169,5 +185,21 @@ namespace UI
 		{
 			m_messageBoxList.erase(m_messageBoxList.begin());
 		}
+	}
+
+	void HomeView::showKeyboard(bool show)
+	{
+		if (show)
+		{
+			lv_obj_align(m_alert.getCont(), LV_ALIGN_TOP_MID, 0, 5);
+			lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(45), LV_PART_MAIN);
+		}
+		else
+		{
+			lv_keyboard_set_textarea(m_kb, nullptr);
+			lv_obj_align(m_alert.getCont(), LV_ALIGN_CENTER, 0, 0);
+			lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(70), LV_PART_MAIN);
+		}
+		lv_obj_set_flag(m_kb, LV_OBJ_FLAG_HIDDEN, !show);
 	}
 } // namespace UI

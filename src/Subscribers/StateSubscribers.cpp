@@ -43,7 +43,8 @@ bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* da
 	if (data[0] != 0)
 		return true;
 	OM::g_currentAlert.Reset();
-	Model::get().newMessageBoxData();
+
+	Model::get().newMessageBoxData(OM::g_currentAlert);
 	return true;
 }
 
@@ -86,11 +87,23 @@ bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* d
 {
 	OM::g_currentAlert.title.copy(data);
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotTitle);
+
+	if (OM::g_currentAlert.seq != OM::g_lastAlertSeq)
+	{
+		Model::get().newMessageBoxData(OM::g_currentAlert);
+	}
 	return true;
 }
 
 bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	if (data[0] == 0)
+	{
+		OM::g_currentAlert.limits.numberInt.min = INT32_MIN;
+		OM::g_currentAlert.limits.numberFloat.min = FLT_MIN;
+		OM::g_currentAlert.limits.text.min = 0;
+		return true;
+	}
 	Comm::GetInteger(data, OM::g_currentAlert.limits.numberInt.min);
 	Comm::GetFloat(data, OM::g_currentAlert.limits.numberFloat.min);
 	Comm::GetInteger(data, OM::g_currentAlert.limits.text.min);
@@ -99,6 +112,13 @@ bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* dat
 
 bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	if (data[0] == 0)
+	{
+		OM::g_currentAlert.limits.numberInt.max = INT32_MAX;
+		OM::g_currentAlert.limits.numberFloat.max = FLT_MAX;
+		OM::g_currentAlert.limits.text.max = INT32_MAX;
+		return true;
+	}
 	Comm::GetInteger(data, OM::g_currentAlert.limits.numberInt.max);
 	Comm::GetFloat(data, OM::g_currentAlert.limits.numberFloat.max);
 	Comm::GetInteger(data, OM::g_currentAlert.limits.text.max);
@@ -107,6 +127,13 @@ bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* dat
 
 bool StateSubscribers::messageBoxDefault(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	if (data[0] == 0)
+	{
+		OM::g_currentAlert.limits.numberInt.valueDefault = 0;
+		OM::g_currentAlert.limits.numberFloat.valueDefault = 0.0;
+		OM::g_currentAlert.limits.text.valueDefault.Clear();
+		return true;
+	}
 	Comm::GetInteger(data, OM::g_currentAlert.limits.numberInt.valueDefault);
 	Comm::GetFloat(data, OM::g_currentAlert.limits.numberFloat.valueDefault);
 	OM::g_currentAlert.limits.text.valueDefault.copy(data);
