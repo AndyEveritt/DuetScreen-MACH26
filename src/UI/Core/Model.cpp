@@ -6,16 +6,16 @@
 #include "Presenter.h"
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
-  for (auto presenter : m_presenters)                                                                                  \
-  {                                                                                                                    \
-	presenter->func(__VA_ARGS__);                                                                                      \
-  }
+	for (auto presenter : m_presenters)                                                                                \
+	{                                                                                                                  \
+		presenter->func(__VA_ARGS__);                                                                                  \
+	}
 
 #define MODEL_NOTIFICATION(func, ...)                                                                                  \
-  void Model::func(__VA_ARGS__)                                                                                        \
-  {                                                                                                                    \
-	NOTIFY_ALL_PRESENTERS(func, __VA_ARGS__);                                                                          \
-  }
+	void Model::func(__VA_ARGS__)                                                                                      \
+	{                                                                                                                  \
+		NOTIFY_ALL_PRESENTERS(func, __VA_ARGS__);                                                                      \
+	}
 
 Model::Model()
 {

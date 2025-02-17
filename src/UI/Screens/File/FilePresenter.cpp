@@ -13,15 +13,25 @@ namespace UI
 		m_currentFolder = folder;
 	}
 
-	void FilePresenter::folderClicked(const size_t index)
+	void FilePresenter::itemClicked(const size_t index)
 	{
 		ModelLock lock;
 		auto file = OM::FileSystem::GetItem(index);
-		if (file != nullptr && file->GetType() == OM::FileSystem::FileSystemItemType::folder)
+		if (file == nullptr)
+		{
+			warn("item %u is null", index);
+			return;
+		}
+
+		if (file->GetType() == OM::FileSystem::FileSystemItemType::folder)
 		{
 			setFolder(file->GetPath().c_str());
 			requestFiles();
+			return;
 		}
+
+		// File
+		m_view->confirmStartPrint()
 	}
 
 	void FilePresenter::requestFiles()

@@ -2,6 +2,7 @@
 
 #include "FilePresenter.h"
 #include "UI/Components/Button.h"
+#include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -17,6 +18,10 @@ namespace UI
 		void setSize(const char* size);
 		void setThumbnail(lv_img_dsc_t* thumbnail);
 		void setType(const bool isFolder);
+
+		const char* getLabel() const;
+		const char* getDate() const;
+		const char* getSize() const;
 
 	  private:
 		FileView* getList() const { return m_list; }
@@ -51,6 +56,7 @@ namespace UI
 		std::shared_ptr<FileItem> getFileItem(size_t index) const;
 
 		void setFolder(const char* path);
+		void confirmStartPrint(const char* filename, const char* date, const char* size);
 
 		void onItemClicked(size_t index, bool isFolder);
 
@@ -69,5 +75,7 @@ namespace UI
 		lv_obj_t* m_sideBar;
 		Button m_refresh;
 		lv_obj_t* m_footer;
+
+		MessageBox m_startPrint;
 	};
 } // namespace UI

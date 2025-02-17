@@ -73,6 +73,24 @@ namespace UI
 		lv_obj_set_state(getCont(), LV_STATE_CHECKED, isFolder);
 	}
 
+	const char* FileItem::getLabel() const
+	{
+		Lock lock;
+		return lv_label_get_text(m_label);
+	}
+
+	const char* FileItem::getDate() const
+	{
+		Lock lock;
+		return lv_label_get_text(m_date);
+	}
+
+	const char* FileItem::getSize() const
+	{
+		Lock lock;
+		return lv_label_get_text(m_size);
+	}
+
 	void FileItem::onClick(lv_event_t* e)
 	{
 		FileItem* item = static_cast<FileItem*>(lv_event_get_user_data(e));
@@ -88,6 +106,7 @@ namespace UI
 		, m_sideBar(lv_obj_create(getCont()))
 		, m_refresh("file_refresh", m_sideBar, _("refresh"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_footer(lv_label_create(getCont()))
+		, m_startPrint("file_messageBox", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		Lock lock;
 
@@ -118,7 +137,13 @@ namespace UI
 		// Footer
 		constexpr lv_coord_t footerPad = 2;
 		lv_obj_set_style_pad_all(m_footer, footerPad, 0);
-		// lv_obj_set_
+
+		// Start Print
+		lv_obj_add_flag(m_startPrint.getCont(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_set_align(m_startPrint.getCont(), LV_ALIGN_CENTER);
+		lv_obj_set_style_max_height(m_startPrint.getCont(), LV_PCT(70), 0);
+		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
+		m_startPrint.setTitle(_("file_start_print_title"));
 	}
 
 	void FileView::setFileCount(const size_t count)
@@ -159,10 +184,18 @@ namespace UI
 
 	void FileView::onItemClicked(size_t index, bool isFolder)
 	{
-		if (isFolder)
+		if (index >= m_fileItems.size())
 		{
-			m_presenter.folderClicked(index);
+			return;
 		}
+
+		m_presenter.itemClicked(index);
+	}
+
+	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size)
+	{
+		m_startPrint.setText(utils::format(_("file_start_print_message"), filename, date, size).c_str());
+		m_startPrint.show();
 	}
 
 	bool FileView::back()

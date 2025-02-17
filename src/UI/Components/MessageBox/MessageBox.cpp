@@ -172,6 +172,7 @@ namespace UI
 	void MessageBox::close()
 	{
 		Lock lock;
+		hide();
 		if (m_closeCb)
 		{
 			info("Calling close callback");

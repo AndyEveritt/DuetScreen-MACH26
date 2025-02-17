@@ -13,7 +13,7 @@ namespace UI
 
 		// Actions
 		void setFolder(const char* folder);
-		void folderClicked(const size_t index);
+		void itemClicked(const size_t index);
 		void requestFiles();
 		bool back();
 
