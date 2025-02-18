@@ -20,6 +20,7 @@ namespace UI
 		, m_thumbnail(lv_img_create(getCont()))
 		, m_type(lv_label_create(getCont()))
 	{
+		Lock lock;
 		// Layout
 		constexpr lv_coord_t pad = 2;
 		lv_obj_set_height(getCont(), LV_SIZE_CONTENT);
@@ -93,6 +94,7 @@ namespace UI
 
 	void FileView::FileItem::onClick(lv_event_t* e)
 	{
+		Lock lock;
 		FileItem* item = static_cast<FileItem*>(lv_event_get_user_data(e));
 		item->getList()->onItemClicked(item->m_index, item->m_isFolder);
 	}
@@ -173,6 +175,7 @@ namespace UI
 
 	std::shared_ptr<FileView::FileItem> FileView::getFileItem(size_t index) const
 	{
+		Lock lock;
 		if (index < m_fileItems.size())
 		{
 			return m_fileItems[index];
@@ -198,6 +201,7 @@ namespace UI
 
 	bool FileView::cancelStartPrint()
 	{
+		Lock lock;
 		if (m_startPrint.isVisible())
 		{
 			m_startPrint.cancel();
@@ -208,12 +212,14 @@ namespace UI
 
 	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size)
 	{
+		Lock lock;
 		m_startPrint.setText(utils::format(_("file_start_print_message"), filename, date, size));
 		m_startPrint.show();
 	}
 
 	void FileView::onRefreshClicked(lv_event_t* e)
 	{
+		Lock lock;
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		view->cancelStartPrint();
 		view->m_presenter.requestFiles();
@@ -221,6 +227,7 @@ namespace UI
 
 	bool FileView::back()
 	{
+		Lock lock;
 		if (cancelStartPrint())
 		{
 			return true;
@@ -230,6 +237,7 @@ namespace UI
 
 	void FileView::onShow()
 	{
+		Lock lock;
 		cancelStartPrint();
 	}
 

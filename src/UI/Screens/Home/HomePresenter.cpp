@@ -67,6 +67,7 @@ namespace UI
 			msgBox->setCancelCallback(
 				[this]()
 				{
+					Lock lock;
 					m_view->popMessageBox();
 					if (m_view->getMessageBoxCount() > 0)
 					{
@@ -81,6 +82,7 @@ namespace UI
 			msgBox->setOkCallback(
 				[this]()
 				{
+					Lock lock;
 					m_view->clearMessageBoxes();
 					openScreen(&m_view->m_consoleView);
 				});

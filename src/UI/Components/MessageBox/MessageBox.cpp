@@ -38,11 +38,13 @@ namespace UI
 		, m_progress(lv_bar_create(lv_msgbox_get_content(m_msgBox)))
 		, m_kb(nullptr)
 	{
+		Lock lock;
 		init();
 	}
 
 	MessageBox::~MessageBox()
 	{
+		Lock lock;
 		if (m_timers.timeout != nullptr)
 		{
 			lv_timer_delete(m_timers.timeout);
@@ -172,7 +174,10 @@ namespace UI
 	void MessageBox::close()
 	{
 		Lock lock;
-		hide();
+		if (getCont()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
+		{
+			hide();
+		}
 		if (m_closeCb)
 		{
 			info("Calling close callback");
@@ -232,6 +237,7 @@ namespace UI
 
 	bool MessageBox::isOpen() const
 	{
+		Lock lock;
 		return !lv_obj_has_flag(m_msgBox, LV_OBJ_FLAG_HIDDEN);
 	}
 
@@ -345,64 +351,75 @@ namespace UI
 
 	void MessageBox::imageVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_image, LV_OBJ_FLAG_HIDDEN, !visible);
 	}
 
 	void MessageBox::okVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_okBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::cancelVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_cancelBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::selectionVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_choicesList, LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::inputVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_inputCont, LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::warningTextVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_warningText, LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::minTextVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_minText, LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::maxTextVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_maxText, LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::axisJogVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_axisJogCont, LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::progressVisible(bool visible)
 	{
+		Lock lock;
 		lv_obj_set_flag(m_progress, LV_OBJ_FLAG_HIDDEN, !visible);
 	}
 
 	void MessageBox::updateVisibility()
 	{
+		Lock lock;
 		bool visible = false;
 		for (size_t i = 0; i < lv_obj_get_child_count(m_centralCont); i++)
 		{
@@ -603,6 +620,7 @@ namespace UI
 		m_timers.timeout = lv_timer_create(
 			[](lv_timer_t* timer)
 			{
+				Lock lock;
 				MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
 				msgBox->cancel();
 			},
@@ -729,6 +747,7 @@ namespace UI
 					Button(utils::format("msgbox_axis_%u_rel_move_6", index), getCont(), "", layout_t(0, 0, 0, 100))}
 
 	{
+		Lock lock;
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);

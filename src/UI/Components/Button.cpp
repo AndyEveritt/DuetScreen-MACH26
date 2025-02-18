@@ -22,6 +22,7 @@ namespace UI
 
 	void Button::init(const char* text)
 	{
+		Lock lock;
 		lv_obj_set_user_data(m_button, this);
 		lv_obj_set_user_data(m_label, this);
 
@@ -45,6 +46,7 @@ namespace UI
 
 	void Button::setText(const char* text)
 	{
+		Lock lock;
 		lv_label_set_text(m_label, text);
 		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_center(m_label);
@@ -57,27 +59,32 @@ namespace UI
 
 	void Button::setCallback(lv_event_cb_t event_cb, lv_event_code_t filter, void* user_data)
 	{
+		Lock lock;
 		lv_obj_add_event_cb(m_button, event_cb, filter, user_data);
 	}
 
 	void Button::setUserData(void* user_data)
 	{
+		Lock lock;
 		lv_obj_set_user_data(m_button, user_data);
 	}
 
 	void* Button::getUserData() const
 	{
+		Lock lock;
 		return lv_obj_get_user_data(m_button);
 	}
 
 	void Button::setStyle(lv_style_t* style, lv_style_selector_t selector)
 	{
+		Lock lock;
 		lv_obj_add_style(m_button, style, selector);
 		lv_obj_add_style(m_label, style, selector);
 	}
 
 	void Button::setIcon(lv_img_dsc_t* icon)
 	{
+		Lock lock;
 		// If the icon is null, remove the icon and center the label
 		if (icon == nullptr)
 		{
@@ -102,6 +109,7 @@ namespace UI
 
 	void Button::setCheckable(bool checkable)
 	{
+		Lock lock;
 		if (checkable)
 		{
 			lv_obj_add_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
@@ -114,6 +122,7 @@ namespace UI
 
 	void Button::setChecked(const bool checked)
 	{
+		Lock lock;
 		if (lv_obj_has_flag(m_button, LV_OBJ_FLAG_CHECKABLE))
 		{
 			lv_obj_set_state(m_button, LV_STATE_CHECKED, checked);
@@ -122,6 +131,7 @@ namespace UI
 
 	const bool Button::getChecked() const
 	{
+		Lock lock;
 		if (lv_obj_has_flag(m_button, LV_OBJ_FLAG_CHECKABLE))
 		{
 			return lv_obj_has_state(m_button, LV_STATE_CHECKED);
@@ -131,11 +141,13 @@ namespace UI
 
 	void Button::setInvalid(bool invalid)
 	{
+		Lock lock;
 		lv_obj_set_state(m_button, LV_STATE_DISABLED, invalid);
 	}
 
 	void Button::setBgColor(lv_color_t color, lv_style_selector_t selector)
 	{
+		Lock lock;
 		lv_obj_set_style_bg_color(m_button, color, selector);
 	}
 } // namespace UI

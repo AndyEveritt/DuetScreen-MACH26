@@ -23,6 +23,7 @@ namespace UI
 		, m_currentSubView(&m_duetSettingsView)
 		, m_keyboard(lv_keyboard_create(getCont()))
 	{
+		Lock lock;
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
@@ -42,6 +43,7 @@ namespace UI
 
 	void SettingsView::onWindowSelectEvent(lv_event_t* e)
 	{
+		Lock lock;
 		SettingsView* view = (SettingsView*)lv_event_get_user_data(e);
 		BaseView* subView = (BaseView*)lv_obj_get_user_data(lv_event_get_target_obj(e));
 		BaseView* currentSubView = view->m_currentSubView;
@@ -87,6 +89,7 @@ namespace UI
 
 	bool SettingsView::back()
 	{
+		Lock lock;
 		if (!lv_obj_has_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN))
 		{
 			showKeyboard(false);
@@ -143,6 +146,7 @@ namespace UI
 		, m_hostname(lv_textarea_create(getCont()))
 		, m_password(lv_textarea_create(getCont()))
 		, m_pollInterval(lv_textarea_create(getCont()))
+		, m_infoTimeout(lv_textarea_create(getCont()))
 		, m_save("duet_settings_save", getCont(), _("save"))
 	{
 		Lock lock;
@@ -179,6 +183,14 @@ namespace UI
 		lv_textarea_set_text(m_pollInterval, utils::format("%u", Comm::DUET.GetPollInterval()).c_str());
 		lv_obj_add_event_cb(m_pollInterval, onTextAreaEvent, LV_EVENT_ALL, this);
 
+		// Info Timeout
+		lv_textarea_set_one_line(m_infoTimeout, true);
+		lv_textarea_set_placeholder_text(m_infoTimeout, _("settings_duet_info_timeout"));
+		lv_textarea_set_accepted_chars(m_infoTimeout, "0123456789");
+		lv_textarea_set_text(
+			m_infoTimeout, utils::format("%u", StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT)).c_str());
+		lv_obj_add_event_cb(m_infoTimeout, onTextAreaEvent, LV_EVENT_ALL, this);
+
 		// Save
 		lv_obj_set_height(m_save.getCont(), LV_SIZE_CONTENT);
 		m_save.setCallback(onSaveEvent, LV_EVENT_CLICKED, this);
@@ -193,6 +205,7 @@ namespace UI
 		Comm::DUET.SetHostname(lv_textarea_get_text(view->m_hostname));
 		Comm::DUET.SetPassword(lv_textarea_get_text(view->m_password));
 		Comm::DUET.SetPollInterval(atoi(lv_textarea_get_text(view->m_pollInterval)));
+		StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)atoi(lv_textarea_get_text(view->m_infoTimeout)));
 	}
 
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)

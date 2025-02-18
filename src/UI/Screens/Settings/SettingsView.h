@@ -37,6 +37,7 @@ namespace UI
 		lv_obj_t* m_hostname;
 		lv_obj_t* m_password;
 		lv_obj_t* m_pollInterval;
+		lv_obj_t* m_infoTimeout;
 		Button m_save;
 	};
 
