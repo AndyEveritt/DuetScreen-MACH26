@@ -14,6 +14,7 @@ namespace UI
 		// Actions
 		void setFolder(const char* folder);
 		void itemClicked(const size_t index);
+		void startPrint();
 		void requestFiles();
 		bool back();
 
@@ -23,5 +24,6 @@ namespace UI
 		void onActivate() override;
 
 		std::string m_currentFolder;
+		std::string m_gcodePath; // path to gcode file to print
 	};
 } // namespace UI

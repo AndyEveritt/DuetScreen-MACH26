@@ -8,7 +8,7 @@
 
 namespace UI
 {
-	FileItem::FileItem(const size_t index, FileView* view, lv_obj_t* parent, layout_t layout)
+	FileView::FileItem::FileItem(const size_t index, FileView* view, lv_obj_t* parent, layout_t layout)
 		: BaseView(utils::format("file_item_%u", index), parent, layout)
 		, m_index(index)
 		, m_list(view)
@@ -41,31 +41,31 @@ namespace UI
 		lv_obj_set_style_bg_color(getCont(), lv_color_hex(0xcb7912), LV_STATE_CHECKED);
 	}
 
-	void FileItem::setLabel(const char* name)
+	void FileView::FileItem::setLabel(const char* name)
 	{
 		Lock lock;
 		lv_label_set_text(m_label, name);
 	}
 
-	void FileItem::setDate(const char* date)
+	void FileView::FileItem::setDate(const char* date)
 	{
 		Lock lock;
 		lv_label_set_text(m_date, date);
 	}
 
-	void FileItem::setSize(const char* size)
+	void FileView::FileItem::setSize(const char* size)
 	{
 		Lock lock;
 		lv_label_set_text(m_size, size);
 	}
 
-	void FileItem::setThumbnail(lv_img_dsc_t* thumbnail)
+	void FileView::FileItem::setThumbnail(lv_img_dsc_t* thumbnail)
 	{
 		Lock lock;
 		lv_image_set_src(m_thumbnail, thumbnail);
 	}
 
-	void FileItem::setType(const bool isFolder)
+	void FileView::FileItem::setType(const bool isFolder)
 	{
 		Lock lock;
 		m_isFolder = isFolder;
@@ -73,25 +73,25 @@ namespace UI
 		lv_obj_set_state(getCont(), LV_STATE_CHECKED, isFolder);
 	}
 
-	const char* FileItem::getLabel() const
+	const char* FileView::FileItem::getLabel() const
 	{
 		Lock lock;
 		return lv_label_get_text(m_label);
 	}
 
-	const char* FileItem::getDate() const
+	const char* FileView::FileItem::getDate() const
 	{
 		Lock lock;
 		return lv_label_get_text(m_date);
 	}
 
-	const char* FileItem::getSize() const
+	const char* FileView::FileItem::getSize() const
 	{
 		Lock lock;
 		return lv_label_get_text(m_size);
 	}
 
-	void FileItem::onClick(lv_event_t* e)
+	void FileView::FileItem::onClick(lv_event_t* e)
 	{
 		FileItem* item = static_cast<FileItem*>(lv_event_get_user_data(e));
 		item->getList()->onItemClicked(item->m_index, item->m_isFolder);
@@ -144,6 +144,10 @@ namespace UI
 		lv_obj_set_style_max_height(m_startPrint.getCont(), LV_PCT(70), 0);
 		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
 		m_startPrint.setTitle(_("file_start_print_title"));
+		m_startPrint.setOkCallback([this]() { m_presenter.startPrint(); });
+
+		// Callbacks
+		m_refresh.setCallback(onRefreshClicked, LV_EVENT_CLICKED, this);
 	}
 
 	void FileView::setFileCount(const size_t count)
@@ -167,7 +171,7 @@ namespace UI
 		}
 	}
 
-	std::shared_ptr<FileItem> FileView::getFileItem(size_t index) const
+	std::shared_ptr<FileView::FileItem> FileView::getFileItem(size_t index) const
 	{
 		if (index < m_fileItems.size())
 		{
@@ -192,18 +196,42 @@ namespace UI
 		m_presenter.itemClicked(index);
 	}
 
+	bool FileView::cancelStartPrint()
+	{
+		if (m_startPrint.isVisible())
+		{
+			m_startPrint.cancel();
+			return true;
+		}
+		return false;
+	}
+
 	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size)
 	{
-		m_startPrint.setText(utils::format(_("file_start_print_message"), filename, date, size).c_str());
+		m_startPrint.setText(utils::format(_("file_start_print_message"), filename, date, size));
 		m_startPrint.show();
+	}
+
+	void FileView::onRefreshClicked(lv_event_t* e)
+	{
+		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
+		view->cancelStartPrint();
+		view->m_presenter.requestFiles();
 	}
 
 	bool FileView::back()
 	{
+		if (cancelStartPrint())
+		{
+			return true;
+		}
 		return m_presenter.back();
 	}
 
-	void FileView::onShow() {}
+	void FileView::onShow()
+	{
+		cancelStartPrint();
+	}
 
 	void FileView::onHide() {}
 } // namespace UI

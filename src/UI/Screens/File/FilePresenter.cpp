@@ -16,22 +16,30 @@ namespace UI
 	void FilePresenter::itemClicked(const size_t index)
 	{
 		ModelLock lock;
-		auto file = OM::FileSystem::GetItem(index);
-		if (file == nullptr)
+		auto item = OM::FileSystem::GetItem(index);
+
+		m_view->cancelStartPrint();
+		if (item == nullptr)
 		{
 			warn("item %u is null", index);
 			return;
 		}
 
-		if (file->GetType() == OM::FileSystem::FileSystemItemType::folder)
+		if (item->GetType() == OM::FileSystem::FileSystemItemType::folder)
 		{
-			setFolder(file->GetPath().c_str());
+			setFolder(item->GetPath().c_str());
 			requestFiles();
 			return;
 		}
 
 		// File
-		m_view->confirmStartPrint()
+		m_gcodePath = item->GetPath();
+		m_view->confirmStartPrint(item->GetName().c_str(), item->GetDate().c_str(), item->GetReadableSize().c_str());
+	}
+
+	void FilePresenter::startPrint()
+	{
+		OM::FileSystem::StartPrint(m_gcodePath);
 	}
 
 	void FilePresenter::requestFiles()
@@ -50,7 +58,7 @@ namespace UI
 					{
 						continue;
 					}
-					OM::FileSystem::FileSystemItem* file = OM::FileSystem::GetItem(i);
+					auto file = OM::FileSystem::GetItem(i);
 					if (file == nullptr)
 					{
 						continue;

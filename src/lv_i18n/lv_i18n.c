@@ -98,6 +98,8 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"msgbox_warning_int_range", "Value must be between %d and %d"},
     {"msgbox_warning_float_range", "Value must be between %f and %f"},
     {"msgbox_warning_text_length", "Input must be between %d and %d characters"},
+    {"file_start_print_title", "Start Print"},
+    {"file_start_print_message", "File: %s\nDate: %s\nSize: %s"},
     {NULL, NULL} // End mark
 };
 

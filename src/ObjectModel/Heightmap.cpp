@@ -423,7 +423,7 @@ namespace OM
 
 	std::vector<FileSystem::FileSystemItem*> GetHeightmapFiles()
 	{
-		std::vector<FileSystem::FileSystemItem*> files = FileSystem::GetItems();
+		const std::vector<FileSystem::FileSystemItem*>& files = FileSystem::GetItems();
 		std::vector<FileSystem::FileSystemItem*> csvFiles;
 
 		for (FileSystem::FileSystemItem* item : files)

@@ -231,7 +231,6 @@ namespace OM::FileSystem
 
 	void RequestFiles(const std::string& path, std::function<void()> callback, bool runEveryTime)
 	{
-		ClearFileSystem();
 		s_usbFolder = false;
 		s_inMacroFolder = path.find("macro") != std::string::npos;
 		s_callback.cb = callback;
