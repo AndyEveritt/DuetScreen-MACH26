@@ -33,6 +33,33 @@ namespace OM
 		slot = MAX_SLOTS;
 	}
 
+	int32_t BedOrChamber::GetCurrentTemp()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return 0;
+
+		return pheater->current;
+	}
+
+	int32_t BedOrChamber::GetCurrentTarget()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return 0;
+
+		switch (pheater->status)
+		{
+		case Heat::HeaterStatus::active:
+		case Heat::HeaterStatus::tuning:
+			return pheater->activeTemp;
+		case Heat::HeaterStatus::standby:
+			return pheater->standbyTemp;
+		default:
+			return 0;
+		}
+	}
+
 	int32_t BedOrChamber::GetActiveTemp()
 	{
 		Heat::Heater* pheater = Heat::GetHeater(heater);

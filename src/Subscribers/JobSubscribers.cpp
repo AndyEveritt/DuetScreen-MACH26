@@ -7,14 +7,14 @@
 bool JobSubscribers::currentFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetJobName(data);
-	Model::get().newJobFileName();
+	Model::get().newJobFileName(data);
 	return true;
 }
 
 bool JobSubscribers::lastFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetLastJobName(data);
-	Model::get().newJobLastFileName();
+	Model::get().newJobLastFileName(data);
 	return true;
 }
 
@@ -25,16 +25,51 @@ bool JobSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data,
 	return true;
 }
 
+bool JobSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	uint32_t val = 0;
+	Comm::GetUnsignedInteger(data, val);
+	OM::SetSimulatedTime(val);
+	Model::get().newJobPrintTime();
+	return true;
+}
+
 bool JobSubscribers::duration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::SetPrintDuration(data);
 	Model::get().newJobDuration();
+	if (OM::GetSimulatedTime() > 0)
+	{
+		OM::SetPrintRemaining(OM::RemainingTimeType::SIMULATED,
+							  OM::GetSimulatedTime() - (OM::GetPrintDuration() - OM::GetWarmUpDuration()));
+		Model::get().newJobTimeLeft();
+	}
 	return true;
 }
 
-bool JobSubscribers::slicerTimeLeft(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+bool JobSubscribers::filamentTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	OM::SetPrintRemaining(OM::RemainingTimeType::slicer, data);
+	uint32_t val = 0;
+	Comm::GetUnsignedInteger(data, val);
+	OM::SetPrintRemaining(OM::RemainingTimeType::FILAMENT, val);
+	Model::get().newJobTimeLeft();
+	return true;
+}
+
+bool JobSubscribers::fileTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	uint32_t val = 0;
+	Comm::GetUnsignedInteger(data, val);
+	OM::SetPrintRemaining(OM::RemainingTimeType::FILE, val);
+	Model::get().newJobTimeLeft();
+	return true;
+}
+
+bool JobSubscribers::slicerTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	uint32_t val = 0;
+	Comm::GetUnsignedInteger(data, val);
+	OM::SetPrintRemaining(OM::RemainingTimeType::SLICER, val);
 	Model::get().newJobTimeLeft();
 	return true;
 }

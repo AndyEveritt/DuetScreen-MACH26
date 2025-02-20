@@ -37,10 +37,11 @@ namespace OM
 
 	enum class RemainingTimeType
 	{
-		filament = 0,
-		file,
-		slicer,
-		simulated
+		FILAMENT = 0,
+		FILE,
+		SLICER,
+		SIMULATED,
+		AUTO
 	};
 
 	void SetJobName(const char* name);
@@ -51,6 +52,9 @@ namespace OM
 
 	void SetPrintTime(const uint32_t printTime);
 	const uint32_t GetPrintTime();
+
+	void SetSimulatedTime(const uint32_t simulatedTime);
+	const uint32_t GetSimulatedTime();
 
 	void SetPrintDuration(const uint32_t printDuration);
 	const uint32_t GetPrintDuration();

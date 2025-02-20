@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
@@ -146,7 +147,12 @@ namespace UI
 		lv_obj_set_style_max_height(m_startPrint.getCont(), LV_PCT(70), 0);
 		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
 		m_startPrint.setTitle(_("file_start_print_title"));
-		m_startPrint.setOkCallback([this]() { m_presenter.startPrint(); });
+		m_startPrint.setOkCallback(
+			[this]()
+			{
+				m_presenter.startPrint();
+				openScreen(&HomeView::instance().getStatusView());
+			});
 
 		// Callbacks
 		m_refresh.setCallback(onRefreshClicked, LV_EVENT_CLICKED, this);
@@ -191,6 +197,7 @@ namespace UI
 
 	void FileView::onItemClicked(size_t index, bool isFolder)
 	{
+		Lock lock;
 		if (index >= m_fileItems.size())
 		{
 			return;

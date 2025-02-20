@@ -88,7 +88,11 @@ namespace UI
 				});
 			msgBox->okVisible(true);
 			msgBox->progressVisible(true);
-			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+			if (m_view->getMessageBoxCount() == 1)
+			{
+				msgBox->show();
+				msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+			}
 			msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
 			if (m_view->m_alert.isVisible())
 			{
@@ -102,9 +106,11 @@ namespace UI
 		Lock lock;
 		MessageBox& msgBox = m_view->m_alert;
 
+		// First clear any existing alert state
+		m_alertAxes.clear();
+
 		if (alert.mode == OM::Alert::Mode::None)
 		{
-			m_alertAxes.clear();
 			if (msgBox.isVisible())
 			{
 				msgBox.close();
@@ -113,18 +119,20 @@ namespace UI
 			return;
 		}
 
+		// Configure the message box before showing it to prevent partial updates
 		msgBox.clear();
-
 		msgBox.setTitle(alert.title.c_str());
 		msgBox.setText(alert.text.c_str());
 		msgBox.setChoiceCount(alert.choices_count);
+
 		for (size_t i = 0; i < alert.choices_count; i++)
 		{
 			msgBox.setChoice(i, alert.choices[i].c_str());
 		}
-		msgBox.setMode(alert.mode);
-		msgBox.show();
 
+		msgBox.setMode(alert.mode);
+
+		// Set up close callback first to ensure proper cleanup
 		msgBox.setCloseCallback(
 			[this]()
 			{
@@ -133,12 +141,15 @@ namespace UI
 				if (m_view->getMessageBoxCount() > 0)
 				{
 					auto msgBox = m_view->getMessageBox(0);
-					msgBox->show();
-					msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+					if (msgBox) // Add null check
+					{
+						msgBox->show();
+						msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+					}
 				}
 			});
 
-		// callbacks
+		// Handle mode-specific setup
 		uint32_t seq = alert.seq;
 		switch (alert.mode)
 		{
@@ -155,6 +166,7 @@ namespace UI
 					Comm::DUET.SendGcodef("M292 S%u", seq);
 				});
 			break;
+
 		case OM::Alert::Mode::Choices:
 			msgBox.setChoiceCallback(
 				[seq](size_t index)
@@ -163,7 +175,10 @@ namespace UI
 					Comm::DUET.SendGcodef("M292 R{%u} S%u", index, seq);
 				});
 			break;
+
 		case OM::Alert::Mode::NumberInt:
+		{
+			Lock lock; // Additional lock for keyboard setup
 			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
 			msgBox.setKeyboard(m_view->m_kb);
 
@@ -188,28 +203,35 @@ namespace UI
 			}
 
 			msgBox.setInput(alert.limits.numberInt.valueDefault);
+
+			// Store validation limits locally
+			const int32_t min = alert.limits.numberInt.min;
+			const int32_t max = alert.limits.numberInt.max;
 			msgBox.setInputValidationCallback(
-				[alert, &msgBox](const char* text) -> bool
+				[min, max, &msgBox](const char* text) -> bool
 				{
 					Lock lock;
 					int value = std::atoi(text);
-					bool valid = value >= alert.limits.numberInt.min && value <= alert.limits.numberInt.max;
+					bool valid = value >= min && value <= max;
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningTextf(
-							_("msgbox_warning_int_range"), alert.limits.numberInt.min, alert.limits.numberInt.max);
+						msgBox.setWarningTextf(_("msgbox_warning_int_range"), min, max);
 					}
 					return valid;
 				});
+
 			msgBox.setOkCallback(
 				[seq, &msgBox]()
 				{
+					Lock lock;
 					int value = std::atoi(msgBox.getInput());
 					Comm::DUET.SendGcodef("M292 R{%d} S%u", value, seq);
 				});
+			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
+		}
+		break;
 
-			break;
 		case OM::Alert::Mode::NumberFloat:
 			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
 			msgBox.setKeyboard(m_view->m_kb);
@@ -294,6 +316,7 @@ namespace UI
 			break;
 		}
 
+		// Handle axis controls after mode setup
 		if (alert.flags.IsBitSet(OM::Alert::GotControls))
 		{
 			size_t count = 0;
@@ -312,11 +335,8 @@ namespace UI
 			}
 			msgBox.axisJogVisible(true);
 		}
-		else
-		{
-			m_alertAxes.clear();
-		}
 
+		// Set up cancel button if needed
 		if (alert.cancelButton)
 		{
 			msgBox.cancelVisible(true);
@@ -328,11 +348,15 @@ namespace UI
 				});
 		}
 
+		// Configure timeout and progress last
 		msgBox.setTimeout(alert.timeout);
 		msgBox.progressVisible(alert.timeout > 0);
 		if (alert.timeout > 0)
 		{
 			msgBox.setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
 		}
+
+		// Finally show the message box
+		msgBox.show();
 	}
 } // namespace UI

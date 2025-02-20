@@ -100,6 +100,21 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"msgbox_warning_text_length", "Input must be between %d and %d characters"},
     {"file_start_print_title", "Start Print"},
     {"file_start_print_message", "File: %s\nDate: %s\nSize: %s"},
+    {"pause", "Pause"},
+    {"resume", "Resume"},
+    {"cancel", "Cancel"},
+    {"print_cancel_title", "Cancel Print"},
+    {"print_cancel_message", "Are you sure you want to cancel the print?"},
+    {"status_tool_temp", "%.1f/%d"},
+    {"status_bed_temp", "%.1f/%d"},
+    {"status_speed", "%.1f/%.1f mm/s"},
+    {"status_flow_rate", "%.1f mm/s^3"},
+    {"status_flow_multiplier", "%u%%"},
+    {"status_speed_multiplier", "%u%%"},
+    {"status_elapsed_time", "Elapsed: %s"},
+    {"status_remaining_time", "Remaining: %s"},
+    {"status_layer", "Z: %.2f/%.2f mm"},
+    {"status_fan_speed", "%u%%"},
     {NULL, NULL} // End mark
 };
 

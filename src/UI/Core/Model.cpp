@@ -3,6 +3,8 @@
 #include "Comm/Usb.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "ObjectModel/Job.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "Presenter.h"
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
@@ -190,8 +192,8 @@ void Model::refresh()
 		presenter->newFanData();
 		presenter->newFileData();
 		presenter->newHeaterData();
-		presenter->newJobFileName();
-		presenter->newJobLastFileName();
+		presenter->newJobFileName(OM::GetJobName().c_str());
+		presenter->newJobLastFileName(OM::GetLastJobName().c_str());
 		presenter->newJobPrintTime();
 		presenter->newJobDuration();
 		presenter->newJobTimeLeft();
@@ -213,7 +215,7 @@ void Model::refresh()
 		presenter->newSpindleData();
 		presenter->newNetworkName();
 		presenter->newIpAddress();
-		presenter->newStatus();
+		presenter->newStatus(OM::GetStatus());
 		presenter->newCurrentTool();
 		presenter->newMessageBoxData(OM::g_currentAlert);
 		presenter->newTime();
@@ -235,8 +237,16 @@ MODEL_NOTIFICATION(newHeaterData)
 
 /* Job methods */
 
-MODEL_NOTIFICATION(newJobFileName)
-MODEL_NOTIFICATION(newJobLastFileName)
+void Model::newJobFileName(const char* filename)
+{
+	NOTIFY_ALL_PRESENTERS(newJobFileName, filename);
+}
+
+void Model::newJobLastFileName(const char* filename)
+{
+	NOTIFY_ALL_PRESENTERS(newJobLastFileName, filename);
+}
+
 MODEL_NOTIFICATION(newJobPrintTime)
 MODEL_NOTIFICATION(newJobDuration)
 MODEL_NOTIFICATION(newJobTimeLeft)
@@ -277,7 +287,12 @@ MODEL_NOTIFICATION(newSpindleData)
 
 MODEL_NOTIFICATION(newNetworkName)
 MODEL_NOTIFICATION(newIpAddress)
-MODEL_NOTIFICATION(newStatus)
+
+void Model::newStatus(const OM::PrinterStatus status)
+{
+	NOTIFY_ALL_PRESENTERS(newStatus, status);
+}
+
 MODEL_NOTIFICATION(newCurrentTool)
 
 void Model::newMessageBoxData(const OM::Alert& alert)

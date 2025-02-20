@@ -54,6 +54,8 @@ namespace OM
 		uint8_t slot;
 
 		void Reset();
+		int32_t GetCurrentTemp();
+		int32_t GetCurrentTarget();
 		int32_t GetActiveTemp();
 		int32_t GetStandbyTemp();
 		float GetMin();

@@ -59,9 +59,11 @@ namespace UI
 		, m_extrudeView(m_mainWindow)
 		, m_fileView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
+		, m_statusView(m_mainWindow)
 		, m_alert("home_alert", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_kb(lv_keyboard_create(m_mainWindow))
 	{
+		Lock lock;
 		info("Creating UI");
 		addHomeScreen(this);
 
@@ -104,12 +106,14 @@ namespace UI
 		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_moveView);
 		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_extrudeView);
 		m_filesWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_fileView);
+		m_statusWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_statusView);
 		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
 
 		m_consoleView.hide();
 		m_moveView.hide();
 		m_extrudeView.hide();
 		m_fileView.hide();
+		m_statusView.hide();
 		m_settingsView.hide();
 
 		// Message Box
@@ -147,6 +151,7 @@ namespace UI
 
 	void HomeView::onWindowSelectEvent(lv_event_t* e)
 	{
+		Lock lock;
 		BaseView* view = (BaseView*)lv_event_get_user_data(e);
 
 		// Don't close the home screen as it contains the side bar an the screen that is being opened
@@ -155,16 +160,13 @@ namespace UI
 
 	std::shared_ptr<MessageBox> HomeView::createMessageBox()
 	{
-		if (m_messageBoxList.size() > 0)
-		{
-			m_messageBoxList.front()->setTimeout(0);
-		}
-		m_messageBoxList.emplace_front(
+		m_messageBoxList.emplace_back(
 			std::make_shared<MessageBox>("home_message_box", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
-		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.front();
+		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.back();
 		lv_obj_add_flag(msgBox->getCont(), LV_OBJ_FLAG_FLOATING);
 		lv_obj_align(msgBox->getCont(), LV_ALIGN_TOP_MID, 0, 2);
 		lv_obj_set_style_max_height(msgBox->getCont(), LV_PCT(70), LV_PART_MAIN);
+		msgBox->hide();
 		return msgBox;
 	}
 

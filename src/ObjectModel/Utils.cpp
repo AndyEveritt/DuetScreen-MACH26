@@ -146,7 +146,7 @@ namespace OM
 			printf("    name: %s", GetJobName().c_str());
 			printf("    Print time: %u", GetPrintTime());
 			printf("    Print duration: %u", GetPrintDuration());
-			printf("    Print remaining (slicer): %u", GetPrintRemaining(OM::RemainingTimeType::slicer));
+			printf("    Print remaining (slicer): %u", GetPrintRemaining(OM::RemainingTimeType::SLICER));
 			printf("    Current object: %d", GetCurrentJobObjectIndex());
 			printf("    Objects:");
 			for (size_t i = 0; i < MAX_TRACKED_OBJECTS; ++i)

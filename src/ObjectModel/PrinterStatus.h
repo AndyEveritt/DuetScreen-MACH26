@@ -8,6 +8,8 @@
 #ifndef SRC_OBJECTMODEL_PRINTERSTATUS_HPP_
 #define SRC_OBJECTMODEL_PRINTERSTATUS_HPP_
 
+#include <string>
+
 namespace OM
 {
 	// Status that the printer may report to us.

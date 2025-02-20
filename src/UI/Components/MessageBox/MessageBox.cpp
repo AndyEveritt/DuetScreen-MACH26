@@ -622,7 +622,10 @@ namespace UI
 			{
 				Lock lock;
 				MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
-				msgBox->cancel();
+				if (msgBox->getCont())
+				{
+					msgBox->cancel();
+				}
 			},
 			timeout,
 			this);

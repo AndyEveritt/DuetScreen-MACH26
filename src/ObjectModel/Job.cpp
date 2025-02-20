@@ -33,6 +33,7 @@ namespace OM
 	static std::string s_jobName;
 	static std::string s_lastJobName;
 	static uint32_t s_printTime = 0;
+	static uint32_t s_simulatedTime = 0;
 	static uint32_t s_printDuration = 0;
 	static uint32_t s_warmUpDuration = 0;
 	static struct
@@ -44,6 +45,7 @@ namespace OM
 	} s_printRemaining;
 
 	ATTR_SETTR_GETTR(PrintTime, uint32_t, s_printTime)
+	ATTR_SETTR_GETTR(SimulatedTime, uint32_t, s_simulatedTime)
 	ATTR_SETTR_GETTR(PrintDuration, uint32_t, s_printDuration)
 	ATTR_SETTR_GETTR(WarmUpDuration, uint32_t, s_warmUpDuration)
 
@@ -51,16 +53,16 @@ namespace OM
 	{
 		switch (type)
 		{
-		case RemainingTimeType::filament:
+		case RemainingTimeType::FILAMENT:
 			s_printRemaining.filament = printRemaining;
 			break;
-		case RemainingTimeType::file:
+		case RemainingTimeType::FILE:
 			s_printRemaining.file = printRemaining;
 			break;
-		case RemainingTimeType::slicer:
+		case RemainingTimeType::SLICER:
 			s_printRemaining.slicer = printRemaining;
 			break;
-		case RemainingTimeType::simulated:
+		case RemainingTimeType::SIMULATED:
 			s_printRemaining.simulated = printRemaining;
 			break;
 		default:
@@ -73,14 +75,28 @@ namespace OM
 	{
 		switch (type)
 		{
-		case RemainingTimeType::filament:
+		case RemainingTimeType::FILAMENT:
 			return s_printRemaining.filament;
-		case RemainingTimeType::file:
+		case RemainingTimeType::FILE:
 			return s_printRemaining.file;
-		case RemainingTimeType::slicer:
+		case RemainingTimeType::SLICER:
 			return s_printRemaining.slicer;
-		case RemainingTimeType::simulated:
+		case RemainingTimeType::SIMULATED:
 			return s_printRemaining.simulated;
+		case RemainingTimeType::AUTO:
+			if (s_printRemaining.simulated > 0)
+			{
+				return s_printRemaining.simulated;
+			}
+			if (s_printRemaining.slicer > 0)
+			{
+				return s_printRemaining.slicer;
+			}
+			if (s_printRemaining.filament > 0)
+			{
+				return s_printRemaining.filament;
+			}
+			return s_printRemaining.file;
 		default:
 			warn("Unknown RemainingTimeType %d\n", (int)type);
 			return 0;

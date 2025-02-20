@@ -27,7 +27,10 @@ bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, cons
 {
 	OM::PrinterStatus prevStatus = OM::GetStatus();
 	OM::SetStatus(data);
-	Model::get().newStatus();
+	if (prevStatus != OM::GetStatus())
+	{
+		Model::get().newStatus(OM::GetStatus());
+	}
 	return true;
 }
 

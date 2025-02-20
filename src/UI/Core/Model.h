@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjectModel/Alert.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "Subscribers/FanSubscribers.h"
 #include "Subscribers/FileSubscribers.h"
 #include "Subscribers/HeatSubscribers.h"
@@ -71,8 +72,8 @@ class Model
 
 	/* Job methods */
 
-	void newJobFileName();
-	void newJobLastFileName();
+	void newJobFileName(const char* filename);
+	void newJobLastFileName(const char* filename);
 	void newJobPrintTime();
 	void newJobDuration();
 	void newJobTimeLeft();
@@ -110,7 +111,7 @@ class Model
 
 	void newNetworkName();
 	void newIpAddress();
-	void newStatus();
+	void newStatus(const OM::PrinterStatus status);
 	void newCurrentTool();
 	void newMessageBoxData(const OM::Alert& alert);
 	void newTime();

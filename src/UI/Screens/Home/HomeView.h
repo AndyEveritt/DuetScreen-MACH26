@@ -14,6 +14,7 @@
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
+#include "UI/Screens/Status/StatusView.h"
 #include "lvgl/lvgl.h"
 #include <list>
 #include <memory>
@@ -42,6 +43,14 @@ namespace UI
 		// Keyboard
 		void showKeyboard(bool show);
 		lv_obj_t* getKeyboard() const { return m_kb; }
+
+		// Sub-views
+		ConsoleView& getConsoleView() { return m_consoleView; }
+		MoveView& getMoveView() { return m_moveView; }
+		ExtrudeView& getExtrudeView() { return m_extrudeView; }
+		FileView& getFileView() { return m_fileView; }
+		SettingsView& getSettingsView() { return m_settingsView; }
+		StatusView& getStatusView() { return m_statusView; }
 
 	  private:
 		HomeView();
@@ -72,6 +81,7 @@ namespace UI
 		ExtrudeView m_extrudeView;
 		FileView m_fileView;
 		SettingsView m_settingsView;
+		StatusView m_statusView;
 
 		// Message box
 		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;

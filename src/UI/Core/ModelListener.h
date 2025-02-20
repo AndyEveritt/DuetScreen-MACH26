@@ -31,8 +31,8 @@ namespace UI
 		virtual void newHeaterData() {}
 
 		/* Job methods */
-		virtual void newJobFileName() {}
-		virtual void newJobLastFileName() {}
+		virtual void newJobFileName(const char* filename) {}
+		virtual void newJobLastFileName(const char* filename) {}
 		virtual void newJobPrintTime() {}
 		virtual void newJobDuration() {}
 		virtual void newJobTimeLeft() {}
@@ -65,7 +65,7 @@ namespace UI
 		/* State methods */
 		virtual void newNetworkName() {}
 		virtual void newIpAddress() {}
-		virtual void newStatus() {}
+		virtual void newStatus(const OM::PrinterStatus status) {}
 		virtual void newCurrentTool() {}
 		virtual void newMessageBoxData(const OM::Alert& alert) {}
 		virtual void newTime() {}

@@ -56,7 +56,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_input, 1);
 		lv_textarea_set_one_line(m_input, true);
 		lv_textarea_set_placeholder_text(m_input, _("console_input_placeholder"));
-		lv_textarea_set_align(m_input, LV_TEXT_ALIGN_LEFT);
+		lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_LEFT, 0);
 		lv_obj_align(m_clear.getCont(), LV_ALIGN_RIGHT_MID, 0, 0);
 		lv_obj_set_height(m_input, LV_SIZE_CONTENT);
 		lv_obj_set_size(m_clear.getCont(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
