@@ -6,7 +6,7 @@
 #include "UI/Components/List.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/NumberPad/NumberPad.h"
-#include "UI/Components/SideBar.h"
+#include "UI/Components/SideBar/SideBar.h"
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"

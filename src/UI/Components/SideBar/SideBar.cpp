@@ -16,7 +16,7 @@ namespace UI
 	static constexpr lv_coord_t height = 100; // %
 
 	SideBar::SideBar(const std::string& name, lv_obj_t* parent)
-		: BaseView(name, parent, layout_t{0, 0, width, height})
+		: View(name, parent, layout_t{0, 0, width, height})
 		, m_backBtn("Back", getCont(), _("back"), layout_t{0, 0, 100, 0})
 		, m_homeBtn("Home", getCont(), _("home"), layout_t{0, 20, 100, 0})
 		, m_macrosBtn("Macros", getCont(), _("macros"), layout_t{0, 40, 100, 0})
@@ -73,5 +73,7 @@ namespace UI
 	void SideBar::eStopBtnEvent(lv_event_t* e)
 	{
 		info("E-Stop button pressed");
+		SideBar* sb = static_cast<SideBar*>(lv_event_get_user_data(e));
+		sb->m_presenter.eStop();
 	}
 } // namespace UI

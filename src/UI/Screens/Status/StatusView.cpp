@@ -69,7 +69,7 @@ namespace UI
 		// Print Info Container
 		lv_obj_set_layout(m_printInfoCont, LV_LAYOUT_GRID);
 		lv_obj_set_grid_align(m_printInfoCont, LV_GRID_ALIGN_SPACE_AROUND, LV_GRID_ALIGN_SPACE_AROUND);
-		static int32_t printInfoColDsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
+		static int32_t printInfoColDsc[] = {LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_FR(3), LV_GRID_TEMPLATE_LAST};
 		static int32_t printInfoRowDsc[] = {
 			LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		lv_obj_set_grid_dsc_array(m_printInfoCont, printInfoColDsc, printInfoRowDsc);

@@ -7,12 +7,13 @@
 
 #pragma once
 
+#include "SideBarPresenter.h"
 #include "UI/Components/Button.h"
 #include "UI/Core/View.h"
 
 namespace UI
 {
-	class SideBar : public BaseView
+	class SideBar : public View<SideBarPresenter>
 	{
 	  public:
 		SideBar(const std::string& name, lv_obj_t* parent);

@@ -5,8 +5,16 @@
             "template_path": ".vscode/templates/cpp_header.h"
         },
         {
-            "label": "C++ Header - UI",
-            "template_path": ".vscode/templates/cpp_header_ui.h"
+            "label": "C++ Header - Base View",
+            "template_path": ".vscode/templates/cpp_header_base_view.h"
+        },
+        {
+            "label": "C++ Header - View",
+            "template_path": ".vscode/templates/cpp_header_view.h"
+        },
+        {
+            "label": "C++ Header - Presenter",
+            "template_path": ".vscode/templates/cpp_header_presenter.h"
         }
     ],
     ".*\\.cpp": [
