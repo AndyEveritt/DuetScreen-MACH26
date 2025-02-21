@@ -8,9 +8,23 @@
 
 namespace UI
 {
+	const char* FilePresenter::getBaseFolderPath() const
+	{
+		switch (m_baseFolder)
+		{
+		case BaseFolder::GCODES:
+			return DEFAULT_GCODES_PATH;
+		case BaseFolder::MACROS:
+			return DEFAULT_MACROS_PATH;
+		default:
+			return nullptr;
+		}
+	}
+
 	void FilePresenter::setFolder(const char* folder)
 	{
 		m_currentFolder = folder;
+		requestFiles();
 	}
 
 	void FilePresenter::itemClicked(const size_t index)
@@ -28,18 +42,27 @@ namespace UI
 		if (item->GetType() == OM::FileSystem::FileSystemItemType::folder)
 		{
 			setFolder(item->GetPath().c_str());
-			requestFiles();
 			return;
 		}
 
 		// File
 		m_gcodePath = item->GetPath();
+		if (m_gcodePath.starts_with(DEFAULT_MACROS_PATH))
+		{
+			m_view->confirmRunMacro(item->GetName().c_str());
+			return;
+		}
 		m_view->confirmStartPrint(item->GetName().c_str(), item->GetDate().c_str(), item->GetReadableSize().c_str());
 	}
 
 	void FilePresenter::startPrint()
 	{
 		OM::FileSystem::StartPrint(m_gcodePath);
+	}
+
+	void FilePresenter::runMacro()
+	{
+		OM::FileSystem::RunMacro(m_gcodePath);
 	}
 
 	void FilePresenter::requestFiles()
@@ -74,7 +97,11 @@ namespace UI
 
 	bool FilePresenter::back()
 	{
-		if (m_currentFolder == "0:/gcodes")
+		if (m_currentFolder == DEFAULT_GCODES_PATH)
+		{
+			return false; // Already at the root folder
+		}
+		if (m_currentFolder == DEFAULT_MACROS_PATH)
 		{
 			return false; // Already at the root folder
 		}
@@ -82,8 +109,7 @@ namespace UI
 		size_t pos = m_currentFolder.find_last_of('/');
 		if (pos != std::string::npos)
 		{
-			m_currentFolder = m_currentFolder.substr(0, pos);
-			requestFiles();
+			setFolder(m_currentFolder.substr(0, pos).c_str());
 			return true;
 		}
 		return false;
@@ -91,7 +117,6 @@ namespace UI
 
 	void FilePresenter::onActivate()
 	{
-		m_currentFolder = "0:/gcodes";
-		requestFiles();
+		setFolder(getBaseFolderPath());
 	}
 } // namespace UI

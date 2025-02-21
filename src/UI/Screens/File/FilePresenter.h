@@ -10,11 +10,19 @@ namespace UI
 	{
 	  public:
 		using Presenter::Presenter;
+		enum class BaseFolder
+		{
+			GCODES,
+			MACROS
+		};
 
 		// Actions
+		void setBaseFolder(BaseFolder folder) { m_baseFolder = folder; }
+		const char* getBaseFolderPath() const;
 		void setFolder(const char* folder);
 		void itemClicked(const size_t index);
 		void startPrint();
+		void runMacro();
 		void requestFiles();
 		bool back();
 
@@ -23,6 +31,7 @@ namespace UI
 	  private:
 		void onActivate() override;
 
+		BaseFolder m_baseFolder = BaseFolder::GCODES;
 		std::string m_currentFolder;
 		std::string m_gcodePath; // path to gcode file to print
 	};

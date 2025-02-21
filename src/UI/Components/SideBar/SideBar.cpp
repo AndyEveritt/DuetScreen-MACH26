@@ -8,6 +8,8 @@
 #include "SideBar.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Screens/File/FileView.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -22,7 +24,6 @@ namespace UI
 		, m_macrosBtn("Macros", getCont(), _("macros"), layout_t{0, 40, 100, 0})
 		, m_consoleBtn("Console", getCont(), _("console"), layout_t{0, 60, 100, 0})
 		, m_eStopBtn("E-Stop", getCont(), _("estop"), layout_t{0, 80, 100, 2 * 0})
-		, m_consoleView(nullptr)
 	{
 		verbose("Creating SideBar");
 
@@ -56,18 +57,15 @@ namespace UI
 	void SideBar::macrosBtnEvent(lv_event_t* e)
 	{
 		info("Macros button pressed");
+		FileView& fileView = HomeView::instance().getFileView();
+		fileView.getPresenter().setBaseFolder(FilePresenter::BaseFolder::MACROS);
+		openScreen(&fileView, true);
 	}
 
 	void SideBar::consoleBtnEvent(lv_event_t* e)
 	{
 		info("Console button pressed");
-		SideBar* sb = static_cast<SideBar*>(lv_event_get_user_data(e));
-		if (sb->m_consoleView == nullptr)
-		{
-			error("Console view not set");
-			return;
-		}
-		openScreen(sb->m_consoleView, true);
+		openScreen(&HomeView::instance().getConsoleView(), true);
 	}
 
 	void SideBar::eStopBtnEvent(lv_event_t* e)

@@ -146,13 +146,6 @@ namespace UI
 		lv_obj_set_align(m_startPrint.getCont(), LV_ALIGN_CENTER);
 		lv_obj_set_style_max_height(m_startPrint.getCont(), LV_PCT(70), 0);
 		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
-		m_startPrint.setTitle(_("file_start_print_title"));
-		m_startPrint.setOkCallback(
-			[this]()
-			{
-				m_presenter.startPrint();
-				openScreen(&HomeView::instance().getStatusView());
-			});
 
 		// Callbacks
 		m_refresh.setCallback(onRefreshClicked, LV_EVENT_CLICKED, this);
@@ -220,7 +213,23 @@ namespace UI
 	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size)
 	{
 		Lock lock;
+		m_startPrint.setTitle(_("file_start_print_title"));
 		m_startPrint.setText(utils::format(_("file_start_print_message"), filename, date, size));
+		m_startPrint.setOkCallback(
+			[this]()
+			{
+				m_presenter.startPrint();
+				openScreen(&HomeView::instance().getStatusView());
+			});
+		m_startPrint.show();
+	}
+
+	void FileView::confirmRunMacro(const char* filename)
+	{
+		Lock lock;
+		m_startPrint.setTitle(_("file_run_macro_title"));
+		m_startPrint.setText(utils::format(_("file_run_macro_message"), filename));
+		m_startPrint.setOkCallback([this]() { m_presenter.runMacro(); });
 		m_startPrint.show();
 	}
 

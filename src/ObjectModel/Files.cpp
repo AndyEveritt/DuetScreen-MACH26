@@ -12,6 +12,7 @@
 #include "Comm/Communication.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
+#include "ObjectModel/Job.h"
 #include <algorithm>
 
 namespace OM::FileSystem
@@ -334,6 +335,11 @@ namespace OM::FileSystem
 	void StopPrint()
 	{
 		Comm::DUET.SendGcode("M0\n");
+	}
+
+	void PrintAgain()
+	{
+		Comm::DUET.SendGcodef("M23 \"%s\"\nM24", OM::GetLastJobName().c_str());
 	}
 
 	void ClearFileSystem()

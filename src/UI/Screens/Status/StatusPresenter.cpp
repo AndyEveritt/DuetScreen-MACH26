@@ -3,6 +3,7 @@
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Fan.h"
+#include "ObjectModel/Files.h"
 #include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Tool.h"
@@ -13,22 +14,22 @@ namespace UI
 {
 	void StatusPresenter::pausePrint()
 	{
-		Comm::DUET.SendGcode("M25"); // Pause print
+		OM::FileSystem::PausePrint(); // Pause print
 	}
 
 	void StatusPresenter::resumePrint()
 	{
-		Comm::DUET.SendGcode("M24"); // Resume print
+		OM::FileSystem::ResumePrint(); // Resume print
 	}
 
 	void StatusPresenter::printAgain()
 	{
-		Comm::DUET.SendGcodef("M23 \"%s\"\nM24", OM::GetLastJobName().c_str()); // Print again
+		OM::FileSystem::PrintAgain(); // Print again
 	}
 
 	void StatusPresenter::cancelPrint()
 	{
-		Comm::DUET.SendGcode("M0 H1"); // Stop print and turn off heaters
+		OM::FileSystem::StopPrint(); // Stop print and turn off heaters
 		closeScreen(m_view);
 	}
 

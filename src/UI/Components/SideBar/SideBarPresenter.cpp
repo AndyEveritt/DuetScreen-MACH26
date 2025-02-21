@@ -18,7 +18,6 @@ namespace UI
 							 "\xF0"
 							 "\x0F");
 		warn("Emergency Stop sent to Duet");
-		std::this_thread::sleep_for(std::chrono::seconds(1));
 		Comm::DUET.SendGcode("M999");
 		warn("Restart sent to Duet");
 	}

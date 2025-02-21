@@ -60,7 +60,7 @@ endif()
 
 file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
      ${LIBRARIES_DIR}/Duet3D/**.cpp)
-# file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/**.c ${SRC_DIR}/Comm/**.cpp)
+file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/**.c ${SRC_DIR}/Comm/**.cpp)
 file(GLOB_RECURSE HW_SOURCES ${SRC_DIR}/Hardware/**.c
      ${SRC_DIR}/Hardware/**.cpp)
 list(REMOVE_ITEM HW_SOURCES ${SRC_DIR}/Hardware/Usb.cpp)
@@ -78,25 +78,12 @@ file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/utils/**.c ${SRC_DIR}/utils/**.cpp)
 list(
   APPEND
   MAIN_SOURCES
-  ${SRC_DIR}/main.cpp
-  ${SRC_DIR}/lv_i18n/lv_i18n.c
-  ${SRC_DIR}/mouse_cursor_icon.c
-  ${SRC_DIR}/Debug.cpp
-  ${SRC_DIR}/DebugCommands.cpp
-  ${SRC_DIR}/Comm/Commands.cpp
-  ${SRC_DIR}/Comm/Communication.cpp
-  ${SRC_DIR}/Comm/JsonDecoder.cpp
-  ${SRC_DIR}/Comm/Usb.cpp
-  ${DUET_LIB_SOURCES}
-  ${COMM_SOURCES}
-  ${HW_SOURCES}
-  ${OM_SOURCES}
-  ${SUBSCRIBER_SOURCES}
-  ${UI_SOURCES}
-  ${UTILS_SOURCES})
+  ${DUET_LIB_SOURCES})
 
 add_executable(DuetScreen ${MAIN_SOURCES})
 target_include_directories(DuetScreen PUBLIC ${SRC_DIR})
+
+add_subdirectory(src)
 
 # Include libusb headers
 target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})

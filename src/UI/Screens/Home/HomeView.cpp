@@ -99,13 +99,18 @@ namespace UI
 		lv_obj_set_flex_flow(m_windowSelect, LV_FLEX_FLOW_ROW_WRAP);
 		lv_obj_set_flex_align(m_windowSelect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		// Sidebar
-		m_sideBar.setConsoleView(&m_consoleView);
-
 		// Window select buttons
 		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_moveView);
 		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_extrudeView);
-		m_filesWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_fileView);
+		m_filesWindow.setCallback(
+			[](lv_event_t* e)
+			{
+				FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
+				view->getPresenter().setBaseFolder(FilePresenter::BaseFolder::GCODES);
+				openScreen(view, false);
+			},
+			LV_EVENT_CLICKED,
+			&m_fileView);
 		m_statusWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_statusView);
 		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
 

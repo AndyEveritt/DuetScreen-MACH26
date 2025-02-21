@@ -18,6 +18,8 @@ constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in mil
 constexpr size_t MODEL_TICK_HZ = 1000 / MODEL_TICK_INTERVAL;
 
 /* Duet */
+constexpr const char* DEFAULT_GCODES_PATH = "0:/gcodes";
+constexpr const char* DEFAULT_MACROS_PATH = "0:/macros";
 constexpr uint32_t DEFAULT_PRINTER_POLL_INTERVAL = 500;
 constexpr uint32_t MIN_PRINTER_POLL_INTERVAL = 100;
 constexpr uint32_t PRINTER_REQUEST_TIMEOUT = 5000;

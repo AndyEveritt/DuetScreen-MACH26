@@ -105,6 +105,7 @@ namespace OM::FileSystem
 	void ResumePrint();
 	void PausePrint();
 	void StopPrint();
+	void PrintAgain();
 	void ClearFileSystem();
 
 	std::string GetFileExtension(const std::string& fileName);

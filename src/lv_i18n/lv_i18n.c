@@ -109,12 +109,14 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"status_bed_temp", "%.1f/%d"},
     {"status_speed", "%.1f/%.1f mm/s"},
     {"status_flow_rate", "%.1f mm/s^3"},
-    {"status_flow_multiplier", "%u%%"},
-    {"status_speed_multiplier", "%u%%"},
+    {"status_flow_multiplier", "Flow: %u%%"},
+    {"status_speed_multiplier", "Speed: %u%%"},
     {"status_elapsed_time", "Elapsed: %s"},
     {"status_remaining_time", "Remaining: %s"},
     {"status_layer", "Z: %.2f/%.2f mm"},
     {"status_fan_speed", "%u%%"},
+    {"file_run_macro_title", "Run Macro"},
+    {"file_run_macro_message", "Do you want to run %s?"},
     {NULL, NULL} // End mark
 };
 
