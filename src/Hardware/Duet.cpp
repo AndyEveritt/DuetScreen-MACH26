@@ -197,6 +197,8 @@ namespace Comm
 		PrepareRequest(*req, path, queryParameters);
 		dbg("Get (async): \"%s\", sessionKey=%u", req->url.c_str(), m_sessionKey);
 
+		// `sendAsync()` requires the client to still be alive later and does appear to be thread safe using a single
+		// client
 		m_cli.sendAsync(req,
 						[req, callback](const HttpResponsePtr& resp)
 						{
@@ -237,7 +239,9 @@ namespace Comm
 		HttpRequest req;
 		PrepareRequest(req, path, queryParameters);
 		dbg("\"%s\", sessionKey=%u", req.url.c_str(), m_sessionKey);
-		m_cli.send(&req, &r);
+
+		hv::HttpClient cli;
+		cli.send(&req, &r); // `send()` is not thread safe if using the same client so client is created on stack
 
 		dbg("Response (async): %s %s", req.url.c_str(), r.status_message());
 

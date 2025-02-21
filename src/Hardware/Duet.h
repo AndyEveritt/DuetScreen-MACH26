@@ -140,7 +140,7 @@ namespace Comm
 		// USB
 
 		// Network
-		hv::HttpClient m_cli;
+		hv::HttpClient m_cli; // for sendAsync() only!
 		uint32_t m_sessionKey;
 		int32_t m_sessionTimeout;
 		bool m_sbcMode;

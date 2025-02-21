@@ -207,33 +207,33 @@ namespace Comm
 		AddQueryParameters(url, queryParameters);
 
 		// get a connection object
-		RestClient::Connection* conn = new RestClient::Connection(url);
+		RestClient::Connection conn = RestClient::Connection(url);
 
 		// set connection timeout in seconds
-		conn->SetTimeout(30);
+		conn.SetTimeout(30);
 
 		// enable following of redirects (default is off)
-		conn->FollowRedirects(true);
+		conn.FollowRedirects(true);
 		// and limit the number of redirects (default is -1, unlimited)
-		conn->FollowRedirects(true, 3);
+		conn.FollowRedirects(true, 3);
 
 		// set headers
 		if (sessionKey > 0)
 		{
-			conn->AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
+			conn.AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
 			dbg("Get: \"%s\", sessionKey=%u", url.c_str(), sessionKey);
 		}
 		else
 		{
 			dbg("Get: \"%s\"", url.c_str());
 		}
-		conn->AppendHeader("Accept", "application/json");
-		conn->AppendHeader("Content-Type", "application/json");
+		conn.AppendHeader("Accept", "application/json");
+		conn.AppendHeader("Content-Type", "application/json");
 
 		// if using a non-standard Certificate Authority (CA) trust file
-		conn->SetCAInfoFilePath(CONFIGMANAGER->getResFilePath("cacert.pem"));
+		conn.SetCAInfoFilePath(CONFIGMANAGER->getResFilePath("cacert.pem"));
 
-		r = conn->get("");
+		r = conn.get("");
 		if (r.code != 200)
 		{
 			error("%s failed, returned response %d", url.c_str(), r.code);
@@ -242,7 +242,6 @@ namespace Comm
 		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
 		verbose("Response body: %s", r.body.c_str());
 
-		delete conn;
 		return true;
 	}
 
@@ -258,25 +257,25 @@ namespace Comm
 		AddQueryParameters(url, queryParameters);
 
 		// get a connection object
-		RestClient::Connection* conn = new RestClient::Connection(url);
+		RestClient::Connection conn = RestClient::Connection(url);
 
 		// set connection timeout in seconds
-		conn->SetTimeout(180);
+		conn.SetTimeout(180);
 
 		// enable following of redirects (default is off)
-		conn->FollowRedirects(true);
+		conn.FollowRedirects(true);
 		// and limit the number of redirects (default is -1, unlimited)
-		conn->FollowRedirects(true, 3);
+		conn.FollowRedirects(true, 3);
 
 		// set headers
-		conn->AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
+		conn.AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
 
-		conn->AppendHeader("Content-Type", "text/plain");
+		conn.AppendHeader("Content-Type", "text/plain");
 		// if using a non-standard Certificate Authority (CA) trust file
-		// conn->SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));
+		// conn.SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));
 
 		verbose("Post: \"%s\", data=\"%s\"", url.c_str(), data.substr(0, 50).c_str());
-		r = conn->post("", data);
+		r = conn.post("", data);
 		if (r.code != 200)
 		{
 			error("%s failed, returned response %d %s", url.c_str(), r.code, r.body.c_str());

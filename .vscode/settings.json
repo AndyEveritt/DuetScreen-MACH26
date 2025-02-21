@@ -79,7 +79,8 @@
         "iomanip": "cpp",
         "valarray": "cpp",
         "*.def": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "unordered_set": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.clang_format_fallbackStyle": "",
