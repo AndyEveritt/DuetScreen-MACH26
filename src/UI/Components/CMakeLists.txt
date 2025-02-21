@@ -1,0 +1,12 @@
+target_sources(
+  DuetScreen
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/Button.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Graph/Graph.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/MessageBox/MessageBox.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/NumberPad/NumberPad.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBar.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBarPresenter.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolList.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolListPresenter.cpp
+)

@@ -1,0 +1,6 @@
+target_sources(
+  DuetScreen
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/FilePresenter.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/FileView.cpp
+)

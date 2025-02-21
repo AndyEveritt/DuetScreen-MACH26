@@ -1,0 +1,8 @@
+target_sources(
+  DuetScreen
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/csv.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/NetworkHelper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/StorageHelper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
+)

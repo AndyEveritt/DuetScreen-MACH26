@@ -1,0 +1,4 @@
+add_subdirectory(Components)
+add_subdirectory(Core)
+add_subdirectory(Screens)
+add_subdirectory(Styles)

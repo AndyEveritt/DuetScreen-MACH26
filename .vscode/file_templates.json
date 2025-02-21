@@ -26,5 +26,11 @@
             "label": "C++ Source - UI",
             "template_path": ".vscode/templates/cpp_source_ui.cpp"
         }
+    ],
+    "CMakeLists.txt": [
+        {
+            "label": "CMakeLists",
+            "template_path": ".vscode/templates/cmake_lists.txt"
+        }
     ]
 }
