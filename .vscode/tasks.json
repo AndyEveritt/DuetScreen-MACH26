@@ -79,11 +79,55 @@
 			}
 		},
 		{
+			"label": "Build DuetScreen for Remote",
+			"type": "shell",
+			"command": "make duetscreen-rebuild",
+			"args": [],
+			"options": {
+				"cwd": "${config:buildroot_path}",
+				"env": {
+					"DUETSCREEN_SRC": "${workspaceFolder}",
+					"PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+				}
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"detail": "Builds DuetScreen for remote debugging",
+		},
+		{
+			"label": "Push DuetScreen - SSH",
+			"type": "shell",
+			"options": {
+				"cwd": "${config:buildroot_path}"
+			},
+			"command": "command ssh root@${config:duetscreen_ip} 'start-stop-daemon -K -n DuetScreen';scp output/target/usr/bin/DuetScreen root@${config:duetscreen_ip}:/usr/bin/DuetScreen",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"detail": "Push the DuetScreen binary to the screen and restart the service",
+			"dependsOn": [
+				"Build DuetScreen for Remote"
+			],
+			"runOptions": {
+				"instanceLimit": 1,
+			}
+		},
+		{
 			"label": "Start gdbserver on DuetScreen",
 			"type": "shell",
 			"command": "command ssh root@${config:duetscreen_ip} 'gdbserver :3000 DuetScreen'",
 			"problemMatcher": [],
-			"isBackground": true
-		}
+			"isBackground": true,
+			// "dependsOn": [
+			// 	"Push DuetScreen - SSH"
+			// ],
+		},
 	]
 }

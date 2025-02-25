@@ -1,5 +1,12 @@
 # Development
 
+The following steps are required to setup VSCode as the development environment for the project.
+- Copy `.vscode/settings.json.default` to `.vscode/settings.json`
+- If you want to debug code running on the physical screen then you will need to:
+  - Clone the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) repository.
+  - Build the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) project.
+  - Set the `buildroot_path` and `duetscreen_ip` settings in `.vscode/settings.json` to the correct values.
+
 ## Simulating
 It is possible to simulate the GUI on PC without access to the physical hardware. This can be beneficial for testing and development purposes as it allows for debugging using gdb. 
 
@@ -31,3 +38,9 @@ cmake --preset Simulation
 ```bash
 cmake --build --preset Simulation
 ```
+
+## Debugging
+The program can be debugged using gdb when running as a simulation or on the physical hardware.
+
+VSCode has been configured for both of these scenarios. The following steps are required to setup debugging in VSCode:
+
