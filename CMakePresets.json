@@ -46,7 +46,9 @@
             "cacheVariables": {
                 "PROCESSOR": "T113",
                 "LOG_TIMESTAMPS": "ON",
-                "DEBUG_BORDERS": "ON"
+                "DEBUG_BORDERS": "ON",
+                "CMAKE_C_FLAGS": "-g",
+                "CMAKE_CXX_FLAGS": "-g"
             }
         },
         {

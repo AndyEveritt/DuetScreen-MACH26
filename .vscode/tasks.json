@@ -78,5 +78,12 @@
 				"isDefault": false
 			}
 		},
+		{
+			"label": "Start gdbserver on DuetScreen",
+			"type": "shell",
+			"command": "command ssh root@${config:duetscreen_ip} 'gdbserver :3000 DuetScreen'",
+			"problemMatcher": [],
+			"isBackground": true
+		}
 	]
 }

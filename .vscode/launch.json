@@ -29,14 +29,15 @@
             "name": "Remote Debug DuetScreen",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/DuetScreen",
+            "envFile": "${workspaceFolder}/.vscode/.env",
+            "program": "${config:buildroot_path}/output/build/duetscreen-HEAD/out/build/T113-Debug/DuetScreen",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "CMake: build",
+            "preLaunchTask": "Start gdbserver on DuetScreen",
             "stopAtEntry": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.4.110:2000",
-            "miDebuggerPath": "/usr/bin/gdb",
+            "miDebuggerServerAddress": "${config:duetscreen_ip}:3000",
+            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-buildroot-linux-musleabihf-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -44,7 +45,10 @@
                     "ignoreFailures": true
                 }
             ],
-            "externalConsole": false
+            "externalConsole": false,
+            "sourceFileMap": {
+                "${config:buildroot_path}/output/build/duetscreen-HEAD/src": "${workspaceFolder}/src"
+            }
         }
     ],
 }

@@ -1,0 +1,8 @@
+{
+    "files.associations": {},
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.clang_format_fallbackStyle": "",
+    "smartTemplates.jsonConfigurationFile": ".vscode/file_templates.json",
+    "buildroot_path": "path_to_buildroot-duetscreen_folder",
+    "duetscreen_ip": "ip_address_of_duetscreen"
+}
