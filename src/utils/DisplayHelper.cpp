@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #if T113
+// Defined in buildroot-duetscreen/output/build/linux-.../include/video/sunxi_display2.h
 #  define DISP_LCD_SET_BRIGHTNESS 0x102
 #  define DISP_LCD_GET_BRIGHTNESS 0x103
 #  define DISP_LCD_BACKLIGHT_ENABLE 0x104
@@ -35,11 +36,13 @@ struct BrightnessParam
 DisplayHelper::DisplayHelper(const char* device, unsigned int screen)
 	: m_screen(screen)
 {
+#if T113
 	m_fd = open(device, O_RDWR);
 	if (m_fd < 0)
 	{
 		throw std::runtime_error(std::string("Failed to open device: ") + strerror(errno));
 	}
+#endif
 }
 
 // Destructor: Closes the device.
