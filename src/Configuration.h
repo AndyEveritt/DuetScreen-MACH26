@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+#include <termios.h>
 
 constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
 
@@ -25,6 +26,7 @@ constexpr uint32_t MIN_PRINTER_POLL_INTERVAL = 100;
 constexpr uint32_t PRINTER_REQUEST_TIMEOUT = 5000;
 constexpr int DEFAULT_COMMUNICATION_TYPE = 1;
 constexpr const char* DEFAULT_IP_ADDRESS = "192.168.0.";
+constexpr const int DEFAULT_BAUD_RATE = B115200;
 constexpr size_t MAX_IP_LENGTH = 50;
 constexpr size_t MAX_HOSTNAME_LENGTH = 64;
 constexpr unsigned long long TIME_SYNC_INTERVAL = 10e3; // Interval to resynchronize time with the Duet in milliseconds

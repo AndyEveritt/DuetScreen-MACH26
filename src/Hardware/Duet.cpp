@@ -286,12 +286,12 @@ namespace Comm
 		return true;
 	}
 
-	void Duet::SendGcode(const char* gcode)
+	void Duet::SendGcode(const std::string& gcode)
 	{
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
-			SerialIo::Sendf("%s\n", gcode);
+			SerialIo::Send(gcode);
 			break;
 		case CommunicationType::network:
 		{
@@ -321,7 +321,7 @@ namespace Comm
 				warn("USB device not connected");
 				connectUsbDevice();
 			}
-			usb.send(gcode);
+			usb.send(gcode.c_str());
 			break;
 		}
 		default:

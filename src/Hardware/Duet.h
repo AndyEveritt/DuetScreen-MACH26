@@ -82,7 +82,7 @@ namespace Comm
 		const uint32_t GetPollInterval() const;
 		const uint32_t GetScaledPollInterval() const;
 
-		void SendGcode(const char* gcode);
+		void SendGcode(const std::string& gcode);
 		void SendGcodef(const char* fmt, ...);
 		void RequestReply(HttpResponse& r);
 		void ProcessReply(HttpResponse& r);
