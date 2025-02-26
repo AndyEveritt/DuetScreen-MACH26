@@ -14,16 +14,18 @@
 #include "Comm/JsonDecoder.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include <array>
 #include <string>
 
 namespace SerialIo
 {
-	constexpr size_t UART_DATA_BUF_SIZE = 32768; // 32KB
+	constexpr size_t UART_DATA_BUF_SIZE = 32 * 1024; // 32KB
 
 	static std::unique_ptr<UartController> s_uart;
-
-	static unsigned char s_buffer[UART_DATA_BUF_SIZE];
+	static std::array<unsigned char, UART_DATA_BUF_SIZE> s_buffer;
 	static size_t s_bufferLen = 0;
+
+	static void processData(const uint8_t* data, size_t len);
 
 	bool Init(const char* device, speed_t baudRate)
 	{
@@ -31,46 +33,13 @@ namespace SerialIo
 		info("Initializing simulated UART on device: %s", device);
 #endif
 		s_uart = std::make_unique<UartController>();
+
 		if (!s_uart->setBaudRate(baudRate))
 		{
 			error("Failed to set baud rate");
 			return false;
 		}
-		s_uart->setReceiveCallback(
-			[](const uint8_t* data, size_t length)
-			{
-				info("Received %.*s", (int)length, data);
-
-				if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::uart)
-				{
-					s_bufferLen = 0;
-					return;
-				}
-
-				if (s_bufferLen + length <= UART_DATA_BUF_SIZE)
-				{
-					memcpy(s_buffer + s_bufferLen - length, data, length);
-					s_bufferLen += length;
-				}
-				else
-				{
-					error("Buffer overflow");
-					memset(s_buffer, 0, UART_DATA_BUF_SIZE);
-					s_bufferLen = 0;
-					Comm::Reconnect();
-					return;
-				}
-
-				if (s_buffer[s_bufferLen - 1] == '\n')
-				{
-					static Comm::JsonDecoder decoder;
-					decoder.CheckInput(s_buffer, s_bufferLen);
-					memset(s_buffer, 0, UART_DATA_BUF_SIZE);
-					s_bufferLen = 0;
-				}
-
-				return;
-			});
+		s_uart->setReceiveCallback(processData);
 
 		return s_uart->open(device);
 	}
@@ -121,6 +90,39 @@ namespace SerialIo
 		if (s_uart)
 		{
 			s_uart->setReceiveCallback(callback);
+		}
+	}
+
+	static void processData(const uint8_t* data, size_t len)
+	{
+		verbose("Received %.*s", (int)len, data);
+
+		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::uart)
+		{
+			s_bufferLen = 0;
+			return;
+		}
+
+		if (s_bufferLen + len <= UART_DATA_BUF_SIZE)
+		{
+			std::copy(data, data + len, s_buffer.data() + s_bufferLen);
+			s_bufferLen += len;
+		}
+		else
+		{
+			error("Buffer overflow");
+			s_buffer.fill(0);
+			s_bufferLen = 0;
+			Comm::Reconnect();
+			return;
+		}
+
+		if (s_buffer[s_bufferLen - 1] == '\n')
+		{
+			static Comm::JsonDecoder decoder;
+			decoder.CheckInput(s_buffer.data(), s_bufferLen);
+			s_buffer.fill(0);
+			s_bufferLen = 0;
 		}
 	}
 } // namespace SerialIo

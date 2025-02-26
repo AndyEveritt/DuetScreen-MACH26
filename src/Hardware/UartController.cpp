@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 UartController::UartController()
-	: fd(-1)
+	: m_fd(-1)
 	, m_running(false)
 	, m_bufferSize(DEFAULT_BUFFER_SIZE)
 	, m_currentBaudRate(B115200)
@@ -22,9 +22,9 @@ bool UartController::open(const std::string& device)
 {
 #if SIMULATION
 	info("Simulating UART open on device: %s", device.c_str());
-	fd = 1; // Simulate success
-	running = true;
-	readThread = std::thread(&UartController::readLoop, this);
+	m_fd = 1; // Simulate success
+	m_running = true;
+	m_readThread = std::thread(&UartController::readLoop, this);
 	return true;
 #else
 	if (isOpen())
@@ -32,8 +32,8 @@ bool UartController::open(const std::string& device)
 		close();
 	}
 
-	fd = ::open(device.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
-	if (fd < 0)
+	m_fd = ::open(device.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+	if (m_fd < 0)
 	{
 		error("Failed to open UART device %s", device.c_str());
 		return false;
@@ -41,8 +41,8 @@ bool UartController::open(const std::string& device)
 
 	if (!configurePort())
 	{
-		::close(fd);
-		fd = -1;
+		::close(m_fd);
+		m_fd = -1;
 		return false;
 	}
 
@@ -64,9 +64,9 @@ void UartController::close()
 			m_readThread.join();
 		}
 #if !SIMULATION
-		::close(fd);
+		::close(m_fd);
 #endif
-		fd = -1;
+		m_fd = -1;
 	}
 }
 
@@ -77,7 +77,7 @@ bool UartController::configurePort()
 #else
 	struct termios tty;
 
-	if (tcgetattr(fd, &tty) != 0)
+	if (tcgetattr(m_fd, &tty) != 0)
 	{
 		error("Error from tcgetattr");
 		return false;
@@ -111,7 +111,7 @@ bool UartController::configurePort()
 	tty.c_cc[VMIN] = 1;
 	tty.c_cc[VTIME] = 1;
 
-	if (tcsetattr(fd, TCSANOW, &tty) != 0)
+	if (tcsetattr(m_fd, TCSANOW, &tty) != 0)
 	{
 		error("Error from tcsetattr");
 		return false;
@@ -137,7 +137,7 @@ bool UartController::setParameters(int dataBits, int stopBits, char parity)
 	return true;
 #else
 	struct termios tty;
-	if (tcgetattr(fd, &tty) != 0)
+	if (tcgetattr(m_fd, &tty) != 0)
 	{
 		return false;
 	}
@@ -175,7 +175,7 @@ bool UartController::setParameters(int dataBits, int stopBits, char parity)
 		}
 	}
 
-	return tcsetattr(fd, TCSANOW, &tty) == 0;
+	return tcsetattr(m_fd, TCSANOW, &tty) == 0;
 #endif
 }
 
@@ -198,7 +198,7 @@ bool UartController::send(const uint8_t* data, size_t length)
 	size_t written = 0;
 	while (written < length)
 	{
-		ssize_t ret = write(fd, data + written, length - written);
+		ssize_t ret = write(m_fd, data + written, length - written);
 		if (ret < 0)
 		{
 			if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -220,20 +220,38 @@ void UartController::readLoop()
 #if SIMULATION
 	// Simulate periodic data reception
 	std::vector<uint8_t> buffer(m_bufferSize);
-	while (running)
+	while (m_running)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds1(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		if (m_receiveCallback)
+		{
+			const char* testData = "simulated data\n";
+			size_t len = strlen(testData);
+			memcpy(buffer.data(), testData, len);
+			m_receiveCallback(buffer.data(), len);
+		}
 	}
 #else
 	std::vector<uint8_t> buffer(m_bufferSize);
 
 	while (m_running)
 	{
-		ssize_t bytesRead = read(fd, buffer.data(), buffer.size());
+		ssize_t bytesRead = read(m_fd, buffer.data(), buffer.size());
 
-		if (bytesRead > 0 && m_receiveCallback)
+		if (bytesRead > 0)
 		{
-			m_receiveCallback(buffer.data(), bytesRead);
+			// Make a local copy of callback with lock protection
+			DataCallback callback;
+			{
+				std::lock_guard<std::mutex> lock(m_callbackMutex);
+				callback = m_receiveCallback;
+			}
+
+			// Only call if we have a valid callback
+			if (callback)
+			{
+				callback(buffer.data(), bytesRead);
+			}
 		}
 		else if (bytesRead < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 		{
