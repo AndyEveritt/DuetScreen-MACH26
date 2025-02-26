@@ -345,6 +345,5 @@ namespace Comm
 		system("mkdir /tmp/heightmaps");
 		SortFieldTable();
 		usbInit();
-		SerialIo::Init("/dev/ttyS5", DEFAULT_BAUD_RATE);
 	}
 } // namespace Comm

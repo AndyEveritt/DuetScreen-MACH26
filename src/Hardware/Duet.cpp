@@ -803,7 +803,8 @@ namespace Comm
 		case CommunicationType::uart:
 		{
 			// TODO open UART connection
-			info("Opening UART %s at %u", "", m_baudrate.rate);
+			info("Opening UART %s at %u", DEFAULT_UART_PORT, m_baudrate.rate);
+			SerialIo::Init(DEFAULT_UART_PORT, m_baudrate.internal);
 			return true;
 		}
 		case CommunicationType::network:
@@ -877,7 +878,7 @@ namespace Comm
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
-			// TODO close UART connection
+			SerialIo::Shutdown();
 			break;
 		case CommunicationType::network:
 		{

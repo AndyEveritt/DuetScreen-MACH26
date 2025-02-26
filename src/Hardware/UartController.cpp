@@ -32,6 +32,8 @@ bool UartController::open(const std::string& device)
 		close();
 	}
 
+	info("Opening UART device %s", device.c_str());
+
 	m_fd = ::open(device.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
 	if (m_fd < 0)
 	{
@@ -58,6 +60,7 @@ void UartController::close()
 {
 	if (isOpen())
 	{
+		info("Closing UART device");
 		m_running = false;
 		if (m_readThread.joinable())
 		{
