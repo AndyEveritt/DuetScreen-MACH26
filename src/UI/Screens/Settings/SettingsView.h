@@ -154,7 +154,7 @@ namespace UI
 		BaseView* m_currentSubView;
 
 		lv_obj_t* m_keyboard;
-		int32_t m_layoutColDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(4), LV_GRID_TEMPLATE_LAST};
+		int32_t m_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_TEMPLATE_LAST};
 		int32_t m_layoutRowDsc[3] = {LV_GRID_FR(2), 0, LV_GRID_TEMPLATE_LAST};
 	};
 } // namespace UI
