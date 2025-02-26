@@ -134,9 +134,6 @@ namespace Comm
 		long long m_lastRequestTime;
 		float m_pollIntervalScale;
 
-		// UART
-		baudrate_t m_baudrate;
-
 		// USB
 
 		// Network

@@ -305,7 +305,7 @@ namespace Comm
 				{
 					if (r->status_code != HTTP_STATUS_OK)
 					{
-						printf("HTTP error %d: Failed to send gcode: %s", r->status_code, gcode);
+						printf("HTTP error %d: Failed to send gcode: %s", r->status_code, gcode.c_str());
 						return false;
 					}
 					return true;
@@ -803,8 +803,8 @@ namespace Comm
 		case CommunicationType::uart:
 		{
 			// TODO open UART connection
-			info("Opening UART %s at %u", DEFAULT_UART_PORT, m_baudrate.rate);
-			SerialIo::Init(DEFAULT_UART_PORT, m_baudrate.internal);
+			info("Opening UART %s at %u", DEFAULT_UART_PORT, GetBaudRate().rate);
+			SerialIo::Init(DEFAULT_UART_PORT, GetBaudRate().internal);
 			return true;
 		}
 		case CommunicationType::network:
@@ -940,14 +940,22 @@ namespace Comm
 	void Duet::SetBaudRate(const baudrate_t& baudRate)
 	{
 		info("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
-		// TODO Store baud rate
-		m_baudrate = baudRate;
-		// TODO set baud rate
+		SerialIo::SetBaudRate(baudRate.internal);
+		m_config.baudRate = baudRate.internal;
+		saveConfig();
 	}
 
 	const baudrate_t& Duet::GetBaudRate() const
 	{
-		return m_baudrate;
+		for (auto& baud : baudRates)
+		{
+			if (baud.internal == m_config.baudRate)
+			{
+				return baud;
+			}
+		}
+		warn("Baud rate %u not found", m_config.baudRate);
+		return baudRates[0];
 	}
 
 	void Duet::SetIPAddress(const std::string& ipAddress)
