@@ -45,6 +45,7 @@ class UartController
 	DataCallback m_receiveCallback;
 	size_t m_bufferSize;
 	speed_t m_currentBaudRate;
+	std::mutex m_writeMutex;
 	std::mutex m_callbackMutex;
 
 	void readLoop();

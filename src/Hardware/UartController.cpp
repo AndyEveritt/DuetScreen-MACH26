@@ -198,6 +198,7 @@ bool UartController::send(const uint8_t* data, size_t length)
 		return false;
 	}
 
+	std::lock_guard<std::mutex> lock(m_writeMutex);
 	size_t written = 0;
 	while (written < length)
 	{
@@ -260,6 +261,12 @@ void UartController::readLoop()
 		{
 			error("UART read error: %s", strerror(errno));
 			break;
+		}
+
+		// Add a small delay to avoid consuming CPU when no data is available
+		if (bytesRead <= 0)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 	}
 #endif
