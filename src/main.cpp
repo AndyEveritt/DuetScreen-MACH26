@@ -12,6 +12,7 @@
 #include "Comm/Usb.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "Hardware/Reset.h"
 #include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "glob.h"

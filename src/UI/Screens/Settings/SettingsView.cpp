@@ -1,6 +1,7 @@
 #include "SettingsView.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "Hardware/Reset.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
@@ -400,6 +401,9 @@ namespace UI
 		, m_debugBorders(lv_checkbox_create(getCont()))
 #endif
 		, m_enableSSH(lv_checkbox_create(getCont()))
+		, m_restart("developer_settings_restart", getCont(), _("settings_restart"))
+		, m_eraseAndRestart("developer_settings_erase_and_restart", getCont(), _("settings_erase_and_restart"))
+		, m_reboot("developer_settings_reboot", getCont(), _("settings_reboot"))
 	{
 		Lock lock;
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
@@ -431,6 +435,14 @@ namespace UI
 		lv_checkbox_set_text(m_enableSSH, _("settings_enable_ssh"));
 		lv_obj_set_state(m_enableSSH, LV_STATE_CHECKED, StorageHelper::getData<bool>(ID_SSH_ENABLED, false));
 		lv_obj_add_event_cb(m_enableSSH, onEnableSSHEvent, LV_EVENT_VALUE_CHANGED, this);
+
+		// Power
+		lv_obj_set_height(m_restart.getCont(), LV_SIZE_CONTENT);
+		lv_obj_set_height(m_eraseAndRestart.getCont(), LV_SIZE_CONTENT);
+		lv_obj_set_height(m_reboot.getCont(), LV_SIZE_CONTENT);
+		m_restart.setCallback(onRestartEvent, LV_EVENT_CLICKED, this);
+		m_eraseAndRestart.setCallback(onEraseAndRestartEvent, LV_EVENT_CLICKED, this);
+		m_reboot.setCallback(onRebootEvent, LV_EVENT_CLICKED, this);
 	}
 
 	void DeveloperSettingsView::onDebugLevelEvent(lv_event_t* e)
@@ -473,5 +485,23 @@ namespace UI
 				   "mv /etc/init.d/S50dropbear /etc/init.d/50dropbear");
 #endif
 		}
+	}
+
+	void DeveloperSettingsView::onRestartEvent(lv_event_t* e)
+	{
+		Lock lock;
+		Restart();
+	}
+
+	void DeveloperSettingsView::onEraseAndRestartEvent(lv_event_t* e)
+	{
+		Lock lock;
+		EraseAndRestart();
+	}
+
+	void DeveloperSettingsView::onRebootEvent(lv_event_t* e)
+	{
+		Lock lock;
+		Reboot();
 	}
 } // namespace UI

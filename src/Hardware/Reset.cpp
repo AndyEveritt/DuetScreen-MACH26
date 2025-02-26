@@ -8,6 +8,7 @@
 
 #include "Reset.h"
 
+#include <cstdlib>
 #include <sys/reboot.h>
 #include <unistd.h>
 
@@ -17,14 +18,38 @@ extern "C"
 #endif
 
 	/**
-	 * @brief Restart the hardware
+	 * @brief Restart the program
 	 */
-	void Reset() noexcept {}
+	void Restart() noexcept
+	{
+#if !SIMULATION
+		system("/etc/init.d/S20DuetScreen restart");
+#endif
+	}
+
+	/**
+	 * @brief Reboot the hardware
+	 */
+	void Reboot() noexcept
+	{
+#if !SIMULATION
+		reboot(RB_AUTOBOOT);
+#endif
+	}
 
 	/**
 	 * @brief Reset any user customizations and reset the hardware
 	 */
-	void EraseAndReset() noexcept {}
+	void EraseAndRestart() noexcept
+	{
+#if SIMULATION
+		system("rm -rf config.json");
+#else
+	system("rm -rf /etc/duetscreen.json");
+#endif
+
+		Restart();
+	}
 
 #ifdef __cplusplus
 }

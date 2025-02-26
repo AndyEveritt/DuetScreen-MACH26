@@ -354,10 +354,10 @@ namespace Comm
 			switch (controlCommand)
 			{
 			case ControlCommand::eraseAndReset:
-				EraseAndReset(); // Does not return
+				EraseAndRestart(); // Does not return
 				break;
 			case ControlCommand::reset:
-				Reset(); // Does not return
+				Restart(); // Does not return
 				break;
 			default:
 				// Invalid command. Just ignore.

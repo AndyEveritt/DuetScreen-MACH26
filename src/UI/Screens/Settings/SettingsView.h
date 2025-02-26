@@ -83,6 +83,9 @@ namespace UI
 		static void onDebugBordersEvent(lv_event_t* e);
 #endif
 		static void onEnableSSHEvent(lv_event_t* e);
+		static void onRestartEvent(lv_event_t* e);
+		static void onEraseAndRestartEvent(lv_event_t* e);
+		static void onRebootEvent(lv_event_t* e);
 
 		lv_obj_t* m_debugLevelCont;
 		lv_obj_t* m_debugLevelLabel;
@@ -92,6 +95,10 @@ namespace UI
 		lv_obj_t* m_debugBorders;
 #endif
 		lv_obj_t* m_enableSSH;
+
+		Button m_restart;
+		Button m_eraseAndRestart;
+		Button m_reboot;
 	};
 
 	/**

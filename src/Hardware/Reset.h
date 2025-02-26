@@ -14,8 +14,9 @@ extern "C"
 {
 #endif
 
-	void Reset() noexcept;
-	void EraseAndReset() noexcept;
+	void Restart() noexcept;
+	void Reboot() noexcept;
+	void EraseAndRestart() noexcept;
 
 #ifdef __cplusplus
 }
