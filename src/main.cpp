@@ -12,19 +12,19 @@
 #include "Comm/Usb.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "glob.h"
 #include "hv/requests.h"
 #include "lv_i18n/lv_i18n.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/core/lv_global.h"
+#include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
 #include <libusb-1.0/libusb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#include "UI/Screens/Home/HomeView.h"
 
 #if LV_USE_OS == LV_OS_PTHREAD
 #  include <pthread.h>
@@ -93,6 +93,7 @@ int main(int argc, char** argv)
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
 	lv_display_t* display = hal_init(1024, 600);
 
+	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u));
 	UI::Styles::instance().init(display);
 
 #if LV_USE_OS == LV_OS_PTHREAD

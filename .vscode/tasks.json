@@ -129,5 +129,11 @@
 			// 	"Push DuetScreen - SSH"
 			// ],
 		},
+		{
+			"label": "Upload config.json",
+			"type": "shell",
+			"command": "scp config.json root@${config:duetscreen_ip}:/etc/duetscreen.json",
+			"problemMatcher": [],
+		},
 	]
 }

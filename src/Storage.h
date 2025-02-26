@@ -27,8 +27,8 @@ constexpr const char* ID_INFO_TIMEOUT = "info_timeout";
 constexpr const char* ID_UPGRADE_FILE_LAST_MODIFIED = "upgrade_file_last_modified";
 constexpr const char* ID_BUZZER_ENABLED = "buzzer_enabled";
 
-constexpr const char* ID_SYS_LANG_CODE_KEY = "sys_lang_code_key";
-constexpr const char* ID_SYS_BRIGHTNESS_KEY = "sys_brightness_key";
+constexpr const char* ID_SYS_LANG_CODE_KEY = "sys:lang_code";
+constexpr const char* ID_SYS_BRIGHTNESS_KEY = "sys:brightness";
 
 constexpr const char* ID_WEBCAM_URL = "webcam:url_%d";
 constexpr const char* ID_ACTIVE_WEBCAM_INDEX = "webcam:active_index";

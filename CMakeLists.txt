@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(LIBRARIES_DIR ${PROJECT_SOURCE_DIR}/libraries)
 # set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
@@ -60,20 +61,6 @@ endif()
 
 file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
      ${LIBRARIES_DIR}/Duet3D/**.cpp)
-file(GLOB_RECURSE COMM_SOURCES ${SRC_DIR}/Comm/**.c ${SRC_DIR}/Comm/**.cpp)
-file(GLOB_RECURSE HW_SOURCES ${SRC_DIR}/Hardware/**.c
-     ${SRC_DIR}/Hardware/**.cpp)
-list(REMOVE_ITEM HW_SOURCES ${SRC_DIR}/Hardware/Usb.cpp)
-
-file(GLOB_RECURSE OM_SOURCES ${SRC_DIR}/ObjectModel/**.c
-     ${SRC_DIR}/ObjectModel/**.cpp)
-# list(REMOVE_ITEM OM_SOURCES ${SRC_DIR}/ObjectModel/Job.cpp)
-
-file(GLOB_RECURSE SUBSCRIBER_SOURCES ${SRC_DIR}/Subscribers/**.c
-     ${SRC_DIR}/Subscribers/**.cpp)
-file(GLOB_RECURSE UI_SOURCES ${SRC_DIR}/UI/**.c ${SRC_DIR}/UI/**.cpp)
-
-file(GLOB_RECURSE UTILS_SOURCES ${SRC_DIR}/utils/**.c ${SRC_DIR}/utils/**.cpp)
 
 list(
   APPEND
@@ -81,7 +68,8 @@ list(
   ${DUET_LIB_SOURCES})
 
 add_executable(DuetScreen ${MAIN_SOURCES})
-target_include_directories(DuetScreen PUBLIC ${SRC_DIR})
+target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
+target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
 
 add_subdirectory(src)
 
