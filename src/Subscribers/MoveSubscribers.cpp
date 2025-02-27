@@ -5,6 +5,16 @@
 #include "ObjectModel/Heightmap.h"
 #include "UI/Core/Model.h"
 
+bool MoveSubscribers::acceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	if (!OM::Move::SetAcceleration(indices[0], data))
+	{
+		error("Failed to set axis[%d]->babystep = %f", indices[0], data);
+		return false;
+	}
+	return true;
+}
+
 bool MoveSubscribers::babyStep(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	if (!OM::Move::SetBabystepOffset(indices[0], data))
@@ -176,6 +186,13 @@ bool MoveSubscribers::workplaceNumber(Comm::JsonDecoder* decoder, const uint32_t
 		return false;
 	}
 	Model::get().newWorkplaceNumber();
+	return true;
+}
+
+bool MoveSubscribers::printingAcceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	OM::Move::SetPrintingAcceleration(data);
+	Model::get().newPrintingAcceleration(OM::Move::GetPrintingAcceleration());
 	return true;
 }
 

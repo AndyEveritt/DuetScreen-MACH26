@@ -7,6 +7,7 @@ class MoveSubscribers : public SubscriberMap
   public:
 	MoveSubscribers()
 	{
+		addSubscriber("move:axes^:acceleration", acceleration);
 		addSubscriber("move:axes^:babystep", babyStep);
 		addSubscriber("move:axes^:homed", axisHomed);
 		addSubscriber("move:axes^:letter", axisLetter);
@@ -25,6 +26,7 @@ class MoveSubscribers : public SubscriberMap
 		addSubscriber("move:kinematics:name", kinematicsName);
 		addSubscriber("move:speedFactor", speedFactor);
 		addSubscriber("move:workplaceNumber", workplaceNumber);
+		addSubscriber("move:printingAcceleration", printingAcceleration);
 		addSubscriber("move:currentMove:requestedSpeed", currentMoveRequestedSpeed);
 		addSubscriber("move:currentMove:topSpeed", currentMoveTopSpeed);
 		addSubscriber("move:currentMove:extrusionRate", currentMoveExtrusionRate);
@@ -35,6 +37,7 @@ class MoveSubscribers : public SubscriberMap
 	}
 
   private:
+	static bool acceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool babyStep(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool axisHomed(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[]);
 	static bool axisLetter(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
@@ -53,6 +56,7 @@ class MoveSubscribers : public SubscriberMap
 	static bool kinematicsName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool speedFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool workplaceNumber(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
+	static bool printingAcceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool currentMoveRequestedSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool currentMoveTopSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool currentMoveExtrusionRate(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);

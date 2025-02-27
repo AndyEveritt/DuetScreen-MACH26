@@ -1,9 +1,17 @@
 #include "StatusView.h"
 #include "Debug.h"
+#include "UI/Core/Navigation.h"
 #include "lv_i18n/lv_i18n.h"
 
+/**
+ * @brief
+ */
 namespace UI
 {
+	/**
+	 * @brief
+	 * @param parent
+	 */
 	StatusView::StatusView(lv_obj_t* parent)
 		: View("print_view", parent, layout_t(0, 0, 100, 100))
 		// Create all panels first
@@ -17,22 +25,15 @@ namespace UI
 		// Create all information widgets
 		, m_thumbnail(lv_image_create(m_centerCont))
 		, m_printInfoCont(lv_obj_create(m_centerCont))
-		, m_toolTemp(lv_label_create(m_printInfoCont))
-		, m_bedTemp(lv_label_create(m_printInfoCont))
-		, m_speed(lv_label_create(m_printInfoCont))
-		, m_speedMultiplier(lv_label_create(m_printInfoCont))
-		, m_flowRate(lv_label_create(m_printInfoCont))
-		, m_flowMultiplier(lv_label_create(m_printInfoCont))
-		, m_elapsedTime(lv_label_create(m_printInfoCont))
-		, m_remainingTime(lv_label_create(m_printInfoCont))
-		, m_layer(lv_label_create(m_printInfoCont))
-		, m_fanSpeed(lv_label_create(m_printInfoCont))
+		, m_printInfo(m_printInfoCont)
 		// Create control buttons last
 		, m_pauseBtn("print_pause", m_footer, _("pause"))
 		, m_resumeBtn("print_resume", m_footer, _("resume"))
 		, m_printAgainBtn("print_again", m_footer, _("print_again"))
 		, m_cancelBtn("print_cancel", m_footer, _("cancel"))
+		, m_fineTuneBtn("fine_tune", m_footer, _("fine_tune"))
 		, m_confirmCancel("print_confirm_cancel", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_fineTune(getCont())
 	{
 		Lock lock;
 
@@ -66,33 +67,8 @@ namespace UI
 		lv_obj_set_flex_grow(m_printInfoCont, 1);
 		lv_obj_set_height(m_printInfoCont, LV_PCT(100));
 
-		// Print Info Container
-		lv_obj_set_layout(m_printInfoCont, LV_LAYOUT_GRID);
-		lv_obj_set_grid_align(m_printInfoCont, LV_GRID_ALIGN_SPACE_AROUND, LV_GRID_ALIGN_SPACE_AROUND);
-		static int32_t printInfoColDsc[] = {LV_GRID_FR(2), LV_GRID_FR(3), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
-		static int32_t printInfoRowDsc[] = {
-			LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-		lv_obj_set_grid_dsc_array(m_printInfoCont, printInfoColDsc, printInfoRowDsc);
-		lv_obj_set_grid_cell(m_toolTemp, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_CENTER, 0, 1);
-		lv_obj_set_grid_cell(m_bedTemp, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-		lv_obj_set_grid_cell(m_speedMultiplier, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-		lv_obj_set_grid_cell(m_speed, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-		lv_obj_set_grid_cell(m_flowMultiplier, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_CENTER, 2, 1);
-		lv_obj_set_grid_cell(m_flowRate, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 2, 1);
-		lv_obj_set_grid_cell(m_elapsedTime, LV_GRID_ALIGN_STRETCH, 0, 3, LV_GRID_ALIGN_CENTER, 3, 1);
-		lv_obj_set_grid_cell(m_remainingTime, LV_GRID_ALIGN_STRETCH, 0, 3, LV_GRID_ALIGN_CENTER, 4, 1);
-		lv_obj_set_grid_cell(m_layer, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-		lv_obj_set_grid_cell(m_fanSpeed, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_CENTER, 2, 1);
-
-		for (size_t i = 0; i < lv_obj_get_child_cnt(m_printInfoCont); i++)
-		{
-			lv_obj_t* child = lv_obj_get_child(m_printInfoCont, i);
-			lv_obj_set_align(child, LV_ALIGN_LEFT_MID);
-			lv_obj_set_width(child, LV_PCT(100));
-			lv_obj_set_style_min_height(child, 20, 0);
-			// lv_obj_set_style_text_align(child, LV_TEXT_ALIGN_LEFT, 0);
-			// lv_obj_set_height(child, LV_SIZE_CONTENT);
-		}
+		// Print information
+		lv_obj_set_style_pad_all(m_printInfoCont, 0, 0);
 
 		// Footer
 		lv_obj_set_layout(m_footer, LV_LAYOUT_FLEX);
@@ -121,6 +97,34 @@ namespace UI
 		m_resumeBtn.setCallback(onResumeClicked, LV_EVENT_CLICKED, this);
 		m_printAgainBtn.setCallback(onPrintAgainClicked, LV_EVENT_CLICKED, this);
 		m_cancelBtn.setCallback(onCancelClicked, LV_EVENT_CLICKED, this);
+
+		m_fineTuneBtn.setCallback(
+			[](lv_event_t* e)
+			{
+				Lock lock;
+				StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
+				view->m_fineTune.show();
+			},
+			LV_EVENT_CLICKED,
+			this);
+
+		// Fine tune
+		// Make the fine tune view floating and fullscreen
+		lv_obj_add_flag(m_fineTune.getCont(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_set_size(m_fineTune.getCont(), LV_PCT(100), LV_PCT(100));
+		lv_obj_align(m_fineTune.getCont(), LV_ALIGN_CENTER, 0, 0);
+		m_fineTune.hide(); // Hide initially, will be shown when needed
+	}
+
+	bool StatusView::back()
+	{
+		Lock lock;
+		if (m_fineTune.isVisible())
+		{
+			m_fineTune.hide();
+			return true;
+		}
+		return m_printInfo.back();
 	}
 
 	void StatusView::onPauseClicked(lv_event_t* e)
@@ -177,71 +181,52 @@ namespace UI
 
 	void StatusView::updateToolTemp(float temp, int32_t target)
 	{
-		Lock lock;
-		lv_label_set_text(m_toolTemp, utils::format(_("status_tool_temp"), temp, target).c_str());
+		m_printInfo.updateToolTemp(temp, target);
 	}
 
 	void StatusView::updateBedTemp(float temp, int32_t target)
 	{
-		Lock lock;
-		lv_label_set_text(m_bedTemp, utils::format(_("status_bed_temp"), temp, target).c_str());
+		m_printInfo.updateBedTemp(temp, target);
 	}
 
 	void StatusView::updateExtrusionRate(float feedrate, float volumetric)
 	{
-		Lock lock;
-		lv_label_set_text(m_speed, utils::format(_("status_speed"), feedrate).c_str());
-		lv_label_set_text(m_flowRate, utils::format(_("status_flow_rate"), volumetric).c_str());
+		m_printInfo.updateExtrusionRate(feedrate, volumetric);
 	}
 
 	void StatusView::updateSpeed(float topSpeed, float requestedSpeed)
 	{
-		Lock lock;
-		lv_label_set_text(m_speed, utils::format(_("status_speed"), topSpeed, requestedSpeed).c_str());
+		m_printInfo.updateSpeed(topSpeed, requestedSpeed);
 	}
 
 	void StatusView::updateFlowMultiplier(uint32_t multiplier)
 	{
-		Lock lock;
-		lv_label_set_text(m_flowMultiplier, utils::format(_("status_flow_multiplier"), multiplier).c_str());
+		m_printInfo.updateFlowMultiplier(multiplier);
 	}
 
 	void StatusView::updateSpeedMultiplier(uint32_t multiplier)
 	{
-		Lock lock;
-		lv_label_set_text(m_speedMultiplier, utils::format(_("status_speed_multiplier"), multiplier).c_str());
+		m_printInfo.updateSpeedMultiplier(multiplier);
 	}
 
 	void StatusView::updateElapsedTime(uint32_t elapsed)
 	{
-		Lock lock;
-		int32_t hours = elapsed / 3600;
-		int32_t minutes = (elapsed % 3600) / 60;
-		int32_t seconds = elapsed % 60;
-		std::string elapsedStr = utils::format("%02d:%02d:%02d", hours, minutes, seconds);
-		lv_label_set_text(m_elapsedTime, utils::format(_("status_elapsed_time"), elapsedStr.c_str()).c_str());
+		m_printInfo.updateElapsedTime(elapsed);
 	}
 
 	void StatusView::updateRemainingTime(uint32_t remaining)
 	{
-		Lock lock;
-		int32_t hours = remaining / 3600;
-		int32_t minutes = (remaining % 3600) / 60;
-		int32_t seconds = remaining % 60;
-		std::string remainingStr = utils::format("%02d:%02d:%02d", hours, minutes, seconds);
-		lv_label_set_text(m_remainingTime, utils::format(_("status_remaining_time"), remainingStr.c_str()).c_str());
+		m_printInfo.updateRemainingTime(remaining);
 	}
 
 	void StatusView::updateLayer(float height, float maxHeight)
 	{
-		Lock lock;
-		lv_label_set_text(m_layer, utils::format(_("status_layer"), height, maxHeight).c_str());
+		m_printInfo.updateLayer(height, maxHeight);
 	}
 
 	void StatusView::updateFanSpeed(uint32_t speed)
 	{
-		Lock lock;
-		lv_label_set_text(m_fanSpeed, utils::format(_("status_fan_speed"), speed).c_str());
+		m_printInfo.updateFanSpeed(speed);
 	}
 
 	void StatusView::setThumbnail(lv_img_dsc_t* img)

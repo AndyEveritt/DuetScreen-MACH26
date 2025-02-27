@@ -89,6 +89,7 @@ class Model
 	void newKinematicsName();
 	void newSpeedFactor();
 	void newWorkplaceNumber();
+	void newPrintingAcceleration(const uint32_t& accel);
 	void newCurrentMoveRequestedSpeed();
 	void newCurrentMoveTopSpeed();
 	void newCurrentMoveExtrusionSpeed();

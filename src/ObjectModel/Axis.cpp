@@ -21,6 +21,7 @@ typedef Vector<OM::Move::ExtruderAxis*, MAX_TOTAL_AXES> ExtruderAxisList;
 static AxisList s_axes;
 static ExtruderAxisList s_extruderAxes;
 static uint8_t s_currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
+static uint32_t s_printingAcceleration = 0;
 
 namespace OM::Move
 {
@@ -158,6 +159,7 @@ namespace OM::Move
 	return true;                                                                                                       \
   }
 
+	AXIS_SETTER(SetAcceleration, uint32_t, acceleration);
 	AXIS_SETTER(SetBabystepOffset, float, babystep);
 	// Update the homed status of the specified axis. If the axis is -1 then it
 	// represents the "all homed" status.
@@ -193,6 +195,16 @@ namespace OM::Move
 	const uint8_t GetCurrentWorkplaceNumber()
 	{
 		return s_currentWorkplaceNumber;
+	}
+
+	void SetPrintingAcceleration(uint32_t acceleration)
+	{
+		s_printingAcceleration = acceleration;
+	}
+
+	const uint32_t& GetPrintingAcceleration()
+	{
+		return s_printingAcceleration;
 	}
 
 	void ExtruderAxis::Reset()

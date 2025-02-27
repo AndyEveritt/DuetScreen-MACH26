@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FineTune.h"
+#include "PrintInfo.h"
 #include "StatusPresenter.h"
 #include "UI/Components/Button.h"
 #include "UI/Components/MessageBox/MessageBox.h"
@@ -16,7 +18,7 @@ namespace UI
 			DISABLED,
 			HIDDEN
 		};
-	
+
 		StatusView(lv_obj_t* parent);
 
 		void setFilename(const char* filename);
@@ -38,6 +40,8 @@ namespace UI
 		void setResume(ControlVisibility visibility);
 		void setPrintAgain(ControlVisibility visibility);
 		void setCancel(ControlVisibility visibility);
+
+		virtual bool back() override;
 
 	  private:
 		void onShow() override;
@@ -61,22 +65,17 @@ namespace UI
 		// Print information widgets
 		lv_obj_t* m_thumbnail;
 		lv_obj_t* m_printInfoCont;
-		lv_obj_t* m_toolTemp;
-		lv_obj_t* m_bedTemp;
-		lv_obj_t* m_speed;
-		lv_obj_t* m_speedMultiplier;
-		lv_obj_t* m_flowRate;
-		lv_obj_t* m_flowMultiplier;
-		lv_obj_t* m_elapsedTime;
-		lv_obj_t* m_remainingTime;
-		lv_obj_t* m_layer;
-		lv_obj_t* m_fanSpeed;
+		PrintInfo m_printInfo;
 
 		// Control buttons
 		Button m_pauseBtn;
 		Button m_resumeBtn;
 		Button m_printAgainBtn;
 		Button m_cancelBtn;
+		Button m_fineTuneBtn;
 		MessageBox m_confirmCancel;
+
+		// Fine tune
+		FineTune m_fineTune;
 	};
 } // namespace UI

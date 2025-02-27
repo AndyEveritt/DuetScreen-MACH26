@@ -262,6 +262,12 @@ MODEL_NOTIFICATION(newExtruderData)
 MODEL_NOTIFICATION(newKinematicsName)
 MODEL_NOTIFICATION(newSpeedFactor)
 MODEL_NOTIFICATION(newWorkplaceNumber)
+
+void Model::newPrintingAcceleration(const uint32_t& accel)
+{
+	NOTIFY_ALL_PRESENTERS(newPrintingAcceleration, accel);
+}
+
 MODEL_NOTIFICATION(newCurrentMoveRequestedSpeed)
 MODEL_NOTIFICATION(newCurrentMoveTopSpeed)
 MODEL_NOTIFICATION(newCurrentMoveExtrusionSpeed)

@@ -37,6 +37,7 @@ namespace OM::Move
 		void operator delete(void* p) noexcept { FreelistManager::Release<Axis>(p); }
 
 		uint8_t index;
+		uint32_t acceleration;
 		float babystep;
 		char letter[2];
 		float workplaceOffsets[Workplaces::MaxTotalWorkplaces];
@@ -75,6 +76,7 @@ namespace OM::Move
 	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveAxis(const size_t index, const bool allFollowing);
 
+	bool SetAcceleration(size_t index, uint32_t acceleration);
 	bool SetBabystepOffset(size_t index, float f);
 	bool SetAxisHomedStatus(size_t index, bool homed);
 	bool SetAxisLetter(size_t index, char letter);
@@ -86,6 +88,8 @@ namespace OM::Move
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset);
 	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber);
 	const uint8_t GetCurrentWorkplaceNumber();
+	void SetPrintingAcceleration(uint32_t printingAcceleration);
+	const uint32_t& GetPrintingAcceleration();
 
 	ExtruderAxis* GetExtruderAxis(const size_t index);
 	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot);

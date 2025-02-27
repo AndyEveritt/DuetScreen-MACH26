@@ -47,6 +47,7 @@ namespace UI
 		virtual void newKinematicsName() {}
 		virtual void newSpeedFactor() {}
 		virtual void newWorkplaceNumber() {}
+		virtual void newPrintingAcceleration(const uint32_t& accel) {}
 		virtual void newCurrentMoveRequestedSpeed() {}
 		virtual void newCurrentMoveTopSpeed() {}
 		virtual void newCurrentMoveExtrusionSpeed() {}
