@@ -1,0 +1,160 @@
+/*
+ * Slider.h
+ *
+ *  Created on: 2025-02-27
+ *      Author: Andy Everitt
+ */
+
+#pragma once
+
+#include "UI/Components/Button.h"
+#include "UI/Core/View.h"
+#include <functional>
+
+namespace UI
+{
+	class Slider : public BaseView
+	{
+	  public:
+		Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
+			: BaseView(name, parent, layout)
+			, m_decrement("slider_decrement", getCont(), LV_SYMBOL_MINUS)
+			, m_slider(lv_slider_create(getCont()))
+			, m_increment("slider_increment", getCont(), LV_SYMBOL_PLUS)
+			, m_input(lv_textarea_create(getCont()))
+			, m_incrementValue(1)
+			, m_keyboard(nullptr)
+		{
+			lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
+			lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
+			lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+			lv_obj_set_width(m_decrement.getCont(), LV_SIZE_CONTENT);
+			lv_obj_set_flex_grow(m_slider, 1);
+			lv_obj_set_width(m_increment.getCont(), LV_SIZE_CONTENT);
+			lv_obj_set_width(m_input, LV_SIZE_CONTENT);
+
+			for (size_t i = 0; i < lv_obj_get_child_cnt(getCont()); i++)
+			{
+				lv_obj_t* child = lv_obj_get_child(getCont(), i);
+				lv_obj_set_height(child, LV_SIZE_CONTENT);
+				lv_obj_set_style_pad_all(child, 2, 0);
+			}
+			lv_obj_set_width(m_decrement.getCont(), LV_SIZE_CONTENT);
+			lv_obj_set_width(m_increment.getCont(), LV_SIZE_CONTENT);
+			lv_obj_set_width(m_input, 40);
+			lv_obj_set_flex_grow(m_slider, 1);
+
+			m_decrement.setCallback(
+				[](lv_event_t* e)
+				{
+					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
+					if (slider->getValue() > slider->getMin())
+					{
+						slider->setValue(slider->getValue() - slider->m_incrementValue);
+					}
+				},
+				LV_EVENT_CLICKED,
+				this);
+
+			m_increment.setCallback(
+				[](lv_event_t* e)
+				{
+					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
+					if (slider->getValue() < slider->getMax())
+					{
+						slider->setValue(slider->getValue() + slider->m_incrementValue);
+					}
+				},
+				LV_EVENT_CLICKED,
+				this);
+
+			lv_textarea_set_one_line(m_input, true);
+			lv_textarea_set_accepted_chars(m_input, "0123456789");
+			lv_textarea_set_max_length(m_input, 3);
+            lv_textarea_set_cursor_click_pos(m_input, false);
+			lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_CENTER, 0);
+			updateText();
+			lv_obj_add_event_cb(m_slider, onValueChanged, LV_EVENT_VALUE_CHANGED, this);
+			lv_obj_add_event_cb(m_input, onInputEvent, LV_EVENT_ALL, this);
+		}
+
+		int32_t getValue() const { return lv_slider_get_value(m_slider); }
+		int32_t getMin() const { return lv_slider_get_min_value(m_slider); }
+		int32_t getMax() const { return lv_slider_get_max_value(m_slider); }
+
+        void allowOutOfRange(bool allow){ m_allowOutOfRange = allow; }
+		void setIncrementValue(int32_t value) {}
+		void setRange(int32_t min, int32_t max) { lv_slider_set_range(m_slider, min, max); }
+		void setValue(int32_t value)
+		{
+            if (!m_allowOutOfRange)
+            {
+                value = std::clamp(value, getMin(), getMax());
+            }
+			lv_slider_set_value(m_slider, value, LV_ANIM_ON);
+			updateText();
+			if (m_callback)
+			{
+				m_callback(getValue());
+			}
+		}
+		void setKeyboard(lv_obj_t* keyboard) { m_keyboard = keyboard; }
+        void setValueChangedCallback(std::function<void(int32_t)> callback) { m_callback = callback; }
+
+	  protected:
+		static void onValueChanged(lv_event_t* e)
+		{
+			Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
+			if (slider->m_callback)
+			{
+				slider->m_callback(slider->getValue());
+			}
+			slider->updateText();
+		}
+
+		static void onInputEvent(lv_event_t* e)
+		{
+			lv_event_code_t code = lv_event_get_code(e);
+			Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
+			switch (code)
+			{
+			case LV_EVENT_FOCUSED:
+			{
+				if (slider->m_keyboard)
+				{
+					lv_keyboard_set_textarea(slider->m_keyboard, slider->m_input);
+				}
+                break;
+			}
+            case LV_EVENT_DEFOCUSED:
+            {
+                if (slider->m_keyboard)
+                {
+                    lv_keyboard_set_textarea(slider->m_keyboard, nullptr);
+                }
+                break;
+            }
+			case LV_EVENT_READY:
+			{
+				int32_t value = atoi(lv_textarea_get_text(slider->m_input));
+				slider->setValue(value);
+				break;
+			}
+			}
+		}
+
+		void updateText() { lv_textarea_set_text(m_input, std::to_string(getValue()).c_str()); }
+
+		Button m_decrement;
+		lv_obj_t* m_slider;
+		Button m_increment;
+		lv_obj_t* m_input;
+
+		int32_t m_incrementValue;
+		lv_obj_t* m_keyboard;
+
+        bool m_allowOutOfRange = false;
+		std::function<void(int32_t)> m_callback;
+	};
+} // namespace UI
