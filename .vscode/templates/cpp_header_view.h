@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Core/View.h"
+#include "{{file_name}}Presenter.h"
 
 namespace UI
 {

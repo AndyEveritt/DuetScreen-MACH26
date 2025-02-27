@@ -9,6 +9,7 @@
 
 #include "FineTunePresenter.h"
 #include "UI/Components/Button.h"
+#include "UI/Components/Slider.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -19,24 +20,25 @@ namespace UI
 		FineTune(lv_obj_t* parent);
 
 		void setBabyStepValue(float value);
-		void setSpeedValue(float value);
-		void setFlowValue(float value);
+
+		void setSpeedValue(uint32_t value);
+
+		void setExtruderCount(size_t count);
+		void setFanCount(size_t count);
+		size_t getExtruderCount() const { return m_extruders.size(); }
+		size_t getFanCount() const { return m_fans.size(); }
+
+		void setExtruderLabel(size_t index, const char* label);
+		void setExtruderValue(size_t index, uint32_t value);
+
+		void setFanLabel(size_t index, const char* label);
+		void setFanValue(size_t index, uint32_t value);
 
 	  protected:
 		static void onBabyStepIncrementClicked(lv_event_t* e);
 		static void onBabyStepDecrementClicked(lv_event_t* e);
 		static void onBabyStepResetClicked(lv_event_t* e);
 		static void onBabyStepValueClicked(lv_event_t* e);
-
-		static void onSpeedIncrementClicked(lv_event_t* e);
-		static void onSpeedDecrementClicked(lv_event_t* e);
-		static void onSpeedResetClicked(lv_event_t* e);
-		static void onSpeedValueClicked(lv_event_t* e);
-
-		static void onFlowIncrementClicked(lv_event_t* e);
-		static void onFlowDecrementClicked(lv_event_t* e);
-		static void onFlowResetClicked(lv_event_t* e);
-		static void onFlowValueClicked(lv_event_t* e);
 
 		class Item : public BaseView
 		{
@@ -57,7 +59,21 @@ namespace UI
 		};
 
 		Item m_babystep;
-		Item m_speed;
-		Item m_flow;
+		lv_obj_t* m_sliderCont;
+
+		// Speed Factor
+		Slider m_speed;
+
+		// Extruders
+		lv_obj_t* m_extruderLabel;
+		lv_obj_t* m_extruderCont;
+		std::vector<std::shared_ptr<Slider>> m_extruders;
+
+		// Fans
+		lv_obj_t* m_fanLabel;
+		lv_obj_t* m_fanCont;
+		std::vector<std::shared_ptr<Slider>> m_fans;
+
+		lv_obj_t* m_keyboard;
 	};
 } // namespace UI

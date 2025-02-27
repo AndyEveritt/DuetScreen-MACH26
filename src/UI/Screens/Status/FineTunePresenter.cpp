@@ -10,6 +10,7 @@
 #include "FineTune.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/Tool.h"
+#include "lv_i18n/lv_i18n.h"
 
 namespace UI
 {
@@ -26,29 +27,16 @@ namespace UI
 	void FineTunePresenter::newExtruderData()
 	{
 		ModelLock lock;
-		OM::Tool* tool = OM::GetCurrentTool();
-		if (tool == nullptr)
-		{
-			m_view->setFlowValue(100);
-			return;
-		}
-		// TODO show all extruder multipliers
-		size_t extruderCount = 0;
-		uint32_t flowMultiplier = 0;
-		tool->IterateExtruders(
-			[&](OM::Move::ExtruderAxis* extruder, size_t index)
+
+		m_view->setExtruderCount(OM::Move::GetExtruderAxisCount());
+
+		OM::Move::IterateExtruderAxesWhile(
+			[this](OM::Move::ExtruderAxis* extruder, size_t index)
 			{
-				flowMultiplier += 100 * extruder->factor;
-				extruderCount++;
+				m_view->setExtruderLabel(index, utils::format(_("fine_tune_extruder"), extruder->index).c_str());
+				m_view->setExtruderValue(index, 100 * extruder->factor);
+				return true;
 			});
-
-		if (extruderCount == 0)
-		{
-			m_view->setFlowValue(100);
-			return;
-		}
-
-		m_view->setFlowValue(flowMultiplier / extruderCount);
 	}
 
 } // namespace UI

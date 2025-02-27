@@ -14,8 +14,13 @@ namespace UI
 	FineTune::FineTune(lv_obj_t* parent)
 		: View("fine_tune", parent, layout_t(0, 0, 100, 100))
 		, m_babystep(getCont())
-		, m_speed(getCont())
-		, m_flow(getCont())
+		, m_sliderCont(lv_obj_create(getCont()))
+		, m_speed("fine_tune_speed", m_sliderCont, layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_extruderLabel(lv_label_create(m_sliderCont))
+		, m_extruderCont(lv_obj_create(m_sliderCont))
+		, m_fanLabel(lv_label_create(m_sliderCont))
+		, m_fanCont(lv_obj_create(m_sliderCont))
+		, m_keyboard(lv_keyboard_create(getCont()))
 	{
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
@@ -28,20 +33,39 @@ namespace UI
 			lv_obj_set_flex_grow(child, 1);
 		}
 
+		lv_obj_set_style_max_width(m_babystep.getCont(), 200, 0);
+
+		lv_obj_set_layout(m_sliderCont, LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(m_sliderCont, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(m_sliderCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		for (size_t i = 0; i < lv_obj_get_child_cnt(m_sliderCont); i++)
+		{
+			lv_obj_t* child = lv_obj_get_child(m_sliderCont, i);
+			lv_obj_set_size(child, LV_PCT(100), LV_SIZE_CONTENT);
+		}
+
+		lv_keyboard_set_mode(m_keyboard, LV_KEYBOARD_MODE_NUMBER);
+		lv_obj_add_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
+
 		m_babystep.setIncrementLabel(_("fine_tune_babystep_increment"));
 		m_babystep.setDecrementLabel(_("fine_tune_babystep_decrement"));
 		m_babystep.setResetLabel(utils::format(_("fine_tune_babystep_reset"), 0).c_str());
 		m_babystep.setValueLabels({"0.01", "0.05"});
 
-		m_speed.setIncrementLabel(_("fine_tune_speed_increment"));
-		m_speed.setDecrementLabel(_("fine_tune_speed_decrement"));
-		m_speed.setResetLabel(utils::format(_("fine_tune_speed_reset"), 100).c_str());
-		m_speed.setValueLabels({"5%", "25%"});
+		m_speed.setLabel(_("speed_factor"));
+		m_speed.setKeyboard(m_keyboard);
+		m_speed.setFocusedCallback([this](bool focused) { lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !focused); });
 
-		m_flow.setIncrementLabel(_("fine_tune_flow_increment"));
-		m_flow.setDecrementLabel(_("fine_tune_flow_decrement"));
-		m_flow.setResetLabel(utils::format(_("fine_tune_flow_reset"), 100).c_str());
-		m_flow.setValueLabels({"1%", "2%"});
+		lv_label_set_text(m_extruderLabel, _("extruders"));
+		lv_obj_set_layout(m_extruderCont, LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(m_extruderCont, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(m_extruderCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		lv_label_set_text(m_fanLabel, _("fan_speed"));
+		lv_obj_set_layout(m_fanCont, LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(m_fanCont, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(m_fanCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	}
 
 	void FineTune::setBabyStepValue(float value)
@@ -49,14 +73,90 @@ namespace UI
 		m_babystep.setResetLabel(utils::format(_("fine_tune_babystep_reset"), value).c_str());
 	}
 
-	void FineTune::setSpeedValue(float value)
+	void FineTune::setSpeedValue(uint32_t value) {}
+
+	/**
+	 * @brief
+	 * @param count
+	 */
+	void FineTune::setExtruderCount(size_t count)
 	{
-		m_speed.setResetLabel(utils::format(_("fine_tune_speed_reset"), value).c_str());
+		if (count == getExtruderCount())
+		{
+			return;
+		}
+
+		if (count < getExtruderCount())
+		{
+			m_extruders.resize(count);
+			return;
+		}
+
+		m_extruders.reserve(count);
+		for (size_t i = getExtruderCount(); i < count; ++i)
+		{
+			m_extruders.emplace_back(
+				std::make_shared<Slider>("extruder_slider", m_extruderCont, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+			Slider& slider = *m_extruders.back();
+			slider.setRange(0, 200);
+		}
 	}
 
-	void FineTune::setFlowValue(float value)
+	void FineTune::setFanCount(size_t count)
 	{
-		m_flow.setResetLabel(utils::format(_("fine_tune_flow_reset"), value).c_str());
+		if (count == getFanCount())
+		{
+			return;
+		}
+
+		if (count < getFanCount())
+		{
+			m_fans.resize(count);
+			return;
+		}
+
+		m_fans.reserve(count);
+		for (size_t i = getFanCount(); i < count; ++i)
+		{
+			m_fans.emplace_back(
+				std::make_shared<Slider>("fan_slider", m_fanCont, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+		}
+	}
+
+	void FineTune::setExtruderLabel(size_t index, const char* label)
+	{
+		if (index >= m_extruders.size())
+		{
+			return;
+		}
+		m_extruders[index]->setLabel(label);
+	}
+
+	void FineTune::setExtruderValue(size_t index, uint32_t value)
+	{
+		if (index >= m_extruders.size())
+		{
+			return;
+		}
+		m_extruders[index]->setValue(value);
+	}
+
+	void FineTune::setFanLabel(size_t index, const char* label)
+	{
+		if (index >= m_fans.size())
+		{
+			return;
+		}
+		m_fans[index]->setLabel(label);
+	}
+
+	void FineTune::setFanValue(size_t index, uint32_t value)
+	{
+		if (index >= m_fans.size())
+		{
+			return;
+		}
+		m_fans[index]->setValue(value);
 	}
 
 	FineTune::Item::Item(lv_obj_t* parent)
