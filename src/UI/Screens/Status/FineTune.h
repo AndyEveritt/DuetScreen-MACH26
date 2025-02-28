@@ -40,6 +40,8 @@ namespace UI
 		static void onBabyStepResetClicked(lv_event_t* e);
 		static void onBabyStepValueClicked(lv_event_t* e);
 
+		void showKeyboard(bool show);
+
 		class Item : public BaseView
 		{
 		  public:

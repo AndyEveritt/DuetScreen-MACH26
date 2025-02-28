@@ -30,8 +30,10 @@ namespace UI
 		{
 			lv_obj_t* child = lv_obj_get_child(getCont(), i);
 			lv_obj_set_height(child, LV_PCT(100));
-			lv_obj_set_flex_grow(child, 1);
 		}
+		lv_obj_set_flex_grow(m_babystep.getCont(), 2);
+		lv_obj_set_flex_grow(m_sliderCont, 5);
+		lv_obj_set_flex_grow(m_keyboard, 6);
 
 		lv_obj_set_style_max_width(m_babystep.getCont(), 200, 0);
 
@@ -55,7 +57,17 @@ namespace UI
 
 		m_speed.setLabel(_("fine_tune_speed_factor"));
 		m_speed.setKeyboard(m_keyboard);
-		m_speed.setFocusedCallback([this](bool focused) { lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !focused); });
+		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+
+		lv_obj_add_event_cb(
+			m_sliderCont,
+			[](lv_event_t* e)
+			{
+				FineTune* view = static_cast<FineTune*>(lv_event_get_user_data(e));
+				view->showKeyboard(false);
+			},
+			LV_EVENT_SCROLL,
+			this);
 
 		lv_label_set_text(m_extruderLabel, _("fine_tune_extruder_header"));
 		lv_obj_set_layout(m_extruderCont, LV_LAYOUT_FLEX);
@@ -157,6 +169,11 @@ namespace UI
 			return;
 		}
 		m_fans[index]->setValue(value);
+	}
+
+	void FineTune::showKeyboard(bool show)
+	{
+		lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !show);
 	}
 
 	FineTune::Item::Item(lv_obj_t* parent)
