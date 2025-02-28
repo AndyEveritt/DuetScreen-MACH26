@@ -21,9 +21,11 @@ namespace UI
         virtual void newSpeedFactor() override;
         virtual void newExtruderData() override;
 		virtual void newFanData() override;
+		virtual void newAxesData() override;
 
 		// Actions
-		void babyStep(float change);
+		void babystep(float change);
+		void resetBabystep();
 		void setSpeedFactor(uint32_t value);
 		void setExtruderFactor(size_t slot, uint32_t value);
 		void setFanValue(size_t slot, uint32_t value);

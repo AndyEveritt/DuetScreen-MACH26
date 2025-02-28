@@ -9,4 +9,5 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBarPresenter.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolList.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolListPresenter.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/VerticalButtonPanel.cpp
 )

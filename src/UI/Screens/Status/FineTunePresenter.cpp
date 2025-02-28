@@ -58,6 +58,18 @@ namespace UI
 			});
 	}
 
+	void FineTunePresenter::newAxesData()
+	{
+		ModelLock lock;
+		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('Z');
+		if (axis == nullptr)
+		{
+			return;
+		}
+
+		m_view->setBabyStepValue(axis->babystep);
+	}
+
 	void FineTunePresenter::onActivate()
 	{
 		newSpeedFactor();
@@ -65,9 +77,14 @@ namespace UI
 		newFanData();
 	}
 
-	void FineTunePresenter::babyStep(float change)
+	void FineTunePresenter::babystep(float change)
 	{
 		Comm::DUET.SendGcodef("M290 S%.3f", change);
+	}
+
+	void FineTunePresenter::resetBabystep()
+	{
+		Comm::DUET.SendGcode("M290 R0 S0");
 	}
 
 	void FineTunePresenter::setSpeedFactor(uint32_t value)

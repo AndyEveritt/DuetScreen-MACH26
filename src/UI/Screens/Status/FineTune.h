@@ -10,6 +10,7 @@
 #include "FineTunePresenter.h"
 #include "UI/Components/Button.h"
 #include "UI/Components/Slider.h"
+#include "UI/Components/VerticalButtonPanel.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -42,25 +43,7 @@ namespace UI
 
 		void showKeyboard(bool show);
 
-		class Item : public BaseView
-		{
-		  public:
-			Item(lv_obj_t* parent);
-			void setIncrementLabel(const char* label);
-			void setDecrementLabel(const char* label);
-			void setResetLabel(const char* label);
-			void setValueLabels(const std::array<const char*, 2>& labels);
-
-		  private:
-			Button m_reset;
-			Button m_increment;
-			Button m_decrement;
-
-			lv_obj_t* m_valueCont;
-			Button m_values[2];
-		};
-
-		Item m_babystep;
+		VerticalButtonPanel m_babystep;
 		lv_obj_t* m_sliderCont;
 
 		// Speed Factor
