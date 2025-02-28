@@ -8,6 +8,7 @@
 #include "FineTune.h"
 #include "Debug.h"
 #include "lv_i18n/lv_i18n.h"
+#include <algorithm>
 
 namespace UI
 {
@@ -58,6 +59,9 @@ namespace UI
 		m_speed.setLabel(_("fine_tune_speed_factor"));
 		m_speed.setKeyboard(m_keyboard);
 		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+		m_speed.allowOutOfRange(true);
+		m_speed.setRange(1, 200);
+		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter.setSpeedFactor(value); });
 
 		lv_obj_add_event_cb(
 			m_sliderCont,
@@ -85,7 +89,14 @@ namespace UI
 		m_babystep.setResetLabel(utils::format(_("fine_tune_babystep_reset"), value).c_str());
 	}
 
-	void FineTune::setSpeedValue(uint32_t value) {}
+	void FineTune::setSpeedValue(uint32_t value)
+	{
+		if (m_speed.isFocused())
+		{
+			return;
+		}
+		m_speed.setValue(value);
+	}
 
 	/**
 	 * @brief
@@ -110,7 +121,11 @@ namespace UI
 			m_extruders.emplace_back(
 				std::make_shared<Slider>("extruder_slider", m_extruderCont, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
 			Slider& slider = *m_extruders.back();
+
+			slider.setKeyboard(m_keyboard);
+			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 			slider.setRange(0, 200);
+			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter.setExtruderFactor(i, value); });
 		}
 	}
 
@@ -132,6 +147,11 @@ namespace UI
 		{
 			m_fans.emplace_back(
 				std::make_shared<Slider>("fan_slider", m_fanCont, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+			Slider& slider = *m_fans.back();
+
+			slider.setKeyboard(m_keyboard);
+			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter.setFanValue(i, value); });
 		}
 	}
 
@@ -146,7 +166,7 @@ namespace UI
 
 	void FineTune::setExtruderValue(size_t index, uint32_t value)
 	{
-		if (index >= m_extruders.size())
+		if (index >= m_extruders.size() || m_extruders[index]->isFocused())
 		{
 			return;
 		}
@@ -164,10 +184,11 @@ namespace UI
 
 	void FineTune::setFanValue(size_t index, uint32_t value)
 	{
-		if (index >= m_fans.size())
+		if (index >= m_fans.size() || m_fans[index]->isFocused())
 		{
 			return;
 		}
+
 		m_fans[index]->setValue(value);
 	}
 

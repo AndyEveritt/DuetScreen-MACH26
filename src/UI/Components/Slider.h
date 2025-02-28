@@ -16,6 +16,12 @@ namespace UI
 	class Slider : public BaseView
 	{
 	  public:
+		enum SendMode
+		{
+			VALUE_CONFIRMED, // Only run callback once the slider has been released or the buttons are pressed
+			VALUE_CHANGED,	 // Run callback as soon as the slider is moved or the buttons are pressed
+		};
+
 		Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: BaseView(name, parent, layout)
 			, m_label(lv_label_create(getCont()))
@@ -81,10 +87,10 @@ namespace UI
 			lv_textarea_set_one_line(m_input, true);
 			lv_textarea_set_accepted_chars(m_input, "0123456789");
 			lv_textarea_set_max_length(m_input, 3);
-            lv_textarea_set_cursor_click_pos(m_input, false);
+			lv_textarea_set_cursor_click_pos(m_input, false);
 			lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_CENTER, 0);
 			updateText();
-			lv_obj_add_event_cb(m_slider, onValueChanged, LV_EVENT_VALUE_CHANGED, this);
+			lv_obj_add_event_cb(m_slider, onValueChanged, LV_EVENT_ALL, this);
 			lv_obj_add_event_cb(m_input, onInputEvent, LV_EVENT_ALL, this);
 		}
 
@@ -92,7 +98,9 @@ namespace UI
 		int32_t getMin() const { return lv_slider_get_min_value(m_slider); }
 		int32_t getMax() const { return lv_slider_get_max_value(m_slider); }
 
-        void allowOutOfRange(bool allow){ m_allowOutOfRange = allow; }
+		bool isFocused() const { return m_focused; }
+
+		void allowOutOfRange(bool allow) { m_allowOutOfRange = allow; }
 		void setLabel(const char* text)
 		{
 			lv_obj_set_flag(m_label, LV_OBJ_FLAG_HIDDEN, text == nullptr);
@@ -102,17 +110,23 @@ namespace UI
 		void setRange(int32_t min, int32_t max) { lv_slider_set_range(m_slider, min, max); }
 		void setValue(int32_t value)
 		{
-            if (!m_allowOutOfRange)
-            {
-                value = std::clamp(value, getMin(), getMax());
-            }
+			if (!m_allowOutOfRange)
+			{
+				value = std::clamp(value, getMin(), getMax());
+			}
 			lv_slider_set_value(m_slider, value, LV_ANIM_ON);
-			updateText();
+
+			if (!lv_obj_has_state(m_input, LV_STATE_FOCUSED))
+			{
+				updateText();
+			}
+
 			if (m_valueChangedCallback)
 			{
 				m_valueChangedCallback(getValue());
 			}
 		}
+		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setKeyboard(lv_obj_t* keyboard) { m_keyboard = keyboard; }
 		void setValueChangedCallback(std::function<void(int32_t)> callback) { m_valueChangedCallback = callback; }
 		void setFocusedCallback(std::function<void(bool)> callback) { m_focusedCallback = callback; }
@@ -120,12 +134,34 @@ namespace UI
 	  protected:
 		static void onValueChanged(lv_event_t* e)
 		{
+			lv_event_code_t code = lv_event_get_code(e);
 			Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
-			if (slider->m_valueChangedCallback)
+
+			switch (code)
 			{
-				slider->m_valueChangedCallback(slider->getValue());
+			case LV_EVENT_FOCUSED:
+				slider->m_focused = true;
+				break;
+			case LV_EVENT_VALUE_CHANGED:
+				if (slider->m_sendMode == VALUE_CHANGED && slider->m_valueChangedCallback)
+				{
+					slider->m_valueChangedCallback(slider->getValue());
+				}
+				if (!lv_obj_has_state(slider->m_input, LV_STATE_FOCUSED))
+				{
+					slider->updateText();
+				}
+				break;
+
+			case LV_EVENT_RELEASED:
+				slider->m_focused = false;
+				if (slider->m_valueChangedCallback)
+				{
+					slider->m_valueChangedCallback(slider->getValue());
+				}
+				slider->updateText();
+				break;
 			}
-			slider->updateText();
 		}
 
 		static void onInputEvent(lv_event_t* e)
@@ -136,6 +172,7 @@ namespace UI
 			{
 			case LV_EVENT_FOCUSED:
 			{
+				slider->m_focused = true;
 				if (slider->m_keyboard)
 				{
 					lv_keyboard_set_textarea(slider->m_keyboard, slider->m_input);
@@ -144,20 +181,21 @@ namespace UI
 						slider->m_focusedCallback(true);
 					}
 				}
-                break;
+				break;
 			}
-            case LV_EVENT_DEFOCUSED:
-            {
-                if (slider->m_keyboard)
-                {
-                    lv_keyboard_set_textarea(slider->m_keyboard, nullptr);
+			case LV_EVENT_DEFOCUSED:
+			{
+				slider->m_focused = false;
+				if (slider->m_keyboard)
+				{
+					lv_keyboard_set_textarea(slider->m_keyboard, nullptr);
 					if (slider->m_focusedCallback)
 					{
 						slider->m_focusedCallback(false);
 					}
 				}
-                break;
-            }
+				break;
+			}
 			case LV_EVENT_READY:
 			{
 				int32_t value = atoi(lv_textarea_get_text(slider->m_input));
@@ -180,7 +218,10 @@ namespace UI
 		int32_t m_incrementValue;
 		lv_obj_t* m_keyboard;
 
-        bool m_allowOutOfRange = false;
+		int32_t m_value;
+		bool m_focused = false;
+		SendMode m_sendMode = VALUE_CONFIRMED;
+		bool m_allowOutOfRange = false;
 		std::function<void(int32_t)> m_valueChangedCallback;
 		std::function<void(int32_t)> m_focusedCallback;
 	};
