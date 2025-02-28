@@ -50,6 +50,15 @@ namespace UI
 
 		lv_keyboard_set_mode(m_keyboard, LV_KEYBOARD_MODE_NUMBER);
 		lv_obj_add_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_event_cb(
+			m_keyboard,
+			[](lv_event_t* e)
+			{
+				FineTune* view = static_cast<FineTune*>(lv_event_get_user_data(e));
+				view->showKeyboard(false);
+			},
+			LV_EVENT_CANCEL,
+			this);
 
 		m_babystep.setIncrementLabel(_("fine_tune_babystep_increment"));
 		m_babystep.setDecrementLabel(_("fine_tune_babystep_decrement"));
@@ -59,7 +68,7 @@ namespace UI
 		m_speed.setLabel(_("fine_tune_speed_factor"));
 		m_speed.setKeyboard(m_keyboard);
 		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
-		m_speed.allowOutOfRange(true);
+		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_speed.setRange(1, 200);
 		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter.setSpeedFactor(value); });
 
@@ -91,10 +100,6 @@ namespace UI
 
 	void FineTune::setSpeedValue(uint32_t value)
 	{
-		if (m_speed.isFocused())
-		{
-			return;
-		}
 		m_speed.setValue(value);
 	}
 
@@ -125,6 +130,7 @@ namespace UI
 			slider.setKeyboard(m_keyboard);
 			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 			slider.setRange(0, 200);
+			slider.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter.setExtruderFactor(i, value); });
 		}
 	}

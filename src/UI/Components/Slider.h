@@ -16,10 +16,18 @@ namespace UI
 	class Slider : public BaseView
 	{
 	  public:
-		enum SendMode
+		enum class SendMode
 		{
 			VALUE_CONFIRMED, // Only run callback once the slider has been released or the buttons are pressed
 			VALUE_CHANGED,	 // Run callback as soon as the slider is moved or the buttons are pressed
+		};
+
+		enum class OutOfRange
+		{
+			NONE,  // Do not allow the value to go out of range
+			BOTH,  // Allow the value to go out of range in both directions
+			UPPER, // Allow the value to go out of range in the +ve direction
+			LOWER, // Allow the value to go out of range in the -ve direction
 		};
 
 		Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
@@ -64,10 +72,7 @@ namespace UI
 				[](lv_event_t* e)
 				{
 					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
-					if (slider->getValue() > slider->getMin())
-					{
-						slider->setValue(slider->getValue() - slider->m_incrementValue);
-					}
+					slider->setValue(slider->getValue() - slider->m_incrementValue);
 				},
 				LV_EVENT_CLICKED,
 				this);
@@ -76,10 +81,7 @@ namespace UI
 				[](lv_event_t* e)
 				{
 					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
-					if (slider->getValue() < slider->getMax())
-					{
-						slider->setValue(slider->getValue() + slider->m_incrementValue);
-					}
+					slider->setValue(slider->getValue() + slider->m_incrementValue);
 				},
 				LV_EVENT_CLICKED,
 				this);
@@ -94,13 +96,27 @@ namespace UI
 			lv_obj_add_event_cb(m_input, onInputEvent, LV_EVENT_ALL, this);
 		}
 
-		int32_t getValue() const { return lv_slider_get_value(m_slider); }
+		int32_t getValue() const { return m_value; }
 		int32_t getMin() const { return lv_slider_get_min_value(m_slider); }
 		int32_t getMax() const { return lv_slider_get_max_value(m_slider); }
 
 		bool isFocused() const { return m_focused; }
 
-		void allowOutOfRange(bool allow) { m_allowOutOfRange = allow; }
+		void setOutOfRangeMode(OutOfRange mode)
+		{
+			switch (mode)
+			{
+			case OutOfRange::NONE:
+			case OutOfRange::UPPER:
+				lv_textarea_set_accepted_chars(m_input, getMin() < 0 ? "-0123456789" : "0123456789");
+				break;
+			case OutOfRange::LOWER:
+			case OutOfRange::BOTH:
+				lv_textarea_set_accepted_chars(m_input, "-0123456789");
+				break;
+			}
+			m_outOfRangeMode = mode;
+		}
 		void setLabel(const char* text)
 		{
 			lv_obj_set_flag(m_label, LV_OBJ_FLAG_HIDDEN, text == nullptr);
@@ -110,10 +126,29 @@ namespace UI
 		void setRange(int32_t min, int32_t max) { lv_slider_set_range(m_slider, min, max); }
 		void setValue(int32_t value)
 		{
-			if (!m_allowOutOfRange)
+			switch (m_outOfRangeMode)
 			{
+			case OutOfRange::NONE:
 				value = std::clamp(value, getMin(), getMax());
+				m_decrement.setInvalid(value == getMin());
+				m_increment.setInvalid(value == getMax());
+				break;
+			case OutOfRange::BOTH:
+				m_decrement.setInvalid(false);
+				m_increment.setInvalid(false);
+				break;
+			case OutOfRange::UPPER:
+				value = std::max(value, getMin());
+				m_decrement.setInvalid(value == getMin());
+				m_increment.setInvalid(false);
+				break;
+			case OutOfRange::LOWER:
+				value = std::min(value, getMax());
+				m_decrement.setInvalid(false);
+				m_increment.setInvalid(value == getMax());
+				break;
 			}
+			m_value = value;
 			lv_slider_set_value(m_slider, value, LV_ANIM_ON);
 
 			if (!lv_obj_has_state(m_input, LV_STATE_FOCUSED))
@@ -143,7 +178,8 @@ namespace UI
 				slider->m_focused = true;
 				break;
 			case LV_EVENT_VALUE_CHANGED:
-				if (slider->m_sendMode == VALUE_CHANGED && slider->m_valueChangedCallback)
+				slider->m_value = lv_slider_get_value(slider->m_slider);
+				if (slider->m_sendMode == SendMode::VALUE_CHANGED && slider->m_valueChangedCallback)
 				{
 					slider->m_valueChangedCallback(slider->getValue());
 				}
@@ -170,6 +206,7 @@ namespace UI
 			Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
 			switch (code)
 			{
+			case LV_EVENT_PRESSED:
 			case LV_EVENT_FOCUSED:
 			{
 				slider->m_focused = true;
@@ -193,6 +230,7 @@ namespace UI
 					{
 						slider->m_focusedCallback(false);
 					}
+					slider->updateText();
 				}
 				break;
 			}
@@ -220,8 +258,8 @@ namespace UI
 
 		int32_t m_value;
 		bool m_focused = false;
-		SendMode m_sendMode = VALUE_CONFIRMED;
-		bool m_allowOutOfRange = false;
+		SendMode m_sendMode = SendMode::VALUE_CONFIRMED;
+		OutOfRange m_outOfRangeMode = OutOfRange::NONE;
 		std::function<void(int32_t)> m_valueChangedCallback;
 		std::function<void(int32_t)> m_focusedCallback;
 	};
