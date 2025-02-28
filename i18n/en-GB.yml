@@ -312,3 +312,15 @@ en-GB:
   print_again: ~
   file_run_macro_title: Run Macro
   file_run_macro_message: Do you want to run %s?
+  settings_restart: Restart
+  settings_erase_and_restart: Erase and Restart
+  settings_reboot: Reboot
+  fine_tune_babystep_increment: ~
+  fine_tune_babystep_decrement: ~
+  fine_tune_babystep_reset: Reset %.3fmm
+  fine_tune_speed_factor: Speed Factor
+  fine_tune_extruder_header: Extrusion Factor
+  fine_tune_fan_header: Fans
+  fine_tune_extruder: Extruder %u
+  fine_tune_fan: Fan %u
+  fine_tune: Fine Tune

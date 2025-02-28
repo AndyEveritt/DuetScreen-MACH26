@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include "FineTune.h"
 #include "ObjectModel/Axis.h"
+#include "ObjectModel/Fan.h"
 #include "ObjectModel/Tool.h"
 #include "lv_i18n/lv_i18n.h"
 
@@ -35,6 +36,21 @@ namespace UI
 			{
 				m_view->setExtruderLabel(index, utils::format(_("fine_tune_extruder"), extruder->index).c_str());
 				m_view->setExtruderValue(index, 100 * extruder->factor);
+				return true;
+			});
+	}
+
+	void FineTunePresenter::newFanData()
+	{
+		ModelLock lock;
+
+		m_view->setFanCount(OM::GetFanCount());
+
+		OM::IterateFansWhile(
+			[this](OM::Fan* fan, size_t index)
+			{
+				m_view->setFanLabel(index, utils::format(_("fine_tune_fan"), fan->index).c_str());
+				m_view->setFanValue(index, 100 * fan->requestedValue);
 				return true;
 			});
 	}

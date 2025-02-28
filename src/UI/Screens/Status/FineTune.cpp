@@ -53,16 +53,16 @@ namespace UI
 		m_babystep.setResetLabel(utils::format(_("fine_tune_babystep_reset"), 0).c_str());
 		m_babystep.setValueLabels({"0.01", "0.05"});
 
-		m_speed.setLabel(_("speed_factor"));
+		m_speed.setLabel(_("fine_tune_speed_factor"));
 		m_speed.setKeyboard(m_keyboard);
 		m_speed.setFocusedCallback([this](bool focused) { lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !focused); });
 
-		lv_label_set_text(m_extruderLabel, _("extruders"));
+		lv_label_set_text(m_extruderLabel, _("fine_tune_extruder_header"));
 		lv_obj_set_layout(m_extruderCont, LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(m_extruderCont, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(m_extruderCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		lv_label_set_text(m_fanLabel, _("fan_speed"));
+		lv_label_set_text(m_fanLabel, _("fine_tune_fan_header"));
 		lv_obj_set_layout(m_fanCont, LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(m_fanCont, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(m_fanCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);

@@ -20,6 +20,8 @@ namespace UI
 
         virtual void newSpeedFactor() override;
         virtual void newExtruderData() override;
+		virtual void newFanData() override;
+
 	  protected:
 	};
 } // namespace UI
