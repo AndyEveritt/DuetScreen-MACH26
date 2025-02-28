@@ -71,19 +71,31 @@ namespace UI
 			m_decrement.setCallback(
 				[](lv_event_t* e)
 				{
+					lv_event_code_t code = lv_event_get_code(e);
 					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
-					slider->setValue(slider->getValue() - slider->m_incrementValue);
+
+					if (code == LV_EVENT_PRESSED ||
+						(code == LV_EVENT_LONG_PRESSED_REPEAT && slider->m_longPressEnabled))
+					{
+						slider->setValue(slider->getValue() - slider->m_incrementValue);
+					}
 				},
-				LV_EVENT_CLICKED,
+				LV_EVENT_ALL,
 				this);
 
 			m_increment.setCallback(
 				[](lv_event_t* e)
 				{
+					lv_event_code_t code = lv_event_get_code(e);
 					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
-					slider->setValue(slider->getValue() + slider->m_incrementValue);
+
+					if (code == LV_EVENT_PRESSED ||
+						(code == LV_EVENT_LONG_PRESSED_REPEAT && slider->m_longPressEnabled))
+					{
+						slider->setValue(slider->getValue() + slider->m_incrementValue);
+					}
 				},
-				LV_EVENT_CLICKED,
+				LV_EVENT_ALL,
 				this);
 
 			lv_textarea_set_one_line(m_input, true);
@@ -162,6 +174,7 @@ namespace UI
 			}
 		}
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
+		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
 		void setKeyboard(lv_obj_t* keyboard) { m_keyboard = keyboard; }
 		void setValueChangedCallback(std::function<void(int32_t)> callback) { m_valueChangedCallback = callback; }
 		void setFocusedCallback(std::function<void(bool)> callback) { m_focusedCallback = callback; }
@@ -258,6 +271,7 @@ namespace UI
 
 		int32_t m_value;
 		bool m_focused = false;
+		bool m_longPressEnabled = true;
 		SendMode m_sendMode = SendMode::VALUE_CONFIRMED;
 		OutOfRange m_outOfRangeMode = OutOfRange::NONE;
 		std::function<void(int32_t)> m_valueChangedCallback;
