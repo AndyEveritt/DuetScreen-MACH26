@@ -120,6 +120,16 @@
 			}
 		},
 		{
+			"label": "Start DuetScreen on remote",
+			"type": "shell",
+			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S20DuetScreen start'",
+			"problemMatcher": [],
+			"isBackground": true,
+			// "dependsOn": [
+			// 	"Push DuetScreen - SSH"
+			// ],
+		},
+		{
 			"label": "Start gdbserver on DuetScreen",
 			"type": "shell",
 			"command": "command ssh root@${config:duetscreen_ip} 'gdbserver :3000 DuetScreen'",

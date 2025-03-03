@@ -29,9 +29,27 @@ bool StorageHelper::load()
 		return false;
 	}
 	nlohmann::json j;
-	file >> j;
+	try
+	{
+		file >> j;
+	}
+	catch (const std::exception& e)
+	{
+		file.close();
+		std::ofstream recreate_file(filename_);
+		if (!recreate_file.is_open())
+		{
+			return false;
+		}
+		recreate_file << "{}";
+		recreate_file.close();
+		j = nlohmann::json::object();
+	}
 	data_ = j.get<std::map<std::string, nlohmann::json>>();
-	file.close();
+	if (file.is_open())
+	{
+		file.close();
+	}
 	return true;
 }
 

@@ -5,6 +5,7 @@
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
+#include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
 
 namespace UI
@@ -15,10 +16,12 @@ namespace UI
 		, m_subWindow(lv_obj_create(getCont()))
 		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header")))
 		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet")))
+		, m_deviceSettings(lv_list_add_button(m_settingsList, NULL, _("settings_device")))
 		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network")))
 		, m_devHeader(lv_list_add_text(m_settingsList, _("settings_dev_header")))
 		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer")))
 		, m_duetSettingsView(m_subWindow, this)
+		, m_deviceSettingsView(m_subWindow, this)
 		, m_networkSettingsView(m_subWindow, this)
 		, m_developerSettingsView(m_subWindow, this)
 		, m_currentSubView(&m_duetSettingsView)
@@ -34,10 +37,12 @@ namespace UI
 
 		// List
 		lv_obj_set_user_data(m_duetSettings, &m_duetSettingsView);
+		lv_obj_set_user_data(m_deviceSettings, &m_deviceSettingsView);
 		lv_obj_set_user_data(m_networkSettings, &m_networkSettingsView);
 		lv_obj_set_user_data(m_developerSettings, &m_developerSettingsView);
 
 		lv_obj_add_event_cb(m_duetSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_deviceSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_networkSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_developerSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 	}
@@ -115,6 +120,9 @@ namespace UI
 		: BaseView(name, parent, layout_t(0, 0, 100, 100))
 		, m_mainSettingsView(mainSettingsView)
 	{
+		Lock lock;
+		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
+		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 	}
 
 	SettingsPresenter& SettingsSubView::getMainSettingsPresenter() const
@@ -151,8 +159,6 @@ namespace UI
 		, m_save("duet_settings_save", getCont(), _("save"))
 	{
 		Lock lock;
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
 		// Connection Method
 		std::string options;
@@ -207,6 +213,25 @@ namespace UI
 		Comm::DUET.SetPassword(lv_textarea_get_text(view->m_password));
 		Comm::DUET.SetPollInterval(atoi(lv_textarea_get_text(view->m_pollInterval)));
 		StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)atoi(lv_textarea_get_text(view->m_infoTimeout)));
+	}
+
+	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
+		: SettingsSubView("device_settings_view", parent, mainSettingsView)
+		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+	{
+		Lock lock;
+
+		// Brightness
+		m_brightness.setRange(0, 100);
+		m_brightness.setLabel(_("settings_brightness"));
+		m_brightness.setValue(DisplayHelper::getBrightness());
+		m_brightness.setValueChangedCallback([](uint32_t value) { DisplayHelper::setBrightness(value); });
+		m_brightness.setSendMode(Slider::SendMode::VALUE_CHANGED);
+	}
+
+	void DeviceSettingsView::onShow()
+	{
+		m_brightness.setValue(DisplayHelper::getBrightness());
 	}
 
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
@@ -406,7 +431,6 @@ namespace UI
 		, m_reboot("developer_settings_reboot", getCont(), _("settings_reboot"))
 	{
 		Lock lock;
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
 
 		// Debug Level
 		lv_obj_set_flex_flow(m_debugLevelCont, LV_FLEX_FLOW_ROW);

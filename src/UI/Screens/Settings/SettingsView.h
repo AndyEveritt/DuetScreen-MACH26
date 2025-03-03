@@ -3,6 +3,7 @@
 #include "SettingsPresenter.h"
 #include "UI/Components/Button.h"
 #include "UI/Components/NumberPad/NumberPad.h"
+#include "UI/Components/Slider.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -39,6 +40,17 @@ namespace UI
 		lv_obj_t* m_pollInterval;
 		lv_obj_t* m_infoTimeout;
 		Button m_save;
+	};
+
+	class DeviceSettingsView : public SettingsSubView
+	{
+	  public:
+		DeviceSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView);
+
+	  private:
+		void onShow() override;
+
+		Slider m_brightness;
 	};
 
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>
@@ -143,11 +155,13 @@ namespace UI
 
 		lv_obj_t* m_connectivityHeader;
 		lv_obj_t* m_duetSettings;
+		lv_obj_t* m_deviceSettings;
 		lv_obj_t* m_networkSettings;
 		lv_obj_t* m_devHeader;
 		lv_obj_t* m_developerSettings;
 
 		DuetSettingsView m_duetSettingsView;
+		DeviceSettingsView m_deviceSettingsView;
 		NetworkSettingsView m_networkSettingsView;
 		DeveloperSettingsView m_developerSettingsView;
 

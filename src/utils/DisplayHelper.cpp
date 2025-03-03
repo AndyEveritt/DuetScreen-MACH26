@@ -93,9 +93,12 @@ unsigned int DisplayHelper::getBrightness()
 	BrightnessParam param;
 	param.screen = disp.m_screen;
 #if T113
+	return StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u);
+
+	// TODO this doesn't appear to work on the T113
 	if (ioctl(disp.m_fd, DISP_LCD_GET_BRIGHTNESS, &param) < 0)
 	{
-		perror("ioctl getBrightness failed");
+		error("ioctl getBrightness failed");
 		return 0;
 	}
 #endif

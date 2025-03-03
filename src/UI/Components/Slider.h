@@ -138,28 +138,7 @@ namespace UI
 		void setRange(int32_t min, int32_t max) { lv_slider_set_range(m_slider, min, max); }
 		void setValue(int32_t value)
 		{
-			switch (m_outOfRangeMode)
-			{
-			case OutOfRange::NONE:
-				value = std::clamp(value, getMin(), getMax());
-				m_decrement.setInvalid(value == getMin());
-				m_increment.setInvalid(value == getMax());
-				break;
-			case OutOfRange::BOTH:
-				m_decrement.setInvalid(false);
-				m_increment.setInvalid(false);
-				break;
-			case OutOfRange::UPPER:
-				value = std::max(value, getMin());
-				m_decrement.setInvalid(value == getMin());
-				m_increment.setInvalid(false);
-				break;
-			case OutOfRange::LOWER:
-				value = std::min(value, getMax());
-				m_decrement.setInvalid(false);
-				m_increment.setInvalid(value == getMax());
-				break;
-			}
+			boundValue(value);
 			m_value = value;
 			lv_slider_set_value(m_slider, value, LV_ANIM_ON);
 
@@ -192,6 +171,11 @@ namespace UI
 				break;
 			case LV_EVENT_VALUE_CHANGED:
 				slider->m_value = lv_slider_get_value(slider->m_slider);
+				if (slider->boundValue(slider->m_value))
+				{
+					// Should never reach here
+					slider->setValue(slider->m_value);
+				}
 				if (slider->m_sendMode == SendMode::VALUE_CHANGED && slider->m_valueChangedCallback)
 				{
 					slider->m_valueChangedCallback(slider->getValue());
@@ -254,6 +238,37 @@ namespace UI
 				break;
 			}
 			}
+		}
+
+		bool boundValue(int32_t& value)
+		{
+			bool outOfRange = false;
+			switch (m_outOfRangeMode)
+			{
+			case OutOfRange::NONE:
+				outOfRange = value < getMin() || value > getMax();
+				value = std::clamp(value, getMin(), getMax());
+				m_decrement.setInvalid(value == getMin());
+				m_increment.setInvalid(value == getMax());
+				break;
+			case OutOfRange::BOTH:
+				m_decrement.setInvalid(false);
+				m_increment.setInvalid(false);
+				break;
+			case OutOfRange::UPPER:
+				outOfRange = value < getMin();
+				value = std::max(value, getMin());
+				m_decrement.setInvalid(value == getMin());
+				m_increment.setInvalid(false);
+				break;
+			case OutOfRange::LOWER:
+				outOfRange = value > getMax();
+				value = std::min(value, getMax());
+				m_decrement.setInvalid(false);
+				m_increment.setInvalid(value == getMax());
+				break;
+			}
+			return outOfRange;
 		}
 
 		void updateText() { lv_textarea_set_text(m_input, std::to_string(getValue()).c_str()); }
