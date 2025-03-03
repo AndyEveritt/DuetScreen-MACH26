@@ -57,6 +57,7 @@ namespace UI
 		, m_consoleView(m_mainWindow)
 		, m_moveView(m_mainWindow)
 		, m_extrudeView(m_mainWindow)
+		, m_fanView(m_mainWindow)
 		, m_fileView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 		, m_statusView(m_mainWindow)
@@ -102,6 +103,7 @@ namespace UI
 		// Window select buttons
 		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_moveView);
 		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_extrudeView);
+		m_fansWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_fanView);
 		m_filesWindow.setCallback(
 			[](lv_event_t* e)
 			{
@@ -117,6 +119,7 @@ namespace UI
 		m_consoleView.hide();
 		m_moveView.hide();
 		m_extrudeView.hide();
+		m_fanView.hide();
 		m_fileView.hide();
 		m_statusView.hide();
 		m_settingsView.hide();

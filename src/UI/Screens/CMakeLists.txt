@@ -1,5 +1,6 @@
 add_subdirectory(Console)
 add_subdirectory(Extrude)
+add_subdirectory(Fan)
 add_subdirectory(File)
 add_subdirectory(Home)
 add_subdirectory(Move)

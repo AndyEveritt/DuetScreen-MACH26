@@ -10,6 +10,7 @@
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"
 #include "UI/Screens/Extrude/ExtrudeView.h"
+#include "UI/Screens/Fan/FanView.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
@@ -78,6 +79,7 @@ namespace UI
 		ConsoleView m_consoleView;
 		MoveView m_moveView;
 		ExtrudeView m_extrudeView;
+		FanView m_fanView;
 		FileView m_fileView;
 		SettingsView m_settingsView;
 		StatusView m_statusView;
