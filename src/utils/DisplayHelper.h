@@ -13,6 +13,9 @@ class DisplayHelper
 	// Sets the display brightness.
 	// brightness should be in the range [0, 100]
 	static bool setBrightness(unsigned int percentage);
+	static bool setScreenSaverBrightness(unsigned int percentage);
+
+	static void enableScreenSaver(bool enable);
 
 	// Gets the current display brightness.
 	// Returns a brightness value in the range [0, 100].
@@ -24,6 +27,11 @@ class DisplayHelper
 
     static DisplayHelper& instance();
 
+	bool setBrightnessInner(unsigned int percentage);
+
 	int m_fd;			   // File descriptor for the display device
 	unsigned int m_screen; // Screen number (typically 0 or 1)
+	unsigned int m_percentage = 100;
+	unsigned int m_screensaverPercentage = 0;
+	unsigned int m_currentBrightness = 0;
 };

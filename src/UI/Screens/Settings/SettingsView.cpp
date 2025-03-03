@@ -218,6 +218,7 @@ namespace UI
 	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
 		: SettingsSubView("device_settings_view", parent, mainSettingsView)
 		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
 		Lock lock;
 
@@ -227,11 +228,19 @@ namespace UI
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_brightness.setValueChangedCallback([](uint32_t value) { DisplayHelper::setBrightness(value); });
 		m_brightness.setSendMode(Slider::SendMode::VALUE_CHANGED);
+
+		// Screensaver Timeout
+		m_screensaverTimeout.setLabel(_("settings_screensaver_timeout"));
+		m_screensaverTimeout.setRange(0, 30 * 60); // seconds
+		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
+													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
+		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 	}
 
 	void DeviceSettingsView::onShow()
 	{
 		m_brightness.setValue(DisplayHelper::getBrightness());
+		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
 	}
 
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)

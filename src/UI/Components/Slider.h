@@ -52,11 +52,6 @@ namespace UI
 			lv_obj_set_flex_flow(m_sliderCont, LV_FLEX_FLOW_ROW);
 			lv_obj_set_flex_align(m_sliderCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-			lv_obj_set_width(m_decrement.getCont(), LV_SIZE_CONTENT);
-			lv_obj_set_flex_grow(m_slider, 1);
-			lv_obj_set_width(m_increment.getCont(), LV_SIZE_CONTENT);
-			lv_obj_set_width(m_input, LV_SIZE_CONTENT);
-
 			for (size_t i = 0; i < lv_obj_get_child_cnt(m_sliderCont); i++)
 			{
 				lv_obj_t* child = lv_obj_get_child(m_sliderCont, i);
@@ -65,7 +60,7 @@ namespace UI
 			}
 			lv_obj_set_width(m_decrement.getCont(), LV_SIZE_CONTENT);
 			lv_obj_set_width(m_increment.getCont(), LV_SIZE_CONTENT);
-			lv_obj_set_width(m_input, 40);
+			lv_obj_set_width(m_input, 50);
 			lv_obj_set_flex_grow(m_slider, 1);
 
 			m_decrement.setCallback(
@@ -100,7 +95,7 @@ namespace UI
 
 			lv_textarea_set_one_line(m_input, true);
 			lv_textarea_set_accepted_chars(m_input, "0123456789");
-			lv_textarea_set_max_length(m_input, 3);
+			lv_textarea_set_max_length(m_input, 4);
 			lv_textarea_set_cursor_click_pos(m_input, false);
 			lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_CENTER, 0);
 			updateText();

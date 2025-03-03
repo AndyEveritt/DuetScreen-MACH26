@@ -17,6 +17,7 @@ constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
 /* UI */
 constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in milliseconds
 constexpr size_t MODEL_TICK_HZ = 1000 / MODEL_TICK_INTERVAL;
+constexpr uint32_t DEFAULT_SCREEN_TIMEOUT = 5 * 60 * 1000; // milliseconds
 
 /* Duet */
 constexpr const char* DEFAULT_GCODES_PATH = "0:/gcodes";

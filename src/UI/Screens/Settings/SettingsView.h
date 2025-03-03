@@ -51,6 +51,7 @@ namespace UI
 		void onShow() override;
 
 		Slider m_brightness;
+		Slider m_screensaverTimeout;
 	};
 
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>

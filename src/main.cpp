@@ -138,6 +138,36 @@ int main(int argc, char** argv)
 		NULL);
 #  endif
 
+	// Screensaver task
+	DisplayHelper::setScreenSaverBrightness(0);
+	lv_timer_t* screensaverTimer = lv_timer_create(
+		[](lv_timer_t* timer)
+		{
+			static bool screensaverEnabled = false;
+			uint32_t inactiveTime = lv_display_get_inactive_time(NULL);
+			uint32_t timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT);
+			if (timeout > 0 && inactiveTime > timeout)
+			{
+				if (!screensaverEnabled)
+				{
+					info("Screensaver timeout reached");
+					DisplayHelper::enableScreenSaver(true);
+					screensaverEnabled = true;
+				}
+			}
+			else
+			{
+				if (screensaverEnabled)
+				{
+					info("Screensaver timeout cancelled");
+					DisplayHelper::enableScreenSaver(false);
+					screensaverEnabled = false;
+				}
+			}
+		},
+		100, // Timer period in milliseconds
+		NULL);
+
 	while (1)
 	{
 		lv_timer_handler();

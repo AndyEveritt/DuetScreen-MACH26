@@ -65,15 +65,41 @@ DisplayHelper& DisplayHelper::instance()
 bool DisplayHelper::setBrightness(unsigned int percentage)
 {
 	auto& disp = instance();
+	disp.m_percentage = percentage;
+	disp.setBrightnessInner(percentage);
+	StorageHelper::setData(ID_SYS_BRIGHTNESS_KEY, percentage);
+	return true;
+}
+
+bool DisplayHelper::setScreenSaverBrightness(unsigned int percentage)
+{
+	auto& disp = instance();
+	disp.m_screensaverPercentage = percentage;
+	return true;
+}
+
+void DisplayHelper::enableScreenSaver(bool enable)
+{
+	auto& disp = instance();
+	disp.setBrightnessInner(enable ? disp.m_screensaverPercentage : disp.m_percentage);
+}
+
+bool DisplayHelper::setBrightnessInner(unsigned int percentage)
+{
+	auto& disp = instance();
 	BrightnessParam param;
-	if (percentage > 100)
-	{
-		percentage = 100;
-	}
+	percentage = std::clamp(percentage, 0u, 100u);
+
 	// Scale brightness from 0-100 to 0-255 for the hardware
 	uint8_t brightness = (percentage * 255) / 100;
 	param.screen = disp.m_screen;
 	param.brightness = brightness;
+
+	if (brightness == disp.m_currentBrightness)
+	{
+		return true;
+	}
+	m_currentBrightness = brightness;
 #if T113
 	if (ioctl(disp.m_fd, DISP_LCD_SET_BRIGHTNESS, &param) < 0)
 	{
@@ -81,7 +107,6 @@ bool DisplayHelper::setBrightness(unsigned int percentage)
 		return false;
 	}
 #endif
-	StorageHelper::setData(ID_SYS_BRIGHTNESS_KEY, percentage);
 	return true;
 }
 
@@ -90,17 +115,5 @@ bool DisplayHelper::setBrightness(unsigned int percentage)
 unsigned int DisplayHelper::getBrightness()
 {
 	auto& disp = instance();
-	BrightnessParam param;
-	param.screen = disp.m_screen;
-#if T113
-	return StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u);
-
-	// TODO this doesn't appear to work on the T113
-	if (ioctl(disp.m_fd, DISP_LCD_GET_BRIGHTNESS, &param) < 0)
-	{
-		error("ioctl getBrightness failed");
-		return 0;
-	}
-#endif
-	return param.brightness;
+	return disp.m_percentage;
 }
