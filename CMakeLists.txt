@@ -148,7 +148,7 @@ target_link_libraries(
 
 # Only link freertos_config if the FreeRTOS directory exists
 if(USE_FREERTOS)
-  target_link_libraries(DuetScreen freertos_config freertos_kernel)
+  target_link_libraries(DuetScreen PRIVATE freertos_config freertos_kernel)
 endif()
 
 # Custom target to run the executable
@@ -163,14 +163,14 @@ if(LV_USE_DRAW_SDL)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
   find_package(SDL2_image REQUIRED)
   target_include_directories(lvgl PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen ${SDL2_IMAGE_LIBRARIES})
+  target_link_libraries(DuetScreen PRIVATE ${SDL2_IMAGE_LIBRARIES})
 endif()
 
 # Conditionally include and link libpng if LV_USE_LIBPNG is enabled
 if(LV_USE_LIBPNG)
   find_package(PNG REQUIRED)
   target_include_directories(lvgl PUBLIC ${PNG_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen ${PNG_LIBRARIES})
+  target_link_libraries(DuetScreen PRIVATE ${PNG_LIBRARIES})
 endif()
 
 # Conditionally include and link libjpeg-turbo if LV_USE_LIBJPEG_TURBO is
@@ -178,19 +178,19 @@ endif()
 if(LV_USE_LIBJPEG_TURBO)
   find_package(JPEG REQUIRED)
   target_include_directories(lvgl PUBLIC ${JPEG_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen ${JPEG_LIBRARIES})
+  target_link_libraries(DuetScreen PRIVATE ${JPEG_LIBRARIES})
 endif()
 
 # Conditionally include and link FFmpeg libraries if LV_USE_FFMPEG is enabled
 if(LV_USE_FFMPEG)
-  target_link_libraries(DuetScreen avformat avcodec avutil swscale z)
+  target_link_libraries(DuetScreen PRIVATE avformat avcodec avutil swscale z)
 endif()
 
 # Conditionally include and link FreeType if LV_USE_FREETYPE is enabled
 if(LV_USE_FREETYPE)
   find_package(Freetype REQUIRED)
   target_include_directories(lvgl PUBLIC ${FREETYPE_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen ${FREETYPE_LIBRARIES})
+  target_link_libraries(DuetScreen PRIVATE ${FREETYPE_LIBRARIES})
 endif()
 
 # Apply additional compile options if the build type is Debug
