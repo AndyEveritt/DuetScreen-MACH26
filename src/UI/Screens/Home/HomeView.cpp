@@ -141,6 +141,18 @@ namespace UI
 		// lv_theme_apply(getCont());
 		// lv_obj_refresh_style(getCont(), LV_PART_ANY, LV_STYLE_PROP_ANY);
 
+		lv_obj_t* image = lv_image_create(getCont());
+		lv_obj_set_size(image, 100, 100);
+		lv_image_set_src(image, "libraries/lvgl/examples/libs/ffmpeg/ffmpeg.png");
+
+		lv_obj_t* player = lv_ffmpeg_player_create(getCont());
+		lv_ffmpeg_player_set_src(player, "libraries/lvgl/examples/libs/ffmpeg/birds.mp4");
+		lv_ffmpeg_player_set_auto_restart(player, true);
+		lv_ffmpeg_player_set_cmd(player, LV_FFMPEG_PLAYER_CMD_START);
+		lv_obj_add_flag(player, LV_OBJ_FLAG_FLOATING);
+		lv_obj_set_size(player, LV_PCT(100), LV_PCT(100));
+		lv_obj_center(player);
+
 		m_presenter.init();
 	}
 

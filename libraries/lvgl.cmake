@@ -2,7 +2,7 @@
 option(LV_USE_DRAW_SDL "Use SDL draw unit" OFF)
 option(LV_USE_LIBPNG "Use libpng to decode PNG" OFF)
 option(LV_USE_LIBJPEG_TURBO "Use libjpeg turbo to decode JPEG" OFF)
-option(LV_USE_FFMPEG "Use libffmpeg to display video using lv_ffmpeg" OFF)
+option(LV_USE_FFMPEG "Use libffmpeg to display video using lv_ffmpeg" ON)
 option(LV_USE_FREETYPE "Use freetype library" OFF)
 
 option(LV_CONF_BUILD_DISABLE_DEMOS "Disable building of demos" ON)
