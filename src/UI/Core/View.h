@@ -2,7 +2,16 @@
 
 #include "Model.h"
 #include "lvgl/lvgl.h"
+#include "lvgl/src/osal/lv_os.h"
 #include <memory>
+
+#if SIMULATION
+#  define IMAGE_ASSET(name) "A:assets/" name
+#  define VIDEO_ASSET(name) "assets/" name
+#else
+#  define IMAGE_ASSET(name) "A:/etc/assets/" name
+#  define VIDEO_ASSET(name) "/etc/assets/" name
+#endif
 
 namespace UI
 {

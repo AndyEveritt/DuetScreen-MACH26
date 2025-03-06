@@ -99,9 +99,6 @@ int main(int argc, char** argv)
 
 #if LV_USE_OS == LV_OS_PTHREAD
 
-	// lv_demo_widgets();
-	// lv_demo_benchmark();
-
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
 

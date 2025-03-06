@@ -25,17 +25,16 @@ set(LV_CONF_INCLUDE_SIMPLE
     CACHE STRING INTERNAL FORCE)
 
 # Add LVGL subdirectory
+# set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(${LIBRARIES_DIR}/lvgl)
 target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
                                        ${SDL2_INCLUDE_DIRS} ${LIBRARIES_DIR})
 
-# Drivers
-# add_subdirectory(${LIBRARIES_DIR}/lv_drivers)
-# target_compile_definitions(
-#   lv_drivers
-#   PUBLIC $<$<BOOL:${LV_LVGL_H_INCLUDE_SIMPLE}>:LV_LVGL_H_INCLUDE_SIMPLE>
-#          $<$<BOOL:${LV_CONF_INCLUDE_SIMPLE}>:LV_CONF_INCLUDE_SIMPLE>
-#          USE_SUNXIFB_G2D=1)
+
+# Drivers add_subdirectory(${LIBRARIES_DIR}/lv_drivers)
+# target_compile_definitions( lv_drivers PUBLIC
+# $<$<BOOL:${LV_LVGL_H_INCLUDE_SIMPLE}>:LV_LVGL_H_INCLUDE_SIMPLE>
+# $<$<BOOL:${LV_CONF_INCLUDE_SIMPLE}>:LV_CONF_INCLUDE_SIMPLE> USE_SUNXIFB_G2D=1)
 
 # target_include_directories(lv_drivers PUBLIC ${PROJECT_SOURCE_DIR}
-#                                              ${LIBRARIES_DIR})
+# ${LIBRARIES_DIR})

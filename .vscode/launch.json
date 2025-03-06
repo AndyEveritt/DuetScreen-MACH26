@@ -47,7 +47,8 @@
             ],
             "externalConsole": false,
             "sourceFileMap": {
-                "${config:buildroot_path}/output/build/duetscreen-HEAD/src": "${workspaceFolder}/src"
+                "${config:buildroot_path}/output/build/duetscreen-HEAD/src": "${workspaceFolder}/src",
+                "${config:buildroot_path}/output/build/duetscreen-HEAD/libraries": "${workspaceFolder}/libraries"
             }
         }
     ],

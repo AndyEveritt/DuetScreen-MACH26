@@ -120,6 +120,21 @@
 			}
 		},
 		{
+			"label": "Push Assets - SSH",
+			"type": "shell",
+			"command": "command ssh root@${config:duetscreen_ip} 'mkdir -p /etc/assets'; scp assets root@${config:duetscreen_ip}:/etc/assets",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"detail": "Push the DuetScreen assets to the screen",
+			"dependsOn": [],
+			"runOptions": {
+				"instanceLimit": 1,
+			}
+		},
+		{
 			"label": "Start DuetScreen on remote",
 			"type": "shell",
 			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S20DuetScreen start'",

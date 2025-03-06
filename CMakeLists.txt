@@ -24,6 +24,8 @@ set(MAIN_SOURCES "")
 # Libraries
 # ----------------------------------------------------------------------------
 
+# option(BUILD_SHARED_LIBS "Set default library type to shared" OFF)
+
 # FreeRTOS
 include(${LIBRARIES_DIR}/FreeRTOS.cmake)
 

@@ -1,9 +1,6 @@
 [submodule "lvgl"]
 	path = libraries/lvgl
 	url = https://github.com/lvgl/lvgl.git
-[submodule "FreeRTOS"]
-	path = libraries/FreeRTOS
-	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
 [submodule "libraries/libhv"]
 	path = libraries/libhv
 	url = https://github.com/ithewei/libhv.git

@@ -6,6 +6,7 @@
 #include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "Presenter.h"
+#include "lvgl/src/osal/lv_os.h"
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
   for (auto presenter : m_presenters)                                                                                  \
