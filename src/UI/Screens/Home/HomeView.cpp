@@ -141,12 +141,22 @@ namespace UI
 		// lv_theme_apply(getCont());
 		// lv_obj_refresh_style(getCont(), LV_PART_ANY, LV_STYLE_PROP_ANY);
 
-		lv_obj_t* image = lv_image_create(getCont());
-		lv_obj_set_size(image, LV_SIZE_CONTENT, 200);
-		lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
-		lv_image_set_src(image, VIDEO_ASSET("ffmpeg.png"));
+		lv_obj_t* cont = lv_obj_create(getCont());
+		lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_PCT(100));
+		lv_obj_set_layout(cont, LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
 
-		lv_obj_t* player = lv_ffmpeg_player_create(getCont());
+		lv_obj_t* image = lv_image_create(cont);
+		lv_obj_set_size(image, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
+		lv_image_set_src(image, IMAGE_ASSET("ffmpeg.png"));
+
+		lv_obj_t* image2 = lv_image_create(cont);
+		lv_obj_set_size(image2, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		lv_obj_align(image2, LV_ALIGN_CENTER, 0, 0);
+		lv_image_set_src(image2, IMAGE_ASSET("024_controls.bmp"));
+
+		lv_obj_t* player = lv_ffmpeg_player_create(cont);
 		lv_ffmpeg_player_set_src(player, VIDEO_ASSET("birds.mp4"));
 		lv_ffmpeg_player_set_auto_restart(player, true);
 		lv_ffmpeg_player_set_cmd(player, LV_FFMPEG_PLAYER_CMD_START);
