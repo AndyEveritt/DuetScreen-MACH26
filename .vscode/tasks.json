@@ -116,7 +116,7 @@
 				"Build DuetScreen for Remote"
 			],
 			"runOptions": {
-				"instanceLimit": 1,
+				"instanceLimit": 1
 			}
 		},
 		{
@@ -129,6 +129,21 @@
 			},
 			"problemMatcher": [],
 			"detail": "Push the DuetScreen assets to the screen",
+			"dependsOn": [],
+			"runOptions": {
+				"instanceLimit": 1,
+			}
+		},
+		{
+			"label": "Push Libraries - SSH",
+			"type": "shell",
+			"command": "scp output/target/usr/lib/*lvgl* root@${config:duetscreen_ip}:/usr/lib",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"detail": "Push the DuetScreen libraries to the screen",
 			"dependsOn": [],
 			"runOptions": {
 				"instanceLimit": 1,

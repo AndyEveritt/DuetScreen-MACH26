@@ -199,6 +199,9 @@ endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   message(STATUS "Debug mode enabled")
 
+  # add_compile_definitions(LV_USE_SYSMON=1)
+  target_compile_definitions(lvgl PUBLIC LV_USE_SYSMON=1)
+
   target_compile_options(
     lvgl
     PRIVATE -pedantic-errors
