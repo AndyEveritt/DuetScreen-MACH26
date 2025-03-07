@@ -12,6 +12,7 @@
 
 #include "Configuration.h"
 #include "Hardware/Duet.h"
+#include "ObjectModel/Files.h"
 #include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "utils/utils.h"
@@ -225,8 +226,10 @@ namespace Comm
 		if (!OM::GetJobName().empty() && m_currentCachedJobPath != OM::GetJobName())
 		{
 			// Set the thumbnail to a small version if it exists
+#if 0
 			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)
 				->setBackgroundPic(GetThumbnailPath(OM::GetJobName().c_str()).c_str());
+#endif
 
 			// Queue a request for a large thumbnail
 			bool queued = QueueLargeThumbnailRequest(OM::GetJobName());
@@ -330,8 +333,11 @@ namespace Comm
 		m_fileInfoRequestInProgress = false;
 		if (m_currentFileInfo == nullptr)
 			return;
-
+#if 0
 		const OM::FileSystem::File* file = UI::FileList::GetSelectedFile();
+#else
+		const OM::FileSystem::File* file = nullptr;
+#endif
 		if (file == nullptr)
 		{
 			return;

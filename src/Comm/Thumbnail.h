@@ -9,6 +9,7 @@
 #include "image/bmp.h"
 #include "image/png.h"
 #include "image/qoi.h"
+#include "lvgl/lvgl.h"
 #include <string>
 
 namespace Comm
@@ -111,8 +112,7 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data);
 
 std::string GetThumbnailPath(const char* filepath);
 bool IsThumbnailCached(const char* filepath, bool includeBlank = false);
-// TODO SetThumbnail
-// void SetThumbnail(ZKBase* base, const char* filepath);
+void SetThumbnail(lv_obj_t* base, const char* filepath);
 bool ClearAllCachedThumbnails();
 bool DeleteCachedThumbnail(const char* filepath);
 bool CreateBlankThumbnailCache(const char* filepath);

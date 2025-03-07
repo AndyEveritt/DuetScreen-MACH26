@@ -222,7 +222,7 @@ namespace Comm
 			case ThumbnailState::DataWait:
 				break;
 			case ThumbnailState::Data:
-#if 0
+#if 1
 				if (!ThumbnailDataIsValid(g_thumbnailBuf))
 				{
 					error("thumbnail meta or data invalid.\n");
@@ -248,7 +248,7 @@ namespace Comm
 			default:
 				break;
 			}
-#if 0
+#if 1
 			FILEINFO_CACHE->ReceivingThumbnailResponse(false);
 #endif
 			break;

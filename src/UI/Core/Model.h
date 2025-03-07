@@ -12,6 +12,7 @@
 #include "Subscribers/SpindleSubscribers.h"
 #include "Subscribers/StateSubscribers.h"
 #include "Subscribers/Subscribers.h"
+#include "Subscribers/ThumbnailSubscribers.h"
 #include "Subscribers/ToolSubscribers.h"
 #include "lvgl/lvgl.h"
 #include <list>
@@ -150,6 +151,7 @@ class Model
 	SensorSubscribers m_sensorSubscribers;
 	SpindleSubscribers m_spindleSubscribers;
 	StateSubscribers m_stateSubscribers;
+	ThumbnailSubscribers m_thumbnailSubscribers;
 	ToolSubscribers m_toolSubscribers;
 	std::list<UI::BasePresenter*> m_presenters;
 
