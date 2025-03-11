@@ -195,7 +195,8 @@ namespace Comm
 			warn("No USB device handle");
 			return -1;
 		}
-		uint8_t request_type = LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE;
+		uint8_t request_type =
+			static_cast<uint8_t>(LIBUSB_REQUEST_TYPE_CLASS) | static_cast<uint8_t>(LIBUSB_RECIPIENT_INTERFACE);
 		uint8_t request = 0x22;				  // SET_CONTROL_LINE_STATE (commonly used for DTR/RTS)
 		uint16_t value = state ? 0x01 : 0x00; // DTR set high (bit 0)
 		uint16_t index = 0;					  // Interface number (adjust if necessary)

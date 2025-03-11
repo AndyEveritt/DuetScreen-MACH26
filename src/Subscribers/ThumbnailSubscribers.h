@@ -26,7 +26,7 @@ class ThumbnailSubscribers : public SubscriberMap
 		addSubscriber("thumbnail:next", thumbnailNext);
 		addSubscriber("thumbnail:err", thumbnailErr);
 
-		addArrayEndSubscriber("thumbnails", thumbnailsArrayEnd);
+		addArrayEndSubscriber("thumbnails^", thumbnailsArrayEnd);
 	}
 
   private:

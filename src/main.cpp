@@ -58,6 +58,7 @@ static int usb_test();
 #if LV_USE_OS == LV_OS_PTHREAD
 static pthread_t s_responseThread;
 static pthread_t s_requestThread;
+static pthread_t s_thumbnailThread;
 #endif
 
 /**********************
@@ -129,6 +130,20 @@ int main(int argc, char** argv)
 			{
 				useconds_t delay = Model::get().receiveNewUsbData();
 				usleep(delay);
+			}
+			return nullptr;
+		},
+		NULL);
+
+	pthread_create(
+		&s_thumbnailThread,
+		NULL,
+		[](void*) -> void*
+		{
+			while (1)
+			{
+				FILEINFO_CACHE->Spin();
+				usleep(50 * 1000);
 			}
 			return nullptr;
 		},

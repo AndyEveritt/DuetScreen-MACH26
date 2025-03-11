@@ -585,7 +585,7 @@ namespace Comm
 	{
 		dbg("File info cache debug");
 		printf("File info cache:");
-		for (auto& it : GetInstance()->m_cache)
+		for (auto& it : get()->m_cache)
 		{
 			FileInfo* fileInfo = it.second;
 			if (fileInfo == nullptr)
@@ -634,12 +634,12 @@ namespace Comm
 			printf("    %dx%d %s", thumbnail->meta.width, thumbnail->meta.height, thumbnail->filename.c_str());
 		}
 
-		FileInfo* fileInfo = GetInstance()->GetCurrentFileInfo();
-		Thumbnail* thumbnail = GetInstance()->GetCurrentThumbnail();
+		FileInfo* fileInfo = get()->GetCurrentFileInfo();
+		Thumbnail* thumbnail = get()->GetCurrentThumbnail();
 		printf("  Current FileInfo: %s",
-			   fileInfo == nullptr ? "null" : GetInstance()->m_currentFileInfo->filename.c_str());
+			   fileInfo == nullptr ? "null" : get()->m_currentFileInfo->filename.c_str());
 		printf("  Current Thumbnail: %s",
-			   thumbnail == nullptr ? "null" : GetInstance()->m_currentThumbnail->filename.c_str());
+			   thumbnail == nullptr ? "null" : get()->m_currentThumbnail->filename.c_str());
 	}
 
 	tm ParseSeconds(uint32_t seconds)
@@ -667,5 +667,5 @@ namespace Comm
 	}
 
 	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache",
-												  []() { FileInfoCache::GetInstance()->Debug(); });
+												  []() { FileInfoCache::get()->Debug(); });
 } // namespace Comm

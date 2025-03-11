@@ -200,7 +200,7 @@ namespace Comm
 				thumbnail->context.state = ThumbnailState::Init;
 			}
 
-#if 1 // && DEBUG
+#if DEBUG
 			if (thumbnail->meta.imageFormat != ThumbnailMeta::ImageFormat::Invalid)
 			{
 				dbg("filename %s offset %d size %d format %d width %d height %d\n",
@@ -263,7 +263,7 @@ namespace Comm
 	// Public functions called by the SerialIo module
 	void JsonDecoder::ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
-		dbg("%s (indices [%d|%d|%d|%d]) = '%s'", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
+		verbose("%s (indices [%d|%d|%d|%d]) = '%s'", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
 		if (StringStartsWith(id.c_str(), "result"))
 		{
 			// We might either get something like:
@@ -436,13 +436,13 @@ namespace Comm
 
 	void JsonDecoder::EndArray()
 	{
-		dbg("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
-			m_fieldId.c_str(),
-			m_arrayIndices[0],
-			m_arrayIndices[1],
-			m_arrayIndices[2],
-			m_arrayIndices[3],
-			m_arrayDepth);
+		verbose("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
+				m_fieldId.c_str(),
+				m_arrayIndices[0],
+				m_arrayIndices[1],
+				m_arrayIndices[2],
+				m_arrayIndices[3],
+				m_arrayDepth);
 
 		ProcessArrayEnd(m_fieldId.c_str(), m_arrayIndices);
 

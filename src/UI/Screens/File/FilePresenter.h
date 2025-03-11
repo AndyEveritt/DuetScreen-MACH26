@@ -24,6 +24,7 @@ namespace UI
 		void startPrint();
 		void runMacro();
 		void requestFiles();
+		void refreshFiles();
 		bool back();
 
 		// Observers

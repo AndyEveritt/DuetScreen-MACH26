@@ -173,14 +173,14 @@ bool Model::initMutex()
 
 void Model::lock()
 {
-	dbg("Attempting to lock model");
+	verbose("Attempting to lock model");
 	lv_lock();
 	pthread_mutex_lock(&m_mutex);
 }
 
 void Model::unlock()
 {
-	dbg("Unlocking model");
+	verbose("Unlocking model");
 	lv_unlock();
 	pthread_mutex_unlock(&m_mutex);
 }

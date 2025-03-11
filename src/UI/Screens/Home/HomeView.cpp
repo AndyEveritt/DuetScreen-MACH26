@@ -147,14 +147,16 @@ namespace UI
 		// lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
 
 		// lv_obj_t* image = lv_image_create(cont);
-		// lv_obj_set_size(image, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		// lv_obj_set_size(image, 100, 200);
 		// lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
 		// lv_image_set_src(image, IMAGE_ASSET("ffmpeg.png"));
+		// lv_image_set_inner_align(image, LV_IMAGE_ALIGN_STRETCH);
 
 		// lv_obj_t* image2 = lv_image_create(cont);
-		// lv_obj_set_size(image2, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		// lv_obj_set_size(image2, 100, 100);
 		// lv_obj_align(image2, LV_ALIGN_CENTER, 0, 0);
 		// lv_image_set_src(image2, IMAGE_ASSET("024_controls.bmp"));
+		// lv_image_set_inner_align(image2, LV_IMAGE_ALIGN_STRETCH);
 
 		// lv_obj_t* player = lv_ffmpeg_player_create(cont);
 		// lv_ffmpeg_player_set_src(player, VIDEO_ASSET("birds.mp4"));

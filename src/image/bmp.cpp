@@ -11,15 +11,25 @@ constexpr int INFO_HEADER_SIZE = 40;
 const static unsigned char padding[BYTES_PER_PIXEL] = {0};
 
 BMP::BMP()
-	: m_width(0), m_height(0), m_imageFileName(nullptr), m_paddingSize(0), m_stride(0), m_imageFile(nullptr),
-	  m_pixelIndex(0), m_pixelBuffer(nullptr)
+	: m_width(0)
+	, m_height(0)
+	, m_imageFileName(nullptr)
+	, m_paddingSize(0)
+	, m_stride(0)
+	, m_imageFile(nullptr)
+	, m_pixelIndex(0)
+	, m_pixelBuffer(nullptr)
 {
 }
 
 BMP::BMP(int width, int height, const char* imageFileName)
-	: m_width(width), m_height(height), m_imageFileName(imageFileName), m_widthInBytes(width * BYTES_PER_PIXEL),
-	  m_paddingSize((4 - (width * BYTES_PER_PIXEL) % 4) % 4), m_stride((width * BYTES_PER_PIXEL) + m_paddingSize),
-	  m_pixelIndex(0)
+	: m_width(width)
+	, m_height(height)
+	, m_imageFileName(imageFileName)
+	, m_widthInBytes(width * BYTES_PER_PIXEL)
+	, m_paddingSize((4 - (width * BYTES_PER_PIXEL) % 4) % 4)
+	, m_stride((width * BYTES_PER_PIXEL) + m_paddingSize)
+	, m_pixelIndex(0)
 {
 	m_imageFile = fopen(imageFileName, "wb");
 	AllocateBuffer();

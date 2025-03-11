@@ -18,7 +18,7 @@ namespace UI
 		, m_label(lv_label_create(getCont()))
 		, m_date(lv_label_create(getCont()))
 		, m_size(lv_label_create(getCont()))
-		, m_thumbnail(lv_img_create(getCont()))
+		, m_thumbnail(lv_image_create(getCont()))
 		, m_type(lv_label_create(getCont()))
 	{
 		Lock lock;
@@ -35,6 +35,8 @@ namespace UI
 		lv_obj_set_grid_cell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
 		lv_obj_set_grid_cell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		lv_obj_set_grid_cell(m_type, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+
+		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_STRETCH);
 
 		// Callbacks
 		lv_obj_add_event_cb(getCont(), onClick, LV_EVENT_CLICKED, this);
@@ -61,7 +63,7 @@ namespace UI
 		lv_label_set_text(m_size, size);
 	}
 
-	void FileView::FileItem::setThumbnail(lv_img_dsc_t* thumbnail)
+	void FileView::FileItem::setThumbnail(const char* thumbnail)
 	{
 		Lock lock;
 		lv_image_set_src(m_thumbnail, thumbnail);
@@ -238,7 +240,7 @@ namespace UI
 		Lock lock;
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		view->cancelStartPrint();
-		view->m_presenter.requestFiles();
+		view->m_presenter.refreshFiles();
 	}
 
 	bool FileView::back()

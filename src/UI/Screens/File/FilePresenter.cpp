@@ -1,4 +1,5 @@
 #include "FilePresenter.h"
+#include "Comm/Thumbnail.h"
 #include "Debug.h"
 #include "FileView.h"
 #include "Hardware/Duet.h"
@@ -52,6 +53,9 @@ namespace UI
 			m_view->confirmRunMacro(item->GetName().c_str());
 			return;
 		}
+
+		Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
+		FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
 		m_view->confirmStartPrint(item->GetName().c_str(), item->GetDate().c_str(), item->GetReadableSize().c_str());
 	}
 
@@ -90,9 +94,26 @@ namespace UI
 					item->setDate(file->GetDate().c_str());
 					item->setSize(file->GetReadableSize().c_str());
 					item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
+
+					// Set thumbnail
+					if (file->GetType() == OM::FileSystem::FileSystemItemType::file &&
+						IsThumbnailCached(file->GetPath().c_str()))
+					{
+						item->setThumbnail(GetThumbnailPath(file->GetPath().c_str()).c_str());
+					}
+					else
+					{
+						item->setThumbnail(nullptr);
+					}
 				}
 			},
 			true);
+	}
+
+	void FilePresenter::refreshFiles()
+	{
+		FILEINFO_CACHE->ClearCache();
+		requestFiles();
 	}
 
 	bool FilePresenter::back()

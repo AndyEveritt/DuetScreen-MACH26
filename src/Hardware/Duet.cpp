@@ -101,7 +101,7 @@ namespace Comm
 		Disconnect();
 
 		m_config.communicationType = type;
-#if 0
+#if 1
 		FILEINFO_CACHE->ClearCache();
 #endif
 		Connect();
@@ -369,25 +369,14 @@ namespace Comm
 		}
 		case CommunicationType::network:
 		{
-			// TODO network upload
-#if 0
-			registerDelayedCallback("upload_file_progress", 1000, []() {
-				static int s_progress = 0;
-				if (s_progress >= 90)
-					return false;
-				s_progress += 10;
-				return true;
-			});
 			HttpResponse r;
 			hv::QueryParams query;
 			query["name"] = filename;
 			if (!Post("/rr_upload", r, query, contents))
 			{
-				printf(utils::format("HTTP error %d %s: Failed to upload file: %s", r.code, r.body, filename).c_str());
-				unregisterDelayedCallback("upload_file_progress");
+				error("HTTP error %d %s: Failed to upload file: %s", r.status_code, r.body, filename);
 				return false;
 			}
-#endif
 			break;
 		}
 		default:
@@ -403,13 +392,13 @@ namespace Comm
 		{
 		case CommunicationType::network:
 		{
-#if 0
+#if 1
 			HttpResponse r;
 			hv::QueryParams query;
 			query["name"] = filename;
 			if (!Get("/rr_download", r, query))
 			{
-				printf("HTTP error %d: Failed to download file: %s", r.code, filename);
+				error("HTTP error %d: Failed to download file: %s", r.status_code, filename);
 				return false;
 			}
 			contents = r.body;
@@ -560,18 +549,19 @@ namespace Comm
 			hv::QueryParams query;
 			query["name"] = filename;
 
-#if 0
+#if 1
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
-				[this](HttpResponse& r) -> bool
+				[this](const HttpResponsePtr& r) -> bool
 				{
 					JsonDecoder decoder;
-					if (r.code != 200)
+					if (r->status_code != 200)
 					{
+						error("HTTP error %d: Failed to get file info for file: %s", r->status_code, r->body.c_str());
 						return false;
 					}
-					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
 					return true;
 				},
 				true);
@@ -713,22 +703,23 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-#if 0
+#if 1
 			hv::QueryParams query;
 			query["name"] = filename;
 			query["offset"] = utils::format("%d", offset);
 			AsyncGet(
 				"/rr_thumbnail",
 				query,
-				[this](HttpResponse& r) -> bool
+				[this](const HttpResponsePtr& r) -> bool
 				{
 					JsonDecoder decoder;
-					if (r.code != 200)
+					if (r->status_code != 200)
 					{
+						error("HTTP error %d: Failed to get thumbnail for file: %s", r->status_code, r->body.c_str());
 						return false;
 					}
 					decoder.SetPrefix("thumbnail:");
-					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.size() + 1);
+					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.size() + 1);
 					return true;
 				},
 				true);
@@ -996,8 +987,7 @@ namespace Comm
 
 		ClearIPAddress();
 		info("Set Duet hostname to %s", m_config.hostname.c_str());
-		// TODO Clear file info cache
-		// FILEINFO_CACHE->ClearCache();
+		FILEINFO_CACHE->ClearCache();
 		if (m_config.communicationType == CommunicationType::network)
 			Connect();
 

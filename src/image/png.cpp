@@ -4,9 +4,14 @@
 #include <algorithm>
 #include <stdio.h>
 
-PNG::PNG() : m_imageFileName(nullptr), m_imageFile(nullptr) {}
+PNG::PNG()
+	: m_imageFileName(nullptr)
+	, m_imageFile(nullptr)
+{
+}
 
-PNG::PNG(const char* imageFileName) : m_imageFileName(imageFileName)
+PNG::PNG(const char* imageFileName)
+	: m_imageFileName(imageFileName)
 {
 	Open();
 }

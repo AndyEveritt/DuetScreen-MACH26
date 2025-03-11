@@ -6,13 +6,14 @@
  */
 #include "Debug.h"
 
-#include "Configuration.h"
 #include "Comm/FileInfo.h"
+#include "Configuration.h"
 #include "ThumbnailSubscribers.h"
 #include "UI/Core/Model.h"
 
 bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	// TODO this is not thread safe with multiple parallel requests
 	FILEINFO_CACHE->SetCurrentFileInfo(data);
 	dbg("Receiving file info about %s", FILEINFO_CACHE->GetCurrentFileInfo()->filename.c_str());
 	return true;

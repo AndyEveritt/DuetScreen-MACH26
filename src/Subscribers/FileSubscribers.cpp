@@ -60,36 +60,35 @@ bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	dbg("Files: name assignment, val=%s", data);
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	info("Files: item[%u] name=%s", index, data);
 	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
 
 	item->SetName(data);
-	info("Files: item[%d] name=%s", index, item->GetName().c_str());
 	return true;
 }
 
 bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	info("Files: item[%u] size=%d", index, data);
 	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
 	item->SetSize(data);
-	info("Files: item[%d] size=%d", index, item->GetSize());
 	return true;
 }
 
 bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	info("Files: item[%u] date=%s", index, data);
 	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
 	item->SetDate(data);
-	info("Files: item[%d] date=%s", index, item->GetDate().c_str());
 	return true;
 }
 
@@ -126,7 +125,7 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 		{
 			continue;
 		}
-#if 0
+#if 1
 		if (FILEINFO_CACHE->IsThumbnailCached(item->GetPath(), item->GetDate().c_str()))
 		{
 			continue;

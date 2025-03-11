@@ -54,7 +54,7 @@ namespace Comm
 	class FileInfoCache
 	{
 	  public:
-		static FileInfoCache* GetInstance()
+		static FileInfoCache* get()
 		{
 			static FileInfoCache instance;
 			return &instance;
@@ -118,6 +118,6 @@ namespace Comm
 
 	extern ThumbnailBuf g_thumbnailBuf;
 } // namespace Comm
-#define FILEINFO_CACHE Comm::FileInfoCache::GetInstance()
+#define FILEINFO_CACHE Comm::FileInfoCache::get()
 
 #endif /* JNI_COMM_FILEINFO_H_ */

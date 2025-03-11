@@ -17,7 +17,7 @@ namespace UI
 			void setLabel(const char* name);
 			void setDate(const char* date);
 			void setSize(const char* size);
-			void setThumbnail(lv_img_dsc_t* thumbnail);
+			void setThumbnail(const char* thumbnail);
 			void setType(const bool isFolder);
 
 			const char* getLabel() const;
