@@ -27,6 +27,7 @@ namespace Comm
 		{
 			unknown = 0,
 			filelist,
+			fileInfo,
 			thumbnail,
 		};
 

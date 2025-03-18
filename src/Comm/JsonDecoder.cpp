@@ -248,7 +248,7 @@ namespace Comm
 			default:
 				break;
 			}
-#if 1
+#if 0
 			FILEINFO_CACHE->ReceivingThumbnailResponse(false);
 #endif
 			break;

@@ -54,7 +54,7 @@ namespace UI
 			return;
 		}
 
-		Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
+		Comm::FileInfoPtr fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
 		FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
 		m_view->confirmStartPrint(item->GetName().c_str(), item->GetDate().c_str(), item->GetReadableSize().c_str());
 	}

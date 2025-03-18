@@ -535,9 +535,10 @@ namespace Comm
 		return;
 	}
 
-	void Duet::RequestFileInfo(const char* filename)
+	bool Duet::RequestFileInfo(const char* filename)
 	{
 		dbg("for %s", filename);
+		bool ret = true;
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
@@ -550,7 +551,7 @@ namespace Comm
 			query["name"] = filename;
 
 #if 1
-			AsyncGet(
+			ret = AsyncGet(
 				"/rr_fileinfo",
 				query,
 				[this](const HttpResponsePtr& r) -> bool
@@ -572,7 +573,7 @@ namespace Comm
 /* This way is quicker but duplicates code to decode the received data */
 #if 0
 			std::string name(filename);
-			AsyncGet(
+			ret = AsyncGet(
 				"/rr_fileinfo",
 				query,
 				[this, name](HttpResponse& r) -> bool {
@@ -688,14 +689,15 @@ namespace Comm
 #endif
 		}
 		default:
-			break;
+			return false;
 		}
-		return;
+		return ret;
 	}
 
-	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
+	bool Duet::RequestThumbnail(const char* filename, uint32_t offset)
 	{
 		dbg("for %s, offset=%u", filename, offset);
+		bool ret = true;
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
@@ -707,7 +709,7 @@ namespace Comm
 			hv::QueryParams query;
 			query["name"] = filename;
 			query["offset"] = utils::format("%d", offset);
-			AsyncGet(
+			ret = AsyncGet(
 				"/rr_thumbnail",
 				query,
 				[this](const HttpResponsePtr& r) -> bool
@@ -727,8 +729,9 @@ namespace Comm
 			break;
 		}
 		default:
-			break;
+			return false;
 		}
+		return ret;
 	}
 
 	void Duet::ProcessReply(HttpResponse& reply)

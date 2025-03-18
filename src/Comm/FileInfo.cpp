@@ -33,15 +33,9 @@ namespace Comm
 	FileInfo::~FileInfo()
 	{
 		dbg("Deleted fileinfo %s", filename.c_str());
-		for (auto& thumbnail : m_thumbnails)
-		{
-			if (thumbnail == nullptr)
-				continue;
-			delete thumbnail;
-		}
 	}
 
-	Thumbnail* FileInfo::GetThumbnail(size_t index)
+	std::shared_ptr<Thumbnail> FileInfo::GetThumbnail(size_t index)
 	{
 		if (index >= m_thumbnails.size())
 		{
@@ -51,12 +45,12 @@ namespace Comm
 		return m_thumbnails[index];
 	}
 
-	Thumbnail* FileInfo::GetOrCreateThumbnail(size_t index)
+	std::shared_ptr<Thumbnail> FileInfo::GetOrCreateThumbnail(size_t index)
 	{
 		if (index >= m_thumbnails.size())
 		{
 			m_thumbnails.resize(index + 1);
-			m_thumbnails[index] = new Thumbnail(filename.GetRef());
+			m_thumbnails[index] = std::make_shared<Thumbnail>(filename.GetRef());
 		}
 
 		return m_thumbnails[index];
@@ -64,14 +58,7 @@ namespace Comm
 
 	size_t FileInfo::ClearThumbnails(size_t fromIndex)
 	{
-		size_t count = 0;
-		for (size_t i = fromIndex; i < m_thumbnails.size(); ++i)
-		{
-			if (m_thumbnails[i] == nullptr)
-				continue;
-			delete m_thumbnails[i];
-			count++;
-		}
+		size_t count = m_thumbnails.size() - fromIndex;
 		m_thumbnails.resize(fromIndex);
 		return count;
 	}
@@ -109,52 +96,63 @@ namespace Comm
 			UI::POPUP_WINDOW.SetProgress(-1); // Hide the progress bar
 		}
 #endif
+		int64_t now = TimeHelper::getCurrentTime();
 
-		long long now = TimeHelper::getCurrentTime();
-
-		// Limit request rate while printing or if the file list is not visible
-		// TODO check if file list is visible
-		if ((OM::PrintInProgress()) && (now - m_lastFileInfoRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL ||
-										now - m_lastThumbnailRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL))
+		// Timeout any request that hasn't received a response within the timeout period
+		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
-			if (m_currentThumbnail == nullptr || !m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
+			if (request.HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
 			{
-				verbose("Skipping file info cache spin");
-				return;
+				warn("File info request timed out for %s", request.GetData()->filename.c_str());
+				request.Complete(true);
+				warn("Requeuing failed file info request for %s", request.GetData()->filename.c_str());
+				QueueFileInfoRequest(request.GetData()->filename.c_str());
 			}
 		}
 
-		// Check if a file info request has timed out
-		if (m_fileInfoRequestInProgress && now > m_lastFileInfoRequestTime + FILE_CACHE_REQUEST_TIMEOUT)
+		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
 		{
-			warn("File info request timed out for %s", m_currentFileInfoRequest.c_str());
-			m_fileInfoRequestInProgress = false;
-			QueueFileInfoRequest(m_currentFileInfoRequest);
-			m_currentFileInfoRequest.clear();
+			if (request.HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+			{
+				warn("Thumbnail request timed out for %s", request.GetData()->filename.c_str());
+				request.Complete(true);
+				warn("Requeuing failed thumbnail request for %s", request.GetData()->filename.c_str());
+				DeleteCachedThumbnail(request.GetData()->filename.c_str());
+				QueueThumbnailRequest(request.GetData()->filename.c_str());
+			}
 		}
 
-		// Check if a thumbnail request has timed out
-		if (m_currentThumbnail != nullptr && now > m_lastThumbnailRequestTime + FILE_CACHE_REQUEST_TIMEOUT)
+		if ((OM::PrintInProgress()) && (now - m_lastRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL))
 		{
-			Thumbnail* thumbnail = m_currentThumbnail;
-			m_currentThumbnail = nullptr;
-			warn("Thumbnail request timed out for %s", thumbnail->filename.c_str());
-			DeleteCachedThumbnail(thumbnail->filename.c_str());
-			QueueThumbnailRequest(thumbnail->filename.c_str());
+			verbose("Skipping file info cache spin");
+			return;
 		}
 
-		// Check if a request has finished
-		if (!m_fileInfoRequestInProgress && m_currentFileInfo != nullptr)
+		// Start a new request if there are no requests in progress
+		if (!FileInfoRequestInProgress())
 		{
-			m_currentFileInfoRequest.clear();
-			m_currentFileInfo = nullptr;
+			for (FileInfoRequest& request : m_fileInfoRequestQueue)
+			{
+				request.RequestData();
+				break;
+			}
 		}
 
-		if (m_currentThumbnail == nullptr)
+		// Start a new thumbnail request if there are none in progress
+		if (!ThumbnailRequestInProgress())
 		{
-			m_thumbnailRequestInProgress = false;
+			for (ThumbnailRequest& request : m_thumbnailRequestQueue)
+			{
+				if (request.IsInProgress())
+				{
+					continue;
+				}
+				// request.RequestData();
+				break;
+			}
 		}
-
+// Check if a request has finished
+#if 0
 		if (m_thumbnailRequestInProgress)
 		{
 			if (m_currentThumbnail->context.parseErr != 0 || m_currentThumbnail->context.err != 0)
@@ -191,14 +189,14 @@ namespace Comm
 			case ThumbnailState::Cached:
 				m_currentThumbnail->image.Close();
 				info("Updating thumbnail %s", m_currentThumbnail->filename.c_str());
-#if 0
+#  if 0
 				UI::FileList::GetThumbnail()->setText("");
 				UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
 				if (m_currentThumbnail->AboveCacheLimit())
 				{
 					UI::POPUP_WINDOW.SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
 				}
-#endif
+#  endif
 				if (m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
 				{
 					if (GetFileSize(currentJobThumbnailFilePath) <
@@ -208,10 +206,10 @@ namespace Comm
 											 m_currentThumbnail->GetThumbnailPath().c_str(),
 											 currentJobThumbnailFilePath)
 								   .c_str());
-#if 0
+#  if 0
 						UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)
 							->setBackgroundPic(currentJobThumbnailFilePath);
-#endif
+#  endif
 					}
 					m_currentCachedJobPath = OM::GetJobName();
 				}
@@ -226,10 +224,10 @@ namespace Comm
 		if (!OM::GetJobName().empty() && m_currentCachedJobPath != OM::GetJobName())
 		{
 			// Set the thumbnail to a small version if it exists
-#if 0
+#  if 0
 			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)
 				->setBackgroundPic(GetThumbnailPath(OM::GetJobName().c_str()).c_str());
-#endif
+#  endif
 
 			// Queue a request for a large thumbnail
 			bool queued = QueueLargeThumbnailRequest(OM::GetJobName());
@@ -272,6 +270,7 @@ namespace Comm
 		m_thumbnailRequestQueue.pop_front();
 
 		RequestThumbnail(thumbnail);
+#endif
 	}
 
 	bool FileInfoCache::IsThumbnailCached(const std::string& filepath, const char* lastModified)
@@ -290,10 +289,10 @@ namespace Comm
 			return false;
 		}
 
-		FileInfo* fileInfo = m_cache[filepath];
+		FileInfoPtr fileInfo = m_cache[filepath];
 
 		// Is the last modified time the same?
-		if (strncmp(fileInfo->lastModified.c_str(), lastModified, fileInfo->lastModified.Capacity()) != 0)
+		if (!fileInfo->lastModified.Equals(lastModified))
 		{
 			dbg("Last modified time for %s does not match", filepath.c_str());
 			return false;
@@ -302,23 +301,12 @@ namespace Comm
 		return true;
 	}
 
-	void FileInfoCache::SetCurrentFileInfo(const char* filepath)
-	{
-		if (m_cache.find(filepath) == m_cache.end())
-		{
-			m_cache[filepath] = new FileInfo;
-		}
-		m_currentFileInfo = m_cache[filepath];
-		m_currentFileInfo->filename.copy(filepath);
-		// TODO do we need to clear the info here?
-	}
-
-	FileInfo* FileInfoCache::GetCurrentFileInfo()
-	{
-		return m_currentFileInfo;
-	}
-
-	FileInfo* FileInfoCache::GetFileInfo(const std::string& filepath)
+	/**
+	 * @brief Get file info for the given gcode file path
+	 * @param filepath
+	 * @return shared_ptr to FileInfo object
+	 */
+	FileInfoPtr FileInfoCache::GetFileInfo(const std::string& filepath)
 	{
 		if (m_cache.find(filepath) == m_cache.end())
 		{
@@ -327,41 +315,91 @@ namespace Comm
 		return m_cache[filepath];
 	}
 
-	void FileInfoCache::FileInfoRequestComplete()
+	bool FileInfoCache::FileInfoRequestInProgress()
 	{
-		dbg("File info request complete for %s", m_currentFileInfoRequest.c_str());
-		m_fileInfoRequestInProgress = false;
-		if (m_currentFileInfo == nullptr)
-			return;
-#if 0
-		const OM::FileSystem::File* file = UI::FileList::GetSelectedFile();
-#else
-		const OM::FileSystem::File* file = nullptr;
-#endif
-		if (file == nullptr)
+		return std::find_if(m_fileInfoRequestQueue.begin(),
+							m_fileInfoRequestQueue.end(),
+							[](const FileInfoRequest& request)
+							{ return request.IsInProgress(); }) != m_fileInfoRequestQueue.end();
+	}
+
+	void FileInfoCache::ReceivingFileInfoResponse(const std::string& filepath)
+	{
+		FileInfoRequest* request = GetFileInfoRequest(filepath);
+		if (request == nullptr)
+		{
+			request = &m_fileInfoRequestQueue.emplace_front(filepath);
+		}
+
+		request->Receiving();
+	}
+
+	/**
+	 * @brief Get the FileInfoRequest object for the given filepath
+	 * @param filepath
+	 * @param createIfNotFound
+	 * @return
+	 */
+	FileInfoCache::FileInfoRequest* FileInfoCache::GetFileInfoRequest(const std::string& filepath)
+	{
+		for (FileInfoRequest& request : m_fileInfoRequestQueue)
+		{
+			if (request.GetData()->filename.Equals(filepath.c_str()))
+			{
+				return &request;
+			}
+		}
+		return nullptr;
+	}
+
+	bool FileInfoCache::IsFileInfoRequestQueued(const std::string& filepath)
+	{
+		return GetFileInfoRequest(filepath) != nullptr;
+	}
+
+	bool FileInfoCache::IsFileInfoRequestInProgress(const std::string& filepath)
+	{
+		FileInfoRequest* request = GetFileInfoRequest(filepath);
+		if (request == nullptr)
+		{
+			return false;
+		}
+
+		return request->IsInProgress();
+	}
+
+	void FileInfoCache::FileInfoRequestComplete(const std::string& filepath)
+	{
+		dbg("File info request complete for %s", filepath.c_str());
+
+		FileInfoRequest* request = GetFileInfoRequest(filepath);
+
+		if (request == nullptr)
 		{
 			return;
 		}
-		if (file->GetPath() == m_currentFileInfo->filename.c_str())
+
+		request->Complete();
+		m_cache[filepath] = request->GetData();
+
+		m_fileInfoRequestQueue.remove(*request);
+	}
+
+	bool FileInfoCache::FileInfoRequest::RequestDataInner()
+	{
+		if (m_data == nullptr)
 		{
-			// TODO set file info UI
-			QueueLargeThumbnailRequest(file->GetPath());
+			return false;
 		}
+
+		info("Requesting file info for \"%s\", ", m_data->filename.c_str());
+		return DUET.RequestFileInfo(m_data->filename.c_str());
 	}
 
 	void FileInfoCache::ClearCache()
 	{
 		info("Clearing file info cache");
-		m_currentThumbnail = nullptr;
-		m_currentFileInfo = nullptr;
-		m_currentFileInfoRequest.clear();
 
-		for (auto& it : m_cache)
-		{
-			if (it.second == nullptr)
-				continue;
-			delete it.second;
-		}
 		m_cache.clear();
 		m_fileInfoRequestQueue.clear();
 		m_thumbnailRequestQueue.clear();
@@ -369,22 +407,46 @@ namespace Comm
 		info("Cache cleared");
 	}
 
+	/**
+	 * @brief Queue a file info request for processing
+	 * @param filepath The filepath to request information for
+	 * @param next If true, try to queue it at the next position
+	 * @return True if the request was successfully queued, false otherwise
+	 */
 	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath, bool next)
 	{
-		for (auto& queuedPath : m_fileInfoRequestQueue)
+		dbg("Attempting to queue file info request for %s", filepath.c_str());
+		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
-			if (queuedPath == filepath)
+			if (request.GetData()->filename.Equals(filepath.c_str()))
 			{
-				if (!next)
+				if (request.IsInProgress())
+				{
+					// Request already in progress so don't remove it from queue or add it again
+					warn("File info request for %s already in progress", filepath.c_str());
 					return false;
-				m_fileInfoRequestQueue.remove(queuedPath);
+				}
+
+				if (!next && !request.IsFailed())
+				{
+					// Request is already in the queue but has not started
+					dbg("File info request for %s already queued", filepath.c_str());
+					return false;
+				}
+
+				// Request in the queue but not in progress or at the front
+				m_fileInfoRequestQueue.remove(request);
 				break;
 			}
 		}
 		info("Queueing file info request for %s", filepath.c_str());
 		if (next)
 		{
-			m_fileInfoRequestQueue.push_front(filepath);
+
+			auto it = std::find_if(m_fileInfoRequestQueue.begin(),
+								   m_fileInfoRequestQueue.end(),
+								   [](const FileInfoRequest& request) { return !request.IsInProgress(); });
+			m_fileInfoRequestQueue.insert(it, filepath);
 		}
 		else
 		{
@@ -393,26 +455,60 @@ namespace Comm
 		return true;
 	}
 
-	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath)
+	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath, bool next)
 	{
-		if (m_currentThumbnail != nullptr && m_currentThumbnail->filename.Equals(filepath.c_str()))
+		dbg("Attempting to queue thumbnail request for %s", filepath.c_str());
+		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
 		{
-			warn("Thumbnail request for %s already in progress", filepath.c_str());
-			return false;
+			if (request.GetData()->filename.Equals(filepath.c_str()))
+			{
+				if (request.IsInProgress())
+				{
+					// Request already in progress so don't remove it from queue or add it again
+					warn("Thumbnail request for %s already in progress", filepath.c_str());
+					return false;
+				}
+
+				if (!next && !request.IsFailed())
+				{
+					// Request is already in the queue but has not started
+					dbg("Thumbnail request for %s already queued", filepath.c_str());
+					return false;
+				}
+
+				// Request in the queue but not in progress or at the front
+				m_thumbnailRequestQueue.remove(request);
+				break;
+			}
 		}
 
-		FileInfo* fileInfo = GetFileInfo(filepath);
+		FileInfoPtr fileInfo = GetFileInfo(filepath);
 		if (fileInfo == nullptr)
 		{
-			QueueFileInfoRequest(filepath);
-			return false;
+			warn("No file info found for %s", filepath.c_str());
+			FileInfoRequest* request = GetFileInfoRequest(filepath);
+			if (request == nullptr)
+			{
+				warn("Request not in progress for \"%s\", queuing file info request", filepath.c_str());
+				QueueFileInfoRequest(filepath, next);
+				return false;
+			}
+
+			if (!request->IsReceiving())
+			{
+				warn("FileInfo request for \"%s\" has not been received yet, not queuing thumbnail request",
+					 filepath.c_str());
+				return false;
+			}
+
+			fileInfo = request->GetData();
 		}
 
-		Thumbnail* largestValidThumbnail = nullptr;
+		ThumbnailPtr largestValidThumbnail;
 		size_t largestSize = 0;
 		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 		{
-			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
+			ThumbnailPtr thumbnail = fileInfo->GetThumbnail(i);
 			if (thumbnail == nullptr)
 				continue;
 			if (!thumbnail->AboveCacheLimit() && thumbnail->meta.width * thumbnail->meta.height > largestSize)
@@ -426,12 +522,27 @@ namespace Comm
 			warn("No valid thumbnail found for %s", filepath.c_str());
 			return false;
 		}
-		m_thumbnailRequestQueue.push_back(largestValidThumbnail);
+		if (next)
+		{
+			auto it = std::find_if(m_thumbnailRequestQueue.begin(),
+								   m_thumbnailRequestQueue.end(),
+								   [](const ThumbnailRequest& request) { return !request.IsInProgress(); });
+			m_thumbnailRequestQueue.insert(it, largestValidThumbnail);
+		}
+		else
+		{
+			m_thumbnailRequestQueue.push_back(largestValidThumbnail);
+		}
+		info("Queued thumbnail request for \"%s\", %ux%u",
+			 filepath.c_str(),
+			 largestValidThumbnail->meta.width,
+			 largestValidThumbnail->meta.height);
 		return true;
 	}
 
 	bool FileInfoCache::QueueLargeThumbnailRequest(const std::string& filepath)
 	{
+#if 0
 		m_queuedLargeThumbnail = nullptr;
 		DeleteCachedThumbnail(largeThumbnailFilename);
 
@@ -443,7 +554,6 @@ namespace Comm
 		}
 
 		Thumbnail* largestThumbnail = nullptr;
-#if 0
 		LayoutPosition pos = UI::FileList::GetThumbnail()->getPosition();
 		int closestDistance = INT_MAX;
 		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
@@ -462,7 +572,6 @@ namespace Comm
 				closestDistance = distance;
 			}
 		}
-#endif
 		if (largestThumbnail == nullptr)
 		{
 			warn("No valid thumbnail found for %s", filepath.c_str());
@@ -473,6 +582,7 @@ namespace Comm
 			 largestThumbnail->meta.size,
 			 largestThumbnail->meta.offset);
 		m_queuedLargeThumbnail = largestThumbnail;
+#endif
 		return true;
 	}
 
@@ -484,13 +594,14 @@ namespace Comm
 			return false;
 		}
 
-		Thumbnail* thumbnail = fileInfo.GetThumbnail(index);
+		ThumbnailPtr thumbnail = fileInfo.GetThumbnail(index);
 
 		return RequestThumbnail(thumbnail);
 	}
 
-	bool FileInfoCache::RequestThumbnail(Thumbnail* thumbnail)
+	bool FileInfoCache::RequestThumbnail(ThumbnailPtr thumbnail)
 	{
+#if 0
 		if (thumbnail == nullptr)
 		{
 			warn("Thumbnail is null");
@@ -518,32 +629,56 @@ namespace Comm
 			return false;
 		}
 
-		m_currentThumbnail = thumbnail;
-		m_thumbnailRequestInProgress = true;
+		ThumbnailRequest* request = GetThumbnailRequest(thumbnail->filename.c_str());
 		thumbnail->context.state = ThumbnailState::DataWait;
-		m_lastThumbnailRequestTime = TimeHelper::getCurrentTime();
 		DUET.RequestThumbnail(thumbnail->filename.c_str(), thumbnail->meta.offset);
+#endif
 		return true;
+	}
+
+	ThumbnailPtr FileInfoCache::GetRequestedThumbnail(const std::string& filepath)
+	{
+		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
+							   m_thumbnailRequestQueue.end(),
+							   [filepath](const ThumbnailRequest& request)
+							   { return request.GetData()->filename.Equals(filepath.c_str()); });
+		if (it != m_thumbnailRequestQueue.end())
+		{
+			return it->GetData();
+		}
+		return nullptr;
 	}
 
 	bool FileInfoCache::ThumbnailRequestInProgress()
 	{
-		return m_thumbnailRequestInProgress;
+		return std::find_if(m_thumbnailRequestQueue.begin(),
+							m_thumbnailRequestQueue.end(),
+							[](const ThumbnailRequest& request)
+							{ return request.IsInProgress(); }) != m_thumbnailRequestQueue.end();
 	}
 
-	void FileInfoCache::ReceivingThumbnailResponse(bool receiving)
+	void FileInfoCache::ThumbnailRequestComplete(const std::string& filepath)
 	{
-		dbg("%d", receiving);
-		m_thumbnailResponseInProgress = receiving;
-	}
-
-	Thumbnail* FileInfoCache::GetCurrentThumbnail(bool force)
-	{
-		if (!m_thumbnailResponseInProgress && !force)
+		ThumbnailRequest* request = GetThumbnailRequest(filepath);
+		if (request == nullptr)
 		{
-			return nullptr;
+			return;
 		}
-		return m_currentThumbnail;
+
+		request->Complete();
+		m_thumbnailRequestQueue.remove(*request);
+	}
+
+	FileInfoCache::ThumbnailRequest* FileInfoCache::GetThumbnailRequest(const std::string& filepath)
+	{
+		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
+		{
+			if (request.GetData()->filename.Equals(filepath.c_str()))
+			{
+				return &request;
+			}
+		}
+		return nullptr;
 	}
 
 	/**
@@ -553,32 +688,7 @@ namespace Comm
 	 */
 	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
-		if (m_currentThumbnail == nullptr)
-		{
-			return true;
-		}
-		if (largeOnly && !m_currentThumbnail->AboveCacheLimit())
-		{
-			return false;
-		}
-		if (m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
-		{
-			dbg("Not stopping thumbnail request for current print job %s", m_currentThumbnail->filename.c_str());
-			return false;
-		}
-		dbg("Stopping thumbnail request for %s", m_currentThumbnail->filename.c_str());
-		m_currentThumbnail = nullptr;
 		return true;
-	}
-
-	void FileInfoCache::SetCurrentThumbnail(Thumbnail* thumbnail)
-	{
-		m_currentThumbnail = thumbnail;
-	}
-
-	Thumbnail* FileInfoCache::GetNextThumbnail()
-	{
-		return nullptr;
 	}
 
 	void FileInfoCache::Debug()
@@ -587,7 +697,7 @@ namespace Comm
 		printf("File info cache:");
 		for (auto& it : get()->m_cache)
 		{
-			FileInfo* fileInfo = it.second;
+			FileInfoPtr fileInfo = it.second;
 			if (fileInfo == nullptr)
 				continue;
 			printf("  File %s:", fileInfo->filename.c_str());
@@ -599,7 +709,7 @@ namespace Comm
 
 			for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 			{
-				Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
+				ThumbnailPtr thumbnail = fileInfo->GetThumbnail(i);
 				if (thumbnail == nullptr)
 					continue;
 				printf("    Thumbnail %lu:", i);
@@ -623,23 +733,19 @@ namespace Comm
 		}
 
 		printf("  File info request queue:");
-		for (auto& filename : m_fileInfoRequestQueue)
+		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
-			printf("    %s", filename.c_str());
+			printf("    %s", request.GetData()->filename.c_str());
 		}
 
 		printf("  Thumbnail request queue:");
-		for (auto& thumbnail : m_thumbnailRequestQueue)
+		for (ThumbnailRequest request : m_thumbnailRequestQueue)
 		{
-			printf("    %dx%d %s", thumbnail->meta.width, thumbnail->meta.height, thumbnail->filename.c_str());
+			printf("    %dx%d %s",
+				   request.GetData()->meta.width,
+				   request.GetData()->meta.height,
+				   request.GetData()->filename.c_str());
 		}
-
-		FileInfo* fileInfo = get()->GetCurrentFileInfo();
-		Thumbnail* thumbnail = get()->GetCurrentThumbnail();
-		printf("  Current FileInfo: %s",
-			   fileInfo == nullptr ? "null" : get()->m_currentFileInfo->filename.c_str());
-		printf("  Current Thumbnail: %s",
-			   thumbnail == nullptr ? "null" : get()->m_currentThumbnail->filename.c_str());
 	}
 
 	tm ParseSeconds(uint32_t seconds)
@@ -666,6 +772,5 @@ namespace Comm
 		return 0;
 	}
 
-	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache",
-												  []() { FileInfoCache::get()->Debug(); });
+	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache", []() { FileInfoCache::get()->Debug(); });
 } // namespace Comm

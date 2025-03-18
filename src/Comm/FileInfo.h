@@ -14,8 +14,10 @@
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
+#include "utils/TimeHelper.h"
 #include <list>
 #include <map>
+#include <memory>
 #include <stdint.h>
 #include <vector>
 
@@ -24,6 +26,8 @@ namespace Comm
 	constexpr const char* largeThumbnailFilename = "largeThumbnail";
 	constexpr const char* currentJobThumbnailFilePath = "/tmp/currentJobThumbnail";
 
+	using ThumbnailPtr = std::shared_ptr<Thumbnail>;
+
 	struct FileInfo
 	{
 	  public:
@@ -31,16 +35,16 @@ namespace Comm
 		~FileInfo();
 
 		String<MAX_FILENAME_LENGTH> filename;
-		uint32_t size;
+		uint32_t size = 0;
 		String<19> lastModified;
-		float height;
-		float layerHeight;
-		uint32_t printTime;
+		float height = 0;
+		float layerHeight = 0;
+		uint32_t printTime = 0;
 		std::vector<float> filament;
 		String<64> generatedBy;
 
-		Thumbnail* GetThumbnail(size_t index);
-		Thumbnail* GetOrCreateThumbnail(size_t index);
+		ThumbnailPtr GetThumbnail(size_t index);
+		ThumbnailPtr GetOrCreateThumbnail(size_t index);
 		size_t GetThumbnailCount() const { return m_thumbnails.size(); }
 		size_t ClearThumbnails(size_t fromIndex);
 
@@ -48,12 +52,100 @@ namespace Comm
 		std::string GetReadableFileSize() const;
 
 	  private:
-		std::vector<Thumbnail*> m_thumbnails;
+		std::vector<ThumbnailPtr> m_thumbnails;
+	};
+
+	using FileInfoPtr = std::shared_ptr<FileInfo>;
+
+	enum class RequestState
+	{
+		UNKNOWN = 0,
+		QUEUED,
+		REQUESTED,
+		RECEIVING,
+		COMPLETE,
+		FAILED
 	};
 
 	class FileInfoCache
 	{
 	  public:
+		template <typename T>
+		struct Request
+		{
+
+			Request()
+				: m_data(std::make_shared<T>())
+			{
+			}
+
+			Request(const std::shared_ptr<T>& data)
+				: m_data(data)
+			{
+			}
+
+			std::shared_ptr<T> GetData() const { return m_data; }
+			RequestState GetState() const { return m_state; }
+
+			bool IsRequested() const { return m_state >= RequestState::REQUESTED; }
+			bool IsInProgress() const
+			{
+				return m_state == RequestState::REQUESTED || m_state == RequestState::RECEIVING;
+			}
+			bool IsReceiving() const { return m_state == RequestState::RECEIVING; }
+			bool IsComplete() const { return m_state == RequestState::COMPLETE || m_state == RequestState::FAILED; }
+			bool IsFailed() const { return m_state == RequestState::FAILED; }
+
+			void Receiving() { m_state = RequestState::RECEIVING; }
+			void Complete(bool failed = false) { m_state = failed ? RequestState::FAILED : RequestState::COMPLETE; }
+
+			int64_t GetRequestTime() const { return m_requestTime; }
+			bool HasTimedOut(uint32_t timeout) const
+			{
+				return m_state == RequestState::REQUESTED && TimeHelper::getTimeSince(m_requestTime) > timeout;
+			}
+
+			void RequestData()
+			{
+				m_requestTime = TimeHelper::getCurrentTime();
+				if (!RequestDataInner())
+				{
+					return;
+				}
+				m_state = RequestState::REQUESTED;
+			}
+
+			bool operator==(const Request& other) { return m_data == other.m_data; }
+
+		  protected:
+			virtual bool RequestDataInner() = 0;
+			void SetState(RequestState state) { m_state = state; }
+
+			std::shared_ptr<T> m_data;
+			RequestState m_state = RequestState::UNKNOWN;
+			int64_t m_requestTime = 0;
+		};
+
+		struct FileInfoRequest : public Request<FileInfo>
+		{
+			FileInfoRequest(const std::string& filepath)
+				: Request<FileInfo>()
+			{
+				m_data->filename.copy(filepath.c_str());
+			}
+
+		  protected:
+			bool RequestDataInner() override;
+		};
+
+		struct ThumbnailRequest : public Request<Thumbnail>
+		{
+			using Request<Thumbnail>::Request;
+
+		  protected:
+			bool RequestDataInner() override { return true; }
+		};
+
 		static FileInfoCache* get()
 		{
 			static FileInfoCache instance;
@@ -64,27 +156,25 @@ namespace Comm
 
 		bool IsThumbnailCached(const std::string& filepath,
 							   const char* lastModified); // returns true if a thumbnail for the file is in cache
-														  // and lastModified is the same
+		// and lastModified is the same
 
-		void SetCurrentFileInfo(const char* filepath);		// set and return the current file info being received. If
-															// file info doesn't exist, it will be created
-		FileInfo* GetCurrentFileInfo();						// returns the current file info
-		FileInfo* GetFileInfo(const std::string& filepath); // returns the file info for the given gcode file path
-		void FileInfoRequestComplete();						// called when the file info request is complete
+		FileInfoPtr GetFileInfo(const std::string& filepath);
+		void ReceivingFileInfoResponse(const std::string& filepath);
+		FileInfoRequest* GetFileInfoRequest(const std::string& filepath);
+		void FileInfoRequestComplete(const std::string& filepath); // called when the file info request is complete
+
+		ThumbnailPtr GetRequestedThumbnail(const std::string& filepath);
+		bool CancelThumbnailRequest(const std::string& filepath);
+		ThumbnailRequest* GetThumbnailRequest(const std::string& filepath);
+		void ThumbnailRequestComplete(const std::string& filepath);
 
 		void ClearCache(); // clears the cache
 
-		bool QueueThumbnailRequest(const std::string& filepath);	  // returns true if the request was queued
+		bool QueueFileInfoRequest(const std::string& filepath, bool next = false);
+		bool QueueThumbnailRequest(const std::string& filepath,
+								   bool next = false);				  // returns true if the request was queued
 		bool QueueLargeThumbnailRequest(const std::string& filepath); // returns true if a thumbnail request was started
-		bool RequestThumbnail(FileInfo& fileInfo,
-							  size_t index);			 // returns true if a thumbnail request was started
-		bool RequestThumbnail(Thumbnail* thumbnail);	 // returns true if a thumbnail request was started
-		bool ThumbnailRequestInProgress();				 // returns true if a thumbnail request is in progress
-		void ReceivingThumbnailResponse(bool receiving); // set to true when receiving thumbnail data, false when done
 
-		Thumbnail* GetCurrentThumbnail(bool force = false); // returns the current thumbnail or nullptr if not
-															// processing thumbnail request. Will return nullptr if you
-															// the response has not been received, unless you use force
 		bool StopThumbnailRequest(bool largeOnly = false);
 
 		void Debug(); // prints debug info
@@ -92,25 +182,25 @@ namespace Comm
 	  private:
 		FileInfoCache();
 
-		bool QueueFileInfoRequest(const std::string& filepath,
-								  bool next = false);	// queues a file info request if not already queued
-		void SetCurrentThumbnail(Thumbnail* thumbnail); // set and return the current thumbnail being received
-		Thumbnail* GetNextThumbnail();					// returns the thumbnail for the next queued thumbail
-														// request, or nullptr if queue is empty.
+		bool FileInfoRequestInProgress();
+		bool ThumbnailRequestInProgress();
 
-		bool m_fileInfoRequestInProgress = false;
-		std::string m_currentFileInfoRequest;
-		bool m_thumbnailRequestInProgress = false;
-		bool m_thumbnailResponseInProgress = false;
-		FileInfo* m_currentFileInfo = nullptr; // the file info currently being processed
-		Thumbnail* m_currentThumbnail = nullptr;
-		Thumbnail* m_queuedLargeThumbnail = nullptr;
-		std::string m_currentCachedJobPath;
-		std::map<std::string, FileInfo*> m_cache; // cache of file path and their associated file info
-		std::list<std::string> m_fileInfoRequestQueue;
-		std::list<Thumbnail*> m_thumbnailRequestQueue;
-		long long m_lastFileInfoRequestTime = 0;
-		long long m_lastThumbnailRequestTime = 0;
+		bool IsFileInfoRequestQueued(const std::string& filepath);
+		bool IsFileInfoRequestInProgress(const std::string& filepath);
+
+		bool IsThumbnailRequestQueued(const std::string& filepath);
+		bool IsThumbnailRequestInProgress(const std::string& filepath);
+
+		bool RequestFileInfo(const std::string& filepath);
+		bool RequestThumbnail(FileInfo& fileInfo, size_t index);
+		bool RequestThumbnail(ThumbnailPtr thumbnail);
+
+		ThumbnailPtr GetNextThumbnail();
+
+		std::map<std::string, FileInfoPtr> m_cache; // cache of file path and their associated file info
+		std::list<FileInfoRequest> m_fileInfoRequestQueue;
+		std::list<ThumbnailRequest> m_thumbnailRequestQueue;
+		int64_t m_lastRequestTime = 0;
 	};
 
 	tm ParseSeconds(uint32_t seconds);

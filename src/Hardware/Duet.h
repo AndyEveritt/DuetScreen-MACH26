@@ -93,8 +93,8 @@ namespace Comm
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);
 		void RequestFileList(const char* dir, const size_t first = 0);
-		void RequestFileInfo(const char* filename);
-		void RequestThumbnail(const char* filename, uint32_t offset);
+		bool RequestFileInfo(const char* filename);
+		bool RequestThumbnail(const char* filename, uint32_t offset);
 
 		// UART methods
 		void SetBaudRate(const unsigned int baudRateCode);

@@ -107,7 +107,7 @@ bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& d
 	{
 		return true;
 	}
-	Comm::DUET.RequestFileList(OM::FileSystem::GetCurrentDirPath().c_str(), data);
+	Comm::DUET.RequestFileList(static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->dir.c_str(), data);
 	return true;
 }
 
@@ -125,13 +125,7 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 		{
 			continue;
 		}
-#if 1
-		if (FILEINFO_CACHE->IsThumbnailCached(item->GetPath(), item->GetDate().c_str()))
-		{
-			continue;
-		}
-		FILEINFO_CACHE->QueueThumbnailRequest(item->GetPath());
-#endif
+		FILEINFO_CACHE->QueueFileInfoRequest(item->GetPath());
 	}
 	Model::get().newFileData();
 	return true;
