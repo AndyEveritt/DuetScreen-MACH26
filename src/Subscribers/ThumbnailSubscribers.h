@@ -20,7 +20,7 @@ class ThumbnailSubscribers : public SubscriberMap
 		addSubscriber("thumbnails^:size", thumbnailsSize);
 		addSubscriber("thumbnails^:width", thumbnailsWidth);
 		addSubscriber("generatedBy", generatedBy);
-		addSubscriber("thumbnail:filename", thumbnailFilename);
+		addSubscriber("thumbnail:fileName", thumbnailFilename);
 		addSubscriber("thumbnail:offset", thumbnailOffset);
 		addSubscriber("thumbnail:data", thumbnailData);
 		addSubscriber("thumbnail:next", thumbnailNext);

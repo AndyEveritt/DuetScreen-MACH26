@@ -249,15 +249,26 @@ bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const cha
 
 bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Comm::ThumbnailPtr thumbnail;
-	if (!getThumbnailFromDecoder(decoder, thumbnail))
+	Comm::FileInfoCache::ThumbnailRequest* request =
+		static_cast<Comm::FileInfoCache::ThumbnailRequest*>(decoder->responseData);
+	if (request == nullptr)
 	{
+		error("Not expecting to receive thumbnail data");
+		return false;
+	}
+
+	Comm::ThumbnailPtr thumbnail = request->GetData();
+	if (thumbnail == nullptr)
+	{
+		error("Invalid thumbnail");
 		return false;
 	}
 
 	dbg("thumbnail data %d", strlen(data));
-	Comm::g_thumbnailBuf.size = strnlen(data, sizeof(Comm::g_thumbnailBuf.buffer));
-	memcpy(Comm::g_thumbnailBuf.buffer, data, Comm::g_thumbnailBuf.size);
+	Comm::ThumbnailBuf& thumbnailBuf = request->GetBuffer();
+	thumbnailBuf.size = strnlen(data, sizeof(thumbnailBuf.buffer));
+	memcpy(thumbnailBuf.buffer, data, thumbnailBuf.size);
+
 	thumbnail->context.state = Comm::ThumbnailState::Data;
 	return true;
 }
@@ -282,9 +293,18 @@ bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char*
 
 bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Comm::ThumbnailPtr thumbnail;
-	if (!getThumbnailFromDecoder(decoder, thumbnail))
+	Comm::FileInfoCache::ThumbnailRequest* request =
+		static_cast<Comm::FileInfoCache::ThumbnailRequest*>(decoder->responseData);
+	if (request == nullptr)
 	{
+		error("Not expecting to receive thumbnail data");
+		return false;
+	}
+
+	Comm::ThumbnailPtr thumbnail = request->GetData();
+	if (thumbnail == nullptr)
+	{
+		error("Invalid thumbnail");
 		return false;
 	}
 
@@ -299,6 +319,43 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 		 thumbnail->context.err,
 		 thumbnail->context.size,
 		 thumbnail->context.parseErr);
+
+	if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
+	{
+		error("thumbnail parseErr %d err %d.\n", thumbnail->context.parseErr, thumbnail->context.err);
+		thumbnail->context.state = Comm::ThumbnailState::Init;
+		return false;
+	}
+
+	if (thumbnail->context.state != Comm::ThumbnailState::Data)
+	{
+		warn("No thumbnail data received for \"%s\"", thumbnail->filename.c_str());
+		return false;
+	}
+
+	Comm::ThumbnailBuf& thumbnailBuf = request->GetBuffer();
+	if (!ThumbnailDataIsValid(thumbnailBuf))
+	{
+		error("thumbnail meta or data invalid.\n");
+		thumbnail->context.state = Comm::ThumbnailState::Init;
+		return false;
+	}
+
+	int ret = 0;
+	if ((ret = ThumbnailDecodeChunk(*thumbnail, thumbnailBuf)) < 0)
+	{
+		error("failed to decode thumbnail chunk %d.\n", ret);
+		thumbnail->context.state = Comm::ThumbnailState::Init;
+		return false;
+	}
+	if (thumbnail->context.next == 0)
+	{
+		thumbnail->context.state = Comm::ThumbnailState::Cached;
+	}
+	else
+	{
+		thumbnail->context.state = Comm::ThumbnailState::DataRequest;
+	}
 	return true;
 }
 

@@ -82,6 +82,7 @@ class Model
 	void newJobBuild();
 	void newJobCurrentObject();
 	void newJobObjectData();
+	void newThumbnailData(const char* filename);
 
 	/* Move methods */
 

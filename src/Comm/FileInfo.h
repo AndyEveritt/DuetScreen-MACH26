@@ -141,9 +141,12 @@ namespace Comm
 		struct ThumbnailRequest : public Request<Thumbnail>
 		{
 			using Request<Thumbnail>::Request;
+			ThumbnailBuf& GetBuffer() { return m_buf; }
 
 		  protected:
-			bool RequestDataInner() override { return true; }
+			bool RequestDataInner() override;
+
+			ThumbnailBuf m_buf;
 		};
 
 		static FileInfoCache* get()
@@ -205,8 +208,6 @@ namespace Comm
 
 	tm ParseSeconds(uint32_t seconds);
 	size_t GetFileSize(const char* filepath);
-
-	extern ThumbnailBuf g_thumbnailBuf;
 } // namespace Comm
 #define FILEINFO_CACHE Comm::FileInfoCache::get()
 

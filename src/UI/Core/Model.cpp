@@ -256,6 +256,11 @@ MODEL_NOTIFICATION(newJobBuild)
 MODEL_NOTIFICATION(newJobCurrentObject)
 MODEL_NOTIFICATION(newJobObjectData)
 
+void Model::newThumbnailData(const char* filename)
+{
+	NOTIFY_ALL_PRESENTERS(newThumbnailData, filename);
+}
+
 /* Move methods */
 
 MODEL_NOTIFICATION(newAxesData)

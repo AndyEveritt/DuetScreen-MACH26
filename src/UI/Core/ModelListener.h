@@ -40,6 +40,7 @@ namespace UI
 		virtual void newJobBuild() {}
 		virtual void newJobCurrentObject() {}
 		virtual void newJobObjectData() {}
+		virtual void newThumbnailData(const char* filename) {}
 
 		/* Move methods */
 		virtual void newAxesData() {}

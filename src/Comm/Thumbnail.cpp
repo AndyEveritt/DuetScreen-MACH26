@@ -24,8 +24,6 @@ std::string GetThumbnailPath(const char* filepath)
 
 namespace Comm
 {
-	ThumbnailBuf g_thumbnailBuf;
-
 	bool ThumbnailImage::New(ThumbnailMeta& meta, const char* filename)
 	{
 		Close();
