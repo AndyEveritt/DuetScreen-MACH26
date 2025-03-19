@@ -136,6 +136,24 @@ namespace UI
 		return false;
 	}
 
+	void FilePresenter::newThumbnailData(const char* filename)
+	{
+		ModelLock lock;
+		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
+		{
+			auto file = OM::FileSystem::GetItem(i);
+			if (file->GetPath() == filename)
+			{
+				auto item = this->m_view->getFileItem(i);
+				if (item != nullptr)
+				{
+					item->setThumbnail(GetThumbnailPath(filename).c_str());
+				}
+				break;
+			}
+		}
+	}
+
 	void FilePresenter::onActivate()
 	{
 		setFolder(getBaseFolderPath());

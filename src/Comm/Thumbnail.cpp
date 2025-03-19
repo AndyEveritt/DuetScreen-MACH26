@@ -91,6 +91,12 @@ namespace Comm
 
 bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)
 {
+	if (thumbnail.filename.IsEmpty())
+	{
+		warn("Thumbnail filename is empty");
+		return false;
+	}
+
 	switch (thumbnail.meta.imageFormat)
 	{
 	case Comm::ThumbnailMeta::ImageFormat::Qoi:

@@ -366,7 +366,10 @@ bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const 
 	if (fileInfo == nullptr)
 		return false;
 	fileInfo->ClearThumbnails(indices[0]);
-	FILEINFO_CACHE->QueueThumbnailRequest(fileInfo->filename.c_str());
+	if (!FILEINFO_CACHE->IsThumbnailCached(fileInfo->filename.c_str(), fileInfo->lastModified.c_str()))
+	{
+		FILEINFO_CACHE->QueueThumbnailRequest(fileInfo->filename.c_str());
+	}
 	info("FileInfo: filename(%s) thumbnails(%d)", fileInfo->filename.c_str(), fileInfo->GetThumbnailCount());
 	for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 	{

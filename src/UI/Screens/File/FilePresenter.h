@@ -28,6 +28,7 @@ namespace UI
 		bool back();
 
 		// Observers
+		virtual void newThumbnailData(const char* filename) override;
 
 	  private:
 		void onActivate() override;

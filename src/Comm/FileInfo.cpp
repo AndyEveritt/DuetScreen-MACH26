@@ -101,8 +101,11 @@ namespace Comm
 		int64_t now = TimeHelper::getCurrentTime();
 
 		// Timeout any request that hasn't received a response within the timeout period
-		for (FileInfoRequest& request : m_fileInfoRequestQueue)
+		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
+			FileInfoRequest& request = *it;
+			it++;
+
 			if (request.HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
 			{
 				warn("File info request timed out for %s", request.GetData()->filename.c_str());
@@ -114,19 +117,28 @@ namespace Comm
 
 		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 		{
-			if (it->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+			ThumbnailRequest& request = *it;
+			it++;
+
+			if (!ThumbnailIsValid(*request.GetData()))
+			{
+				error("Invalid thumbnail");
+				m_thumbnailRequestQueue.remove(request);
+				continue;
+			}
+
+			if (request.HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
 			{
 #if DEBUG
-				ThumbnailPtr t = it->GetData();
+				ThumbnailPtr t = request.GetData();
 #endif
-				warn("Thumbnail request timed out for %s", it->GetData()->filename.c_str());
-				it->Complete(true);
-				warn("Requeuing thumbnail request for %s", it->GetData()->filename.c_str());
-				std::string filename = it->GetData()->filename.c_str();
+				warn("Thumbnail request timed out for %s", request.GetData()->filename.c_str());
+				request.Complete(true);
+				warn("Requeuing thumbnail request for %s", request.GetData()->filename.c_str());
+				std::string filename = request.GetData()->filename.c_str();
 				DeleteCachedThumbnail(filename.c_str());
 				QueueThumbnailRequest(filename);
 			}
-			++it;
 		}
 
 		if ((OM::PrintInProgress()) && (now - m_lastRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL))
@@ -164,7 +176,9 @@ namespace Comm
 			{
 			case ThumbnailState::Init:
 			case ThumbnailState::DataRequest:
-				request.RequestData();
+				if (!request.RequestData())
+				{
+				}
 				thumbnailsRequested++;
 				break;
 			case ThumbnailState::Data:

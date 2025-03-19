@@ -105,14 +105,15 @@ namespace Comm
 				return m_state == RequestState::REQUESTED && TimeHelper::getTimeSince(m_requestTime) > timeout;
 			}
 
-			void RequestData()
+			bool RequestData()
 			{
 				m_requestTime = TimeHelper::getCurrentTime();
 				if (!RequestDataInner())
 				{
-					return;
+					return false;
 				}
 				m_state = RequestState::REQUESTED;
+				return true;
 			}
 
 			bool operator==(const Request& other) { return m_data == other.m_data; }
