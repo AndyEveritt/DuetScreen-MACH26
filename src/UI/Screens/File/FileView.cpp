@@ -37,7 +37,7 @@ namespace UI
 		lv_obj_set_grid_cell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		lv_obj_set_grid_cell(m_type, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 
-		// lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_STRETCH);
+		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_AUTO_SCALE);
 
 		// Callbacks
 		lv_obj_add_event_cb(getCont(), onClick, LV_EVENT_CLICKED, this);
@@ -68,18 +68,6 @@ namespace UI
 	{
 		Lock lock;
 		lv_image_set_src(m_thumbnail, thumbnail);
-		lv_image_t* img = (lv_image_t*)m_thumbnail;
-		if (img->w != 0 && img->h != 0)
-		{
-			lv_obj_update_layout(m_thumbnail);
-			int32_t scale_x = lv_obj_get_width(m_thumbnail) * LV_SCALE_NONE / img->w;
-			int32_t scale_y = lv_obj_get_height(m_thumbnail) * LV_SCALE_NONE / img->h;
-			scale_x = std::min(scale_x, scale_y);
-			scale_y = std::min(scale_x, scale_y);
-
-			lv_image_set_scale_x(m_thumbnail, scale_x);
-			lv_image_set_scale_y(m_thumbnail, scale_y);
-		}
 	}
 
 	void FileView::FileItem::setType(const bool isFolder)

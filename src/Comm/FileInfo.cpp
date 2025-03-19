@@ -603,7 +603,7 @@ namespace Comm
 		FileInfoPtr fileInfo = GetFileInfo(filepath);
 		if (fileInfo == nullptr)
 		{
-			warn("No file info found for %s", filepath.c_str());
+			dbg("No file info found for %s", filepath.c_str());
 			FileInfoRequest* request = GetFileInfoRequest(filepath);
 			if (request == nullptr)
 			{

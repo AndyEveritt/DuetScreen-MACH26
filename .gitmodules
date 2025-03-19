@@ -1,6 +1,6 @@
 [submodule "lvgl"]
 	path = libraries/lvgl
-	url = https://github.com/lvgl/lvgl.git
+	url = https://github.com/AndyEveritt/lvgl
 [submodule "libraries/libhv"]
 	path = libraries/libhv
 	url = https://github.com/ithewei/libhv.git
