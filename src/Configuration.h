@@ -40,7 +40,8 @@ constexpr const char* DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
 constexpr int32_t FILE_CACHE_REQUEST_TIMEOUT = 5000;
 constexpr size_t MAX_THUMBNAIL_CACHE_PIXELS = 64; // Largest pixel width/height thumbnail that is allowed to be cached
 constexpr int32_t BACKGROUND_FILE_CACHE_POLL_INTERVAL = 500;
-constexpr size_t MAX_THUMBNAIL_REQUESTS = 1;
+constexpr size_t MAX_FILEINFO_REQUESTS = 2;
+constexpr size_t MAX_THUMBNAIL_REQUESTS = 2;
 
 /* Json Decoder */
 constexpr size_t MAX_ARRAY_NESTING = 4;
@@ -61,7 +62,7 @@ constexpr size_t MAX_EXTRUDERS_PER_TOOL = 8;
 constexpr size_t MAX_HEATERS_PER_TOOL = 8;
 constexpr unsigned int MAX_TOOL_NAME_LENGTH = 20;
 constexpr unsigned int MAX_FILAMENT_NAME_LENGTH = 100;
-constexpr unsigned int MAX_FILENAME_LENGTH = 100;
+constexpr unsigned int MAX_FILENAME_LENGTH = 255;
 constexpr unsigned int MAX_SLOTS = 32;
 constexpr unsigned int MAX_FANS = 12;
 constexpr unsigned int MAX_HEATERS = 32;

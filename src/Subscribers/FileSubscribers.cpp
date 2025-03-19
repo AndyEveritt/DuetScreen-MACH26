@@ -125,7 +125,11 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 		{
 			continue;
 		}
-		FILEINFO_CACHE->QueueFileInfoRequest(item->GetPath());
+		Comm::FileInfoPtr fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
+		if (fileInfo == nullptr || !fileInfo->lastModified.Equals(item->GetDate().c_str()))
+		{
+			FILEINFO_CACHE->QueueFileInfoRequest(item->GetPath());
+		}
 	}
 	Model::get().newFileData();
 	return true;

@@ -148,13 +148,22 @@ namespace Comm
 		}
 
 		// Start a new request if there are no requests in progress
-		if (!FileInfoRequestInProgress())
+		size_t fileInfoRequested = 0;
+		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
-			for (FileInfoRequest& request : m_fileInfoRequestQueue)
+			if (request.IsRequested())
 			{
-				request.RequestData();
+				fileInfoRequested++;
+				continue;
+			}
+
+			if (fileInfoRequested >= MAX_FILEINFO_REQUESTS)
+			{
 				break;
 			}
+
+			request.RequestData();
+			fileInfoRequested++;
 		}
 
 		// Start a new thumbnail request if there are none in progress
