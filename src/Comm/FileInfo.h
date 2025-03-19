@@ -96,13 +96,21 @@ namespace Comm
 			bool IsComplete() const { return m_state == RequestState::COMPLETE || m_state == RequestState::FAILED; }
 			bool IsFailed() const { return m_state == RequestState::FAILED; }
 
-			void Receiving() { m_state = RequestState::RECEIVING; }
+			void Receiving()
+			{
+				m_receiveTime = TimeHelper::getCurrentTime();
+				m_state = RequestState::RECEIVING;
+			}
 			void Complete(bool failed = false) { m_state = failed ? RequestState::FAILED : RequestState::COMPLETE; }
 
 			int64_t GetRequestTime() const { return m_requestTime; }
 			bool HasTimedOut(uint32_t timeout) const
 			{
-				return m_state == RequestState::REQUESTED && TimeHelper::getTimeSince(m_requestTime) > timeout;
+				const bool requestTimedOut =
+					m_state == RequestState::REQUESTED && TimeHelper::getTimeSince(m_requestTime) > timeout;
+				const bool receiveTimedOut =
+					m_state == RequestState::RECEIVING && TimeHelper::getTimeSince(m_receiveTime) > timeout;
+				return requestTimedOut || receiveTimedOut;
 			}
 
 			bool RequestData()
@@ -125,6 +133,7 @@ namespace Comm
 			std::shared_ptr<T> m_data;
 			RequestState m_state = RequestState::UNKNOWN;
 			int64_t m_requestTime = 0;
+			int64_t m_receiveTime = 0;
 		};
 
 		struct FileInfoRequest : public Request<FileInfo>
