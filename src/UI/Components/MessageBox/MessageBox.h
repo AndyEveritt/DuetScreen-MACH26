@@ -71,6 +71,8 @@ namespace UI
 		void setOkBtnText(const std::string& text);
 		void setCancelBtnText(const std::string& text);
 		void setImage(const char* imagePath);
+		void autoSizeImage(bool autoSize) { m_autoSizeImage = autoSize; }
+		void setImageSize(int32_t width, int32_t height);
 		void setProgress(int percent);
 		void setMode(OM::Alert::Mode mode);
 		void preventClosing(bool prevent);
@@ -200,6 +202,7 @@ namespace UI
 		std::function<void(bool)> m_showKeyboardCb;
 		OM::Alert::Mode m_mode = OM::Alert::Mode::None;
 		uint32_t m_timeout = 0;
+		bool m_autoSizeImage = true;
 
 		struct
 		{

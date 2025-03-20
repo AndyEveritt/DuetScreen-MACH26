@@ -149,6 +149,7 @@ namespace UI
 		lv_obj_set_align(m_startPrint.getCont(), LV_ALIGN_CENTER);
 		lv_obj_set_style_max_height(m_startPrint.getCont(), LV_PCT(70), 0);
 		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
+		m_startPrint.setImageSize(200, 200);
 
 		// Callbacks
 		m_refresh.setCallback(onRefreshClicked, LV_EVENT_CLICKED, this);
