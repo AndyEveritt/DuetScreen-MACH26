@@ -57,7 +57,10 @@ namespace UI
 
 		Comm::FileInfoPtr fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
 		FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
-		m_view->confirmStartPrint(item->GetName().c_str(), item->GetDate().c_str(), item->GetReadableSize().c_str());
+		m_view->confirmStartPrint(item->GetName().c_str(),
+								  item->GetDate().c_str(),
+								  item->GetReadableSize().c_str(),
+								  GetThumbnailPath(item->GetPath().c_str()).c_str());
 	}
 
 	void FilePresenter::startPrint()

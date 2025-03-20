@@ -9,6 +9,7 @@ extern "C"
 }
 
 #include "sys/param.h"
+#include <filesystem>
 #include <sys/stat.h>
 
 #include "Comm/FileInfo.h"
@@ -18,8 +19,27 @@ std::string GetThumbnailPath(const char* filepath)
 {
 	std::string sanitisedFilename = filepath;
 	utils::replaceSubstring(sanitisedFilename, ":", "\%3A");
-	utils::replaceSubstring(sanitisedFilename, "/", "\%2F");
+	// utils::replaceSubstring(sanitisedFilename, "/", "\%2F");
+	if (sanitisedFilename.rfind("/tmp/thumbnails/") == 0)
+	{
+		return sanitisedFilename;
+	}
 	return std::string("/tmp/thumbnails/") + sanitisedFilename;
+}
+
+static bool CreateThumbnailDirectory(const std::string& thumbnailFilepath)
+{
+	std::string directory = thumbnailFilepath.substr(0, thumbnailFilepath.find_last_of('/'));
+	struct stat sb;
+	if (stat(directory.c_str(), &sb) != 0 || !S_ISDIR(sb.st_mode))
+	{
+		if (mkdir(directory.c_str(), 0755) != 0)
+		{
+			error("Failed to create directory %s", directory.c_str());
+			return false;
+		}
+	}
+	return true;
 }
 
 namespace Comm
@@ -29,6 +49,11 @@ namespace Comm
 		Close();
 		qoi.decoder_state = qoi_decoder_state::qoi_decoder_header;
 		imageFilename = GetThumbnailPath(filename);
+		// if (!CreateThumbnailDirectory(imageFilename))
+		// {
+		// 	return false;
+		// }
+		std::filesystem::create_directories(imageFilename.substr(0, imageFilename.find_last_of('/')));
 		switch (meta.imageFormat)
 		{
 		case ThumbnailMeta::ImageFormat::Png:
@@ -280,7 +305,7 @@ void SetThumbnail(lv_obj_t* base, const char* filepath) {}
 bool ClearAllCachedThumbnails()
 {
 	info("Clearing all cached thumbnails");
-	return system("rm -f /tmp/thumbnails/*") == 0;
+	return system("rm -rf /tmp/thumbnails/*") == 0;
 }
 
 bool DeleteCachedThumbnail(const char* filepath)

@@ -213,7 +213,7 @@ namespace UI
 		return false;
 	}
 
-	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size)
+	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size, const char* thumbnail)
 	{
 		Lock lock;
 		m_startPrint.setTitle(_("file_start_print_title"));
@@ -224,6 +224,7 @@ namespace UI
 				m_presenter.startPrint();
 				openScreen(&HomeView::instance().getStatusView());
 			});
+		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail : nullptr);
 		m_startPrint.show();
 	}
 

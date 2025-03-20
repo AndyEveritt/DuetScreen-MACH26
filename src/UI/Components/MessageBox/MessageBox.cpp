@@ -81,13 +81,14 @@ namespace UI
 		lv_obj_set_flex_flow(m_bottomCont, LV_FLEX_FLOW_ROW);
 
 		// Top Container
-		for (size_t i = 0; i < lv_obj_get_child_count(m_topCont); i++)
-		{
-			lv_obj_t* child = lv_obj_get_child(m_topCont, i);
-			lv_obj_set_flex_grow(child, 1);
-			lv_obj_set_height(child, LV_SIZE_CONTENT);
-		}
+		lv_obj_set_flex_grow(m_text, 1);
+		lv_obj_set_height(m_text, LV_SIZE_CONTENT);
 		lv_obj_set_style_text_align(m_text, LV_TEXT_ALIGN_CENTER, 0);
+		lv_obj_set_style_min_width(m_image, 200, LV_PART_MAIN);
+		lv_obj_set_style_min_height(m_image, 200, LV_PART_MAIN);
+		lv_obj_set_style_max_width(m_image, 300, LV_PART_MAIN);
+		lv_obj_set_style_max_height(m_image, 300, LV_PART_MAIN);
+		lv_image_set_inner_align(m_image, LV_IMAGE_ALIGN_AUTO_SCALE);
 
 		// Central Container
 
@@ -207,6 +208,15 @@ namespace UI
 	{
 		Lock lock;
 		m_cancelBtn.setText(text.c_str());
+	}
+
+	void MessageBox::setImage(const char* imagePath)
+	{
+		Lock lock;
+		lv_image_set_src(m_image, imagePath);
+		lv_obj_set_width(m_image, lv_image_get_width(m_image));
+		lv_obj_set_height(m_image, lv_image_get_height(m_image));
+		imageVisible(imagePath != nullptr);
 	}
 
 	void MessageBox::setInputValidationCallback(std::function<bool(const char*)> cb)
@@ -353,6 +363,7 @@ namespace UI
 	{
 		Lock lock;
 		lv_obj_set_flag(m_image, LV_OBJ_FLAG_HIDDEN, !visible);
+		lv_obj_set_style_text_align(m_text, visible ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
 	}
 
 	void MessageBox::okVisible(bool visible)

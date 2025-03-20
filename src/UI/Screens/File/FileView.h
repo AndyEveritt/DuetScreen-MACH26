@@ -52,7 +52,7 @@ namespace UI
 
 		void setFolder(const char* path);
 		bool cancelStartPrint();
-		void confirmStartPrint(const char* filename, const char* date, const char* size);
+		void confirmStartPrint(const char* filename, const char* date, const char* size, const char* thumbnail);
 		void confirmRunMacro(const char* filename);
 
 		void onItemClicked(size_t index, bool isFolder);
