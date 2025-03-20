@@ -122,6 +122,9 @@
 		{
 			"label": "Push Assets - SSH",
 			"type": "shell",
+			"options": {
+				"cwd": "${config:buildroot_path}"
+			},
 			"command": "command ssh root@${config:duetscreen_ip} 'mkdir -p /etc/assets'; scp assets/* root@${config:duetscreen_ip}:/etc/assets",
 			"group": {
 				"kind": "build",
@@ -137,6 +140,9 @@
 		{
 			"label": "Push Libraries - SSH",
 			"type": "shell",
+			"options": {
+				"cwd": "${config:buildroot_path}"
+			},
 			"command": "scp output/target/usr/lib/*lvgl* root@${config:duetscreen_ip}:/usr/lib",
 			"group": {
 				"kind": "build",

@@ -92,7 +92,7 @@ namespace Comm
 
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);
-		void RequestFileList(const char* dir, const size_t first = 0);
+		bool RequestFileList(const char* dir, const size_t first = 0);
 		bool RequestFileInfo(const char* filename);
 		bool RequestThumbnail(const char* filename, uint32_t offset);
 
@@ -126,6 +126,8 @@ namespace Comm
 
 		void PrepareRequest(HttpRequest& req, const char* subUrl, hv::QueryParams& queryParameters);
 		bool AsyncGet(const char* subUrl, hv::QueryParams& queryParameters, HttpResponseCallback callback, bool queue);
+		void AsyncGetInner(const HttpRequestPtr& req, HttpResponseCallback callback);
+		bool AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback);
 		bool Get(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
 		bool Post(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters, const std::string& data);
 		void saveConfig();

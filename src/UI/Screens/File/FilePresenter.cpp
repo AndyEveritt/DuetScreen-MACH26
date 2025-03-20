@@ -25,6 +25,7 @@ namespace UI
 	void FilePresenter::setFolder(const char* folder)
 	{
 		m_currentFolder = folder;
+		m_view->setFolder(folder);
 		requestFiles();
 	}
 
@@ -71,6 +72,8 @@ namespace UI
 
 	void FilePresenter::requestFiles()
 	{
+		m_view->setFileCount(0);
+		OM::FileSystem::ClearFileSystem();
 		OM::FileSystem::RequestFiles(
 			m_currentFolder.c_str(),
 			[this]()
@@ -142,6 +145,10 @@ namespace UI
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
 		{
 			auto file = OM::FileSystem::GetItem(i);
+			if (file == nullptr)
+			{
+				continue;
+			}
 			if (file->GetPath() == filename)
 			{
 				auto item = this->m_view->getFileItem(i);

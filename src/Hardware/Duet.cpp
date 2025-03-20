@@ -176,6 +176,27 @@ namespace Comm
 		req.DumpUrl();
 	}
 
+	void Duet::AsyncGetInner(const HttpRequestPtr& req, HttpResponseCallback callback)
+	{
+		m_cli.sendAsync(req,
+						[this, req, callback](const HttpResponsePtr& resp) { AsyncGetCallback(req, resp, callback); });
+		m_lastRequestTime = TimeHelper::getCurrentTime();
+	}
+
+	bool Duet::AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback)
+	{
+		if (r == NULL)
+		{
+			error("request \"%s\" failed!", req->url.c_str());
+			AsyncGetInner(req, callback);
+			return false;
+		}
+		dbg("Response (async): %s %s", req->url.c_str(), r->status_message());
+		verbose("%s", r->body.c_str());
+		callback(r);
+		return true;
+	}
+
 	bool Duet::AsyncGet(const char* path,
 						hv::QueryParams& queryParameters,
 						HttpResponseCallback callback,
@@ -199,21 +220,8 @@ namespace Comm
 
 		// `sendAsync()` requires the client to still be alive later and does appear to be thread safe using a single
 		// client
-		m_cli.sendAsync(req,
-						[req, callback](const HttpResponsePtr& resp)
-						{
-							if (resp == NULL)
-							{
-								error("request \"%s\" failed!", req->url.c_str());
-							}
-							else
-							{
-								dbg("Response (async): %s %s", req->url.c_str(), resp->status_message());
-								verbose("%s", resp->body.c_str());
-								callback(resp);
-							}
-						});
-		m_lastRequestTime = TimeHelper::getCurrentTime();
+
+		AsyncGetInner(req, callback);
 #endif
 		return true;
 	}
@@ -505,8 +513,9 @@ namespace Comm
 		return;
 	}
 
-	void Duet::RequestFileList(const char* dir, const size_t first)
+	bool Duet::RequestFileList(const char* dir, const size_t first)
 	{
+		bool ret = true;
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
@@ -520,19 +529,31 @@ namespace Comm
 			hv::QueryParams query;
 			query["dir"] = dir;
 			query["first"] = utils::format("%d", first);
-			if (!Get("/rr_filelist", r, query))
-			{
-				error("HTTP error %d (%s): Failed to get file list for %s", r.status_code, r.status_message(), dir);
-				break;
-			}
-			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			ret = AsyncGet(
+				"/rr_filelist",
+				query,
+				[this, dir](const HttpResponsePtr& r) -> bool
+				{
+					JsonDecoder decoder;
+					if (r->status_code != 200)
+					{
+						error("HTTP error %d (%s): Failed to get file list for %s",
+							  r->status_code,
+							  r->status_message(),
+							  dir);
+						return false;
+					}
+					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
+					return true;
+				},
+				true);
 			break;
 		}
 		default:
 			warn("Communication type not supported for requesting file list");
 			break;
 		}
-		return;
+		return ret;
 	}
 
 	bool Duet::RequestFileInfo(const char* filename)
