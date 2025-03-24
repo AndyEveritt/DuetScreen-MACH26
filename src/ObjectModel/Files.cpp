@@ -18,7 +18,7 @@
 namespace OM::FileSystem
 {
 	static std::string s_currentDirPath;
-	static std::vector<FileSystemItem*> s_items;
+	static std::vector<std::shared_ptr<FileSystemItem>> s_items;
 	static struct
 	{
 		std::function<void()> cb;
@@ -71,28 +71,26 @@ namespace OM::FileSystem
 		dbg("Files: destructing item %s", GetPath().c_str());
 	}
 
-	File* AddFileAt(const size_t index)
+	std::shared_ptr<File> AddFileAt(const size_t index)
 	{
 		if (index < s_items.size())
 		{
 			dbg("Deleting item[%d]", index);
-			delete s_items[index];
-			s_items[index] = nullptr;
+			s_items[index].reset();
 		}
-		File* file = new File();
+		std::shared_ptr<File> file = std::make_shared<File>();
 		s_items.insert(s_items.begin() + index, file);
 		return file;
 	}
 
-	Folder* AddFolderAt(const size_t index)
+	std::shared_ptr<Folder> AddFolderAt(const size_t index)
 	{
 		if (index < s_items.size())
 		{
 			dbg("Deleting item[%d]", index);
-			delete s_items[index];
-			s_items[index] = nullptr;
+			s_items[index].reset();
 		}
-		Folder* folder = new Folder();
+		std::shared_ptr<Folder> folder = std::make_shared<Folder>();
 		s_items.insert(s_items.begin() + index, folder);
 		return folder;
 	}
@@ -102,44 +100,44 @@ namespace OM::FileSystem
 		return s_items.size();
 	}
 
-	const std::vector<FileSystemItem*>& GetItems()
+	const std::vector<std::shared_ptr<FileSystemItem>>& GetItems()
 	{
 		return s_items;
 	}
 
-	FileSystemItem* GetItem(const size_t index)
+	std::shared_ptr<FileSystemItem> GetItem(const size_t index)
 	{
 		if (index >= GetItemCount())
 			return nullptr;
 		return s_items[index];
 	}
 
-	File* GetFile(const std::string& name)
+	std::shared_ptr<File> GetFile(const std::string& name)
 	{
-		for (FileSystemItem* item : s_items)
+		for (const auto& item : s_items)
 		{
-			if (item == nullptr)
+			if (!item)
 				continue;
 			if (item->GetName() != name)
 				continue;
 			if (item->GetType() != FileSystemItemType::file)
 				continue;
-			return (File*)item;
+			return std::static_pointer_cast<File>(item);
 		}
 		return nullptr;
 	}
 
-	Folder* GetSubFolder(const std::string& name)
+	std::shared_ptr<Folder> GetSubFolder(const std::string& name)
 	{
-		for (FileSystemItem* item : s_items)
+		for (const auto& item : s_items)
 		{
-			if (item == nullptr)
+			if (!item)
 				continue;
 			if (item->GetName() != name)
 				continue;
 			if (item->GetType() != FileSystemItemType::folder)
 				continue;
-			return (Folder*)item;
+			return std::static_pointer_cast<Folder>(item);
 		}
 		return nullptr;
 	}
@@ -152,7 +150,7 @@ namespace OM::FileSystem
 
 	struct
 	{
-		bool operator()(FileSystemItem* L, FileSystemItem* R)
+		bool operator()(std::shared_ptr<FileSystemItem> L, std::shared_ptr<FileSystemItem> R)
 		{
 			if (L->GetType() == R->GetType())
 				return L->GetDate() > R->GetDate();
@@ -345,13 +343,6 @@ namespace OM::FileSystem
 	void ClearFileSystem()
 	{
 		info("Files: clearing items");
-		for (auto item : s_items)
-		{
-			if (item == nullptr)
-				continue;
-			dbg("Files: deleting item %s", item->GetName().c_str());
-			delete item;
-		}
 		s_items.clear();
 	}
 

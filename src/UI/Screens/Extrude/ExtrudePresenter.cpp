@@ -177,7 +177,8 @@ namespace UI
 										 this->m_filamentOptions.clear();
 										 for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
 										 {
-											 OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(i);
+											 std::shared_ptr<OM::FileSystem::FileSystemItem> item =
+												 OM::FileSystem::GetItem(i);
 											 if (item == nullptr)
 											 {
 												 continue;

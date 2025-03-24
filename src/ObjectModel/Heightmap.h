@@ -98,7 +98,7 @@ namespace OM
 	size_t ClearHeightmapCache();
 
 	void RequestHeightmapFiles();
-	std::vector<FileSystem::FileSystemItem*> GetHeightmapFiles();
+	std::vector<std::shared_ptr<FileSystem::FileSystemItem>> GetHeightmapFiles();
 } // namespace OM
 
 #endif /* JNI_OBJECTMODEL_HEIGHTMAP_H_ */

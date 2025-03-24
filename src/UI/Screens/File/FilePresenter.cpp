@@ -75,23 +75,29 @@ namespace UI
 
 	void FilePresenter::requestFiles()
 	{
+		m_items.clear();
 		m_view->setFileCount(0);
-		OM::FileSystem::ClearFileSystem();
 		OM::FileSystem::RequestFiles(
 			m_currentFolder.c_str(),
 			[this]()
 			{
 				ModelLock lock;
+				m_items = OM::FileSystem::GetItems();
 				this->m_view->setFolder(this->m_currentFolder.c_str());
-				this->m_view->setFileCount(OM::FileSystem::GetItemCount());
+				this->m_view->setFileCount(m_items.size());
 				for (size_t i = 0; i < this->m_view->getFileCount(); i++)
 				{
+					if (i > m_items.size())
+					{
+						warn("File count mismatch");
+						break;
+					}
 					auto item = this->m_view->getFileItem(i);
 					if (item == nullptr)
 					{
 						continue;
 					}
-					auto file = OM::FileSystem::GetItem(i);
+					auto file = m_items[i];
 					if (file == nullptr)
 					{
 						continue;

@@ -9,6 +9,7 @@
 #define JNI_OBJECTMODEL_FILES_HPP_
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,9 @@ namespace OM::FileSystem
 	class FileSystemItem
 	{
 	  public:
+		virtual ~FileSystemItem();						// Makes the class polymorphic
+		virtual FileSystemItemType GetType() const = 0; // Pure virtual function
+
 		FileSystemItem(const FileSystemItemType type)
 			: m_type(type)
 			, m_size(0)
@@ -43,9 +47,6 @@ namespace OM::FileSystem
 		size_t GetSize() const { return m_size; }
 		std::string GetReadableSize() const;
 		void SetSize(const size_t size) { m_size = size; }
-		FileSystemItemType GetType() const { return m_type; }
-
-		~FileSystemItem();
 
 	  private:
 		std::string m_name;
@@ -65,6 +66,7 @@ namespace OM::FileSystem
 			: FileSystemItem(FileSystemItemType::file, name)
 		{
 		}
+		FileSystemItemType GetType() const override { return FileSystemItemType::file; }
 	};
 
 	class Folder : public FileSystemItem
@@ -78,15 +80,16 @@ namespace OM::FileSystem
 			: FileSystemItem(FileSystemItemType::folder, name)
 		{
 		}
+		FileSystemItemType GetType() const override { return FileSystemItemType::folder; }
 	};
 
-	File* AddFileAt(const size_t index);
-	Folder* AddFolderAt(const size_t index);
+	std::shared_ptr<File> AddFileAt(const size_t index);
+	std::shared_ptr<Folder> AddFolderAt(const size_t index);
 	const size_t GetItemCount();
-	const std::vector<FileSystemItem*>& GetItems();
-	FileSystemItem* GetItem(const size_t index);
-	File* GetFile(const std::string& name);
-	Folder* GetSubFolder(const std::string& name);
+	const std::vector<std::shared_ptr<FileSystemItem>>& GetItems();
+	std::shared_ptr<FileSystemItem> GetItem(const size_t index);
+	std::shared_ptr<File> GetFile(const std::string& name);
+	std::shared_ptr<Folder> GetSubFolder(const std::string& name);
 	void SetCurrentDir(const std::string& path);
 	void SortFileSystem();
 	std::string GetParentDirPath();

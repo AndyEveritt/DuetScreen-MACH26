@@ -15,7 +15,7 @@ namespace UI
 		, m_index(index)
 		, m_list(view)
 		, m_layoutColDsc{LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
+		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_label(lv_label_create(getCont()))
 		, m_date(lv_label_create(getCont()))
 		, m_size(lv_label_create(getCont()))
@@ -36,6 +36,8 @@ namespace UI
 		lv_obj_set_grid_cell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
 		lv_obj_set_grid_cell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		lv_obj_set_grid_cell(m_type, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+
+		lv_obj_set_height(m_label, LV_SIZE_CONTENT);
 
 		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_AUTO_SCALE);
 

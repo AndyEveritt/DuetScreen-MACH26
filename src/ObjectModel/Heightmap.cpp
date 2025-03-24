@@ -332,13 +332,13 @@ namespace OM
 
 	const std::string& GetHeightmapNameAt(int index)
 	{
-		std::vector<FileSystem::FileSystemItem*> filenames = GetHeightmapFiles();
+		std::vector<std::shared_ptr<FileSystem::FileSystemItem>> filenames = GetHeightmapFiles();
 		if (index < 0 || index >= (int)filenames.size())
 		{
 			error("Invalid heightmap index %d", index);
 			return s_emptyStr;
 		}
-		FileSystem::FileSystemItem* item = filenames[index];
+		std::shared_ptr<FileSystem::FileSystemItem> item = filenames[index];
 		if (item == nullptr)
 		{
 			error("Filesystem item at index %d is null", index);
@@ -421,18 +421,18 @@ namespace OM
 		ClearHeightmapCache();
 	}
 
-	std::vector<FileSystem::FileSystemItem*> GetHeightmapFiles()
+	std::vector<std::shared_ptr<FileSystem::FileSystemItem>> GetHeightmapFiles()
 	{
-		const std::vector<FileSystem::FileSystemItem*>& files = FileSystem::GetItems();
-		std::vector<FileSystem::FileSystemItem*> csvFiles;
+		const std::vector<std::shared_ptr<FileSystem::FileSystemItem>>& files = FileSystem::GetItems();
+		std::vector<std::shared_ptr<FileSystem::FileSystemItem>> csvFiles;
 
-		for (FileSystem::FileSystemItem* item : files)
+		for (const auto& item : files)
 		{
 			if (item->GetType() != FileSystem::FileSystemItemType::file)
 				continue;
 
 			// Ignore non CSV files
-			if (item->GetName().find(".csv\0") == std::string::npos)
+			if (item->GetName().rfind(".csv\0") == std::string::npos)
 				continue;
 
 			if (item->GetName().find(DEFAULT_FILAMENTS_FILE) != std::string::npos)

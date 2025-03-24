@@ -62,7 +62,7 @@ bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, cons
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
 	info("Files: item[%u] name=%s", index, data);
-	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
 
@@ -74,7 +74,7 @@ bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, 
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
 	info("Files: item[%u] size=%d", index, data);
-	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
 	item->SetSize(data);
@@ -85,7 +85,7 @@ bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, cons
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
 	info("Files: item[%u] date=%s", index, data);
-	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
 	item->SetDate(data);
@@ -116,7 +116,7 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 	OM::FileSystem::SortFileSystem();
 	for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
 	{
-		OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(i);
+		std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(i);
 		if (item == nullptr || item->GetType() == OM::FileSystem::FileSystemItemType::folder)
 		{
 			continue;

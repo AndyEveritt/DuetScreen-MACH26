@@ -116,8 +116,8 @@ namespace OM
 			printf("  Files:");
 			for (size_t i = 0; i < FileSystem::GetItemCount(); ++i)
 			{
-				FileSystem::FileSystemItem* item = FileSystem::GetItem(i);
-				if (item != nullptr)
+				std::shared_ptr<FileSystem::FileSystemItem> item = FileSystem::GetItem(i);
+				if (item)
 				{
 					printf("    [%lu]: path(%s)", i, item->GetPath().c_str());
 					printf("          date(%s), size(%lu)", item->GetDate().c_str(), item->GetSize());
