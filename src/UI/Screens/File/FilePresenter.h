@@ -42,6 +42,9 @@ namespace UI
 	  private:
 		void onActivate() override;
 
+		void displayFiles();
+		void sortFiles();
+
 		BaseFolder m_baseFolder = BaseFolder::GCODES;
 		std::string m_currentFolder;
 		std::string m_gcodePath; // path to gcode file to print

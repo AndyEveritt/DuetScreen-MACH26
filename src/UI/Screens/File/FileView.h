@@ -61,6 +61,7 @@ namespace UI
 
 	  private:
 		static void onRefreshClicked(lv_event_t* e);
+		static void onSortClicked(lv_event_t* e);
 
 		virtual void onShow() override;
 		virtual void onHide() override;
@@ -73,6 +74,9 @@ namespace UI
 		std::vector<std::shared_ptr<FileItem>> m_fileItems;
 		lv_obj_t* m_sideBar;
 		Button m_refresh;
+		Button m_sortName;
+		Button m_sortDate;
+		Button m_sortSize;
 		lv_obj_t* m_footer;
 
 		MessageBox m_startPrint;

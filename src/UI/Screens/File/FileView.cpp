@@ -113,6 +113,9 @@ namespace UI
 		, m_listCont(lv_obj_create(getCont()))
 		, m_sideBar(lv_obj_create(getCont()))
 		, m_refresh("file_refresh", m_sideBar, _("refresh"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_sortName("file_sort_name", m_sideBar, _("sort_by_name"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_sortDate("file_sort_date", m_sideBar, _("sort_by_date"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_sortSize("file_sort_size", m_sideBar, _("sort_by_size"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_footer(lv_label_create(getCont()))
 		, m_startPrint("file_messageBox", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
@@ -141,6 +144,9 @@ namespace UI
 		lv_obj_set_flex_flow(m_sideBar, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(m_sideBar, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_style_pad_all(m_sideBar, 2, 0);
+		m_sortName.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::NAME)));
+		m_sortDate.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::DATE)));
+		m_sortSize.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::SIZE)));
 
 		// Footer
 		constexpr lv_coord_t footerPad = 2;
@@ -155,6 +161,9 @@ namespace UI
 
 		// Callbacks
 		m_refresh.setCallback(onRefreshClicked, LV_EVENT_CLICKED, this);
+		m_sortName.setCallback(onSortClicked, LV_EVENT_CLICKED, this);
+		m_sortDate.setCallback(onSortClicked, LV_EVENT_CLICKED, this);
+		m_sortSize.setCallback(onSortClicked, LV_EVENT_CLICKED, this);
 	}
 
 	void FileView::setFileCount(const size_t count)
@@ -246,6 +255,16 @@ namespace UI
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		view->cancelStartPrint();
 		view->m_presenter.refreshFiles();
+	}
+
+	void FileView::onSortClicked(lv_event_t* e)
+	{
+		Lock lock;
+		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
+		lv_obj_t* btn = lv_event_get_target_obj(e);
+		FilePresenter::SortBy sort =
+			static_cast<FilePresenter::SortBy>(reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn)));
+		view->m_presenter.setSortOrder(sort);
 	}
 
 	bool FileView::back()

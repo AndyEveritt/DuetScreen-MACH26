@@ -73,6 +73,44 @@ namespace UI
 		OM::FileSystem::RunMacro(m_gcodePath);
 	}
 
+	void FilePresenter::displayFiles()
+	{
+		m_view->setFileCount(m_items.size());
+		for (size_t i = 0; i < m_view->getFileCount(); i++)
+		{
+			if (i > m_items.size())
+			{
+				warn("File count mismatch");
+				break;
+			}
+			auto item = m_view->getFileItem(i);
+			if (item == nullptr)
+			{
+				continue;
+			}
+			auto file = m_items[i];
+			if (file == nullptr)
+			{
+				continue;
+			}
+			item->setLabel(file->GetName().c_str());
+			item->setDate(file->GetDate().c_str());
+			item->setSize(file->GetReadableSize().c_str());
+			item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
+
+			// Set thumbnail
+			if (file->GetType() == OM::FileSystem::FileSystemItemType::file &&
+				IsThumbnailCached(file->GetPath().c_str()))
+			{
+				item->setThumbnail(GetThumbnailPath(file->GetPath().c_str()).c_str());
+			}
+			else
+			{
+				item->setThumbnail(nullptr);
+			}
+		}
+	}
+
 	void FilePresenter::requestFiles()
 	{
 		m_items.clear();
@@ -84,40 +122,8 @@ namespace UI
 				ModelLock lock;
 				m_items = OM::FileSystem::GetItems();
 				this->m_view->setFolder(this->m_currentFolder.c_str());
-				this->m_view->setFileCount(m_items.size());
-				for (size_t i = 0; i < this->m_view->getFileCount(); i++)
-				{
-					if (i > m_items.size())
-					{
-						warn("File count mismatch");
-						break;
-					}
-					auto item = this->m_view->getFileItem(i);
-					if (item == nullptr)
-					{
-						continue;
-					}
-					auto file = m_items[i];
-					if (file == nullptr)
-					{
-						continue;
-					}
-					item->setLabel(file->GetName().c_str());
-					item->setDate(file->GetDate().c_str());
-					item->setSize(file->GetReadableSize().c_str());
-					item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
-
-					// Set thumbnail
-					if (file->GetType() == OM::FileSystem::FileSystemItemType::file &&
-						IsThumbnailCached(file->GetPath().c_str()))
-					{
-						item->setThumbnail(GetThumbnailPath(file->GetPath().c_str()).c_str());
-					}
-					else
-					{
-						item->setThumbnail(nullptr);
-					}
-				}
+				this->sortFiles();
+				this->displayFiles();
 			},
 			true);
 	}
@@ -126,6 +132,57 @@ namespace UI
 	{
 		FILEINFO_CACHE->ClearCache();
 		requestFiles();
+	}
+
+	void FilePresenter::sortFiles()
+	{
+		auto first = m_items.begin();
+		auto last = m_items.end();
+		if (first != last)
+		{			// Ensure the range is not empty
+			--last; // Point to the last valid item
+			while (std::distance(first, last) > 0)
+			{
+				auto temp = last;
+				while (temp != first)
+				{
+					auto prev = std::prev(temp);
+					if (
+						[this](std::shared_ptr<OM::FileSystem::FileSystemItem> L,
+							   std::shared_ptr<OM::FileSystem::FileSystemItem> R) -> bool
+						{
+							if (L->GetType() == R->GetType())
+							{
+								switch (m_sortBy)
+								{
+								case SortBy::NAME:
+									return L->GetName() > R->GetName();
+								case SortBy::DATE:
+									return L->GetDate() > R->GetDate();
+								case SortBy::SIZE:
+									return L->GetSize() > R->GetSize();
+								default:
+									return false;
+								}
+							}
+							return L->GetType() < R->GetType();
+						}(*temp, *prev))
+					{
+						std::iter_swap(temp, prev);
+					}
+					--temp;
+				}
+				++first;
+			}
+		}
+	}
+
+	void FilePresenter::setSortOrder(SortBy by, bool forward)
+	{
+		m_sortBy = by;
+		m_sortOrder = forward;
+		sortFiles();
+		displayFiles();
 	}
 
 	bool FilePresenter::back()
