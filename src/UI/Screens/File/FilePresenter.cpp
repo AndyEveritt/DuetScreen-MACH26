@@ -6,6 +6,7 @@
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "lv_i18n/lv_i18n.h"
+#include "utils/StorageHelper.h"
 
 namespace UI
 {
@@ -32,7 +33,13 @@ namespace UI
 	void FilePresenter::itemClicked(const size_t index)
 	{
 		ModelLock lock;
-		auto item = OM::FileSystem::GetItem(index);
+		if (index >= m_items.size())
+		{
+			error("item %u out of range", index);
+			return;
+		}
+
+		auto item = m_items[index];
 
 		m_view->cancelStartPrint();
 		if (item == nullptr)
@@ -76,9 +83,10 @@ namespace UI
 	void FilePresenter::displayFiles()
 	{
 		m_view->setFileCount(m_items.size());
+		m_view->showSort(m_sortBy, m_sortOrder);
 		for (size_t i = 0; i < m_view->getFileCount(); i++)
 		{
-			if (i > m_items.size())
+			if (i >= m_items.size())
 			{
 				warn("File count mismatch");
 				break;
@@ -156,11 +164,11 @@ namespace UI
 								switch (m_sortBy)
 								{
 								case SortBy::NAME:
-									return L->GetName() > R->GetName();
+									return m_sortOrder ? (L->GetName() > R->GetName()) : (L->GetName() < R->GetName());
 								case SortBy::DATE:
-									return L->GetDate() > R->GetDate();
+									return m_sortOrder ? (L->GetDate() > R->GetDate()) : (L->GetDate() < R->GetDate());
 								case SortBy::SIZE:
-									return L->GetSize() > R->GetSize();
+									return m_sortOrder ? (L->GetSize() > R->GetSize()) : (L->GetSize() < R->GetSize());
 								default:
 									return false;
 								}
@@ -177,10 +185,12 @@ namespace UI
 		}
 	}
 
-	void FilePresenter::setSortOrder(SortBy by, bool forward)
+	void FilePresenter::setSort(SortBy by, bool descending)
 	{
 		m_sortBy = by;
-		m_sortOrder = forward;
+		m_sortOrder = descending;
+		StorageHelper::setData(ID_FILE_SORT_BY, by);
+		StorageHelper::setData(ID_FILE_SORT_DESCENDING, descending);
 		sortFiles();
 		displayFiles();
 	}
@@ -229,6 +239,8 @@ namespace UI
 
 	void FilePresenter::onActivate()
 	{
+		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
+				StorageHelper::getData(ID_FILE_SORT_DESCENDING, true));
 		setFolder(getBaseFolderPath());
 	}
 } // namespace UI

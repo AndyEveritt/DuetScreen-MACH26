@@ -33,7 +33,9 @@ namespace UI
 		void runMacro();
 		void requestFiles();
 		void refreshFiles();
-		void setSortOrder(SortBy by, bool forward = true);
+		void setSort(SortBy by, bool descending = true);
+		SortBy getSortBy() const { return m_sortBy; }
+		bool getSortOrder() const { return m_sortOrder; }
 		bool back();
 
 		// Observers

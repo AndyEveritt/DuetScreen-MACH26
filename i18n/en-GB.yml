@@ -324,3 +324,12 @@ en-GB:
   fine_tune_extruder: Extruder %u
   fine_tune_fan: Fan %u
   fine_tune: Fine Tune
+  fan_header: ~
+  max: ~
+  fan: ~
+  sort_by_name: Name
+  sort_by_date: Date
+  sort_by_size: Size
+  settings_device: ~
+  settings_brightness: ~
+  settings_screensaver_timeout: ~

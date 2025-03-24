@@ -107,7 +107,7 @@ namespace UI
 
 	FileView::FileView(lv_obj_t* parent)
 		: View("file_view", parent, layout_t(0, 0, 100, 100))
-		, m_layoutColDsc{LV_GRID_FR(1), 100, LV_GRID_TEMPLATE_LAST}
+		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_listHeader(lv_label_create(getCont()))
 		, m_listCont(lv_obj_create(getCont()))
@@ -147,6 +147,9 @@ namespace UI
 		m_sortName.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::NAME)));
 		m_sortDate.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::DATE)));
 		m_sortSize.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::SIZE)));
+		m_sortName.setCheckable(true);
+		m_sortDate.setCheckable(true);
+		m_sortSize.setCheckable(true);
 
 		// Footer
 		constexpr lv_coord_t footerPad = 2;
@@ -249,6 +252,36 @@ namespace UI
 		m_startPrint.show();
 	}
 
+	void FileView::showSort(FilePresenter::SortBy by, bool descending)
+	{
+		m_sortName.setChecked(false);
+		m_sortDate.setChecked(false);
+		m_sortSize.setChecked(false);
+
+		m_sortName.setText(_("sort_by_name"));
+		m_sortDate.setText(_("sort_by_date"));
+		m_sortSize.setText(_("sort_by_size"));
+
+		switch (by)
+		{
+		case FilePresenter::SortBy::NAME:
+			m_sortName.setChecked(true);
+			m_sortName.setText(descending ? utils::format(LV_SYMBOL_DOWN " %s", _("sort_by_name")).c_str()
+										  : utils::format(LV_SYMBOL_UP " %s", _("sort_by_name")).c_str());
+			break;
+		case FilePresenter::SortBy::DATE:
+			m_sortDate.setChecked(true);
+			m_sortDate.setText(descending ? utils::format(LV_SYMBOL_DOWN " %s", _("sort_by_date")).c_str()
+										  : utils::format(LV_SYMBOL_UP " %s", _("sort_by_date")).c_str());
+			break;
+		case FilePresenter::SortBy::SIZE:
+			m_sortSize.setChecked(true);
+			m_sortSize.setText(descending ? utils::format(LV_SYMBOL_DOWN " %s", _("sort_by_size")).c_str()
+										  : utils::format(LV_SYMBOL_UP " %s", _("sort_by_size")).c_str());
+			break;
+		}
+	}
+
 	void FileView::onRefreshClicked(lv_event_t* e)
 	{
 		Lock lock;
@@ -264,7 +297,13 @@ namespace UI
 		lv_obj_t* btn = lv_event_get_target_obj(e);
 		FilePresenter::SortBy sort =
 			static_cast<FilePresenter::SortBy>(reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn)));
-		view->m_presenter.setSortOrder(sort);
+
+		bool forward = view->m_presenter.getSortOrder();
+		if (view->m_presenter.getSortBy() == sort)
+		{
+			forward = !forward;
+		}
+		view->m_presenter.setSort(sort, forward);
 	}
 
 	bool FileView::back()

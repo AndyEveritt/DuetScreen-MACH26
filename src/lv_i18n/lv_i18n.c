@@ -127,6 +127,9 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"fine_tune_extruder", "Extruder %u"},
     {"fine_tune_fan", "Fan %u"},
     {"fine_tune", "Fine Tune"},
+    {"sort_by_name", "Name"},
+    {"sort_by_date", "Date"},
+    {"sort_by_size", "Size"},
     {NULL, NULL} // End mark
 };
 

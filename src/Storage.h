@@ -46,6 +46,9 @@ constexpr const char* ID_EXTRUSION_SELECTED_DISTANCE = "extrusion:selected_dista
 constexpr const char* ID_EXTRUSION_FEEDRATE = "extrusion:feedrate_%d";
 constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "extrusion:selected_feedrate";
 
+constexpr const char* ID_FILE_SORT_BY = "file:sort_by";
+constexpr const char* ID_FILE_SORT_DESCENDING = "file:sort_descending";
+
 #if DEBUG_BORDERS
 constexpr const char* ID_DEBUG_BORDERS = "debug:borders";
 #endif

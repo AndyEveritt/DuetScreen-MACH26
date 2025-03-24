@@ -55,6 +55,8 @@ namespace UI
 		void confirmStartPrint(const char* filename, const char* date, const char* size, const char* thumbnail);
 		void confirmRunMacro(const char* filename);
 
+		void showSort(FilePresenter::SortBy by, bool descending);
+
 		void onItemClicked(size_t index, bool isFolder);
 
 		bool back() override;
