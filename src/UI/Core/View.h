@@ -56,7 +56,6 @@ namespace UI
 			lv_obj_set_width(getCont(), layout.w == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.w));
 			lv_obj_set_height(getCont(), layout.h == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.h));
 		}
-
 		BaseView(const std::string& name, layout_t layout)
 			: BaseView(name, lv_scr_act(), layout)
 		{
@@ -69,6 +68,8 @@ namespace UI
 		 * @return Get the base container for the view
 		 */
 		inline lv_obj_t* getCont() const { return m_cont; }
+		operator lv_obj_t*() const { return getCont(); }
+
 		lv_obj_t* getScreen() const;
 		lv_obj_t* getParent() const;
 		lv_obj_t* getChild(int32_t id) const;

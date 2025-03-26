@@ -12,6 +12,7 @@
 #include "UI/Screens/Extrude/ExtrudeView.h"
 #include "UI/Screens/Fan/FanView.h"
 #include "UI/Screens/File/FileView.h"
+#include "UI/Screens/Heightmap/HeightmapView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Screens/Status/StatusView.h"
@@ -54,7 +55,7 @@ namespace UI
 
 	  private:
 		HomeView();
-		virtual void onShow() {}
+		virtual void onShow();
 		virtual void onHide();
 
 		static void onWindowSelectEvent(lv_event_t* e);
@@ -81,6 +82,7 @@ namespace UI
 		ExtrudeView m_extrudeView;
 		FanView m_fanView;
 		FileView m_fileView;
+		HeightmapView m_heightmapView;
 		SettingsView m_settingsView;
 		StatusView m_statusView;
 

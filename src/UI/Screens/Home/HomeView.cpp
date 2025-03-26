@@ -59,6 +59,7 @@ namespace UI
 		, m_extrudeView(m_mainWindow)
 		, m_fanView(m_mainWindow)
 		, m_fileView(m_mainWindow)
+		, m_heightmapView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 		, m_statusView(m_mainWindow)
 		, m_alert("home_alert", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
@@ -113,6 +114,7 @@ namespace UI
 			},
 			LV_EVENT_CLICKED,
 			&m_fileView);
+		m_heightmapWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_heightmapView);
 		m_statusWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_statusView);
 		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
 
@@ -121,6 +123,7 @@ namespace UI
 		m_extrudeView.hide();
 		m_fanView.hide();
 		m_fileView.hide();
+		m_heightmapView.hide();
 		m_statusView.hide();
 		m_settingsView.hide();
 
@@ -170,6 +173,11 @@ namespace UI
 	void HomeView::refresh()
 	{
 		m_graph.clear();
+	}
+
+	void HomeView::onShow()
+	{
+		m_heightmapView.show();
 	}
 
 	void HomeView::onHide()

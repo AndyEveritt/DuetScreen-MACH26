@@ -39,7 +39,7 @@ namespace UI
 
 		lv_obj_set_height(m_label, LV_SIZE_CONTENT);
 
-		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_AUTO_SCALE);
+		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_CONTAIN);
 
 		// Callbacks
 		lv_obj_add_event_cb(getCont(), onClick, LV_EVENT_CLICKED, this);

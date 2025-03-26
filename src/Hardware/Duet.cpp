@@ -812,15 +812,15 @@ namespace Comm
 	{
 		Disconnect();
 		Reset();
+		bool ret = false;
 
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 		{
-			// TODO open UART connection
 			info("Opening UART %s at %u", DEFAULT_UART_PORT, GetBaudRate().rate);
-			SerialIo::Init(DEFAULT_UART_PORT, GetBaudRate().internal);
-			return true;
+			ret = SerialIo::Init(DEFAULT_UART_PORT, GetBaudRate().internal);
+			break;
 		}
 		case CommunicationType::network:
 		{
@@ -873,18 +873,23 @@ namespace Comm
 				info("Connected to Duet in SBC mode");
 			}
 			info("rr_connect succeeded");
-			return true;
+			ret = true;
 		}
 		case CommunicationType::usb:
 		{
-			connectUsbDevice();
+
+			ret = connectUsbDevice();
+			if (ret)
+			{
+				SendGcode("M575 P0 S0");
+			}
 			break;
 		}
 		default:
 			break;
 		}
 
-		return false;
+		return ret;
 	}
 
 	const Duet::error_code Duet::Disconnect()

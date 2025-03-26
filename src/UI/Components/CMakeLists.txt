@@ -2,7 +2,9 @@ target_sources(
   DuetScreen
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Button.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Canvas/Canvas.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Graph/Graph.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Heatmap/Heatmap.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/MessageBox/MessageBox.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/NumberPad/NumberPad.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBar.cpp

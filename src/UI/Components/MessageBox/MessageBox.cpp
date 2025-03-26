@@ -88,7 +88,7 @@ namespace UI
 		lv_obj_set_style_min_height(m_image, 50, LV_PART_MAIN);
 		lv_obj_set_style_max_width(m_image, 300, LV_PART_MAIN);
 		lv_obj_set_style_max_height(m_image, 300, LV_PART_MAIN);
-		lv_image_set_inner_align(m_image, LV_IMAGE_ALIGN_AUTO_SCALE);
+		lv_image_set_inner_align(m_image, LV_IMAGE_ALIGN_CONTAIN);
 
 		// Central Container
 
@@ -216,8 +216,8 @@ namespace UI
 		lv_image_set_src(m_image, imagePath);
 		if (m_autoSizeImage)
 		{
-			lv_obj_set_width(m_image, lv_image_get_width(m_image));
-			lv_obj_set_height(m_image, lv_image_get_height(m_image));
+			lv_obj_set_width(m_image, lv_image_get_src_width(m_image));
+			lv_obj_set_height(m_image, lv_image_get_src_height(m_image));
 		}
 		imageVisible(imagePath != nullptr);
 	}

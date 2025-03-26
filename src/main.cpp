@@ -99,7 +99,6 @@ int main(int argc, char** argv)
 	UI::Styles::instance().init(display);
 
 #if LV_USE_OS == LV_OS_PTHREAD
-
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
 
