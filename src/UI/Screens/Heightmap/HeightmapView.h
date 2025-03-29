@@ -13,6 +13,8 @@ namespace UI
 		HeightmapView(lv_obj_t* parent);
 
 	  private:
+		virtual void onShow() override;
+
 		int32_t m_layoutColDsc[4];
 		int32_t m_layoutRowDsc[3];
 

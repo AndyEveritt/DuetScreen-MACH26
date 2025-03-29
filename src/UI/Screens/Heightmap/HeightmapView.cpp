@@ -37,4 +37,14 @@ namespace UI
 		lv_scale_set_label_show(m_scale2, true);
 		lv_obj_set_style_border_width(m_scale2, 2, LV_PART_MAIN);
 	}
+
+	void HeightmapView::onShow()
+	{
+		// Add example data to the heightmap
+		std::vector<Heatmap::DataPoint> exampleData = {
+			{0.0f, 0.0f, 0.1f}, {1.0f, 0.0f, 0.2f}, {0.0f, 1.0f, 0.3f}, {1.0f, 1.0f, 0.4f}, {0.5f, 0.5f, 0.5f}};
+		m_heightmap.addDataPoints(exampleData);
+		m_heightmap.renderColorBar();
+		m_heightmap.render();
+	}
 } // namespace UI

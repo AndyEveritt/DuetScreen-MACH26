@@ -177,7 +177,7 @@ namespace UI
 
 	void HomeView::onShow()
 	{
-		m_heightmapView.show();
+		// m_heightmapView.show();
 	}
 
 	void HomeView::onHide()

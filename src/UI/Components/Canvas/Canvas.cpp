@@ -10,6 +10,9 @@
 
 namespace UI
 {
+#define DEFAULT_CANVAS_WIDTH 100
+#define DEFAULT_CANVAS_HEIGHT 100
+
 	static constexpr lv_coord_t s_scaleSize = 30;
 
 	Canvas::Canvas(const std::string& name, lv_obj_t* parent)
@@ -74,9 +77,6 @@ namespace UI
 		lv_scale_set_major_tick_every(m_vScale, 4);
 
 		// Canvas
-		m_buf = lv_draw_buf_create(100, 100, LV_COLOR_FORMAT_RGB565, 0);
-		lv_canvas_set_draw_buf(m_canvas, m_buf);
-		lv_canvas_fill_bg(m_canvas, lv_color_hex(0xFF0000), LV_OPA_COVER);
 		lv_image_set_inner_align(m_canvas, LV_IMAGE_ALIGN_STRETCH);
 		lv_obj_set_style_border_width(m_canvas, 2, LV_PART_MAIN);
 		lv_obj_set_style_border_color(m_canvas, lv_color_hex(0x000000), LV_PART_MAIN);
@@ -140,6 +140,32 @@ namespace UI
 	{
 		Lock lock;
 		lv_scale_set_range(m_vScale, range.min, range.max);
+	}
+
+	bool Canvas::getResolution(uint32_t& width, uint32_t& height) const
+	{
+		Lock lock;
+		if (m_buf == nullptr)
+		{
+			width = 0;
+			height = 0;
+			return false;
+		}
+
+		width = m_buf->header.w;
+		height = m_buf->header.h;
+		return true;
+	}
+
+	void Canvas::setResolution(uint32_t width, uint32_t height)
+	{
+		Lock lock;
+		if (m_buf != nullptr)
+		{
+			lv_draw_buf_destroy(m_buf);
+		}
+		m_buf = lv_draw_buf_create(width, height, LV_COLOR_FORMAT_RGB565, 0);
+		lv_canvas_set_draw_buf(m_canvas, m_buf);
 	}
 
 	void Canvas::drawRect(const lv_area_t& area, lv_color_t color, lv_opa_t opa)

@@ -7,13 +7,14 @@
 
 #include "Heatmap.h"
 #include "Debug.h"
+#include <algorithm>
 #include <cmath>
 
 namespace UI
 {
 	static constexpr lv_coord_t s_scaleSize = 30;
 
-	static uint32_t GetColorForPercent(double percent);
+	static lv_color_t GetColorForPercent(double percent);
 
 	Heatmap::Heatmap(const std::string& name, lv_obj_t* parent)
 		: BaseView(name, parent)
@@ -52,10 +53,13 @@ namespace UI
 		lv_obj_set_style_pad_all(getCont(), 5, LV_PART_MAIN);
 
 		m_canvas.setTitle("Heatmap");
-		m_colorBar.setTitle("Scale:");
+		m_canvas.setResolution(100, 100);
 
 		// Color Bar
+		m_colorBar.setTitle("Scale:");
+		m_colorBar.setResolution(1, 100);
 		m_colorBar.showXScale(false);
+		m_colorBar.setYRange({-10, 10});
 
 		// lv_obj_set_style
 	}
@@ -68,14 +72,12 @@ namespace UI
 
 	Heatmap::range_t Heatmap::getXRange() const
 	{
-		range_t range;
-		return range;
+		return m_canvas.getXRange();
 	}
 
 	Heatmap::range_t Heatmap::getYRange() const
 	{
-		range_t range;
-		return range;
+		return m_canvas.getYRange();
 	}
 
 	void Heatmap::setXRange(Heatmap::range_t range)
@@ -85,15 +87,125 @@ namespace UI
 
 	void Heatmap::setYRange(Heatmap::range_t range)
 	{
-		m_colorBar.setYRange(range);
+		m_canvas.setYRange(range);
+	}
+
+	void Heatmap::setRenderMode(HeatmapRenderMode mode)
+	{
+		m_renderMode = mode;
+	}
+
+	void Heatmap::setValueRange(float min, float max)
+	{
+		m_minValue = min;
+		m_maxValue = max;
+
+		// Update the color bar scale
+		range_t colorRange = {static_cast<int32_t>(min), static_cast<int32_t>(max)};
+		m_colorBar.setYRange(colorRange);
+	}
+
+	float Heatmap::normalizeValue(float value) const
+	{
+		if (m_renderMode == HeatmapRenderMode::Deviation)
+		{
+			// In deviation mode, center is 0, normalize around that
+			float absMax = std::max(std::abs(m_minValue), std::abs(m_maxValue));
+			return (value + absMax) / (2 * absMax);
+		}
+		else
+		{
+			// In fixed mode, simple min-max normalization
+			return (value - m_minValue) / (m_maxValue - m_minValue);
+		}
+	}
+
+	void Heatmap::addDataPoint(float x, float y, float value)
+	{
+		m_dataPoints.push_back({x, y, value});
+	}
+
+	void Heatmap::addDataPoints(const std::vector<DataPoint>& points)
+	{
+		m_dataPoints.insert(m_dataPoints.end(), points.begin(), points.end());
+	}
+
+	void Heatmap::render()
+	{
+		// Skip if no data
+		if (m_dataPoints.empty())
+			return;
+
+		// Get the canvas dimensions
+		lv_obj_update_layout(m_canvas);
+		uint32_t width;
+		uint32_t height;
+		m_canvas.getResolution(width, height);
+
+		// Get the data ranges
+		range_t xRange = getXRange();
+		range_t yRange = getYRange();
+
+		float xScale = static_cast<float>(width) / (xRange.max - xRange.min);
+		float yScale = static_cast<float>(height) / (yRange.max - yRange.min);
+
+		// Clear the canvas before rendering
+		m_canvas.clear();
+
+		// Render each data point as a rectangle
+		for (const auto& point : m_dataPoints)
+		{
+			// Calculate the position on the canvas
+			lv_coord_t x = static_cast<lv_coord_t>((point.x - xRange.min) * xScale);
+			lv_coord_t y = static_cast<lv_coord_t>(height - (point.y - yRange.min) * yScale);
+
+			// Calculate the normalized value and get the color
+			float normalizedValue = normalizeValue(point.value);
+			lv_color_t color = GetColorForPercent(normalizedValue);
+
+			// Create a rectangle for this point
+			// Using 5x5 rectangles, could make this configurable
+			lv_area_t area;
+			area.x1 = x - 2;
+			area.y1 = y - 2;
+			area.x2 = x + 2;
+			area.y2 = y + 2;
+
+			// Draw the rectangle with the appropriate color
+			m_canvas.drawRect(area, color, LV_OPA_COVER);
+		}
+	}
+
+	void Heatmap::renderColorBar()
+	{
+		// Also render a color scale on the color bar
+		lv_obj_update_layout(m_colorBar);
+		uint32_t barWidth;
+		uint32_t barHeight;
+		m_colorBar.getResolution(barWidth, barHeight);
+		for (int y = 0; y < barHeight; y++)
+		{
+			float percent = 1.0f - (float)y / barHeight;
+			lv_color_t color = GetColorForPercent(percent);
+
+			lv_area_t area;
+			area.x1 = 0;
+			area.y1 = y;
+			area.x2 = barWidth;
+			area.y2 = y;
+
+			m_colorBar.drawRect(area, color, LV_OPA_COVER);
+		}
 	}
 
 	void Heatmap::clear()
 	{
-		lv_canvas_fill_bg(m_canvas, lv_color_hex(0xFFFFFF), LV_OPA_COVER);
+		m_canvas.clear();
+		m_colorBar.clear();
+		m_dataPoints.clear();
 	}
 
-	static uint32_t GetColorForPercent(double percent)
+	static lv_color_t GetColorForPercent(double percent)
 	{
 		// Convert the height to a color on a HSV colorbar from blue to red
 		double hue = (1.0 - percent) * 240.0; // Map the percent to the hue range (blue to red)
@@ -149,7 +261,7 @@ namespace UI
 		uint8_t blue = static_cast<uint8_t>((b + m) * 255);
 
 		// Combine the RGB values into a single color
-		uint32_t color = (0xFF << 24) | (red << 16) | (green << 8) | blue;
+		lv_color_t color = lv_color_make(red, green, blue);
 
 		return color;
 	}

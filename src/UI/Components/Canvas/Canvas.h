@@ -39,6 +39,9 @@ namespace UI
 		void showXScale(const bool show);
 		void showYScale(const bool show);
 
+		bool getResolution(uint32_t& width, uint32_t& height) const;
+		void setResolution(uint32_t width, uint32_t height);
+
 		void drawRect(const lv_area_t& area, lv_color_t color, lv_opa_t opa);
 
 		void clear();
@@ -49,7 +52,7 @@ namespace UI
 		int32_t m_columnDsc[3];
 		int32_t m_rowDsc[4];
 
-		lv_draw_buf_t* m_buf;
+		lv_draw_buf_t* m_buf = nullptr;
 
 		lv_obj_t* m_title;
 		lv_obj_t* m_canvas;
