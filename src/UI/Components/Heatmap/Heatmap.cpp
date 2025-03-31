@@ -53,7 +53,7 @@ namespace UI
 		lv_obj_set_style_pad_all(getCont(), 5, LV_PART_MAIN);
 
 		m_canvas.setTitle("Heatmap");
-		m_canvas.setResolution(100, 100);
+		m_canvas.setResolution(10, 10);
 
 		// Color Bar
 		m_colorBar.setTitle("Scale:");
@@ -194,7 +194,7 @@ namespace UI
 			area.x2 = barWidth;
 			area.y2 = y;
 
-			m_colorBar.drawRect(area, color, LV_OPA_COVER);
+			m_colorBar.drawRectPx(area, color, LV_OPA_COVER);
 		}
 	}
 

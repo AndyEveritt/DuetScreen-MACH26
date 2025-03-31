@@ -42,7 +42,8 @@ namespace UI
 		bool getResolution(uint32_t& width, uint32_t& height) const;
 		void setResolution(uint32_t width, uint32_t height);
 
-		void drawRect(const lv_area_t& area, lv_color_t color, lv_opa_t opa);
+		void drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa);
+		void drawRectPx(lv_area_t area, lv_color_t color, lv_opa_t opa);
 
 		void clear();
 

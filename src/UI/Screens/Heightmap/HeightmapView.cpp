@@ -42,7 +42,7 @@ namespace UI
 	{
 		// Add example data to the heightmap
 		std::vector<Heatmap::DataPoint> exampleData = {
-			{0.0f, 0.0f, 0.1f}, {1.0f, 0.0f, 0.2f}, {0.0f, 1.0f, 0.3f}, {1.0f, 1.0f, 0.4f}, {0.5f, 0.5f, 0.5f}};
+			{0.0f, 0.0f, 0.1f}, {50.0f, 0.0f, 0.2f}, {0.0f, 50.0f, 0.3f}, {100.0f, 100.0f, 0.4f}, {50.0f, 50.0f, 0.5f}};
 		m_heightmap.addDataPoints(exampleData);
 		m_heightmap.renderColorBar();
 		m_heightmap.render();

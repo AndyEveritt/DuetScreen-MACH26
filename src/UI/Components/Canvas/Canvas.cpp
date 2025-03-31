@@ -168,7 +168,27 @@ namespace UI
 		lv_canvas_set_draw_buf(m_canvas, m_buf);
 	}
 
-	void Canvas::drawRect(const lv_area_t& area, lv_color_t color, lv_opa_t opa)
+	void Canvas::drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa)
+	{
+		Lock lock;
+
+		// Get the X and Y range
+		range_t xRange = getXRange();
+		range_t yRange = getYRange();
+
+		// Convert the area to pixel coordinates
+		uint32_t res_x, res_y;
+		getResolution(res_x, res_y);
+
+		area.x1 = (area.x1 - xRange.min) * (int32_t)res_x / (xRange.max - xRange.min);
+		area.x2 = (area.x2 - xRange.min) * (int32_t)res_x / (xRange.max - xRange.min);
+		area.y1 = (area.y1 - yRange.min) * (int32_t)res_y / (yRange.max - yRange.min);
+		area.y2 = (area.y2 - yRange.min) * (int32_t)res_y / (yRange.max - yRange.min);
+
+		drawRectPx(area, color, opa);
+	}
+
+	void Canvas::drawRectPx(lv_area_t area, lv_color_t color, lv_opa_t opa)
 	{
 		Lock lock;
 		lv_draw_rect_dsc_t rect_dsc;
@@ -178,6 +198,14 @@ namespace UI
 
 		lv_layer_t layer;
 		lv_canvas_init_layer(m_canvas, &layer);
+
+		uint32_t res_x, res_y;
+		getResolution(res_x, res_y);
+		area.x1 = std::max(area.x1, 0);
+		area.y1 = std::max(area.y1, 0);
+		area.x2 = std::min(area.x2, (int32_t)res_x - 1);
+		area.y2 = std::min(area.y2, (int32_t)res_y - 1);
+
 		lv_draw_rect(&layer, &rect_dsc, &area);
 
 		lv_draw_rect(&layer, &rect_dsc, &area);
