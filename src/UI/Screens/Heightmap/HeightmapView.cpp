@@ -36,14 +36,17 @@ namespace UI
 		lv_scale_set_mode(m_scale2, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
 		lv_scale_set_label_show(m_scale2, true);
 		lv_obj_set_style_border_width(m_scale2, 2, LV_PART_MAIN);
+
+		// m_heightmap.setXRange({-200, 200});
+		m_heightmap.setGridSize(3, 3);
+		std::vector<Heatmap::DataPoint> exampleData = {
+			{0.0f, 0.0f, 0.1f}, {50.0f, 0.0f, 0.2f}, {0.0f, 50.0f, 0.3f}, {100.0f, 100.0f, 0.4f}, {50.0f, 50.0f, 0.5f}};
+		m_heightmap.addDataPoints(exampleData);
 	}
 
 	void HeightmapView::onShow()
 	{
 		// Add example data to the heightmap
-		std::vector<Heatmap::DataPoint> exampleData = {
-			{0.0f, 0.0f, 0.1f}, {50.0f, 0.0f, 0.2f}, {0.0f, 50.0f, 0.3f}, {100.0f, 100.0f, 0.4f}, {50.0f, 50.0f, 0.5f}};
-		m_heightmap.addDataPoints(exampleData);
 		m_heightmap.renderColorBar();
 		m_heightmap.render();
 	}

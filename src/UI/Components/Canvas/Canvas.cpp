@@ -147,8 +147,8 @@ namespace UI
 		Lock lock;
 		if (m_buf == nullptr)
 		{
-			width = 0;
-			height = 0;
+			width = 0u;
+			height = 0u;
 			return false;
 		}
 
@@ -164,6 +164,8 @@ namespace UI
 		{
 			lv_draw_buf_destroy(m_buf);
 		}
+		width = std::max(width, 1u);
+		height = std::max(height, 1u);
 		m_buf = lv_draw_buf_create(width, height, LV_COLOR_FORMAT_RGB565, 0);
 		lv_canvas_set_draw_buf(m_canvas, m_buf);
 	}
