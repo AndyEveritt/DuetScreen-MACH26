@@ -278,14 +278,6 @@ namespace UI
 		if (!inGrid)
 			return std::numeric_limits<float>::quiet_NaN();
 
-		// Check if we're at the edge of the grid
-		// if (row >= m_gridRows - 1 || col >= m_gridCols - 1)
-		// {
-		// 	// Return the value at this cell if available
-		// 	return std::isnan(getGridValue(row, col)) ? std::numeric_limits<float>::quiet_NaN()
-		// 											  : getGridValue(row, col);
-		// }
-
 		// Get the four corner values
 		float q11 = getGridValue(row, col);
 		float q12 = getGridValue(row, col + 1);
@@ -358,13 +350,7 @@ namespace UI
 				lv_color_t color = GetColorForPercent(normalizedValue);
 
 				// Draw the pixel
-				lv_area_t area;
-				area.x1 = pixelX;
-				area.y1 = height - pixelY - 1;
-				area.x2 = pixelX;
-				area.y2 = height - pixelY - 1;
-
-				m_canvas.drawRectPx(area, color, LV_OPA_COVER);
+				lv_canvas_set_px(m_canvas.getCanvas(), pixelX, height - pixelY - 1, color, LV_OPA_COVER);
 			}
 		}
 
@@ -383,14 +369,7 @@ namespace UI
 		{
 			float percent = 1.0f - (float)y / barHeight;
 			lv_color_t color = GetColorForPercent(percent);
-
-			lv_area_t area;
-			area.x1 = 0;
-			area.y1 = y;
-			area.x2 = barWidth;
-			area.y2 = y;
-
-			m_colorBar.drawRectPx(area, color, LV_OPA_COVER);
+			lv_canvas_set_px(m_colorBar.getCanvas(), 0, y, color, LV_OPA_COVER);
 		}
 	}
 
