@@ -39,8 +39,15 @@ namespace UI
 
 		// m_heightmap.setXRange({-200, 200});
 		m_heightmap.setGridSize(3, 3);
-		std::vector<Heatmap::DataPoint> exampleData = {
-			{0.0f, 0.0f, 0.1f}, {50.0f, 0.0f, 0.2f}, {0.0f, 50.0f, 0.3f}, {100.0f, 100.0f, 0.4f}, {50.0f, 50.0f, 0.5f}};
+		std::vector<Heatmap::DataPoint> exampleData = {{0.0f, 0.0f, 0.1f},
+													   {50.0f, 0.0f, 0.2f},
+													   {0.0f, 50.0f, 0.3f},
+													   {0.0f, 100.0f, 0.4f},
+													   {50.0f, 100.0f, 0.4f},
+													   {100.0f, 0.0f, 0.3f},
+													   {100.0f, 50.0f, 0.8f},
+													   {100.0f, 100.0f, 1.0f},
+													   {50.0f, 50.0f, 0.5f}};
 		m_heightmap.addDataPoints(exampleData);
 	}
 

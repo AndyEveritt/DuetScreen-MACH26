@@ -167,8 +167,8 @@ namespace UI
 		// Calculate spacing based on the current x/y ranges
 		range_t xRange = getXRange();
 		range_t yRange = getYRange();
-		m_gridXSpacing = static_cast<float>(xRange.max - xRange.min) / cols;
-		m_gridYSpacing = static_cast<float>(yRange.max - yRange.min) / rows;
+		m_gridXSpacing = static_cast<float>(xRange.max - xRange.min) / (cols - 1);
+		m_gridYSpacing = static_cast<float>(yRange.max - yRange.min) / (rows - 1);
 
 		setupGrid();
 	}
@@ -252,8 +252,9 @@ namespace UI
 		range_t xRange = getXRange();
 		range_t yRange = getYRange();
 
-		col = static_cast<int>((x - xRange.min) / m_gridXSpacing);
-		row = static_cast<int>((y - yRange.min) / m_gridYSpacing);
+		const float fEPSILON = 0.0f;
+		col = static_cast<int>((x - xRange.min - fEPSILON) / m_gridXSpacing);
+		row = static_cast<int>((y - yRange.min - fEPSILON) / m_gridYSpacing);
 
 		return (row >= 0 && row < m_gridRows && col >= 0 && col < m_gridCols);
 	}
@@ -278,18 +279,22 @@ namespace UI
 			return std::numeric_limits<float>::quiet_NaN();
 
 		// Check if we're at the edge of the grid
-		if (row >= m_gridRows - 1 || col >= m_gridCols - 1)
-		{
-			// Return the value at this cell if available
-			return std::isnan(getGridValue(row, col)) ? std::numeric_limits<float>::quiet_NaN()
-													  : getGridValue(row, col);
-		}
+		// if (row >= m_gridRows - 1 || col >= m_gridCols - 1)
+		// {
+		// 	// Return the value at this cell if available
+		// 	return std::isnan(getGridValue(row, col)) ? std::numeric_limits<float>::quiet_NaN()
+		// 											  : getGridValue(row, col);
+		// }
 
 		// Get the four corner values
 		float q11 = getGridValue(row, col);
 		float q12 = getGridValue(row, col + 1);
 		float q21 = getGridValue(row + 1, col);
 		float q22 = getGridValue(row + 1, col + 1);
+
+		q12 = std::isnan(q12) ? q11 : q12;
+		q21 = std::isnan(q21) ? q11 : q21;
+		q22 = std::isnan(q22) ? q11 : q22;
 
 		// If any corner is NaN, return NaN
 		if (std::isnan(q11) || std::isnan(q12) || std::isnan(q21) || std::isnan(q22))
@@ -355,9 +360,9 @@ namespace UI
 				// Draw the pixel
 				lv_area_t area;
 				area.x1 = pixelX;
-				area.y1 = pixelY;
+				area.y1 = height - pixelY - 1;
 				area.x2 = pixelX;
-				area.y2 = pixelY;
+				area.y2 = height - pixelY - 1;
 
 				m_canvas.drawRectPx(area, color, LV_OPA_COVER);
 			}
