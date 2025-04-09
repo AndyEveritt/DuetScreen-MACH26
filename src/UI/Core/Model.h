@@ -2,6 +2,7 @@
 
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "Subscribers/DirectoriesSubscribers.h"
 #include "Subscribers/FanSubscribers.h"
 #include "Subscribers/FileSubscribers.h"
 #include "Subscribers/HeatSubscribers.h"
@@ -143,6 +144,7 @@ class Model
 	Model();
 	bool initMutex();
 
+	DirectoriesSubscribers m_directoriesSubscribers;
 	FanSubscribers m_fanSubscribers;
 	FileSubscribers m_fileSubscribers;
 	HeatSubscribers m_heatSubscribers;

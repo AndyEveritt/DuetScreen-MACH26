@@ -3,6 +3,7 @@ target_sources(
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Alert.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/Axis.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/BedOrChamber.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/Directories.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/Fan.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/Files.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/Heat.cpp

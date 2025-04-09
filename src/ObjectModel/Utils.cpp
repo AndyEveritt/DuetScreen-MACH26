@@ -13,6 +13,7 @@
 #include "BedOrChamber.h"
 #include "Configuration.h"
 #include "DebugCommands.h"
+#include "Directories.h"
 #include "Files.h"
 #include "Heightmap.h"
 #include "Job.h"
@@ -42,6 +43,7 @@ namespace OM
 		RemoveSpindle(0, true);
 		RemoveTool(0, true);
 		ClearCurrentHeightmap();
+		Directories::Reset();
 
 		Model::get().refresh();
 	}

@@ -33,7 +33,7 @@
 // If one of the fields in the disabled ones need to be fetched the
 // corresponding define has to be set to (1)
 #define FETCH_BOARDS (1)
-#define FETCH_DIRECTORIES (0)
+#define FETCH_DIRECTORIES (1)
 #define FETCH_FANS (1)
 #define FETCH_HEAT (1)
 #define FETCH_INPUTS (0)
