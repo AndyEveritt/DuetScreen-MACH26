@@ -63,8 +63,6 @@ namespace UI
 		m_colorBar.setResolution(1, 100);
 		m_colorBar.showXScale(false);
 		m_colorBar.setYRange({-10, 10});
-
-		// lv_obj_set_style
 	}
 
 	void Heatmap::showScale(const bool show)

@@ -10,6 +10,7 @@
 #include "Heightmap.h"
 
 #include "Hardware/Duet.h"
+#include "ObjectModel/Directories.h"
 #include "utils/csv.h"
 #include <cmath>
 #include <fstream>
@@ -120,7 +121,7 @@ namespace OM
 		Reset();
 		m_fileName = filename;
 		std::string csvContents;
-		if (!Comm::DUET.DownloadFile(utils::format("/sys/%s", filename).c_str(), csvContents))
+		if (!Comm::DUET.DownloadFile((Directories::GetSystemDirectory() + filename).c_str(), csvContents))
 		{
 			error("Failed to download heightmap file %s", filename);
 			return false;
@@ -166,17 +167,7 @@ namespace OM
 			error("Invalid point %u, %u, heightmap size (%u, %u)", x, y, GetWidth(), GetHeight());
 			return nullptr;
 		}
-		return &m_heightmap[y][x];
-	}
-
-	size_t Heightmap::GetPointCount() const
-	{
-		size_t count = 0;
-		for (const std::vector<Point>& row : m_heightmap)
-		{
-			count += row.size();
-		}
-		return count;
+		return &m_heightmap[y * GetWidth() + x];
 	}
 
 	bool Heightmap::ParseMeta(const std::string& csvContents)
@@ -219,6 +210,15 @@ namespace OM
 		size_t rows = doc.GetRowCount();
 		size_t cols = doc.GetColumnCount();
 
+		if (rows != GetHeight() || cols != GetWidth())
+		{
+			error("Heightmap size mismatch: %u != %u or %u != %u", rows, GetHeight(), cols, GetWidth());
+			return false;
+		}
+
+		// Resize the 1D vector to hold all points
+		m_heightmap.resize(rows * cols);
+
 		double errorSum = 0.0f;
 		double errorSqrSum = 0.0f;
 		double xMin = 9999.9f;	// Used to calculate area
@@ -228,10 +228,10 @@ namespace OM
 
 		for (size_t rowIdx = 0; rowIdx < rows; rowIdx++)
 		{
-			std::vector<Point> row(cols);
 			for (size_t colIdx = 0; colIdx < cols; colIdx++)
 			{
-				Point point;
+				size_t index = rowIdx * cols + colIdx;
+				Point& point = m_heightmap[index];
 				std::string val;
 				point.x = meta.GetMin(0) + colIdx * meta.GetSpacing(0);
 				point.y = meta.GetMin(1) + rowIdx * meta.GetSpacing(1);
@@ -286,16 +286,7 @@ namespace OM
 				}
 				errorSum += point.z;
 				errorSqrSum += point.z * point.z;
-
-				if (colIdx >= row.size())
-				{
-					warn("Heightmap column index out of range: %u >= %u", colIdx, row.size());
-					parseError = true;
-					continue;
-				}
-				row[colIdx] = point;
 			}
-			m_heightmap.push_back(row);
 		}
 
 		dbg("xMin=%.3f, xMax=%.3f, yMin=%.3f, yMax=%.3f", xMin, xMax, yMin, yMax);
@@ -304,23 +295,16 @@ namespace OM
 		m_meanError = errorSum / (rows * cols);
 		m_stdDev = sqrt(errorSqrSum * GetPointCount() - errorSum * errorSum) / GetPointCount();
 
-		if (rows != m_heightmap.size())
+		if (rows * cols != m_heightmap.size())
 		{
-			warn("Heightmap row count mismatch: %u != %u", rows, m_heightmap.size());
-			parseError = true;
-		}
-		if (cols != m_heightmap.empty() ? 0 : m_heightmap[0].size())
-		{
-			warn("Heightmap column count mismatch: %u != %u", cols, m_heightmap.empty() ? 0 : m_heightmap[0].size());
+			warn("Heightmap size mismatch: %u != %u", rows * cols, m_heightmap.size());
 			parseError = true;
 		}
 
-		dbg("Heightmap: %u (%u) rows, %u (%u) cols, area=%.3f mm^2, minError=%.3f mm, maxError=%.3f mm, meanError=%.3f "
+		dbg("Heightmap: %u rows, %u cols, area=%.3f mm^2, minError=%.3f mm, maxError=%.3f mm, meanError=%.3f "
 			"mm, stdDev=%.3f mm",
 			rows,
-			m_heightmap.size(),
 			cols,
-			m_heightmap.empty() ? 0 : m_heightmap[0].size(),
 			m_area,
 			m_minError,
 			m_maxError,

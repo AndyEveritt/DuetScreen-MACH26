@@ -3,6 +3,8 @@
 #include "UI/Core/Navigation.h"
 #include "lv_i18n/lv_i18n.h"
 
+#include "ObjectModel/Heightmap.h"
+
 namespace UI
 {
 	HeightmapView::HeightmapView(lv_obj_t* parent)
@@ -55,7 +57,9 @@ namespace UI
 	void HeightmapView::onShow()
 	{
 		// Add example data to the heightmap
-		m_heightmap.renderColorBar();
+		OM::Heightmap map;
+		map.LoadFromDuet("heightmap.csv");
+
 		m_heightmap.render();
 	}
 } // namespace UI
