@@ -41,6 +41,7 @@ namespace UI
 		void setXRange(range_t range);
 		void setYRange(range_t range);
 
+		void setTitle(const char* title);
 		void showScale(const bool show);
 
 		void setRenderMode(HeatmapRenderMode mode);

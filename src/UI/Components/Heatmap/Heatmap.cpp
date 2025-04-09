@@ -53,7 +53,7 @@ namespace UI
 
 		lv_obj_set_style_pad_all(getCont(), 5, LV_PART_MAIN);
 
-		m_canvas.setTitle("Heatmap");
+		m_canvas.setTitle("");
 		m_canvas.setResolution(100, 100);
 		m_canvas.setXRange({0, 100});
 		m_canvas.setYRange({0, 100});
@@ -91,6 +91,11 @@ namespace UI
 	void Heatmap::setYRange(Heatmap::range_t range)
 	{
 		m_canvas.setYRange(range);
+	}
+
+	void Heatmap::setTitle(const char* title)
+	{
+		m_canvas.setTitle(title);
 	}
 
 	void Heatmap::setRenderMode(HeatmapRenderMode mode)

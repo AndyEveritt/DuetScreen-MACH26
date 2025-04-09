@@ -38,6 +38,7 @@ namespace UI
 		lv_obj_set_style_border_width(m_scale2, 2, LV_PART_MAIN);
 
 		// m_heightmap.setXRange({-200, 200});
+		m_heightmap.setTitle("Heightmap");
 		m_heightmap.setGridSize(3, 3);
 		std::vector<Heatmap::DataPoint> exampleData = {{0.0f, 0.0f, 0.0f},
 													   {50.0f, 0.0f, 0.0f},
