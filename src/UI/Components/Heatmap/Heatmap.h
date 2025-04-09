@@ -24,6 +24,7 @@ namespace UI
 	{
 	  public:
 		using range_t = Canvas::range_t;
+		using range_float_t = Canvas::range_float_t;
 
 		struct DataPoint
 		{

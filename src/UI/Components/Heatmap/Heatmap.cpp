@@ -55,14 +55,14 @@ namespace UI
 
 		m_canvas.setTitle("");
 		m_canvas.setResolution(100, 100);
-		m_canvas.setXRange({0, 100});
-		m_canvas.setYRange({0, 100});
+		m_canvas.setXRange(range_t{0, 100});
+		m_canvas.setYRange(range_t{0, 100});
 
 		// Color Bar
 		m_colorBar.setTitle("Scale:");
 		m_colorBar.setResolution(1, 100);
 		m_colorBar.showXScale(false);
-		m_colorBar.setYRange({-10, 10});
+		m_colorBar.setYRange(range_float_t{-1.0f, 1.0f});
 	}
 
 	void Heatmap::showScale(const bool show)

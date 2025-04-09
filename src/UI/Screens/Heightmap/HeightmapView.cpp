@@ -42,16 +42,6 @@ namespace UI
 		// m_heightmap.setXRange({-200, 200});
 		m_heightmap.setTitle("Heightmap");
 		m_heightmap.setGridSize(3, 3);
-		std::vector<Heatmap::DataPoint> exampleData = {{0.0f, 0.0f, 0.0f},
-													   {50.0f, 0.0f, 0.0f},
-													   {0.0f, 50.0f, 0.5f},
-													   {0.0f, 100.0f, 1.0f},
-													   {50.0f, 100.0f, 0.0f},
-													   {100.0f, 0.0f, 0.0f},
-													   {100.0f, 50.0f, 0.0f},
-													   {100.0f, 100.0f, 1.0f},
-													   {50.0f, 50.0f, 0.0f}};
-		m_heightmap.addDataPoints(exampleData);
 	}
 
 	void HeightmapView::onShow()
@@ -59,6 +49,15 @@ namespace UI
 		// Add example data to the heightmap
 		OM::Heightmap map;
 		map.LoadFromDuet("heightmap.csv");
+		m_heightmap.setXRange({static_cast<int32_t>(map.meta.GetMin(0)), static_cast<int32_t>(map.meta.GetMax(0))});
+		m_heightmap.setYRange({static_cast<int32_t>(map.meta.GetMin(1)), static_cast<int32_t>(map.meta.GetMax(1))});
+		m_heightmap.setGridSize(map.GetWidth(), map.GetHeight());
+
+		for (auto& point : map.GetPoints())
+		{
+			float value = point.isNull ? std::numeric_limits<float>::quiet_NaN() : point.z;
+			m_heightmap.addDataPoint(point.x, point.y, value);
+		}
 
 		m_heightmap.render();
 	}

@@ -62,6 +62,7 @@ namespace OM
 		const std::string& GetFileName() const { return m_fileName; }
 		size_t GetHeight() const { return meta.GetSamples(1); }
 		size_t GetWidth() const { return meta.GetSamples(0); }
+		const std::vector<Point>& GetPoints() const { return m_heightmap; }
 		const Point* GetPoint(size_t x, size_t y) const;
 		size_t GetPointCount() const { return m_heightmap.size(); }
 		double GetArea() const { return m_area; }

@@ -13,7 +13,7 @@ namespace UI
 #define DEFAULT_CANVAS_WIDTH 100
 #define DEFAULT_CANVAS_HEIGHT 100
 
-	static constexpr lv_coord_t s_scaleSize = 30;
+	static constexpr lv_coord_t s_scaleSize = 50;
 
 	Canvas::Canvas(const std::string& name, lv_obj_t* parent)
 		: BaseView(name, parent)
@@ -68,12 +68,14 @@ namespace UI
 		lv_obj_set_height(m_hScale, LV_SIZE_CONTENT);
 		lv_scale_set_mode(m_hScale, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
 		lv_scale_set_label_show(m_hScale, true);
+		lv_scale_set_total_tick_count(m_hScale, 17);
+		lv_scale_set_major_tick_every(m_hScale, 4);
 
 		// Vertical scale
 		lv_obj_set_width(m_vScale, LV_SIZE_CONTENT);
 		lv_scale_set_mode(m_vScale, LV_SCALE_MODE_VERTICAL_LEFT);
 		lv_scale_set_label_show(m_vScale, true);
-		lv_scale_set_total_tick_count(m_vScale, 21);
+		lv_scale_set_total_tick_count(m_vScale, 17);
 		lv_scale_set_major_tick_every(m_vScale, 4);
 
 		// Canvas
@@ -133,13 +135,73 @@ namespace UI
 	void Canvas::setXRange(Canvas::range_t range)
 	{
 		Lock lock;
+		m_xLabels.clear();
+		if (m_xLabelPtr != nullptr)
+		{
+			delete[] m_xLabelPtr;
+			m_xLabelPtr = nullptr;
+		}
+		lv_scale_set_text_src(m_hScale, nullptr);
 		lv_scale_set_range(m_hScale, range.min, range.max);
 	}
 
 	void Canvas::setYRange(Canvas::range_t range)
 	{
 		Lock lock;
+		m_yLabels.clear();
+		if (m_yLabelPtr != nullptr)
+		{
+			delete[] m_yLabelPtr;
+			m_yLabelPtr = nullptr;
+		}
+		lv_scale_set_text_src(m_vScale, nullptr);
 		lv_scale_set_range(m_vScale, range.min, range.max);
+	}
+
+	void Canvas::createLabels(Canvas::range_float_t range,
+							  uint32_t ticks,
+							  std::vector<std::string>& vec,
+							  const char**& labels)
+	{
+		vec.clear();
+		vec.reserve(ticks);
+		float step = (range.max - range.min) / (float)(ticks - 1);
+		for (uint32_t i = 0; i < ticks; ++i)
+		{
+			vec.emplace_back(utils::format("%.2f", range.min + step * (float)i));
+		}
+
+		// Delete existing labels if any
+		if (labels != nullptr)
+		{
+			delete[] labels;
+			labels = nullptr;
+		}
+
+		labels = new const char*[vec.size() + 1];
+		for (size_t i = 0; i < vec.size(); ++i)
+		{
+			labels[i] = vec[i].c_str();
+		}
+		labels[vec.size()] = nullptr;
+	}
+
+	void Canvas::setXRange(Canvas::range_float_t range)
+	{
+		Lock lock;
+		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_hScale) / lv_scale_get_major_tick_every(m_hScale);
+		createLabels(range, ticks, m_xLabels, m_xLabelPtr);
+		lv_scale_set_range(m_hScale, range.min, range.max);
+		lv_scale_set_text_src(m_hScale, m_xLabelPtr);
+	}
+
+	void Canvas::setYRange(Canvas::range_float_t range)
+	{
+		Lock lock;
+		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_vScale) / lv_scale_get_major_tick_every(m_vScale);
+		createLabels(range, ticks, m_yLabels, m_yLabelPtr);
+		lv_scale_set_range(m_vScale, range.min, range.max);
+		lv_scale_set_text_src(m_vScale, m_yLabelPtr);
 	}
 
 	bool Canvas::getResolution(uint32_t& width, uint32_t& height) const

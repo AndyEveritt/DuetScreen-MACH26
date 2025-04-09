@@ -23,6 +23,11 @@ namespace UI
 			int32_t min;
 			int32_t max;
 		};
+		struct range_float_t
+		{
+			float min;
+			float max;
+		};
 
 		Canvas(const std::string& name, lv_obj_t* parent);
 		Canvas(const std::string& name, lv_obj_t* parent, layout_t layout);
@@ -32,6 +37,8 @@ namespace UI
 		range_t getYRange() const;
 		void setXRange(range_t range);
 		void setYRange(range_t range);
+		void setXRange(range_float_t range);
+		void setYRange(range_float_t range);
 
 		void setTitle(const char* title);
 
@@ -52,6 +59,8 @@ namespace UI
 	  private:
 		void init();
 
+		void createLabels(range_float_t range, uint32_t ticks, std::vector<std::string>& vec, const char**& labels);
+
 		int32_t m_columnDsc[3];
 		int32_t m_rowDsc[4];
 
@@ -61,5 +70,10 @@ namespace UI
 		lv_obj_t* m_canvas;
 		lv_obj_t* m_vScale;
 		lv_obj_t* m_hScale;
+
+		std::vector<std::string> m_xLabels;
+		std::vector<std::string> m_yLabels;
+		const char** m_xLabelPtr = nullptr;
+		const char** m_yLabelPtr = nullptr;
 	};
 } // namespace UI
