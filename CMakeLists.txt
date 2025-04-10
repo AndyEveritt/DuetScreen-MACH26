@@ -102,6 +102,10 @@ if(LOG_TIMESTAMPS)
   target_compile_definitions(DuetScreen PRIVATE LOG_TIMESTAMPS=1)
 endif()
 
+if(LOG_THREAD)
+  target_compile_definitions(DuetScreen PRIVATE LOG_THREAD=1)
+endif()
+
 if(ASYNC_RR_MODEL)
   target_compile_definitions(DuetScreen PRIVATE ASYNC_RR_MODEL=1)
 endif()

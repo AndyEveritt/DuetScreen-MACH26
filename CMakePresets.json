@@ -34,6 +34,7 @@
             "cacheVariables": {
                 "PROCESSOR": "Simulation",
                 "LOG_TIMESTAMPS": "ON",
+                "LOG_THREAD": "ON",
                 "DEBUG_BORDERS": "ON",
                 "ASYNC_RR_MODEL": "OFF"
             }
@@ -46,6 +47,7 @@
             "cacheVariables": {
                 "PROCESSOR": "T113",
                 "LOG_TIMESTAMPS": "ON",
+                "LOG_THREAD": "ON",
                 "DEBUG_BORDERS": "ON",
                 "CMAKE_C_FLAGS": "-g",
                 "CMAKE_CXX_FLAGS": "-g"

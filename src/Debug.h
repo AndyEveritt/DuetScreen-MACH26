@@ -31,17 +31,19 @@ enum class DebugLevel
 	COUNT
 };
 
-enum class LogColors
-{
-	Black = 30,
-	Red,
-	Green,
-	Yellow,
-	Blue,
-	Magenta,
-	Cyan,
-	White,
-};
+#define LOG_FORMAT_START "\033["
+#define LOG_FORMAT_END "\033[0m"
+#define LOG_FORMAT_BOLD "1"
+#define LOG_FORMAT_UNDERLINE "4"
+#define LOG_FORMAT_ITALIC "3"
+#define LOG_COLOR_BLACK "30m"
+#define LOG_COLOR_RED "31m"
+#define LOG_COLOR_GREEN "32m"
+#define LOG_COLOR_YELLOW "33m"
+#define LOG_COLOR_BLUE "34m"
+#define LOG_COLOR_MAGENTA "35m"
+#define LOG_COLOR_CYAN "36m"
+#define LOG_COLOR_WHITE "37m"
 
 static_assert(ARRAY_SIZE(DebugLevelStrings) == (int)DebugLevel::COUNT);
 
@@ -56,53 +58,50 @@ void error_inner(const char* fmt, ...);
 void fatal_inner(const char* fmt, ...);
 
 #if LOG_TIMESTAMPS
-  #include "utils/TimeHelper.h"
-  #define LOG_FUNCTION(name, color, level, fmt, args...)                                                               \
-	do                                                                                                                 \
-	{                                                                                                                  \
-	  const int colorCode = static_cast<int>(color);                                                                   \
-	  name##_inner("%lld \033[1;%dm%s\033[0m \033[3;4;%dm%s:%d\033[0m \033[3;%dm%s():\033[0m\033[%dm " fmt             \
-				   "\033[0m\n",                                                                                        \
-				   TimeHelper::getCurrentTime(),                                                                       \
-				   colorCode,                                                                                          \
-				   DebugLevelStrings[(int)level],                                                                      \
-				   colorCode,                                                                                          \
-				   __FILE_RELPATH__,                                                                                   \
-				   __LINE__,                                                                                           \
-				   colorCode,                                                                                          \
-				   __FUNCTION__,                                                                                       \
-				   colorCode,                                                                                          \
-				   ##args);                                                                                            \
-	} while (0)
+#  include "utils/TimeHelper.h"
+#  define LOG_TIMESTAMP_FMT "%lld "
+#  define LOG_TIMESTAMP_ARGS TimeHelper::getCurrentTime(),
 #else
-  #define LOG_FUNCTION(name, color, level, fmt, args...)                                                               \
+#  define LOG_TIMESTAMP_FMT ""
+#  define LOG_TIMESTAMP_ARGS
+#endif
+
+#if LOG_THREAD
+#  define LOG_THREAD_FMT "[%u] "
+#  define LOG_THREAD_ARGS pthread_self(),
+#else
+#  define LOG_THREAD_FMT ""
+#  define LOG_THREAD_ARGS
+#endif
+
+#define LOG_LEVEL_FMT(color) LOG_FORMAT_START LOG_FORMAT_BOLD ";" color "%s" LOG_FORMAT_END
+#define LOG_FILE_FMT(color) LOG_FORMAT_START LOG_FORMAT_ITALIC ";" LOG_FORMAT_UNDERLINE ";" color "%s:%d" LOG_FORMAT_END
+#define LOG_FUNCTION_FMT(color) LOG_FORMAT_START LOG_FORMAT_ITALIC ";" color " %s(): " LOG_FORMAT_END
+#define LOG_MESSAGE_FMT(color, fmt) LOG_FORMAT_START color fmt LOG_FORMAT_END
+
+#define LOG_FUNCTION(name, color, level, fmt, args...)                                                                 \
 	do                                                                                                                 \
 	{                                                                                                                  \
-	  const int colorCode = static_cast<int>(color);                                                                   \
-	  name##_inner("\033[1;%dm%s\033[0m \033[3;4;%dm%s:%d\033[0m \033[3;%dm%s():\033[0m\033[%dm " fmt "\033[0m\n",     \
-				   colorCode,                                                                                          \
-				   DebugLevelStrings[(int)level],                                                                      \
-				   colorCode,                                                                                          \
-				   __FILE_RELPATH__,                                                                                   \
-				   __LINE__,                                                                                           \
-				   colorCode,                                                                                          \
-				   __FUNCTION__,                                                                                       \
-				   colorCode,                                                                                          \
-				   ##args);                                                                                            \
+		name##_inner(LOG_TIMESTAMP_FMT LOG_THREAD_FMT LOG_LEVEL_FMT(color) " " LOG_FILE_FMT(color)                     \
+						 LOG_FUNCTION_FMT(color) LOG_MESSAGE_FMT(color, fmt) "\n",                                     \
+					 LOG_TIMESTAMP_ARGS LOG_THREAD_ARGS DebugLevelStrings[(int)level],                                 \
+					 __FILE_RELPATH__,                                                                                 \
+					 __LINE__,                                                                                         \
+					 __FUNCTION__,                                                                                     \
+					 ##args);                                                                                          \
 	} while (0)
-#endif
 
 #ifdef DEBUG
-  #define verbose(fmt, args...) LOG_FUNCTION(verbose, LogColors::White, DebugLevel::Verbose, fmt, ##args)
-  #define dbg(fmt, args...) LOG_FUNCTION(dbg, LogColors::Blue, DebugLevel::Debug, fmt, ##args)
+#  define verbose(fmt, args...) LOG_FUNCTION(verbose, LOG_COLOR_WHITE, DebugLevel::Verbose, fmt, ##args)
+#  define dbg(fmt, args...) LOG_FUNCTION(dbg, LOG_COLOR_BLUE, DebugLevel::Debug, fmt, ##args)
 #else
-  #define verbose(fmt, args...)
-  #define dbg(fmt, args...)
+#  define verbose(fmt, args...)
+#  define dbg(fmt, args...)
 #endif
 
-#define info(fmt, args...) LOG_FUNCTION(info, LogColors::Green, DebugLevel::Info, fmt, ##args)
-#define warn(fmt, args...) LOG_FUNCTION(warn, LogColors::Yellow, DebugLevel::Warn, fmt, ##args)
-#define error(fmt, args...) LOG_FUNCTION(error, LogColors::Red, DebugLevel::Error, fmt, ##args)
-#define fatal(fmt, args...) LOG_FUNCTION(fatal, LogColors::Magenta, DebugLevel::Fatal, fmt, ##args)
+#define info(fmt, args...) LOG_FUNCTION(info, LOG_COLOR_GREEN, DebugLevel::Info, fmt, ##args)
+#define warn(fmt, args...) LOG_FUNCTION(warn, LOG_COLOR_YELLOW, DebugLevel::Warn, fmt, ##args)
+#define error(fmt, args...) LOG_FUNCTION(error, LOG_COLOR_RED, DebugLevel::Error, fmt, ##args)
+#define fatal(fmt, args...) LOG_FUNCTION(fatal, LOG_COLOR_MAGENTA, DebugLevel::Fatal, fmt, ##args)
 
 #endif /* JNI_DEBUG_HPP_ */
