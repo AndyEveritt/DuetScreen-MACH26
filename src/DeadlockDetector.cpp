@@ -1,7 +1,14 @@
 #include "DeadlockDetector.h"
 #include "Debug.h"
+#include <chrono>
+#include <map>
+#include <mutex>
+#include <set>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <vector>
 
-// DeadlockDetector implementation
 DeadlockDetector& DeadlockDetector::getInstance()
 {
 	static DeadlockDetector instance;
@@ -176,7 +183,7 @@ void DeadlockDetectingMutex::lock()
 
 		if (elapsed > std::chrono::milliseconds(5000))
 		{
-			error("Lock acquisition timeout for \"%s\" in thread %u", mName.c_str(), std::this_thread::get_id());
+			warn("Lock acquisition timeout for \"%s\" in thread %u", mName.c_str(), std::this_thread::get_id());
 			start = now; // Reset the timer to continue logging periodically
 		}
 

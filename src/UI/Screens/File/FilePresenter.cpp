@@ -127,8 +127,10 @@ namespace UI
 			m_currentFolder.c_str(),
 			[this]()
 			{
-				MODEL_LOCK();
-				m_items = OM::FileSystem::GetItems();
+				{
+					MODEL_LOCK();
+					m_items = OM::FileSystem::GetItems();
+				}
 				this->m_view->setFolder(this->m_currentFolder.c_str());
 				this->sortFiles();
 				this->displayFiles();

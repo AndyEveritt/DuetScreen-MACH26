@@ -192,7 +192,6 @@ namespace UI
 
 	std::shared_ptr<FileView::FileItem> FileView::getFileItem(size_t index) const
 	{
-		UI_LOCK();
 		if (index < m_fileItems.size())
 		{
 			return m_fileItems[index];

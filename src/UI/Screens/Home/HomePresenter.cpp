@@ -103,7 +103,6 @@ namespace UI
 
 	void HomePresenter::newMessageBoxData(const OM::Alert& alert)
 	{
-		MODEL_LOCK();
 		MessageBox& msgBox = m_view->m_alert;
 
 		// First clear any existing alert state
