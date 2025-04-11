@@ -16,7 +16,7 @@ namespace UI
 		, m_infoCont(lv_obj_create(getCont()))
 		, m_heightmap("heightmap", m_graphCont, layout_t(0, 0, 100, 100))
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_graphCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);

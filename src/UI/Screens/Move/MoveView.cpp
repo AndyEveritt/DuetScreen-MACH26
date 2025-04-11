@@ -59,38 +59,38 @@ namespace UI
 
 	void AxisItem::setAxisLetter(const char* letter)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_home.setText(utils::format(_("move_axis_home"), letter).c_str());
 	}
 
 	void AxisItem::setHomed(const bool homed)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_home.setChecked(!homed);
 	}
 
 	void AxisItem::setToolPosition(const float& position)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_toolPosition, utils::format("%.2f", position).c_str());
 	}
 
 	void AxisItem::setMachinePosition(const float& position)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_machinePosition, utils::format("(%.2f)", position).c_str());
 	}
 
 	void AxisItem::onHomeEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
 		item->getList()->m_presenter.homeAxis(item->getIndex());
 	}
 
 	void AxisItem::onRelMoveEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
 		uintptr_t index = (uintptr_t)lv_obj_get_user_data(btn);
@@ -123,7 +123,7 @@ namespace UI
 					  Button("move_feed_rate_5", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
 					  Button("move_feed_rate_6", m_bottomBarCont, "", layout_t(0, 0, 0, 100))}
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
@@ -191,42 +191,42 @@ namespace UI
 
 	void MoveView::onHomeAllEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter.homeAll();
 	}
 
 	void MoveView::onTrueBedLevelEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter.trueBedLevel();
 	}
 
 	void MoveView::onMeshBedLevelEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter.meshBedLevel();
 	}
 
 	void MoveView::onHeightmapEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter.heightmap();
 	}
 
 	void MoveView::onDisableMotorsEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter.disableMotors();
 	}
 
 	void MoveView::onFeedRateEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
 		view->m_feedRates[s_currentFeedRateIndex].setChecked(false);
@@ -239,7 +239,7 @@ namespace UI
 
 	void MoveView::setAxisCount(const size_t count)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (count == getAxisCount())
 		{
 			return;

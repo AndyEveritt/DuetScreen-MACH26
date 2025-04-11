@@ -32,7 +32,7 @@ namespace UI
 
 	void FilePresenter::itemClicked(const size_t index)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		if (index >= m_items.size())
 		{
 			error("item %u out of range", index);
@@ -127,7 +127,7 @@ namespace UI
 			m_currentFolder.c_str(),
 			[this]()
 			{
-				ModelLock lock;
+				MODEL_LOCK();
 				m_items = OM::FileSystem::GetItems();
 				this->m_view->setFolder(this->m_currentFolder.c_str());
 				this->sortFiles();
@@ -217,10 +217,14 @@ namespace UI
 
 	void FilePresenter::newThumbnailData(const char* filename)
 	{
-		ModelLock lock;
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
 		{
-			auto file = OM::FileSystem::GetItem(i);
+			if (i >= m_items.size())
+			{
+				warn("File count mismatch");
+				break;
+			}
+			auto file = m_items[i];
 			if (file == nullptr)
 			{
 				continue;

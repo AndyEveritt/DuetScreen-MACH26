@@ -20,7 +20,7 @@ namespace UI
 		, m_enter("console_enter", m_inputCont, LV_SYMBOL_NEW_LINE)
 		, m_kb(lv_keyboard_create(getCont()))
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_align(getCont(), LV_ALIGN_CENTER, 0, 0);
@@ -78,7 +78,7 @@ namespace UI
 
 	void ConsoleView::clear()
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_textarea_set_text(m_input, "");
 	}
 
@@ -89,7 +89,7 @@ namespace UI
 
 	void ConsoleView::addResponse(const char* resp)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		lv_textarea_add_text(m_output, resp);
 		lv_textarea_add_char(m_output, '\n');

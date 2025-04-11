@@ -55,13 +55,13 @@ namespace UI
 
 	void StatusPresenter::newJobFileName(const char* filename)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		m_view->setFilename(filename);
 	}
 
 	void StatusPresenter::newJobLastFileName(const char* filename)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		if (filename[0] == 0)
 		{
 			return;
@@ -73,7 +73,7 @@ namespace UI
 
 	void StatusPresenter::newJobDuration()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		uint32_t elapsed = OM::GetPrintDuration();
 		m_view->updateElapsedTime(elapsed);
 
@@ -90,7 +90,7 @@ namespace UI
 
 	void StatusPresenter::newJobTimeLeft()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		uint32_t timeRemaining = OM::GetPrintRemaining(OM::RemainingTimeType::AUTO);
 
 		m_view->updateRemainingTime(timeRemaining);
@@ -98,19 +98,19 @@ namespace UI
 
 	void StatusPresenter::newCurrentMoveRequestedSpeed()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
 	}
 
 	void StatusPresenter::newCurrentMoveTopSpeed()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
 	}
 
 	void StatusPresenter::newCurrentMoveExtrusionSpeed()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		m_view->updateExtrusionRate(OM::Move::GetExtrusionRate(), OM::Move::GetVolumetricFlow());
 	}
 
@@ -129,7 +129,7 @@ namespace UI
 
 	void StatusPresenter::newExtruderData()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetCurrentTool();
 		if (tool == nullptr)
 		{
@@ -157,13 +157,13 @@ namespace UI
 
 	void StatusPresenter::newSpeedFactor()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		m_view->updateSpeedMultiplier(100 * OM::Move::GetSpeedFactor());
 	}
 
 	void StatusPresenter::newHeaterData()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetCurrentTool();
 
 		if (tool == nullptr || tool->GetHeaterCount() == 0)
@@ -188,7 +188,7 @@ namespace UI
 
 	void StatusPresenter::newFanData()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetCurrentTool();
 
 		uint32_t fanSpeed = 0;
@@ -202,7 +202,7 @@ namespace UI
 
 	void StatusPresenter::newStatus(OM::PrinterStatus status)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		switch (status)
 		{
 		case OM::PrinterStatus::printing:

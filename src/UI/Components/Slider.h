@@ -41,6 +41,7 @@ namespace UI
 			, m_incrementValue(1)
 			, m_keyboard(nullptr)
 		{
+			UI_LOCK();
 			lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
 			lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 			lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
@@ -66,6 +67,7 @@ namespace UI
 			m_decrement.setCallback(
 				[](lv_event_t* e)
 				{
+					UI_LOCK();
 					lv_event_code_t code = lv_event_get_code(e);
 					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
 
@@ -81,6 +83,7 @@ namespace UI
 			m_increment.setCallback(
 				[](lv_event_t* e)
 				{
+					UI_LOCK();
 					lv_event_code_t code = lv_event_get_code(e);
 					Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
 
@@ -104,13 +107,22 @@ namespace UI
 		}
 
 		int32_t getValue() const { return m_value; }
-		int32_t getMin() const { return lv_slider_get_min_value(m_slider); }
-		int32_t getMax() const { return lv_slider_get_max_value(m_slider); }
+		int32_t getMin() const
+		{
+			UI_LOCK();
+			return lv_slider_get_min_value(m_slider);
+		}
+		int32_t getMax() const
+		{
+			UI_LOCK();
+			return lv_slider_get_max_value(m_slider);
+		}
 
 		bool isFocused() const { return m_focused; }
 
 		void setOutOfRangeMode(OutOfRange mode)
 		{
+			UI_LOCK();
 			switch (mode)
 			{
 			case OutOfRange::NONE:
@@ -126,13 +138,19 @@ namespace UI
 		}
 		void setLabel(const char* text)
 		{
+			UI_LOCK();
 			lv_obj_set_flag(m_label, LV_OBJ_FLAG_HIDDEN, text == nullptr);
 			lv_label_set_text(m_label, text);
 		}
 		void setIncrementValue(int32_t value) {}
-		void setRange(int32_t min, int32_t max) { lv_slider_set_range(m_slider, min, max); }
+		void setRange(int32_t min, int32_t max)
+		{
+			UI_LOCK();
+			lv_slider_set_range(m_slider, min, max);
+		}
 		void setValue(int32_t value)
 		{
+			UI_LOCK();
 			boundValue(value);
 			m_value = value;
 			lv_slider_set_value(m_slider, value, LV_ANIM_ON);
@@ -156,6 +174,7 @@ namespace UI
 	  protected:
 		static void onValueChanged(lv_event_t* e)
 		{
+			UI_LOCK();
 			lv_event_code_t code = lv_event_get_code(e);
 			Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
 
@@ -194,6 +213,7 @@ namespace UI
 
 		static void onInputEvent(lv_event_t* e)
 		{
+			UI_LOCK();
 			lv_event_code_t code = lv_event_get_code(e);
 			Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
 			switch (code)
@@ -237,6 +257,7 @@ namespace UI
 
 		bool boundValue(int32_t& value)
 		{
+			UI_LOCK();
 			bool outOfRange = false;
 			switch (m_outOfRangeMode)
 			{
@@ -266,7 +287,11 @@ namespace UI
 			return outOfRange;
 		}
 
-		void updateText() { lv_textarea_set_text(m_input, std::to_string(getValue()).c_str()); }
+		void updateText()
+		{
+			UI_LOCK();
+			lv_textarea_set_text(m_input, std::to_string(getValue()).c_str());
+		}
 
 		lv_obj_t* m_label;
 		lv_obj_t* m_sliderCont;

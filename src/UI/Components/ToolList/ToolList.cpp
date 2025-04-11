@@ -22,7 +22,7 @@ namespace UI
 		, m_activeTemp(lv_label_create(getCont()))
 		, m_standbyTemp(lv_label_create(getCont()))
 	{
-		Lock lock;
+		UI_LOCK();
 		activate();
 
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
@@ -59,13 +59,13 @@ namespace UI
 
 	void ToolListItem::setLabel(const char* text)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_label, text);
 	}
 
 	void ToolListItem::setIcon(lv_img_dsc_t* icon)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (m_icon == nullptr)
 		{
 			m_icon = lv_image_create(getCont());
@@ -80,7 +80,7 @@ namespace UI
 		{
 			return;
 		}
-		Lock lock;
+		UI_LOCK();
 		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
 		if (selected)
 		{
@@ -97,43 +97,43 @@ namespace UI
 
 	void ToolListItem::setStatus(const char* text)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_status, text);
 	}
 
 	void ToolListItem::setCurrentTemp(float value)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_currentTemp, utils::format("%.1f", value).c_str());
 	}
 
 	void ToolListItem::setActiveTemp(int32_t value)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_activeTemp, utils::format("%d", value).c_str());
 	}
 
 	void ToolListItem::setActiveTempText(const char* text)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_activeTemp, text);
 	}
 
 	void ToolListItem::setStandbyTemp(int32_t value)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_standbyTemp, utils::format("%d", value).c_str());
 	}
 
 	void ToolListItem::setStandbyTempText(const char* text)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_standbyTemp, text);
 	}
 
 	void ToolListItem::showTemps(bool show)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (show)
 		{
 			lv_obj_remove_flag(m_status, LV_OBJ_FLAG_HIDDEN);
@@ -181,7 +181,7 @@ namespace UI
 		, m_header(lv_label_create(getCont()))
 		, m_numberPad("tool_list_number_pad", getCont(), layout_t(0, 0, 100, 100))
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
@@ -233,7 +233,7 @@ namespace UI
 
 	void ToolList::init()
 	{
-		Lock lock;
+		UI_LOCK();
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_style_pad_row(getCont(), 0, 0);
 		// lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
@@ -266,7 +266,7 @@ namespace UI
 
 	void ToolList::setItemCnt(size_t cnt)
 	{
-		Lock lock;
+		UI_LOCK();
 		size_t currentCnt = getItemCnt();
 		if (cnt <= currentCnt)
 		{
@@ -300,7 +300,7 @@ namespace UI
 
 	void ToolList::showNumberPad(const ToolListItem& item)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_numberPad.clear();
 		openScreen(&m_numberPad, false);
 		// m_numberPad.show();

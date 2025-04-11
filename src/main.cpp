@@ -181,6 +181,7 @@ int main(int argc, char** argv)
 
 	while (1)
 	{
+		UI_LOCK();
 		lv_timer_handler();
 		usleep(5 * 1000); // Sleep for 1 second
 	}

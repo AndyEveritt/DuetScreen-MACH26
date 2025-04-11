@@ -15,7 +15,7 @@ namespace UI
 
 	void HomePresenter::tick()
 	{
-		Lock lock;
+		UI_LOCK();
 		const size_t sensorCount = OM::GetAnalogSensorCount();
 		m_view->m_graph.setSeriesCount(sensorCount);
 		for (size_t i = 0; i < sensorCount; i++)
@@ -33,7 +33,7 @@ namespace UI
 
 	void HomePresenter::refresh()
 	{
-		Lock lock;
+		UI_LOCK();
 		m_view->refresh();
 		m_alertAxes.clear();
 	}
@@ -53,7 +53,7 @@ namespace UI
 
 	void HomePresenter::newResponse(const char* resp)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (m_view->m_consoleView.isVisible())
 		{
 			return;
@@ -67,7 +67,7 @@ namespace UI
 			msgBox->setCancelCallback(
 				[this]()
 				{
-					Lock lock;
+					UI_LOCK();
 					m_view->popMessageBox();
 					if (m_view->getMessageBoxCount() > 0)
 					{
@@ -82,7 +82,7 @@ namespace UI
 			msgBox->setOkCallback(
 				[this]()
 				{
-					Lock lock;
+					UI_LOCK();
 					m_view->clearMessageBoxes();
 					openScreen(&m_view->m_consoleView);
 				});
@@ -103,7 +103,7 @@ namespace UI
 
 	void HomePresenter::newMessageBoxData(const OM::Alert& alert)
 	{
-		Lock lock;
+		MODEL_LOCK();
 		MessageBox& msgBox = m_view->m_alert;
 
 		// First clear any existing alert state
@@ -136,7 +136,7 @@ namespace UI
 		msgBox.setCloseCallback(
 			[this]()
 			{
-				Lock lock;
+				UI_LOCK();
 				m_view->m_alert.hide();
 				if (m_view->getMessageBoxCount() > 0)
 				{
@@ -178,7 +178,7 @@ namespace UI
 
 		case OM::Alert::Mode::NumberInt:
 		{
-			Lock lock; // Additional lock for keyboard setup
+			UI_LOCK();
 			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
 			msgBox.setKeyboard(m_view->m_kb);
 
@@ -210,7 +210,7 @@ namespace UI
 			msgBox.setInputValidationCallback(
 				[min, max, &msgBox](const char* text) -> bool
 				{
-					Lock lock;
+					UI_LOCK();
 					int value = std::atoi(text);
 					bool valid = value >= min && value <= max;
 					msgBox.warningTextVisible(!valid);
@@ -224,7 +224,7 @@ namespace UI
 			msgBox.setOkCallback(
 				[seq, &msgBox]()
 				{
-					Lock lock;
+					UI_LOCK();
 					int value = std::atoi(msgBox.getInput());
 					Comm::DUET.SendGcodef("M292 R{%d} S%u", value, seq);
 				});
@@ -260,7 +260,7 @@ namespace UI
 			msgBox.setInputValidationCallback(
 				[alert, &msgBox](const char* text) -> bool
 				{
-					Lock lock;
+					UI_LOCK();
 					float value = std::atof(text);
 					bool valid = value >= alert.limits.numberFloat.min && value <= alert.limits.numberFloat.max;
 					msgBox.warningTextVisible(!valid);
@@ -289,7 +289,7 @@ namespace UI
 			msgBox.setInputValidationCallback(
 				[alert, &msgBox](const char* text) -> bool
 				{
-					Lock lock;
+					UI_LOCK();
 					int32_t len = (int32_t)strlen(text);
 					bool valid = len >= alert.limits.text.min && len <= alert.limits.text.max;
 					msgBox.warningTextVisible(!valid);

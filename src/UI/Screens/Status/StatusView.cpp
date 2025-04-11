@@ -35,7 +35,7 @@ namespace UI
 		, m_confirmCancel("print_confirm_cancel", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_fineTune(getCont())
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
@@ -101,7 +101,7 @@ namespace UI
 		m_fineTuneBtn.setCallback(
 			[](lv_event_t* e)
 			{
-				Lock lock;
+				UI_LOCK();
 				StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 				view->m_fineTune.show();
 			},
@@ -118,7 +118,7 @@ namespace UI
 
 	bool StatusView::back()
 	{
-		Lock lock;
+		UI_LOCK();
 		if (m_fineTune.isVisible())
 		{
 			m_fineTune.hide();
@@ -129,28 +129,28 @@ namespace UI
 
 	void StatusView::onPauseClicked(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		view->m_presenter.pausePrint();
 	}
 
 	void StatusView::onResumeClicked(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		view->m_presenter.resumePrint();
 	}
 
 	void StatusView::onPrintAgainClicked(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		view->m_presenter.printAgain();
 	}
 
 	void StatusView::onCancelClicked(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		view->m_confirmCancel.setOkCallback([view]() { view->m_presenter.cancelPrint(); });
 		view->m_confirmCancel.show();
@@ -165,13 +165,13 @@ namespace UI
 
 	void StatusView::setFilename(const char* filename)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_filename, filename);
 	}
 
 	void StatusView::updateProgress(uint32_t percent)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		percent = percent > 100 ? 100 : percent;
 
@@ -231,13 +231,13 @@ namespace UI
 
 	void StatusView::setThumbnail(lv_img_dsc_t* img)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_image_set_src(m_thumbnail, img);
 	}
 
 	void StatusView::setPause(ControlVisibility visibility)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		m_pauseBtn.setInvalid(visibility != ENABLED);
 		if (visibility == HIDDEN)
@@ -252,7 +252,7 @@ namespace UI
 
 	void StatusView::setResume(ControlVisibility visibility)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		m_resumeBtn.setInvalid(visibility != ENABLED);
 		if (visibility == HIDDEN)
@@ -267,7 +267,7 @@ namespace UI
 
 	void StatusView::setPrintAgain(ControlVisibility visibility)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		m_printAgainBtn.setInvalid(visibility != ENABLED);
 		if (visibility == HIDDEN)
@@ -282,7 +282,7 @@ namespace UI
 
 	void StatusView::setCancel(ControlVisibility visibility)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		m_cancelBtn.setInvalid(visibility != ENABLED);
 		if (visibility == HIDDEN)

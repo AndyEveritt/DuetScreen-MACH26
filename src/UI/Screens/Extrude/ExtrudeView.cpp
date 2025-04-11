@@ -75,13 +75,13 @@ namespace UI
 
 	void ToolItem::setLabel(const char* txt)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_label, txt);
 	}
 
 	void ToolItem::setHeaterName(size_t index, const char* name)
 	{
-		Lock lock;
+		UI_LOCK();
 		auto heater = getHeater(index);
 		if (heater == nullptr)
 		{
@@ -92,7 +92,7 @@ namespace UI
 
 	void ToolItem::setStatus(size_t index, const char* txt)
 	{
-		Lock lock;
+		UI_LOCK();
 		auto heater = getHeater(index);
 		if (heater == nullptr)
 		{
@@ -103,7 +103,7 @@ namespace UI
 
 	void ToolItem::setCurrentTemperature(size_t index, const float temp)
 	{
-		Lock lock;
+		UI_LOCK();
 		auto heater = getHeater(index);
 		if (heater == nullptr)
 		{
@@ -114,7 +114,7 @@ namespace UI
 
 	void ToolItem::setActiveTemperature(size_t index, const int32_t temp)
 	{
-		Lock lock;
+		UI_LOCK();
 		auto heater = getHeater(index);
 		if (heater == nullptr)
 		{
@@ -125,7 +125,7 @@ namespace UI
 
 	void ToolItem::setStandbyTemperature(size_t index, const int32_t temp)
 	{
-		Lock lock;
+		UI_LOCK();
 		auto heater = getHeater(index);
 		if (heater == nullptr)
 		{
@@ -136,7 +136,7 @@ namespace UI
 
 	void ToolItem::setFilamentOptions(const std::vector<std::string>& options)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_dropdown_clear_options(m_filament);
 		// lv_dropdown_add_option(m_filament, _("none"), LV_DROPDOWN_POS_LAST);
 		for (const auto& option : options)
@@ -147,7 +147,7 @@ namespace UI
 
 	void ToolItem::showFilamentControls(bool show)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (show)
 		{
 			lv_obj_remove_flag(m_filament, LV_OBJ_FLAG_HIDDEN);
@@ -162,7 +162,7 @@ namespace UI
 
 	void ToolItem::setLoadedFilament(const char* filament)
 	{
-		Lock lock;
+		UI_LOCK();
 		int32_t index = lv_dropdown_get_option_index(m_filament, filament);
 		if (index < 0)
 		{
@@ -193,7 +193,7 @@ namespace UI
 		{
 			return;
 		}
-		Lock lock;
+		UI_LOCK();
 		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
 		if (selected)
 		{
@@ -210,7 +210,7 @@ namespace UI
 
 	void ToolItem::setHeaterCount(const size_t count)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (count == getHeaterCount())
 		{
 			return;
@@ -248,7 +248,7 @@ namespace UI
 		, active(lv_label_create(getCont()))
 		, standby(lv_label_create(getCont()))
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_set_style_pad_all(getCont(), 2, 0);
 		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
@@ -363,7 +363,7 @@ namespace UI
 		, m_extrude("extrude_extrude", m_extrudeControlCont, _("extrude"), layout_t(0, 0, 100, 0))
 		, m_numberPad("extrude_number_pad", getCont(), layout_t(65, 0, 35, 100))
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
@@ -487,7 +487,7 @@ namespace UI
 
 	void ExtrudeView::setToolCount(const size_t count)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (count == getToolCount())
 		{
 			return;
@@ -538,7 +538,7 @@ namespace UI
 	{
 		if (show)
 		{
-			Lock lock;
+			UI_LOCK();
 			m_numberPad.clear();
 			openScreen(&m_numberPad, false);
 		}
@@ -550,7 +550,7 @@ namespace UI
 
 	void ExtrudeView::onRetractEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
 		auto dist = s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex];
 		auto rate = s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex];
@@ -559,7 +559,7 @@ namespace UI
 
 	void ExtrudeView::onExtrudeEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
 		auto dist = s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex];
 		auto rate = s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex];
@@ -568,7 +568,7 @@ namespace UI
 
 	void ExtrudeView::onFeedDistEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
 		view->m_feedDists[s_selectedExtrusionFeedDistanceIndex].setChecked(false);
@@ -579,7 +579,7 @@ namespace UI
 
 	void ExtrudeView::onFeedRateEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
 		view->m_feedRates[s_selectedExtrusionFeedRateIndex].setChecked(false);

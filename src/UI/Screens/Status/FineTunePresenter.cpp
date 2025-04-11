@@ -24,13 +24,13 @@ namespace UI
 
 	void FineTunePresenter::newSpeedFactor()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		m_view->setSpeedValue(std::round(100 * OM::Move::GetSpeedFactor()));
 	}
 
 	void FineTunePresenter::newExtruderData()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 
 		m_view->setExtruderCount(OM::Move::GetExtruderAxisCount());
 
@@ -45,7 +45,7 @@ namespace UI
 
 	void FineTunePresenter::newFanData()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 
 		m_view->setFanCount(OM::GetFanCount());
 
@@ -60,7 +60,7 @@ namespace UI
 
 	void FineTunePresenter::newAxesData()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('Z');
 		if (axis == nullptr)
 		{

@@ -20,7 +20,7 @@ namespace UI
 
 	void ExtrudePresenter::newToolData()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		m_view->setToolCount(OM::GetToolCount());
 		for (size_t i = 0; i < m_view->getToolCount(); i++)
 		{
@@ -77,7 +77,7 @@ namespace UI
 
 	void ExtrudePresenter::toggleToolState(size_t index)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetToolBySlot(index);
 		if (tool == nullptr)
 		{
@@ -88,7 +88,7 @@ namespace UI
 
 	void ExtrudePresenter::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetToolBySlot(toolIndex);
 		if (tool == nullptr)
 		{
@@ -99,7 +99,7 @@ namespace UI
 
 	void ExtrudePresenter::loadFilament(size_t index, const char* filament)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetToolBySlot(index);
 		if (tool == nullptr)
 		{
@@ -110,7 +110,7 @@ namespace UI
 
 	void ExtrudePresenter::unloadFilament(size_t index)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetToolBySlot(index);
 		if (tool == nullptr)
 		{
@@ -121,7 +121,7 @@ namespace UI
 
 	bool ExtrudePresenter::configureNumberPad(const size_t toolIndex, const size_t heaterIndex, const bool active)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::Tool* tool = OM::GetToolBySlot(toolIndex);
 		if (tool == nullptr)
 		{
@@ -169,11 +169,11 @@ namespace UI
 
 	void ExtrudePresenter::onActivate()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		OM::FileSystem::RequestFiles("/filaments",
 									 [this]()
 									 {
-										 ModelLock lock;
+										 MODEL_LOCK();
 										 this->m_filamentOptions.clear();
 										 for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
 										 {

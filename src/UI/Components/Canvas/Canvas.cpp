@@ -13,7 +13,7 @@ namespace UI
 #define DEFAULT_CANVAS_WIDTH 100
 #define DEFAULT_CANVAS_HEIGHT 100
 
-	static constexpr lv_coord_t s_scaleSize = 50;
+	static constexpr lv_coord_t s_scaleSize = 30;
 
 	Canvas::Canvas(const std::string& name, lv_obj_t* parent)
 		: BaseView(name, parent)
@@ -46,7 +46,7 @@ namespace UI
 
 	void Canvas::init()
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
@@ -89,34 +89,34 @@ namespace UI
 
 	void Canvas::setTitle(const char* title)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_title, title);
 	}
 
 	void Canvas::showTitle(const bool show)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_set_flag(m_title, LV_OBJ_FLAG_HIDDEN, !show);
 		m_rowDsc[0] = show ? LV_GRID_CONTENT : 0;
 	}
 
 	void Canvas::showXScale(const bool show)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_set_flag(m_hScale, LV_OBJ_FLAG_HIDDEN, !show);
 		m_rowDsc[2] = show ? s_scaleSize : 0;
 	}
 
 	void Canvas::showYScale(const bool show)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_set_flag(m_vScale, LV_OBJ_FLAG_HIDDEN, !show);
 		m_columnDsc[0] = show ? s_scaleSize : 0;
 	}
 
 	Canvas::range_t Canvas::getXRange() const
 	{
-		Lock lock;
+		UI_LOCK();
 		range_t range;
 		range.min = lv_scale_get_range_min_value(m_hScale);
 		range.max = lv_scale_get_range_max_value(m_hScale);
@@ -125,7 +125,7 @@ namespace UI
 
 	Canvas::range_t Canvas::getYRange() const
 	{
-		Lock lock;
+		UI_LOCK();
 		range_t range;
 		range.min = lv_scale_get_range_min_value(m_vScale);
 		range.max = lv_scale_get_range_max_value(m_vScale);
@@ -134,7 +134,7 @@ namespace UI
 
 	void Canvas::setXRange(Canvas::range_t range)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_xLabels.clear();
 		if (m_xLabelPtr != nullptr)
 		{
@@ -147,7 +147,7 @@ namespace UI
 
 	void Canvas::setYRange(Canvas::range_t range)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_yLabels.clear();
 		if (m_yLabelPtr != nullptr)
 		{
@@ -188,7 +188,7 @@ namespace UI
 
 	void Canvas::setXRange(Canvas::range_float_t range)
 	{
-		Lock lock;
+		UI_LOCK();
 		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_hScale) / lv_scale_get_major_tick_every(m_hScale);
 		createLabels(range, ticks, m_xLabels, m_xLabelPtr);
 		lv_scale_set_range(m_hScale, range.min, range.max);
@@ -197,7 +197,7 @@ namespace UI
 
 	void Canvas::setYRange(Canvas::range_float_t range)
 	{
-		Lock lock;
+		UI_LOCK();
 		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_vScale) / lv_scale_get_major_tick_every(m_vScale);
 		createLabels(range, ticks, m_yLabels, m_yLabelPtr);
 		lv_scale_set_range(m_vScale, range.min, range.max);
@@ -206,7 +206,7 @@ namespace UI
 
 	bool Canvas::getResolution(uint32_t& width, uint32_t& height) const
 	{
-		Lock lock;
+		UI_LOCK();
 		if (m_buf == nullptr)
 		{
 			width = 0u;
@@ -221,7 +221,7 @@ namespace UI
 
 	void Canvas::setResolution(uint32_t width, uint32_t height)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (m_buf != nullptr)
 		{
 			lv_draw_buf_destroy(m_buf);
@@ -234,7 +234,7 @@ namespace UI
 
 	void Canvas::drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Get the X and Y range
 		range_t xRange = getXRange();
@@ -254,7 +254,7 @@ namespace UI
 
 	void Canvas::drawRectPx(lv_area_t area, lv_color_t color, lv_opa_t opa)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_draw_rect_dsc_t rect_dsc;
 		lv_draw_rect_dsc_init(&rect_dsc);
 		rect_dsc.bg_opa = opa;
@@ -279,7 +279,7 @@ namespace UI
 
 	void Canvas::clear()
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_canvas_fill_bg(m_canvas, lv_color_hex(0xFFFFFF), LV_OPA_COVER);
 	}
 } // namespace UI

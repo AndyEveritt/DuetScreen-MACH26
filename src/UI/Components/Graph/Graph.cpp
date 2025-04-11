@@ -36,7 +36,7 @@ namespace UI
 
 	void Graph::init()
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);

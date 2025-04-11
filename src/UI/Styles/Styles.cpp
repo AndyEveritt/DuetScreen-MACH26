@@ -29,7 +29,7 @@ namespace UI
 
 	void Styles::init(lv_display_t* display)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_display = display;
 		lv_theme_t* baseTheme = lv_theme_default_init(m_display,
 													  lv_palette_main(LV_PALETTE_BLUE),
@@ -76,7 +76,7 @@ namespace UI
 
 	void Styles::applyTheme(lv_obj_t* obj, const bool recursive)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (recursive)
 		{
 			uint32_t childCount = lv_obj_get_child_count(obj);
@@ -92,7 +92,7 @@ namespace UI
 
 	void Styles::removeTheme(lv_obj_t* obj, const bool recursive)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (recursive)
 		{
 			uint32_t childCount = lv_obj_get_child_count(obj);
@@ -110,7 +110,7 @@ namespace UI
 
 	void Styles::applyThemeCb(lv_theme_t* th, lv_obj_t* obj)
 	{
-		Lock lock;
+		UI_LOCK();
 		LV_UNUSED(th);
 
 #if DEBUG_BORDERS
@@ -123,7 +123,7 @@ namespace UI
 
 	bool Styles::hasStyle(lv_obj_t* obj, const lv_style_t* style) const
 	{
-		Lock lock;
+		UI_LOCK();
 		for (size_t i = 0; i < obj->style_cnt; i++)
 		{
 			if (obj->styles[i].style == style)
@@ -137,20 +137,20 @@ namespace UI
 #if DEBUG_BORDERS
 	bool Styles::isdebugBorderVisible(lv_obj_t* obj) const
 	{
-		Lock lock;
+		UI_LOCK();
 		return hasStyle(obj, &debugBorders.style);
 	}
 
 	void Styles::showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
 	{
-		Lock lock;
+		UI_LOCK();
 		_showDebugBorders(obj, show, recursive);
 		lv_obj_refresh_style(obj, LV_PART_ANY, LV_STYLE_PROP_ANY);
 	}
 
 	void Styles::_showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (recursive)
 		{
 			uint32_t childCount = lv_obj_get_child_count(obj);

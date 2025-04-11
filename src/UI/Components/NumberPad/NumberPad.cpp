@@ -76,7 +76,7 @@ namespace UI
 	void NumberPad::clear()
 	{
 		{
-			Lock lock;
+			UI_LOCK();
 			lv_textarea_set_text(m_textArea, "");
 		}
 		validateInput();
@@ -91,7 +91,7 @@ namespace UI
 	{
 		if (validateInput())
 		{
-			Lock lock;
+			UI_LOCK();
 			// Call the confirm callback
 			lv_obj_send_event(m_textArea, LV_EVENT_READY, this);
 			if (m_closeOnConfirm)
@@ -116,7 +116,7 @@ namespace UI
 	void NumberPad::setValue(int16_t value)
 	{
 		{
-			Lock lock;
+			UI_LOCK();
 			lv_textarea_set_text(m_textArea, std::to_string(value).c_str());
 		}
 		validateInput();
@@ -124,13 +124,13 @@ namespace UI
 
 	int16_t NumberPad::getValue() const
 	{
-		Lock lock;
+		UI_LOCK();
 		return atoi(lv_textarea_get_text(m_textArea));
 	}
 
 	bool NumberPad::validateInput() const
 	{
-		Lock lock;
+		UI_LOCK();
 		int16_t value = getValue();
 		if (value < m_minValue || value > m_maxValue)
 		{
@@ -146,13 +146,13 @@ namespace UI
 
 	void NumberPad::setValueChangedCallback(lv_event_cb_t eventCb, void* userData)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_add_event_cb(m_textArea, eventCb, LV_EVENT_VALUE_CHANGED, userData);
 	}
 
 	void NumberPad::setConfirmCallback(lv_event_cb_t eventCb, void* userData)
 	{
-		Lock lock;
+		UI_LOCK();
 		uint32_t event_cnt = lv_obj_get_event_count(m_textArea);
 		for (uint32_t i = 0; i < event_cnt; i++)
 		{

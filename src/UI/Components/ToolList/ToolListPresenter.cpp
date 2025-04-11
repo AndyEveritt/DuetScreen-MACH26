@@ -464,7 +464,7 @@ namespace UI
 
 	size_t ToolListPresenter::getTotalHeaterCount(const bool addTools, const bool addBeds, const bool addChambers)
 	{
-
+		MODEL_LOCK();
 		size_t totalHeaterCount = 0;
 		if (addTools)
 		{

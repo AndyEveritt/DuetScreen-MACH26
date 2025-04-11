@@ -75,29 +75,7 @@ namespace Comm
 
 	void FileInfoCache::Spin()
 	{
-		ModelLock lock;
-// Update status message
-#if 0
-		UI::GetUIControl<ZKTextView>(ID_MAIN_FileListInfo)
-			->setTextTrf(
-				"file_cache_state",
-				m_fileInfoRequestQueue.size(),
-				m_cache.size(),
-				m_currentFileInfoRequest.c_str(),
-				m_currentThumbnail == nullptr
-					? ""
-					: utils::format("%u%% %s", m_currentThumbnail->GetProgress(), m_currentThumbnail->filename.c_str())
-						  .c_str());
-
-		if (m_currentThumbnail != nullptr && m_currentThumbnail->AboveCacheLimit())
-		{
-			UI::POPUP_WINDOW.SetProgress(m_currentThumbnail->GetProgress());
-		}
-		else
-		{
-			UI::POPUP_WINDOW.SetProgress(-1); // Hide the progress bar
-		}
-#endif
+		// MODEL_LOCK();
 		int64_t now = TimeHelper::getCurrentTime();
 
 		// Timeout any request that hasn't received a response within the timeout period
@@ -336,7 +314,7 @@ namespace Comm
 
 	bool FileInfoCache::IsThumbnailCached(const std::string& filepath, const char* lastModified)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		// Does a thumbnail file exist in the file system?
 		if (!::IsThumbnailCached(filepath.c_str(), false))
 		{
@@ -370,7 +348,7 @@ namespace Comm
 	 */
 	FileInfoPtr FileInfoCache::GetFileInfo(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		if (m_cache.find(filepath) == m_cache.end())
 		{
 			return nullptr;
@@ -380,7 +358,7 @@ namespace Comm
 
 	bool FileInfoCache::FileInfoRequestInProgress()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		return std::find_if(m_fileInfoRequestQueue.begin(),
 							m_fileInfoRequestQueue.end(),
 							[](const FileInfoRequest& request)
@@ -389,7 +367,7 @@ namespace Comm
 
 	void FileInfoCache::ReceivingFileInfoResponse(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		FileInfoRequest* request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
@@ -407,7 +385,7 @@ namespace Comm
 	 */
 	FileInfoCache::FileInfoRequest* FileInfoCache::GetFileInfoRequest(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
 			if (request.GetData()->filename.Equals(filepath.c_str()))
@@ -420,13 +398,13 @@ namespace Comm
 
 	bool FileInfoCache::IsFileInfoRequestQueued(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		return GetFileInfoRequest(filepath) != nullptr;
 	}
 
 	bool FileInfoCache::IsFileInfoRequestInProgress(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		FileInfoRequest* request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
@@ -438,7 +416,7 @@ namespace Comm
 
 	void FileInfoCache::FileInfoRequestComplete(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		dbg("File info request complete for %s", filepath.c_str());
 
 		FileInfoRequest* request = GetFileInfoRequest(filepath);
@@ -456,7 +434,7 @@ namespace Comm
 
 	bool FileInfoCache::FileInfoRequest::RequestDataInner()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		if (m_data == nullptr)
 		{
 			return false;
@@ -468,7 +446,7 @@ namespace Comm
 
 	bool FileInfoCache::ThumbnailRequest::RequestDataInner()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		if (m_data == nullptr)
 		{
 			return false;
@@ -513,7 +491,7 @@ namespace Comm
 
 	void FileInfoCache::ClearCache()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		info("Clearing file info cache");
 
 		m_cache.clear();
@@ -531,7 +509,7 @@ namespace Comm
 	 */
 	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath, bool next)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		dbg("Attempting to queue file info request for %s", filepath.c_str());
 		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
@@ -574,7 +552,7 @@ namespace Comm
 
 	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath, bool next)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		dbg("Attempting to queue thumbnail request for %s", filepath.c_str());
 		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
 		{
@@ -662,7 +640,7 @@ namespace Comm
 
 	bool FileInfoCache::QueueLargeThumbnailRequest(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 #if 0
 		m_queuedLargeThumbnail = nullptr;
 		DeleteCachedThumbnail(largeThumbnailFilename);
@@ -709,7 +687,7 @@ namespace Comm
 
 	bool FileInfoCache::RequestThumbnail(FileInfo& fileInfo, size_t index)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		if (index >= fileInfo.GetThumbnailCount())
 		{
 			warn("Thumbnail index %d out of range for %s", index, fileInfo.filename.c_str());
@@ -723,7 +701,7 @@ namespace Comm
 
 	bool FileInfoCache::RequestThumbnail(ThumbnailPtr thumbnail)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 #if 0
 		if (thumbnail == nullptr)
 		{
@@ -761,7 +739,7 @@ namespace Comm
 
 	ThumbnailPtr FileInfoCache::GetRequestedThumbnail(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 							   m_thumbnailRequestQueue.end(),
 							   [filepath](const ThumbnailRequest& request)
@@ -775,7 +753,7 @@ namespace Comm
 
 	bool FileInfoCache::ThumbnailRequestInProgress()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		return std::find_if(m_thumbnailRequestQueue.begin(),
 							m_thumbnailRequestQueue.end(),
 							[](const ThumbnailRequest& request)
@@ -784,7 +762,7 @@ namespace Comm
 
 	void FileInfoCache::ThumbnailRequestComplete(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		ThumbnailRequest* request = GetThumbnailRequest(filepath);
 		if (request == nullptr)
 		{
@@ -797,7 +775,7 @@ namespace Comm
 
 	FileInfoCache::ThumbnailRequest* FileInfoCache::GetThumbnailRequest(const std::string& filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
 		{
 			if (request.GetData()->filename.Equals(filepath.c_str()))
@@ -815,13 +793,13 @@ namespace Comm
 	 */
 	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		return true;
 	}
 
 	void FileInfoCache::Debug()
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		dbg("File info cache debug");
 		printf("File info cache:");
 		for (auto& it : get()->m_cache)
@@ -888,7 +866,7 @@ namespace Comm
 
 	size_t GetFileSize(const char* filepath)
 	{
-		ModelLock lock;
+		MODEL_LOCK();
 		struct stat sb;
 		if (system(utils::format("test -f \"%s\"", filepath).c_str()) == 0)
 		{

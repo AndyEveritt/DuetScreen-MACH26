@@ -22,7 +22,7 @@ namespace UI
 		, m_thumbnail(lv_image_create(getCont()))
 		, m_type(lv_label_create(getCont()))
 	{
-		Lock lock;
+		UI_LOCK();
 		// Layout
 		constexpr lv_coord_t pad = 2;
 		lv_obj_set_height(getCont(), LV_SIZE_CONTENT);
@@ -50,31 +50,31 @@ namespace UI
 
 	void FileView::FileItem::setLabel(const char* name)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_label, name);
 	}
 
 	void FileView::FileItem::setDate(const char* date)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_date, date);
 	}
 
 	void FileView::FileItem::setSize(const char* size)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_size, size);
 	}
 
 	void FileView::FileItem::setThumbnail(const char* thumbnail)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_image_set_src(m_thumbnail, thumbnail);
 	}
 
 	void FileView::FileItem::setType(const bool isFolder)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_isFolder = isFolder;
 		lv_label_set_text(m_type, isFolder ? _("folder") : _("file"));
 		lv_obj_set_state(getCont(), LV_STATE_CHECKED, isFolder);
@@ -82,25 +82,25 @@ namespace UI
 
 	const char* FileView::FileItem::getLabel() const
 	{
-		Lock lock;
+		UI_LOCK();
 		return lv_label_get_text(m_label);
 	}
 
 	const char* FileView::FileItem::getDate() const
 	{
-		Lock lock;
+		UI_LOCK();
 		return lv_label_get_text(m_date);
 	}
 
 	const char* FileView::FileItem::getSize() const
 	{
-		Lock lock;
+		UI_LOCK();
 		return lv_label_get_text(m_size);
 	}
 
 	void FileView::FileItem::onClick(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		FileItem* item = static_cast<FileItem*>(lv_event_get_user_data(e));
 		item->getList()->onItemClicked(item->m_index, item->m_isFolder);
 	}
@@ -119,7 +119,7 @@ namespace UI
 		, m_footer(lv_label_create(getCont()))
 		, m_startPrint("file_messageBox", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
@@ -171,7 +171,7 @@ namespace UI
 
 	void FileView::setFileCount(const size_t count)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (count == getFileCount())
 		{
 			return;
@@ -192,7 +192,7 @@ namespace UI
 
 	std::shared_ptr<FileView::FileItem> FileView::getFileItem(size_t index) const
 	{
-		Lock lock;
+		UI_LOCK();
 		if (index < m_fileItems.size())
 		{
 			return m_fileItems[index];
@@ -202,13 +202,13 @@ namespace UI
 
 	void FileView::setFolder(const char* folder)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_listHeader, utils::format(_("file_header"), folder).c_str());
 	}
 
 	void FileView::onItemClicked(size_t index, bool isFolder)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (index >= m_fileItems.size())
 		{
 			return;
@@ -219,7 +219,7 @@ namespace UI
 
 	bool FileView::cancelStartPrint()
 	{
-		Lock lock;
+		UI_LOCK();
 		if (m_startPrint.isVisible())
 		{
 			m_startPrint.cancel();
@@ -230,7 +230,7 @@ namespace UI
 
 	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size, const char* thumbnail)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_startPrint.setTitle(_("file_start_print_title"));
 		m_startPrint.setText(utils::format(_("file_start_print_message"), filename, date, size));
 		m_startPrint.setOkCallback(
@@ -245,7 +245,7 @@ namespace UI
 
 	void FileView::confirmRunMacro(const char* filename)
 	{
-		Lock lock;
+		UI_LOCK();
 		m_startPrint.setTitle(_("file_run_macro_title"));
 		m_startPrint.setText(utils::format(_("file_run_macro_message"), filename));
 		m_startPrint.setOkCallback([this]() { m_presenter.runMacro(); });
@@ -284,7 +284,7 @@ namespace UI
 
 	void FileView::onRefreshClicked(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		view->cancelStartPrint();
 		view->m_presenter.refreshFiles();
@@ -292,7 +292,7 @@ namespace UI
 
 	void FileView::onSortClicked(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = lv_event_get_target_obj(e);
 		FilePresenter::SortBy sort =
@@ -308,7 +308,7 @@ namespace UI
 
 	bool FileView::back()
 	{
-		Lock lock;
+		UI_LOCK();
 		if (cancelStartPrint())
 		{
 			return true;
@@ -318,7 +318,7 @@ namespace UI
 
 	void FileView::onShow()
 	{
-		Lock lock;
+		UI_LOCK();
 		cancelStartPrint();
 	}
 

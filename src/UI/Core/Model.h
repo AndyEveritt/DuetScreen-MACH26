@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Debug.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "Subscribers/DirectoriesSubscribers.h"
@@ -185,3 +186,7 @@ struct ModelLock
   private:
 	Model& m_model;
 };
+
+#define MODEL_LOCK()                                                                                                   \
+	verbose("Model lock requested in thread %u", pthread_self());                                                      \
+	ModelLock modelLock;

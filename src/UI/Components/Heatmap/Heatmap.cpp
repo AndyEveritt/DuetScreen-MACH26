@@ -41,7 +41,7 @@ namespace UI
 
 	void Heatmap::init()
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);

@@ -27,7 +27,7 @@ namespace UI
 		, m_currentSubView(&m_duetSettingsView)
 		, m_keyboard(lv_keyboard_create(getCont()))
 	{
-		Lock lock;
+		UI_LOCK();
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
@@ -49,7 +49,7 @@ namespace UI
 
 	void SettingsView::onWindowSelectEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		SettingsView* view = (SettingsView*)lv_event_get_user_data(e);
 		BaseView* subView = (BaseView*)lv_obj_get_user_data(lv_event_get_target_obj(e));
 		BaseView* currentSubView = view->m_currentSubView;
@@ -71,7 +71,7 @@ namespace UI
 
 	void SettingsView::showKeyboard(bool show, lv_keyboard_mode_t mode, lv_obj_t* textArea)
 	{
-		Lock lock;
+		UI_LOCK();
 		if (show)
 		{
 			m_layoutRowDsc[1] = LV_GRID_FR(1);
@@ -89,13 +89,13 @@ namespace UI
 
 	void SettingsView::setKeyboardTextArea(lv_obj_t* textArea)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_keyboard_set_textarea(m_keyboard, textArea);
 	}
 
 	bool SettingsView::back()
 	{
-		Lock lock;
+		UI_LOCK();
 		if (!lv_obj_has_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN))
 		{
 			showKeyboard(false);
@@ -120,7 +120,7 @@ namespace UI
 		: BaseView(name, parent, layout_t(0, 0, 100, 100))
 		, m_mainSettingsView(mainSettingsView)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 	}
@@ -132,7 +132,7 @@ namespace UI
 
 	void SettingsSubView::onTextAreaEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_event_code_t code = lv_event_get_code(e);
 		lv_obj_t* ta = (lv_obj_t*)lv_event_get_target(e);
 		SettingsSubView* view = (SettingsSubView*)lv_event_get_user_data(e);
@@ -158,7 +158,7 @@ namespace UI
 		, m_infoTimeout(lv_textarea_create(getCont()))
 		, m_save("duet_settings_save", getCont(), _("save"))
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Connection Method
 		std::string options;
@@ -205,7 +205,7 @@ namespace UI
 
 	void DuetSettingsView::onSaveEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		DuetSettingsView* view = (DuetSettingsView*)lv_event_get_user_data(e);
 
 		Comm::DUET.SetCommunicationType((Comm::CommunicationType)lv_dropdown_get_selected(view->m_connectionMethod));
@@ -220,7 +220,7 @@ namespace UI
 		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Brightness
 		m_brightness.setRange(0, 100);
@@ -254,7 +254,7 @@ namespace UI
 		, m_passwordInput(lv_textarea_create(m_passwordWindow))
 		, m_passwordSsid(nullptr)
 	{
-		Lock lock;
+		UI_LOCK();
 		setMainSettingsView(mainSettingsView);
 
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
@@ -347,14 +347,14 @@ namespace UI
 
 	void NetworkSettingsView::onEnableEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
 		view->getPresenter().setWifiEnabled(lv_obj_has_state(view->m_enable, LV_STATE_CHECKED));
 	}
 
 	void NetworkSettingsView::onNetworkSelectionEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
 		lv_obj_t* table = (lv_obj_t*)lv_event_get_target(e);
@@ -391,7 +391,7 @@ namespace UI
 
 	void NetworkSettingsView::onPasswordCloseEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
 		view->getMainSettingsView()->showKeyboard(false);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
@@ -399,7 +399,7 @@ namespace UI
 
 	void NetworkSettingsView::onPasswordConfirmEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
 		view->getMainSettingsView()->showKeyboard(false);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
@@ -409,7 +409,7 @@ namespace UI
 
 	void NetworkSettingsView::onRefreshEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		view->getPresenter().scanWifi();
@@ -439,7 +439,7 @@ namespace UI
 		, m_eraseAndRestart("developer_settings_erase_and_restart", getCont(), _("settings_erase_and_restart"))
 		, m_reboot("developer_settings_reboot", getCont(), _("settings_reboot"))
 	{
-		Lock lock;
+		UI_LOCK();
 
 		// Debug Level
 		lv_obj_set_flex_flow(m_debugLevelCont, LV_FLEX_FLOW_ROW);
@@ -480,7 +480,7 @@ namespace UI
 
 	void DeveloperSettingsView::onDebugLevelEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_t* dropdown = (lv_obj_t*)lv_event_get_target(e);
 		size_t lvl = lv_dropdown_get_selected(dropdown);
 		SetDebugLevel(static_cast<DebugLevel>(lvl));
@@ -489,7 +489,7 @@ namespace UI
 #if DEBUG_BORDERS
 	void DeveloperSettingsView::onDebugBordersEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
 		StorageHelper::setData<bool>(ID_DEBUG_BORDERS, checked);
@@ -499,7 +499,7 @@ namespace UI
 
 	void DeveloperSettingsView::onEnableSSHEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
 		info("%s SSH", checked ? "Enabling" : "Disabling");
@@ -522,19 +522,19 @@ namespace UI
 
 	void DeveloperSettingsView::onRestartEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		Restart();
 	}
 
 	void DeveloperSettingsView::onEraseAndRestartEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		EraseAndRestart();
 	}
 
 	void DeveloperSettingsView::onRebootEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		Reboot();
 	}
 } // namespace UI

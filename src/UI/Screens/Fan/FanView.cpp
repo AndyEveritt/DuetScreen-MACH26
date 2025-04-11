@@ -38,6 +38,7 @@ namespace UI
 
 	void FanView::setFanLabel(size_t index, const char* label)
 	{
+		UI_LOCK();
 		if (index >= m_fans.size())
 		{
 			return;
@@ -47,6 +48,7 @@ namespace UI
 
 	void FanView::setFanValue(size_t index, uint32_t value)
 	{
+		UI_LOCK();
 		if (index >= m_fans.size())
 		{
 			return;
@@ -78,11 +80,13 @@ namespace UI
 
 	void FanView::FanItem::setLabel(const char* label)
 	{
+		UI_LOCK();
 		m_slider.setLabel(label);
 	}
 
 	void FanView::FanItem::setValue(uint32_t value)
 	{
+		UI_LOCK();
 		if (m_slider.isFocused())
 		{
 			return;
@@ -92,12 +96,14 @@ namespace UI
 
 	void FanView::FanItem::onFanOffClicked(lv_event_t* e)
 	{
+		UI_LOCK();
 		FanItem* item = static_cast<FanItem*>(lv_event_get_user_data(e));
 		item->m_view.m_presenter.setFanSpeed(item->m_index, 0);
 	}
 
 	void FanView::FanItem::onFanMaxClicked(lv_event_t* e)
 	{
+		UI_LOCK();
 		FanItem* item = static_cast<FanItem*>(lv_event_get_user_data(e));
 		item->m_view.m_presenter.setFanSpeed(item->m_index, 100);
 	}

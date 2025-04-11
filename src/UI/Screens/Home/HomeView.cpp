@@ -65,7 +65,7 @@ namespace UI
 		, m_alert("home_alert", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_kb(lv_keyboard_create(m_mainWindow))
 	{
-		Lock lock;
+		UI_LOCK();
 		info("Creating UI");
 		addHomeScreen(this);
 
@@ -190,7 +190,7 @@ namespace UI
 
 	void HomeView::onWindowSelectEvent(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		BaseView* view = (BaseView*)lv_event_get_user_data(e);
 
 		// Don't close the home screen as it contains the side bar an the screen that is being opened

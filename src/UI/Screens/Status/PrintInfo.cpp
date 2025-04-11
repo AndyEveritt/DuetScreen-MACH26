@@ -77,58 +77,58 @@ namespace UI
 
 	void PrintInfo::openExtrudeView(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		auto& view = HomeView::instance().getExtrudeView();
 		openScreen(&view, true);
 	}
 
 	void PrintInfo::openSubView(lv_event_t* e)
 	{
-		Lock lock;
+		UI_LOCK();
 		BaseView* view = static_cast<BaseView*>(lv_event_get_user_data(e));
 		view->show();
 	}
 
 	void PrintInfo::updateToolTemp(float temp, int32_t target)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_toolTemp, utils::format(_("status_tool_temp"), temp, target).c_str());
 	}
 
 	void PrintInfo::updateBedTemp(float temp, int32_t target)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_bedTemp, utils::format(_("status_bed_temp"), temp, target).c_str());
 	}
 
 	void PrintInfo::updateExtrusionRate(float feedrate, float volumetric)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_speed, utils::format(_("status_speed"), feedrate).c_str());
 		lv_label_set_text(m_flowRate, utils::format(_("status_flow_rate"), volumetric).c_str());
 	}
 
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_speed, utils::format(_("status_speed"), topSpeed, requestedSpeed).c_str());
 	}
 
 	void PrintInfo::updateFlowMultiplier(uint32_t multiplier)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_flowMultiplier, utils::format(_("status_flow_multiplier"), multiplier).c_str());
 	}
 
 	void PrintInfo::updateSpeedMultiplier(uint32_t multiplier)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_speedMultiplier, utils::format(_("status_speed_multiplier"), multiplier).c_str());
 	}
 
 	void PrintInfo::updateElapsedTime(uint32_t elapsed)
 	{
-		Lock lock;
+		UI_LOCK();
 		int32_t hours = elapsed / 3600;
 		int32_t minutes = (elapsed % 3600) / 60;
 		int32_t seconds = elapsed % 60;
@@ -138,7 +138,7 @@ namespace UI
 
 	void PrintInfo::updateRemainingTime(uint32_t remaining)
 	{
-		Lock lock;
+		UI_LOCK();
 		int32_t hours = remaining / 3600;
 		int32_t minutes = (remaining % 3600) / 60;
 		int32_t seconds = remaining % 60;
@@ -148,13 +148,13 @@ namespace UI
 
 	void PrintInfo::updateLayer(float height, float maxHeight)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_layer, utils::format(_("status_layer"), height, maxHeight).c_str());
 	}
 
 	void PrintInfo::updateFanSpeed(uint32_t speed)
 	{
-		Lock lock;
+		UI_LOCK();
 		lv_label_set_text(m_fanSpeed, utils::format(_("status_fan_speed"), speed).c_str());
 	}
 

@@ -45,20 +45,19 @@ Model::Model()
 
 void Model::bind(UI::BasePresenter* presenter)
 {
-	ModelLock lock;
+	MODEL_LOCK();
 	unbind(presenter);
 	m_presenters.push_back(presenter);
 }
 
 void Model::unbind(UI::BasePresenter* presenter)
 {
-	ModelLock lock;
+	MODEL_LOCK();
 	m_presenters.remove(presenter);
 }
 
 void Model::tick()
 {
-	ModelLock lock;
 	for (auto presenter : m_presenters)
 	{
 		presenter->tick();
@@ -116,7 +115,6 @@ useconds_t Model::receiveNewUsbData()
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	ModelLock lock;
 	auto subscribers = getSubscribers(key);
 	if (subscribers.size() != 0)
 	{
@@ -130,7 +128,6 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 
 void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[])
 {
-	ModelLock lock;
 	auto subscribers = getArrayEndSubscribers(key);
 	if (subscribers.size() != 0)
 	{
@@ -174,15 +171,17 @@ bool Model::initMutex()
 void Model::lock()
 {
 	verbose("Attempting to lock model");
-	lv_lock();
+	// lv_lock();
 	pthread_mutex_lock(&m_mutex);
+	verbose("Model locked by thread %u", pthread_self());
 }
 
 void Model::unlock()
 {
 	verbose("Unlocking model");
-	lv_unlock();
+	// lv_unlock();
 	pthread_mutex_unlock(&m_mutex);
+	verbose("Model unlocked by thread %u", pthread_self());
 }
 
 void Model::refresh()
