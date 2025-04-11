@@ -55,11 +55,9 @@ static int usb_test();
 /**********************
  *  STATIC VARIABLES
  **********************/
-#if LV_USE_OS == LV_OS_PTHREAD
 static pthread_t s_responseThread;
 static pthread_t s_requestThread;
 static pthread_t s_thumbnailThread;
-#endif
 
 /**********************
  *      MACROS
@@ -98,12 +96,11 @@ int main(int argc, char** argv)
 	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u));
 	UI::Styles::instance().init(display);
 
-#if LV_USE_OS == LV_OS_PTHREAD
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
 
 	// Create a thread to handle requesting data from Duet
-#  if MULTITHREADED
+#if MULTITHREADED
 	pthread_create(
 		&s_requestThread,
 		NULL,
@@ -147,7 +144,7 @@ int main(int argc, char** argv)
 			return nullptr;
 		},
 		NULL);
-#  endif
+#endif
 
 	// Screensaver task
 	DisplayHelper::setScreenSaverBrightness(0);
@@ -185,13 +182,6 @@ int main(int argc, char** argv)
 		lv_timer_handler();
 		usleep(5 * 1000); // Sleep for 1 second
 	}
-
-#elif LV_USE_OS == LV_OS_FREERTOS
-
-	/* Run FreeRTOS and create lvgl task */
-	freertos_main();
-
-#endif
 
 	return 0;
 }

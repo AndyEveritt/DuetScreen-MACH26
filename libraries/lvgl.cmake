@@ -14,7 +14,7 @@ add_compile_definitions($<$<BOOL:${LV_USE_LIBPNG}>:LV_USE_LIBPNG=1>)
 add_compile_definitions(
   $<$<BOOL:${LV_USE_LIBJPEG_TURBO}>:LV_USE_LIBJPEG_TURBO=1>)
 add_compile_definitions($<$<BOOL:${LV_USE_FFMPEG}>:LV_USE_FFMPEG=1>)
-add_compile_definitions(LV_USE_OS=LV_OS_PTHREAD)
+add_compile_definitions(LV_USE_OS=LV_OS_NONE)
 add_compile_definitions($<$<BOOL:${USE_FREERTOS}>:LV_USE_OS=LV_OS_FREERTOS>)
 
 set(LV_LVGL_H_INCLUDE_SIMPLE

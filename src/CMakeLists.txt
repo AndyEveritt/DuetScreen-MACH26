@@ -3,7 +3,9 @@ target_sources(
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/lv_i18n/lv_i18n.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/DeadlockDetector.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Debug.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LockWrapper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/DebugCommands.cpp)
 
 if(PROCESSOR STREQUAL "Simulation")

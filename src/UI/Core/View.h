@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LockWrapper.h"
 #include "Model.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/osal/lv_os.h"
@@ -185,4 +186,4 @@ void lv_obj_set_flag(lv_obj_t* obj, lv_obj_flag_t flag, bool enable);
 
 #define UI_LOCK()                                                                                                      \
 	verbose("UI lock requested by thread %u", pthread_self());                                                         \
-	UI::Lock uiLock;
+	auto uiLock = ScopedLock(mutexUi);

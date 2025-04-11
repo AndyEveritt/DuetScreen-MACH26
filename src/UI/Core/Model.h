@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Debug.h"
+#include "LockWrapper.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "Subscribers/DirectoriesSubscribers.h"
@@ -189,4 +190,4 @@ struct ModelLock
 
 #define MODEL_LOCK()                                                                                                   \
 	verbose("Model lock requested in thread %u", pthread_self());                                                      \
-	ModelLock modelLock;
+	auto modelLock = ScopedLock(mutexModel);
