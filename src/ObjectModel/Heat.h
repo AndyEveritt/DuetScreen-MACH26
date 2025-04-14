@@ -5,8 +5,7 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_OBJECTMODEL_HEAT_HPP_
-#define JNI_OBJECTMODEL_HEAT_HPP_
+#pragma once
 
 #include "Configuration.h"
 #include "Sensor.h"
@@ -15,6 +14,7 @@
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringRef.h>
 #include <Duet3D/General/function_ref.h>
+#include <memory>
 #include <sys/types.h>
 
 namespace OM
@@ -61,7 +61,7 @@ namespace OM
 			float min;
 			float max;
 			HeaterStatus status;
-			AnalogSensor* sensor;
+			std::shared_ptr<AnalogSensor> sensor;
 
 			void Reset();
 			int32_t GetTemperature();
@@ -75,9 +75,9 @@ namespace OM
 			void UpdateMax(const float max) { this->max = max; }
 		};
 
-		Heater* GetHeater(const size_t heaterIndex);
-		Heater* GetOrCreateHeater(const size_t heaterIndex);
-		bool IterateHeatersWhile(function_ref<bool(Heater*&, size_t)> func, const size_t startAt = 0);
+		std::shared_ptr<Heater> GetHeater(const size_t heaterIndex);
+		std::shared_ptr<Heater> GetOrCreateHeater(const size_t heaterIndex);
+		bool IterateHeatersWhile(function_ref<bool(std::shared_ptr<Heater>, size_t)> func, const size_t startAt = 0);
 		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active);
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);
 		bool UpdateHeaterPwm(const size_t heaterIndex, const float pwm);
@@ -89,5 +89,3 @@ namespace OM
 		size_t RemoveHeater(const size_t index, const bool allFollowing);
 	} // namespace Heat
 } // namespace OM
-
-#endif /* JNI_OBJECTMODEL_HEAT_HPP_ */

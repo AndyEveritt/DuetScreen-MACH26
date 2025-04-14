@@ -29,7 +29,7 @@ namespace UI
 			{
 				continue;
 			}
-			OM::Tool* tool = OM::GetToolBySlot(i);
+			auto tool = OM::GetToolBySlot(i);
 			if (tool == nullptr)
 			{
 				continue;
@@ -42,11 +42,11 @@ namespace UI
 			item->setHeaterCount(tool->GetHeaterCount());
 			item->setSelected(tool->status == OM::ToolStatus::active);
 			tool->IterateHeaters(
-				[&item](OM::ToolHeater* th, size_t index)
+				[&item](std::shared_ptr<OM::ToolHeater> th, size_t index)
 				{
 					item->setActiveTemperature(index, th->activeTemp);
 					item->setStandbyTemperature(index, th->standbyTemp);
-					OM::Heat::Heater* heater = th->heater;
+					auto heater = th->heater;
 					if (heater == nullptr)
 					{
 						warn("Heater is null");
@@ -78,7 +78,7 @@ namespace UI
 	void ExtrudePresenter::toggleToolState(size_t index)
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetToolBySlot(index);
+		auto tool = OM::GetToolBySlot(index);
 		if (tool == nullptr)
 		{
 			return;
@@ -89,7 +89,7 @@ namespace UI
 	void ExtrudePresenter::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetToolBySlot(toolIndex);
+		auto tool = OM::GetToolBySlot(toolIndex);
 		if (tool == nullptr)
 		{
 			return;
@@ -100,7 +100,7 @@ namespace UI
 	void ExtrudePresenter::loadFilament(size_t index, const char* filament)
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetToolBySlot(index);
+		auto tool = OM::GetToolBySlot(index);
 		if (tool == nullptr)
 		{
 			return;
@@ -111,7 +111,7 @@ namespace UI
 	void ExtrudePresenter::unloadFilament(size_t index)
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetToolBySlot(index);
+		auto tool = OM::GetToolBySlot(index);
 		if (tool == nullptr)
 		{
 			return;
@@ -122,19 +122,19 @@ namespace UI
 	bool ExtrudePresenter::configureNumberPad(const size_t toolIndex, const size_t heaterIndex, const bool active)
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetToolBySlot(toolIndex);
+		auto tool = OM::GetToolBySlot(toolIndex);
 		if (tool == nullptr)
 		{
 			error("Failed to get tool %d", toolIndex);
 			return false;
 		}
-		OM::ToolHeater* th = tool->GetHeater(heaterIndex);
+		auto th = tool->GetHeater(heaterIndex);
 		if (th == nullptr)
 		{
 			error("Failed to get tool %d tHeater %d", toolIndex, heaterIndex);
 			return false;
 		}
-		OM::Heat::Heater* heater = th->heater;
+		auto heater = th->heater;
 		if (heater == nullptr)
 		{
 			error("Failed to get tool %d heater %d", toolIndex, heaterIndex);
@@ -157,7 +157,7 @@ namespace UI
 	{
 		auto presenter = (ExtrudePresenter*)lv_event_get_user_data(e);
 		NumberPad* np = (NumberPad*)lv_event_get_param(e);
-		OM::Tool* tool = OM::GetToolBySlot(presenter->m_numberPadData.toolIndex);
+		auto tool = OM::GetToolBySlot(presenter->m_numberPadData.toolIndex);
 
 		if (tool == nullptr)
 		{

@@ -16,7 +16,7 @@
 
 #include "Debug.h"
 
-typedef Vector<OM::Tool*, MAX_SLOTS> ToolList;
+typedef Vector<std::shared_ptr<OM::Tool>, MAX_SLOTS> ToolList;
 static ToolList s_tools;
 
 namespace OM
@@ -33,16 +33,10 @@ namespace OM
 	void Tool::operator delete(void* p) noexcept
 	{
 		Tool* t = static_cast<Tool*>(p);
-		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL; ++i)
-		{
-			if (t->heaters[i] == nullptr)
-				continue;
-			delete t->heaters[i];
-		}
 		FreelistManager::Release<Tool>(p);
 	}
 
-	ToolHeater* Tool::GetHeater(const uint8_t toolHeaterIndex)
+	std::shared_ptr<ToolHeater> Tool::GetHeater(const uint8_t toolHeaterIndex)
 	{
 		if (toolHeaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
@@ -51,19 +45,19 @@ namespace OM
 		return heaters[toolHeaterIndex];
 	}
 
-	ToolHeater* Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
+	std::shared_ptr<ToolHeater> Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
 	{
-		ToolHeater* th = GetHeater(toolHeaterIndex);
+		auto th = GetHeater(toolHeaterIndex);
 		if (th != nullptr && th->heater->index == heaterIndex)
 		{
 			return th;
 		}
 		if (th == nullptr)
 		{
-			th = new ToolHeater;
+			th = std::make_shared<ToolHeater>();
 		}
 		th->Reset();
-		Heat::Heater* heater = Heat::GetOrCreateHeater(heaterIndex);
+		auto heater = Heat::GetOrCreateHeater(heaterIndex);
 		th->index = toolHeaterIndex;
 		th->heater = heater;
 		dbg("Setting tool %d heater %d=%d", index, toolHeaterIndex, heaterIndex);
@@ -71,7 +65,7 @@ namespace OM
 		return th;
 	}
 
-	Move::ExtruderAxis* Tool::GetExtruder(const uint8_t toolExtruderIndex) const
+	std::shared_ptr<Move::ExtruderAxis> Tool::GetExtruder(const uint8_t toolExtruderIndex) const
 	{
 		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL || toolExtruderIndex < 0)
 		{
@@ -80,9 +74,10 @@ namespace OM
 		return extruders[toolExtruderIndex];
 	}
 
-	Move::ExtruderAxis* Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex)
+	std::shared_ptr<Move::ExtruderAxis> Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex,
+																  const uint8_t extruderIndex)
 	{
-		Move::ExtruderAxis* extruder = GetExtruder(toolExtruderIndex);
+		auto extruder = GetExtruder(toolExtruderIndex);
 		if (extruder != nullptr && extruder->index == extruderIndex)
 		{
 			return extruder;
@@ -93,7 +88,7 @@ namespace OM
 		return extruder;
 	}
 
-	Fan* Tool::GetFan(const uint8_t toolFanIndex)
+	std::shared_ptr<Fan> Tool::GetFan(const uint8_t toolFanIndex)
 	{
 		if (toolFanIndex >= MAX_FANS)
 		{
@@ -102,9 +97,9 @@ namespace OM
 		return fans[toolFanIndex];
 	}
 
-	Fan* Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
+	std::shared_ptr<Fan> Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
 	{
-		Fan* fan = GetFan(toolFanIndex);
+		auto fan = GetFan(toolFanIndex);
 		if (fan != nullptr && fan->index == fanIndex)
 		{
 			return fan;
@@ -117,7 +112,7 @@ namespace OM
 
 	StringRef Tool::GetFilament() const
 	{
-		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		auto extruder = Move::GetExtruderAxis(filamentExtruder);
 		if (extruder == nullptr)
 		{
 			static String<1> empty;
@@ -128,7 +123,7 @@ namespace OM
 
 	int32_t Tool::GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active)
 	{
-		ToolHeater* heater = GetHeater(toolHeaterIndex);
+		auto heater = GetHeater(toolHeaterIndex);
 		if (heater == nullptr)
 		{
 			return -2000;
@@ -196,7 +191,7 @@ namespace OM
 		return -1;
 	}
 
-	void Tool::IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt)
+	void Tool::IterateHeaters(function_ref<void(std::shared_ptr<ToolHeater>, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
@@ -204,7 +199,8 @@ namespace OM
 		}
 	}
 
-	void Tool::IterateExtruders(function_ref<void(Move::ExtruderAxis*, size_t)> func, const size_t startAt)
+	void Tool::IterateExtruders(function_ref<void(std::shared_ptr<Move::ExtruderAxis>, size_t)> func,
+								const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_EXTRUDERS_PER_TOOL && extruders[i] != nullptr; ++i)
 		{
@@ -212,7 +208,7 @@ namespace OM
 		}
 	}
 
-	void Tool::IterateFans(function_ref<void(Fan*, size_t)> func, const size_t startAt)
+	void Tool::IterateFans(function_ref<void(std::shared_ptr<Fan>, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_FANS && fans[i] != nullptr; ++i)
 		{
@@ -229,8 +225,7 @@ namespace OM
 		size_t removed = 0;
 		for (size_t i = heaterIndex; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
-			delete heaters[i];
-			heaters[i] = nullptr;
+			heaters[i].reset();
 			++removed;
 		}
 		return removed;
@@ -245,7 +240,7 @@ namespace OM
 		size_t removed = 0;
 		for (size_t i = extruderIndex; i < MAX_EXTRUDERS_PER_TOOL && extruders[i] != nullptr; ++i)
 		{
-			extruders[i] = nullptr;
+			extruders[i].reset();
 			++removed;
 		}
 		return removed;
@@ -260,7 +255,7 @@ namespace OM
 		size_t removed = 0;
 		for (size_t i = fanIndex; i < MAX_FANS && fans[i] != nullptr; ++i)
 		{
-			fans[i] = nullptr;
+			fans[i].reset();
 			++removed;
 		}
 		return removed;
@@ -268,7 +263,7 @@ namespace OM
 
 	void Tool::UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
-		ToolHeater* toolHeater = GetHeater(toolHeaterIndex);
+		auto toolHeater = GetHeater(toolHeaterIndex);
 		if (toolHeater == nullptr)
 		{
 			return;
@@ -299,7 +294,7 @@ namespace OM
 
 	void Tool::ToggleHeaterState(const uint8_t toolHeaterIndex)
 	{
-		ToolHeater* toolHeater = GetHeater(toolHeaterIndex);
+		auto toolHeater = GetHeater(toolHeaterIndex);
 		if (toolHeater == nullptr)
 		{
 			return;
@@ -358,7 +353,7 @@ namespace OM
 			warn("No filament extruder assigned to tool %d", index);
 			return;
 		}
-		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		auto extruder = Move::GetExtruderAxis(filamentExtruder);
 		if (extruder == nullptr)
 		{
 			warn("Failed to get extruder %d for tool %d", filamentExtruder, index);
@@ -388,7 +383,7 @@ namespace OM
 			warn("No filament extruder assigned to tool %d", index);
 			return;
 		}
-		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		auto extruder = Move::GetExtruderAxis(filamentExtruder);
 		if (extruder == nullptr)
 		{
 			warn("Failed to get extruder %d for tool %d", filamentExtruder, index);
@@ -414,7 +409,7 @@ namespace OM
 			warn("No filament extruder assigned to tool %d", index);
 			return;
 		}
-		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		auto extruder = Move::GetExtruderAxis(filamentExtruder);
 		if (extruder == nullptr)
 		{
 			warn("Failed to get extruder %d for tool %d", filamentExtruder, index);
@@ -433,18 +428,18 @@ namespace OM
 		index = 0;
 		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL; ++i)
 		{
-			heaters[i] = nullptr;
+			heaters[i].reset();
 		}
 		for (size_t i = 0; i < MAX_EXTRUDERS_PER_TOOL; ++i)
 		{
-			extruders[i] = nullptr;
+			extruders[i].reset();
 		}
 		for (size_t i = 0; i < MAX_FANS; ++i)
 		{
-			fans[i] = nullptr;
+			fans[i].reset();
 		}
 		filamentExtruder = -1;
-		spindle = nullptr;
+		spindle.reset();
 		spindleRpm = 0;
 		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
@@ -457,18 +452,18 @@ namespace OM
 		status = ToolStatus::off;
 	}
 
-	Tool* GetTool(const size_t index)
+	std::shared_ptr<Tool> GetTool(const size_t index)
 	{
 		return GetOrCreate<ToolList, Tool>(s_tools, index, false);
 	}
 
-	Tool* GetOrCreateTool(const size_t index)
+	std::shared_ptr<Tool> GetOrCreateTool(const size_t index)
 	{
 		dbg("%d", index);
 		return GetOrCreate<ToolList, Tool>(s_tools, index, true);
 	}
 
-	Tool* GetToolBySlot(const size_t slot)
+	std::shared_ptr<Tool> GetToolBySlot(const size_t slot)
 	{
 		if (slot >= s_tools.Size())
 		{
@@ -482,7 +477,7 @@ namespace OM
 		return s_tools.Size();
 	}
 
-	bool IterateToolsWhile(function_ref<bool(Tool*&, size_t)> func, const size_t startAt)
+	bool IterateToolsWhile(function_ref<bool(std::shared_ptr<Tool>, size_t)> func, const size_t startAt)
 	{
 		return s_tools.IterateWhile(func, startAt);
 	}
@@ -499,25 +494,24 @@ namespace OM
 		{
 			return false;
 		}
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
 		}
-		ToolHeater* heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
+		auto heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
 		if (heater == nullptr)
 		{
 			error("Failed to get or create tool %d heater %d=%d", toolIndex, toolHeaterIndex, heaterIndex);
 			return false;
 		}
 		dbg("Assigned heater %d to tool %d heaterIndex %d", heaterIndex, toolIndex, toolHeaterIndex);
-		tool->heaters[toolHeaterIndex] = heater;
 		return true;
 	}
 
 	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete)
 	{
-		OM::Tool* tool = OM::GetTool(toolIndex);
+		auto tool = OM::GetTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
@@ -531,25 +525,23 @@ namespace OM
 		{
 			return false;
 		}
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
 		}
-		Move::ExtruderAxis* extruder = tool->GetOrCreateExtruder(toolExtruderIndex, extruderIndex);
+		auto extruder = tool->GetOrCreateExtruder(toolExtruderIndex, extruderIndex);
 		if (extruder == nullptr)
 		{
 			error("Failed to get or create tool %d extruder %d=%d", toolIndex, toolExtruderIndex, extruderIndex);
 			return false;
 		}
-		dbg("Assigned extruder %d to tool %d extruderIndex %d", extruderIndex, toolIndex, toolExtruderIndex);
-		tool->extruders[toolExtruderIndex] = extruder;
 		return true;
 	}
 
 	bool RemoveToolExtruders(const size_t toolIndex, const uint8_t firstIndexToDelete)
 	{
-		OM::Tool* tool = OM::GetTool(toolIndex);
+		auto tool = OM::GetTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
@@ -559,7 +551,7 @@ namespace OM
 
 	bool UpdateToolMix(const size_t toolIndex, const size_t toolExtruderIndex, const float mix)
 	{
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
@@ -575,25 +567,24 @@ namespace OM
 		{
 			return false;
 		}
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
 		}
-		Fan* fan = tool->GetOrCreateFan(toolFanIndex, fanIndex);
+		auto fan = tool->GetOrCreateFan(toolFanIndex, fanIndex);
 		if (fan == nullptr)
 		{
 			error("Failed to get or create tool %d fan %d=%d", toolIndex, toolFanIndex, fanIndex);
 			return false;
 		}
 		dbg("Assigned fan %d to tool %d fanIndex %d", fanIndex, toolIndex, toolFanIndex);
-		tool->fans[toolFanIndex] = fan;
 		return true;
 	}
 
 	bool UpdateToolFilamentExtruder(const size_t toolIndex, const int8_t extruderIndex)
 	{
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
@@ -604,7 +595,7 @@ namespace OM
 
 	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete)
 	{
-		OM::Tool* tool = OM::GetTool(toolIndex);
+		auto tool = OM::GetTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;
@@ -614,7 +605,7 @@ namespace OM
 
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 
 		// If we do not handle this tool back off
 		if (tool == nullptr)
@@ -628,7 +619,7 @@ namespace OM
 
 	bool UpdateToolName(const size_t toolIndex, const char* name)
 	{
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 
 		// If we do not handle this tool back off
 		if (tool == nullptr)
@@ -643,7 +634,7 @@ namespace OM
 
 	bool UpdateToolStatus(const size_t toolIndex, const char* statusStr)
 	{
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 
 		// If we do not handle this tool back off
 		if (tool == nullptr)
@@ -661,7 +652,7 @@ namespace OM
 
 	bool UpdateToolSpindle(const size_t toolIndex, const int8_t spindleIndex)
 	{
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 
 		// If we do not handle this tool back off
 		if (tool == nullptr)
@@ -675,7 +666,7 @@ namespace OM
 
 	bool UpdateToolSpindleRpm(const size_t toolIndex, const int32_t rpm)
 	{
-		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		auto tool = OM::GetOrCreateTool(toolIndex);
 
 		// If we do not handle this tool back off
 		if (tool == nullptr)
@@ -693,7 +684,7 @@ namespace OM
 		s_currentTool = toolIndex;
 	}
 
-	Tool* GetCurrentTool()
+	std::shared_ptr<Tool> GetCurrentTool()
 	{
 		if (s_currentTool < 0)
 		{

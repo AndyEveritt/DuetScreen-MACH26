@@ -13,7 +13,7 @@
 
 #include "Debug.h"
 
-typedef Vector<OM::Fan*, MAX_FANS> FanList;
+typedef Vector<std::shared_ptr<OM::Fan>, MAX_FANS> FanList;
 static FanList s_fans;
 
 namespace OM
@@ -26,12 +26,12 @@ namespace OM
 		rpm = -1;
 	}
 
-	Fan* GetFan(const size_t index)
+	std::shared_ptr<Fan> GetFan(const size_t index)
 	{
 		return GetOrCreate<FanList, Fan>(s_fans, index, false);
 	}
 
-	Fan* GetFanBySlot(const size_t index)
+	std::shared_ptr<Fan> GetFanBySlot(const size_t index)
 	{
 		if (index >= s_fans.Size())
 			return nullptr;
@@ -39,7 +39,7 @@ namespace OM
 		return s_fans[index];
 	}
 
-	Fan* GetOrCreateFan(const size_t index)
+	std::shared_ptr<Fan> GetOrCreateFan(const size_t index)
 	{
 		return GetOrCreate<FanList, Fan>(s_fans, index, true);
 	}
@@ -49,14 +49,14 @@ namespace OM
 		return s_fans.Size();
 	}
 
-	bool IterateFansWhile(function_ref<bool(Fan*&, size_t)> func, const size_t startAt)
+	bool IterateFansWhile(function_ref<bool(std::shared_ptr<Fan>, size_t)> func, const size_t startAt)
 	{
 		return s_fans.IterateWhile(func, startAt);
 	}
 
 	bool UpdateFanActualVal(const size_t fanIndex, const float val)
 	{
-		Fan* fan = GetOrCreateFan(fanIndex);
+		auto fan = GetOrCreateFan(fanIndex);
 
 		// If we do not handle this fan back off
 		if (fan == nullptr)
@@ -70,7 +70,7 @@ namespace OM
 
 	bool UpdateFanRequestedVal(const size_t fanIndex, const float val)
 	{
-		Fan* fan = GetOrCreateFan(fanIndex);
+		auto fan = GetOrCreateFan(fanIndex);
 
 		// If we do not handle this fan back off
 		if (fan == nullptr)
@@ -84,7 +84,7 @@ namespace OM
 
 	bool UpdateFanRpm(const size_t fanIndex, const int32_t val)
 	{
-		Fan* fan = GetOrCreateFan(fanIndex);
+		auto fan = GetOrCreateFan(fanIndex);
 
 		// If we do not handle this fan back off
 		if (fan == nullptr)

@@ -14,7 +14,7 @@
 
 #include "Debug.h"
 
-typedef Vector<OM::Heat::Heater*, MAX_HEATERS> HeaterList;
+typedef Vector<std::shared_ptr<OM::Heat::Heater>, MAX_HEATERS> HeaterList;
 static HeaterList heaters;
 
 namespace OM
@@ -65,24 +65,24 @@ namespace OM
 			standbyTemp = temp;
 		}
 
-		Heater* GetHeater(const size_t index)
+		std::shared_ptr<Heater> GetHeater(const size_t index)
 		{
 			return GetOrCreate<HeaterList, Heater>(heaters, index, false);
 		}
 
-		Heater* GetOrCreateHeater(const size_t index)
+		std::shared_ptr<Heater> GetOrCreateHeater(const size_t index)
 		{
 			return GetOrCreate<HeaterList, Heater>(heaters, index, true);
 		}
 
-		bool IterateHeatersWhile(function_ref<bool(Heater*&, size_t)> func, const size_t startAt)
+		bool IterateHeatersWhile(function_ref<bool(std::shared_ptr<Heater>, size_t)> func, const size_t startAt)
 		{
 			return heaters.IterateWhile(func, startAt);
 		}
 
 		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active)
 		{
-			Heater* heater = GetOrCreateHeater(heaterIndex);
+			auto heater = GetOrCreateHeater(heaterIndex);
 
 			// If we do not handle this heater back off
 			if (heater == nullptr)
@@ -96,7 +96,7 @@ namespace OM
 
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp)
 		{
-			Heater* heater = GetOrCreateHeater(heaterIndex);
+			auto heater = GetOrCreateHeater(heaterIndex);
 
 			// If we do not handle this heater back off
 			if (heater == nullptr)
@@ -110,7 +110,7 @@ namespace OM
 
 		bool UpdateHeaterPwm(const size_t heaterIndex, const float pwm)
 		{
-			Heater* heater = GetOrCreateHeater(heaterIndex);
+			auto heater = GetOrCreateHeater(heaterIndex);
 
 			// If we do not handle this heater back off
 			if (heater == nullptr)
@@ -124,7 +124,7 @@ namespace OM
 
 		bool UpdateHeaterMin(const size_t heaterIndex, const float min)
 		{
-			Heater* heater = GetOrCreateHeater(heaterIndex);
+			auto heater = GetOrCreateHeater(heaterIndex);
 
 			// If we do not handle this heater back off
 			if (heater == nullptr)
@@ -138,7 +138,7 @@ namespace OM
 
 		bool UpdateHeaterMax(const size_t heaterIndex, const float max)
 		{
-			Heater* heater = GetOrCreateHeater(heaterIndex);
+			auto heater = GetOrCreateHeater(heaterIndex);
 
 			// If we do not handle this heater back off
 			if (heater == nullptr)
@@ -165,7 +165,7 @@ namespace OM
 
 		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status)
 		{
-			Heater* heater = GetOrCreateHeater(heaterIndex);
+			auto heater = GetOrCreateHeater(heaterIndex);
 
 			if (heater == nullptr)
 				return false;
@@ -177,7 +177,7 @@ namespace OM
 
 		bool UpdateHeaterSensor(const size_t heaterIndex, const size_t sensorIndex)
 		{
-			Heater* heater = GetOrCreateHeater(heaterIndex);
+			auto heater = GetOrCreateHeater(heaterIndex);
 			if (heater == nullptr)
 			{
 				return false;

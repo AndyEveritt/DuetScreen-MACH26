@@ -26,7 +26,7 @@
 
 namespace OM
 {
-	typedef Vector<JobObject*, MAX_TRACKED_OBJECTS> JobObjectList;
+	typedef Vector<std::shared_ptr<JobObject>, MAX_TRACKED_OBJECTS> JobObjectList;
 	static JobObjectList s_jobObjects;
 	static int8_t s_currentJobObjectIndex = -1;
 
@@ -150,7 +150,7 @@ namespace OM
 		return s_currentJobObjectIndex;
 	}
 
-	JobObject* GetJobObject(const int8_t index)
+	std::shared_ptr<JobObject> GetJobObject(const int8_t index)
 	{
 		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
 		{
@@ -160,7 +160,7 @@ namespace OM
 		return GetOrCreate<JobObjectList, JobObject>(s_jobObjects, index, false);
 	}
 
-	JobObject* GetOrCreateJobObject(const int8_t index)
+	std::shared_ptr<JobObject> GetOrCreateJobObject(const int8_t index)
 	{
 		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
 		{
@@ -175,7 +175,7 @@ namespace OM
 		return s_jobObjects.Size();
 	}
 
-	bool IterateJobObjectsWhile(function_ref<bool(JobObject*&, size_t)> func, const size_t startAt)
+	bool IterateJobObjectsWhile(function_ref<bool(std::shared_ptr<JobObject>, size_t)> func, const size_t startAt)
 	{
 		return s_jobObjects.IterateWhile(func, startAt);
 	}
@@ -194,13 +194,13 @@ namespace OM
 
 	bool IsJobObjectActive(const size_t index)
 	{
-		JobObject* jobObject = GetJobObject(index);
+		auto jobObject = GetJobObject(index);
 		return jobObject != nullptr && !jobObject->cancelled;
 	}
 
 	void SetJobObjectActive(const size_t index, const bool active)
 	{
-		JobObject* jobObject = GetJobObject(index);
+		auto jobObject = GetJobObject(index);
 		if (jobObject == nullptr)
 		{
 			warn("Failed to get job object %d\n", index);

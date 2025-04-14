@@ -34,7 +34,7 @@ namespace UI
 	void MovePresenter::homeAxis(size_t axisSlot)
 	{
 		MODEL_LOCK();
-		OM::Move::Axis* axis = OM::Move::GetAxisBySlot(axisSlot);
+		auto axis = OM::Move::GetAxisBySlot(axisSlot);
 		if (axis == nullptr)
 		{
 			warn("Axis %u not found", axisSlot);
@@ -46,7 +46,7 @@ namespace UI
 	void MovePresenter::moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate)
 	{
 		MODEL_LOCK();
-		OM::Move::Axis* axis = OM::Move::GetAxisBySlot(axisSlot);
+		auto axis = OM::Move::GetAxisBySlot(axisSlot);
 		if (axis == nullptr)
 		{
 			warn("Axis %u not found", axisSlot);
@@ -57,12 +57,11 @@ namespace UI
 
 	void MovePresenter::newAxesData()
 	{
-		MODEL_LOCK();
 		size_t axisCount = OM::Move::GetAxisCount(false);
 		m_view->setAxisCount(axisCount);
 		for (size_t i = 0; i < axisCount; i++)
 		{
-			OM::Move::Axis* axis = OM::Move::GetAxis(i);
+			auto axis = OM::Move::GetAxis(i);
 			if (axis == nullptr)
 			{
 				warn("Axis %u not found", i);

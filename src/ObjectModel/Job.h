@@ -11,6 +11,7 @@
 #include "Duet3D/General/FreelistManager.h"
 #include "Duet3D/General/StringRef.h"
 #include "Duet3D/General/function_ref.h"
+#include <memory>
 #include <string>
 #include <sys/types.h>
 
@@ -68,10 +69,10 @@ namespace OM
 	void SetCurrentJobObject(int8_t index);
 	const int8_t GetCurrentJobObjectIndex();
 
-	JobObject* GetJobObject(const int8_t index);
-	JobObject* GetOrCreateJobObject(const int8_t index);
+	std::shared_ptr<JobObject> GetJobObject(const int8_t index);
+	std::shared_ptr<JobObject> GetOrCreateJobObject(const int8_t index);
 	size_t GetJobObjectCount();
-	bool IterateJobObjectsWhile(function_ref<bool(JobObject*&, size_t)> func, const size_t startAt = 0);
+	bool IterateJobObjectsWhile(function_ref<bool(std::shared_ptr<JobObject>, size_t)> func, const size_t startAt = 0);
 	size_t RemoveJobObject(const size_t index, const bool allFollowing);
 	size_t ClearJobObjects();
 

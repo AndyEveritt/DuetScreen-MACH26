@@ -35,7 +35,7 @@ namespace UI
 		m_view->setExtruderCount(OM::Move::GetExtruderAxisCount());
 
 		OM::Move::IterateExtruderAxesWhile(
-			[this](OM::Move::ExtruderAxis* extruder, size_t index)
+			[this](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
 				m_view->setExtruderLabel(index, utils::format(_("fine_tune_extruder"), extruder->index).c_str());
 				m_view->setExtruderValue(index, std::round(100 * extruder->factor));
@@ -50,7 +50,7 @@ namespace UI
 		m_view->setFanCount(OM::GetFanCount());
 
 		OM::IterateFansWhile(
-			[this](OM::Fan* fan, size_t index)
+			[this](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
 				m_view->setFanLabel(index, utils::format(_("fine_tune_fan"), fan->index).c_str());
 				m_view->setFanValue(index, std::round(100 * fan->requestedValue));
@@ -61,7 +61,7 @@ namespace UI
 	void FineTunePresenter::newAxesData()
 	{
 		MODEL_LOCK();
-		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('Z');
+		auto axis = OM::Move::GetAxisByLetter('Z');
 		if (axis == nullptr)
 		{
 			return;
@@ -98,7 +98,7 @@ namespace UI
 
 	void FineTunePresenter::setExtruderFactor(size_t slot, uint32_t value)
 	{
-		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(slot);
+		auto extruder = OM::Move::GetExtruderAxisBySlot(slot);
 		if (extruder == nullptr || value == std::round(100 * extruder->factor))
 		{
 			return;
@@ -109,7 +109,7 @@ namespace UI
 
 	void FineTunePresenter::setFanValue(size_t slot, uint32_t value)
 	{
-		OM::Fan* fan = OM::GetFanBySlot(slot);
+		auto fan = OM::GetFanBySlot(slot);
 		if (fan == nullptr || value == std::round(100 * fan->requestedValue))
 		{
 			return;

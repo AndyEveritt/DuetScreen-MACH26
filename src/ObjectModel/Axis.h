@@ -5,14 +5,14 @@
  *      Author: manuel
  */
 
-#ifndef SRC_OBJECTMODEL_AXIS_HPP_
-#define SRC_OBJECTMODEL_AXIS_HPP_
+#pragma once
 
 // #include <cstdint>
 #include "Configuration.h"
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/function_ref.h>
+#include <memory>
 #include <sys/types.h>
 
 namespace OM::Move
@@ -68,12 +68,12 @@ namespace OM::Move
 		void Reset();
 	};
 
-	Axis* GetAxis(const size_t index);
-	Axis* GetAxisBySlot(const size_t slot, const bool includeHidden = false);
-	Axis* GetAxisByLetter(const char letter);
-	Axis* GetOrCreateAxis(const size_t index);
+	std::shared_ptr<Axis> GetAxis(const size_t index);
+	std::shared_ptr<Axis> GetAxisBySlot(const size_t slot, const bool includeHidden = false);
+	std::shared_ptr<Axis> GetAxisByLetter(const char letter);
+	std::shared_ptr<Axis> GetOrCreateAxis(const size_t index);
 	size_t GetAxisCount(const bool includeHidden = false);
-	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt = 0);
+	bool IterateAxesWhile(function_ref<bool(std::shared_ptr<Axis>, size_t)> func, const size_t startAt = 0);
 	size_t RemoveAxis(const size_t index, const bool allFollowing);
 
 	bool SetAcceleration(size_t index, uint32_t acceleration);
@@ -91,11 +91,12 @@ namespace OM::Move
 	void SetPrintingAcceleration(uint32_t printingAcceleration);
 	const uint32_t& GetPrintingAcceleration();
 
-	ExtruderAxis* GetExtruderAxis(const size_t index);
-	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot);
-	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index);
+	std::shared_ptr<ExtruderAxis> GetExtruderAxis(const size_t index);
+	std::shared_ptr<ExtruderAxis> GetExtruderAxisBySlot(const size_t slot);
+	std::shared_ptr<ExtruderAxis> GetOrCreateExtruderAxis(const size_t index);
 	size_t GetExtruderAxisCount();
-	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis*&, size_t)> func, const size_t startAt = 0);
+	bool IterateExtruderAxesWhile(function_ref<bool(std::shared_ptr<ExtruderAxis>, size_t)> func,
+								  const size_t startAt = 0);
 	size_t RemoveExtruderAxis(const size_t index, const bool allFollowing);
 
 	bool SetExtruderPosition(size_t index, float f);
@@ -116,5 +117,3 @@ namespace OM::Move
 	const float GetCurrentMoveTopSpeed();
 	void SetCurrentMoveTopSpeed(float speed);
 } // namespace OM::Move
-
-#endif /* SRC_OBJECTMODEL_AXIS_HPP_ */

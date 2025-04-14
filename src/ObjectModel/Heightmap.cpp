@@ -83,10 +83,10 @@ namespace OM
 		dbg("Samples: %u, %u", m_samples[0], m_samples[1]);
 	}
 
-	Move::Axis* HeightmapMeta::GetAxis(size_t index) const
+	std::shared_ptr<Move::Axis> HeightmapMeta::GetAxis(size_t index) const
 	{
 		const std::string& label = m_axis[index];
-		Move::Axis* axis = Move::GetAxisByLetter(label[0]);
+		auto axis = Move::GetAxisByLetter(label[0]);
 		if (axis == nullptr)
 		{
 			error("Axis %s not found", label.c_str());

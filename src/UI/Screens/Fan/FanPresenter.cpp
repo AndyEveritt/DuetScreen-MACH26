@@ -9,7 +9,7 @@ namespace UI
 {
 	void FanPresenter::setFanSpeed(size_t slot, uint32_t value)
 	{
-		OM::Fan* fan = OM::GetFanBySlot(slot);
+		auto fan = OM::GetFanBySlot(slot);
 		if (fan == nullptr || value == std::round(100 * fan->requestedValue))
 		{
 			return;
@@ -25,7 +25,7 @@ namespace UI
 		m_view->setFanCount(OM::GetFanCount());
 
 		OM::IterateFansWhile(
-			[&](OM::Fan* fan, size_t index)
+			[&](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
 				m_view->setFanLabel(index, utils::format(_("fine_tune_fan"), fan->index).c_str());
 				m_view->setFanValue(index, std::round(100 * fan->requestedValue));

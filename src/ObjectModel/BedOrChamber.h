@@ -11,6 +11,7 @@
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/function_ref.h>
 #include <cstdint>
+#include <memory>
 #include <sys/types.h>
 
 namespace OM
@@ -69,20 +70,20 @@ namespace OM
 	typedef BedOrChamber Bed;
 	typedef BedOrChamber Chamber;
 
-	Bed* GetBedBySlot(const size_t index);
-	Bed* GetBed(const size_t index);
-	Bed* GetOrCreateBed(const size_t index);
-	Bed* GetFirstBed();
+	std::shared_ptr<Bed> GetBedBySlot(const size_t index);
+	std::shared_ptr<Bed> GetBed(const size_t index);
+	std::shared_ptr<Bed> GetOrCreateBed(const size_t index);
+	std::shared_ptr<Bed> GetFirstBed();
 	size_t GetBedCount();
-	bool IterateBedsWhile(function_ref<bool(Bed*&, size_t)> func, const size_t startAt = 0);
+	bool IterateBedsWhile(function_ref<bool(std::shared_ptr<Bed>, size_t)> func, const size_t startAt = 0);
 	size_t RemoveBed(const size_t index, const bool allFollowing);
 
-	Chamber* GetChamberBySlot(const size_t index);
-	Chamber* GetChamber(const size_t index);
-	Chamber* GetOrCreateChamber(const size_t index);
-	Chamber* GetFirstChamber();
+	std::shared_ptr<Chamber> GetChamberBySlot(const size_t index);
+	std::shared_ptr<Chamber> GetChamber(const size_t index);
+	std::shared_ptr<Chamber> GetOrCreateChamber(const size_t index);
+	std::shared_ptr<Chamber> GetFirstChamber();
 	size_t GetChamberCount();
-	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func, const size_t startAt = 0);
+	bool IterateChambersWhile(function_ref<bool(std::shared_ptr<Chamber>, size_t)> func, const size_t startAt = 0);
 	size_t RemoveChamber(const size_t index, const bool allFollowing);
 	bool SetBedHeater(const uint8_t bedIndex, const int8_t heaterNumber);
 	bool SetChamberHeater(const uint8_t chamberIndex, const int8_t heaterNumber);

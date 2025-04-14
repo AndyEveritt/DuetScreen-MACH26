@@ -11,8 +11,8 @@
 #include "Sensor.h"
 #include <Duet3D/General/Vector.h>
 
-typedef Vector<OM::AnalogSensor*, MAX_SENSORS> AnalogSensorList;
-typedef Vector<OM::Endstop*, MAX_ENDSTOPS> EndstopList;
+typedef Vector<std::shared_ptr<OM::AnalogSensor>, MAX_SENSORS> AnalogSensorList;
+typedef Vector<std::shared_ptr<OM::Endstop>, MAX_ENDSTOPS> EndstopList;
 
 static AnalogSensorList s_analogSensors;
 static EndstopList s_endstops;
@@ -38,17 +38,17 @@ namespace OM
 		return s_analogSensors.Size();
 	}
 
-	AnalogSensor* GetAnalogSensor(const size_t index, const bool silent)
+	std::shared_ptr<AnalogSensor> GetAnalogSensor(const size_t index, const bool silent)
 	{
 		return GetOrCreate<AnalogSensorList, AnalogSensor>(s_analogSensors, index, false, silent);
 	}
 
-	AnalogSensor* GetOrCreateAnalogSensor(const size_t index)
+	std::shared_ptr<AnalogSensor> GetOrCreateAnalogSensor(const size_t index)
 	{
 		return GetOrCreate<AnalogSensorList, AnalogSensor>(s_analogSensors, index, true);
 	}
 
-	AnalogSensor* GetAnalogSensorBySlot(const size_t index)
+	std::shared_ptr<AnalogSensor> GetAnalogSensorBySlot(const size_t index)
 	{
 		if (index >= s_analogSensors.Size())
 			return nullptr;
@@ -64,7 +64,7 @@ namespace OM
 
 	bool UpdateAnalogSensorReading(const size_t index, const float reading)
 	{
-		AnalogSensor* const sensor = GetOrCreateAnalogSensor(index);
+		auto const sensor = GetOrCreateAnalogSensor(index);
 		if (sensor == nullptr)
 		{
 			warn("Failed to get or create analog sensor %d", index);
@@ -72,14 +72,13 @@ namespace OM
 		}
 
 		sensor->lastReading = reading;
-		// TODO set lastReadingTime
-		// sensor->lastReadingTime = TimeHelper::getCurrentTime();
+		sensor->lastReadingTime = TimeHelper::getCurrentTime();
 		return true;
 	}
 
 	bool UpdateAnalogSensorName(const size_t index, const char* name)
 	{
-		AnalogSensor* const sensor = GetOrCreateAnalogSensor(index);
+		auto const sensor = GetOrCreateAnalogSensor(index);
 		if (sensor == nullptr)
 		{
 			warn("Failed to get or create analog sensor %d", index);
@@ -100,12 +99,12 @@ namespace OM
 		return s_endstops.Size();
 	}
 
-	Endstop* GetEndstop(const size_t index)
+	std::shared_ptr<Endstop> GetEndstop(const size_t index)
 	{
 		return GetOrCreate<EndstopList, Endstop>(s_endstops, index, false);
 	}
 
-	Endstop* GetOrCreateEndstop(const size_t index)
+	std::shared_ptr<Endstop> GetOrCreateEndstop(const size_t index)
 	{
 		return GetOrCreate<EndstopList, Endstop>(s_endstops, index, true);
 	}
@@ -118,7 +117,7 @@ namespace OM
 
 	bool UpdateEndstopTriggered(const size_t index, const bool triggered)
 	{
-		Endstop* const endstop = GetOrCreateEndstop(index);
+		auto const endstop = GetOrCreateEndstop(index);
 		if (endstop == nullptr)
 		{
 			warn("Failed to get or create endstop %d", index);

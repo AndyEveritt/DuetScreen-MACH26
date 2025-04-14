@@ -20,7 +20,7 @@ namespace UI
 		m_view->m_graph.setSeriesCount(sensorCount);
 		for (size_t i = 0; i < sensorCount; i++)
 		{
-			OM::AnalogSensor* sensor = OM::GetAnalogSensorBySlot(i);
+			auto sensor = OM::GetAnalogSensorBySlot(i);
 			if (!m_view->m_graph.getSeries(i))
 			{
 				m_view->m_graph.createSeries(lv_palette_main((lv_palette_t)m_view->m_graph.getSeriesCount()),
@@ -43,7 +43,7 @@ namespace UI
 		// Alert jog axes
 		for (size_t i = 0; i < m_alertAxes.size(); i++)
 		{
-			OM::Move::Axis* axis = OM::Move::GetAxisByLetter(m_alertAxes[i]);
+			auto axis = OM::Move::GetAxisByLetter(m_alertAxes[i]);
 			if (axis == nullptr)
 				continue;
 			m_view->m_alert.setJogAxisPosition(i, axis->userPosition);
@@ -324,7 +324,7 @@ namespace UI
 			{
 				if (!(alert.controls & (1 << i)))
 					continue;
-				OM::Move::Axis* axis = OM::Move::GetAxis(i);
+				auto axis = OM::Move::GetAxis(i);
 				if (axis == nullptr)
 					continue;
 				m_alertAxes.push_back(axis->letter[0]);

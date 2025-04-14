@@ -12,10 +12,11 @@
 
 //#include <cstdint>
 #include <Duet3D/General/function_ref.h>
+#include <memory>
 #include <sys/types.h>
 
 template <typename L, typename T>
-T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent = false)
+std::shared_ptr<T> GetOrCreate(L& list, const size_t index, const bool create, const bool silent = false)
 {
 	const size_t count = list.Size();
 	for (size_t i = 0; i < count; ++i)
@@ -30,11 +31,11 @@ T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent
 	if (create && !list.Full())
 	{
 		verbose("Creating index=%d", index);
-		T* elem = new T;
+		std::shared_ptr<T> elem = std::make_shared<T>();
 		elem->Reset();
 		elem->index = index;
 		list.Add(elem);
-		list.Sort([](T* e1, T* e2) { return e1->index > e2->index; });
+		list.Sort([](std::shared_ptr<T> e1, std::shared_ptr<T> e2) { return e1->index > e2->index; });
 		return elem;
 	}
 
@@ -44,7 +45,7 @@ T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent
 }
 
 template <typename L, typename T>
-T* Find(L& list, function_ref<bool(T*)> filter)
+std::shared_ptr<T> Find(L& list, function_ref<bool(std::shared_ptr<T>)> filter)
 {
 	const size_t count = list.Size();
 	for (size_t i = 0; i < count; ++i)
@@ -72,12 +73,12 @@ size_t Remove(L& list, const size_t index, const bool allFollowing)
 	for (size_t i = list.Size(); i != 0;)
 	{
 		--i;
-		T* elem = list[i];
+		std::shared_ptr<T> elem = list[i];
 		if (elem->index == index || (allFollowing && elem->index > index))
 		{
 			// dbg("Removing index=%d", i);
 			list.Erase(i);
-			delete elem;
+			elem.reset();
 			++removed;
 			if (!allFollowing)
 			{

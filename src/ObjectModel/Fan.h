@@ -14,6 +14,7 @@
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringRef.h>
 #include <Duet3D/General/function_ref.h>
+#include <memory>
 #include <sys/types.h>
 
 namespace OM
@@ -32,11 +33,11 @@ namespace OM
 		void Reset();
 	};
 
-	Fan* GetFan(const size_t fanIndex);
-	Fan* GetFanBySlot(const size_t index);
-	Fan* GetOrCreateFan(const size_t fanIndex);
+	std::shared_ptr<Fan> GetFan(const size_t fanIndex);
+	std::shared_ptr<Fan> GetFanBySlot(const size_t index);
+	std::shared_ptr<Fan> GetOrCreateFan(const size_t fanIndex);
 	const size_t GetFanCount();
-	bool IterateFansWhile(function_ref<bool(Fan*&, size_t)> func, const size_t startAt = 0);
+	bool IterateFansWhile(function_ref<bool(std::shared_ptr<Fan>, size_t)> func, const size_t startAt = 0);
 	bool UpdateFanActualVal(const size_t fanIndex, const float val);
 	bool UpdateFanRequestedVal(const size_t fanIndex, const float val);
 	bool UpdateFanRpm(const size_t fanIndex, const int32_t val);

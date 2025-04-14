@@ -56,7 +56,7 @@ namespace UI
 		m_spindle = nullptr;
 
 		OM::IterateToolsWhile(
-			[&](OM::Tool*& toolIter, size_t)
+			[&](std::shared_ptr<OM::Tool> toolIter, size_t)
 			{
 				const bool hasHeater = toolIter->GetHeaterCount() > 0;
 				const bool hasSpindle = toolIter->spindle != nullptr;
@@ -98,7 +98,7 @@ namespace UI
 
 		int8_t bedOrChamberIndex = m_slotIndex - count;
 		m_bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
-		OM::Heat::Heater* heater;
+		std::shared_ptr<OM::Heat::Heater> heater;
 		if (m_bedOrChamber != nullptr)
 		{
 			m_slotType = SlotType::Bed;
@@ -136,10 +136,10 @@ namespace UI
 		m_slotType = SlotType::Unknown;
 	}
 
-	bool ToolListItemPresenter::updateView(const OM::Tool* tool,
-										   const OM::ToolHeater* tHeater,
+	bool ToolListItemPresenter::updateView(const std::shared_ptr<OM::Tool> tool,
+										   const std::shared_ptr<OM::ToolHeater> tHeater,
 										   const uint8_t tHeaterIndex,
-										   const OM::Spindle* spindle)
+										   const std::shared_ptr<OM::Spindle> spindle)
 	{
 		if (tool == nullptr)
 		{
@@ -188,8 +188,8 @@ namespace UI
 
 		return true;
 	}
-	bool ToolListItemPresenter::updateView(const OM::BedOrChamber* bedOrChamber,
-										   const OM::Heat::Heater* heater,
+	bool ToolListItemPresenter::updateView(const std::shared_ptr<OM::BedOrChamber> bedOrChamber,
+										   const std::shared_ptr<OM::Heat::Heater> heater,
 										   const bool bed)
 	{
 		if (bedOrChamber == nullptr)
@@ -276,7 +276,7 @@ namespace UI
 	bool ToolListItemPresenter::configureNumberPad(const bool active)
 	{
 		ToolListNumPad& np = m_view->getToolList().m_numberPad;
-		OM::Heat::Heater* heater = nullptr;
+		std::shared_ptr<OM::Heat::Heater> heater;
 		std::string header;
 
 		switch (m_slotType)
@@ -470,7 +470,7 @@ namespace UI
 		{
 			size_t count = 0;
 			OM::IterateToolsWhile(
-				[&count](OM::Tool*& tool, size_t index)
+				[&count](std::shared_ptr<OM::Tool> tool, size_t index)
 				{
 					const bool hasHeater = tool->GetHeaterCount() > 0;
 					const bool hasSpindle = tool->spindle != nullptr;

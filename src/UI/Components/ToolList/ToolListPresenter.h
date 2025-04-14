@@ -40,11 +40,13 @@ namespace UI
 	  private:
 		static void numberPadConfirmCallback(lv_event_t* e);
 
-		bool updateView(const OM::Tool* tool,
-						const OM::ToolHeater* tHeater,
+		bool updateView(const std::shared_ptr<OM::Tool> tool,
+						const std::shared_ptr<OM::ToolHeater> tHeater,
 						const uint8_t tHeaterIndex,
-						const OM::Spindle* spindle);
-		bool updateView(const OM::BedOrChamber* bedOrChamber, const OM::Heat::Heater* heater, const bool bed);
+						const std::shared_ptr<OM::Spindle> spindle);
+		bool updateView(const std::shared_ptr<OM::BedOrChamber> bedOrChamber,
+						const std::shared_ptr<OM::Heat::Heater> heater,
+						const bool bed);
 
 		int8_t m_slotIndex = -1;
 
@@ -56,10 +58,10 @@ namespace UI
 			Unknown
 		} m_slotType = SlotType::Unknown;
 
-		OM::Tool* m_tool = nullptr;
-		OM::ToolHeater* m_tHeater = nullptr;
-		OM::Spindle* m_spindle = nullptr;
-		OM::BedOrChamber* m_bedOrChamber = nullptr;
+		std::shared_ptr<OM::Tool> m_tool;
+		std::shared_ptr<OM::ToolHeater> m_tHeater;
+		std::shared_ptr<OM::Spindle> m_spindle;
+		std::shared_ptr<OM::BedOrChamber> m_bedOrChamber;
 
 		bool m_setActiveTemp = true;
 	};

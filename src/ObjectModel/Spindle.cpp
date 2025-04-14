@@ -12,7 +12,7 @@
 #include "utils/utils.h"
 #include <Duet3D/General/Vector.h>
 
-typedef Vector<OM::Spindle*, MAX_SLOTS> SpindleList;
+typedef Vector<std::shared_ptr<OM::Spindle>, MAX_SLOTS> SpindleList;
 static SpindleList s_spindles;
 
 namespace OM
@@ -40,12 +40,12 @@ namespace OM
 		return (stateFromMap != nullptr) ? stateFromMap->key : "unknown";
 	}
 
-	Spindle* GetSpindle(const size_t index)
+	std::shared_ptr<Spindle> GetSpindle(const size_t index)
 	{
 		return GetOrCreate<SpindleList, Spindle>(s_spindles, index, false);
 	}
 
-	Spindle* GetOrCreateSpindle(const size_t index)
+	std::shared_ptr<Spindle> GetOrCreateSpindle(const size_t index)
 	{
 		return GetOrCreate<SpindleList, Spindle>(s_spindles, index, true);
 	}
@@ -63,7 +63,7 @@ namespace OM
 	  error("spindle[%d] greater than MAX_SLOTS", index);                                                              \
 	  return false;                                                                                                    \
 	}                                                                                                                  \
-	Spindle* spindle = GetOrCreateSpindle(index);                                                                      \
+	std::shared_ptr<Spindle> spindle = GetOrCreateSpindle(index);                                                      \
 	if (spindle == nullptr)                                                                                            \
 	{                                                                                                                  \
 	  error("Could not get or create spindle %d", index);                                                              \
@@ -81,7 +81,7 @@ namespace OM
 			return false;
 		}
 
-		Spindle* spindle = GetOrCreateSpindle(index);
+		auto spindle = GetOrCreateSpindle(index);
 
 		// If we do not handle this spindle back off
 		if (spindle == nullptr)

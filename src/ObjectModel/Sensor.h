@@ -2,15 +2,15 @@
  * Sensor.h
  *
  *  Created on: 20 Mar 2024
- *      Author: andy
+ *      Author: Andy Everitt
  */
 
-#ifndef JNI_OBJECTMODEL_SENSOR_H_
-#define JNI_OBJECTMODEL_SENSOR_H_
+#pragma once
 
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include <Duet3D/General/FreelistManager.h>
+#include <memory>
 
 namespace OM
 {
@@ -40,21 +40,19 @@ namespace OM
 	};
 
 	const size_t GetAnalogSensorCount();
-	AnalogSensor* GetAnalogSensor(const size_t index, const bool silent = false);
-	AnalogSensor* GetOrCreateAnalogSensor(const size_t index);
-	AnalogSensor* GetAnalogSensorBySlot(const size_t index);
+	std::shared_ptr<AnalogSensor> GetAnalogSensor(const size_t index, const bool silent = false);
+	std::shared_ptr<AnalogSensor> GetOrCreateAnalogSensor(const size_t index);
+	std::shared_ptr<AnalogSensor> GetAnalogSensorBySlot(const size_t index);
 	size_t RemoveAnalogSensor(const size_t index, const bool allFollowing);
 
 	bool UpdateAnalogSensorReading(const size_t index, const float reading);
 	bool UpdateAnalogSensorName(const size_t index, const char* name);
 
 	const size_t GetEndstopCount();
-	Endstop* GetEndstop(const size_t index);
-	Endstop* GetOrCreateEndstop(const size_t index);
+	std::shared_ptr<Endstop> GetEndstop(const size_t index);
+	std::shared_ptr<Endstop> GetOrCreateEndstop(const size_t index);
 	size_t RemoveEndstop(const size_t index, const bool allFollowing);
 
 	bool UpdateEndstopTriggered(const size_t index, const bool triggered);
 
 } // namespace OM
-
-#endif /* JNI_OBJECTMODEL_SENSOR_H_ */

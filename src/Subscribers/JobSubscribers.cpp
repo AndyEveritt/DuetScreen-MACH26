@@ -105,7 +105,7 @@ bool JobSubscribers::nullObject(Comm::JsonDecoder* decoder, const char* data, co
 
 bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
-	OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
 		warn("Job object %u not found", indices[0]);
@@ -116,7 +116,7 @@ bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& dat
 
 bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
 		warn("Job object %u not found", indices[0]);
@@ -127,7 +127,7 @@ bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, co
 
 bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
-	OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
 		warn("Job object %u not found", indices[0]);
@@ -143,7 +143,7 @@ bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, co
 
 bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
-	OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
 		warn("Job object %u not found", indices[0]);

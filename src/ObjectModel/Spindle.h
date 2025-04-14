@@ -10,6 +10,7 @@
 
 #include <Duet3D/General/FreelistManager.h>
 #include <cstdint>
+#include <memory>
 #include <sys/types.h>
 
 namespace OM
@@ -52,8 +53,8 @@ namespace OM
 		const char* GetStateStr() const;
 	};
 
-	Spindle* GetSpindle(const size_t index);
-	Spindle* GetOrCreateSpindle(const size_t index);
+	std::shared_ptr<Spindle> GetSpindle(const size_t index);
+	std::shared_ptr<Spindle> GetOrCreateSpindle(const size_t index);
 	size_t RemoveSpindle(const size_t index, const bool allFollowing);
 
 	bool SetSpindleActive(size_t index, uint32_t active);

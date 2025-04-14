@@ -58,7 +58,7 @@ namespace OM
 			printf("  Axes:");
 			for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 			{
-				Move::Axis* axis = Move::GetAxis(i);
+				auto axis = Move::GetAxis(i);
 				if (axis != nullptr)
 				{
 					printf("    [%u]: (%s), babystep(%.3f), user(%.2f), machine(%.2f), homed(%d)",
@@ -73,7 +73,7 @@ namespace OM
 			printf("  Extruders:");
 			for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 			{
-				Move::ExtruderAxis* extruder = Move::GetExtruderAxis(i);
+				auto extruder = Move::GetExtruderAxis(i);
 				if (extruder != nullptr)
 				{
 					printf("    [%u]: pos(%.2f), f(%.2f), spmm(%.1f), pa(%.2f), fil(%.2f, %s)",
@@ -89,7 +89,7 @@ namespace OM
 			printf("  Beds:");
 			for (size_t i = 0; i < MAX_SLOTS; ++i)
 			{
-				BedOrChamber* bed = GetBed(i);
+				auto bed = GetBed(i);
 				if (bed != nullptr)
 				{
 					printf("    [%u]: heater(%d), slot(%d)", bed->index, bed->heater, bed->slot);
@@ -98,7 +98,7 @@ namespace OM
 			printf("  Chambers:");
 			for (size_t i = 0; i < MAX_SLOTS; ++i)
 			{
-				BedOrChamber* chamber = GetChamber(i);
+				auto chamber = GetChamber(i);
 				if (chamber != nullptr)
 				{
 					printf("    [%u]: heater(%d), slot(%d)", chamber->index, chamber->heater, chamber->slot);
@@ -107,7 +107,7 @@ namespace OM
 			printf("  Fans:");
 			for (size_t i = 0; i < MAX_FANS; ++i)
 			{
-				Fan* fan = GetFan(i);
+				auto fan = GetFan(i);
 				if (fan != nullptr)
 				{
 					printf("    [%u]: actual(%.2f), requested(%.2f), rpm(%d)",
@@ -120,7 +120,7 @@ namespace OM
 			printf("  Files:");
 			for (size_t i = 0; i < FileSystem::GetItemCount(); ++i)
 			{
-				std::shared_ptr<FileSystem::FileSystemItem> item = FileSystem::GetItem(i);
+				auto item = FileSystem::GetItem(i);
 				if (item)
 				{
 					printf("    [%lu]: path(%s)", i, item->GetPath().c_str());
@@ -130,7 +130,7 @@ namespace OM
 			printf("  Heaters:");
 			for (size_t i = 0; i < MAX_HEATERS; ++i)
 			{
-				Heat::Heater* heater = Heat::GetHeater(i);
+				auto heater = Heat::GetHeater(i);
 				if (heater != nullptr)
 				{
 					printf("    [%u]: status(%d), active(%d), standby(%d), current(%.2f),",
@@ -155,7 +155,7 @@ namespace OM
 			printf("    Objects:");
 			for (size_t i = 0; i < MAX_TRACKED_OBJECTS; ++i)
 			{
-				JobObject* jobObject = GetJobObject(i);
+				auto jobObject = GetJobObject(i);
 				if (jobObject != nullptr)
 				{
 					printf("      [%lu]: cancelled(%d), name(%s)",
@@ -172,7 +172,7 @@ namespace OM
 			printf("  Sensors:");
 			for (size_t i = 0; i < MAX_SENSORS; ++i)
 			{
-				AnalogSensor* sensor = GetAnalogSensor(i);
+				auto sensor = GetAnalogSensor(i);
 				if (sensor != nullptr)
 				{
 					printf("    [%u]: %s, %.3f @ time(%lld)",
@@ -185,7 +185,7 @@ namespace OM
 			printf("  Endstops:");
 			for (size_t i = 0; i < MAX_ENDSTOPS; ++i)
 			{
-				Endstop* endstop = GetEndstop(i);
+				auto endstop = GetEndstop(i);
 				if (endstop != nullptr)
 				{
 					printf("    [%u]: triggered(%d)", endstop->index, endstop->triggered);
@@ -194,7 +194,7 @@ namespace OM
 			printf("  Spindles:");
 			for (size_t i = 0; i < MAX_SLOTS; ++i)
 			{
-				Spindle* spindle = GetSpindle(i);
+				auto spindle = GetSpindle(i);
 				if (spindle != nullptr)
 				{
 					printf("    [%u]: state(%d), active(%u), current(%u), min(%u), max(%u), canReverse(%d)",
@@ -210,7 +210,7 @@ namespace OM
 			printf("  Tools:");
 			for (size_t i = 0; i < MAX_SLOTS; ++i)
 			{
-				Tool* tool = GetTool(i);
+				auto tool = GetTool(i);
 				if (tool != nullptr)
 				{
 					printf("    [%u]: %s, status(%d), filamentExtruder(%d), spindle(%d)",
@@ -221,7 +221,7 @@ namespace OM
 						   tool->spindle == nullptr ? -1 : tool->spindle->index);
 					for (size_t j = 0; j < MAX_HEATERS_PER_TOOL; ++j)
 					{
-						ToolHeater* th = tool->GetHeater(j);
+						auto th = tool->GetHeater(j);
 						if (th != nullptr)
 						{
 							printf("      ToolHeater[%lu]: active(%d), standby(%d), heater(%d)",
@@ -235,7 +235,7 @@ namespace OM
 					bool first = true;
 					for (size_t j = 0; j < MAX_EXTRUDERS_PER_TOOL; ++j)
 					{
-						Move::ExtruderAxis* ea = tool->GetExtruder(j);
+						auto ea = tool->GetExtruder(j);
 						if (ea != nullptr)
 						{
 							extruders += utils::format("%s%u", first ? "" : ", ", ea->index);
@@ -249,7 +249,7 @@ namespace OM
 					first = true;
 					for (size_t j = 0; j < MAX_FANS; ++j)
 					{
-						Fan* fan = tool->GetFan(j);
+						auto fan = tool->GetFan(j);
 						if (fan != nullptr)
 						{
 							fans += utils::format("%s%u", first ? "" : ", ", fan->index);

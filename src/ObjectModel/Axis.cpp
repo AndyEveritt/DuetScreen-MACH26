@@ -16,8 +16,8 @@
 #include "Debug.h"
 #include "ListHelpers.h"
 
-typedef Vector<OM::Move::Axis*, MAX_TOTAL_AXES> AxisList;
-typedef Vector<OM::Move::ExtruderAxis*, MAX_TOTAL_AXES> ExtruderAxisList;
+typedef Vector<std::shared_ptr<OM::Move::Axis>, MAX_TOTAL_AXES> AxisList;
+typedef Vector<std::shared_ptr<OM::Move::ExtruderAxis>, MAX_TOTAL_AXES> ExtruderAxisList;
 static AxisList s_axes;
 static ExtruderAxisList s_extruderAxes;
 static uint8_t s_currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
@@ -55,9 +55,9 @@ namespace OM::Move
 		Comm::DUET.SendGcodef("G91\nG1 %s%.2f F%u\nG90\n", letter, distance, feedrate);
 	}
 
-	Axis* GetAxis(const size_t index)
+	std::shared_ptr<Axis> GetAxis(const size_t index)
 	{
-		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		dbg("Axis index %d / max %d", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
@@ -65,13 +65,13 @@ namespace OM::Move
 		return GetOrCreate<AxisList, Axis>(s_axes, index, true);
 	}
 
-	Axis* GetAxisBySlot(const size_t slot, const bool includeHidden)
+	std::shared_ptr<Axis> GetAxisBySlot(const size_t slot, const bool includeHidden)
 	{
 		dbg("Slot %u%s", slot, includeHidden ? " (including hidden)" : "");
 		size_t count = 0;
 		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
-			Axis* axis = GetAxis(i);
+			auto axis = GetAxis(i);
 			if (axis == nullptr)
 			{
 				continue;
@@ -89,11 +89,11 @@ namespace OM::Move
 		return nullptr;
 	}
 
-	Axis* GetAxisByLetter(const char letter)
+	std::shared_ptr<Axis> GetAxisByLetter(const char letter)
 	{
 		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
-			Axis* axis = GetAxis(i);
+			auto axis = GetAxis(i);
 			if (axis != nullptr && axis->letter[0] == letter)
 			{
 				return axis;
@@ -102,7 +102,7 @@ namespace OM::Move
 		return nullptr;
 	}
 
-	Axis* GetOrCreateAxis(const size_t index)
+	std::shared_ptr<Axis> GetOrCreateAxis(const size_t index)
 	{
 		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
@@ -117,7 +117,7 @@ namespace OM::Move
 		size_t count = 0;
 		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
-			Axis* axis = GetAxis(i);
+			auto axis = GetAxis(i);
 			if (axis == nullptr)
 			{
 				continue;
@@ -131,7 +131,7 @@ namespace OM::Move
 		return count;
 	}
 
-	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt)
+	bool IterateAxesWhile(function_ref<bool(std::shared_ptr<Axis>, size_t)> func, const size_t startAt)
 	{
 		return s_axes.IterateWhile(func, startAt);
 	}
@@ -149,7 +149,7 @@ namespace OM::Move
 	  error("axis[%d] greater than MAX_TOTAL_AXES", index);                                                            \
 	  return false;                                                                                                    \
 	}                                                                                                                  \
-	Axis* axis = GetOrCreateAxis(index);                                                                               \
+	std::shared_ptr<Axis> axis = GetOrCreateAxis(index);                                                               \
 	if (axis == nullptr)                                                                                               \
 	{                                                                                                                  \
 	  error("Could not get or create axis %d", index);                                                                 \
@@ -175,7 +175,7 @@ namespace OM::Move
 	{
 		if (axisIndex >= MAX_TOTAL_AXES || workplaceIndex >= OM::Move::Workplaces::MaxTotalWorkplaces)
 			return false;
-		Axis* axis = GetOrCreateAxis(axisIndex);
+		auto axis = GetOrCreateAxis(axisIndex);
 		if (axis == nullptr)
 			return false;
 		axis->workplaceOffsets[workplaceIndex] = offset;
@@ -215,7 +215,7 @@ namespace OM::Move
 		stepsPerMm = 0.0f;
 	}
 
-	ExtruderAxis* GetExtruderAxis(const size_t index)
+	std::shared_ptr<ExtruderAxis> GetExtruderAxis(const size_t index)
 	{
 		dbg("ExtruderAxis index %d / max %d\n", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
@@ -225,7 +225,7 @@ namespace OM::Move
 		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(s_extruderAxes, index, false);
 	}
 
-	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot)
+	std::shared_ptr<ExtruderAxis> GetExtruderAxisBySlot(const size_t slot)
 	{
 		if (slot >= MAX_TOTAL_AXES)
 		{
@@ -234,7 +234,7 @@ namespace OM::Move
 		return s_extruderAxes[slot];
 	}
 
-	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index)
+	std::shared_ptr<ExtruderAxis> GetOrCreateExtruderAxis(const size_t index)
 	{
 		dbg("ExtruderAxis index %d / max %d\n", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
@@ -250,7 +250,7 @@ namespace OM::Move
 		return s_extruderAxes.Size();
 	}
 
-	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis*&, size_t)> func, const size_t startAt)
+	bool IterateExtruderAxesWhile(function_ref<bool(std::shared_ptr<ExtruderAxis>, size_t)> func, const size_t startAt)
 	{
 		return s_extruderAxes.IterateWhile(func, startAt);
 	}
@@ -263,7 +263,7 @@ namespace OM::Move
 #define EXTRUDER_AXIS_SETTER(funcName, valType, varName)                                                               \
   bool funcName(size_t index, valType val)                                                                             \
   {                                                                                                                    \
-	ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);                                                           \
+	std::shared_ptr<ExtruderAxis> extruder = GetOrCreateExtruderAxis(index);                                           \
 	if (extruder == nullptr)                                                                                           \
 	{                                                                                                                  \
 	  error("Could not get or create extruderAxis %d", index);                                                         \
@@ -281,7 +281,7 @@ namespace OM::Move
 
 	bool SetExtruderFilamentName(size_t index, const char* name)
 	{
-		ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);
+		auto extruder = GetOrCreateExtruderAxis(index);
 		if (extruder == nullptr)
 		{
 			error("Could not get or create extruderAxis %d", index);
@@ -303,7 +303,7 @@ namespace OM::Move
 
 	const float GetVolumetricFlow()
 	{
-		OM::Tool* tool = OM::GetCurrentTool();
+		auto tool = OM::GetCurrentTool();
 		if (tool == nullptr)
 		{
 			return 0.0f;
@@ -311,7 +311,7 @@ namespace OM::Move
 		float filamentArea = 0;
 		float numExtruders = 0;
 		tool->IterateExtruders(
-			[&](OM::Move::ExtruderAxis* extruder, size_t index)
+			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
 				if (extruder == nullptr)
 					return;

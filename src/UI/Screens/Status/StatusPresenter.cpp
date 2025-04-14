@@ -116,7 +116,7 @@ namespace UI
 
 	void StatusPresenter::newAxesData()
 	{
-		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('Z');
+		auto axis = OM::Move::GetAxisByLetter('Z');
 		if (axis == nullptr)
 		{
 			m_view->updateLayer(0, 0);
@@ -130,7 +130,7 @@ namespace UI
 	void StatusPresenter::newExtruderData()
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetCurrentTool();
+		auto tool = OM::GetCurrentTool();
 		if (tool == nullptr)
 		{
 			m_view->updateFlowMultiplier(100);
@@ -140,7 +140,7 @@ namespace UI
 		size_t extruderCount = 0;
 		uint32_t flowMultiplier = 0;
 		tool->IterateExtruders(
-			[&](OM::Move::ExtruderAxis* extruder, size_t index)
+			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
 				flowMultiplier += 100 * extruder->factor;
 				extruderCount++;
@@ -164,7 +164,7 @@ namespace UI
 	void StatusPresenter::newHeaterData()
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetCurrentTool();
+		auto tool = OM::GetCurrentTool();
 
 		if (tool == nullptr || tool->GetHeaterCount() == 0)
 		{
@@ -175,7 +175,7 @@ namespace UI
 			m_view->updateToolTemp(tool->GetHeater(0)->heater->current, tool->GetHeater(0)->activeTemp);
 		}
 
-		OM::Bed* bed = OM::GetBedBySlot(0);
+		auto bed = OM::GetBedBySlot(0);
 		if (bed == nullptr)
 		{
 			m_view->updateBedTemp(0, 0);
@@ -189,13 +189,13 @@ namespace UI
 	void StatusPresenter::newFanData()
 	{
 		MODEL_LOCK();
-		OM::Tool* tool = OM::GetCurrentTool();
+		auto tool = OM::GetCurrentTool();
 
 		uint32_t fanSpeed = 0;
 		if (tool != nullptr)
 		{
 			// TODO show all fan speeds
-			tool->IterateFans([&](OM::Fan* fan, size_t index) { fanSpeed = fan->requestedValue; });
+			tool->IterateFans([&](std::shared_ptr<OM::Fan> fan, size_t index) { fanSpeed = fan->requestedValue; });
 		}
 		m_view->updateFanSpeed(fanSpeed);
 	}

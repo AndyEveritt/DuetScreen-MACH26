@@ -25,7 +25,7 @@ namespace OM
 		void Reset();
 		void Parse(const std::string& meta);
 
-		Move::Axis* GetAxis(size_t index) const;
+		std::shared_ptr<Move::Axis> GetAxis(size_t index) const;
 		double GetMin(size_t index) const { return m_min[index]; }
 		double GetMax(size_t index) const { return m_max[index]; }
 		double GetSpacing(size_t index) const { return m_spacing[index]; }

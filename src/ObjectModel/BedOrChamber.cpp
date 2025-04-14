@@ -15,8 +15,8 @@
 
 #include "Debug.h"
 
-typedef Vector<OM::Bed*, MAX_SLOTS> BedList;
-typedef Vector<OM::Chamber*, MAX_SLOTS> ChamberList;
+typedef Vector<std::shared_ptr<OM::Bed>, MAX_SLOTS> BedList;
+typedef Vector<std::shared_ptr<OM::Chamber>, MAX_SLOTS> ChamberList;
 
 static BedList s_beds;
 static ChamberList s_chambers;
@@ -35,7 +35,7 @@ namespace OM
 
 	int32_t BedOrChamber::GetCurrentTemp()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return 0;
 
@@ -44,7 +44,7 @@ namespace OM
 
 	int32_t BedOrChamber::GetCurrentTarget()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return 0;
 
@@ -62,7 +62,7 @@ namespace OM
 
 	int32_t BedOrChamber::GetActiveTemp()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return 0;
 
@@ -71,7 +71,7 @@ namespace OM
 
 	int32_t BedOrChamber::GetStandbyTemp()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return 0;
 
@@ -80,7 +80,7 @@ namespace OM
 
 	float BedOrChamber::GetMin()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return 0;
 
@@ -89,7 +89,7 @@ namespace OM
 
 	float BedOrChamber::GetMax()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return 0;
 
@@ -98,7 +98,7 @@ namespace OM
 
 	bool BedOrChamber::SetBedTemp(const int32_t temp, const bool active)
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return false;
 
@@ -111,7 +111,7 @@ namespace OM
 
 	bool BedOrChamber::SetChamberTemp(const int32_t temp, const bool active)
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return false;
 
@@ -124,7 +124,7 @@ namespace OM
 
 	bool BedOrChamber::ToggleBedState()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return false;
 
@@ -151,7 +151,7 @@ namespace OM
 
 	bool BedOrChamber::ToggleChamberState()
 	{
-		Heat::Heater* pheater = Heat::GetHeater(heater);
+		auto pheater = Heat::GetHeater(heater);
 		if (pheater == nullptr)
 			return false;
 
@@ -174,7 +174,7 @@ namespace OM
 		return true;
 	}
 
-	Bed* GetBedBySlot(const size_t index)
+	std::shared_ptr<Bed> GetBedBySlot(const size_t index)
 	{
 		if (index >= s_beds.Size())
 			return nullptr;
@@ -182,19 +182,19 @@ namespace OM
 		return s_beds[index];
 	}
 
-	Bed* GetBed(const size_t index)
+	std::shared_ptr<Bed> GetBed(const size_t index)
 	{
 		return GetOrCreate<BedList, Bed>(s_beds, index, false);
 	}
 
-	Bed* GetOrCreateBed(const size_t index)
+	std::shared_ptr<Bed> GetOrCreateBed(const size_t index)
 	{
 		return GetOrCreate<BedList, Bed>(s_beds, index, true);
 	}
 
-	Bed* GetFirstBed()
+	std::shared_ptr<Bed> GetFirstBed()
 	{
-		return Find<BedList, Bed>(s_beds, [](Bed* bed) { return bed->heater > -1; });
+		return Find<BedList, Bed>(s_beds, [](std::shared_ptr<Bed> bed) { return bed->heater > -1; });
 	}
 
 	size_t GetBedCount()
@@ -202,7 +202,7 @@ namespace OM
 		return s_beds.Size();
 	}
 
-	bool IterateBedsWhile(function_ref<bool(Bed*&, size_t)> func, const size_t startAt)
+	bool IterateBedsWhile(function_ref<bool(std::shared_ptr<Bed>, size_t)> func, const size_t startAt)
 	{
 		return s_beds.IterateWhile(func, startAt);
 	}
@@ -213,7 +213,7 @@ namespace OM
 		return Remove<BedList, Bed>(s_beds, index, allFollowing);
 	}
 
-	Chamber* GetChamberBySlot(const size_t index)
+	std::shared_ptr<Chamber> GetChamberBySlot(const size_t index)
 	{
 		if (index >= s_chambers.Size())
 			return nullptr;
@@ -221,19 +221,20 @@ namespace OM
 		return s_chambers[index];
 	}
 
-	Chamber* GetChamber(const size_t index)
+	std::shared_ptr<Chamber> GetChamber(const size_t index)
 	{
 		return GetOrCreate<ChamberList, Chamber>(s_chambers, index, false);
 	}
 
-	Chamber* GetOrCreateChamber(const size_t index)
+	std::shared_ptr<Chamber> GetOrCreateChamber(const size_t index)
 	{
 		return GetOrCreate<ChamberList, Chamber>(s_chambers, index, true);
 	}
 
-	Chamber* GetFirstChamber()
+	std::shared_ptr<Chamber> GetFirstChamber()
 	{
-		return Find<ChamberList, Chamber>(s_chambers, [](Chamber* chamber) { return chamber->heater > -1; });
+		return Find<ChamberList, Chamber>(s_chambers,
+										  [](std::shared_ptr<Chamber> chamber) { return chamber->heater > -1; });
 	}
 
 	size_t GetChamberCount()
@@ -241,7 +242,7 @@ namespace OM
 		return s_chambers.Size();
 	}
 
-	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func, const size_t startAt)
+	bool IterateChambersWhile(function_ref<bool(std::shared_ptr<Chamber>, size_t)> func, const size_t startAt)
 	{
 		return s_chambers.IterateWhile(func, startAt);
 	}
