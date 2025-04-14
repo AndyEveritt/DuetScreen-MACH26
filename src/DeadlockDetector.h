@@ -15,6 +15,7 @@ class DeadlockDetector
 	void afterLockAcquire(const void* lockPtr);
 	void beforeLockRelease(const void* lockPtr);
 	void afterLockRelease(const void* lockPtr);
+	void allowThreadToTakeMultipleLocks(std::thread::id threadId, bool allowed = true);
 
   private:
 	DeadlockDetector() = default;
@@ -28,10 +29,11 @@ class DeadlockDetector
 								 std::thread::id thread2,
 								 const void* lock2);
 
-	std::mutex mDetectorMutex;
-	std::map<const void*, std::string> mRegisteredLocks;
-	std::map<std::thread::id, std::set<const void*>> mThreadLocks;
-	std::map<std::thread::id, const void*> mThreadWaiting;
+	std::mutex m_detectorMutex;
+	std::map<const void*, std::string> m_registeredLocks;
+	std::map<std::thread::id, std::set<const void*>> m_threadLocks;
+	std::map<std::thread::id, const void*> m_threadWaiting;
+	std::set<std::thread::id> m_threadsAllowedToTakeMultipleLocks;
 };
 
 // Wrapper for std::mutex to detect deadlocks
@@ -45,14 +47,14 @@ class DeadlockDetectingMutex
 	std::mutex& native_handle();
 
 	// Updated method to check if mutex supports recursion
-	bool is_recursive() const { return mRecursive; }
+	bool is_recursive() const { return m_recursive; }
 
   private:
-	std::mutex mMutex;
-	std::string mName;
-	bool mRecursive;
+	std::mutex m_mutex;
+	std::string m_name;
+	bool m_recursive;
 
 	// Map to track thread-specific lock counts for recursive locking
-	std::map<std::thread::id, int> mOwnershipCount;
-	std::mutex mOwnershipMutex;
+	std::map<std::thread::id, int> m_ownershipCount;
+	std::mutex m_ownershipMutex;
 };

@@ -27,6 +27,7 @@ namespace UI
 		, m_machinePosition(lv_label_create(getCont()))
 	{
 		// Layout
+		UI_LOCK();
 		constexpr lv_coord_t pad = 2;
 		lv_obj_set_style_pad_all(getCont(), pad, 0);
 		lv_obj_set_style_pad_column(getCont(), pad, 0);
@@ -239,7 +240,6 @@ namespace UI
 
 	void MoveView::setAxisCount(const size_t count)
 	{
-		UI_LOCK();
 		if (count == getAxisCount())
 		{
 			return;

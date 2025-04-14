@@ -75,7 +75,6 @@ namespace Comm
 
 	void FileInfoCache::Spin()
 	{
-		// MODEL_LOCK();
 		int64_t now = TimeHelper::getCurrentTime();
 
 		// Timeout any request that hasn't received a response within the timeout period

@@ -22,9 +22,9 @@ namespace UI
 		, m_activeTemp(lv_label_create(getCont()))
 		, m_standbyTemp(lv_label_create(getCont()))
 	{
-		UI_LOCK();
 		activate();
 
+		UI_LOCK();
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 
 		lv_obj_set_flex_grow(m_label, 4);
@@ -266,7 +266,6 @@ namespace UI
 
 	void ToolList::setItemCnt(size_t cnt)
 	{
-		UI_LOCK();
 		size_t currentCnt = getItemCnt();
 		if (cnt <= currentCnt)
 		{

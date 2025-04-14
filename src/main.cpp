@@ -76,6 +76,10 @@ int main(int argc, char** argv)
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
 
+	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
+	// deadlocks can occur
+	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(std::this_thread::get_id(), true);
+
 	// Initialise
 	StorageHelper::load();
 	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
@@ -178,9 +182,11 @@ int main(int argc, char** argv)
 
 	while (1)
 	{
-		UI_LOCK();
-		lv_timer_handler();
-		usleep(5 * 1000); // Sleep for 1 second
+		{
+			UI_LOCK();
+			lv_timer_handler();
+		}
+		usleep(5 * 1000); // Sleep for 5 milliseconds
 	}
 
 	return 0;
