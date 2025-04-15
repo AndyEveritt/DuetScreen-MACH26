@@ -181,5 +181,18 @@
 			"command": "scp config.json root@${config:duetscreen_ip}:/etc/duetscreen.json",
 			"problemMatcher": [],
 		},
+		{
+			"label": "Create update.tar.gz",
+			"type": "shell",
+			"command": "./scripts/create_upgrade.sh",
+			"problemMatcher": [],
+			"detail": "Create a tar.gz file for the update",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"dependsOn": [
+				"Build DuetScreen for Remote"
+			]
+		}
 	]
 }
