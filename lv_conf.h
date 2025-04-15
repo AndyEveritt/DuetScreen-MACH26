@@ -171,6 +171,7 @@
     #define LV_DRAW_SW_SUPPORT_RGB888       1
     #define LV_DRAW_SW_SUPPORT_XRGB8888     1
     #define LV_DRAW_SW_SUPPORT_ARGB8888     1
+    #define LV_DRAW_SW_SUPPORT_ARGB8888_PREMULTIPLIED 1
     #define LV_DRAW_SW_SUPPORT_L8           1
     #define LV_DRAW_SW_SUPPORT_AL88         1
     #define LV_DRAW_SW_SUPPORT_A8           1
@@ -465,6 +466,9 @@
 /** Add `id` field to `lv_obj_t` */
 #define LV_USE_OBJ_ID           0
 
+/**  Enable support widget names*/
+#define LV_USE_OBJ_NAME         0
+
 /** Automatically assign an ID when obj is created */
 #define LV_OBJ_ID_AUTO_ASSIGN   LV_USE_OBJ_ID
 
@@ -558,7 +562,9 @@
 #define LV_USE_MATRIX           0
 
 /** Include `lvgl_private.h` in `lvgl.h` to access internal data and functions by default */
-#define LV_USE_PRIVATE_API      0
+#ifndef LV_USE_PRIVATE_API
+    #define LV_USE_PRIVATE_API  0
+#endif
 
 /*==================
  *   FONT USAGE
@@ -672,7 +678,7 @@
 /*==================
  * WIDGETS
  *================*/
-/* Documentation for widgets can be found here: https://docs.lvgl.io/latest/en/html/widgets/index.html . */
+/* Documentation for widgets can be found here: https://docs.lvgl.io/master/details/widgets/index.html . */
 
 /** 1: Causes these widgets to be given default values at creation time.
  *  - lv_buttonmatrix_t:  Get default maps:  {"Btn1", "Btn2", "Btn3", "\n", "Btn4", "Btn5", ""}, else map not set.
@@ -775,7 +781,7 @@
 /*==================
  * THEMES
  *==================*/
-/* Documentation for themes can be found here: https://docs.lvgl.io/master/overview/style.html#themes . */
+/* Documentation for themes can be found here: https://docs.lvgl.io/master/details/common-widget-features/styles/style.html#themes . */
 
 /** A simple, impressive and very complete theme */
 #define LV_USE_THEME_DEFAULT 1
@@ -799,7 +805,7 @@
 /*==================
  * LAYOUTS
  *==================*/
-/* Documentation for layouts can be found here: https://docs.lvgl.io/master/layouts/index.html . */
+/* Documentation for layouts can be found here: https://docs.lvgl.io/master/details/common-widget-features/layouts/index.html . */
 
 /** A layout similar to Flexbox in CSS. */
 #define LV_USE_FLEX 1
@@ -810,13 +816,13 @@
 /*====================
  * 3RD PARTS LIBRARIES
  *====================*/
-/* Documentation for libraries can be found here: https://docs.lvgl.io/master/libs/index.html . */
+/* Documentation for libraries can be found here: https://docs.lvgl.io/master/details/libs/index.html . */
 
 /* File system interfaces for common APIs */
 
 /** Setting a default driver letter allows skipping the driver prefix in filepaths.
  *  Documentation about how to use the below driver-identifier letters can be found at
- *  https://docs.lvgl.io/master/details/main-components/fs.html#lv-fs-identifier-letters . */
+ *  https://docs.lvgl.io/master/details/main-modules/fs.html#lv-fs-identifier-letters . */
 #define LV_FS_DEFAULT_DRIVER_LETTER 'A'
 
 /** API for fopen, fread, etc. */
@@ -980,7 +986,7 @@
 /*==================
  * OTHERS
  *==================*/
-/* Documentation for several of the below items can be found here: https://docs.lvgl.io/master/others/index.html . */
+/* Documentation for several of the below items can be found here: https://docs.lvgl.io/master/details/auxiliary-modules/index.html . */
 
 /** 1: Enable API to take snapshot for object */
 #define LV_USE_SNAPSHOT 0
@@ -1125,9 +1131,20 @@
 
 #endif
 
+/** Enable emulated input devices, time emulation, and screenshot compares. */
+#define LV_USE_TEST 0
+#if LV_USE_TEST
+
+/** Enable `lv_test_screenshot_compare`.
+ * Requires libpng and a few MB of extra RAM. */
+#define LV_USE_TEST_SCREENSHOT_COMPARE 0
+#endif /*LV_USE_TEST*/
+
 /** Enable loading XML UIs runtime */
 #define LV_USE_XML    0
 
+/*1: Enable color filter style*/
+#define LV_USE_COLOR_FILTER     0
 /*==================
  * DEVICES
  *==================*/
@@ -1173,6 +1190,7 @@
     #define LV_LINUX_FBDEV_RENDER_MODE   LV_DISPLAY_RENDER_MODE_DIRECT
     #define LV_LINUX_FBDEV_BUFFER_COUNT  0
     #define LV_LINUX_FBDEV_BUFFER_SIZE   60
+    #define LV_LINUX_FBDEV_MMAP          1
 #endif
 
 /** Use Nuttx to open window and handle touchscreen */
@@ -1243,7 +1261,11 @@
 #define LV_USE_ST7796        0
 #define LV_USE_ILI9341       0
 
-#define LV_USE_GENERIC_MIPI (LV_USE_ST7735 | LV_USE_ST7789 | LV_USE_ST7796 | LV_USE_ILI9341)
+#if (LV_USE_ST7735 | LV_USE_ST7789 | LV_USE_ST7796 | LV_USE_ILI9341)
+    #define LV_USE_GENERIC_MIPI 1
+#else
+    #define LV_USE_GENERIC_MIPI 0
+#endif
 
 /** Driver for Renesas GLCD */
 #define LV_USE_RENESAS_GLCDC    0
@@ -1314,6 +1336,13 @@
     #define LV_DEMO_MUSIC_AUTO_PLAY 0
 #endif
 
+/** Vector graphic demo */
+#define LV_USE_DEMO_VECTOR_GRAPHIC  0
+
+/*---------------------------
+ * Demos from lvgl/lv_demos
+  ---------------------------*/
+
 /** Flex layout demo */
 #define LV_USE_DEMO_FLEX_LAYOUT     0
 
@@ -1325,9 +1354,6 @@
 
 /** Demonstrate scroll settings */
 #define LV_USE_DEMO_SCROLL          0
-
-/** Vector graphic demo */
-#define LV_USE_DEMO_VECTOR_GRAPHIC  0
 
 /*E-bike demo with Lottie animations (if LV_USE_LOTTIE is enabled)*/
 #define LV_USE_DEMO_EBIKE           0

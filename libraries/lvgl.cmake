@@ -1,28 +1,16 @@
-# Define options for LVGL with default values (OFF)
-option(LV_USE_DRAW_SDL "Use SDL draw unit" OFF)
-option(LV_USE_LIBPNG "Use libpng to decode PNG" OFF)
-option(LV_USE_LIBJPEG_TURBO "Use libjpeg turbo to decode JPEG" OFF)
-option(LV_USE_FFMPEG "Use libffmpeg to display video using lv_ffmpeg" ON)
-option(LV_USE_FREETYPE "Use freetype library" OFF)
-
 option(LV_CONF_BUILD_DISABLE_DEMOS "Disable building of demos" ON)
 option(LV_CONF_BUILD_DISABLE_EXAMPLES "Disable building of examples" ON)
 
-# Add compile definitions based on the selected options
-add_compile_definitions($<$<BOOL:${LV_USE_DRAW_SDL}>:LV_USE_DRAW_SDL=1>)
-add_compile_definitions($<$<BOOL:${LV_USE_LIBPNG}>:LV_USE_LIBPNG=1>)
-add_compile_definitions(
-  $<$<BOOL:${LV_USE_LIBJPEG_TURBO}>:LV_USE_LIBJPEG_TURBO=1>)
-add_compile_definitions($<$<BOOL:${LV_USE_FFMPEG}>:LV_USE_FFMPEG=1>)
 add_compile_definitions(LV_USE_OS=LV_OS_NONE)
-add_compile_definitions($<$<BOOL:${USE_FREERTOS}>:LV_USE_OS=LV_OS_FREERTOS>)
 
 set(LV_LVGL_H_INCLUDE_SIMPLE
     OFF
     CACHE BOOL INTERNAL FORCE)
 set(LV_CONF_INCLUDE_SIMPLE
     ON
-    CACHE STRING INTERNAL FORCE)
+    CACHE BOOL INTERNAL FORCE)
+set(LV_CONF_PATH ${PROJECT_SOURCE_DIR}/lv_conf.h
+    CACHE STRING "Path to lv_conf.h")
 
 # Add LVGL subdirectory
 # set(BUILD_SHARED_LIBS OFF)
