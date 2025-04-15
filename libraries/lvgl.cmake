@@ -18,6 +18,7 @@ add_subdirectory(${LIBRARIES_DIR}/lvgl)
 target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
                                        ${SDL2_INCLUDE_DIRS} ${LIBRARIES_DIR})
 
+include(${CMAKE_BINARY_DIR}/libraries/lvgl/lv_conf.cmake)
 
 # Drivers add_subdirectory(${LIBRARIES_DIR}/lv_drivers)
 # target_compile_definitions( lv_drivers PUBLIC
