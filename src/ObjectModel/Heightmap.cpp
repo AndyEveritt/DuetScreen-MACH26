@@ -48,6 +48,8 @@ namespace OM
 		m_spacing[1] = 0.0f;
 		m_samples[0] = 0;
 		m_samples[1] = 0;
+		m_recipSpacing[0] = 0.0f;
+		m_recipSpacing[1] = 0.0f;
 	}
 
 	void HeightmapMeta::Parse(const std::string& meta)
@@ -74,6 +76,9 @@ namespace OM
 
 		doc.GetCell("num0", 0, m_samples[0]);
 		doc.GetCell("num1", 0, m_samples[1]);
+
+		m_recipSpacing[0] = 1.0 / m_spacing[0];
+		m_recipSpacing[1] = 1.0 / m_spacing[1];
 
 		dbg("Axes: %s, %s", m_axis[0].c_str(), m_axis[1].c_str());
 		dbg("Min: %f, %f", m_min[0], m_min[1]);
@@ -312,6 +317,76 @@ namespace OM
 			m_stdDev);
 
 		return !parseError;
+	}
+
+	Heightmap::Point Heightmap::GetInterpolatedPoint(double axis0, double axis1) const
+	{
+		// Last grid point
+		const double xLast = meta.GetMin(0) + (meta.GetSamples(0) - 1) * meta.GetSpacing(0);
+		const double yLast = meta.GetMin(1) + (meta.GetSamples(1) - 1) * meta.GetSpacing(1);
+
+		// Clamp to rectangle so InterpolateXY will always have valid parameters
+		const double fEPSILON = 0.01;
+		if (axis0 < meta.GetMin(0))
+		{
+			axis0 = meta.GetMin(0);
+		}
+		if (axis1 < meta.GetMin(1))
+		{
+			axis1 = meta.GetMin(1);
+		}
+		if (axis0 > xLast - fEPSILON)
+		{
+			axis0 = xLast - fEPSILON;
+		}
+		if (axis1 > yLast - fEPSILON)
+		{
+			axis1 = yLast - fEPSILON;
+		}
+
+		const double xf = (axis0 - meta.GetMin(0)) * meta.GetRecipSpacing(0);
+		const double xFloor = floor(xf);
+		const int32_t xIndex = (int32_t)xFloor;
+		const double yf = (axis1 - meta.GetMin(1)) * meta.GetRecipSpacing(1);
+		const double yFloor = floor(yf);
+		const int32_t yIndex = (int32_t)yFloor;
+
+		Point point(axis0, axis1, 0.0f, false);
+		point.isNull = !InterpolateAxis0Axis1(xIndex, yIndex, xf - xFloor, yf - yFloor, point.z);
+		return point;
+	}
+
+	bool Heightmap::InterpolateAxis0Axis1(
+		size_t axis0Index, size_t axis1Index, double axis0Frac, double axis1Frac, double& result) const
+	{
+		const uint32_t indexX0Y0 = GetMapIndex(axis0Index, axis1Index); // (X0,Y0)
+		const uint32_t indexX1Y0 = indexX0Y0 + 1;						// (X1,Y0)
+		const uint32_t indexX0Y1 = indexX0Y0 + meta.GetSamples(0);		// (X0 Y1)
+		const uint32_t indexX1Y1 = indexX0Y1 + 1;						// (X1,Y1)
+
+		const float xyFrac = axis0Frac * axis1Frac;
+
+		if (indexX1Y1 >= m_heightmap.size())
+		{
+			error("Invalid heightmap index %u, %u. Max index = %u", axis0Index, axis1Index, m_heightmap.size() - 1);
+			return 0.0;
+		}
+
+		Point points[4] = {
+			m_heightmap[indexX0Y0], m_heightmap[indexX1Y0], m_heightmap[indexX0Y1], m_heightmap[indexX1Y1]};
+
+		for (Point& point : points)
+		{
+			if (point.isNull)
+			{
+				result = 0.0f;
+				return false;
+			}
+		}
+
+		result = (points[0].z * (1.0 - axis0Frac - axis1Frac + xyFrac)) + (points[1].z * (axis0Frac - xyFrac)) +
+				 (points[2].z * (axis1Frac - xyFrac)) + (points[3].z * xyFrac);
+		return true;
 	}
 
 	const std::string& GetHeightmapNameAt(int index)

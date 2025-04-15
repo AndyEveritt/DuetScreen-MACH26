@@ -41,7 +41,6 @@ namespace UI
 
 		// m_heightmap.setXRange({-200, 200});
 		m_heightmap.setTitle("Heightmap");
-		m_heightmap.setGridSize(3, 3);
 	}
 
 	void HeightmapView::onShow()
@@ -51,14 +50,26 @@ namespace UI
 		map.LoadFromDuet("heightmap.csv");
 		m_heightmap.setXRange({static_cast<int32_t>(map.meta.GetMin(0)), static_cast<int32_t>(map.meta.GetMax(0))});
 		m_heightmap.setYRange({static_cast<int32_t>(map.meta.GetMin(1)), static_cast<int32_t>(map.meta.GetMax(1))});
-		m_heightmap.setGridSize(map.GetWidth(), map.GetHeight());
 
-		for (auto& point : map.GetPoints())
+		uint32_t width, height;
+		m_heightmap.getResolution(width, height);
+
+		for (uint32_t px = 0; px < width; px++)
 		{
-			float value = point.isNull ? std::numeric_limits<float>::quiet_NaN() : point.z;
-			m_heightmap.addDataPoint(point.x, point.y, value);
+			for (uint32_t py = 0; py < height; py++)
+			{
+				float x, y;
+				if (m_heightmap.pxToPos(px, py, x, y))
+				{
+					OM::Heightmap::Point point = map.GetInterpolatedPoint(x, y);
+					if (point.isNull)
+					{
+						continue;
+					}
+					m_heightmap.setPx(px, height - py - 1, point.z);
+				}
+			}
 		}
-
-		m_heightmap.render();
+		m_heightmap.renderColorBar();
 	}
 } // namespace UI

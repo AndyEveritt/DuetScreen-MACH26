@@ -29,6 +29,7 @@ namespace OM
 		double GetMin(size_t index) const { return m_min[index]; }
 		double GetMax(size_t index) const { return m_max[index]; }
 		double GetSpacing(size_t index) const { return m_spacing[index]; }
+		double GetRecipSpacing(size_t index) const { return m_recipSpacing[index]; }
 		size_t GetSamples(size_t index) const { return m_samples[index]; }
 		double GetRadius() const { return m_radius; }
 
@@ -39,6 +40,7 @@ namespace OM
 		double m_radius;
 		double m_spacing[2];
 		size_t m_samples[2];
+		double m_recipSpacing[2];
 	};
 
 	class Heightmap
@@ -71,11 +73,20 @@ namespace OM
 		double GetMeanError() const { return m_meanError; }
 		double GetStdDev() const { return m_stdDev; }
 
+		Point GetInterpolatedPoint(double axis0, double axis1) const;
+
 		HeightmapMeta meta;
 
 	  private:
 		bool ParseMeta(const std::string& csvContents);
 		bool ParseData(const std::string& csvContents);
+
+		bool InterpolateAxis0Axis1(
+			size_t axis0Index, size_t axis1Index, double axis0Frac, double axis1Frac, double& result) const;
+		size_t GetMapIndex(size_t axis0Index, size_t axis1Index) const
+		{
+			return (axis1Index * meta.GetSamples(0)) + axis0Index;
+		}
 
 		std::string m_fileName;
 		double m_minError = 0.0f;

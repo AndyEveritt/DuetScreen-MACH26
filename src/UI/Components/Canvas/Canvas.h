@@ -40,6 +40,9 @@ namespace UI
 		void setXRange(range_float_t range);
 		void setYRange(range_float_t range);
 
+		bool pxToPos(size_t px, size_t py, float& x, float& y) const;
+		bool posToPx(float x, float y, size_t& px, size_t& py) const;
+
 		void setTitle(const char* title);
 
 		void showTitle(const bool show);
@@ -49,6 +52,7 @@ namespace UI
 		bool getResolution(uint32_t& width, uint32_t& height) const;
 		void setResolution(uint32_t width, uint32_t height);
 
+		void drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa);
 		void drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa);
 		void drawRectPx(lv_area_t area, lv_color_t color, lv_opa_t opa);
 

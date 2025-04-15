@@ -204,6 +204,44 @@ namespace UI
 		lv_scale_set_text_src(m_vScale, m_yLabelPtr);
 	}
 
+	bool Canvas::pxToPos(size_t px, size_t py, float& x, float& y) const
+	{
+		uint32_t res_x, res_y;
+		getResolution(res_x, res_y);
+
+		if (px >= res_x || py >= res_y)
+		{
+			return false;
+		}
+
+		range_t xRange = getXRange();
+		range_t yRange = getYRange();
+
+		x = xRange.min + (float)px * (xRange.max - xRange.min) / (float)res_x;
+		y = yRange.min + (float)py * (yRange.max - yRange.min) / (float)res_y;
+
+		return true;
+	}
+
+	bool Canvas::posToPx(float x, float y, size_t& px, size_t& py) const
+	{
+		range_t xRange = getXRange();
+		range_t yRange = getYRange();
+
+		if (x < xRange.min || x > xRange.max || y < yRange.min || y > yRange.max)
+		{
+			return false;
+		}
+
+		uint32_t res_x, res_y;
+		getResolution(res_x, res_y);
+
+		px = (size_t)((x - xRange.min) * (float)res_x / (xRange.max - xRange.min));
+		py = (size_t)((y - yRange.min) * (float)res_y / (yRange.max - yRange.min));
+
+		return true;
+	}
+
 	bool Canvas::getResolution(uint32_t& width, uint32_t& height) const
 	{
 		UI_LOCK();
@@ -230,6 +268,12 @@ namespace UI
 		height = std::max(height, 1u);
 		m_buf = lv_draw_buf_create(width, height, LV_COLOR_FORMAT_RGB565, 0);
 		lv_canvas_set_draw_buf(m_canvas, m_buf);
+	}
+
+	void Canvas::drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa)
+	{
+		// Draw the pixel
+		lv_canvas_set_px(getCanvas(), px, py, color, LV_OPA_COVER);
 	}
 
 	void Canvas::drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa)

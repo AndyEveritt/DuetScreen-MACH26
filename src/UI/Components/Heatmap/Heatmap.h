@@ -39,8 +39,8 @@ namespace UI
 
 		range_t getXRange() const;
 		range_t getYRange() const;
-		void setXRange(range_t range);
-		void setYRange(range_t range);
+		void setXRange(range_t range) { m_canvas.setXRange(range); }
+		void setYRange(range_t range) { m_canvas.setYRange(range); }
 
 		void setTitle(const char* title);
 		void showScale(const bool show);
@@ -48,18 +48,14 @@ namespace UI
 		void setRenderMode(HeatmapRenderMode mode);
 		void setValueRange(float min, float max);
 
-		void addDataPoint(float x, float y, float value);
-		void addDataPoints(const std::vector<DataPoint>& points);
+		bool getResolution(uint32_t& width, uint32_t& height) const { return m_canvas.getResolution(width, height); }
+		void setResolution(uint32_t width, uint32_t height) { m_canvas.setResolution(width, height); }
 
-		// Grid configuration methods - setting one parameter infers the other
-		void setGridSize(int rows, int cols);
-		void setGridSpacing(float xSpacing, float ySpacing);
+		bool pxToPos(size_t px, size_t py, float& x, float& y) const { return m_canvas.pxToPos(px, py, x, y); }
+		bool posToPx(float x, float y, size_t& px, size_t& py) const { return m_canvas.posToPx(x, y, px, py); }
 
-		// Get a grid value at specific grid coordinates
-		float getGridValue(int row, int col) const;
-
-		// Add a data point to the grid at specific grid coordinates
-		void setGridValue(int row, int col, float value);
+		void setPx(size_t px, size_t py, float value);
+		void setPos(float x, float y, float value);
 
 		void render();
 		void renderColorBar();
@@ -70,36 +66,11 @@ namespace UI
 		void init();
 		float normalizeValue(float value) const;
 
-		// Bilinear interpolation for grid values
-		float interpolateValue(float x, float y) const;
-
-		// Map real coordinates to grid indices
-		bool mapToGrid(float x, float y, int& row, int& col) const;
-
-		// Map grid indices to real coordinates
-		void mapFromGrid(int row, int col, float& x, float& y) const;
-
-		// Convert 2D indices to 1D index
-		int gridIndex(int row, int col) const;
-
-		// Initialize or resize the grid
-		void setupGrid();
-
-		// Ensure grid is initialized
-		void ensureGridInitialized();
-
 		int32_t m_columnDsc[4];
 		int32_t m_rowDsc[3];
 
 		Canvas m_canvas;
 		Canvas m_colorBar;
-
-		// Grid data storage (single 1D vector)
-		std::vector<float> m_gridData;
-		int m_gridRows = 0;
-		int m_gridCols = 0;
-		float m_gridXSpacing = 1.0f;
-		float m_gridYSpacing = 1.0f;
 
 		HeatmapRenderMode m_renderMode = HeatmapRenderMode::Fixed;
 		float m_minValue = 0.0f;
