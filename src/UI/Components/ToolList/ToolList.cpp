@@ -269,10 +269,7 @@ namespace UI
 		size_t currentCnt = getItemCnt();
 		if (cnt <= currentCnt)
 		{
-			while (m_items.size() > cnt)
-			{
-				m_items.pop_back();
-			}
+			m_items.resize(cnt);
 			return;
 		}
 

@@ -415,7 +415,6 @@ namespace Comm
 
 	void FileInfoCache::FileInfoRequestComplete(const std::string& filepath)
 	{
-		MODEL_LOCK();
 		dbg("File info request complete for %s", filepath.c_str());
 
 		FileInfoRequest* request = GetFileInfoRequest(filepath);
@@ -433,7 +432,6 @@ namespace Comm
 
 	bool FileInfoCache::FileInfoRequest::RequestDataInner()
 	{
-		MODEL_LOCK();
 		if (m_data == nullptr)
 		{
 			return false;
@@ -445,7 +443,6 @@ namespace Comm
 
 	bool FileInfoCache::ThumbnailRequest::RequestDataInner()
 	{
-		MODEL_LOCK();
 		if (m_data == nullptr)
 		{
 			return false;
@@ -490,7 +487,6 @@ namespace Comm
 
 	void FileInfoCache::ClearCache()
 	{
-		MODEL_LOCK();
 		info("Clearing file info cache");
 
 		m_cache.clear();

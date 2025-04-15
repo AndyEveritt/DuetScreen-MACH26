@@ -20,8 +20,6 @@ namespace UI
 
 	void FanPresenter::newFanData()
 	{
-		MODEL_LOCK();
-
 		m_view->setFanCount(OM::GetFanCount());
 
 		OM::IterateFansWhile(

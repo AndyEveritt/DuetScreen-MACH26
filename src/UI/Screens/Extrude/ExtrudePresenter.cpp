@@ -20,7 +20,6 @@ namespace UI
 
 	void ExtrudePresenter::newToolData()
 	{
-		MODEL_LOCK();
 		m_view->setToolCount(OM::GetToolCount());
 		for (size_t i = 0; i < m_view->getToolCount(); i++)
 		{
@@ -173,17 +172,19 @@ namespace UI
 		OM::FileSystem::RequestFiles("/filaments",
 									 [this]()
 									 {
-										 MODEL_LOCK();
-										 this->m_filamentOptions.clear();
-										 for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
 										 {
-											 std::shared_ptr<OM::FileSystem::FileSystemItem> item =
-												 OM::FileSystem::GetItem(i);
-											 if (item == nullptr)
+											 MODEL_LOCK();
+											 this->m_filamentOptions.clear();
+											 for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
 											 {
-												 continue;
+												 std::shared_ptr<OM::FileSystem::FileSystemItem> item =
+													 OM::FileSystem::GetItem(i);
+												 if (item == nullptr)
+												 {
+													 continue;
+												 }
+												 this->m_filamentOptions.push_back(item->GetName());
 											 }
-											 this->m_filamentOptions.push_back(item->GetName());
 										 }
 										 this->updateFilamentList();
 									 });

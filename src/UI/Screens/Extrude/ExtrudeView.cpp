@@ -24,6 +24,8 @@ namespace UI
 		, m_filament(lv_dropdown_create(m_filamentControls))
 		, m_unload(utils::format("extrude_unload_%u", index), m_filamentControls, _("unload"), layout_t(0, 0, 0, 100))
 	{
+		UI_LOCK();
+
 		// Layout
 		constexpr lv_coord_t pad = 2;
 		lv_obj_set_height(getCont(), LV_SIZE_CONTENT);

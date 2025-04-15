@@ -104,7 +104,7 @@ namespace OM::Move
 
 	std::shared_ptr<Axis> GetOrCreateAxis(const size_t index)
 	{
-		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		dbg("Axis index %d / max %d", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;

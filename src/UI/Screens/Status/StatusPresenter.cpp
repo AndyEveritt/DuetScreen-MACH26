@@ -55,13 +55,11 @@ namespace UI
 
 	void StatusPresenter::newJobFileName(const char* filename)
 	{
-		MODEL_LOCK();
 		m_view->setFilename(filename);
 	}
 
 	void StatusPresenter::newJobLastFileName(const char* filename)
 	{
-		MODEL_LOCK();
 		if (filename[0] == 0)
 		{
 			return;
@@ -73,24 +71,26 @@ namespace UI
 
 	void StatusPresenter::newJobDuration()
 	{
-		MODEL_LOCK();
-		uint32_t elapsed = OM::GetPrintDuration();
-		m_view->updateElapsedTime(elapsed);
+		uint32_t progress = 0;
+		{
+			MODEL_LOCK();
+			uint32_t elapsed = OM::GetPrintDuration();
+			m_view->updateElapsedTime(elapsed);
 
-		// Progress
-		uint32_t warmupTime = OM::GetWarmUpDuration();
-		uint32_t totalDuration = std::max<uint32_t>(OM::GetPrintTime(), OM::GetSimulatedTime());
-		uint32_t progress =
-			totalDuration == 0
-				? 0
-				: std::min<uint32_t>((100 * std::max<uint32_t>(0, elapsed - warmupTime)) / totalDuration, 100);
+			// Progress
+			uint32_t warmupTime = OM::GetWarmUpDuration();
+			uint32_t totalDuration = std::max<uint32_t>(OM::GetPrintTime(), OM::GetSimulatedTime());
+			progress =
+				totalDuration == 0
+					? 0
+					: std::min<uint32_t>((100 * std::max<uint32_t>(0, elapsed - warmupTime)) / totalDuration, 100);
+		}
 
 		m_view->updateProgress(progress);
 	}
 
 	void StatusPresenter::newJobTimeLeft()
 	{
-		MODEL_LOCK();
 		uint32_t timeRemaining = OM::GetPrintRemaining(OM::RemainingTimeType::AUTO);
 
 		m_view->updateRemainingTime(timeRemaining);
@@ -98,19 +98,16 @@ namespace UI
 
 	void StatusPresenter::newCurrentMoveRequestedSpeed()
 	{
-		MODEL_LOCK();
 		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
 	}
 
 	void StatusPresenter::newCurrentMoveTopSpeed()
 	{
-		MODEL_LOCK();
 		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
 	}
 
 	void StatusPresenter::newCurrentMoveExtrusionSpeed()
 	{
-		MODEL_LOCK();
 		m_view->updateExtrusionRate(OM::Move::GetExtrusionRate(), OM::Move::GetVolumetricFlow());
 	}
 
@@ -129,7 +126,6 @@ namespace UI
 
 	void StatusPresenter::newExtruderData()
 	{
-		MODEL_LOCK();
 		auto tool = OM::GetCurrentTool();
 		if (tool == nullptr)
 		{
@@ -157,13 +153,11 @@ namespace UI
 
 	void StatusPresenter::newSpeedFactor()
 	{
-		MODEL_LOCK();
 		m_view->updateSpeedMultiplier(100 * OM::Move::GetSpeedFactor());
 	}
 
 	void StatusPresenter::newHeaterData()
 	{
-		MODEL_LOCK();
 		auto tool = OM::GetCurrentTool();
 
 		if (tool == nullptr || tool->GetHeaterCount() == 0)
@@ -188,21 +182,23 @@ namespace UI
 
 	void StatusPresenter::newFanData()
 	{
-		MODEL_LOCK();
-		auto tool = OM::GetCurrentTool();
-
 		uint32_t fanSpeed = 0;
-		if (tool != nullptr)
 		{
-			// TODO show all fan speeds
-			tool->IterateFans([&](std::shared_ptr<OM::Fan> fan, size_t index) { fanSpeed = fan->requestedValue; });
+			MODEL_LOCK();
+			auto tool = OM::GetCurrentTool();
+
+			if (tool != nullptr)
+			{
+				// TODO show all fan speeds
+				tool->IterateFans([&](std::shared_ptr<OM::Fan> fan, size_t index) { fanSpeed = fan->requestedValue; });
+			}
 		}
 		m_view->updateFanSpeed(fanSpeed);
 	}
 
 	void StatusPresenter::newStatus(OM::PrinterStatus status)
 	{
-		MODEL_LOCK();
+		UI_LOCK();
 		switch (status)
 		{
 		case OM::PrinterStatus::printing:
