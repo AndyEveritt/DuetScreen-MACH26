@@ -894,7 +894,7 @@
 #define LV_USE_LODEPNG 0
 
 /** PNG decoder(libpng) library */
-#define LV_USE_LIBPNG 0
+#define LV_USE_LIBPNG 1
 
 /** BMP decoder library */
 #define LV_USE_BMP 1
@@ -973,7 +973,7 @@
 
 /** FFmpeg library for image decoding and playing videos.
  *  Supports all major image formats so do not enable other image decoder with it. */
-#define LV_USE_FFMPEG 1
+#define LV_USE_FFMPEG 0
 #if LV_USE_FFMPEG
     /** Dump input information to stderr */
     #define LV_FFMPEG_DUMP_FORMAT 0

@@ -153,7 +153,7 @@ namespace UI
 		// lv_obj_set_size(image, 100, 200);
 		// lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
 		// lv_image_set_src(image, IMAGE_ASSET("ffmpeg.png"));
-		// lv_image_set_inner_align(image, LV_IMAGE_ALIGN_STRETCH);
+		// lv_image_set_inner_align(image, LV_IMAGE_ALIGN_CONTAIN);
 
 		// lv_obj_t* image2 = lv_image_create(cont);
 		// lv_obj_set_size(image2, 100, 100);
