@@ -810,12 +810,19 @@ namespace Comm
 							}
 							break;
 						case 'n':
-						case 't':
-							if (m_fieldVal.cat(' '))
-							{ // replace newline and tab by space
+							if (m_fieldVal.cat('\n'))
+							{
 								m_state = jsError;
 
-								jserror("jsStringEscape 2, failed to append space");
+								jserror("jsStringEscape 2, failed to append newline");
+							}
+							break;
+						case 't':
+							if (m_fieldVal.cat('\t'))
+							{
+								m_state = jsError;
+
+								jserror("jsStringEscape 2, failed to append tab");
 							}
 							break;
 						case 'u':
