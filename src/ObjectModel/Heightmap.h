@@ -11,11 +11,14 @@
 #include "Files.h"
 
 #include "Axis.h"
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace OM
 {
+	class Heightmap;
+
 	class HeightmapMeta
 	{
 	  public:
@@ -31,9 +34,16 @@ namespace OM
 		double GetSpacing(size_t index) const { return m_spacing[index]; }
 		double GetRecipSpacing(size_t index) const { return m_recipSpacing[index]; }
 		size_t GetSamples(size_t index) const { return m_samples[index]; }
+		size_t GetNumSamples() const { return GetSamples(0) * GetSamples(1); }
 		double GetRadius() const { return m_radius; }
+		bool IsValid() const { return m_isValid; }
 
 	  private:
+		void CheckValidity();
+
+		static constexpr float MinSpacing = 0.1; // The minimum point spacing allowed
+		static constexpr float MinRange = 1.0;	 // The minimum X and Y range allowed
+
 		std::string m_axis[2];
 		double m_min[2];
 		double m_max[2];
@@ -41,6 +51,7 @@ namespace OM
 		double m_spacing[2];
 		size_t m_samples[2];
 		double m_recipSpacing[2];
+		bool m_isValid = false;
 	};
 
 	class Heightmap
@@ -60,6 +71,7 @@ namespace OM
 		void Reset();
 
 		bool LoadFromDuet(const char* filename);
+		bool IsValid() const { return meta.IsValid(); }
 
 		const std::string& GetFileName() const { return m_fileName; }
 		size_t GetHeight() const { return meta.GetSamples(1); }
@@ -73,7 +85,7 @@ namespace OM
 		double GetMeanError() const { return m_meanError; }
 		double GetStdDev() const { return m_stdDev; }
 
-		Point GetInterpolatedPoint(double axis0, double axis1) const;
+		double GetInterpolatedPoint(double axis0, double axis1, bool extrapolate = false) const;
 
 		HeightmapMeta meta;
 
@@ -106,7 +118,7 @@ namespace OM
 	void UnloadHeightmap();
 	void ToggleHeightmap(const char* filename);
 
-	const Heightmap& GetHeightmapData(const char* filename);
+	std::shared_ptr<Heightmap> GetHeightmapData(const char* filename);
 	size_t ClearHeightmapCache();
 
 	void RequestHeightmapFiles();

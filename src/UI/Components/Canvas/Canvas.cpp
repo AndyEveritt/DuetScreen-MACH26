@@ -321,6 +321,13 @@ namespace UI
 		lv_canvas_finish_layer(m_canvas, &layer);
 	}
 
+	lv_color_t Canvas::getPx(size_t px, size_t py) const
+	{
+		lv_color32_t color32 = lv_canvas_get_px(m_canvas, px, py);
+		lv_color_t color = {color32.blue, color32.green, color32.red};
+		return color;
+	}
+
 	void Canvas::clear()
 	{
 		UI_LOCK();

@@ -12,6 +12,8 @@ namespace UI
 	  public:
 		HeightmapView(lv_obj_t* parent);
 
+		Heatmap& getHeightmap() { return m_heightmap; }
+
 	  private:
 		virtual void onShow() override;
 

@@ -4,6 +4,7 @@
 #include "lv_i18n/lv_i18n.h"
 
 #include "ObjectModel/Heightmap.h"
+#include <cmath>
 
 namespace UI
 {
@@ -43,33 +44,5 @@ namespace UI
 		m_heightmap.setTitle("Heightmap");
 	}
 
-	void HeightmapView::onShow()
-	{
-		// Add example data to the heightmap
-		OM::Heightmap map;
-		map.LoadFromDuet("heightmap.csv");
-		m_heightmap.setXRange({static_cast<int32_t>(map.meta.GetMin(0)), static_cast<int32_t>(map.meta.GetMax(0))});
-		m_heightmap.setYRange({static_cast<int32_t>(map.meta.GetMin(1)), static_cast<int32_t>(map.meta.GetMax(1))});
-
-		uint32_t width, height;
-		m_heightmap.getResolution(width, height);
-
-		for (uint32_t px = 0; px < width; px++)
-		{
-			for (uint32_t py = 0; py < height; py++)
-			{
-				float x, y;
-				if (m_heightmap.pxToPos(px, py, x, y))
-				{
-					OM::Heightmap::Point point = map.GetInterpolatedPoint(x, y);
-					if (point.isNull)
-					{
-						continue;
-					}
-					m_heightmap.setPx(px, height - py - 1, point.z);
-				}
-			}
-		}
-		m_heightmap.renderColorBar();
-	}
+	void HeightmapView::onShow() {}
 } // namespace UI

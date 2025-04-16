@@ -14,12 +14,6 @@
 
 namespace UI
 {
-	enum class HeatmapRenderMode
-	{
-		Fixed = 0,
-		Deviation,
-	};
-
 	class Heatmap : public BaseView
 	{
 	  public:
@@ -45,7 +39,6 @@ namespace UI
 		void setTitle(const char* title);
 		void showScale(const bool show);
 
-		void setRenderMode(HeatmapRenderMode mode);
 		void setValueRange(float min, float max);
 
 		bool getResolution(uint32_t& width, uint32_t& height) const { return m_canvas.getResolution(width, height); }
@@ -72,8 +65,7 @@ namespace UI
 		Canvas m_canvas;
 		Canvas m_colorBar;
 
-		HeatmapRenderMode m_renderMode = HeatmapRenderMode::Fixed;
-		float m_minValue = 0.0f;
+		float m_minValue = -1.0f;
 		float m_maxValue = 1.0f;
 	};
 } // namespace UI

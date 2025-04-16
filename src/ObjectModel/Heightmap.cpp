@@ -20,7 +20,7 @@
 namespace OM
 {
 	static std::string s_currentHeightmapName;
-	static std::map<std::string, Heightmap> s_heightmapCache;
+	static std::map<std::string, std::shared_ptr<Heightmap>> s_heightmapCache;
 	static std::string s_emptyStr = "";
 
 	static std::string GetLocalFilePath(const char* filename)
@@ -37,6 +37,7 @@ namespace OM
 
 	void HeightmapMeta::Reset()
 	{
+		m_isValid = false;
 		m_axis[0] = "X";
 		m_axis[1] = "Y";
 		m_min[0] = 0.0f;
@@ -77,15 +78,21 @@ namespace OM
 		doc.GetCell("num0", 0, m_samples[0]);
 		doc.GetCell("num1", 0, m_samples[1]);
 
-		m_recipSpacing[0] = 1.0 / m_spacing[0];
-		m_recipSpacing[1] = 1.0 / m_spacing[1];
+		CheckValidity();
 
-		dbg("Axes: %s, %s", m_axis[0].c_str(), m_axis[1].c_str());
-		dbg("Min: %f, %f", m_min[0], m_min[1]);
-		dbg("Max: %f, %f", m_max[0], m_max[1]);
-		dbg("Radius: %f", m_radius);
-		dbg("Spacing: %f, %f", m_spacing[0], m_spacing[1]);
-		dbg("Samples: %u, %u", m_samples[0], m_samples[1]);
+		if (IsValid())
+		{
+			dbg("Axes: %s, %s", m_axis[0].c_str(), m_axis[1].c_str());
+			dbg("Min: %f, %f", m_min[0], m_min[1]);
+			dbg("Max: %f, %f", m_max[0], m_max[1]);
+			dbg("Radius: %f", m_radius);
+			dbg("Spacing: %f, %f", m_spacing[0], m_spacing[1]);
+			dbg("Samples: %u, %u", m_samples[0], m_samples[1]);
+		}
+		else
+		{
+			warn("Heightmap meta data is invalid");
+		}
 	}
 
 	std::shared_ptr<Move::Axis> HeightmapMeta::GetAxis(size_t index) const
@@ -97,6 +104,25 @@ namespace OM
 			error("Axis %s not found", label.c_str());
 		}
 		return axis;
+	}
+
+	void HeightmapMeta::CheckValidity()
+	{
+		if (m_max[0] - m_min[0] < MinRange || m_spacing[0] < MinSpacing || m_max[1] - m_min[1] < MinRange ||
+			m_spacing[1] < MinSpacing)
+		{
+			m_isValid = false;
+		}
+		else
+		{
+			m_isValid = GetNumSamples() != 0 && (m_radius < 0.0 || m_radius >= 1.0) && m_axis[0] != m_axis[1];
+
+			if (m_isValid)
+			{
+				m_recipSpacing[0] = 1.0 / m_spacing[0];
+				m_recipSpacing[1] = 1.0 / m_spacing[1];
+			}
+		}
 	}
 
 	Heightmap::Heightmap()
@@ -319,7 +345,7 @@ namespace OM
 		return !parseError;
 	}
 
-	Heightmap::Point Heightmap::GetInterpolatedPoint(double axis0, double axis1) const
+	double Heightmap::GetInterpolatedPoint(double axis0, double axis1, bool extrapolate) const
 	{
 		// Last grid point
 		const double xLast = meta.GetMin(0) + (meta.GetSamples(0) - 1) * meta.GetSpacing(0);
@@ -327,22 +353,30 @@ namespace OM
 
 		// Clamp to rectangle so InterpolateXY will always have valid parameters
 		const double fEPSILON = 0.01;
+		bool outOfBounds = false;
 		if (axis0 < meta.GetMin(0))
 		{
+			outOfBounds = true;
 			axis0 = meta.GetMin(0);
 		}
 		if (axis1 < meta.GetMin(1))
 		{
+			outOfBounds = true;
 			axis1 = meta.GetMin(1);
 		}
 		if (axis0 > xLast - fEPSILON)
 		{
+			outOfBounds = true;
 			axis0 = xLast - fEPSILON;
 		}
 		if (axis1 > yLast - fEPSILON)
 		{
+			outOfBounds = true;
 			axis1 = yLast - fEPSILON;
 		}
+
+		if (!extrapolate && outOfBounds)
+			return std::numeric_limits<double>::quiet_NaN();
 
 		const double xf = (axis0 - meta.GetMin(0)) * meta.GetRecipSpacing(0);
 		const double xFloor = floor(xf);
@@ -351,9 +385,12 @@ namespace OM
 		const double yFloor = floor(yf);
 		const int32_t yIndex = (int32_t)yFloor;
 
-		Point point(axis0, axis1, 0.0f, false);
-		point.isNull = !InterpolateAxis0Axis1(xIndex, yIndex, xf - xFloor, yf - yFloor, point.z);
-		return point;
+		double value;
+		if (!InterpolateAxis0Axis1(xIndex, yIndex, xf - xFloor, yf - yFloor, value))
+		{
+			return std::numeric_limits<double>::quiet_NaN();
+		}
+		return value;
 	}
 
 	bool Heightmap::InterpolateAxis0Axis1(
@@ -455,12 +492,12 @@ namespace OM
 		return s_currentHeightmapName;
 	}
 
-	const Heightmap& GetHeightmapData(const char* filename)
+	std::shared_ptr<Heightmap> GetHeightmapData(const char* filename)
 	{
 		auto it = s_heightmapCache.find(filename);
 		if (it == s_heightmapCache.end())
 		{
-			Heightmap heightmap(filename);
+			std::shared_ptr<Heightmap> heightmap = std::make_shared<Heightmap>(filename);
 			s_heightmapCache[filename] = heightmap;
 			return s_heightmapCache[filename];
 		}

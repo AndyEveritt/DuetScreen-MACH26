@@ -62,7 +62,7 @@ namespace UI
 		m_colorBar.setTitle("Scale:");
 		m_colorBar.setResolution(1, 100);
 		m_colorBar.showXScale(false);
-		m_colorBar.setYRange(range_float_t{-1.0f, 1.0f});
+		setValueRange(m_minValue, m_maxValue);
 	}
 
 	void Heatmap::showScale(const bool show)
@@ -86,34 +86,19 @@ namespace UI
 		m_canvas.setTitle(title);
 	}
 
-	void Heatmap::setRenderMode(HeatmapRenderMode mode)
-	{
-		m_renderMode = mode;
-	}
-
 	void Heatmap::setValueRange(float min, float max)
 	{
 		m_minValue = min;
 		m_maxValue = max;
 
 		// Update the color bar scale
-		range_t colorRange = {static_cast<int32_t>(min), static_cast<int32_t>(max)};
-		m_colorBar.setYRange(colorRange);
+		m_colorBar.setYRange(range_float_t{min, max});
+		m_canvas.clear();
 	}
 
 	float Heatmap::normalizeValue(float value) const
 	{
-		if (m_renderMode == HeatmapRenderMode::Deviation)
-		{
-			// In deviation mode, center is 0, normalize around that
-			float absMax = std::max(std::abs(m_minValue), std::abs(m_maxValue));
-			return (value + absMax) / (2 * absMax);
-		}
-		else
-		{
-			// In fixed mode, simple min-max normalization
-			return (value - m_minValue) / (m_maxValue - m_minValue);
-		}
+		return std::clamp((value - m_minValue) / (m_maxValue - m_minValue), 0.0f, 1.0f);
 	}
 
 	void Heatmap::setPx(size_t px, size_t py, float value)

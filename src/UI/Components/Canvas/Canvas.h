@@ -56,6 +56,8 @@ namespace UI
 		void drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa);
 		void drawRectPx(lv_area_t area, lv_color_t color, lv_opa_t opa);
 
+		lv_color_t getPx(size_t px, size_t py) const;
+
 		lv_obj_t* getCanvas() const { return m_canvas; }
 
 		void clear();
