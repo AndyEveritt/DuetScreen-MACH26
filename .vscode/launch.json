@@ -37,7 +37,7 @@
             "stopAtEntry": false,
             "MIMode": "gdb",
             "miDebuggerServerAddress": "${config:duetscreen_ip}:3000",
-            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-buildroot-linux-musleabihf-gdb",
+            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-buildroot-linux-gnueabihf-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
