@@ -9,10 +9,26 @@
 #include "lvgl/src/osal/lv_os.h"
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
-  for (auto presenter : m_presenters)                                                                                  \
-  {                                                                                                                    \
-	presenter->func(__VA_ARGS__);                                                                                      \
-  }
+	{                                                                                                                  \
+		auto it = m_presenters.begin();                                                                                \
+		UI::BasePresenter* presenter = nullptr;                                                                        \
+		while (true)                                                                                                   \
+		{                                                                                                              \
+			{                                                                                                          \
+				MODEL_LOCK();                                                                                          \
+				if (it == m_presenters.end())                                                                          \
+				{                                                                                                      \
+					break;                                                                                             \
+				}                                                                                                      \
+				presenter = *it;                                                                                       \
+			}                                                                                                          \
+			presenter->func(__VA_ARGS__);                                                                              \
+			{                                                                                                          \
+				MODEL_LOCK();                                                                                          \
+				++it;                                                                                                  \
+			}                                                                                                          \
+		}                                                                                                              \
+	}
 
 #define MODEL_NOTIFICATION(func, ...)                                                                                  \
   void Model::func(__VA_ARGS__)                                                                                        \
