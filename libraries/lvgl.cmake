@@ -13,7 +13,7 @@ set(LV_CONF_PATH ${PROJECT_SOURCE_DIR}/lv_conf.h
     CACHE STRING "Path to lv_conf.h")
 
 # Add LVGL subdirectory
-# set(BUILD_SHARED_LIBS OFF)
+# set(BUILD_SHARED_LIBS OFF CACHE BOOL FORCE "Build shared libraries")
 add_subdirectory(${LIBRARIES_DIR}/lvgl)
 target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
                                        ${SDL2_INCLUDE_DIRS} ${LIBRARIES_DIR})

@@ -30,7 +30,7 @@ set(MAIN_SOURCES "")
 include(${LIBRARIES_DIR}/lvgl.cmake)
 
 # Networking
-add_subdirectory(${LIBRARIES_DIR}/libhv)
+include(${LIBRARIES_DIR}/hv.cmake)
 
 # Find libusb package
 find_package(PkgConfig REQUIRED)
@@ -136,7 +136,7 @@ target_link_libraries(
           ${LIBUSB_LIBRARIES} # Link libusb library
           m
           pthread
-          hv
+          hv_static
           nlohmann_json::nlohmann_json)
 
 # Custom target to run the executable
