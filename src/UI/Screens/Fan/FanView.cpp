@@ -9,6 +9,8 @@ namespace UI
 		: View("fan_view", parent, layout_t(0, 0, 100, 100))
 		, m_fanHeader(lv_label_create(getCont()))
 	{
+		UI_LOCK();
+
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
@@ -65,6 +67,7 @@ namespace UI
 		, m_slider(utils::format("fan_slider_%d", index).c_str(), getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_max(utils::format("fan_max_%d", index).c_str(), getCont(), _("max"))
 	{
+		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
