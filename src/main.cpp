@@ -13,6 +13,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
+#include "Hardware/Usb.h"
 #include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "glob.h"
@@ -102,6 +103,16 @@ int main(int argc, char** argv)
 
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
+
+	USB::UsbMonitor::getInstance().registerCallback(
+		[](const std::string& path, bool mounted)
+		{
+			if (mounted)
+			{
+				info("USB drive mounted: %s", path.c_str());
+			}
+		});
+	USB::UsbMonitor::getInstance().startMonitoring();
 
 	// Create a thread to handle requesting data from Duet
 #if MULTITHREADED

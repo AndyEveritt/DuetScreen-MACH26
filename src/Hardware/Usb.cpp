@@ -8,11 +8,15 @@
 #include "Usb.h"
 #include "sys/stat.h"
 #include "utils/utils.h"
+#include <algorithm>
+#include <chrono>
 #include <cstring>
 #include <fstream>
+#include <sstream>
 
 namespace USB
 {
+#if 0
 	std::vector<FileInfo> ListEntriesInDirectory(const std::string& directoryPath)
 	{
 		std::vector<FileInfo> files;
@@ -101,5 +105,119 @@ namespace USB
 		}
 		dbg("Read %d bytes", contents.size());
 		return true;
+	}
+#endif
+
+	UsbMonitor::~UsbMonitor()
+	{
+		stopMonitoring();
+	}
+
+	void UsbMonitor::startMonitoring()
+	{
+		if (!running)
+		{
+			running = true;
+			monitor_thread = std::thread(&UsbMonitor::monitorThread, this);
+		}
+	}
+
+	void UsbMonitor::stopMonitoring()
+	{
+		if (running)
+		{
+			running = false;
+			if (monitor_thread.joinable())
+			{
+				monitor_thread.join();
+			}
+		}
+	}
+
+	void UsbMonitor::registerCallback(UsbDriveCallback callback)
+	{
+		std::lock_guard<std::mutex> lock(callback_mutex);
+		callbacks.push_back(callback);
+	}
+
+	std::vector<std::string> UsbMonitor::getMountedDrives() const
+	{
+		std::lock_guard<std::mutex> lock(callback_mutex);
+		return current_mounts;
+	}
+
+	std::vector<std::string> UsbMonitor::getUsbMounts()
+	{
+		std::vector<std::string> mounts;
+		FILE* fp = popen("grep \"/media/usb\" /proc/mounts | awk '{print $2}'", "r");
+		if (fp == nullptr)
+		{
+			error("Failed to run mount point detection command");
+			return mounts;
+		}
+
+		char path[256];
+		while (fgets(path, sizeof(path), fp) != nullptr)
+		{
+			// Remove newline if present
+			size_t len = strlen(path);
+			if (len > 0 && path[len - 1] == '\n')
+			{
+				path[len - 1] = '\0';
+			}
+			mounts.push_back(path);
+		}
+
+		pclose(fp);
+		return mounts;
+	}
+
+	void UsbMonitor::notifyCallbacks(const std::string& path, bool connected)
+	{
+		std::lock_guard<std::mutex> lock(callback_mutex);
+		for (const auto& callback : callbacks)
+		{
+			callback(path, connected);
+		}
+	}
+
+	void UsbMonitor::monitorThread()
+	{
+		verbose("USB monitor thread started");
+
+		while (running)
+		{
+			auto new_mounts = getUsbMounts();
+
+			// Find new mounts
+			for (const auto& mount : new_mounts)
+			{
+				if (std::find(current_mounts.begin(), current_mounts.end(), mount) == current_mounts.end())
+				{
+					info("USB drive mounted at: %s", mount.c_str());
+					notifyCallbacks(mount, true);
+				}
+			}
+
+			// Find removed mounts
+			for (const auto& mount : current_mounts)
+			{
+				if (std::find(new_mounts.begin(), new_mounts.end(), mount) == new_mounts.end())
+				{
+					info("USB drive unmounted from: %s", mount.c_str());
+					notifyCallbacks(mount, false);
+				}
+			}
+
+			{
+				std::lock_guard<std::mutex> lock(callback_mutex);
+				current_mounts = new_mounts;
+			}
+
+			// Sleep for a bit to avoid excessive CPU usage
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+
+		verbose("USB monitor thread stopped");
 	}
 } // namespace USB
