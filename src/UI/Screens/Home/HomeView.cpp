@@ -63,6 +63,7 @@ namespace UI
 		, m_settingsView(m_mainWindow)
 		, m_statusView(m_mainWindow)
 		, m_alert("home_alert", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_updatePrompt("update_prompt", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_kb(lv_keyboard_create(m_mainWindow))
 	{
 		UI_LOCK();
@@ -129,9 +130,21 @@ namespace UI
 
 		// Message Box
 		m_alert.hide();
-		lv_obj_add_flag(m_alert.getCont(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(m_alert.getCont(), LV_ALIGN_CENTER, 0, 0);
+		m_alert.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_alert.setAlign(LV_ALIGN_CENTER, 0, 0);
 		lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(70), LV_PART_MAIN);
+
+		// Update Prompt
+		m_updatePrompt.hide();
+		m_updatePrompt.setTitle(_("update_available"));
+		m_updatePrompt.setText(_("update_available_text"));
+		m_updatePrompt.setOkBtnText(_("update_confirm"));
+		m_updatePrompt.setCancelBtnText(_("update_cancel"));
+		m_updatePrompt.setOkCallback([this]() { m_presenter.update(); });
+		m_updatePrompt.okVisible(true);
+		m_updatePrompt.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_updatePrompt.setAlign(LV_ALIGN_CENTER, 0, 0);
+		lv_obj_set_style_max_height(m_updatePrompt.getCont(), LV_PCT(70), LV_PART_MAIN);
 
 		// Keyboard
 		showKeyboard(false);
@@ -242,5 +255,11 @@ namespace UI
 			lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(70), LV_PART_MAIN);
 		}
 		lv_obj_set_flag(m_kb, LV_OBJ_FLAG_HIDDEN, !show);
+	}
+
+	void HomeView::showUpdatePrompt()
+	{
+		UI_LOCK();
+		m_updatePrompt.show();
 	}
 } // namespace UI

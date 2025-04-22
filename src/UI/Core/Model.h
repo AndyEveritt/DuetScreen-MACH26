@@ -62,6 +62,8 @@ class Model
 
 	void refresh();
 
+	void newUpdateAvailable(const std::string& file);
+
 	/* Fan methods */
 
 	void newFanData();

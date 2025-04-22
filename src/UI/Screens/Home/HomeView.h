@@ -53,6 +53,8 @@ namespace UI
 		SettingsView& getSettingsView() { return m_settingsView; }
 		StatusView& getStatusView() { return m_statusView; }
 
+		void showUpdatePrompt();
+
 	  private:
 		HomeView();
 		virtual void onShow();
@@ -89,6 +91,9 @@ namespace UI
 		// Message box
 		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;
 		MessageBox m_alert;
+
+		// Update prompt
+		MessageBox m_updatePrompt;
 
 		lv_obj_t* m_kb;
 	};

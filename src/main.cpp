@@ -112,10 +112,7 @@ int main(int argc, char** argv)
 			{
 				info("USB drive mounted: %s", path.c_str());
 				std::string upgradeFilePath = path + "/DuetScreen.tar.gz";
-				if (!UpgradeHelper::upgradeFromUSB(upgradeFilePath))
-				{
-					error("Upgrade from USB failed");
-				}
+				Model::get().newUpdateAvailable(upgradeFilePath);
 			}
 		});
 	USB::UsbMonitor::getInstance().startMonitoring();

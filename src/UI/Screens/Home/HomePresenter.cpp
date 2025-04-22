@@ -7,6 +7,7 @@
 #include "UI/Core/Navigation.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
+#include "utils/UpgradeHelper.h"
 #include <regex>
 
 namespace UI
@@ -36,6 +37,17 @@ namespace UI
 		UI_LOCK();
 		m_view->refresh();
 		m_alertAxes.clear();
+	}
+
+	void HomePresenter::update()
+	{
+		UpgradeHelper::upgradeFromUSB(m_updateFile);
+	}
+
+	void HomePresenter::newUpdateAvailable(const std::string& file)
+	{
+		m_updateFile = file.c_str();
+		m_view->showUpdatePrompt();
 	}
 
 	void HomePresenter::newAxesData()

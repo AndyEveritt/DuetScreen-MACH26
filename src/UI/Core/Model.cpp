@@ -9,26 +9,26 @@
 #include "lvgl/src/osal/lv_os.h"
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
+  {                                                                                                                    \
+	auto it = m_presenters.begin();                                                                                    \
+	UI::BasePresenter* presenter = nullptr;                                                                            \
+	while (true)                                                                                                       \
 	{                                                                                                                  \
-		auto it = m_presenters.begin();                                                                                \
-		UI::BasePresenter* presenter = nullptr;                                                                        \
-		while (true)                                                                                                   \
+	  {                                                                                                                \
+		MODEL_LOCK();                                                                                                  \
+		if (it == m_presenters.end())                                                                                  \
 		{                                                                                                              \
-			{                                                                                                          \
-				MODEL_LOCK();                                                                                          \
-				if (it == m_presenters.end())                                                                          \
-				{                                                                                                      \
-					break;                                                                                             \
-				}                                                                                                      \
-				presenter = *it;                                                                                       \
-			}                                                                                                          \
-			presenter->func(__VA_ARGS__);                                                                              \
-			{                                                                                                          \
-				MODEL_LOCK();                                                                                          \
-				++it;                                                                                                  \
-			}                                                                                                          \
+		  break;                                                                                                       \
 		}                                                                                                              \
-	}
+		presenter = *it;                                                                                               \
+	  }                                                                                                                \
+	  presenter->func(__VA_ARGS__);                                                                                    \
+	  {                                                                                                                \
+		MODEL_LOCK();                                                                                                  \
+		++it;                                                                                                          \
+	  }                                                                                                                \
+	}                                                                                                                  \
+  }
 
 #define MODEL_NOTIFICATION(func, ...)                                                                                  \
   void Model::func(__VA_ARGS__)                                                                                        \
@@ -237,6 +237,11 @@ void Model::refresh()
 		presenter->newTime();
 		presenter->newToolData();
 	}
+}
+
+void Model::newUpdateAvailable(const std::string& file)
+{
+	NOTIFY_ALL_PRESENTERS(newUpdateAvailable, file);
 }
 
 /* Fan methods */

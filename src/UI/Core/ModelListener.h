@@ -21,6 +21,8 @@ namespace UI
 
 		virtual void tick() {}
 
+		virtual void newUpdateAvailable(const std::string& file) {}
+
 		/* Fan methods */
 		virtual void newFanData() {}
 
