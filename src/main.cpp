@@ -23,6 +23,7 @@
 #include "lvgl/src/core/lv_global.h"
 #include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
+#include "utils/UpgradeHelper.h"
 #include <libusb-1.0/libusb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,6 +111,11 @@ int main(int argc, char** argv)
 			if (mounted)
 			{
 				info("USB drive mounted: %s", path.c_str());
+				std::string upgradeFilePath = path + "/DuetScreen.tar.gz";
+				if (!UpgradeHelper::upgradeFromUSB(upgradeFilePath))
+				{
+					error("Upgrade from USB failed");
+				}
 			}
 		});
 	USB::UsbMonitor::getInstance().startMonitoring();

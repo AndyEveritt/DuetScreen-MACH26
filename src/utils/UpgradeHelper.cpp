@@ -12,7 +12,10 @@
 #include "utils/StorageHelper.h"
 #include <sys/stat.h>
 
-#define UPGRADE_FILE "DuetScreen.tar.gz"
+#define USB_BASE_DIR "/media/usb"
+#define UPGRADE_EXT ".tar.gz"
+static constexpr size_t UPGRADE_EXT_SIZE = sizeof(UPGRADE_EXT) - 1;
+#define UPGRADE_FILE "DuetScreen" UPGRADE_EXT
 #define TMP_FILEPATH "/tmp/" UPGRADE_FILE
 #define BOOT_FILEPATH "/boot/update.tar.gz"
 
@@ -25,15 +28,28 @@ namespace UpgradeHelper
 
 	static bool copyFileFromUsb(const std::string& filePath)
 	{
+		if (filePath.rfind(USB_BASE_DIR, 0) != 0)
+		{
+			error("File path %s is not on USB", filePath.c_str());
+			return false;
+		}
+
+		// Check if the file has the correct extension
+		if (filePath.size() < UPGRADE_EXT_SIZE || filePath.substr(filePath.size() - UPGRADE_EXT_SIZE) != UPGRADE_EXT)
+		{
+			error("File %s does not have the required " UPGRADE_EXT " extension", filePath.c_str());
+			return false;
+		}
+
 		struct stat sb;
-		if (stat((std::string("/mnt/usb1/") + filePath).c_str(), &sb) == -1)
+		if (stat(filePath.c_str(), &sb) == -1)
 		{
 			error("Failed to get file stats for %s", filePath.c_str());
 			return false;
 		}
 
 		removeTmpFile(); // Remove any previous upgrade file
-		int ret = system(utils::format("cd /mnt/usb1 && cp \"%s\" " TMP_FILEPATH, filePath.c_str()).c_str());
+		int ret = system(utils::format("cp \"%s\" " TMP_FILEPATH, filePath.c_str()).c_str());
 		if (ret != 0)
 		{
 			error("Failed to copy file \"%s\" to /tmp, code=%d", filePath.c_str(), ret);
