@@ -83,6 +83,8 @@ namespace UI
 		void setHeight(int heightPct);
 		void setX(int xPct);
 		void setY(int yPct);
+		void setFlag(lv_obj_flag_t flag, bool enable);
+		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
 
 		virtual void setStyle(lv_style_t* style, lv_style_selector_t selector);
 		virtual void show();

@@ -111,6 +111,18 @@ namespace UI
 		lv_obj_set_y(getCont(), lv_pct(yPct));
 	}
 
+	void BaseView::setFlag(lv_obj_flag_t flag, bool enable)
+	{
+		UI_LOCK();
+		lv_obj_set_flag(getCont(), flag, enable);
+	}
+
+	void BaseView::setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y)
+	{
+		UI_LOCK();
+		lv_obj_align(getCont(), align, x, y);
+	}
+
 	void BaseView::setStyle(lv_style_t* style, lv_style_selector_t selector)
 	{
 		UI_LOCK();
