@@ -12,8 +12,8 @@ mkdir -p out/update/etc/assets
 cp -r assets out/update/etc
 
 # Copy libraries
-mkdir -p out/update/usr/lib
-cp ../buildroot-duetscreen/output/target/usr/lib/liblvgl* out/update/usr/lib/
+# mkdir -p out/update/usr/lib
+# cp ../buildroot-duetscreen/output/target/usr/lib/liblvgl* out/update/usr/lib/
 
 echo "rm -rf /etc/assets" > out/update/pre-update
 chmod +x out/update/pre-update
