@@ -16,10 +16,10 @@ namespace UI
 	class FineTunePresenter : public Presenter<FineTune>
 	{
 	  public:
-  		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(FineTunePresenter, FineTune)
 
-        virtual void newSpeedFactor() override;
-        virtual void newExtruderData() override;
+		virtual void newSpeedFactor() override;
+		virtual void newExtruderData() override;
 		virtual void newFanData() override;
 		virtual void newAxesData() override;
 

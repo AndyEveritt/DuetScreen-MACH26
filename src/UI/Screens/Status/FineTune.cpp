@@ -65,15 +65,15 @@ namespace UI
 		m_babystep.setResetLabel(utils::format(_("fine_tune_babystep_reset"), 0).c_str());
 		m_babystep.setValueLabelFmt("%.2fmm");
 		m_babystep.setIncrementValues({0.01f, 0.05f});
-		m_babystep.setValueChangeCallback([this](float change) { m_presenter.babystep(change); });
-		m_babystep.setResetCallback([this]() { m_presenter.resetBabystep(); });
+		m_babystep.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
+		m_babystep.setResetCallback([this]() { m_presenter->resetBabystep(); });
 
 		m_speed.setLabel(_("fine_tune_speed_factor"));
 		m_speed.setKeyboard(m_keyboard);
 		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_speed.setRange(1, 200);
-		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter.setSpeedFactor(value); });
+		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter->setSpeedFactor(value); });
 
 		lv_obj_add_event_cb(
 			m_sliderCont,
@@ -134,7 +134,7 @@ namespace UI
 			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 			slider.setRange(0, 200);
 			slider.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter.setExtruderFactor(i, value); });
+			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter->setExtruderFactor(i, value); });
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace UI
 
 			slider.setKeyboard(m_keyboard);
 			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
-			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter.setFanValue(i, value); });
+			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter->setFanValue(i, value); });
 		}
 	}
 

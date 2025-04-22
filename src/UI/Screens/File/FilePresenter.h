@@ -10,7 +10,7 @@ namespace UI
 	class FilePresenter : public Presenter<FileView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(FilePresenter, FileView)
 		enum class BaseFolder
 		{
 			GCODES,

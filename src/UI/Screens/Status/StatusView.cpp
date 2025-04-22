@@ -131,28 +131,28 @@ namespace UI
 	{
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
-		view->m_presenter.pausePrint();
+		view->m_presenter->pausePrint();
 	}
 
 	void StatusView::onResumeClicked(lv_event_t* e)
 	{
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
-		view->m_presenter.resumePrint();
+		view->m_presenter->resumePrint();
 	}
 
 	void StatusView::onPrintAgainClicked(lv_event_t* e)
 	{
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
-		view->m_presenter.printAgain();
+		view->m_presenter->printAgain();
 	}
 
 	void StatusView::onCancelClicked(lv_event_t* e)
 	{
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
-		view->m_confirmCancel.setOkCallback([view]() { view->m_presenter.cancelPrint(); });
+		view->m_confirmCancel.setOkCallback([view]() { view->m_presenter->cancelPrint(); });
 		view->m_confirmCancel.show();
 	}
 

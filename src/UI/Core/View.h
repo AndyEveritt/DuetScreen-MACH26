@@ -120,23 +120,23 @@ namespace UI
 	  public:
 		View(const std::string& name, BaseView* parent)
 			: BaseViewType(name, parent)
-			, m_presenter(this)
+			, m_presenter(std::make_shared<T>(this))
 		{
 		}
 		View(const std::string& name, BaseViewType* parent, layout_t layout)
 			: BaseViewType(name, parent, layout)
-			, m_presenter(this)
+			, m_presenter(std::make_shared<T>(this))
 		{
 		}
 
 		View(const std::string& name, lv_obj_t* parent)
 			: BaseViewType(name, parent)
-			, m_presenter(this)
+			, m_presenter(std::make_shared<T>(this))
 		{
 		}
 		View(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: BaseViewType(name, parent, layout)
-			, m_presenter(this)
+			, m_presenter(std::make_shared<T>(this))
 		{
 		}
 		View(const std::string& name, layout_t layout)
@@ -144,17 +144,25 @@ namespace UI
 		{
 		}
 
-		virtual ~View() { m_presenter.deactivate(); }
+		virtual ~View() { m_presenter->deactivate(); }
 
 		/**
 		 * @brief Get a pointer to the MVP model
 		 */
 		Model& getModel() const { return m_presenter->getModel(); }
 
-		T& getPresenter() { return m_presenter; }
+		std::shared_ptr<T> getPresenter() { return m_presenter; }
 
-		void activate() { m_presenter.activate(); }
-		void deactivate() { m_presenter.deactivate(); }
+		void activate()
+		{
+			Model::get().bind(m_presenter);
+			m_presenter->activate();
+		}
+		void deactivate()
+		{
+			Model::get().unbind(m_presenter);
+			m_presenter->deactivate();
+		}
 
 		/**
 		 * @brief Shows the view by activating its presenter and then showing the view itself.
@@ -179,7 +187,7 @@ namespace UI
 		}
 
 	  protected:
-		T m_presenter;
+		std::shared_ptr<T> m_presenter;
 	};
 
 } // namespace UI

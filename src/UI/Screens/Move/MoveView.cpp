@@ -86,7 +86,7 @@ namespace UI
 	{
 		UI_LOCK();
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
-		item->getList()->m_presenter.homeAxis(item->getIndex());
+		item->getList()->m_presenter->homeAxis(item->getIndex());
 	}
 
 	void AxisItem::onRelMoveEvent(lv_event_t* e)
@@ -97,7 +97,7 @@ namespace UI
 		uintptr_t index = (uintptr_t)lv_obj_get_user_data(btn);
 
 		float distance = s_relMoveValues[index];
-		item->getList()->m_presenter.moveAxisRelative(item->getIndex(), distance, s_feedRates[s_currentFeedRateIndex]);
+		item->getList()->m_presenter->moveAxisRelative(item->getIndex(), distance, s_feedRates[s_currentFeedRateIndex]);
 	}
 
 	MoveView::MoveView(lv_obj_t* parent)
@@ -194,35 +194,35 @@ namespace UI
 	{
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter.homeAll();
+		view->m_presenter->homeAll();
 	}
 
 	void MoveView::onTrueBedLevelEvent(lv_event_t* e)
 	{
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter.trueBedLevel();
+		view->m_presenter->trueBedLevel();
 	}
 
 	void MoveView::onMeshBedLevelEvent(lv_event_t* e)
 	{
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter.meshBedLevel();
+		view->m_presenter->meshBedLevel();
 	}
 
 	void MoveView::onHeightmapEvent(lv_event_t* e)
 	{
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter.heightmap();
+		view->m_presenter->heightmap();
 	}
 
 	void MoveView::onDisableMotorsEvent(lv_event_t* e)
 	{
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter.disableMotors();
+		view->m_presenter->disableMotors();
 	}
 
 	void MoveView::onFeedRateEvent(lv_event_t* e)

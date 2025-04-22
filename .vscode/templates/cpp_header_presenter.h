@@ -16,7 +16,7 @@ namespace UI
 	class {{file_name}} : public Presenter<MyView>
 	{
 	  public:
-  		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR({{file_name}}, MyView);
 
 	  protected:
 	};

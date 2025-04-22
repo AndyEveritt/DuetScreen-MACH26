@@ -9,7 +9,7 @@ namespace UI
 	class CustomPresenter : public Presenter<CustomView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(CustomPresenter, CustomView)
 
 		// Actions
 

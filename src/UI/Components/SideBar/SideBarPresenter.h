@@ -18,9 +18,11 @@ namespace UI
 	class SideBarPresenter : public Presenter<SideBar>
 	{
 	  public:
-  		using Presenter::Presenter;
+		using Presenter::Presenter;
+		// TODO work out why this gives a compile error
+		// PRESENTER_CONSTRUCTOR(SideBarPresenter, SideBar)
 
-        void eStop();
+		void eStop();
 
 	  protected:
 	};

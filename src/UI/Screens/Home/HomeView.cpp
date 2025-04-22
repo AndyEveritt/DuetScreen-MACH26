@@ -110,7 +110,7 @@ namespace UI
 			[](lv_event_t* e)
 			{
 				FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
-				view->getPresenter().setBaseFolder(FilePresenter::BaseFolder::GCODES);
+				view->getPresenter()->setBaseFolder(FilePresenter::BaseFolder::GCODES);
 				openScreen(view, false);
 			},
 			LV_EVENT_CLICKED,
@@ -140,7 +140,7 @@ namespace UI
 		m_updatePrompt.setText(_("update_available_text"));
 		m_updatePrompt.setOkBtnText(_("update_confirm"));
 		m_updatePrompt.setCancelBtnText(_("update_cancel"));
-		m_updatePrompt.setOkCallback([this]() { m_presenter.update(); });
+		m_updatePrompt.setOkCallback([this]() { m_presenter->update(); });
 		m_updatePrompt.okVisible(true);
 		m_updatePrompt.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_updatePrompt.setAlign(LV_ALIGN_CENTER, 0, 0);
@@ -180,7 +180,7 @@ namespace UI
 		// lv_ffmpeg_player_set_cmd(player, LV_FFMPEG_PLAYER_CMD_START);
 		// lv_obj_set_size(player, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
-		m_presenter.init();
+		// m_presenter->init();
 	}
 
 	void HomeView::refresh()
@@ -257,9 +257,16 @@ namespace UI
 		lv_obj_set_flag(m_kb, LV_OBJ_FLAG_HIDDEN, !show);
 	}
 
-	void HomeView::showUpdatePrompt()
+	void HomeView::showUpdatePrompt(bool show)
 	{
 		UI_LOCK();
-		m_updatePrompt.show();
+		if (show)
+		{
+			m_updatePrompt.show();
+		}
+		else
+		{
+			m_updatePrompt.hide();
+		}
 	}
 } // namespace UI

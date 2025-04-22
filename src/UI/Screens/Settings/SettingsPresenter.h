@@ -10,7 +10,7 @@ namespace UI
 	class SettingsPresenter : public Presenter<SettingsView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(SettingsPresenter, SettingsView)
 
 	  private:
 	};
@@ -18,7 +18,7 @@ namespace UI
 	class NetworkSettingsPresenter : public Presenter<NetworkSettingsView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(NetworkSettingsPresenter, NetworkSettingsView)
 
 		// Actions
 		void setWifiEnabled(bool enabled);

@@ -58,7 +58,7 @@ namespace UI
 	{
 		info("Macros button pressed");
 		FileView& fileView = HomeView::instance().getFileView();
-		fileView.getPresenter().setBaseFolder(FilePresenter::BaseFolder::MACROS);
+		fileView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
 		openScreen(&fileView, true);
 	}
 
@@ -72,6 +72,6 @@ namespace UI
 	{
 		info("E-Stop button pressed");
 		SideBar* sb = static_cast<SideBar*>(lv_event_get_user_data(e));
-		sb->m_presenter.eStop();
+		sb->m_presenter->eStop();
 	}
 } // namespace UI

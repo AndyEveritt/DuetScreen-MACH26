@@ -75,7 +75,7 @@ namespace UI
 
 		m_slider.setLabel(utils::format(_("fan"), index).c_str());
 		m_slider.setRange(0, 100);
-		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter.setFanSpeed(m_index, value); });
+		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter->setFanSpeed(m_index, value); });
 
 		m_off.setCallback(onFanOffClicked, LV_EVENT_CLICKED, this);
 		m_max.setCallback(onFanMaxClicked, LV_EVENT_CLICKED, this);
@@ -101,13 +101,13 @@ namespace UI
 	{
 		UI_LOCK();
 		FanItem* item = static_cast<FanItem*>(lv_event_get_user_data(e));
-		item->m_view.m_presenter.setFanSpeed(item->m_index, 0);
+		item->m_view.m_presenter->setFanSpeed(item->m_index, 0);
 	}
 
 	void FanView::FanItem::onFanMaxClicked(lv_event_t* e)
 	{
 		UI_LOCK();
 		FanItem* item = static_cast<FanItem*>(lv_event_get_user_data(e));
-		item->m_view.m_presenter.setFanSpeed(item->m_index, 100);
+		item->m_view.m_presenter->setFanSpeed(item->m_index, 100);
 	}
 } // namespace UI

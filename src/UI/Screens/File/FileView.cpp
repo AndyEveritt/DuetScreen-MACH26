@@ -213,7 +213,7 @@ namespace UI
 			return;
 		}
 
-		m_presenter.itemClicked(index);
+		m_presenter->itemClicked(index);
 	}
 
 	bool FileView::cancelStartPrint()
@@ -235,7 +235,7 @@ namespace UI
 		m_startPrint.setOkCallback(
 			[this]()
 			{
-				m_presenter.startPrint();
+				m_presenter->startPrint();
 				openScreen(&HomeView::instance().getStatusView());
 			});
 		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail : nullptr);
@@ -247,7 +247,7 @@ namespace UI
 		UI_LOCK();
 		m_startPrint.setTitle(_("file_run_macro_title"));
 		m_startPrint.setText(utils::format(_("file_run_macro_message"), filename));
-		m_startPrint.setOkCallback([this]() { m_presenter.runMacro(); });
+		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });
 		m_startPrint.show();
 	}
 
@@ -286,7 +286,7 @@ namespace UI
 		UI_LOCK();
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		view->cancelStartPrint();
-		view->m_presenter.refreshFiles();
+		view->m_presenter->refreshFiles();
 	}
 
 	void FileView::onSortClicked(lv_event_t* e)
@@ -297,12 +297,12 @@ namespace UI
 		FilePresenter::SortBy sort =
 			static_cast<FilePresenter::SortBy>(reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn)));
 
-		bool forward = view->m_presenter.getSortOrder();
-		if (view->m_presenter.getSortBy() == sort)
+		bool forward = view->m_presenter->getSortOrder();
+		if (view->m_presenter->getSortBy() == sort)
 		{
 			forward = !forward;
 		}
-		view->m_presenter.setSort(sort, forward);
+		view->m_presenter->setSort(sort, forward);
 	}
 
 	bool FileView::back()
@@ -312,7 +312,7 @@ namespace UI
 		{
 			return true;
 		}
-		return m_presenter.back();
+		return m_presenter->back();
 	}
 
 	void FileView::onShow()

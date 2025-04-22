@@ -49,12 +49,12 @@ namespace UI
 
 	uint8_t ToolListItem::getSlotIndex() const
 	{
-		return (uint8_t)m_presenter.getSlotIndex();
+		return (uint8_t)m_presenter->getSlotIndex();
 	}
 
 	void ToolListItem::setSlotIndex(uint8_t index)
 	{
-		m_presenter.setSlotIndex(index);
+		m_presenter->setSlotIndex(index);
 	}
 
 	void ToolListItem::setLabel(const char* text)
@@ -153,13 +153,13 @@ namespace UI
 	void ToolListItem::onNameEvent(lv_event_t* e)
 	{
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
-		view->m_presenter.toggleState();
+		view->m_presenter->toggleState();
 	}
 
 	void ToolListItem::onStatusEvent(lv_event_t* e)
 	{
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
-		view->m_presenter.toggleSubState();
+		view->m_presenter->toggleSubState();
 	}
 
 	void ToolListItem::onActiveStandbyEvent(lv_event_t* e)
@@ -167,7 +167,7 @@ namespace UI
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
 		lv_obj_t* obj = lv_event_get_target_obj(e);
 
-		if (!view->m_presenter.configureNumberPad(obj == view->m_activeTemp))
+		if (!view->m_presenter->configureNumberPad(obj == view->m_activeTemp))
 		{
 			warn("Failed to configure number pad");
 			view->getToolList().hideNumberPad();

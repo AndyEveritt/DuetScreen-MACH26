@@ -10,7 +10,7 @@ namespace UI
 	class StatusPresenter : public Presenter<StatusView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(StatusPresenter, StatusView)
 
 		// Actions
 		void pausePrint();

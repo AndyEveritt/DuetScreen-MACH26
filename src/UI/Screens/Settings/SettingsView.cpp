@@ -125,7 +125,7 @@ namespace UI
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 	}
 
-	SettingsPresenter& SettingsSubView::getMainSettingsPresenter() const
+	std::shared_ptr<SettingsPresenter> SettingsSubView::getMainSettingsPresenter() const
 	{
 		return m_mainSettingsView->getPresenter();
 	}
@@ -349,7 +349,7 @@ namespace UI
 	{
 		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
-		view->getPresenter().setWifiEnabled(lv_obj_has_state(view->m_enable, LV_STATE_CHECKED));
+		view->getPresenter()->setWifiEnabled(lv_obj_has_state(view->m_enable, LV_STATE_CHECKED));
 	}
 
 	void NetworkSettingsView::onNetworkSelectionEvent(lv_event_t* e)
@@ -371,7 +371,7 @@ namespace UI
 
 		if (col == 3)
 		{
-			view->getPresenter().forgetNetwork(lv_table_get_cell_value(table, row, 0));
+			view->getPresenter()->forgetNetwork(lv_table_get_cell_value(table, row, 0));
 			return;
 		}
 
@@ -386,7 +386,7 @@ namespace UI
 			return;
 		}
 
-		view->getPresenter().connectToNetwork(ssid);
+		view->getPresenter()->connectToNetwork(ssid);
 	}
 
 	void NetworkSettingsView::onPasswordCloseEvent(lv_event_t* e)
@@ -403,8 +403,8 @@ namespace UI
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
 		view->getMainSettingsView()->showKeyboard(false);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
-		view->getPresenter().connectToNetwork(lv_label_get_text(view->m_passwordSsid),
-											  lv_textarea_get_text(view->m_passwordInput));
+		view->getPresenter()->connectToNetwork(lv_label_get_text(view->m_passwordSsid),
+											   lv_textarea_get_text(view->m_passwordInput));
 	}
 
 	void NetworkSettingsView::onRefreshEvent(lv_event_t* e)
@@ -412,13 +412,13 @@ namespace UI
 		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
-		view->getPresenter().scanWifi();
+		view->getPresenter()->scanWifi();
 	}
 
 	void NetworkSettingsView::onShow()
 	{
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
-		getPresenter().scanWifi();
+		getPresenter()->scanWifi();
 	}
 
 	void NetworkSettingsView::onHide()

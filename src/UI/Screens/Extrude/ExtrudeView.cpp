@@ -309,7 +309,7 @@ namespace UI
 	{
 		ToolItem::Heater* heater = static_cast<ToolItem::Heater*>(lv_event_get_user_data(e));
 		lv_obj_t* obj = lv_event_get_target_obj(e);
-		heater->tool.getList()->m_presenter.configureNumberPad(
+		heater->tool.getList()->m_presenter->configureNumberPad(
 			heater->tool.m_index, heater->index, obj == heater->active);
 		heater->tool.getList()->showNumberPad(true);
 	}
@@ -518,22 +518,22 @@ namespace UI
 
 	void ExtrudeView::toggleToolState(size_t index)
 	{
-		m_presenter.toggleToolState(index);
+		m_presenter->toggleToolState(index);
 	}
 
 	void ExtrudeView::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
 	{
-		m_presenter.toggleHeaterState(toolIndex, heaterIndex);
+		m_presenter->toggleHeaterState(toolIndex, heaterIndex);
 	}
 
 	void ExtrudeView::loadFilament(size_t index, const char* filament)
 	{
-		m_presenter.loadFilament(index, filament);
+		m_presenter->loadFilament(index, filament);
 	}
 
 	void ExtrudeView::unloadFilament(size_t index)
 	{
-		m_presenter.unloadFilament(index);
+		m_presenter->unloadFilament(index);
 	}
 
 	void ExtrudeView::showNumberPad(bool show)
@@ -556,7 +556,7 @@ namespace UI
 		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
 		auto dist = s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex];
 		auto rate = s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex];
-		view->m_presenter.retract(dist, rate);
+		view->m_presenter->retract(dist, rate);
 	}
 
 	void ExtrudeView::onExtrudeEvent(lv_event_t* e)
@@ -565,7 +565,7 @@ namespace UI
 		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
 		auto dist = s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex];
 		auto rate = s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex];
-		view->m_presenter.extrude(dist, rate);
+		view->m_presenter->extrude(dist, rate);
 	}
 
 	void ExtrudeView::onFeedDistEvent(lv_event_t* e)

@@ -19,7 +19,7 @@ namespace UI
 
 		void setMainSettingsView(SettingsView* mainSettingsView) { m_mainSettingsView = mainSettingsView; }
 		SettingsView* getMainSettingsView() const { return m_mainSettingsView; }
-		SettingsPresenter& getMainSettingsPresenter() const;
+		std::shared_ptr<SettingsPresenter> getMainSettingsPresenter() const;
 
 	  protected:
 		static void onTextAreaEvent(lv_event_t* e);

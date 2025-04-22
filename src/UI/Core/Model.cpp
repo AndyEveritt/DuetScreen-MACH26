@@ -11,7 +11,7 @@
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
   {                                                                                                                    \
 	auto it = m_presenters.begin();                                                                                    \
-	UI::BasePresenter* presenter = nullptr;                                                                            \
+	std::shared_ptr<UI::BasePresenter> presenter;                                                                      \
 	while (true)                                                                                                       \
 	{                                                                                                                  \
 	  {                                                                                                                \
@@ -59,14 +59,14 @@ Model::Model()
 	}
 }
 
-void Model::bind(UI::BasePresenter* presenter)
+void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
 {
 	MODEL_LOCK();
 	unbind(presenter);
 	m_presenters.push_back(presenter);
 }
 
-void Model::unbind(UI::BasePresenter* presenter)
+void Model::unbind(std::shared_ptr<UI::BasePresenter> presenter)
 {
 	MODEL_LOCK();
 	m_presenters.remove(presenter);

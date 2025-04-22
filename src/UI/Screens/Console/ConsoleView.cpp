@@ -197,7 +197,7 @@ namespace UI
 			{
 				// Send the command
 				view->addCommand(text);
-				view->m_presenter.sendGcode(text);
+				view->m_presenter->sendGcode(text);
 			}
 			break;
 		}

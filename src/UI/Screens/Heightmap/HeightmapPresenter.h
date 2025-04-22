@@ -16,7 +16,7 @@ namespace UI
 	class HeightmapPresenter : public Presenter<HeightmapView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(HeightmapPresenter, HeightmapView)
 
 		// Actions
 		void setHeightmap(const std::shared_ptr<OM::Heightmap>& heightmap);

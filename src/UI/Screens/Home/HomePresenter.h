@@ -11,8 +11,10 @@ namespace UI
 	class HomePresenter : public Presenter<HomeView>
 	{
 	  public:
-		using Presenter::Presenter;
-		void init();
+		// using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(HomePresenter, HomeView)
+
+		virtual void init() override;
 
 		void tick() override;
 		virtual void refresh() override;

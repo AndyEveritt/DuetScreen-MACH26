@@ -2,6 +2,7 @@
 #include "HomeView.h"
 
 #include "Hardware/Duet.h"
+#include "Hardware/Usb.h"
 #include "ObjectModel/Heat.h"
 #include "ObjectModel/Sensor.h"
 #include "UI/Core/Navigation.h"
@@ -12,7 +13,24 @@
 
 namespace UI
 {
-	void HomePresenter::init() {}
+	void HomePresenter::init()
+	{
+		USB::UsbMonitor::getInstance().registerCallback(
+			[this](const std::string& path, bool mounted)
+			{
+				if (mounted)
+				{
+					return;
+				}
+
+				if (m_updateFile.rfind(path, 0) != 0)
+				{
+					return;
+				}
+				m_updateFile.clear();
+				m_view->showUpdatePrompt(false);
+			});
+	}
 
 	void HomePresenter::tick()
 	{
@@ -47,7 +65,7 @@ namespace UI
 	void HomePresenter::newUpdateAvailable(const std::string& file)
 	{
 		m_updateFile = file.c_str();
-		m_view->showUpdatePrompt();
+		m_view->showUpdatePrompt(true);
 	}
 
 	void HomePresenter::newAxesData()

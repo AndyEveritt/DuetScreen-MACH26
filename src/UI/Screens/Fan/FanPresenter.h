@@ -9,7 +9,7 @@ namespace UI
 	class FanPresenter : public Presenter<FanView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(FanPresenter, FanView)
 
 		// Actions
 		void setFanSpeed(size_t slot, uint32_t value);

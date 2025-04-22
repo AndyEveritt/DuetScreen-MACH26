@@ -53,7 +53,7 @@ namespace UI
 		SettingsView& getSettingsView() { return m_settingsView; }
 		StatusView& getStatusView() { return m_statusView; }
 
-		void showUpdatePrompt();
+		void showUpdatePrompt(bool show);
 
 	  private:
 		HomeView();

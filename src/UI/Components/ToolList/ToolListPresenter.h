@@ -22,7 +22,7 @@ namespace UI
 	class ToolListItemPresenter : public Presenter<ToolListItem>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(ToolListItemPresenter, ToolListItem)
 
 		int8_t getSlotIndex() const;
 		void setSlotIndex(int8_t index);
@@ -69,7 +69,7 @@ namespace UI
 	class ToolListPresenter : public Presenter<ToolList>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(ToolListPresenter, ToolList)
 
 		void newToolData() override;
 		void newHeaterData() override;

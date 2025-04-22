@@ -9,7 +9,7 @@ namespace UI
 	class ConsolePresenter : public Presenter<ConsoleView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(ConsolePresenter, ConsoleView)
 
 		// Actions
 		bool back();

@@ -3,25 +3,26 @@
 #include "ModelListener.h"
 #include "Subscribers/Subscribers.h"
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace UI
 {
+#define PRESENTER_CONSTRUCTOR(PresenterType, ViewType)                                                                 \
+	PresenterType(BaseView* view)                                                                                      \
+		: Presenter<ViewType>(view)                                                                                    \
+	{                                                                                                                  \
+		init();                                                                                                        \
+	}
+
 	class BaseView;
 
 	class BasePresenter : public ModelListener
 	{
 	  public:
-		void activate()
-		{
-			m_model.bind(this);
-			onActivate();
-		}
-		void deactivate()
-		{
-			m_model.unbind(this);
-			onDeactivate();
-		}
+		virtual void init() {}
+		void activate() { onActivate(); }
+		void deactivate() { onDeactivate(); }
 
 	  protected:
 		virtual void onActivate() {}
@@ -32,22 +33,13 @@ namespace UI
 	class Presenter : public BasePresenter
 	{
 	  public:
-		Presenter()
-			: m_view(nullptr)
-		{
-		}
-
 		Presenter(BaseView* view)
 			: m_view(static_cast<V*>(view))
 		{
 		}
 
-		Presenter(V* view)
-			: m_view(view)
-		{
-		}
+		V* m_view;
 
 	  protected:
-		V* m_view;
 	};
 } // namespace UI

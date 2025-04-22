@@ -9,7 +9,7 @@ namespace UI
 	class MovePresenter : public Presenter<MoveView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(MovePresenter, MoveView)
 
 		// Actions
 		void homeAll();

@@ -9,7 +9,7 @@ namespace UI
 	class ExtrudePresenter : public Presenter<ExtrudeView>
 	{
 	  public:
-		using Presenter::Presenter;
+		PRESENTER_CONSTRUCTOR(ExtrudePresenter, ExtrudeView)
 
 		// Actions
 		void retract(uint32_t distance, uint32_t feedrate);
