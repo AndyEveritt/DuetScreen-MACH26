@@ -112,7 +112,6 @@ int main(int argc, char** argv)
 			if (mounted)
 			{
 				info("USB drive mounted: %s", path.c_str());
-				
 				std::string upgradeFilePath = path + "/DuetScreen.tar.gz";
 				if (!std::filesystem::exists(upgradeFilePath))
 				{
