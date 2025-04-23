@@ -24,7 +24,7 @@
 
 #include "Debug.h"
 
-#define jserror(fmt, args...) error("jsError id='%s' @ %d: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
+#define jserror(fmt, args...) LOG_ERROR("jsError id='%s' @ %d: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
 
 namespace Comm
 {
@@ -170,7 +170,7 @@ namespace Comm
 		if (m_seq != nullptr)
 		{
 			m_seq->state = SeqStateOk;
-			dbg("seq %s %d DONE", m_seq->key, m_seq->state);
+			LOG_DBG("seq %s %d DONE", m_seq->key, m_seq->state);
 			m_seq = nullptr;
 		}
 
@@ -198,7 +198,8 @@ namespace Comm
 	// Public functions called by the SerialIo module
 	void JsonDecoder::ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
-		verbose("%s (indices [%d|%d|%d|%d]) = '%s'", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
+		LOG_VERBOSE(
+			"%s (indices [%d|%d|%d|%d]) = '%s'", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
 		if (StringStartsWith(id.c_str(), "result"))
 		{
 			// We might either get something like:
@@ -230,7 +231,7 @@ namespace Comm
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		verbose("event: %s(%d) data '%s'", searchResult->key, searchResult->val, data);
+		LOG_VERBOSE("event: %s(%d) data '%s'", searchResult->key, searchResult->val, data);
 		switch (rde)
 		{
 		// M409 section
@@ -310,7 +311,7 @@ namespace Comm
 	void JsonDecoder::ProcessArrayEnd(const char id[], const size_t indices[])
 	{
 		// search for key in subscribers
-		// verbose("searching for array end subscribers for '%s'", id);
+		// LOG_VERBOSE("searching for array end subscribers for '%s'", id);
 		Model::get().runArrayEndSubscribers(id, this, indices);
 	}
 
@@ -320,7 +321,7 @@ namespace Comm
 
 		if (errors > parserMinErrors)
 		{
-			error("Warning: received %d malformed responses for id \"%s\"", errors, id);
+			LOG_ERROR("Warning: received %d malformed responses for id \"%s\"", errors, id);
 		}
 		if (m_seq == nullptr)
 		{
@@ -332,7 +333,7 @@ namespace Comm
 
 	void JsonDecoder::RemoveLastId()
 	{
-		// verbose("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
+		// LOG_VERBOSE("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
 		size_t index = m_fieldId.strlen();
 		while (index != 0 && m_fieldId[index - 1] != '^' && m_fieldId[index - 1] != ':')
 		{
@@ -340,7 +341,7 @@ namespace Comm
 		}
 		m_fieldId.Truncate(index);
 
-		// verbose("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
+		// LOG_VERBOSE("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
 	}
 
 	void JsonDecoder::RemoveLastIdChar()
@@ -371,13 +372,13 @@ namespace Comm
 
 	void JsonDecoder::EndArray()
 	{
-		verbose("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
-				m_fieldId.c_str(),
-				m_arrayIndices[0],
-				m_arrayIndices[1],
-				m_arrayIndices[2],
-				m_arrayIndices[3],
-				m_arrayDepth);
+		LOG_VERBOSE("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
+					m_fieldId.c_str(),
+					m_arrayIndices[0],
+					m_arrayIndices[1],
+					m_arrayIndices[2],
+					m_arrayIndices[3],
+					m_arrayDepth);
 
 		ProcessArrayEnd(m_fieldId.c_str(), m_arrayIndices);
 
@@ -583,24 +584,24 @@ namespace Comm
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
 		m_nextOut = 0;
-		dbg("len=%u: %s", len, rxBuffer);
+		LOG_DBG("len=%u: %s", len, rxBuffer);
 		while (len != m_nextOut)
 		{
 			char c = rxBuffer[m_nextOut];
-			// verbose("char %d: %c", m_nextOut, c);
+			// LOG_VERBOSE("char %d: %c", m_nextOut, c);
 			m_nextOut = (m_nextOut + 1) % (len + 1);
 			if (c == '\n')
 			{
 				if (m_state == jsError)
 				{
-					error("ParserErrorEncountered @ %d", m_nextOut);
+					LOG_ERROR("ParserErrorEncountered @ %d", m_nextOut);
 
 					m_serialIoErrors++;
 
 					ParserErrorEncountered(m_lastState,
 										   m_fieldId.c_str(),
 										   m_serialIoErrors); // Notify the consumer that we ran into an error
-					error("rxBuffer: %s", rxBuffer);
+					LOG_ERROR("rxBuffer: %s", rxBuffer);
 					m_lastState = jsBegin;
 				}
 				m_state = jsBegin; // abandon current parse (if any) and start again
@@ -651,7 +652,7 @@ namespace Comm
 					default:
 						m_state = jsError;
 
-						error("jsError: jsExpectId, expected [\" or }] but got \"%c\"", c);
+						LOG_ERROR("jsError: jsExpectId, expected [\" or }] but got \"%c\"", c);
 						break;
 					}
 					break;
@@ -982,7 +983,7 @@ namespace Comm
 #if 0
 				if (m_lastState != m_state)
 				{
-					verbose("state %d -> %d", m_lastState, m_state);
+					LOG_VERBOSE("state %d -> %d", m_lastState, m_state);
 				}
 #endif
 			}

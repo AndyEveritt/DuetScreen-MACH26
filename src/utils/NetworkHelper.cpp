@@ -50,7 +50,7 @@ namespace NetworkHelper
 					break;
 				if (ferror(pipe) && errno == EINTR)
 					continue;
-				error("Failed to read command output");
+				LOG_ERROR("Failed to read command output");
 				return "";
 			}
 
@@ -73,13 +73,13 @@ namespace NetworkHelper
 	static std::string executeCommandWithOutput(const std::string& command)
 	{
 #if SIMULATION
-		info("Simulating command: %s", command.c_str());
+		LOG_INFO("Simulating command: %s", command.c_str());
 		return "";
 #else
 		std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
 		if (!pipe)
 		{
-			error("Failed to run command: %s", command.c_str());
+			LOG_ERROR("Failed to run command: %s", command.c_str());
 			return "";
 		}
 
@@ -89,13 +89,13 @@ namespace NetworkHelper
 		{
 			if (WEXITSTATUS(status) != 0)
 			{
-				error("Command failed with exit code: %d", WEXITSTATUS(status));
+				LOG_ERROR("Command failed with exit code: %d", WEXITSTATUS(status));
 				return "";
 			}
 		}
 		else
 		{
-			error("Command terminated abnormally");
+			LOG_ERROR("Command terminated abnormally");
 			return "";
 		}
 		return output;
@@ -109,7 +109,7 @@ namespace NetworkHelper
 		for (int attempt = 0; attempt < retries; ++attempt)
 		{
 #if SIMULATION
-			info("Simulating command: %s", command.c_str());
+			LOG_INFO("Simulating command: %s", command.c_str());
 			result = 0;
 #else
 			result = system(command.c_str());
@@ -121,7 +121,7 @@ namespace NetworkHelper
 
 			if (attempt < retries - 1)
 			{
-				error("Command failed (attempt %d), retrying in %dms...", attempt + 1, delay_ms);
+				LOG_ERROR("Command failed (attempt %d), retrying in %dms...", attempt + 1, delay_ms);
 				usleep(delay_ms * 1000);
 				delay_ms *= 2; // Exponential backoff
 			}
@@ -185,7 +185,7 @@ namespace NetworkHelper
 					}
 					catch (const std::exception& e)
 					{
-						error("Invalid network ID: %s", idStr.c_str());
+						LOG_ERROR("Invalid network ID: %s", idStr.c_str());
 					}
 				}
 			}
@@ -208,32 +208,32 @@ namespace NetworkHelper
 
 	static void connectToNetworkById(int32_t id)
 	{
-		info("Connecting to network id=%d", id);
+		LOG_INFO("Connecting to network id=%d", id);
 		std::string command = "wpa_cli select_network " + std::to_string(id);
 		int32_t errorCode = executeCommand(command.c_str());
 		if (errorCode != 0)
 		{
-			error("Failed to connect to network id=%d, code=%d", id, errorCode);
+			LOG_ERROR("Failed to connect to network id=%d, code=%d", id, errorCode);
 		}
 	}
 
 	static void save()
 	{
-		info("Saving wpa_supplicant configuration");
+		LOG_INFO("Saving wpa_supplicant configuration");
 		int32_t errorCode = executeCommand("wpa_cli save_config");
 		if (errorCode != 0)
 		{
-			error("Failed to save wpa_supplicant configuration, code=%d", errorCode);
+			LOG_ERROR("Failed to save wpa_supplicant configuration, code=%d", errorCode);
 		}
 	}
 
 	void enable(bool enable)
 	{
-		info("%s WiFi", enable ? "Enabling" : "Disabling");
+		LOG_INFO("%s WiFi", enable ? "Enabling" : "Disabling");
 		int32_t errorCode = executeCommand("ip link set " + INTERFACE + (enable ? " up" : " down"));
 		if (errorCode != 0)
 		{
-			error("Failed to %s WiFi, code=%d", enable ? "enable" : "disable", errorCode);
+			LOG_ERROR("Failed to %s WiFi, code=%d", enable ? "enable" : "disable", errorCode);
 		}
 	}
 
@@ -246,11 +246,11 @@ namespace NetworkHelper
 
 	void reconfigure()
 	{
-		info("Reconfiguring wpa_supplicant");
+		LOG_INFO("Reconfiguring wpa_supplicant");
 		int32_t errorCode = executeCommand("wpa_cli reconfigure");
 		if (errorCode != 0)
 		{
-			error("Failed to reconfigure wpa_supplicant, code=%d", errorCode);
+			LOG_ERROR("Failed to reconfigure wpa_supplicant, code=%d", errorCode);
 		}
 	}
 
@@ -263,7 +263,7 @@ namespace NetworkHelper
 
 	std::vector<WiFiNetwork> getKnownWiFiNetworks()
 	{
-		info("Getting known WiFi networks");
+		LOG_INFO("Getting known WiFi networks");
 		std::vector<WiFiNetwork> networks;
 		// reconfigure();
 
@@ -312,10 +312,10 @@ namespace NetworkHelper
 				network.id = stoi(idStr);
 				network.connected = flags.find("[CURRENT]") != std::string::npos;
 				networks.push_back(network);
-				info("Found known network: \"%s\", id: %d, current: %d",
-					 network.ssid.c_str(),
-					 network.id,
-					 network.connected);
+				LOG_INFO("Found known network: \"%s\", id: %d, current: %d",
+						 network.ssid.c_str(),
+						 network.id,
+						 network.connected);
 			}
 		}
 		return networks;
@@ -324,10 +324,10 @@ namespace NetworkHelper
 	std::vector<WiFiNetwork> scanWiFiNetworks()
 	{
 		std::vector<WiFiNetwork> knownNetworks = getKnownWiFiNetworks();
-		info("Found %d known networks", knownNetworks.size());
+		LOG_INFO("Found %d known networks", knownNetworks.size());
 
 		// sleep(2);
-		info("Scanning for WiFi networks");
+		LOG_INFO("Scanning for WiFi networks");
 		std::vector<WiFiNetwork> networks;
 		std::string output = executeCommandWithOutput("iw dev " + INTERFACE + " scan");
 
@@ -355,26 +355,26 @@ namespace NetworkHelper
 					{
 						if (network.ssid == knownNetwork.ssid)
 						{
-							info("Network: \"%s\" matches known network \"%s\"",
-								 network.ssid.c_str(),
-								 knownNetwork.ssid.c_str());
+							LOG_INFO("Network: \"%s\" matches known network \"%s\"",
+									 network.ssid.c_str(),
+									 knownNetwork.ssid.c_str());
 							network.id = knownNetwork.id;
 							network.connected = knownNetwork.connected;
 							break;
 						}
 					}
-					info("Found network: \"%s\", signal: %d dBm, id: %d, %s",
-						 network.ssid.c_str(),
-						 network.signal_level,
-						 network.id,
-						 network.connected ? "connected" : "disconnected");
+					LOG_INFO("Found network: \"%s\", signal: %d dBm, id: %d, %s",
+							 network.ssid.c_str(),
+							 network.signal_level,
+							 network.id,
+							 network.connected ? "connected" : "disconnected");
 					networks.push_back(network);
 					network.clear();
 				}
 			}
 		}
 
-		info("Sorting networks by signal level");
+		LOG_INFO("Sorting networks by signal level");
 		std::sort(networks.begin(),
 				  networks.end(),
 				  [](const WiFiNetwork& a, const WiFiNetwork& b)
@@ -397,7 +397,7 @@ namespace NetworkHelper
 		std::ifstream wpa_supplicant(s_wpa_supplicant);
 		if (!wpa_supplicant.is_open())
 		{
-			error("Failed to open wpa_supplicant.conf");
+			LOG_ERROR("Failed to open wpa_supplicant.conf");
 			return false;
 		}
 
@@ -415,11 +415,11 @@ namespace NetworkHelper
 
 	void connect(const std::string& ssid)
 	{
-		info("Connecting to WiFi network \"%s\"", ssid.c_str());
+		LOG_INFO("Connecting to WiFi network \"%s\"", ssid.c_str());
 		int32_t id = getNetworkId(ssid);
 		if (id == -1)
 		{
-			error("Failed to get network id for \"%s\"", ssid.c_str());
+			LOG_ERROR("Failed to get network id for \"%s\"", ssid.c_str());
 			return;
 		}
 		connectToNetworkById(id);
@@ -427,15 +427,15 @@ namespace NetworkHelper
 
 	void connect(const std::string& ssid, const std::string& password)
 	{
-		info("Connecting to WiFi network \"%s\"", ssid.c_str());
+		LOG_INFO("Connecting to WiFi network \"%s\"", ssid.c_str());
 		if (!isNetworkKnown(ssid))
 		{
-			info("Network \"%s\" is not known, saving details", ssid.c_str());
+			LOG_INFO("Network \"%s\" is not known, saving details", ssid.c_str());
 			std::string command = "wpa_passphrase " + ssid + " " + password + " >>" + s_wpa_supplicant;
 			int32_t errorCode = executeCommand(command);
 			if (errorCode != 0)
 			{
-				error("Failed to save details for network \"%s\", code=%d", ssid.c_str(), errorCode);
+				LOG_ERROR("Failed to save details for network \"%s\", code=%d", ssid.c_str(), errorCode);
 				return;
 			}
 			reconfigure();
@@ -445,7 +445,7 @@ namespace NetworkHelper
 		int32_t id = getNetworkId(ssid);
 		if (id == -1)
 		{
-			error("Failed to get network id for \"%s\"", ssid.c_str());
+			LOG_ERROR("Failed to get network id for \"%s\"", ssid.c_str());
 			return;
 		}
 		connectToNetworkById(id);
@@ -453,34 +453,34 @@ namespace NetworkHelper
 
 	void disconnect()
 	{
-		info("Disconnecting from WiFi network");
+		LOG_INFO("Disconnecting from WiFi network");
 		int32_t errorCode = executeCommand("wpa_cli disconnect");
 	}
 
 	void reconnect()
 	{
-		info("Reconnecting to WiFi network");
+		LOG_INFO("Reconnecting to WiFi network");
 		int32_t errorCode = executeCommand("wpa_cli reconnect");
 		if (errorCode != 0)
 		{
-			error("Failed to restart wpa_supplicant, code=%d", errorCode);
+			LOG_ERROR("Failed to restart wpa_supplicant, code=%d", errorCode);
 		}
 	}
 
 	void forgetNetwork(const std::string& ssid)
 	{
-		info("Forgetting network \"%s\"", ssid.c_str());
+		LOG_INFO("Forgetting network \"%s\"", ssid.c_str());
 		int32_t id = getNetworkId(ssid);
 		if (id == -1)
 		{
-			error("Failed to get network id for \"%s\"", ssid.c_str());
+			LOG_ERROR("Failed to get network id for \"%s\"", ssid.c_str());
 			return;
 		}
 		std::string command = "wpa_cli remove_network " + std::to_string(id);
 		int32_t errorCode = executeCommand(command.c_str());
 		if (errorCode != 0)
 		{
-			error("Failed to forget network \"%s\", code=%d", ssid.c_str(), errorCode);
+			LOG_ERROR("Failed to forget network \"%s\", code=%d", ssid.c_str(), errorCode);
 			return;
 		}
 		save();

@@ -69,7 +69,7 @@ namespace Comm
 
 	void Duet::Reset()
 	{
-		verbose("Resetting Duet");
+		LOG_VERBOSE("Resetting Duet");
 		m_sessionKey = sm_noSessionKey;
 		m_sbcMode = false;
 		m_sessionTimeout = 0;
@@ -83,7 +83,7 @@ namespace Comm
 
 	void Duet::Reconnect()
 	{
-		warn("");
+		LOG_WARN("");
 		Disconnect();
 		Connect();
 	}
@@ -97,7 +97,7 @@ namespace Comm
 	{
 		if (type == m_config.communicationType)
 			return;
-		info("Setting communication type to %d", (int)type);
+		LOG_INFO("Setting communication type to %d", (int)type);
 		Disconnect();
 
 		m_config.communicationType = type;
@@ -117,12 +117,12 @@ namespace Comm
 	{
 		if (interval < MIN_PRINTER_POLL_INTERVAL)
 		{
-			warn("Poll interval too low, setting to %d", MIN_PRINTER_POLL_INTERVAL);
+			LOG_WARN("Poll interval too low, setting to %d", MIN_PRINTER_POLL_INTERVAL);
 			interval = MIN_PRINTER_POLL_INTERVAL;
 		}
-		info("Setting poll interval to %u (scaled to %u)",
-			 interval,
-			 static_cast<uint32_t>(interval * m_pollIntervalScale));
+		LOG_INFO("Setting poll interval to %u (scaled to %u)",
+				 interval,
+				 static_cast<uint32_t>(interval * m_pollIntervalScale));
 
 		m_config.pollInterval = interval;
 		saveConfig();
@@ -133,14 +133,14 @@ namespace Comm
 	{
 		if (scale <= 0.0f)
 		{
-			warn("Invalid scale factor %f", scale);
+			LOG_WARN("Invalid scale factor %f", scale);
 			return;
 		}
 
-		info("Scalling poll interval by %f from %u to %u",
-			 scale,
-			 GetScaledPollInterval(),
-			 static_cast<uint32_t>(m_config.pollInterval * scale));
+		LOG_INFO("Scalling poll interval by %f from %u to %u",
+				 scale,
+				 GetScaledPollInterval(),
+				 static_cast<uint32_t>(m_config.pollInterval * scale));
 
 		m_pollIntervalScale = scale;
 		saveConfig();
@@ -187,12 +187,12 @@ namespace Comm
 	{
 		if (r == NULL)
 		{
-			error("request \"%s\" failed!", req->url.c_str());
+			LOG_ERROR("request \"%s\" failed!", req->url.c_str());
 			AsyncGetInner(req, callback);
 			return false;
 		}
-		dbg("Response (async): %s %s", req->url.c_str(), r->status_message());
-		verbose("%s", r->body.c_str());
+		LOG_DBG("Response (async): %s %s", req->url.c_str(), r->status_message());
+		LOG_VERBOSE("%s", r->body.c_str());
 		callback(r);
 		return true;
 	}
@@ -209,14 +209,14 @@ namespace Comm
 		{
 			if (!Connect())
 			{
-				warn("Failed to connect to Duet, cannot send get request %s", path);
+				LOG_WARN("Failed to connect to Duet, cannot send get request %s", path);
 				return false;
 			}
 		}
 
 		auto req = std::make_shared<HttpRequest>();
 		PrepareRequest(*req, path, queryParameters);
-		dbg("Get (async): \"%s\", sessionKey=%u", req->url.c_str(), m_sessionKey);
+		LOG_DBG("Get (async): \"%s\", sessionKey=%u", req->url.c_str(), m_sessionKey);
 
 		// `sendAsync()` requires the client to still be alive later and does appear to be thread safe using a single
 		// client
@@ -238,7 +238,7 @@ namespace Comm
 		{
 			if (!Connect())
 			{
-				warn("Failed to connect to Duet, cannot send get request %s", path);
+				LOG_WARN("Failed to connect to Duet, cannot send get request %s", path);
 				r.status_code = HTTP_STATUS_NOT_FOUND;
 				return false;
 			}
@@ -246,19 +246,19 @@ namespace Comm
 
 		HttpRequest req;
 		PrepareRequest(req, path, queryParameters);
-		dbg("\"%s\", sessionKey=%u", req.url.c_str(), m_sessionKey);
+		LOG_DBG("\"%s\", sessionKey=%u", req.url.c_str(), m_sessionKey);
 
 		hv::HttpClient cli;
 		cli.send(&req, &r); // `send()` is not thread safe if using the same client so client is created on stack
 
-		dbg("Response (async): %s %s", req.url.c_str(), r.status_message());
+		LOG_DBG("Response (async): %s %s", req.url.c_str(), r.status_message());
 
 		if (r.status_code != HTTP_STATUS_OK)
 		{
-			error("HTTP error %d: Likely invalid sessionKey %u.", r.status_code, m_sessionKey);
+			LOG_ERROR("HTTP error %d: Likely invalid sessionKey %u.", r.status_code, m_sessionKey);
 			return false;
 		}
-		verbose("%s", r.body.c_str());
+		LOG_VERBOSE("%s", r.body.c_str());
 		m_lastRequestTime = TimeHelper::getCurrentTime();
 		return true;
 	}
@@ -275,7 +275,7 @@ namespace Comm
 		{
 			if (!Connect())
 			{
-				warn("Failed to connect to Duet, cannot send post request %s", subUrl);
+				LOG_WARN("Failed to connect to Duet, cannot send post request %s", subUrl);
 				return false;
 			}
 		}
@@ -283,7 +283,7 @@ namespace Comm
 		{
 			if (r.code == 401 || r.code == 403)
 			{
-				error("HTTP error %d: Likely invalid sessionKey %d. Running rr_connect", r.code, m_sessionKey);
+				LOG_ERROR("HTTP error %d: Likely invalid sessionKey %d. Running rr_connect", r.code, m_sessionKey);
 				Connect();
 				return Comm::Post(GetBaseUrl(), subUrl, r, queryParameters, data, m_sessionKey);
 			}
@@ -326,7 +326,7 @@ namespace Comm
 			UsbDevice& usb = getCurrentUsbDevice();
 			if (!usb.isConnected())
 			{
-				warn("USB device not connected");
+				LOG_WARN("USB device not connected");
 				connectUsbDevice();
 			}
 			usb.send(gcode.c_str());
@@ -347,7 +347,7 @@ namespace Comm
 
 	bool Duet::UploadFile(const char* filename, const std::string& contents)
 	{
-		info("Uploading file %s: %d bytes", filename, contents.size());
+		LOG_INFO("Uploading file %s: %d bytes", filename, contents.size());
 		// TODO add sleep
 
 		switch (m_config.communicationType)
@@ -357,7 +357,7 @@ namespace Comm
 			/* UART is too slow to support uploading files */
 			if (contents.size() > MAX_UART_UPLOAD_SIZE)
 			{
-				warn("File too large (%u) to upload via UART, limit is %u", contents.size(), MAX_UART_UPLOAD_SIZE);
+				LOG_WARN("File too large (%u) to upload via UART, limit is %u", contents.size(), MAX_UART_UPLOAD_SIZE);
 				return false;
 			}
 
@@ -382,7 +382,7 @@ namespace Comm
 			query["name"] = filename;
 			if (!Post("/rr_upload", r, query, contents))
 			{
-				error("HTTP error %d %s: Failed to upload file: %s", r.status_code, r.body, filename);
+				LOG_ERROR("HTTP error %d %s: Failed to upload file: %s", r.status_code, r.body, filename);
 				return false;
 			}
 			break;
@@ -395,7 +395,7 @@ namespace Comm
 
 	bool Duet::DownloadFile(const char* filename, std::string& contents)
 	{
-		info("Downloading file %s", filename);
+		LOG_INFO("Downloading file %s", filename);
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::network:
@@ -406,7 +406,7 @@ namespace Comm
 			query["name"] = filename;
 			if (!Get("/rr_download", r, query))
 			{
-				error("HTTP error %d: Failed to download file: %s", r.status_code, filename);
+				LOG_ERROR("HTTP error %d: Failed to download file: %s", r.status_code, filename);
 				return false;
 			}
 			contents = r.body;
@@ -414,7 +414,7 @@ namespace Comm
 			break;
 		}
 		default:
-			warn("Communication type not supported for downloading files");
+			LOG_WARN("Communication type not supported for downloading files");
 			return false;
 		}
 		return true;
@@ -440,7 +440,8 @@ namespace Comm
 						 JsonDecoder decoder;
 						 if (r->status_code != HTTP_STATUS_OK)
 						 {
-							 error("HTTP error %d: Failed to get model update for flags: %s", r->status_code, flags);
+							 LOG_ERROR(
+								 "HTTP error %d: Failed to get model update for flags: %s", r->status_code, flags);
 							 return false;
 						 }
 						 decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
@@ -452,7 +453,7 @@ namespace Comm
 			JsonDecoder decoder;
 			if (r.status_code != HTTP_STATUS_OK)
 			{
-				error("HTTP error %d: Failed to get model update for flags: %s", r.status_code, flags);
+				LOG_ERROR("HTTP error %d: Failed to get model update for flags: %s", r.status_code, flags);
 				break;
 			}
 			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
@@ -485,10 +486,10 @@ namespace Comm
 						 JsonDecoder decoder;
 						 if (r->status_code != HTTP_STATUS_OK)
 						 {
-							 error("HTTP error %d: Failed to get model update for key: %s, flags: %s",
-								   r->status_code,
-								   key,
-								   flags);
+							 LOG_ERROR("HTTP error %d: Failed to get model update for key: %s, flags: %s",
+									   r->status_code,
+									   key,
+									   flags);
 							 return false;
 						 }
 						 decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
@@ -500,7 +501,8 @@ namespace Comm
 			JsonDecoder decoder;
 			if (r.status_code != HTTP_STATUS_OK)
 			{
-				error("HTTP error %d: Failed to get model update for key: %s, flags: %s", r.status_code, key, flags);
+				LOG_ERROR(
+					"HTTP error %d: Failed to get model update for key: %s, flags: %s", r.status_code, key, flags);
 				break;
 			}
 			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
@@ -537,10 +539,10 @@ namespace Comm
 					JsonDecoder decoder;
 					if (r->status_code != 200)
 					{
-						error("HTTP error %d (%s): Failed to get file list for %s",
-							  r->status_code,
-							  r->status_message(),
-							  dir);
+						LOG_ERROR("HTTP error %d (%s): Failed to get file list for %s",
+								  r->status_code,
+								  r->status_message(),
+								  dir);
 						return false;
 					}
 					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
@@ -550,7 +552,7 @@ namespace Comm
 			break;
 		}
 		default:
-			warn("Communication type not supported for requesting file list");
+			LOG_WARN("Communication type not supported for requesting file list");
 			break;
 		}
 		return ret;
@@ -558,7 +560,7 @@ namespace Comm
 
 	bool Duet::RequestFileInfo(const char* filename)
 	{
-		dbg("for %s", filename);
+		LOG_DBG("for %s", filename);
 		bool ret = true;
 		switch (m_config.communicationType)
 		{
@@ -580,7 +582,8 @@ namespace Comm
 					JsonDecoder decoder;
 					if (r->status_code != 200)
 					{
-						error("HTTP error %d: Failed to get file info for file: %s", r->status_code, r->body.c_str());
+						LOG_ERROR(
+							"HTTP error %d: Failed to get file info for file: %s", r->status_code, r->body.c_str());
 						return false;
 					}
 					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
@@ -601,7 +604,7 @@ namespace Comm
 					Json::Reader reader;
 					Json::Value body;
 					const char* filename = name.c_str();
-					dbg("Name = %s", filename);
+					LOG_DBG("Name = %s", filename);
 					if (r.code != 200)
 					{
 						printf(
@@ -620,7 +623,7 @@ namespace Comm
 					}
 					if (!body.isMember("thumbnails"))
 					{
-						info("No thumbnails found for %s", filename);
+						LOG_INFO("No thumbnails found for %s", filename);
 						return false;
 					}
 					Json::Value thumbnailsJson = body["thumbnails"];
@@ -654,12 +657,12 @@ namespace Comm
 						std::string format = thumbnailsJson[i]["format"].asString();
 						if (!thumbnail.meta.SetImageFormat(format.c_str()))
 						{
-							warn("Unsupported thumbnail format: %s", format.c_str());
+							LOG_WARN("Unsupported thumbnail format: %s", format.c_str());
 							continue;
 						}
 						thumbnail.image.New(thumbnail.meta, filename);
 
-						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
+						LOG_INFO("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
 
 						hv::QueryParams query;
 						query["name"] = filename;
@@ -667,18 +670,18 @@ namespace Comm
 						{
 							// Request thumbnail data
 							query["offset"] = utils::format("%d", context.next);
-							info("Requesting thumbnail data for %s at offset %d\n", filename, context.next);
+							LOG_INFO("Requesting thumbnail data for %s at offset %d\n", filename, context.next);
 							if (!Get("/rr_thumbnail", r, query))
 							{
-								error("Failed to get thumbnail data for %s at offset %d", filename, context.next);
+								LOG_ERROR("Failed to get thumbnail data for %s at offset %d", filename, context.next);
 								continue;
 							}
-							dbg("Parsing rr_thumbnail response");
+							LOG_DBG("Parsing rr_thumbnail response");
 							reader.parse(r.body, body);
 
 							if (body.isMember("err") && body["err"].asInt() != 0)
 							{
-								error("Failed to get thumbnail data for %s at offset %d: %d",
+								LOG_ERROR("Failed to get thumbnail data for %s at offset %d: %d",
 									  filename,
 									  context.next,
 									  body["err"].asInt());
@@ -688,10 +691,10 @@ namespace Comm
 							if (body.isMember("next"))
 							{
 								context.next = body["next"].asInt();
-								dbg("Next thumbnail offset: %d", context.next);
+								LOG_DBG("Next thumbnail offset: %d", context.next);
 							}
 
-							dbg("Decoding thumbnail data");
+							LOG_DBG("Decoding thumbnail data");
 							if (body.isMember("data"))
 							{
 								ThumbnailBuf data;
@@ -717,7 +720,7 @@ namespace Comm
 
 	bool Duet::RequestThumbnail(const char* filename, uint32_t offset)
 	{
-		dbg("for %s, offset=%u", filename, offset);
+		LOG_DBG("for %s, offset=%u", filename, offset);
 		bool ret = true;
 		switch (m_config.communicationType)
 		{
@@ -738,7 +741,8 @@ namespace Comm
 					JsonDecoder decoder;
 					if (r->status_code != 200)
 					{
-						error("HTTP error %d: Failed to get thumbnail for file: %s", r->status_code, r->body.c_str());
+						LOG_ERROR(
+							"HTTP error %d: Failed to get thumbnail for file: %s", r->status_code, r->body.c_str());
 						return false;
 					}
 					decoder.SetPrefix("thumbnail:");
@@ -762,16 +766,16 @@ namespace Comm
 
 		if (reply.body.empty())
 		{
-			warn("Empty reply received");
+			LOG_WARN("Empty reply received");
 			return;
 		}
 
 		JsonDecoder decoder;
 		if (reply.body[0] != '{')
 		{
-			dbg("Reply not json: assuming it is a gcode response");
+			LOG_DBG("Reply not json: assuming it is a gcode response");
 
-			dbg("Removing \\r from reply body");
+			LOG_DBG("Removing \\r from reply body");
 			utils::removeCharFromString(reply.body, '\r');
 			size_t prevPosition = 0;
 			size_t position = reply.body.find("\n"); // Find the first occurrence of \n
@@ -784,13 +788,13 @@ namespace Comm
 			while (position != std::string::npos)
 			{
 				std::string line = reply.body.substr(prevPosition, position - prevPosition);
-				dbg("line: %s", line.c_str());
+				LOG_DBG("line: %s", line.c_str());
 				prevPosition = position + 1;
 				position = reply.body.find("\n", position + 1); // Find the next occurrence, if any
-				verbose("position=%u, prevPosition=%u", position, prevPosition);
+				LOG_VERBOSE("position=%u, prevPosition=%u", position, prevPosition);
 				if (line.empty())
 				{
-					verbose("Skipping empty line");
+					LOG_VERBOSE("Skipping empty line");
 					continue;
 				}
 				// Can skip checking the input since we know it's a gcode response
@@ -818,13 +822,13 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 		{
-			info("Opening UART %s at %u", DEFAULT_UART_PORT, GetBaudRate().rate);
+			LOG_INFO("Opening UART %s at %u", DEFAULT_UART_PORT, GetBaudRate().rate);
 			ret = SerialIo::Init(DEFAULT_UART_PORT, GetBaudRate().internal);
 			break;
 		}
 		case CommunicationType::network:
 		{
-			info("Connecting to Duet at %s", GetBaseUrl().c_str());
+			LOG_INFO("Connecting to Duet at %s", GetBaseUrl().c_str());
 
 			HttpResponse r;
 			hv::QueryParams query;
@@ -836,21 +840,21 @@ namespace Comm
 
 			if (r.status_code != HTTP_STATUS_OK)
 			{
-				error("rr_connect failed, returned response %d", r.status_code);
+				LOG_ERROR("rr_connect failed, returned response %d", r.status_code);
 				return false;
 			}
 
-			verbose("parsing rr_connect response");
+			LOG_VERBOSE("parsing rr_connect response");
 			auto body = nlohmann::json::parse(r.body, nullptr, false);
 			if (body.is_discarded())
 			{
-				error("Failed to parse JSON response from rr_connect");
+				LOG_ERROR("Failed to parse JSON response from rr_connect");
 				return false;
 			}
 
 			if (body.contains("err") && body["err"].get<int>() != 0)
 			{
-				error("rr_connect failed, returned error %d", body["err"].get<int>());
+				LOG_ERROR("rr_connect failed, returned error %d", body["err"].get<int>());
 				return false;
 			}
 
@@ -858,21 +862,21 @@ namespace Comm
 			{
 				m_sessionTimeout = body["sessionTimeout"].get<int>();
 				m_lastRequestTime = TimeHelper::getCurrentTime();
-				info("Duet session timeout set to %d", m_sessionTimeout);
+				LOG_INFO("Duet session timeout set to %d", m_sessionTimeout);
 			}
 
 			if (body.contains("sessionKey"))
 			{
 				SetSessionKey(body["sessionKey"].get<unsigned int>());
-				info("Duet session key = %u", m_sessionKey);
+				LOG_INFO("Duet session key = %u", m_sessionKey);
 			}
 			if (body.contains("isEmulated"))
 			{
 				SetSessionKey(sm_noSessionKey);
 				m_sbcMode = true;
-				info("Connected to Duet in SBC mode");
+				LOG_INFO("Connected to Duet in SBC mode");
 			}
-			info("rr_connect succeeded");
+			LOG_INFO("rr_connect succeeded");
 			ret = true;
 		}
 		case CommunicationType::usb:
@@ -913,7 +917,7 @@ namespace Comm
 			hv::QueryParams query;
 			if (!Comm::Get(GetBaseUrl(), "/rr_disconnect", r, query, m_sessionKey))
 			{
-				error("rr_disconnect failed, returned response %d", r.code);
+				LOG_ERROR("rr_disconnect failed, returned response %d", r.code);
 				return r.code;
 			}
 			Reset();
@@ -937,10 +941,10 @@ namespace Comm
 	{
 		if (!m_config.ipAddress.empty())
 		{
-			verbose("Using IP address %s", m_config.ipAddress.c_str());
+			LOG_VERBOSE("Using IP address %s", m_config.ipAddress.c_str());
 			return m_config.ipAddress;
 		}
-		verbose("Using hostname %s", m_config.hostname.c_str());
+		LOG_VERBOSE("Using hostname %s", m_config.hostname.c_str());
 		return m_config.hostname;
 	}
 
@@ -954,12 +958,12 @@ namespace Comm
 				return;
 			}
 		}
-		warn("Baud rate %u not found", baudRateCode);
+		LOG_WARN("Baud rate %u not found", baudRateCode);
 	}
 
 	void Duet::SetBaudRate(const baudrate_t& baudRate)
 	{
-		info("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
+		LOG_INFO("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
 		SerialIo::SetBaudRate(baudRate.internal);
 		m_config.baudRate = baudRate.internal;
 		saveConfig();
@@ -974,7 +978,7 @@ namespace Comm
 				return baud;
 			}
 		}
-		warn("Baud rate %u not found", m_config.baudRate);
+		LOG_WARN("Baud rate %u not found", m_config.baudRate);
 		return baudRates[0];
 	}
 
@@ -992,12 +996,12 @@ namespace Comm
 	void Duet::ClearIPAddress()
 	{
 		m_config.ipAddress.clear();
-		dbg("IP address cleared \"%s\"", m_config.ipAddress.c_str());
+		LOG_DBG("IP address cleared \"%s\"", m_config.ipAddress.c_str());
 	}
 
 	void Duet::SetHostname(const std::string hostname)
 	{
-		dbg("Hostname = %s", hostname.c_str());
+		LOG_DBG("Hostname = %s", hostname.c_str());
 		// TODO store hostname
 		m_config.hostname.clear();
 
@@ -1015,7 +1019,7 @@ namespace Comm
 		}
 
 		ClearIPAddress();
-		info("Set Duet hostname to %s", m_config.hostname.c_str());
+		LOG_INFO("Set Duet hostname to %s", m_config.hostname.c_str());
 		FILEINFO_CACHE->ClearCache();
 		if (m_config.communicationType == CommunicationType::network)
 			Connect();
@@ -1042,6 +1046,6 @@ namespace Comm
 	void Duet::SetSessionKey(const uint32_t key)
 	{
 		m_sessionKey = key;
-		info("Set Duet session key = %u", m_sessionKey);
+		LOG_INFO("Set Duet session key = %u", m_sessionKey);
 	}
 } // namespace Comm

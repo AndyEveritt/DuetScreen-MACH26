@@ -169,7 +169,7 @@ namespace UI
 
 		if (!view->m_presenter->configureNumberPad(obj == view->m_activeTemp))
 		{
-			warn("Failed to configure number pad");
+			LOG_WARN("Failed to configure number pad");
 			view->getToolList().hideNumberPad();
 			return;
 		}

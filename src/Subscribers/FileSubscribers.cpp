@@ -21,7 +21,7 @@
 bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::FileSystem::SetCurrentDir(data);
-	info("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
+	LOG_INFO("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
 	decoder->responseType = Comm::JsonDecoder::ResponseType::filelist;
 	Comm::JsonDecoder::FileListData* fileData =
 		new Comm::JsonDecoder::FileListData(OM::FileSystem::GetCurrentDirPath());
@@ -42,17 +42,17 @@ bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& 
 
 bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	dbg("Files: type check val=%s", data);
+	LOG_DBG("Files: type check val=%s", data);
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
 	switch (*data)
 	{
 	case 'd':
 		OM::FileSystem::AddFolderAt(index);
-		dbg("Files: folder at index %d", index);
+		LOG_DBG("Files: folder at index %d", index);
 		break;
 	case 'f':
 		OM::FileSystem::AddFileAt(index);
-		dbg("Files: file at index %d", index);
+		LOG_DBG("Files: file at index %d", index);
 		break;
 	}
 	return true;
@@ -61,7 +61,7 @@ bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, cons
 bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
-	info("Files: item[%u] name=%s", index, data);
+	LOG_INFO("Files: item[%u] name=%s", index, data);
 	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
@@ -73,7 +73,7 @@ bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, cons
 bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
-	info("Files: item[%u] size=%d", index, data);
+	LOG_INFO("Files: item[%u] size=%d", index, data);
 	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
@@ -84,7 +84,7 @@ bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, 
 bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
-	info("Files: item[%u] date=%s", index, data);
+	LOG_INFO("Files: item[%u] date=%s", index, data);
 	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
@@ -99,7 +99,7 @@ bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& d
 		// There is a key collision with `M409 K"boards" F"v"`, so we need to check if the key is part of an OM request
 		return true;
 	}
-	info("Files: next index = %d", data);
+	LOG_INFO("Files: next index = %d", data);
 
 	OM::FileSystem::RunCallback(data);
 

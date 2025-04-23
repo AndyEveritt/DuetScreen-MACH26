@@ -151,7 +151,7 @@ namespace UI
 	{
 		if (index >= m_series.size())
 		{
-			warn("Series index out of range");
+			LOG_WARN("Series index out of range");
 			return nullptr;
 		}
 		return &m_series[index];
@@ -164,7 +164,7 @@ namespace UI
 
 		if (series == nullptr)
 		{
-			error("Failed to create series");
+			LOG_ERROR("Failed to create series");
 			return false;
 		}
 
@@ -190,7 +190,7 @@ namespace UI
 		series_t* series = (series_t*)getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot update series, series not found");
+			LOG_WARN("Cannot update series, series not found");
 			return false;
 		}
 		setSeriesColor(*series, color);
@@ -202,7 +202,7 @@ namespace UI
 		series_t* series = (series_t*)getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot update series, series not found");
+			LOG_WARN("Cannot update series, series not found");
 			return false;
 		}
 		legend_obj_t* legendObj = series->legendObj.get();
@@ -215,7 +215,7 @@ namespace UI
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot show/hide series, series not found");
+			LOG_WARN("Cannot show/hide series, series not found");
 			return;
 		}
 		lv_chart_hide_series(m_chart, series->series, !show);
@@ -236,7 +236,7 @@ namespace UI
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot clear series, series not found");
+			LOG_WARN("Cannot clear series, series not found");
 			return;
 		}
 		lv_chart_remove_series(m_chart, series->series);
@@ -249,7 +249,7 @@ namespace UI
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot add data to series, series not found");
+			LOG_WARN("Cannot add data to series, series not found");
 			return;
 		}
 		lv_chart_set_next_value(m_chart, series->series, value);

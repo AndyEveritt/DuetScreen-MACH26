@@ -37,7 +37,7 @@ namespace UI
 		auto axis = OM::Move::GetAxisBySlot(axisSlot);
 		if (axis == nullptr)
 		{
-			warn("Axis %u not found", axisSlot);
+			LOG_WARN("Axis %u not found", axisSlot);
 			return;
 		}
 		axis->Home();
@@ -49,7 +49,7 @@ namespace UI
 		auto axis = OM::Move::GetAxisBySlot(axisSlot);
 		if (axis == nullptr)
 		{
-			warn("Axis %u not found", axisSlot);
+			LOG_WARN("Axis %u not found", axisSlot);
 			return;
 		}
 		axis->MoveRelative(distance, feedrate);
@@ -64,13 +64,13 @@ namespace UI
 			auto axis = OM::Move::GetAxis(i);
 			if (axis == nullptr)
 			{
-				warn("Axis %u not found", i);
+				LOG_WARN("Axis %u not found", i);
 				continue;
 			}
 			std::shared_ptr<AxisItem> item = m_view->getAxisItem(i);
 			if (item == nullptr)
 			{
-				warn("AxisItem %u not found", i);
+				LOG_WARN("AxisItem %u not found", i);
 				continue;
 			}
 			item->setAxisLetter(axis->letter);

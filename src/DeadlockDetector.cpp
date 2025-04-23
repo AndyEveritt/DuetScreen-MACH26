@@ -19,7 +19,7 @@ void DeadlockDetector::registerLock(const std::string& lockName, const void* loc
 {
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	m_registeredLocks[lockPtr] = lockName;
-	verbose("Lock registered: %s at %p", lockName.c_str(), lockPtr);
+	LOG_VERBOSE("Lock registered: %s at %p", lockName.c_str(), lockPtr);
 }
 
 void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
@@ -28,12 +28,12 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 
 	auto threadId = std::this_thread::get_id();
 	std::string lockName = getLockName(lockPtr);
-	verbose("Thread %u attempting to acquire lock: %s", threadId, lockName.c_str());
+	LOG_VERBOSE("Thread %u attempting to acquire lock: %s", threadId, lockName.c_str());
 
 	// Check if acquiring this lock might cause a deadlock
 	if (m_threadLocks.find(threadId) != m_threadLocks.end())
 	{
-		verbose("Thread %u already holds %zu locks", threadId, m_threadLocks[threadId].size());
+		LOG_VERBOSE("Thread %u already holds %zu locks", threadId, m_threadLocks[threadId].size());
 
 		auto threadLocks = m_threadLocks[threadId];
 
@@ -51,10 +51,10 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 				}
 				ownedLocks += getLockName(lock);
 			}
-			fatal("Thread %u is not allowed to take multiple locks, trying to take %s but already owns %s",
-				  threadId,
-				  lockName.c_str(),
-				  ownedLocks.c_str());
+			LOG_FATAL("Thread %u is not allowed to take multiple locks, trying to take %s but already owns %s",
+					  threadId,
+					  lockName.c_str(),
+					  ownedLocks.c_str());
 			return;
 		}
 		// Check if any other thread holds the lock we want and is waiting for a lock we hold
@@ -66,7 +66,7 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 			// Check if another thread holds the lock we want
 			if (threadEntry.second.find(lockPtr) != threadEntry.second.end())
 			{
-				verbose(
+				LOG_VERBOSE(
 					"Thread %u already holds the lock %s we're trying to acquire", threadEntry.first, lockName.c_str());
 
 				// Check if that thread is waiting for any lock we hold
@@ -75,12 +75,13 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 					if (waitEntry.first != threadEntry.first)
 						continue;
 
-					verbose("Thread %u is waiting for lock %s", waitEntry.first, getLockName(waitEntry.second).c_str());
+					LOG_VERBOSE(
+						"Thread %u is waiting for lock %s", waitEntry.first, getLockName(waitEntry.second).c_str());
 
 					if (m_threadLocks[threadId].find(waitEntry.second) == m_threadLocks[threadId].end())
 						continue;
 
-					verbose(
+					LOG_VERBOSE(
 						"Potential deadlock condition detected between threads %u and %u", threadId, threadEntry.first);
 
 					reportPotentialDeadlock(threadId, lockPtr, threadEntry.first, waitEntry.second);
@@ -91,7 +92,7 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 
 	// Record that this thread is waiting for this lock
 	m_threadWaiting[threadId] = lockPtr;
-	verbose("Thread %u now waiting for lock: %s", threadId, lockName.c_str());
+	LOG_VERBOSE("Thread %u now waiting for lock: %s", threadId, lockName.c_str());
 }
 
 void DeadlockDetector::afterLockAcquire(const void* lockPtr)
@@ -102,10 +103,10 @@ void DeadlockDetector::afterLockAcquire(const void* lockPtr)
 
 	m_threadLocks[threadId].insert(lockPtr);
 	m_threadWaiting.erase(threadId);
-	verbose("Thread %u acquired lock: %s (now holding %zu locks)",
-			threadId,
-			lockName.c_str(),
-			m_threadLocks[threadId].size());
+	LOG_VERBOSE("Thread %u acquired lock: %s (now holding %zu locks)",
+				threadId,
+				lockName.c_str(),
+				m_threadLocks[threadId].size());
 }
 
 void DeadlockDetector::beforeLockRelease(const void* lockPtr)
@@ -113,7 +114,7 @@ void DeadlockDetector::beforeLockRelease(const void* lockPtr)
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	auto threadId = std::this_thread::get_id();
 	std::string lockName = getLockName(lockPtr);
-	verbose("Thread %u about to release lock: %s", threadId, lockName.c_str());
+	LOG_VERBOSE("Thread %u about to release lock: %s", threadId, lockName.c_str());
 }
 
 void DeadlockDetector::afterLockRelease(const void* lockPtr)
@@ -126,12 +127,13 @@ void DeadlockDetector::afterLockRelease(const void* lockPtr)
 	{
 		m_threadLocks[threadId].erase(lockPtr);
 		size_t remainingLocks = m_threadLocks[threadId].size();
-		verbose("Thread %u released lock: %s (still holding %zu locks)", threadId, lockName.c_str(), remainingLocks);
+		LOG_VERBOSE(
+			"Thread %u released lock: %s (still holding %zu locks)", threadId, lockName.c_str(), remainingLocks);
 
 		if (remainingLocks == 0)
 		{
 			m_threadLocks.erase(threadId);
-			verbose("Thread %u no longer holds any locks, removing from tracking", threadId);
+			LOG_VERBOSE("Thread %u no longer holds any locks, removing from tracking", threadId);
 		}
 	}
 }
@@ -154,10 +156,10 @@ void DeadlockDetector::reportPotentialDeadlock(std::thread::id thread1,
 											   std::thread::id thread2,
 											   const void* lock2)
 {
-	error("POTENTIAL DEADLOCK DETECTED!");
-	error(
+	LOG_ERROR("POTENTIAL DEADLOCK DETECTED!");
+	LOG_ERROR(
 		"Thread %u holds %s and wants to acquire %s", thread1, getLockName(lock2).c_str(), getLockName(lock1).c_str());
-	error(
+	LOG_ERROR(
 		"Thread %u holds %s and wants to acquire %s", thread2, getLockName(lock1).c_str(), getLockName(lock2).c_str());
 }
 
@@ -172,7 +174,7 @@ void DeadlockDetector::allowThreadToTakeMultipleLocks(std::thread::id threadId, 
 	{
 		m_threadsAllowedToTakeMultipleLocks.erase(threadId);
 	}
-	verbose("Thread %u %s allowed to take multiple locks", threadId, allowed ? "is" : "is not");
+	LOG_VERBOSE("Thread %u %s allowed to take multiple locks", threadId, allowed ? "is" : "is not");
 }
 
 // DeadlockDetectingMutex implementation
@@ -181,7 +183,7 @@ DeadlockDetectingMutex::DeadlockDetectingMutex(const std::string& name, bool rec
 	, m_recursive(recursive)
 {
 	DeadlockDetector::getInstance().registerLock(name, &m_mutex);
-	verbose("DeadlockDetectingMutex created: %s (recursive: %s)", name.c_str(), recursive ? "yes" : "no");
+	LOG_VERBOSE("DeadlockDetectingMutex created: %s (recursive: %s)", name.c_str(), recursive ? "yes" : "no");
 }
 
 void DeadlockDetectingMutex::lock()
@@ -197,7 +199,7 @@ void DeadlockDetectingMutex::lock()
 		{
 			// This thread already owns the lock - just increment the count
 			it->second++;
-			verbose("Thread %u recursively locked mutex %s (count: %d)", threadId, m_name.c_str(), it->second);
+			LOG_VERBOSE("Thread %u recursively locked mutex %s (count: %d)", threadId, m_name.c_str(), it->second);
 			return;
 		}
 	}
@@ -220,7 +222,7 @@ void DeadlockDetectingMutex::lock()
 
 		if (elapsed > std::chrono::milliseconds(5000))
 		{
-			warn("Lock acquisition timeout for \"%s\" in thread %u", m_name.c_str(), std::this_thread::get_id());
+			LOG_WARN("Lock acquisition timeout for \"%s\" in thread %u", m_name.c_str(), std::this_thread::get_id());
 			start = now; // Reset the timer to continue logging periodically
 		}
 
@@ -232,7 +234,7 @@ void DeadlockDetectingMutex::lock()
 	{
 		std::lock_guard<std::mutex> guard(m_ownershipMutex);
 		m_ownershipCount[threadId] = 1;
-		verbose("Thread %u first-time lock of mutex %s", threadId, m_name.c_str());
+		LOG_VERBOSE("Thread %u first-time lock of mutex %s", threadId, m_name.c_str());
 	}
 
 	DeadlockDetector::getInstance().afterLockAcquire(&m_mutex);
@@ -251,7 +253,7 @@ bool DeadlockDetectingMutex::try_lock()
 		{
 			// This thread already owns the lock - just increment the count
 			it->second++;
-			verbose("Thread %u recursively try_locked mutex %s (count: %d)", threadId, m_name.c_str(), it->second);
+			LOG_VERBOSE("Thread %u recursively try_locked mutex %s (count: %d)", threadId, m_name.c_str(), it->second);
 			return true;
 		}
 	}
@@ -263,7 +265,7 @@ bool DeadlockDetectingMutex::try_lock()
 		{
 			std::lock_guard<std::mutex> guard(m_ownershipMutex);
 			m_ownershipCount[threadId] = 1;
-			verbose("Thread %u first-time try_lock of mutex %s", threadId, m_name.c_str());
+			LOG_VERBOSE("Thread %u first-time try_lock of mutex %s", threadId, m_name.c_str());
 		}
 		DeadlockDetector::getInstance().afterLockAcquire(&m_mutex);
 	}
@@ -284,14 +286,14 @@ void DeadlockDetectingMutex::unlock()
 			if (it != m_ownershipCount.end() && it->second > 0)
 			{
 				it->second--;
-				verbose("Thread %u unlocked mutex %s (count: %d)", threadId, m_name.c_str(), it->second);
+				LOG_VERBOSE("Thread %u unlocked mutex %s (count: %d)", threadId, m_name.c_str(), it->second);
 
 				if (it->second == 0)
 				{
 					// Last unlock, actually release the mutex
 					actuallyUnlock = true;
 					m_ownershipCount.erase(it);
-					verbose("Thread %u final unlock of mutex %s", threadId, m_name.c_str());
+					LOG_VERBOSE("Thread %u final unlock of mutex %s", threadId, m_name.c_str());
 				}
 				else
 				{
@@ -301,7 +303,7 @@ void DeadlockDetectingMutex::unlock()
 			}
 			else
 			{
-				error("Thread %u attempted to unlock mutex %s it doesn't own", threadId, m_name.c_str());
+				LOG_ERROR("Thread %u attempted to unlock mutex %s it doesn't own", threadId, m_name.c_str());
 				return;
 			}
 		}

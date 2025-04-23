@@ -27,7 +27,7 @@ namespace utils
 		FILE* pipe = popen(cmd, "r");
 		if (!pipe)
 		{
-			error("popen(%s) failed!", cmd);
+			LOG_ERROR("popen(%s) failed!", cmd);
 			return "";
 		}
 		while (!feof(pipe))
@@ -54,18 +54,26 @@ namespace utils
 
 	std::string vformat(const char* format, va_list args)
 	{
-		std::vector<char> buffer;
-
-		// Copy the va_list to use it twice
+		std::vector<char> buffer(256); // Start with reasonable buffer
 		va_list args_copy;
 		va_copy(args_copy, args);
-		// First call to vsnprintf to get the size
-		size_t size = vsnprintf(nullptr, 0, format, args_copy) + 1;
-		va_end(args_copy);
 
-		buffer.resize(size);
-		vsnprintf(buffer.data(), buffer.size(), format, args);
-		return std::string(buffer.data());
+		int result = vsnprintf(buffer.data(), buffer.size(), format, args_copy);
+
+		if (result < 0)
+		{
+			va_end(args_copy);
+			return std::string();
+		}
+
+		if (static_cast<size_t>(result) >= buffer.size())
+		{
+			buffer.resize(static_cast<size_t>(result) + 1);
+			result = vsnprintf(buffer.data(), buffer.size(), format, args);
+		}
+
+		va_end(args_copy);
+		return std::string(buffer.data(), static_cast<size_t>(result));
 	}
 
 	size_t removeCharFromString(std::string& nString, char c)

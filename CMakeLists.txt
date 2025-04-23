@@ -45,6 +45,9 @@ set(JSON_BuildTests
     CACHE INTERNAL "")
 add_subdirectory(${LIBRARIES_DIR}/json)
 
+# Logging
+include(${LIBRARIES_DIR}/spdlog.cmake)
+
 # ----------------------------------------------------------------------------
 # Set source files for executable
 # ----------------------------------------------------------------------------
@@ -137,7 +140,8 @@ target_link_libraries(
           m
           pthread
           hv_static
-          nlohmann_json::nlohmann_json)
+          nlohmann_json::nlohmann_json
+          spdlog::spdlog)
 
 # Custom target to run the executable
 add_custom_target(

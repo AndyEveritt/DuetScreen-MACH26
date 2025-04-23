@@ -447,13 +447,13 @@ namespace UI
 		lv_obj_set_style_pad_column(m_debugLevelCont, 5, 0);
 		lv_label_set_text(m_debugLevelLabel, _("settings_debug_level"));
 		std::string options;
-		for (const auto& level : DebugLevelStrings)
+		for (const auto& level : Log::DebugLevelStrings)
 		{
 			options += level;
 			options += "\n";
 		}
 		lv_dropdown_set_options(m_debugLevel, options.c_str());
-		lv_dropdown_set_selected(m_debugLevel, static_cast<uint32_t>(GetDebugLevel()), false);
+		lv_dropdown_set_selected(m_debugLevel, static_cast<uint32_t>(Log::GetDebugLevel()), false);
 		lv_dropdown_set_selected_highlight(m_debugLevel, true);
 		lv_obj_add_event_cb(m_debugLevel, onDebugLevelEvent, LV_EVENT_VALUE_CHANGED, NULL);
 
@@ -483,7 +483,7 @@ namespace UI
 		UI_LOCK();
 		lv_obj_t* dropdown = (lv_obj_t*)lv_event_get_target(e);
 		size_t lvl = lv_dropdown_get_selected(dropdown);
-		SetDebugLevel(static_cast<DebugLevel>(lvl));
+		Log::SetDebugLevel(static_cast<Log::DebugLevel>(lvl));
 	}
 
 #if DEBUG_BORDERS
@@ -502,7 +502,7 @@ namespace UI
 		UI_LOCK();
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
-		info("%s SSH", checked ? "Enabling" : "Disabling");
+		LOG_INFO("%s SSH", checked ? "Enabling" : "Disabling");
 		StorageHelper::setData<bool>(ID_SSH_ENABLED, checked);
 		if (checked)
 		{

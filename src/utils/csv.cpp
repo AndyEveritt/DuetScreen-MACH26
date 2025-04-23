@@ -20,22 +20,22 @@ namespace utils
 		size_t dataOffset = hasHeaders ? 1 : 0;
 		bool inQuote = false;
 
-		info("Parsing CSV: hasHeaders=%d", hasHeaders);
-		dbg("CSV contents: %s", csvContents.c_str());
+		LOG_INFO("Parsing CSV: hasHeaders=%d", hasHeaders);
+		LOG_DBG("CSV contents: %s", csvContents.c_str());
 
 		for (size_t i = 0; i < csvContents.size(); i++)
 		{
 			const char c = csvContents[i];
 			const char n = i < csvContents.size() - 1 ? csvContents[i + 1] : 0;
 
-			verbose("c=%c, n=%c, inQuote=%d, col=%u, row=%u", c, n, inQuote, col, row);
+			LOG_VERBOSE("c=%c, n=%c, inQuote=%d, col=%u, row=%u", c, n, inQuote, col, row);
 
 			// Make sure we have enough rows and columns
 			if (hasHeaders && row == 0)
 			{
 				if (m_headers.size() <= col)
 				{
-					verbose("Adding col %u to headers", col);
+					LOG_VERBOSE("Adding col %u to headers", col);
 					m_headers.push_back("");
 				}
 			}
@@ -43,12 +43,12 @@ namespace utils
 			{
 				if (m_data.size() <= row - dataOffset)
 				{
-					verbose("Adding row %u", row - dataOffset);
+					LOG_VERBOSE("Adding row %u", row - dataOffset);
 					m_data.push_back(std::vector<std::string>());
 				}
 				if (m_data[row - dataOffset].size() <= col)
 				{
-					verbose("Adding col %u to m_data[%u]", col, row - dataOffset);
+					LOG_VERBOSE("Adding col %u to m_data[%u]", col, row - dataOffset);
 					m_data[row - dataOffset].push_back("");
 				}
 			}
@@ -110,7 +110,7 @@ namespace utils
 		{
 			m_data.pop_back();
 		}
-		dbg("CSV: %u rows, %u cols", m_data.size(), m_data.size() > 0 ? m_data[0].size() : 0);
+		LOG_DBG("CSV: %u rows, %u cols", m_data.size(), m_data.size() > 0 ? m_data[0].size() : 0);
 	}
 
 	const std::vector<std::string>& CSV::GetHeaders() const
@@ -132,7 +132,7 @@ namespace utils
 	{
 		if (!m_hasHeaders)
 		{
-			warn("No headers in CSV");
+			LOG_WARN("No headers in CSV");
 			return false;
 		}
 
@@ -144,7 +144,7 @@ namespace utils
 			}
 		}
 
-		warn("Header \"%s\" not found", header.c_str());
+		LOG_WARN("Header \"%s\" not found", header.c_str());
 		return false;
 	}
 
@@ -152,13 +152,13 @@ namespace utils
 	{
 		if (row >= m_data.size())
 		{
-			warn("Row %u out of range, rows=%u", row, m_data.size());
+			LOG_WARN("Row %u out of range, rows=%u", row, m_data.size());
 			return false;
 		}
 
 		if (col >= m_data[row].size())
 		{
-			warn("Column %u out of range, row[%u].size()=%u", col, row, m_data[row].size());
+			LOG_WARN("Column %u out of range, row[%u].size()=%u", col, row, m_data[row].size());
 			return false;
 		}
 

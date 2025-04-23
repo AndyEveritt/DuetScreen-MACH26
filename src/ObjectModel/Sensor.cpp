@@ -10,6 +10,7 @@
 #include "ListHelpers.h"
 #include "Sensor.h"
 #include <Duet3D/General/Vector.h>
+#include <utils/TimeHelper.h>
 
 typedef Vector<std::shared_ptr<OM::AnalogSensor>, MAX_SENSORS> AnalogSensorList;
 typedef Vector<std::shared_ptr<OM::Endstop>, MAX_ENDSTOPS> EndstopList;
@@ -58,7 +59,7 @@ namespace OM
 
 	size_t RemoveAnalogSensor(const size_t index, const bool allFollowing)
 	{
-		dbg("Removing analogSensor %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		LOG_DBG("Removing analogSensor %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<AnalogSensorList, AnalogSensor>(s_analogSensors, index, allFollowing);
 	}
 
@@ -67,7 +68,7 @@ namespace OM
 		auto const sensor = GetOrCreateAnalogSensor(index);
 		if (sensor == nullptr)
 		{
-			warn("Failed to get or create analog sensor %d", index);
+			LOG_WARN("Failed to get or create analog sensor %d", index);
 			return false;
 		}
 
@@ -81,7 +82,7 @@ namespace OM
 		auto const sensor = GetOrCreateAnalogSensor(index);
 		if (sensor == nullptr)
 		{
-			warn("Failed to get or create analog sensor %d", index);
+			LOG_WARN("Failed to get or create analog sensor %d", index);
 			return false;
 		}
 
@@ -111,7 +112,7 @@ namespace OM
 
 	size_t RemoveEndstop(const size_t index, const bool allFollowing)
 	{
-		dbg("Removing endstop %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		LOG_DBG("Removing endstop %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<EndstopList, Endstop>(s_endstops, index, allFollowing);
 	}
 
@@ -120,7 +121,7 @@ namespace OM
 		auto const endstop = GetOrCreateEndstop(index);
 		if (endstop == nullptr)
 		{
-			warn("Failed to get or create endstop %d", index);
+			LOG_WARN("Failed to get or create endstop %d", index);
 			return false;
 		}
 

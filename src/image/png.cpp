@@ -34,7 +34,7 @@ bool PNG::Open()
 	m_imageFile = fopen(m_imageFileName, "wb");
 	if (m_imageFile == nullptr)
 	{
-		error("Failed to open file %s", m_imageFileName);
+		LOG_ERROR("Failed to open file %s", m_imageFileName);
 	}
 	return m_imageFile != nullptr;
 }
@@ -45,10 +45,10 @@ bool PNG::Close()
 	{
 		return true;
 	}
-	info("Closing file %s", m_imageFileName);
+	LOG_INFO("Closing file %s", m_imageFileName);
 	if (!fclose(m_imageFile) == 0)
 	{
-		error("Failed to close file %s", m_imageFileName);
+		LOG_ERROR("Failed to close file %s", m_imageFileName);
 		return false;
 	}
 	m_imageFile = nullptr;
@@ -59,7 +59,7 @@ size_t PNG::appendData(unsigned char data[], int size)
 {
 	if (!IsOpen())
 	{
-		warn("File %s not open", m_imageFileName);
+		LOG_WARN("File %s not open", m_imageFileName);
 		return 0;
 	}
 	dataSize += size;

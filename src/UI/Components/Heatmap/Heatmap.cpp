@@ -115,7 +115,7 @@ namespace UI
 		size_t px, py;
 		if (!m_canvas.posToPx(x, y, px, py))
 		{
-			warn("Invalid position (%f, %f) for heatmap", x, y);
+			LOG_WARN("Invalid position (%f, %f) for heatmap", x, y);
 			return;
 		}
 		setPx(px, py, value);

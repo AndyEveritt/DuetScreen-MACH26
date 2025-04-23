@@ -153,7 +153,7 @@ bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char*
 {
 	if (indices[0] >= ALERT_MAX_CHOICES)
 	{
-		error("Too many choices in message box");
+		LOG_ERROR("Too many choices in message box");
 		return false;
 	}
 	OM::g_currentAlert.choices[indices[0]].copy(data);
@@ -173,7 +173,7 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 	{
 		return true;
 	}
-	dbg("Setting system time to %s", data);
+	LOG_DBG("Setting system time to %s", data);
 	TimeHelper::setDateTime(data);
 	Model::get().newTime();
 	return true;

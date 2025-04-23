@@ -21,7 +21,7 @@ namespace UI
 	{
 		if (m_heightmap == nullptr || !m_heightmap->IsValid())
 		{
-			warn("Heightmap is not valid");
+			LOG_WARN("Heightmap is not valid");
 			return;
 		}
 
@@ -30,7 +30,7 @@ namespace UI
 
 		if (axis0 == nullptr || axis1 == nullptr)
 		{
-			warn("Heightmap axes are not valid");
+			LOG_WARN("Heightmap axes are not valid");
 			return;
 		}
 

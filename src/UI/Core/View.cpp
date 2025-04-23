@@ -13,7 +13,7 @@ namespace UI
 		, m_name(name)
 	{
 		UI_LOCK();
-		verbose("Creating view '%s' (%p)", getName(), m_cont);
+		LOG_VERBOSE("Creating view '%s' (%p)", getName(), m_cont);
 		lv_obj_set_style_pad_all(getCont(), 5, 0);
 		lv_obj_null_on_delete(&m_cont);
 #if DEBUG_BORDERS
@@ -26,7 +26,7 @@ namespace UI
 	BaseView::~BaseView()
 	{
 		UI_LOCK();
-		verbose("Deleting view '%s' (%p)", getName(), m_cont);
+		LOG_VERBOSE("Deleting view '%s' (%p)", getName(), m_cont);
 		lv_obj_delete(getCont());
 	}
 

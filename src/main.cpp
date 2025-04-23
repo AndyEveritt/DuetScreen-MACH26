@@ -1,4 +1,3 @@
-
 /**
  * @file main
  *
@@ -85,7 +84,9 @@ int main(int argc, char** argv)
 
 	// Initialise
 	StorageHelper::load();
-	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
+	Log::Init();
+	Log::SetDebugFile(StorageHelper::getData<std::string>(ID_LOG_FILE, DEFAULT_LOG_FILE).c_str());
+	Log::SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
 
 	/*Initialize LVGL*/
 	lv_init();
@@ -111,7 +112,7 @@ int main(int argc, char** argv)
 		{
 			if (mounted)
 			{
-				info("USB drive mounted: %s", path.c_str());
+				LOG_INFO("USB drive mounted: %s", path.c_str());
 				std::string upgradeFilePath = path + "/DuetScreen.tar.gz";
 				if (!std::filesystem::exists(upgradeFilePath))
 				{
@@ -182,7 +183,7 @@ int main(int argc, char** argv)
 			{
 				if (!screensaverEnabled)
 				{
-					info("Screensaver timeout reached");
+					LOG_INFO("Screensaver timeout reached");
 					DisplayHelper::enableScreenSaver(true);
 					screensaverEnabled = true;
 				}
@@ -191,7 +192,7 @@ int main(int argc, char** argv)
 			{
 				if (screensaverEnabled)
 				{
-					info("Screensaver timeout cancelled");
+					LOG_INFO("Screensaver timeout cancelled");
 					DisplayHelper::enableScreenSaver(false);
 					screensaverEnabled = false;
 				}
@@ -227,7 +228,7 @@ static const char* getenv_default(const char* name, const char* dflt)
  */
 static lv_display_t* hal_init(int32_t w, int32_t h)
 {
-	info("Initialising display");
+	LOG_INFO("Initialising display");
 #if LV_USE_LINUX_FBDEV
 	const char* device = getenv_default("LV_LINUX_FBDEV_DEVICE", "/dev/fb0");
 	lv_display_t* disp = lv_linux_fbdev_create();

@@ -62,7 +62,7 @@ namespace OM
 												compareKey<OM::PrinterStatusMapEntry>);
 		if (!statusFromMap)
 		{
-			error("unknown status %s", status);
+			LOG_ERROR("unknown status %s", status);
 			return;
 		}
 		SetStatus(statusFromMap->val);
@@ -73,7 +73,7 @@ namespace OM
 	{
 		if (newStatus != s_status)
 		{
-			info("printer status %d -> %d\n", (int)s_status, (int)newStatus);
+			LOG_INFO("printer status %d -> %d\n", (int)s_status, (int)newStatus);
 			s_status = newStatus;
 			if (s_status == OM::PrinterStatus::halted)
 			{

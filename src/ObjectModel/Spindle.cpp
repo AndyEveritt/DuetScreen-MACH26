@@ -60,13 +60,13 @@ namespace OM
   {                                                                                                                    \
 	if (index >= MAX_SLOTS)                                                                                            \
 	{                                                                                                                  \
-	  error("spindle[%d] greater than MAX_SLOTS", index);                                                              \
+	  LOG_ERROR("spindle[%d] greater than MAX_SLOTS", index);                                                          \
 	  return false;                                                                                                    \
 	}                                                                                                                  \
 	std::shared_ptr<Spindle> spindle = GetOrCreateSpindle(index);                                                      \
 	if (spindle == nullptr)                                                                                            \
 	{                                                                                                                  \
-	  error("Could not get or create spindle %d", index);                                                              \
+	  LOG_ERROR("Could not get or create spindle %d", index);                                                          \
 	  return false;                                                                                                    \
 	}                                                                                                                  \
 	spindle->varName = val;                                                                                            \
@@ -77,7 +77,7 @@ namespace OM
 	{
 		if (index >= MAX_SLOTS)
 		{
-			error("spindle[%d] greater than MAX_SLOTS", index);
+			LOG_ERROR("spindle[%d] greater than MAX_SLOTS", index);
 			return false;
 		}
 

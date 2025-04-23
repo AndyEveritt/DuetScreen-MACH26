@@ -50,7 +50,7 @@ namespace Debug
 	{
 		if (commandsMap.find(id) == commandsMap.end())
 		{
-			warn("id %s not found", id);
+			LOG_WARN("id %s not found", id);
 			return nullptr;
 		}
 		return commandsMap[id];
@@ -60,7 +60,7 @@ namespace Debug
 	{
 		if (index >= commandsMap.size())
 		{
-			warn("Index out of range");
+			LOG_WARN("Index out of range");
 			return nullptr;
 		}
 		auto it = commandsMap.begin();

@@ -7,81 +7,124 @@
 
 #include "Debug.h"
 #include "utils/StorageHelper.h"
+#include <ctime>
+#include <memory>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
+#include <vector>
 
-static DebugLevel s_debugLevel = DebugLevel::Info;
+// Use global namespace for std
+using std::make_shared;
+using std::shared_ptr;
+using std::vector;
 
-static void __dbg(const char* fmt, va_list args)
+namespace Log
 {
-	vprintf(fmt, args);
-}
+	static DebugLevel s_debugLevel = DebugLevel::Info;
+	static shared_ptr<spdlog::logger> s_logger;
 
-void SetDebugLevel(DebugLevel level)
-{
-	// TODO save debug level
-	s_debugLevel = level;
-	StorageHelper::setData(ID_DEBUG_LEVEL, level);
-}
+	void Init()
+	{
+		try
+		{
+			auto console_sink = make_shared<spdlog::sinks::stdout_color_sink_mt>();
+			console_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
 
-const DebugLevel& GetDebugLevel()
-{
-	return s_debugLevel;
-}
+			auto file_sink = make_shared<spdlog::sinks::rotating_file_sink_mt>("DuetScreen.log", 1024 * 1024 * 5, 3);
+			file_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
 
-void verbose_inner(const char* fmt, ...)
-{
-	if (GetDebugLevel() > DebugLevel::Verbose)
-		return;
-	va_list args;
-	va_start(args, fmt);
-	__dbg(fmt, args);
-	va_end(args);
-}
+			spdlog::sinks_init_list sinks{console_sink, file_sink};
+			s_logger = make_shared<spdlog::logger>("duetscreen", sinks);
+			s_logger->set_level(spdlog::level::trace);
+			s_logger->flush_on(spdlog::level::debug);
+			spdlog::set_default_logger(s_logger);
+			spdlog::enable_backtrace(32);
+			spdlog::trace("Logger initialized {}, {}, {}", 1u, (uint32_t)s_debugLevel, "Hello World!");
+			spdlog::debug("Logger initialized {}, {}", 1u, 1.0f);
+			spdlog::info("Logger initialized {}", 1u, 1.0f);
+			spdlog::warn("Logger initialized {}, {}", 1u, 1.0f);
+			spdlog::error("Logger initialized {}, {}", 1u, 1.0f);
+			spdlog::critical("Logger initialized {}, {}", 1u, 1.0f);
+			spdlog::dump_backtrace();
+			LOG_INFO("Logger initialized");
+		}
+		catch (const spdlog::spdlog_ex& ex)
+		{
+			fprintf(stderr, "Log initialization failed: %s\n", ex.what());
+		}
+	}
 
-void dbg_inner(const char* fmt, ...)
-{
-	if (GetDebugLevel() > DebugLevel::Debug)
-		return;
-	va_list args;
-	va_start(args, fmt);
-	__dbg(fmt, args);
-	va_end(args);
-}
+	void SetDebugLevel(DebugLevel level)
+	{
+		s_debugLevel = level;
+		StorageHelper::setData(ID_DEBUG_LEVEL, level);
 
-void info_inner(const char* fmt, ...)
-{
-	if (GetDebugLevel() > DebugLevel::Info)
-		return;
-	va_list args;
-	va_start(args, fmt);
-	__dbg(fmt, args);
-	va_end(args);
-}
+		if (!s_logger)
+			return;
 
-void warn_inner(const char* fmt, ...)
-{
-	if (GetDebugLevel() > DebugLevel::Warn)
-		return;
-	va_list args;
-	va_start(args, fmt);
-	__dbg(fmt, args);
-	va_end(args);
-}
+		switch (level)
+		{
+		case DebugLevel::Verbose:
+			s_logger->set_level(spdlog::level::trace);
+			break;
+		case DebugLevel::Debug:
+			s_logger->set_level(spdlog::level::debug);
+			break;
+		case DebugLevel::Info:
+			s_logger->set_level(spdlog::level::info);
+			break;
+		case DebugLevel::Warn:
+			s_logger->set_level(spdlog::level::warn);
+			break;
+		case DebugLevel::Error:
+			s_logger->set_level(spdlog::level::err);
+			break;
+		case DebugLevel::Fatal:
+			s_logger->set_level(spdlog::level::critical);
+			break;
+		default:
+			s_logger->set_level(spdlog::level::info);
+		}
+	}
 
-void error_inner(const char* fmt, ...)
-{
-	if (GetDebugLevel() > DebugLevel::Error)
-		return;
-	va_list args;
-	va_start(args, fmt);
-	__dbg(fmt, args);
-	va_end(args);
-}
+	void SetDebugFile(const char* filename)
+	{
+		try
+		{
+			auto file_sink = make_shared<spdlog::sinks::rotating_file_sink_mt>(filename, 1024 * 1024 * 5, 3);
+			file_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
 
-void fatal_inner(const char* fmt, ...)
-{
-	va_list args;
-	va_start(args, fmt);
-	__dbg(fmt, args);
-	va_end(args);
-	exit(EXIT_FAILURE);
-}
+			if (s_logger)
+			{
+				auto console_sink = s_logger->sinks()[0];
+				vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
+				s_logger = make_shared<spdlog::logger>("duetscreen", sinks.begin(), sinks.end());
+				s_logger->set_level(spdlog::level::trace);
+				s_logger->flush_on(spdlog::level::debug);
+			}
+		}
+		catch (const spdlog::spdlog_ex& ex)
+		{
+			fprintf(stderr, "Failed to set debug file: %s\n", ex.what());
+		}
+	}
+
+	void CloseDebugFile()
+	{
+		if (s_logger)
+		{
+			s_logger->flush();
+		}
+	}
+
+	const DebugLevel& GetDebugLevel()
+	{
+		return s_debugLevel;
+	}
+
+	shared_ptr<spdlog::logger> GetLogger()
+	{
+		return s_logger;
+	}
+} // namespace Log

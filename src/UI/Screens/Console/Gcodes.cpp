@@ -228,7 +228,7 @@ Gcodes::Gcodes()
 		  {"T", _("gcode_T_desc")},
 	  })
 {
-	verbose("Creating Gcodes");
+	LOG_VERBOSE("Creating Gcodes");
 }
 
 const size_t Gcodes::getGcodeCount()

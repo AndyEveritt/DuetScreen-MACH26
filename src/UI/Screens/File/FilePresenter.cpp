@@ -35,7 +35,7 @@ namespace UI
 		MODEL_LOCK();
 		if (index >= m_items.size())
 		{
-			error("item %u out of range", index);
+			LOG_ERROR("item %u out of range", index);
 			return;
 		}
 
@@ -44,7 +44,7 @@ namespace UI
 		m_view->cancelStartPrint();
 		if (item == nullptr)
 		{
-			warn("item %u is null", index);
+			LOG_WARN("item %u is null", index);
 			return;
 		}
 
@@ -88,7 +88,7 @@ namespace UI
 		{
 			if (i >= m_items.size())
 			{
-				warn("File count mismatch");
+				LOG_WARN("File count mismatch");
 				break;
 			}
 			auto item = m_view->getFileItem(i);
@@ -223,7 +223,7 @@ namespace UI
 		{
 			if (i >= m_items.size())
 			{
-				warn("File count mismatch");
+				LOG_WARN("File count mismatch");
 				break;
 			}
 			auto file = m_items[i];

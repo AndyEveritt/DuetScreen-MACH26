@@ -170,7 +170,7 @@ namespace UI
 		{
 			if (filament[0] != '\0')
 			{
-				warn("Failed to find filament option");
+				LOG_WARN("Failed to find filament option");
 				lv_dropdown_set_text(m_filament, filament);
 				lv_dropdown_set_selected_highlight(m_filament, false);
 				return;
@@ -394,7 +394,7 @@ namespace UI
 		static_assert(ARRAY_SIZE(s_listGrow) == ARRAY_SIZE(headerLabels), "Invalid array size");
 		if (ARRAY_SIZE(s_listGrow) != lv_obj_get_child_cnt(m_listHeader))
 		{
-			fatal("Invalid s_listGrow array size");
+			LOG_FATAL("Invalid s_listGrow array size");
 		}
 
 		for (size_t i = 0; i < ARRAY_SIZE(s_listGrow); i++)

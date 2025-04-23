@@ -155,7 +155,7 @@ namespace UI
 		UI_LOCK();
 		if (m_okCb)
 		{
-			info("Calling ok callback");
+			LOG_INFO("Calling ok callback");
 			m_okCb();
 		}
 		close();
@@ -166,7 +166,7 @@ namespace UI
 		UI_LOCK();
 		if (m_cancelCb)
 		{
-			info("Calling cancel callback");
+			LOG_INFO("Calling cancel callback");
 			m_cancelCb();
 		}
 		close();
@@ -181,7 +181,7 @@ namespace UI
 		}
 		if (m_closeCb)
 		{
-			info("Calling close callback");
+			LOG_INFO("Calling close callback");
 			m_closeCb();
 		}
 	}
@@ -251,7 +251,7 @@ namespace UI
 	void MessageBox::setKeyboard(lv_obj_t* kb)
 	{
 		UI_LOCK();
-		info("Setting keyboard %p", kb);
+		LOG_INFO("Setting keyboard %p", kb);
 		m_kb = kb;
 		lv_keyboard_set_textarea(m_kb, m_input);
 	}
@@ -321,7 +321,7 @@ namespace UI
 	void MessageBox::setMode(OM::Alert::Mode mode)
 	{
 		UI_LOCK();
-		info("Seting mode to %u", (uint8_t)mode);
+		LOG_INFO("Seting mode to %u", (uint8_t)mode);
 		m_mode = mode;
 
 		// Hide all containers
@@ -586,7 +586,7 @@ namespace UI
 	{
 		if (index >= getChoiceCount())
 		{
-			error("Index %u out of range", index);
+			LOG_ERROR("Index %u out of range", index);
 			return;
 		}
 		m_choices[index]->setText(text.c_str());
@@ -675,7 +675,7 @@ namespace UI
 		{
 			return 0u;
 		}
-		verbose("Time remaining: %u", getTimeRemaining());
+		LOG_VERBOSE("Time remaining: %u", getTimeRemaining());
 		return 100 * getTimeRemaining() / m_timeout;
 	}
 

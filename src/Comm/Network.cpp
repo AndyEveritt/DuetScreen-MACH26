@@ -40,12 +40,12 @@ namespace Comm
 			, m_sessionKey(sessionKey)
 			, m_callback(callback)
 		{
-			dbg("starting thread for %s%s", url.c_str(), subUrl);
+			LOG_DBG("starting thread for %s%s", url.c_str(), subUrl);
 			run();
 		}
 		virtual bool threadLoop()
 		{
-			verbose("%s%s", m_url.c_str(), m_subUrl);
+			LOG_VERBOSE("%s%s", m_url.c_str(), m_subUrl);
 			if (!Get(m_url, m_subUrl, m_r, m_queryParameters, m_sessionKey))
 			{
 				return false;
@@ -121,7 +121,7 @@ namespace Comm
 			if (thread->isRunning())
 				continue;
 
-			verbose("Reusing thread from pool");
+			LOG_VERBOSE("Reusing thread from pool");
 			thread->SetRequestParameters(url, subUrl, queryParameters, callback, sessionKey);
 			return thread->run();
 		}
@@ -134,26 +134,26 @@ namespace Comm
 				{
 					if (data.url == url && data.subUrl == subUrl)
 					{
-						info("Request %s already queued, not adding again", (url + subUrl).c_str());
+						LOG_INFO("Request %s already queued, not adding again", (url + subUrl).c_str());
 						return false;
 					}
 				}
 			}
 			s_queuedData.push_back({url, subUrl, queryParameters, callback, sessionKey});
-			info("Queued request %s, size=%d", (url + subUrl).c_str(), s_queuedData.size());
+			LOG_INFO("Queued request %s, size=%d", (url + subUrl).c_str(), s_queuedData.size());
 			return true;
 		}
 
 		if (s_threadPool.size() >= MAX_THREAD_POOL_SIZE)
 		{
-			warn("Thread pool is full, cannot add more threads");
+			LOG_WARN("Thread pool is full, cannot add more threads");
 			return false;
 		}
 
 		// Create a new thread and add it to the pool
 		AsyncGetThread* thread = new AsyncGetThread(url, subUrl, queryParameters, callback, sessionKey);
 		s_threadPool.push_back(thread);
-		info("Added thread to pool, size=%d", s_threadPool.size());
+		LOG_INFO("Added thread to pool, size=%d", s_threadPool.size());
 		return true;
 	}
 
@@ -173,20 +173,20 @@ namespace Comm
 		if (s_queuedData.empty())
 			return;
 
-		info("Processing queued requests, size=%d", s_queuedData.size());
+		LOG_INFO("Processing queued requests, size=%d", s_queuedData.size());
 		auto data = s_queuedData.begin();
 		while (data != s_queuedData.end())
 		{
-			info("Processing queued request %s", (data->url + data->subUrl).c_str());
+			LOG_INFO("Processing queued request %s", (data->url + data->subUrl).c_str());
 			if (!AsyncGetInner(data->url, data->subUrl, data->queryParameters, data->callback, data->sessionKey, false))
 			{
-				warn("Failed to process queued request %s", (data->url + data->subUrl).c_str());
+				LOG_WARN("Failed to process queued request %s", (data->url + data->subUrl).c_str());
 				return;
 			}
-			info("Processed queued request %s", (data->url + data->subUrl).c_str());
+			LOG_INFO("Processed queued request %s", (data->url + data->subUrl).c_str());
 			data = s_queuedData.erase(data);
 		}
-		info("Processed all queued requests, size=%d", s_queuedData.size());
+		LOG_INFO("Processed all queued requests, size=%d", s_queuedData.size());
 	}
 
 	int ClearThreadPool()
@@ -221,11 +221,11 @@ namespace Comm
 		if (sessionKey > 0)
 		{
 			conn.AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
-			dbg("Get: \"%s\", sessionKey=%u", url.c_str(), sessionKey);
+			LOG_DBG("Get: \"%s\", sessionKey=%u", url.c_str(), sessionKey);
 		}
 		else
 		{
-			dbg("Get: \"%s\"", url.c_str());
+			LOG_DBG("Get: \"%s\"", url.c_str());
 		}
 		conn.AppendHeader("Accept", "application/json");
 		conn.AppendHeader("Content-Type", "application/json");
@@ -236,11 +236,11 @@ namespace Comm
 		r = conn.get("");
 		if (r.code != 200)
 		{
-			error("%s failed, returned response %d", url.c_str(), r.code);
+			LOG_ERROR("%s failed, returned response %d", url.c_str(), r.code);
 			return false;
 		}
-		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
-		verbose("Response body: %s", r.body.c_str());
+		LOG_DBG("%s succeeded, returned response %d", url.c_str(), r.code);
+		LOG_VERBOSE("Response body: %s", r.body.c_str());
 
 		return true;
 	}
@@ -274,15 +274,15 @@ namespace Comm
 		// if using a non-standard Certificate Authority (CA) trust file
 		// conn.SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));
 
-		verbose("Post: \"%s\", data=\"%s\"", url.c_str(), data.substr(0, 50).c_str());
+		LOG_VERBOSE("Post: \"%s\", data=\"%s\"", url.c_str(), data.substr(0, 50).c_str());
 		r = conn.post("", data);
 		if (r.code != 200)
 		{
-			error("%s failed, returned response %d %s", url.c_str(), r.code, r.body.c_str());
+			LOG_ERROR("%s failed, returned response %d %s", url.c_str(), r.code, r.body.c_str());
 			return false;
 		}
-		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
-		verbose("Response body: %s", r.body.c_str());
+		LOG_DBG("%s succeeded, returned response %d", url.c_str(), r.code);
+		LOG_VERBOSE("Response body: %s", r.body.c_str());
 		return true;
 	}
 } // namespace Comm

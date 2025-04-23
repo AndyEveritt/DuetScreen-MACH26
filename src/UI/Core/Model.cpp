@@ -55,7 +55,7 @@ Model::Model()
 
 	if (!initMutex())
 	{
-		fatal("Failed to initialise mutex");
+		LOG_FATAL("Failed to initialise mutex");
 	}
 }
 
@@ -99,7 +99,7 @@ useconds_t Model::receiveNewUsbData()
 
 	if (!Comm::getCurrentUsbDevice().isConnected())
 	{
-		verbose("USB device disconnected");
+		LOG_VERBOSE("USB device disconnected");
 		return 500 * 1000;
 	}
 	int len = Comm::getCurrentUsbDevice().receive(buffer + bufferLen, bufferSize - bufferLen);
@@ -109,14 +109,14 @@ useconds_t Model::receiveNewUsbData()
 		bufferLen += len;
 		if (bufferLen >= bufferSize)
 		{
-			error("Buffer overflow");
+			LOG_ERROR("Buffer overflow");
 			bufferLen = 0;
 			return 5 * 1000;
 		}
 	}
 	else if (len < 0)
 	{
-		error("Error receiving data");
+		LOG_ERROR("Error receiving data");
 		bufferLen = 0;
 		return 5 * 1000;
 	}
@@ -134,7 +134,7 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 	auto subscribers = getSubscribers(key);
 	if (subscribers.size() != 0)
 	{
-		dbg("found %d subscribers for '%s'", subscribers.size(), key);
+		LOG_DBG("found %d subscribers for '%s'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
 			subscriber.run(decoder, data, indices);
@@ -147,7 +147,7 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 	auto subscribers = getArrayEndSubscribers(key);
 	if (subscribers.size() != 0)
 	{
-		dbg("found %d array end subscribers for '%s'", subscribers.size(), key);
+		LOG_DBG("found %d array end subscribers for '%s'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
 			subscriber.run(decoder, indices);
@@ -175,7 +175,7 @@ bool Model::initMutex()
 
 	if (ret)
 	{
-		error("%d", ret);
+		LOG_ERROR("%d", ret);
 		return false;
 	}
 	else
@@ -186,18 +186,18 @@ bool Model::initMutex()
 
 void Model::lock()
 {
-	verbose("Attempting to lock model");
+	LOG_VERBOSE("Attempting to lock model");
 	// lv_lock();
 	pthread_mutex_lock(&m_mutex);
-	verbose("Model locked by thread %u", pthread_self());
+	LOG_VERBOSE("Model locked by thread %u", pthread_self());
 }
 
 void Model::unlock()
 {
-	verbose("Unlocking model");
+	LOG_VERBOSE("Unlocking model");
 	// lv_unlock();
 	pthread_mutex_unlock(&m_mutex);
-	verbose("Model unlocked by thread %u", pthread_self());
+	LOG_VERBOSE("Model unlocked by thread %u", pthread_self());
 }
 
 void Model::refresh()

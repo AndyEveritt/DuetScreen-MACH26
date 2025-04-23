@@ -25,7 +25,7 @@ namespace UI
 		, m_consoleBtn("Console", getCont(), _("console"), layout_t{0, 60, 100, 0})
 		, m_eStopBtn("E-Stop", getCont(), _("estop"), layout_t{0, 80, 100, 2 * 0})
 	{
-		verbose("Creating SideBar");
+		LOG_VERBOSE("Creating SideBar");
 
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_style_pad_row(getCont(), 0, 0);
@@ -56,7 +56,7 @@ namespace UI
 
 	void SideBar::macrosBtnEvent(lv_event_t* e)
 	{
-		info("Macros button pressed");
+		LOG_INFO("Macros button pressed");
 		FileView& fileView = HomeView::instance().getFileView();
 		fileView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
 		openScreen(&fileView, true);
@@ -64,13 +64,13 @@ namespace UI
 
 	void SideBar::consoleBtnEvent(lv_event_t* e)
 	{
-		info("Console button pressed");
+		LOG_INFO("Console button pressed");
 		openScreen(&HomeView::instance().getConsoleView(), true);
 	}
 
 	void SideBar::eStopBtnEvent(lv_event_t* e)
 	{
-		info("E-Stop button pressed");
+		LOG_INFO("E-Stop button pressed");
 		SideBar* sb = static_cast<SideBar*>(lv_event_get_user_data(e));
 		sb->m_presenter->eStop();
 	}

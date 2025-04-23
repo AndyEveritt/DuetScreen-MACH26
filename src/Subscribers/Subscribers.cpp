@@ -51,7 +51,7 @@ void SubscriberMap::_addSubscriber(const char* key, subscriberCb_t cb)
 	if (key == nullptr)
 		return;
 
-	verbose("Adding subscriber for key '%s' cb @ %p", key, &cb);
+	LOG_VERBOSE("Adding subscriber for key '%s' cb @ %p", key, &cb);
 
 	s_subscribers[key].emplace_back(key, cb);
 }
@@ -127,10 +127,10 @@ void SubscriberMap::addArrayEndSubscriber(const char* key,
 	// Check key ends with '^', otherwise raise compiler error
 	if (key[strlen(key) - 1] != '^')
 	{
-		error("Key '%s' must end with '^' as it is provided as an array end subscriber");
+		LOG_ERROR("Key '%s' must end with '^' as it is provided as an array end subscriber");
 		return;
 	}
 
-	verbose("Adding array end subscriber for key '%s' cb @ %p", key, &cb);
+	LOG_VERBOSE("Adding array end subscriber for key '%s' cb @ %p", key, &cb);
 	s_arrayEndSubscribers[key].emplace_back(key, cb);
 }

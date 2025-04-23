@@ -67,7 +67,7 @@ namespace UI
 		, m_kb(lv_keyboard_create(m_mainWindow))
 	{
 		UI_LOCK();
-		info("Creating UI");
+		LOG_INFO("Creating UI");
 		addHomeScreen(this);
 
 #if DEBUG_BORDERS

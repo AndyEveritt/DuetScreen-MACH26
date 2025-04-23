@@ -83,7 +83,7 @@ bool JobSubscribers::warmUpDuration(Comm::JsonDecoder* decoder, const uint32_t& 
 
 bool JobSubscribers::nullBuild(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	dbg("Job: build is null");
+	LOG_DBG("Job: build is null");
 	OM::RemoveJobObject(indices[0], true);
 	Model::get().newJobBuild();
 	return true;
@@ -108,7 +108,7 @@ bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& dat
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		warn("Job object %u not found", indices[0]);
+		LOG_WARN("Job object %u not found", indices[0]);
 	}
 	jobObject->cancelled = data;
 	return true;
@@ -119,7 +119,7 @@ bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, co
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		warn("Job object %u not found", indices[0]);
+		LOG_WARN("Job object %u not found", indices[0]);
 	}
 	jobObject->name = data;
 	return true;
@@ -130,11 +130,11 @@ bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, co
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		warn("Job object %u not found", indices[0]);
+		LOG_WARN("Job object %u not found", indices[0]);
 	}
 	if (indices[1] < 0 || indices[1] >= 2)
 	{
-		warn("Job object %u x index %u out of range", indices[0], indices[1]);
+		LOG_WARN("Job object %u x index %u out of range", indices[0], indices[1]);
 		return false;
 	}
 	jobObject->bounds.x[indices[1]] = data;
@@ -146,11 +146,11 @@ bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, co
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		warn("Job object %u not found", indices[0]);
+		LOG_WARN("Job object %u not found", indices[0]);
 	}
 	if (indices[1] < 0 || indices[1] >= 2)
 	{
-		warn("Job object %u y index %u out of range", indices[0], indices[1]);
+		LOG_WARN("Job object %u y index %u out of range", indices[0], indices[1]);
 		return false;
 	}
 	jobObject->bounds.y[indices[1]] = data;

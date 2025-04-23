@@ -13,6 +13,7 @@
 #include <termios.h>
 
 constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
+constexpr const char* DEFAULT_LOG_FILE = "DuetScreen.log";
 
 /* UI */
 constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in milliseconds

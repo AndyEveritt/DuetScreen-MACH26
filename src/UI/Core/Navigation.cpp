@@ -24,7 +24,7 @@ namespace UI
 		auto it = std::find(vec.begin(), vec.end(), item);
 		if (it != vec.end())
 		{
-			dbg("Removing screen '%s' from vector", item->getName());
+			LOG_DBG("Removing screen '%s' from vector", item->getName());
 			vec.erase(it);
 			return true;
 		}
@@ -34,7 +34,7 @@ namespace UI
 	static bool addToVector(ViewList_t& vec, ViewListItem_t item)
 	{
 		removeFromVector(vec, item);
-		dbg("Adding screen %d to vector", item->getName());
+		LOG_DBG("Adding screen %d to vector", item->getName());
 		vec.push_back(item);
 		return true;
 	}
@@ -56,11 +56,11 @@ namespace UI
 	 */
 	void back()
 	{
-		info("Back button pressed");
+		LOG_INFO("Back button pressed");
 		ViewListItem_t currentScreen = getCurrentScreen();
 		if (currentScreen == nullptr)
 		{
-			warn("No current screen");
+			LOG_WARN("No current screen");
 			return;
 		}
 		if (currentScreen->back())
@@ -84,7 +84,7 @@ namespace UI
 	 */
 	void home()
 	{
-		info("Home button pressed");
+		LOG_INFO("Home button pressed");
 		for (auto screen : s_openScreens)
 		{
 			if (!screen->isVisible())
@@ -133,7 +133,7 @@ namespace UI
 	{
 		if (s_openScreens.empty())
 		{
-			warn("No current screen");
+			LOG_WARN("No current screen");
 			return nullptr;
 		}
 		return s_openScreens.back();
@@ -157,7 +157,7 @@ namespace UI
 	{
 		if (view == nullptr)
 		{
-			warn("Trying to open a nullptr screen");
+			LOG_WARN("Trying to open a nullptr screen");
 			return;
 		}
 
@@ -166,7 +166,7 @@ namespace UI
 			closeLastScreen();
 		}
 
-		info("Opening screen '%s'", view->getName());
+		LOG_INFO("Opening screen '%s'", view->getName());
 		view->show();
 		removeFromVector(s_returnableScreens, view);
 		if (!inVector(s_homeScreens, view))
@@ -184,7 +184,7 @@ namespace UI
 	 */
 	void closeLastScreen()
 	{
-		info("Closing last screen");
+		LOG_INFO("Closing last screen");
 #if 0
 		for (auto screen : s_homeScreens)
 		{
@@ -213,7 +213,7 @@ namespace UI
 	 */
 	void closeScreen(ViewListItem_t view, bool returnable)
 	{
-		info("Closing screen '%s'", view->getName());
+		LOG_INFO("Closing screen '%s'", view->getName());
 		if (view->isVisible())
 		{
 			view->hide();

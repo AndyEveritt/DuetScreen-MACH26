@@ -191,5 +191,5 @@ struct ModelLock
 };
 
 #define MODEL_LOCK()                                                                                                   \
-	verbose("MODEL_LOCK requested in thread %u", std::this_thread::get_id());                                          \
+	LOG_VERBOSE("MODEL_LOCK requested in thread %u", std::this_thread::get_id());                                      \
 	auto modelLock = ScopedLock(mutexModel);

@@ -25,7 +25,7 @@ namespace UI
 	{
 		if (index >= MAX_SLOTS)
 		{
-			error("Invalid tool index %u", index);
+			LOG_ERROR("Invalid tool index %u", index);
 			return;
 		}
 		m_slotIndex = index;
@@ -45,7 +45,7 @@ namespace UI
 	{
 		if (m_slotIndex < 0)
 		{
-			warn("Tool index not set");
+			LOG_WARN("Tool index not set");
 			return;
 		}
 
@@ -105,10 +105,10 @@ namespace UI
 			heater = OM::Heat::GetHeater(m_bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				warn("List index %d: Bed %d heater %d is null",
-					 m_slotIndex,
-					 m_bedOrChamber->index,
-					 m_bedOrChamber->heater);
+				LOG_WARN("List index %d: Bed %d heater %d is null",
+						 m_slotIndex,
+						 m_bedOrChamber->index,
+						 m_bedOrChamber->heater);
 				return;
 			}
 			updateView(m_bedOrChamber, heater, true);
@@ -123,16 +123,16 @@ namespace UI
 			heater = OM::Heat::GetHeater(m_bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				warn("List index %d: Bed %d heater %d is null",
-					 m_slotIndex,
-					 m_bedOrChamber->index,
-					 m_bedOrChamber->heater);
+				LOG_WARN("List index %d: Bed %d heater %d is null",
+						 m_slotIndex,
+						 m_bedOrChamber->index,
+						 m_bedOrChamber->heater);
 				return;
 			}
 			updateView(m_bedOrChamber, heater, false);
 			return;
 		}
-		warn("Unknown index");
+		LOG_WARN("Unknown index");
 		m_slotType = SlotType::Unknown;
 	}
 
@@ -194,13 +194,13 @@ namespace UI
 	{
 		if (bedOrChamber == nullptr)
 		{
-			error("BedOrChamber is null");
+			LOG_ERROR("BedOrChamber is null");
 			return false;
 		}
 
 		if (heater == nullptr)
 		{
-			error("Heater is null");
+			LOG_ERROR("Heater is null");
 			return false;
 		}
 
@@ -229,7 +229,7 @@ namespace UI
 	{
 		if (m_slotIndex < 0)
 		{
-			warn("Tool index not set");
+			LOG_WARN("Tool index not set");
 			return;
 		}
 		switch (m_slotType)
@@ -238,12 +238,12 @@ namespace UI
 		{
 			if (m_tool == nullptr)
 			{
-				error("Tool is null");
+				LOG_ERROR("Tool is null");
 				return;
 			}
 			if (m_tHeater == nullptr)
 			{
-				error("Tool heater is null");
+				LOG_ERROR("Tool heater is null");
 				return;
 			}
 
@@ -254,7 +254,7 @@ namespace UI
 		{
 			if (m_bedOrChamber == nullptr)
 			{
-				error("BedOrChamber is null");
+				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
 			m_bedOrChamber->SetBedTemp(value, m_setActiveTemp);
@@ -264,7 +264,7 @@ namespace UI
 		{
 			if (m_bedOrChamber == nullptr)
 			{
-				error("BedOrChamber is null");
+				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
 			m_bedOrChamber->SetChamberTemp(value, m_setActiveTemp);
@@ -300,7 +300,7 @@ namespace UI
 									   m_tHeater->index,
 									   active ? _("active") : _("standby"));
 			}
-			warn("Tool heater is null");
+			LOG_WARN("Tool heater is null");
 			return false;
 		}
 		case SlotType::Bed:
@@ -308,7 +308,7 @@ namespace UI
 		{
 			if (m_bedOrChamber == nullptr)
 			{
-				warn("BedOrChamber is null");
+				LOG_WARN("BedOrChamber is null");
 				return false;
 			}
 			header = utils::format(_("tool_list_numpad_header_bed_chamber"),
@@ -338,7 +338,7 @@ namespace UI
 			return true;
 		}
 
-		warn("Heater is null");
+		LOG_WARN("Heater is null");
 		return false;
 	}
 
@@ -350,7 +350,7 @@ namespace UI
 		{
 			if (m_tool == nullptr)
 			{
-				error("Tool is null");
+				LOG_ERROR("Tool is null");
 				return;
 			}
 			m_tool->ToggleState();
@@ -360,7 +360,7 @@ namespace UI
 		{
 			if (m_bedOrChamber == nullptr)
 			{
-				error("BedOrChamber is null");
+				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
 			m_bedOrChamber->ToggleBedState();
@@ -370,7 +370,7 @@ namespace UI
 		{
 			if (m_bedOrChamber == nullptr)
 			{
-				error("BedOrChamber is null");
+				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
 			m_bedOrChamber->ToggleChamberState();
@@ -387,7 +387,7 @@ namespace UI
 		{
 			if (m_tool == nullptr)
 			{
-				error("Tool is null");
+				LOG_ERROR("Tool is null");
 				return;
 			}
 			if (m_tHeater != nullptr)
@@ -400,14 +400,14 @@ namespace UI
 				m_tool->ToggleSpindleState();
 				break;
 			}
-			warn("No heater or spindle");
+			LOG_WARN("No heater or spindle");
 			break;
 		}
 		case SlotType::Bed:
 		{
 			if (m_bedOrChamber == nullptr)
 			{
-				error("BedOrChamber is null");
+				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
 			m_bedOrChamber->ToggleBedState();
@@ -417,7 +417,7 @@ namespace UI
 		{
 			if (m_bedOrChamber == nullptr)
 			{
-				error("BedOrChamber is null");
+				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
 			m_bedOrChamber->ToggleBedState();
@@ -432,7 +432,7 @@ namespace UI
 		NumberPad* np = (NumberPad*)lv_event_get_param(e);
 		if (presenter == nullptr)
 		{
-			error("Presenter is null");
+			LOG_ERROR("Presenter is null");
 			return;
 		}
 		presenter->setTemp(np->getValue());
@@ -486,19 +486,19 @@ namespace UI
 					}
 					return true;
 				});
-			verbose("Tool count: %u", count);
+			LOG_VERBOSE("Tool count: %u", count);
 			totalHeaterCount += count;
 		}
 		if (addBeds)
 		{
 			size_t bedCount = OM::GetBedCount();
-			verbose("Bed count: %u", bedCount);
+			LOG_VERBOSE("Bed count: %u", bedCount);
 			totalHeaterCount += bedCount;
 		}
 		if (addChambers)
 		{
 			size_t chamberCount = OM::GetChamberCount();
-			verbose("Chamber count: %u", chamberCount);
+			LOG_VERBOSE("Chamber count: %u", chamberCount);
 			totalHeaterCount += chamberCount;
 		}
 		return totalHeaterCount;
