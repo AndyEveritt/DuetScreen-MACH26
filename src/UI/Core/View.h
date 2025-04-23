@@ -192,8 +192,6 @@ namespace UI
 
 } // namespace UI
 
-void lv_obj_set_flag(lv_obj_t* obj, lv_obj_flag_t flag, bool enable);
-
 #define UI_LOCK()                                                                                                      \
 	verbose("UI_LOCK requested by thread %u", std::this_thread::get_id());                                             \
 	auto uiLock = ScopedLock(mutexUi);
