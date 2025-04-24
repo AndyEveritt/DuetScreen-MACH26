@@ -50,6 +50,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
+void lvgl_log_cb(lv_log_level_t level, const char* buf);
 static lv_display_t* hal_init(int32_t w, int32_t h);
 static void http_test();
 static int usb_test();
@@ -88,6 +89,7 @@ int main(int argc, char** argv)
 
 	/*Initialize LVGL*/
 	lv_init();
+	lv_log_register_print_cb(lvgl_log_cb);
 	lv_i18n_init(lv_i18n_language_pack);
 	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());
 
@@ -214,6 +216,27 @@ int main(int argc, char** argv)
 /**********************
  *   STATIC FUNCTIONS
  **********************/
+
+void lvgl_log_cb(lv_log_level_t level, const char* buf)
+{
+	switch (level)
+	{
+	case LV_LOG_LEVEL_TRACE:
+		LOG_VERBOSE("{:s}", buf);
+		break;
+	case LV_LOG_LEVEL_INFO:
+		LOG_INFO("{:s}", buf);
+		break;
+	case LV_LOG_LEVEL_WARN:
+		LOG_WARN("{:s}", buf);
+		break;
+	case LV_LOG_LEVEL_ERROR:
+		LOG_ERROR("{:s}", buf);
+		break;
+	default:
+		break;
+	}
+}
 
 static const char* getenv_default(const char* name, const char* dflt)
 {

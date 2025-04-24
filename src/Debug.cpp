@@ -28,8 +28,8 @@ using std::vector;
 #define LOG_FORMAT_UNDERLINE_END "\033[24m"
 
 #define LOG_CONSOLE_PATTERN                                                                                            \
-	"%^[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] " LOG_FORMAT_UNDERLINE_START LOG_FORMAT_ITALIC_START                           \
-	"%@" LOG_FORMAT_UNDERLINE_END " %!()" LOG_FORMAT_ITALIC_END " %v%$"
+  "%^[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] " LOG_FORMAT_UNDERLINE_START LOG_FORMAT_ITALIC_START                             \
+  "%@" LOG_FORMAT_UNDERLINE_END " %!()" LOG_FORMAT_ITALIC_END " %v%$"
 
 #define LOG_FILE_PATTERN "[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %@ %!() %v"
 #define LOG_UI_PATTERN "[%Y-%m-%d %H:%M:%S.%e] [%l] %v"
