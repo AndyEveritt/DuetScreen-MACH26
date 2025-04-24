@@ -30,7 +30,7 @@ namespace SerialIo
 	bool Init(const char* device, speed_t baudRate)
 	{
 #if SIMULATION
-		LOG_INFO("Initializing simulated UART on device: %s", device);
+		LOG_INFO("Initializing simulated UART on device: {:s}", device);
 #endif
 		s_uart = std::make_unique<UartController>();
 
@@ -64,7 +64,7 @@ namespace SerialIo
 		va_start(vargs, fmt);
 
 		std::string buf = utils::vformat(fmt, vargs);
-		LOG_INFO("Sending %s", buf.c_str());
+		LOG_INFO("Sending {:s}", buf.c_str());
 
 		if (s_uart)
 		{
@@ -95,7 +95,7 @@ namespace SerialIo
 
 	static void processData(const uint8_t* data, size_t len)
 	{
-		LOG_VERBOSE("Received %.*s", (int)len, data);
+		LOG_VERBOSE("Received {1:.{0}s}", (int)len, data);
 
 		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::uart)
 		{

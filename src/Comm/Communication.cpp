@@ -166,14 +166,14 @@ namespace Comm
 			current = &seqs[i];
 			if (current->state == SeqStateError)
 			{
-				LOG_WARN("seq %s had an error", current->key);
+				LOG_WARN("seq {:s} had an error", current->key);
 				// skip and re-init if last request had an error
 				current->state = SeqStateInit;
 				continue;
 			}
 			if (current->state == SeqStateInit || current->state == SeqStateUpdate)
 			{
-				LOG_DBG("seq %s", current->key);
+				LOG_DBG("seq {:s}", current->key);
 				return current;
 			}
 		}
@@ -182,7 +182,7 @@ namespace Comm
 
 	Seq* FindSeqByKey(const char* key)
 	{
-		LOG_VERBOSE("key %s\n", key);
+		LOG_VERBOSE("key {:s}\n", key);
 
 		for (size_t i = 0; i < ARRAY_SIZE(seqs); ++i)
 		{
@@ -203,7 +203,7 @@ namespace Comm
 			{
 				if (seqs[i].lastSeq != val)
 				{
-					LOG_DBG("%s %d -> %d\n", seqs[i].key, seqs[i].lastSeq, val);
+					LOG_DBG("{:s} {:d} -> {:d}\n", seqs[i].key, seqs[i].lastSeq, val);
 					seqs[i].lastSeq = val;
 					seqs[i].state = SeqStateUpdate;
 				}
@@ -315,8 +315,8 @@ namespace Comm
 			s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
 		if (now > expectedResponseBy)
 		{
-			LOG_WARN("No response from Duet for %d ms", PRINTER_REQUEST_TIMEOUT);
-			LOG_VERBOSE("last response=%lld, now=%lld, expected by=%lld, diff=%lld",
+			LOG_WARN("No response from Duet for {:d} ms", PRINTER_REQUEST_TIMEOUT);
+			LOG_VERBOSE("last response={:d}, now={:d}, expected by={:d}, diff={:d}",
 						s_lastResponseTime,
 						now,
 						expectedResponseBy,
@@ -328,7 +328,7 @@ namespace Comm
 		g_currentReqSeq = GetNextSeq(g_currentReqSeq);
 		if (g_currentReqSeq != nullptr)
 		{
-			LOG_INFO("requesting %s", g_currentReqSeq->key);
+			LOG_INFO("requesting {:s}", g_currentReqSeq->key);
 			Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
 		}
 		else

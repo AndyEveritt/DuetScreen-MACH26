@@ -35,7 +35,7 @@ static bool CreateThumbnailDirectory(const std::string& thumbnailFilepath)
 	{
 		if (mkdir(directory.c_str(), 0755) != 0)
 		{
-			LOG_ERROR("Failed to create directory %s", directory.c_str());
+			LOG_ERROR("Failed to create directory {:s}", directory.c_str());
 			return false;
 		}
 	}
@@ -128,13 +128,13 @@ bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)
 	case Comm::ThumbnailMeta::ImageFormat::Png:
 		break;
 	default:
-		LOG_WARN("Thumbnail %s format invalid", thumbnail.filename.c_str());
+		LOG_WARN("Thumbnail {:s} format invalid", thumbnail.filename.c_str());
 		return false;
 	}
 
 	if (thumbnail.meta.height == 0 || thumbnail.meta.width == 0)
 	{
-		LOG_WARN("Thumbnail invalid because heigh=%d, width=%d", thumbnail.meta.height, thumbnail.meta.width);
+		LOG_WARN("Thumbnail invalid because heigh={:d}, width={:d}", thumbnail.meta.height, thumbnail.meta.width);
 		return false;
 	}
 
@@ -169,7 +169,7 @@ int ThumbnailInit(Comm::Thumbnail& thumbnail)
 static int ThumbnailDecodeChunkPng(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 {
 	size_t ret = thumbnail.image.png.appendData(data.buffer, data.size);
-	LOG_INFO("done %d/%d %s\n", ret, data.size, thumbnail.filename.c_str());
+	LOG_INFO("done {:d}/{:d} {:s}\n", ret, data.size, thumbnail.filename.c_str());
 	return 0;
 }
 
@@ -182,11 +182,11 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 
 	do
 	{
-		LOG_DBG("buffer %08x (size %d, done%d) pixbuf %08x (size %d, decoded %d)\n",
+		LOG_DBG("buffer {:p} (size {:d}, done{:d}) pixbuf {:p} (size {:d}, decoded {:d})\n",
 				data.buffer,
 				data.size,
 				size_done,
-				rgba_buffer,
+				static_cast<const void*>(rgba_buffer),
 				sizeof(rgba_buffer),
 				pixel_decoded);
 		ret = qoi_decode_chunked(&thumbnail.image.qoi,
@@ -197,14 +197,14 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 								 &pixel_decoded);
 		if (ret < 0)
 		{
-			LOG_ERROR("failed qoi decoding state %d %d.\n", qoi_decode_state_get(&thumbnail.image.qoi), ret);
+			LOG_ERROR("failed qoi decoding state {:d} {:d}.\n", qoi_decode_state_get(&thumbnail.image.qoi), ret);
 			return -6;
 		}
 
 		if (thumbnail.image.qoi.height != thumbnail.meta.height || thumbnail.image.qoi.width != thumbnail.meta.width)
 		{
-			LOG_ERROR("thumbnail height %d, qoi height %d", thumbnail.meta.height, thumbnail.image.qoi.height);
-			LOG_ERROR("thumbnail width %d, qoi width %d", thumbnail.meta.width, thumbnail.image.qoi.width);
+			LOG_ERROR("thumbnail height {:d}, qoi height {:d}", thumbnail.meta.height, thumbnail.image.qoi.height);
+			LOG_ERROR("thumbnail width {:d}, qoi width {:d}", thumbnail.meta.width, thumbnail.image.qoi.width);
 			return -7;
 		}
 
@@ -212,7 +212,7 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 
 		thumbnail.image.pixel_count += pixel_decoded;
 
-		LOG_DBG("decoded %d bytes, done %d/%d; decoded %d missing %d(%02x) count %d/%d/%d\n",
+		LOG_DBG("decoded {:d} bytes, done {:d}/{:d}; decoded {:d} missing {:d}({:#02x}) count {:d}/{:d}/{:d}\n",
 				ret,
 				size_done,
 				data.size,
@@ -226,7 +226,7 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 		thumbnail.image.bmp.appendPixels(rgba_buffer, pixel_decoded);
 	} while (size_done < data.size && qoi_decode_state_get(&thumbnail.image.qoi) == qoi_decoder_body);
 
-	LOG_INFO("done %d/%d pixels %d/%d %s",
+	LOG_INFO("done {:d}/{:d} pixels {:d}/{:d} {:s}",
 			 size_done,
 			 data.size,
 			 thumbnail.image.pixel_count,
@@ -259,11 +259,11 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 	int ret = base64_decode((const char*)data.buffer, data.size, data.buffer);
 	if (ret < 0)
 	{
-		LOG_ERROR("decode error %d size %d data\n%s\n", ret, data.size, data.buffer);
+		LOG_ERROR("decode error {:d} size {:d} data\n{:s}\n", ret, data.size, data.buffer);
 		return -4;
 	}
 
-	LOG_DBG("*** received size %d, base64 decoded size %d\n", data.size, ret);
+	LOG_DBG("*** received size {:d}, base64 decoded size {:d}\n", data.size, ret);
 
 	data.size = ret;
 
@@ -310,14 +310,14 @@ bool ClearAllCachedThumbnails()
 
 bool DeleteCachedThumbnail(const char* filepath)
 {
-	LOG_INFO("Deleting thumbnail for %s", filepath);
+	LOG_INFO("Deleting thumbnail for {:s}", filepath);
 	std::string thumbnailPath = GetThumbnailPath(filepath);
 	return system(utils::format("rm -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
 }
 
 bool CreateBlankThumbnailCache(const char* filepath)
 {
-	LOG_INFO("Creating blank thumbnail for %s", filepath);
+	LOG_INFO("Creating blank thumbnail for {:s}", filepath);
 	std::string thumbnailPath = GetThumbnailPath(filepath);
 	return system(utils::format("echo \"\" > \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
 }

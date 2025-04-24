@@ -108,7 +108,7 @@ bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& dat
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		LOG_WARN("Job object %u not found", indices[0]);
+		LOG_WARN("Job object {:d} not found", indices[0]);
 	}
 	jobObject->cancelled = data;
 	return true;
@@ -119,7 +119,7 @@ bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, co
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		LOG_WARN("Job object %u not found", indices[0]);
+		LOG_WARN("Job object {:d} not found", indices[0]);
 	}
 	jobObject->name = data;
 	return true;
@@ -130,11 +130,11 @@ bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, co
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		LOG_WARN("Job object %u not found", indices[0]);
+		LOG_WARN("Job object {:d} not found", indices[0]);
 	}
 	if (indices[1] < 0 || indices[1] >= 2)
 	{
-		LOG_WARN("Job object %u x index %u out of range", indices[0], indices[1]);
+		LOG_WARN("Job object {:d} x index {:d} out of range", indices[0], indices[1]);
 		return false;
 	}
 	jobObject->bounds.x[indices[1]] = data;
@@ -146,11 +146,11 @@ bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, co
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
-		LOG_WARN("Job object %u not found", indices[0]);
+		LOG_WARN("Job object {:d} not found", indices[0]);
 	}
 	if (indices[1] < 0 || indices[1] >= 2)
 	{
-		LOG_WARN("Job object %u y index %u out of range", indices[0], indices[1]);
+		LOG_WARN("Job object {:d} y index {:d} out of range", indices[0], indices[1]);
 		return false;
 	}
 	jobObject->bounds.y[indices[1]] = data;

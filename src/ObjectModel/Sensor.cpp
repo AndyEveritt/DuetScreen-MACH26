@@ -59,7 +59,7 @@ namespace OM
 
 	size_t RemoveAnalogSensor(const size_t index, const bool allFollowing)
 	{
-		LOG_DBG("Removing analogSensor %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		LOG_DBG("Removing analogSensor {:d} (allFollowing={:s})", index, allFollowing ? "true" : "false");
 		return Remove<AnalogSensorList, AnalogSensor>(s_analogSensors, index, allFollowing);
 	}
 
@@ -68,7 +68,7 @@ namespace OM
 		auto const sensor = GetOrCreateAnalogSensor(index);
 		if (sensor == nullptr)
 		{
-			LOG_WARN("Failed to get or create analog sensor %d", index);
+			LOG_WARN("Failed to get or create analog sensor {:d}", index);
 			return false;
 		}
 
@@ -82,7 +82,7 @@ namespace OM
 		auto const sensor = GetOrCreateAnalogSensor(index);
 		if (sensor == nullptr)
 		{
-			LOG_WARN("Failed to get or create analog sensor %d", index);
+			LOG_WARN("Failed to get or create analog sensor {:d}", index);
 			return false;
 		}
 
@@ -112,7 +112,7 @@ namespace OM
 
 	size_t RemoveEndstop(const size_t index, const bool allFollowing)
 	{
-		LOG_DBG("Removing endstop %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		LOG_DBG("Removing endstop {:d} (allFollowing={:s})", index, allFollowing ? "true" : "false");
 		return Remove<EndstopList, Endstop>(s_endstops, index, allFollowing);
 	}
 
@@ -121,7 +121,7 @@ namespace OM
 		auto const endstop = GetOrCreateEndstop(index);
 		if (endstop == nullptr)
 		{
-			LOG_WARN("Failed to get or create endstop %d", index);
+			LOG_WARN("Failed to get or create endstop {:d}", index);
 			return false;
 		}
 

@@ -60,7 +60,7 @@ namespace OM
 		auto heater = Heat::GetOrCreateHeater(heaterIndex);
 		th->index = toolHeaterIndex;
 		th->heater = heater;
-		LOG_DBG("Setting tool %d heater %d=%d", index, toolHeaterIndex, heaterIndex);
+		LOG_DBG("Setting tool {:d} heater {:d}={:d}", index, toolHeaterIndex, heaterIndex);
 		heaters[toolHeaterIndex] = th;
 		return th;
 	}
@@ -83,7 +83,7 @@ namespace OM
 			return extruder;
 		}
 		extruder = Move::GetOrCreateExtruderAxis(extruderIndex);
-		LOG_DBG("Setting tool %d extruder %d=%d", index, toolExtruderIndex, extruderIndex);
+		LOG_DBG("Setting tool {:d} extruder {:d}={:d}", index, toolExtruderIndex, extruderIndex);
 		extruders[toolExtruderIndex] = extruder;
 		return extruder;
 	}
@@ -105,7 +105,7 @@ namespace OM
 			return fan;
 		}
 		fan = OM::GetOrCreateFan(fanIndex);
-		LOG_DBG("Setting tool %d fan %d=%d", index, toolFanIndex, fanIndex);
+		LOG_DBG("Setting tool {:d} fan {:d}={:d}", index, toolFanIndex, fanIndex);
 		fans[toolFanIndex] = fan;
 		return fan;
 	}
@@ -350,13 +350,13 @@ namespace OM
 	{
 		if (filamentExtruder < 0)
 		{
-			LOG_WARN("No filament extruder assigned to tool %d", index);
+			LOG_WARN("No filament extruder assigned to tool {:d}", index);
 			return;
 		}
 		auto extruder = Move::GetExtruderAxis(filamentExtruder);
 		if (extruder == nullptr)
 		{
-			LOG_WARN("Failed to get extruder %d for tool %d", filamentExtruder, index);
+			LOG_WARN("Failed to get extruder {:d} for tool {:d}", filamentExtruder, index);
 			return;
 		}
 		if (extruder->filamentName.Equals(filament))
@@ -380,13 +380,13 @@ namespace OM
 	{
 		if (filamentExtruder < 0)
 		{
-			LOG_WARN("No filament extruder assigned to tool %d", index);
+			LOG_WARN("No filament extruder assigned to tool {:d}", index);
 			return;
 		}
 		auto extruder = Move::GetExtruderAxis(filamentExtruder);
 		if (extruder == nullptr)
 		{
-			LOG_WARN("Failed to get extruder %d for tool %d", filamentExtruder, index);
+			LOG_WARN("Failed to get extruder {:d} for tool {:d}", filamentExtruder, index);
 			return;
 		}
 		if (extruder->filamentName.Equals(filament))
@@ -406,13 +406,13 @@ namespace OM
 	{
 		if (filamentExtruder < 0)
 		{
-			LOG_WARN("No filament extruder assigned to tool %d", index);
+			LOG_WARN("No filament extruder assigned to tool {:d}", index);
 			return;
 		}
 		auto extruder = Move::GetExtruderAxis(filamentExtruder);
 		if (extruder == nullptr)
 		{
-			LOG_WARN("Failed to get extruder %d for tool %d", filamentExtruder, index);
+			LOG_WARN("Failed to get extruder {:d} for tool {:d}", filamentExtruder, index);
 			return;
 		}
 		if (extruder->filamentName.IsEmpty())
@@ -459,7 +459,7 @@ namespace OM
 
 	std::shared_ptr<Tool> GetOrCreateTool(const size_t index)
 	{
-		LOG_DBG("%d", index);
+		LOG_DBG("{:d}", index);
 		return GetOrCreate<ToolList, Tool>(s_tools, index, true);
 	}
 
@@ -484,7 +484,7 @@ namespace OM
 
 	size_t RemoveTool(const size_t index, const bool allFollowing)
 	{
-		LOG_DBG("Removing tool %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		LOG_DBG("Removing tool {:d} (allFollowing={:s})", index, allFollowing ? "true" : "false");
 		return Remove<ToolList, Tool>(s_tools, index, allFollowing);
 	}
 
@@ -502,10 +502,10 @@ namespace OM
 		auto heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
 		if (heater == nullptr)
 		{
-			LOG_ERROR("Failed to get or create tool %d heater %d=%d", toolIndex, toolHeaterIndex, heaterIndex);
+			LOG_ERROR("Failed to get or create tool {:d} heater {:d}={:d}", toolIndex, toolHeaterIndex, heaterIndex);
 			return false;
 		}
-		LOG_DBG("Assigned heater %d to tool %d heaterIndex %d", heaterIndex, toolIndex, toolHeaterIndex);
+		LOG_DBG("Assigned heater {:d} to tool {:d} heaterIndex {:d}", heaterIndex, toolIndex, toolHeaterIndex);
 		return true;
 	}
 
@@ -533,7 +533,8 @@ namespace OM
 		auto extruder = tool->GetOrCreateExtruder(toolExtruderIndex, extruderIndex);
 		if (extruder == nullptr)
 		{
-			LOG_ERROR("Failed to get or create tool %d extruder %d=%d", toolIndex, toolExtruderIndex, extruderIndex);
+			LOG_ERROR(
+				"Failed to get or create tool %d extruder {:d}={:d}", toolIndex, toolExtruderIndex, extruderIndex);
 			return false;
 		}
 		return true;
@@ -575,10 +576,10 @@ namespace OM
 		auto fan = tool->GetOrCreateFan(toolFanIndex, fanIndex);
 		if (fan == nullptr)
 		{
-			LOG_ERROR("Failed to get or create tool %d fan %d=%d", toolIndex, toolFanIndex, fanIndex);
+			LOG_ERROR("Failed to get or create tool {:d} fan {:d}={:d}", toolIndex, toolFanIndex, fanIndex);
 			return false;
 		}
-		LOG_DBG("Assigned fan %d to tool %d fanIndex %d", fanIndex, toolIndex, toolFanIndex);
+		LOG_DBG("Assigned fan {:d} to tool {:d} fanIndex {:d}", fanIndex, toolIndex, toolFanIndex);
 		return true;
 	}
 
@@ -628,7 +629,7 @@ namespace OM
 		}
 
 		tool->name.copy(name, MAX_TOOL_NAME_LENGTH);
-		LOG_DBG("Tool %d name=%s", tool->index, tool->name.c_str());
+		LOG_DBG("Tool {:d} name={:s}", tool->index, tool->name.c_str());
 		return true;
 	}
 
@@ -680,7 +681,7 @@ namespace OM
 
 	void SetCurrentTool(const int32_t toolIndex)
 	{
-		LOG_DBG("Setting current tool to %d", toolIndex);
+		LOG_DBG("Setting current tool to {:d}", toolIndex);
 		s_currentTool = toolIndex;
 	}
 

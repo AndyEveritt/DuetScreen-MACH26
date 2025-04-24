@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/osal/lv_os.h"
+#include <fmt/ostream.h>
 #include <memory>
 
 #if SIMULATION
@@ -193,5 +194,5 @@ namespace UI
 } // namespace UI
 
 #define UI_LOCK()                                                                                                      \
-	LOG_VERBOSE("UI_LOCK requested by thread %u", std::this_thread::get_id());                                         \
+	LOG_VERBOSE("UI_LOCK requested by thread {}", std::this_thread::get_id());                                         \
 	auto uiLock = ScopedLock(mutexUi);

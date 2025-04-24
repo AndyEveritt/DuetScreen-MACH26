@@ -21,7 +21,7 @@ UartController::~UartController()
 bool UartController::open(const std::string& device)
 {
 #if SIMULATION
-	LOG_INFO("Simulating UART open on device: %s", device.c_str());
+	LOG_INFO("Simulating UART open on device: {:s}", device.c_str());
 	m_fd = 1; // Simulate success
 	m_running = true;
 	m_readThread = std::thread(&UartController::readLoop, this);
@@ -32,12 +32,12 @@ bool UartController::open(const std::string& device)
 		close();
 	}
 
-	LOG_INFO("Opening UART device %s", device.c_str());
+	LOG_INFO("Opening UART device {:s}", device.c_str());
 
 	m_fd = ::open(device.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
 	if (m_fd < 0)
 	{
-		LOG_ERROR("Failed to open UART device %s", device.c_str());
+		LOG_ERROR("Failed to open UART device {:s}", device.c_str());
 		return false;
 	}
 
@@ -190,7 +190,7 @@ void UartController::setBufferSize(size_t size)
 bool UartController::send(const uint8_t* data, size_t length)
 {
 #if SIMULATION
-	LOG_INFO("Simulated UART send: %.*s", (int)length, data);
+	LOG_INFO("Simulated UART send: {1:.{0}s}", (int)length, data);
 	return true;
 #else
 	if (!isOpen())
@@ -209,7 +209,7 @@ bool UartController::send(const uint8_t* data, size_t length)
 			{
 				continue;
 			}
-			LOG_ERROR("UART write error: %s", strerror(errno));
+			LOG_ERROR("UART write error: {:s}", strerror(errno));
 			return false;
 		}
 		written += ret;
@@ -259,7 +259,7 @@ void UartController::readLoop()
 		}
 		else if (bytesRead < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 		{
-			LOG_ERROR("UART read error: %s", strerror(errno));
+			LOG_ERROR("UART read error: {:s}", strerror(errno));
 			break;
 		}
 

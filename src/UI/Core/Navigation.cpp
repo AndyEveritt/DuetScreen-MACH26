@@ -24,7 +24,7 @@ namespace UI
 		auto it = std::find(vec.begin(), vec.end(), item);
 		if (it != vec.end())
 		{
-			LOG_DBG("Removing screen '%s' from vector", item->getName());
+			LOG_DBG("Removing screen '{:s}' from vector", item->getName());
 			vec.erase(it);
 			return true;
 		}
@@ -34,7 +34,7 @@ namespace UI
 	static bool addToVector(ViewList_t& vec, ViewListItem_t item)
 	{
 		removeFromVector(vec, item);
-		LOG_DBG("Adding screen %d to vector", item->getName());
+		LOG_DBG("Adding screen {:s} to vector", item->getName());
 		vec.push_back(item);
 		return true;
 	}
@@ -166,7 +166,7 @@ namespace UI
 			closeLastScreen();
 		}
 
-		LOG_INFO("Opening screen '%s'", view->getName());
+		LOG_INFO("Opening screen '{:s}'", view->getName());
 		view->show();
 		removeFromVector(s_returnableScreens, view);
 		if (!inVector(s_homeScreens, view))
@@ -213,7 +213,7 @@ namespace UI
 	 */
 	void closeScreen(ViewListItem_t view, bool returnable)
 	{
-		LOG_INFO("Closing screen '%s'", view->getName());
+		LOG_INFO("Closing screen '{:s}'", view->getName());
 		if (view->isVisible())
 		{
 			view->hide();

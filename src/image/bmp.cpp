@@ -33,7 +33,7 @@ BMP::BMP(int width, int height, const char* imageFileName)
 {
 	m_imageFile = fopen(imageFileName, "wb");
 	AllocateBuffer();
-	LOG_INFO("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
+	LOG_INFO("BMP: {:s}, width({:d}), height({:d}), paddingSize({:d}), stride({:d})",
 			 imageFileName,
 			 m_width,
 			 m_height,
@@ -60,7 +60,7 @@ bool BMP::New(int width, int height, const char* imageFileName)
 	m_paddingSize = (4 - (width * BYTES_PER_PIXEL) % 4) % 4;
 	m_stride = (width * BYTES_PER_PIXEL) + m_paddingSize;
 	AllocateBuffer();
-	LOG_INFO("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
+	LOG_INFO("BMP: {:s}, width({:d}), height({:d}), paddingSize({:d}), stride({:d})",
 			 imageFileName,
 			 m_width,
 			 m_height,
@@ -68,7 +68,7 @@ bool BMP::New(int width, int height, const char* imageFileName)
 			 m_stride);
 	if (!Open())
 	{
-		LOG_ERROR("Failed to open file %s", imageFileName);
+		LOG_ERROR("Failed to open file {:s}", imageFileName);
 		return false;
 	}
 
@@ -86,13 +86,13 @@ bool BMP::Close()
 {
 	if (m_imageFile == nullptr)
 	{
-		// LOG_WARN("File %s already closed", m_imageFileName);
+		// LOG_WARN("File {:s} already closed", m_imageFileName);
 		return true;
 	}
-	LOG_INFO("Closing file %s", m_imageFileName);
+	LOG_INFO("Closing file {:s}", m_imageFileName);
 	if (!fclose(m_imageFile) == 0)
 	{
-		LOG_ERROR("Failed to close file %s", m_imageFileName);
+		LOG_ERROR("Failed to close file {:s}", m_imageFileName);
 		return false;
 	}
 	m_imageFile = nullptr;
@@ -111,23 +111,23 @@ void BMP::generateBitmapImage(rgba_t* pixels)
 void BMP::generateBitmapHeaders()
 {
 	unsigned char* fileHeader = createBitmapFileHeader();
-	LOG_DBG("fileHeader: %.*x", FILE_HEADER_SIZE, fileHeader);
+	LOG_DBG("fileHeader: {:#x}", fmt::join(fileHeader, fileHeader + FILE_HEADER_SIZE, ", "));
 	fwrite(fileHeader, 1, FILE_HEADER_SIZE, m_imageFile);
 
 	unsigned char* infoHeader = createBitmapInfoHeader();
-	LOG_DBG("infoHeader: %.*x", INFO_HEADER_SIZE, infoHeader);
+	LOG_DBG("infoHeader: {:#x}", fmt::join(infoHeader, infoHeader + INFO_HEADER_SIZE, ", "));
 	fwrite(infoHeader, 1, INFO_HEADER_SIZE, m_imageFile);
 }
 
 void BMP::writeRow(unsigned char* pixels)
 {
-	LOG_DBG("Writing row to file %s", m_imageFileName);
+	LOG_DBG("Writing row to file {:s}", m_imageFileName);
 #if DEBUG_LEVEL <= DEBUG_LEVEL_VERBOSE
 	for (int i = 0; i < m_width; i++)
 	{
 		rgba_t* pixel = (rgba_t*)(pixels) + i;
 		LOG_VERBOSE(
-			"pixel[%d]: %x r=%d g=%d b=%d a=%d", i, *pixel, pixel->rgba.r, pixel->rgba.g, pixel->rgba.b, pixel->rgba.a);
+			"pixel[{:d}]: r={:d} g={:d} b={:d} a={:d}", i, pixel->rgba.r, pixel->rgba.g, pixel->rgba.b, pixel->rgba.a);
 	}
 #endif
 	fwrite(pixels, BYTES_PER_PIXEL, m_width, m_imageFile);
@@ -138,24 +138,24 @@ void BMP::appendPixels(rgba_t* pixels, int count)
 {
 	if (!IsOpen())
 	{
-		LOG_WARN("File %s not open", m_imageFileName);
+		LOG_WARN("File {:s} not open", m_imageFileName);
 		return;
 	}
 	int size = m_width * m_height;
 	int pixelsToAdd = std::min(size - m_pixelIndex, count);
 	while (pixelsToAdd > 0)
 	{
-		LOG_DBG("Adding %d pixels to buffer index %d", pixelsToAdd, m_pixelIndex);
+		LOG_DBG("Adding {:d} pixels to buffer index {:d}", pixelsToAdd, m_pixelIndex);
 		std::copy(pixels, pixels + pixelsToAdd, m_pixelBuffer + m_pixelIndex);
 		m_pixelIndex += pixelsToAdd;
-		LOG_DBG("new pixelIndex: %d", m_pixelIndex);
+		LOG_DBG("new pixelIndex: {:d}", m_pixelIndex);
 		if ((int)m_pixelIndex >= size)
 		{
-			LOG_INFO("Writing %d pixels to file %s", m_pixelIndex, m_imageFileName);
+			LOG_INFO("Writing {:d} pixels to file {:s}", m_pixelIndex, m_imageFileName);
 			for (int i = m_height - 1; i >= 0; i--)
 			// for (int i = 0; i < m_height; i++)
 			{
-				LOG_DBG("Row %d", i);
+				LOG_DBG("Row {:d}", i);
 				writeRow((unsigned char*)(m_pixelBuffer + i * m_width));
 			}
 			m_pixelIndex = 0;
@@ -197,7 +197,7 @@ void BMP::DeleteBuffer()
 unsigned char* BMP::createBitmapFileHeader()
 {
 	int fileSize = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (m_stride * m_height);
-	LOG_DBG("%s fileSize: %d", m_imageFileName, fileSize);
+	LOG_DBG("{:s} fileSize: {:d}", m_imageFileName, fileSize);
 	static unsigned char fileHeader[] = {
 		0,
 		0, /// signature

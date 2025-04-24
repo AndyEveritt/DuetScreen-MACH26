@@ -173,7 +173,7 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 	{
 		return true;
 	}
-	LOG_DBG("Setting system time to %s", data);
+	LOG_DBG("Setting system time to {:s}", data);
 	TimeHelper::setDateTime(data);
 	Model::get().newTime();
 	return true;

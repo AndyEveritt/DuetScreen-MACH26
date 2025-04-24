@@ -502,7 +502,7 @@ namespace UI
 		UI_LOCK();
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
-		LOG_INFO("%s SSH", checked ? "Enabling" : "Disabling");
+		LOG_INFO("{:s} SSH", checked ? "Enabling" : "Disabling");
 		StorageHelper::setData<bool>(ID_SSH_ENABLED, checked);
 		if (checked)
 		{

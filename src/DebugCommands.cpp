@@ -50,7 +50,7 @@ namespace Debug
 	{
 		if (commandsMap.find(id) == commandsMap.end())
 		{
-			LOG_WARN("id %s not found", id);
+			LOG_WARN("id {:s} not found", id);
 			return nullptr;
 		}
 		return commandsMap[id];

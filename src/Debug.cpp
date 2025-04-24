@@ -39,7 +39,7 @@ namespace Log
 			s_logger->set_level(spdlog::level::trace);
 			s_logger->flush_on(spdlog::level::debug);
 			spdlog::set_default_logger(s_logger);
-			spdlog::enable_backtrace(32);
+			spdlog::enable_backtrace(100);
 			spdlog::trace("Logger initialized {}, {}, {}", 1u, (uint32_t)s_debugLevel, "Hello World!");
 			spdlog::debug("Logger initialized {}, {}", 1u, 1.0f);
 			spdlog::info("Logger initialized {}", 1u, 1.0f);

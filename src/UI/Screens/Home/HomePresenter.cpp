@@ -341,7 +341,7 @@ namespace UI
 			break;
 		}
 		default:
-			LOG_WARN("Unhandled alert mode %d", alert.mode);
+			LOG_WARN("Unhandled alert mode {}", (int)alert.mode);
 			break;
 		}
 
@@ -349,7 +349,7 @@ namespace UI
 		if (alert.flags.IsBitSet(OM::Alert::GotControls))
 		{
 			size_t count = 0;
-			LOG_DBG("axisControl %d", alert.controls);
+			LOG_DBG("axisControl {:d}", alert.controls);
 			for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 			{
 				if (!(alert.controls & (1 << i)))
@@ -360,7 +360,7 @@ namespace UI
 				m_alertAxes.push_back(axis->letter[0]);
 				msgBox.setJogAxisLetter(count, axis->letter[0]);
 				count++;
-				LOG_DBG("Axis %d, count %d", i, count);
+				LOG_DBG("Axis {:d}, count {:d}", i, count);
 			}
 			msgBox.axisJogVisible(true);
 		}

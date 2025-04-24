@@ -27,7 +27,7 @@ namespace utils
 		FILE* pipe = popen(cmd, "r");
 		if (!pipe)
 		{
-			LOG_ERROR("popen(%s) failed!", cmd);
+			LOG_ERROR("popen({:s}) failed!", cmd);
 			return "";
 		}
 		while (!feof(pipe))

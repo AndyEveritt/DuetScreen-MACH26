@@ -14,7 +14,7 @@ class StorageHelper
 	template <typename T>
 	static void setData(const std::string& key, const T& value)
 	{
-		LOG_VERBOSE("Saving \"%s\" to config.json", key.c_str());
+		LOG_VERBOSE("Saving \"{:s}\" to config.json", key.c_str());
 		std::istringstream keyStream(key);
 		std::string segment;
 		nlohmann::json* current = &data_;

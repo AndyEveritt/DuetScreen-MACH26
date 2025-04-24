@@ -25,7 +25,7 @@ namespace USB
 		DIR* dir = opendir(directoryPath.c_str());
 		if (dir == nullptr)
 		{
-			LOG_ERROR("Error opening directory %s", directoryPath.c_str());
+			LOG_ERROR("Error opening directory {:s}", directoryPath.c_str());
 			return files;
 		}
 
@@ -46,7 +46,7 @@ namespace USB
 				struct stat sb;
 				if (stat((directoryPath + "/" + entry->d_name).c_str(), &sb) == -1)
 				{
-					LOG_ERROR("Failed to get file stats for %s", (directoryPath + entry->d_name).c_str());
+					LOG_ERROR("Failed to get file stats for {:s}", (directoryPath + entry->d_name).c_str());
 				}
 				strncpy(info.d_name, entry->d_name, 256);
 				info.d_type = entry->d_type;
@@ -83,27 +83,27 @@ namespace USB
 
 	bool ReadFileContents(const std::string& filePath, std::string& contents)
 	{
-		LOG_INFO("Reading file %s", filePath.c_str());
+		LOG_INFO("Reading file {:s}", filePath.c_str());
 		std::ifstream file(filePath.c_str(), std::ios::in | std::ios::ate);
 
 		if (!file.is_open())
 		{
 			printf(utils::format("Unable to open file %s", filePath.c_str()).c_str());
-			LOG_ERROR("Unable to open file %s", filePath.c_str());
+			LOG_ERROR("Unable to open file {:s}", filePath.c_str());
 			return false;
 		}
 
 		std::streamsize size = file.tellg();
 		file.seekg(0, std::ios::beg);
 		contents.resize(size);
-		LOG_DBG("Reading %ld bytes", size);
+		LOG_DBG("Reading {:d} bytes", size);
 		if (!file.read(contents.begin(), size))
 		{
 			printf(utils::format("Failed to read file %s", filePath.c_str()).c_str());
-			LOG_ERROR("Failed to read file %s", filePath.c_str());
+			LOG_ERROR("Failed to read file {:s}", filePath.c_str());
 			return false;
 		}
-		LOG_DBG("Read %d bytes", contents.size());
+		LOG_DBG("Read {:d} bytes", contents.size());
 		return true;
 	}
 #endif
@@ -194,7 +194,7 @@ namespace USB
 			{
 				if (std::find(current_mounts.begin(), current_mounts.end(), mount) == current_mounts.end())
 				{
-					LOG_INFO("USB drive mounted at: %s", mount.c_str());
+					LOG_INFO("USB drive mounted at: {:s}", mount.c_str());
 					notifyCallbacks(mount, true);
 				}
 			}
@@ -204,7 +204,7 @@ namespace USB
 			{
 				if (std::find(new_mounts.begin(), new_mounts.end(), mount) == new_mounts.end())
 				{
-					LOG_INFO("USB drive unmounted from: %s", mount.c_str());
+					LOG_INFO("USB drive unmounted from: {:s}", mount.c_str());
 					notifyCallbacks(mount, false);
 				}
 			}

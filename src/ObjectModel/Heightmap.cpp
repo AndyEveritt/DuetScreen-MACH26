@@ -59,7 +59,7 @@ namespace OM
 		const std::vector<std::string> headers = doc.GetHeaders();
 		for (const std::string& header : headers)
 		{
-			LOG_DBG("Header: \"%s\"", header.c_str());
+			LOG_DBG("Header: \"{:s}\"", header.c_str());
 		}
 
 		doc.GetCell("axis0", 0, m_axis[0]);
@@ -82,12 +82,12 @@ namespace OM
 
 		if (IsValid())
 		{
-			LOG_DBG("Axes: %s, %s", m_axis[0].c_str(), m_axis[1].c_str());
-			LOG_DBG("Min: %f, %f", m_min[0], m_min[1]);
-			LOG_DBG("Max: %f, %f", m_max[0], m_max[1]);
-			LOG_DBG("Radius: %f", m_radius);
-			LOG_DBG("Spacing: %f, %f", m_spacing[0], m_spacing[1]);
-			LOG_DBG("Samples: %u, %u", m_samples[0], m_samples[1]);
+			LOG_DBG("Axes: {:s}, {:s}", m_axis[0].c_str(), m_axis[1].c_str());
+			LOG_DBG("Min: {:g}, {:g}", m_min[0], m_min[1]);
+			LOG_DBG("Max: {:g}, {:g}", m_max[0], m_max[1]);
+			LOG_DBG("Radius: {:g}", m_radius);
+			LOG_DBG("Spacing: {:g}, {:g}", m_spacing[0], m_spacing[1]);
+			LOG_DBG("Samples: {:d}, {:d}", m_samples[0], m_samples[1]);
 		}
 		else
 		{
@@ -101,7 +101,7 @@ namespace OM
 		auto axis = Move::GetAxisByLetter(label[0]);
 		if (axis == nullptr)
 		{
-			LOG_ERROR("Axis %s not found", label.c_str());
+			LOG_ERROR("Axis {:s} not found", label.c_str());
 		}
 		return axis;
 	}
@@ -154,13 +154,13 @@ namespace OM
 		std::string csvContents;
 		if (!Comm::DUET.DownloadFile((Directories::GetSystemDirectory() + filename).c_str(), csvContents))
 		{
-			LOG_ERROR("Failed to download heightmap file %s", filename);
+			LOG_ERROR("Failed to download heightmap file {:s}", filename);
 			return false;
 		}
 
 		if (csvContents.find("RepRapFirmware height map") == std::string::npos)
 		{
-			LOG_WARN("CSV file \"%s\" not a heightmap", filename);
+			LOG_WARN("CSV file \"{:s}\" not a heightmap", filename);
 			return false;
 		}
 
@@ -169,22 +169,22 @@ namespace OM
 		std::ofstream file(localFilePath.c_str(), std::ios::out | std::ios::binary);
 		if (!file.is_open())
 		{
-			LOG_ERROR("Failed to open file %s for writing", localFilePath.c_str());
+			LOG_ERROR("Failed to open file {:s} for writing", localFilePath.c_str());
 			return false;
 		}
 
-		LOG_INFO("Writing heightmap to %s", localFilePath.c_str());
+		LOG_INFO("Writing heightmap to {:s}", localFilePath.c_str());
 		file.write(csvContents.c_str(), csvContents.length());
 
 		if (!ParseMeta(csvContents))
 		{
-			LOG_ERROR("Failed to parse meta data for heightmap %s", m_fileName.c_str());
+			LOG_ERROR("Failed to parse meta data for heightmap {:s}", m_fileName.c_str());
 			return false;
 		}
 
 		if (!ParseData(csvContents))
 		{
-			LOG_ERROR("Failed to parse data for heightmap %s", m_fileName.c_str());
+			LOG_ERROR("Failed to parse data for heightmap {:s}", m_fileName.c_str());
 			return false;
 		}
 
@@ -195,7 +195,7 @@ namespace OM
 	{
 		if (x >= GetWidth() || y >= GetHeight())
 		{
-			LOG_ERROR("Invalid point %u, %u, heightmap size (%u, %u)", x, y, GetWidth(), GetHeight());
+			LOG_ERROR("Invalid point {:d}, {:d}, heightmap size ({:d}, {:d})", x, y, GetWidth(), GetHeight());
 			return nullptr;
 		}
 		return &m_heightmap[y * GetWidth() + x];
@@ -203,17 +203,17 @@ namespace OM
 
 	bool Heightmap::ParseMeta(const std::string& csvContents)
 	{
-		LOG_INFO("Parsing meta data for heightmap %s", m_fileName.c_str());
+		LOG_INFO("Parsing meta data for heightmap {:s}", m_fileName.c_str());
 		size_t metaStart = utils::findInstance(csvContents, "\n", 1);
 		size_t metaEnd = utils::findInstance(csvContents, "\n", 3);
 		if (metaStart == std::string::npos || metaEnd == std::string::npos)
 		{
-			LOG_ERROR("Corrupt heightmap file %s", m_fileName.c_str());
+			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName.c_str());
 			return false;
 		}
 
 		std::string metaStr = csvContents.substr(metaStart, metaEnd - metaStart);
-		LOG_DBG("Meta:\n%s", metaStr.c_str());
+		LOG_DBG("Meta:\n{:s}", metaStr.c_str());
 
 		meta.Parse(metaStr);
 		return true;
@@ -221,17 +221,17 @@ namespace OM
 
 	bool Heightmap::ParseData(const std::string& csvContents)
 	{
-		LOG_INFO("Parsing data for heightmap %s", m_fileName.c_str());
+		LOG_INFO("Parsing data for heightmap {:s}", m_fileName.c_str());
 		size_t dataStart = utils::findInstance(csvContents, "\n", 3) + 1;
 		if (dataStart == std::string::npos)
 		{
-			LOG_ERROR("Corrupt heightmap file %s", m_fileName.c_str());
+			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName.c_str());
 			return false;
 		}
 
 		bool parseError = false;
 		std::string dataStr = csvContents.substr(dataStart);
-		LOG_DBG("Data:\n%s", dataStr.c_str());
+		LOG_DBG("Data:\n{:s}", dataStr.c_str());
 		utils::CSV doc(dataStr, false);
 
 		m_heightmap.clear();
@@ -243,7 +243,7 @@ namespace OM
 
 		if (rows != GetHeight() || cols != GetWidth())
 		{
-			LOG_ERROR("Heightmap size mismatch: %u != %u or %u != %u", rows, GetHeight(), cols, GetWidth());
+			LOG_ERROR("Heightmap size mismatch: {:d} != {:d} or {:d} != {:d}", rows, GetHeight(), cols, GetWidth());
 			return false;
 		}
 
@@ -268,27 +268,27 @@ namespace OM
 				point.y = meta.GetMin(1) + rowIdx * meta.GetSpacing(1);
 				if (point.x < xMin)
 				{
-					LOG_DBG("New xMin: %.3f", point.x);
+					LOG_DBG("New xMin: {:g}", point.x);
 					xMin = point.x;
 				}
 				if (point.x > xMax)
 				{
-					LOG_DBG("New xMax: %.3f", point.x);
+					LOG_DBG("New xMax: {:g}", point.x);
 					xMax = point.x;
 				}
 				if (point.y < yMin)
 				{
-					LOG_DBG("New yMin: %.3f", point.y);
+					LOG_DBG("New yMin: {:g}", point.y);
 					yMin = point.y;
 				}
 				if (point.y > yMax)
 				{
-					LOG_DBG("New yMax: %.3f", point.y);
+					LOG_DBG("New yMax: {:g}", point.y);
 					yMax = point.y;
 				}
 				if (!doc.GetCell(colIdx, rowIdx, val))
 				{
-					LOG_ERROR("Failed to get cell %u, %u", colIdx, rowIdx);
+					LOG_ERROR("Failed to get cell {:d}, {:d}", colIdx, rowIdx);
 					point.isNull = true;
 					parseError = true;
 				}
@@ -299,7 +299,7 @@ namespace OM
 				}
 				point.z = strtod(val.c_str(), NULL);
 
-				LOG_DBG("Cell %u, %u%s: (%.3f, %.3f, %.3f) raw=\"%s\"",
+				LOG_DBG("Cell {:d}, {:d}{:s}: ({:g}, {:g}, {:g}) raw=\"{:s}\"",
 						colIdx,
 						rowIdx,
 						point.isNull ? "[INVALID]" : "",
@@ -320,7 +320,7 @@ namespace OM
 			}
 		}
 
-		LOG_DBG("xMin=%.3f, xMax=%.3f, yMin=%.3f, yMax=%.3f", xMin, xMax, yMin, yMax);
+		LOG_DBG("xMin={:g}, xMax={:g}, yMin={:g}, yMax={:g}", xMin, xMax, yMin, yMax);
 		m_area =
 			meta.GetRadius() > 0 ? meta.GetRadius() * meta.GetRadius() * M_PI : std::abs((xMax - xMin) * (yMax - yMin));
 		m_meanError = errorSum / (rows * cols);
@@ -328,11 +328,11 @@ namespace OM
 
 		if (rows * cols != m_heightmap.size())
 		{
-			LOG_WARN("Heightmap size mismatch: %u != %u", rows * cols, m_heightmap.size());
+			LOG_WARN("Heightmap size mismatch: {:d} != {:d}", rows * cols, m_heightmap.size());
 			parseError = true;
 		}
 
-		LOG_DBG("Heightmap: %u rows, %u cols, area=%.3f mm^2, minError=%.3f mm, maxError=%.3f mm, meanError=%.3f "
+		LOG_DBG("Heightmap: {:d} rows, {:d} cols, area={:g} mm^2, minError={:g} mm, maxError={:g} mm, meanError={:g} "
 				"mm, stdDev=%.3f mm",
 				rows,
 				cols,
@@ -405,7 +405,8 @@ namespace OM
 
 		if (indexX1Y1 >= m_heightmap.size())
 		{
-			LOG_ERROR("Invalid heightmap index %u, %u. Max index = %u", axis0Index, axis1Index, m_heightmap.size() - 1);
+			LOG_ERROR(
+				"Invalid heightmap index {:d}, {:d}. Max index = {:d}", axis0Index, axis1Index, m_heightmap.size() - 1);
 			return 0.0;
 		}
 
@@ -431,13 +432,13 @@ namespace OM
 		std::vector<std::shared_ptr<FileSystem::FileSystemItem>> filenames = GetHeightmapFiles();
 		if (index < 0 || index >= (int)filenames.size())
 		{
-			LOG_ERROR("Invalid heightmap index %d", index);
+			LOG_ERROR("Invalid heightmap index {:d}", index);
 			return s_emptyStr;
 		}
 		std::shared_ptr<FileSystem::FileSystemItem> item = filenames[index];
 		if (item == nullptr)
 		{
-			LOG_ERROR("Filesystem item at index %d is null", index);
+			LOG_ERROR("Filesystem item at index {:d} is null", index);
 			return s_emptyStr;
 		}
 		return item->GetName();
@@ -454,7 +455,7 @@ namespace OM
 		{
 			s_currentHeightmapName = filename;
 		}
-		LOG_DBG("Set current heightmap to \"%s\" (%s)", s_currentHeightmapName.c_str(), filename.c_str());
+		LOG_DBG("Set current heightmap to \"{:s}\" ({:s})", s_currentHeightmapName.c_str(), filename.c_str());
 	}
 
 	void ClearCurrentHeightmap()
@@ -465,7 +466,7 @@ namespace OM
 	/* Sends command to Duet to use the heightmap called `filename` */
 	void LoadHeightmap(const char* filename)
 	{
-		LOG_INFO("Loading heightmap %s", filename);
+		LOG_INFO("Loading heightmap {:s}", filename);
 		Comm::DUET.SendGcodef("G29 S1 P\"%s\"", filename);
 	}
 

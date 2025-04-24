@@ -209,7 +209,7 @@ namespace OM
 
 	size_t RemoveBed(const size_t index, const bool allFollowing)
 	{
-		LOG_DBG("Removing bed %d allFollowing=%s", index, allFollowing ? "true" : "false");
+		LOG_DBG("Removing bed {:d} allFollowing={:s}", index, allFollowing ? "true" : "false");
 		return Remove<BedList, Bed>(s_beds, index, allFollowing);
 	}
 
@@ -257,11 +257,11 @@ namespace OM
 		auto bed = OM::GetOrCreateBed(bedIndex);
 		if (bed == nullptr)
 		{
-			LOG_ERROR("Failed to get or create bed %d", bedIndex);
+			LOG_ERROR("Failed to get or create bed {:d}", bedIndex);
 			return false;
 		}
 		bed->heater = heaterNumber;
-		LOG_DBG("Created bed %d, heater number %d", bedIndex, heaterNumber);
+		LOG_DBG("Created bed {:d}, heater number {:d}", bedIndex, heaterNumber);
 		return true;
 	}
 

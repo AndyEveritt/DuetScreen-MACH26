@@ -30,21 +30,21 @@ namespace UpgradeHelper
 	{
 		if (filePath.rfind(USB_BASE_DIR, 0) != 0)
 		{
-			LOG_ERROR("File path %s is not on USB", filePath.c_str());
+			LOG_ERROR("File path {:s} is not on USB", filePath.c_str());
 			return false;
 		}
 
 		// Check if the file has the correct extension
 		if (filePath.size() < UPGRADE_EXT_SIZE || filePath.substr(filePath.size() - UPGRADE_EXT_SIZE) != UPGRADE_EXT)
 		{
-			LOG_ERROR("File %s does not have the required " UPGRADE_EXT " extension", filePath.c_str());
+			LOG_ERROR("File {:s} does not have the required " UPGRADE_EXT " extension", filePath.c_str());
 			return false;
 		}
 
 		struct stat sb;
 		if (stat(filePath.c_str(), &sb) == -1)
 		{
-			LOG_ERROR("Failed to get file stats for %s", filePath.c_str());
+			LOG_ERROR("Failed to get file stats for {:s}", filePath.c_str());
 			return false;
 		}
 
@@ -52,10 +52,10 @@ namespace UpgradeHelper
 		int ret = system(utils::format("cp \"%s\" " TMP_FILEPATH, filePath.c_str()).c_str());
 		if (ret != 0)
 		{
-			LOG_ERROR("Failed to copy file \"%s\" to /tmp, code=%d", filePath.c_str(), ret);
+			LOG_ERROR("Failed to copy file \"{:s}\" to /tmp, code={:d}", filePath.c_str(), ret);
 			return false;
 		}
-		LOG_DBG("File \"%s\" copied to " TMP_FILEPATH ", code=%d", filePath.c_str(), ret);
+		LOG_DBG("File \"{:s}\" copied to " TMP_FILEPATH ", code={:d}", filePath.c_str(), ret);
 		return true;
 	}
 
@@ -71,10 +71,10 @@ namespace UpgradeHelper
 		int ret = system("mv " TMP_FILEPATH " " BOOT_FILEPATH);
 		if (ret != 0)
 		{
-			LOG_ERROR("Failed to move file from " TMP_FILEPATH " to " BOOT_FILEPATH ", code=%d", ret);
+			LOG_ERROR("Failed to move file from " TMP_FILEPATH " to " BOOT_FILEPATH ", code={:d}", ret);
 			return false;
 		}
-		LOG_DBG("File moved from " TMP_FILEPATH " to " BOOT_FILEPATH ", code=%d", ret);
+		LOG_DBG("File moved from " TMP_FILEPATH " to " BOOT_FILEPATH ", code={:d}", ret);
 		return true;
 	}
 
@@ -92,7 +92,7 @@ namespace UpgradeHelper
 
 	bool upgradeFromUSB(const std::string& filePath)
 	{
-		LOG_INFO("Attempting upgrade from USB file %s", filePath.c_str());
+		LOG_INFO("Attempting upgrade from USB file {:s}", filePath.c_str());
 		if (!copyFileFromUsb(filePath))
 		{
 			LOG_ERROR("Failed to copy file from USB");
@@ -105,13 +105,13 @@ namespace UpgradeHelper
 	{
 		std::string filePath = "/firmware/" UPGRADE_FILE;
 
-		LOG_INFO("Attempting upgrade from Duet file %s", filePath.c_str());
+		LOG_INFO("Attempting upgrade from Duet file {:s}", filePath.c_str());
 		removeTmpFile(); // Remove any previous upgrade file
 
 		std::string contents;
 		if (!Comm::DUET.DownloadFile(filePath.c_str(), contents))
 		{
-			LOG_ERROR("Failed to download file \"%s\" from Duet", filePath.c_str());
+			LOG_ERROR("Failed to download file \"{:s}\" from Duet", filePath.c_str());
 			return false;
 		}
 

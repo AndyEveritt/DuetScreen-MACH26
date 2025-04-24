@@ -25,7 +25,7 @@ namespace UI
 	{
 		if (index >= MAX_SLOTS)
 		{
-			LOG_ERROR("Invalid tool index %u", index);
+			LOG_ERROR("Invalid tool index {:d}", index);
 			return;
 		}
 		m_slotIndex = index;
@@ -105,7 +105,7 @@ namespace UI
 			heater = OM::Heat::GetHeater(m_bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				LOG_WARN("List index %d: Bed %d heater %d is null",
+				LOG_WARN("List index {:d}: Bed {:d} heater {:d} is null",
 						 m_slotIndex,
 						 m_bedOrChamber->index,
 						 m_bedOrChamber->heater);
@@ -123,7 +123,7 @@ namespace UI
 			heater = OM::Heat::GetHeater(m_bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				LOG_WARN("List index %d: Bed %d heater %d is null",
+				LOG_WARN("List index {:d}: Bed {:d} heater {:d} is null",
 						 m_slotIndex,
 						 m_bedOrChamber->index,
 						 m_bedOrChamber->heater);
@@ -486,19 +486,19 @@ namespace UI
 					}
 					return true;
 				});
-			LOG_VERBOSE("Tool count: %u", count);
+			LOG_VERBOSE("Tool count: {:d}", count);
 			totalHeaterCount += count;
 		}
 		if (addBeds)
 		{
 			size_t bedCount = OM::GetBedCount();
-			LOG_VERBOSE("Bed count: %u", bedCount);
+			LOG_VERBOSE("Bed count: {:d}", bedCount);
 			totalHeaterCount += bedCount;
 		}
 		if (addChambers)
 		{
 			size_t chamberCount = OM::GetChamberCount();
-			LOG_VERBOSE("Chamber count: %u", chamberCount);
+			LOG_VERBOSE("Chamber count: {:d}", chamberCount);
 			totalHeaterCount += chamberCount;
 		}
 		return totalHeaterCount;

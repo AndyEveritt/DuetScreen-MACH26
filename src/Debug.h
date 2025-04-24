@@ -42,7 +42,7 @@ namespace Log
 	std::shared_ptr<spdlog::logger> GetLogger();
 } // namespace Log
 
-#if 0
+#if 1
 #  define LOG_VERBOSE(...) spdlog::trace(__VA_ARGS__)
 #  define LOG_DBG(...) spdlog::debug(__VA_ARGS__)
 #  define LOG_INFO(...) spdlog::info(__VA_ARGS__)

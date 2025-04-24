@@ -124,19 +124,19 @@ namespace UI
 		auto tool = OM::GetToolBySlot(toolIndex);
 		if (tool == nullptr)
 		{
-			LOG_ERROR("Failed to get tool %d", toolIndex);
+			LOG_ERROR("Failed to get tool {:d}", toolIndex);
 			return false;
 		}
 		auto th = tool->GetHeater(heaterIndex);
 		if (th == nullptr)
 		{
-			LOG_ERROR("Failed to get tool %d tHeater %d", toolIndex, heaterIndex);
+			LOG_ERROR("Failed to get tool {:d} tHeater {:d}", toolIndex, heaterIndex);
 			return false;
 		}
 		auto heater = th->heater;
 		if (heater == nullptr)
 		{
-			LOG_ERROR("Failed to get tool %d heater %d", toolIndex, heaterIndex);
+			LOG_ERROR("Failed to get tool {:d} heater {:d}", toolIndex, heaterIndex);
 			return false;
 		}
 

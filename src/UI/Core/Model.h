@@ -18,6 +18,7 @@
 #include "Subscribers/ThumbnailSubscribers.h"
 #include "Subscribers/ToolSubscribers.h"
 #include "lvgl/lvgl.h"
+#include <fmt/ostream.h>
 #include <list>
 #include <map>
 #include <mutex>
@@ -191,5 +192,5 @@ struct ModelLock
 };
 
 #define MODEL_LOCK()                                                                                                   \
-	LOG_VERBOSE("MODEL_LOCK requested in thread %u", std::this_thread::get_id());                                      \
+	LOG_VERBOSE("MODEL_LOCK requested in thread {}", std::this_thread::get_id());                                      \
 	auto modelLock = ScopedLock(mutexModel);

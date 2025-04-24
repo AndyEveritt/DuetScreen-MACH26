@@ -24,7 +24,7 @@
 
 #include "Debug.h"
 
-#define jserror(fmt, args...) LOG_ERROR("jsError id='%s' @ %d: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
+#define jserror(fmt, args...) LOG_ERROR("jsError id='{:s}' @ {:d}: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
 
 namespace Comm
 {
@@ -170,7 +170,7 @@ namespace Comm
 		if (m_seq != nullptr)
 		{
 			m_seq->state = SeqStateOk;
-			LOG_DBG("seq %s %d DONE", m_seq->key, m_seq->state);
+			LOG_DBG("seq {:s} {} DONE", m_seq->key, m_seq->state);
 			m_seq = nullptr;
 		}
 
@@ -231,7 +231,7 @@ namespace Comm
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		LOG_VERBOSE("event: %s(%d) data '%s'", searchResult->key, searchResult->val, data);
+		LOG_VERBOSE("event: {:s}({}) data '{:s}'", searchResult->key, searchResult->val, data);
 		switch (rde)
 		{
 		// M409 section
@@ -311,7 +311,7 @@ namespace Comm
 	void JsonDecoder::ProcessArrayEnd(const char id[], const size_t indices[])
 	{
 		// search for key in subscribers
-		// LOG_VERBOSE("searching for array end subscribers for '%s'", id);
+		// LOG_VERBOSE("searching for array end subscribers for '{:s}'", id);
 		Model::get().runArrayEndSubscribers(id, this, indices);
 	}
 
@@ -321,7 +321,7 @@ namespace Comm
 
 		if (errors > parserMinErrors)
 		{
-			LOG_ERROR("Warning: received %d malformed responses for id \"%s\"", errors, id);
+			LOG_ERROR("Warning: received {:d} malformed responses for id \"{:s}\"", errors, id);
 		}
 		if (m_seq == nullptr)
 		{
@@ -333,7 +333,7 @@ namespace Comm
 
 	void JsonDecoder::RemoveLastId()
 	{
-		// LOG_VERBOSE("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
+		// LOG_VERBOSE("{:s}, len: {:d}", m_fieldId.c_str(), m_fieldId.strlen());
 		size_t index = m_fieldId.strlen();
 		while (index != 0 && m_fieldId[index - 1] != '^' && m_fieldId[index - 1] != ':')
 		{
@@ -341,7 +341,7 @@ namespace Comm
 		}
 		m_fieldId.Truncate(index);
 
-		// LOG_VERBOSE("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
+		// LOG_VERBOSE("{:s}, len: {:d}", m_fieldId.c_str(), m_fieldId.strlen());
 	}
 
 	void JsonDecoder::RemoveLastIdChar()
@@ -372,7 +372,7 @@ namespace Comm
 
 	void JsonDecoder::EndArray()
 	{
-		LOG_VERBOSE("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
+		LOG_VERBOSE("id {:s}, arrayIndices [{:d}|{:d}|{:d}|{:d}], arrayDepth {:d}",
 					m_fieldId.c_str(),
 					m_arrayIndices[0],
 					m_arrayIndices[1],
@@ -550,7 +550,7 @@ namespace Comm
 			{
 				m_state = jsError;
 
-				jserror("CheckValueCompleted: }");
+				jserror("CheckValueCompleted: }}");
 			}
 			else
 			{
@@ -584,24 +584,24 @@ namespace Comm
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
 		m_nextOut = 0;
-		LOG_DBG("len=%u: %s", len, rxBuffer);
+		LOG_DBG("len={:d}: {:s}", len, rxBuffer);
 		while (len != m_nextOut)
 		{
 			char c = rxBuffer[m_nextOut];
-			// LOG_VERBOSE("char %d: %c", m_nextOut, c);
+			// LOG_VERBOSE("char {:d}: {:c}", m_nextOut, c);
 			m_nextOut = (m_nextOut + 1) % (len + 1);
 			if (c == '\n')
 			{
 				if (m_state == jsError)
 				{
-					LOG_ERROR("ParserErrorEncountered @ %d", m_nextOut);
+					LOG_ERROR("ParserErrorEncountered @ {:d}", m_nextOut);
 
 					m_serialIoErrors++;
 
 					ParserErrorEncountered(m_lastState,
 										   m_fieldId.c_str(),
 										   m_serialIoErrors); // Notify the consumer that we ran into an error
-					LOG_ERROR("rxBuffer: %s", rxBuffer);
+					LOG_ERROR("rxBuffer: {:s}", rxBuffer);
 					m_lastState = jsBegin;
 				}
 				m_state = jsBegin; // abandon current parse (if any) and start again
@@ -652,7 +652,7 @@ namespace Comm
 					default:
 						m_state = jsError;
 
-						LOG_ERROR("jsError: jsExpectId, expected [\" or }] but got \"%c\"", c);
+						LOG_ERROR("jsError: jsExpectId, expected [\" or }}] but got \"{:c}\"", c);
 						break;
 					}
 					break;
@@ -668,7 +668,7 @@ namespace Comm
 						{
 							m_state = jsError;
 
-							jserror("jsId 1, expected \" but got \"%c\"", c);
+							jserror("jsId 1, expected \" but got \"{:c}\"", c);
 						}
 						else if (c != ':' && c != '^')
 						{
@@ -676,7 +676,7 @@ namespace Comm
 							{
 								m_state = jsError;
 
-								jserror("jsId 2, id not finished, received \"%c\"", c);
+								jserror("jsId 2, id not finished, received \"{:c}\"", c);
 							}
 						}
 						break;
@@ -694,7 +694,7 @@ namespace Comm
 					default:
 						m_state = jsError;
 
-						jserror("jsHadId, expected : but got \"%c\"", c);
+						jserror("jsHadId, expected : but got \"{:c}\"", c);
 						break;
 					}
 					break;
@@ -718,7 +718,7 @@ namespace Comm
 						{
 							m_state = jsError;
 
-							jserror("[, could not start array, current depth: %d", m_arrayDepth);
+							jserror("[, could not start array, current depth: {:d}", m_arrayDepth);
 						}
 						break;
 					case ']':
@@ -744,7 +744,7 @@ namespace Comm
 
 						if (m_state == jsError)
 						{
-							jserror("{, failed to start nested object");
+							jserror("{{, failed to start nested object");
 						}
 						break;
 					default:
@@ -764,7 +764,7 @@ namespace Comm
 						{
 							m_state = jsError;
 
-							jserror("jsVal default, expected [a-z0-9] but got \"%c\"", c);
+							jserror("jsVal default, expected [a-z0-9] but got \"{:c}\"", c);
 						}
 					}
 					break;
@@ -785,7 +785,7 @@ namespace Comm
 						{
 							m_state = jsError;
 
-							jserror("jsStringVal, got \"%c\"", c);
+							jserror("jsStringVal, got \"{:c}\"", c);
 						}
 						else
 						{
@@ -807,7 +807,7 @@ namespace Comm
 							{
 								m_state = jsError;
 
-								jserror("jsStringEscape 1, failed to append %c", c);
+								jserror("jsStringEscape 1, failed to append {:c}", c);
 							}
 							break;
 						case 'n':
@@ -843,7 +843,7 @@ namespace Comm
 							else
 							{
 								m_state = jsError;
-								jserror("jsUnicodeEscape, unknown code %s", code);
+								jserror("jsUnicodeEscape, unknown code {:s}", code);
 							}
 							m_nextOut += 4;
 							break;
@@ -863,7 +863,7 @@ namespace Comm
 
 					if (m_state == jsError)
 					{
-						jserror("jsNegIntVal, expected negative int but got %c", c);
+						jserror("jsNegIntVal, expected negative int but got {:c}", c);
 					}
 					break;
 
@@ -879,14 +879,14 @@ namespace Comm
 
 						if (m_state == jsError)
 						{
-							jserror("jsIntVal, failed to append %c", c);
+							jserror("jsIntVal, failed to append {:c}", c);
 						}
 					}
 					else if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
 					{
 						m_state = jsError;
 
-						jserror("jsIntVal, expected [0-9] but got \"%c\", or failed to append to m_fieldVal", c);
+						jserror("jsIntVal, expected [0-9] but got \"{:c}\", or failed to append to m_fieldVal", c);
 					}
 					break;
 
@@ -904,7 +904,7 @@ namespace Comm
 					{
 						m_state = jsError;
 
-						jserror("jsFracVal, expected [0-9] but got \"%c\", or failed to append to m_fieldVal", c);
+						jserror("jsFracVal, expected [0-9] but got \"{:c}\", or failed to append to m_fieldVal", c);
 					}
 					break;
 
@@ -914,7 +914,7 @@ namespace Comm
 						if (m_fieldVal.cat(c))
 						{
 							m_state = jsError;
-							jserror("jsExpValSign, expected '-' or '+' but got '%c'", c);
+							jserror("jsExpValSign, expected '-' or '+' but got '{:c}'", c);
 							break;
 						}
 
@@ -928,8 +928,9 @@ namespace Comm
 					{
 						m_state = jsError;
 
-						jserror("jsExpValFirstDigit, expected [0-9] but got \"%c\", or failed to append to m_fieldVal",
-								c);
+						jserror(
+							"jsExpValFirstDigit, expected [0-9] but got \"{:c}\", or failed to append to m_fieldVal",
+							c);
 					}
 					m_state = jsExpValDigits;
 					break;
@@ -944,8 +945,9 @@ namespace Comm
 					{
 						m_state = jsError;
 
-						jserror("jsExpValFirstDigit, expected [0-9] but got \"%c\", or failed to append to m_fieldVal",
-								c);
+						jserror(
+							"jsExpValFirstDigit, expected [0-9] but got \"{:c}\", or failed to append to m_fieldVal",
+							c);
 					}
 					break;
 
@@ -959,7 +961,7 @@ namespace Comm
 					{
 						m_state = jsError;
 
-						jserror("jsCharsVal, expected [a-z] but got \"%c\", or failed to append to m_fieldVal", c);
+						jserror("jsCharsVal, expected [a-z] but got \"{:c}\", or failed to append to m_fieldVal", c);
 					}
 					break;
 
@@ -971,7 +973,7 @@ namespace Comm
 
 					m_state = jsError;
 
-					jserror("jsEndVal, expected comma or ] or }");
+					jserror("jsEndVal, expected comma or ] or }}");
 					break;
 
 				case jsError:
@@ -983,7 +985,7 @@ namespace Comm
 #if 0
 				if (m_lastState != m_state)
 				{
-					LOG_VERBOSE("state %d -> %d", m_lastState, m_state);
+					LOG_VERBOSE("state {:d} -> {:d}", m_lastState, m_state);
 				}
 #endif
 			}

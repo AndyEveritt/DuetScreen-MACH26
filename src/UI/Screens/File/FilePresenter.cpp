@@ -35,7 +35,7 @@ namespace UI
 		MODEL_LOCK();
 		if (index >= m_items.size())
 		{
-			LOG_ERROR("item %u out of range", index);
+			LOG_ERROR("item {:d} out of range", index);
 			return;
 		}
 
@@ -44,7 +44,7 @@ namespace UI
 		m_view->cancelStartPrint();
 		if (item == nullptr)
 		{
-			LOG_WARN("item %u is null", index);
+			LOG_WARN("item {:d} is null", index);
 			return;
 		}
 

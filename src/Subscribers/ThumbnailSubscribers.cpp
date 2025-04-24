@@ -25,13 +25,13 @@ bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data
 	decoder->responseType = Comm::JsonDecoder::ResponseType::fileInfo;
 	decoder->responseData = request;
 
-	LOG_DBG("Receiving file info about %s", request->GetData()->filename.c_str());
+	LOG_DBG("Receiving file info about {:s}", request->GetData()->filename.c_str());
 	return true;
 }
 
 bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	LOG_INFO("lastModified %s", data);
+	LOG_INFO("lastModified {:s}", data);
 	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
@@ -104,7 +104,7 @@ bool ThumbnailSubscribers::layerHeight(Comm::JsonDecoder* decoder, const float& 
 
 bool ThumbnailSubscribers::thumbnailsFormat(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	LOG_VERBOSE("thumbnail format %s", data);
+	LOG_VERBOSE("thumbnail format {:s}", data);
 	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
@@ -121,7 +121,7 @@ bool ThumbnailSubscribers::thumbnailsFormat(Comm::JsonDecoder* decoder, const ch
 
 bool ThumbnailSubscribers::thumbnailsHeight(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	LOG_VERBOSE("thumbnail height %d", data);
+	LOG_VERBOSE("thumbnail height {:d}", data);
 	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
@@ -134,7 +134,7 @@ bool ThumbnailSubscribers::thumbnailsHeight(Comm::JsonDecoder* decoder, const ui
 
 bool ThumbnailSubscribers::thumbnailsOffset(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	LOG_VERBOSE("thumbnail offset %d", data);
+	LOG_VERBOSE("thumbnail offset {:d}", data);
 	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
@@ -149,7 +149,7 @@ bool ThumbnailSubscribers::thumbnailsOffset(Comm::JsonDecoder* decoder, const ui
 
 bool ThumbnailSubscribers::thumbnailsSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	LOG_VERBOSE("thumbnail size %d", data);
+	LOG_VERBOSE("thumbnail size {:d}", data);
 	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
@@ -162,7 +162,7 @@ bool ThumbnailSubscribers::thumbnailsSize(Comm::JsonDecoder* decoder, const uint
 
 bool ThumbnailSubscribers::thumbnailsWidth(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	LOG_VERBOSE("thumbnail width %d", data);
+	LOG_VERBOSE("thumbnail width {:d}", data);
 	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
@@ -191,7 +191,7 @@ bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const c
 	Comm::FileInfoCache::ThumbnailRequest* request = FILEINFO_CACHE->GetThumbnailRequest(data);
 	if (request == nullptr)
 	{
-		LOG_WARN("Not expecting to receive thumbnail data for \"%s\", ignoring", data);
+		LOG_WARN("Not expecting to receive thumbnail data for \"{:s}\", ignoring", data);
 		return false;
 	}
 
@@ -205,7 +205,7 @@ bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const c
 		return false;
 	}
 
-	LOG_INFO("Receiving thumbnail information about %s", thumbnail->filename.c_str());
+	LOG_INFO("Receiving thumbnail information about {:s}", thumbnail->filename.c_str());
 	request->Receiving();
 	return true;
 }
@@ -239,11 +239,11 @@ bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const cha
 
 	if (!Comm::GetUnsignedInteger(data, thumbnail->context.offset))
 	{
-		LOG_WARN("thumbnail offset error \"%s\"", data);
+		LOG_WARN("thumbnail offset error \"{:s}\"", data);
 		thumbnail->context.parseErr = -4;
 		return false;
 	}
-	LOG_DBG("thumbnail receive current offset %u.", thumbnail->context.offset);
+	LOG_DBG("thumbnail receive current offset {:d}.", thumbnail->context.offset);
 	return true;
 }
 
@@ -264,7 +264,7 @@ bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char*
 		return false;
 	}
 
-	LOG_DBG("thumbnail data %d", strlen(data));
+	LOG_DBG("thumbnail data {:d}", strlen(data));
 	Comm::ThumbnailBuf& thumbnailBuf = request->GetBuffer();
 	thumbnailBuf.size = strnlen(data, sizeof(thumbnailBuf.buffer));
 	memcpy(thumbnailBuf.buffer, data, thumbnailBuf.size);
@@ -283,11 +283,11 @@ bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char*
 
 	if (!Comm::GetUnsignedInteger(data, thumbnail->context.next))
 	{
-		LOG_WARN("thumbnail next error \"%s\"", data);
+		LOG_WARN("thumbnail next error \"{:s}\"", data);
 		thumbnail->context.parseErr = -4;
 		return false;
 	}
-	LOG_DBG("thumbnail next %u", thumbnail->context.next);
+	LOG_DBG("thumbnail next {:d}", thumbnail->context.next);
 	return true;
 }
 
@@ -310,10 +310,10 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 
 	if (!Comm::GetInteger(data, thumbnail->context.err))
 	{
-		LOG_WARN("Failed to parse thumbnail err %s", data);
+		LOG_WARN("Failed to parse thumbnail err {:s}", data);
 		thumbnail->context.parseErr = -1;
 	}
-	LOG_INFO("Thumbnail: offset(%d), next(%d), err(%d), size(%d), parseErr(%d)",
+	LOG_INFO("Thumbnail: offset({:d}), next({:d}), err({:d}), size({:d}), parseErr({:d})",
 			 thumbnail->context.offset,
 			 thumbnail->context.next,
 			 thumbnail->context.err,
@@ -322,14 +322,14 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 
 	if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
 	{
-		LOG_ERROR("thumbnail parseErr %d err %d.\n", thumbnail->context.parseErr, thumbnail->context.err);
+		LOG_ERROR("thumbnail parseErr {:d} err {:d}.\n", thumbnail->context.parseErr, thumbnail->context.err);
 		thumbnail->context.state = Comm::ThumbnailState::Init;
 		return false;
 	}
 
 	if (thumbnail->context.state != Comm::ThumbnailState::Data)
 	{
-		LOG_WARN("No thumbnail data received for \"%s\"", thumbnail->filename.c_str());
+		LOG_WARN("No thumbnail data received for \"{:s}\"", thumbnail->filename.c_str());
 		return false;
 	}
 
@@ -344,7 +344,7 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 	int ret = 0;
 	if ((ret = ThumbnailDecodeChunk(*thumbnail, thumbnailBuf)) < 0)
 	{
-		LOG_ERROR("failed to decode thumbnail chunk %d.\n", ret);
+		LOG_ERROR("failed to decode thumbnail chunk {:d}.\n", ret);
 		thumbnail->context.state = Comm::ThumbnailState::Init;
 		return false;
 	}
@@ -370,11 +370,11 @@ bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const 
 	{
 		FILEINFO_CACHE->QueueThumbnailRequest(fileInfo->filename.c_str());
 	}
-	LOG_INFO("FileInfo: filename(%s) thumbnails(%d)", fileInfo->filename.c_str(), fileInfo->GetThumbnailCount());
+	LOG_INFO("FileInfo: filename({:s}) thumbnails({:d})", fileInfo->filename.c_str(), fileInfo->GetThumbnailCount());
 	for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 	{
 		Comm::ThumbnailPtr thumbnail = fileInfo->GetOrCreateThumbnail(i);
-		LOG_INFO("Thumbnail %d: filename(%s) offset(%d) size(%d) width(%d) height(%d) format(%d)",
+		LOG_INFO("Thumbnail {:d}: filename({:s}) offset({:d}) size({:d}) width({:d}) height({:d}) format({})",
 				 i,
 				 thumbnail->filename.c_str(),
 				 thumbnail->meta.offset,

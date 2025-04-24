@@ -55,7 +55,7 @@ namespace Comm
 
 	void UsbDevice::reset()
 	{
-		LOG_DBG("Resetting USB device %s", m_name);
+		LOG_DBG("Resetting USB device {:s}", m_name);
 		if (m_handle)
 		{
 			LOG_DBG("Releasing interface");
@@ -138,7 +138,7 @@ namespace Comm
 			int r = libusb_bulk_transfer(m_handle, m_outEndpoint, (unsigned char*)data, len, &actual_length, 0);
 			if (r != 0)
 			{
-				LOG_ERROR("Error sending data: %s", libusb_error_name(r));
+				LOG_ERROR("Error sending data: {:s}", libusb_error_name(r));
 				reset();
 				pthread_mutex_unlock(&s_usbMutex);
 				return -1;
@@ -181,7 +181,7 @@ namespace Comm
 			LOG_WARN("Device disconnected");
 			break;
 		default:
-			LOG_ERROR("Error receiving data: %s", libusb_error_name(r));
+			LOG_ERROR("Error receiving data: {:s}", libusb_error_name(r));
 			break;
 		}
 
@@ -203,7 +203,7 @@ namespace Comm
 		int err = libusb_control_transfer(m_handle, request_type, request, value, index, nullptr, 0, 1000);
 		if (err < 0)
 		{
-			LOG_ERROR("Failed to set DTR: %s", libusb_error_name(err));
+			LOG_ERROR("Failed to set DTR: {:s}", libusb_error_name(err));
 		}
 		else
 		{
@@ -235,13 +235,13 @@ namespace Comm
 						{
 							m_inEndpoint = ep_desc.bEndpointAddress;
 							m_packetSize = ep_desc.wMaxPacketSize;
-							LOG_DBG("Found IN endpoint: %x", m_inEndpoint);
+							LOG_DBG("Found IN endpoint: {:#x}", m_inEndpoint);
 							foundIn = true;
 						}
 						else
 						{
 							m_outEndpoint = ep_desc.bEndpointAddress;
-							LOG_DBG("Found OUT endpoint: %x", m_outEndpoint);
+							LOG_DBG("Found OUT endpoint: {:#x}", m_outEndpoint);
 							foundOut = true;
 						}
 					}
@@ -270,7 +270,8 @@ namespace Comm
 					{
 						if (desc.idProduct == deviceId.productId)
 						{
-							LOG_INFO("%s target device (Product ID: %x) found.", deviceId.name, deviceId.productId);
+							LOG_INFO(
+								"{:s} target device (Product ID: {:#x}) found.", deviceId.name, deviceId.productId);
 							return s_currentUsbDevice.init(deviceId.name, device);
 						}
 					}
@@ -297,7 +298,7 @@ namespace Comm
 
 		if (device_count < 0)
 		{
-			LOG_ERROR("Failed to get device list: %s", libusb_error_name(device_count));
+			LOG_ERROR("Failed to get device list: {:s}", libusb_error_name(device_count));
 			return false;
 		}
 

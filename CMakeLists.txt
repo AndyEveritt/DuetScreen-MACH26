@@ -141,7 +141,8 @@ target_link_libraries(
           pthread
           hv_static
           nlohmann_json::nlohmann_json
-          spdlog::spdlog)
+          spdlog::spdlog
+          fmt::fmt)
 
 # Custom target to run the executable
 add_custom_target(

@@ -134,7 +134,7 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 	auto subscribers = getSubscribers(key);
 	if (subscribers.size() != 0)
 	{
-		LOG_DBG("found %d subscribers for '%s'", subscribers.size(), key);
+		LOG_DBG("found {:d} subscribers for '{:s}'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
 			subscriber.run(decoder, data, indices);
@@ -147,7 +147,7 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 	auto subscribers = getArrayEndSubscribers(key);
 	if (subscribers.size() != 0)
 	{
-		LOG_DBG("found %d array end subscribers for '%s'", subscribers.size(), key);
+		LOG_DBG("found {:d} array end subscribers for '{:s}'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
 			subscriber.run(decoder, indices);
@@ -175,7 +175,7 @@ bool Model::initMutex()
 
 	if (ret)
 	{
-		LOG_ERROR("%d", ret);
+		LOG_ERROR("{:d}", ret);
 		return false;
 	}
 	else
@@ -189,7 +189,7 @@ void Model::lock()
 	LOG_VERBOSE("Attempting to lock model");
 	// lv_lock();
 	pthread_mutex_lock(&m_mutex);
-	LOG_VERBOSE("Model locked by thread %u", pthread_self());
+	LOG_VERBOSE("Model locked by thread {:d}", pthread_self());
 }
 
 void Model::unlock()
@@ -197,7 +197,7 @@ void Model::unlock()
 	LOG_VERBOSE("Unlocking model");
 	// lv_unlock();
 	pthread_mutex_unlock(&m_mutex);
-	LOG_VERBOSE("Model unlocked by thread %u", pthread_self());
+	LOG_VERBOSE("Model unlocked by thread {:d}", pthread_self());
 }
 
 void Model::refresh()

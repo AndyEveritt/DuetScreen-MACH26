@@ -83,7 +83,8 @@
         "unordered_set": "cpp",
         "*.json.default": "json",
         "lv_i18n": "cpp",
-        "*.template": "cpp"
+        "*.template": "cpp",
+        "span": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.clang_format_fallbackStyle": "",

@@ -33,7 +33,7 @@ namespace Comm
 
 	FileInfo::~FileInfo()
 	{
-		LOG_DBG("Deleted fileinfo %s", filename.c_str());
+		LOG_DBG("Deleted fileinfo {:s}", filename.c_str());
 	}
 
 	std::shared_ptr<Thumbnail> FileInfo::GetThumbnail(size_t index)
@@ -67,7 +67,7 @@ namespace Comm
 	tm FileInfo::GetPrintTime() const
 	{
 		tm time = ParseSeconds(printTime);
-		LOG_DBG("Print time (%d): %d:%02d:%02d", printTime, time.tm_hour, time.tm_min, time.tm_sec);
+		LOG_DBG("Print time ({:d}): {:d}:{:2d}:{:2d}", printTime, time.tm_hour, time.tm_min, time.tm_sec);
 		return time;
 	}
 
@@ -85,9 +85,9 @@ namespace Comm
 
 			if (request.HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
 			{
-				LOG_WARN("File info request timed out for %s", request.GetData()->filename.c_str());
+				LOG_WARN("File info request timed out for {:s}", request.GetData()->filename.c_str());
 				request.Complete(true);
-				LOG_WARN("Requeuing failed file info request for %s", request.GetData()->filename.c_str());
+				LOG_WARN("Requeuing failed file info request for {:s}", request.GetData()->filename.c_str());
 				QueueFileInfoRequest(request.GetData()->filename.c_str());
 			}
 		}
@@ -109,9 +109,9 @@ namespace Comm
 #if DEBUG
 				ThumbnailPtr t = request.GetData();
 #endif
-				LOG_WARN("Thumbnail request timed out for %s", request.GetData()->filename.c_str());
+				LOG_WARN("Thumbnail request timed out for {:s}", request.GetData()->filename.c_str());
 				request.Complete(true);
-				LOG_WARN("Requeuing thumbnail request for %s", request.GetData()->filename.c_str());
+				LOG_WARN("Requeuing thumbnail request for {:s}", request.GetData()->filename.c_str());
 				std::string filename = request.GetData()->filename.c_str();
 				DeleteCachedThumbnail(filename.c_str());
 				QueueThumbnailRequest(filename);
@@ -169,14 +169,14 @@ namespace Comm
 				break;
 			case ThumbnailState::Data:
 			case ThumbnailState::DataWait:
-				LOG_VERBOSE("Thumbnail request in progress for %s, state=%d",
+				LOG_VERBOSE("Thumbnail request in progress for {:s}, state={}",
 							thumbnail->filename.c_str(),
 							thumbnail->context.state);
 				thumbnailsRequested++;
 				break;
 			case ThumbnailState::Cached:
 				thumbnail->image.Close();
-				LOG_INFO("Updating thumbnail %s", thumbnail->filename.c_str());
+				LOG_INFO("Updating thumbnail {:s}", thumbnail->filename.c_str());
 				ThumbnailRequestComplete(thumbnail->filename.c_str());
 				Model::get().newThumbnailData(thumbnail->filename.c_str());
 				break;
@@ -195,7 +195,7 @@ namespace Comm
 		{
 			if (m_currentThumbnail->context.parseErr != 0 || m_currentThumbnail->context.err != 0)
 			{
-				LOG_WARN("Thumbnail request failed for %s, parseErr(%d), err(%d)",
+				LOG_WARN("Thumbnail request failed for {:s}, parseErr({:d}), err({:d})",
 					 m_currentThumbnail->filename.c_str(),
 					 m_currentThumbnail->context.parseErr,
 					 m_currentThumbnail->context.err);
@@ -215,7 +215,7 @@ namespace Comm
 				break;
 			case ThumbnailState::Data:
 			case ThumbnailState::DataWait:
-				LOG_VERBOSE("Thumbnail request in progress for %s, state=%d",
+				LOG_VERBOSE("Thumbnail request in progress for {:s}, state={:d}",
 						m_currentThumbnail->filename.c_str(),
 						m_currentThumbnail->context.state);
 				return;
@@ -226,7 +226,7 @@ namespace Comm
 				return;
 			case ThumbnailState::Cached:
 				m_currentThumbnail->image.Close();
-				LOG_INFO("Updating thumbnail %s", m_currentThumbnail->filename.c_str());
+				LOG_INFO("Updating thumbnail {:s}", m_currentThumbnail->filename.c_str());
 #  if 0
 				UI::FileList::GetThumbnail()->setText("");
 				UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
@@ -278,7 +278,7 @@ namespace Comm
 
 		if (m_queuedLargeThumbnail != nullptr)
 		{
-			LOG_INFO("Requesting queued large thumbnail for %s", m_queuedLargeThumbnail->filename.c_str());
+			LOG_INFO("Requesting queued large thumbnail for {:s}", m_queuedLargeThumbnail->filename.c_str());
 			if (RequestThumbnail(m_queuedLargeThumbnail))
 			{
 				m_queuedLargeThumbnail = nullptr;
@@ -317,14 +317,14 @@ namespace Comm
 		// Does a thumbnail file exist in the file system?
 		if (!::IsThumbnailCached(filepath.c_str(), false))
 		{
-			LOG_DBG("Thumbnail file for %s does not exist", filepath.c_str());
+			LOG_DBG("Thumbnail file for {:s} does not exist", filepath.c_str());
 			return false;
 		}
 
 		// Do we have a cache for the files meta data?
 		if (m_cache.find(filepath) == m_cache.end())
 		{
-			LOG_DBG("No file info cached for %s", filepath.c_str());
+			LOG_DBG("No file info cached for {:s}", filepath.c_str());
 			return false;
 		}
 
@@ -333,7 +333,7 @@ namespace Comm
 		// Is the last modified time the same?
 		if (!fileInfo->lastModified.Equals(lastModified))
 		{
-			LOG_DBG("Last modified time for %s does not match", filepath.c_str());
+			LOG_DBG("Last modified time for {:s} does not match", filepath.c_str());
 			return false;
 		}
 
@@ -415,7 +415,7 @@ namespace Comm
 
 	void FileInfoCache::FileInfoRequestComplete(const std::string& filepath)
 	{
-		LOG_DBG("File info request complete for %s", filepath.c_str());
+		LOG_DBG("File info request complete for {:s}", filepath.c_str());
 
 		FileInfoRequest* request = GetFileInfoRequest(filepath);
 
@@ -437,7 +437,7 @@ namespace Comm
 			return false;
 		}
 
-		LOG_INFO("Requesting file info for \"%s\", ", m_data->filename.c_str());
+		LOG_INFO("Requesting file info for \"{:s}\", ", m_data->filename.c_str());
 		return DUET.RequestFileInfo(m_data->filename.c_str());
 	}
 
@@ -448,14 +448,14 @@ namespace Comm
 			return false;
 		}
 
-		LOG_INFO("Requesting thumbnail for \"%s\", %ux%u",
+		LOG_INFO("Requesting thumbnail for \"{:s}\", {:d}x{:d}",
 				 m_data->filename.c_str(),
 				 m_data->meta.width,
 				 m_data->meta.height);
 
 		if (m_data->filename.IsEmpty() || m_data->meta.offset == 0)
 		{
-			LOG_WARN("Not enough information to request thumbnail for %s", m_data->filename.c_str());
+			LOG_WARN("Not enough information to request thumbnail for {:s}", m_data->filename.c_str());
 			return false;
 		}
 
@@ -477,7 +477,7 @@ namespace Comm
 			const char* filename = m_data->AboveCacheLimit() ? largeThumbnailFilename : m_data->filename.c_str();
 			if (!m_data->image.New(m_data->meta, filename))
 			{
-				LOG_ERROR("Failed to create thumbnail file %s.", filename);
+				LOG_ERROR("Failed to create thumbnail file {:s}.", filename);
 				return false;
 			}
 			m_data->context.state = ThumbnailState::DataWait;
@@ -505,7 +505,7 @@ namespace Comm
 	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath, bool next)
 	{
 		MODEL_LOCK();
-		LOG_DBG("Attempting to queue file info request for %s", filepath.c_str());
+		LOG_DBG("Attempting to queue file info request for {:s}", filepath.c_str());
 		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
 			if (request.GetData()->filename.Equals(filepath.c_str()))
@@ -513,14 +513,14 @@ namespace Comm
 				if (request.IsInProgress())
 				{
 					// Request already in progress so don't remove it from queue or add it again
-					LOG_WARN("File info request for %s already in progress", filepath.c_str());
+					LOG_WARN("File info request for {:s} already in progress", filepath.c_str());
 					return false;
 				}
 
 				if (!next && !request.IsFailed())
 				{
 					// Request is already in the queue but has not started
-					LOG_DBG("File info request for %s already queued", filepath.c_str());
+					LOG_DBG("File info request for {:s} already queued", filepath.c_str());
 					return false;
 				}
 
@@ -529,7 +529,7 @@ namespace Comm
 				break;
 			}
 		}
-		LOG_INFO("Queueing file info request for %s", filepath.c_str());
+		LOG_INFO("Queueing file info request for {:s}", filepath.c_str());
 		if (next)
 		{
 
@@ -548,7 +548,7 @@ namespace Comm
 	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath, bool next)
 	{
 		MODEL_LOCK();
-		LOG_DBG("Attempting to queue thumbnail request for %s", filepath.c_str());
+		LOG_DBG("Attempting to queue thumbnail request for {:s}", filepath.c_str());
 		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
 		{
 			if (request.GetData()->filename.Equals(filepath.c_str()))
@@ -556,14 +556,14 @@ namespace Comm
 				if (request.IsInProgress())
 				{
 					// Request already in progress so don't remove it from queue or add it again
-					LOG_WARN("Thumbnail request for %s already in progress", filepath.c_str());
+					LOG_WARN("Thumbnail request for {:s} already in progress", filepath.c_str());
 					return false;
 				}
 
 				if (!next && !request.IsFailed())
 				{
 					// Request is already in the queue but has not started
-					LOG_DBG("Thumbnail request for %s already queued", filepath.c_str());
+					LOG_DBG("Thumbnail request for {:s} already queued", filepath.c_str());
 					return false;
 				}
 
@@ -576,18 +576,18 @@ namespace Comm
 		FileInfoPtr fileInfo = GetFileInfo(filepath);
 		if (fileInfo == nullptr)
 		{
-			LOG_DBG("No file info found for %s", filepath.c_str());
+			LOG_DBG("No file info found for {:s}", filepath.c_str());
 			FileInfoRequest* request = GetFileInfoRequest(filepath);
 			if (request == nullptr)
 			{
-				LOG_WARN("Request not in progress for \"%s\", queuing file info request", filepath.c_str());
+				LOG_WARN("Request not in progress for \"{:s}\", queuing file info request", filepath.c_str());
 				QueueFileInfoRequest(filepath, next);
 				return false;
 			}
 
 			if (!request->IsReceiving())
 			{
-				LOG_WARN("FileInfo request for \"%s\" has not been received yet, not queuing thumbnail request",
+				LOG_WARN("FileInfo request for \"{:s}\" has not been received yet, not queuing thumbnail request",
 						 filepath.c_str());
 				return false;
 			}
@@ -610,7 +610,7 @@ namespace Comm
 		}
 		if (largestValidThumbnail == nullptr)
 		{
-			LOG_WARN("No valid thumbnail found for %s", filepath.c_str());
+			LOG_WARN("No valid thumbnail found for {:s}", filepath.c_str());
 			return false;
 		}
 
@@ -626,7 +626,7 @@ namespace Comm
 		{
 			m_thumbnailRequestQueue.push_back(largestValidThumbnail);
 		}
-		LOG_INFO("Queued thumbnail request for \"%s\", %ux%u",
+		LOG_INFO("Queued thumbnail request for \"{:s}\", {:d}x{:d}",
 				 filepath.c_str(),
 				 largestValidThumbnail->meta.width,
 				 largestValidThumbnail->meta.height);
@@ -668,10 +668,10 @@ namespace Comm
 		}
 		if (largestThumbnail == nullptr)
 		{
-			LOG_WARN("No valid thumbnail found for %s", filepath.c_str());
+			LOG_WARN("No valid thumbnail found for {:s}", filepath.c_str());
 			return false;
 		}
-		LOG_INFO("Queued large thumbnail request for %s, size=%u, offset=%u",
+		LOG_INFO("Queued large thumbnail request for {:s}, size={:d}, offset={:d}",
 			 filepath.c_str(),
 			 largestThumbnail->meta.size,
 			 largestThumbnail->meta.offset);
@@ -685,7 +685,7 @@ namespace Comm
 		MODEL_LOCK();
 		if (index >= fileInfo.GetThumbnailCount())
 		{
-			LOG_WARN("Thumbnail index %d out of range for %s", index, fileInfo.filename.c_str());
+			LOG_WARN("Thumbnail index {:d} out of range for {:s}", index, fileInfo.filename.c_str());
 			return false;
 		}
 
@@ -707,7 +707,7 @@ namespace Comm
 		thumbnail->context.Init();
 		if (thumbnail->filename.IsEmpty() || thumbnail->meta.offset == 0)
 		{
-			LOG_WARN("Not enough information to request thumbnail for %s", thumbnail->filename.c_str());
+			LOG_WARN("Not enough information to request thumbnail for {:s}", thumbnail->filename.c_str());
 			return false;
 		}
 
@@ -721,7 +721,7 @@ namespace Comm
 
 		if (!thumbnail->image.New(thumbnail->meta, filename))
 		{
-			LOG_ERROR("Failed to create thumbnail file %s.", filename);
+			LOG_ERROR("Failed to create thumbnail file {:s}.", filename);
 			return false;
 		}
 
