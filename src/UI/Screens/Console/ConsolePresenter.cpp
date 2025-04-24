@@ -16,6 +16,13 @@ namespace UI
 		m_view->addResponse(resp);
 	}
 
+	void ConsolePresenter::newLogMessage(const Log::DebugLevel& level,
+										 const std::chrono::_V2::system_clock::time_point& time,
+										 const std::string& message)
+	{
+		m_view->addResponse(message.c_str());
+	}
+
 	void ConsolePresenter::sendGcode(const char* gcode)
 	{
 		Comm::DUET.SendGcode(gcode);

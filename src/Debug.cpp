@@ -7,9 +7,11 @@
 
 #include "Debug.h"
 #include "Configuration.h"
+#include "UI/Core/Model.h"
 #include "utils/StorageHelper.h"
 #include <ctime>
 #include <memory>
+#include <spdlog/details/os.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -36,8 +38,26 @@ using std::vector;
 
 namespace Log
 {
+	template <typename Mutex>
+	class UiSink : public spdlog::sinks::base_sink<Mutex>
+	{
+	  protected:
+		void sink_it_(const spdlog::details::log_msg& msg) override
+		{
+			spdlog::memory_buf_t formatted;
+			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
+			std::string str(formatted.data(), formatted.size());
+			Model::get().newLogMessage(static_cast<DebugLevel>(msg.level), msg.time, str);
+		}
+
+		void flush_() override {}
+	};
+
+	using UiSink_mt = UiSink<spdlog::details::null_mutex>;
+
 	static DebugLevel s_debugLevel = DebugLevel::Info;
 	static shared_ptr<spdlog::logger> s_logger;
+	static shared_ptr<UiSink_mt> s_uiSink;
 
 	void Init()
 	{
@@ -55,10 +75,11 @@ namespace Log
 			spdlog::sinks_init_list sinks{console_sink, file_sink};
 			s_logger = make_shared<spdlog::logger>("duetscreen", sinks);
 			s_logger->flush_on(spdlog::level::debug);
-			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
-			spdlog::flush_every(std::chrono::seconds(1));
 			spdlog::set_default_logger(s_logger);
-			spdlog::enable_backtrace(100);
+			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
+			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
+			spdlog::flush_every(std::chrono::seconds(1));
+			// spdlog::enable_backtrace(100);
 			LOG_INFO("Logger initialized");
 		}
 		catch (const spdlog::spdlog_ex& ex)
@@ -106,6 +127,43 @@ namespace Log
 		{
 			s_logger->flush();
 		}
+	}
+
+	void EnableUiLogging(bool enable)
+	{
+		if ((s_uiSink && enable) || (!s_uiSink && !enable))
+			return;
+
+		if (enable)
+		{
+			s_uiSink = make_shared<UiSink_mt>();
+			s_uiSink->set_pattern(LOG_UI_PATTERN);
+			s_uiSink->set_level(spdlog::level::info);
+			s_logger->sinks().push_back(s_uiSink);
+		}
+		else
+		{
+			auto sinks = s_logger->sinks();
+			for (auto it = sinks.begin(); it != sinks.end(); ++it)
+			{
+				if (*it == s_uiSink)
+				{
+					sinks.erase(it);
+					break;
+				}
+			}
+			s_uiSink.reset();
+		}
+	}
+
+	bool IsUiLoggingEnabled()
+	{
+		return s_uiSink != nullptr;
+	}
+
+	size_t GetThreadId()
+	{
+		return spdlog::details::os::thread_id();
 	}
 
 	const DebugLevel& GetDebugLevel()

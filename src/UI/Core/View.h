@@ -194,5 +194,5 @@ namespace UI
 } // namespace UI
 
 #define UI_LOCK()                                                                                                      \
-	LOG_VERBOSE("UI_LOCK requested by thread {}", std::this_thread::get_id());                                         \
+	LOG_VERBOSE("UI_LOCK requested by thread {}", Log::GetThreadId());                                                 \
 	auto uiLock = ScopedLock(mutexUi);

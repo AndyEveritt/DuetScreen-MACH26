@@ -17,6 +17,9 @@ namespace UI
 
 		// Observers
 		void newResponse(const char* resp) override;
+		void newLogMessage(const Log::DebugLevel& level,
+						   const std::chrono::_V2::system_clock::time_point& time,
+						   const std::string& message) override;
 
 	  private:
 		void onActivate() override;

@@ -6,6 +6,8 @@
 #include <string>
 #include <thread>
 
+using thread_id_t = size_t;
+
 class DeadlockDetector
 {
   public:
@@ -15,7 +17,8 @@ class DeadlockDetector
 	void afterLockAcquire(const void* lockPtr);
 	void beforeLockRelease(const void* lockPtr);
 	void afterLockRelease(const void* lockPtr);
-	void allowThreadToTakeMultipleLocks(std::thread::id threadId, bool allowed = true);
+	void allowThreadToTakeMultipleLocks(thread_id_t threadId, bool allowed = true);
+	thread_id_t getOwningThreadId(const void* lockPtr);
 
   private:
 	DeadlockDetector() = default;
@@ -24,16 +27,13 @@ class DeadlockDetector
 	DeadlockDetector& operator=(const DeadlockDetector&) = delete;
 
 	std::string getLockName(const void* lockPtr);
-	void reportPotentialDeadlock(std::thread::id thread1,
-								 const void* lock1,
-								 std::thread::id thread2,
-								 const void* lock2);
+	void reportPotentialDeadlock(thread_id_t thread1, const void* lock1, thread_id_t thread2, const void* lock2);
 
 	std::mutex m_detectorMutex;
 	std::map<const void*, std::string> m_registeredLocks;
-	std::map<std::thread::id, std::set<const void*>> m_threadLocks;
-	std::map<std::thread::id, const void*> m_threadWaiting;
-	std::set<std::thread::id> m_threadsAllowedToTakeMultipleLocks;
+	std::map<thread_id_t, std::set<const void*>> m_threadLocks;
+	std::map<thread_id_t, const void*> m_threadWaiting;
+	std::set<thread_id_t> m_threadsAllowedToTakeMultipleLocks;
 };
 
 // Wrapper for std::mutex to detect deadlocks
@@ -55,6 +55,6 @@ class DeadlockDetectingMutex
 	bool m_recursive;
 
 	// Map to track thread-specific lock counts for recursive locking
-	std::map<std::thread::id, int> m_ownershipCount;
+	std::map<thread_id_t, int> m_ownershipCount;
 	std::mutex m_ownershipMutex;
 };

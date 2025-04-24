@@ -38,6 +38,7 @@ constexpr const char* ID_USB_HOST_MODE = "usb_host_mode";
 constexpr const char* ID_CONSOLE_SYSTEM_COMMANDS = "console_system_commands";
 constexpr const char* ID_DEBUG_LEVEL = "debug:level";
 constexpr const char* ID_LOG_FILE = "debug:file";
+constexpr const char* ID_ENABLE_UI_LOGGING = "debug:ui_logging";
 
 constexpr const char* ID_BABYSTEP_AMOUNT = "baby_step_amount";
 constexpr const char* ID_MOVE_FEEDRATE = "move:feedrate_%d";

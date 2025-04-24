@@ -106,6 +106,9 @@ class Model
 	/* Response methods */
 
 	void newResponse(const char* resp);
+	void newLogMessage(const Log::DebugLevel& level,
+					   const std::chrono::_V2::system_clock::time_point& time,
+					   const std::string& message);
 
 	/* Sensor methods */
 
@@ -192,5 +195,5 @@ struct ModelLock
 };
 
 #define MODEL_LOCK()                                                                                                   \
-	LOG_VERBOSE("MODEL_LOCK requested in thread {}", std::this_thread::get_id());                                      \
+	LOG_VERBOSE("MODEL_LOCK requested in thread {}", Log::GetThreadId());                                              \
 	auto modelLock = ScopedLock(mutexModel);

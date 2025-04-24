@@ -38,6 +38,11 @@ namespace Log
 	const DebugLevel& GetDebugLevel();
 	void CloseDebugFile();
 
+	void EnableUiLogging(bool enable);
+	bool IsUiLoggingEnabled();
+
+	size_t GetThreadId();
+
 	std::shared_ptr<spdlog::logger> GetLogger();
 } // namespace Log
 

@@ -79,16 +79,17 @@ int main(int argc, char** argv)
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
 
+	lv_init();
+
 	// Initialise
 	StorageHelper::load();
 	Log::Init();
 
 	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
 	// deadlocks can occur
-	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(std::this_thread::get_id(), true);
+	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	/*Initialize LVGL*/
-	lv_init();
 	lv_log_register_print_cb(lvgl_log_cb);
 	lv_i18n_init(lv_i18n_language_pack);
 	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());

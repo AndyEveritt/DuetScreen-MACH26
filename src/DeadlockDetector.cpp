@@ -27,7 +27,7 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 {
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 
-	auto threadId = std::this_thread::get_id();
+	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
 	LOG_VERBOSE("Thread {} attempting to acquire lock: {:s}", threadId, lockName.c_str());
 
@@ -100,7 +100,7 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 void DeadlockDetector::afterLockAcquire(const void* lockPtr)
 {
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
-	auto threadId = std::this_thread::get_id();
+	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
 
 	m_threadLocks[threadId].insert(lockPtr);
@@ -114,7 +114,7 @@ void DeadlockDetector::afterLockAcquire(const void* lockPtr)
 void DeadlockDetector::beforeLockRelease(const void* lockPtr)
 {
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
-	auto threadId = std::this_thread::get_id();
+	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
 	LOG_VERBOSE("Thread {} about to release lock: {:s}", threadId, lockName.c_str());
 }
@@ -122,7 +122,7 @@ void DeadlockDetector::beforeLockRelease(const void* lockPtr)
 void DeadlockDetector::afterLockRelease(const void* lockPtr)
 {
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
-	auto threadId = std::this_thread::get_id();
+	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
 
 	if (m_threadLocks.find(threadId) != m_threadLocks.end())
@@ -153,9 +153,9 @@ std::string DeadlockDetector::getLockName(const void* lockPtr)
 	return ss.str();
 }
 
-void DeadlockDetector::reportPotentialDeadlock(std::thread::id thread1,
+void DeadlockDetector::reportPotentialDeadlock(thread_id_t thread1,
 											   const void* lock1,
-											   std::thread::id thread2,
+											   thread_id_t thread2,
 											   const void* lock2)
 {
 	LOG_ERROR("POTENTIAL DEADLOCK DETECTED!");
@@ -169,7 +169,7 @@ void DeadlockDetector::reportPotentialDeadlock(std::thread::id thread1,
 			  getLockName(lock2).c_str());
 }
 
-void DeadlockDetector::allowThreadToTakeMultipleLocks(std::thread::id threadId, bool allowed)
+void DeadlockDetector::allowThreadToTakeMultipleLocks(thread_id_t threadId, bool allowed)
 {
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	if (allowed)
@@ -183,6 +183,19 @@ void DeadlockDetector::allowThreadToTakeMultipleLocks(std::thread::id threadId, 
 	LOG_VERBOSE("Thread {} {:s} allowed to take multiple locks", threadId, allowed ? "is" : "is not");
 }
 
+thread_id_t DeadlockDetector::getOwningThreadId(const void* lockPtr)
+{
+	std::lock_guard<std::mutex> guard(m_detectorMutex);
+	for (const auto& entry : m_threadLocks)
+	{
+		if (entry.second.find(lockPtr) != entry.second.end())
+		{
+			return entry.first;
+		}
+	}
+	return 0; // No thread owns this lock
+}
+
 // DeadlockDetectingMutex implementation
 DeadlockDetectingMutex::DeadlockDetectingMutex(const std::string& name, bool recursive)
 	: m_name(name)
@@ -194,7 +207,7 @@ DeadlockDetectingMutex::DeadlockDetectingMutex(const std::string& name, bool rec
 
 void DeadlockDetectingMutex::lock()
 {
-	auto threadId = std::this_thread::get_id();
+	auto threadId = Log::GetThreadId();
 
 	// Check if this is a recursive lock
 	if (m_recursive)
@@ -228,7 +241,11 @@ void DeadlockDetectingMutex::lock()
 
 		if (elapsed > std::chrono::milliseconds(5000))
 		{
-			LOG_WARN("Lock acquisition timeout for \"{:s}\" in thread {}", m_name.c_str(), std::this_thread::get_id());
+			thread_id_t holdingThread = DeadlockDetector::getInstance().getOwningThreadId(&m_mutex);
+			LOG_WARN("Lock acquisition timeout for \"{:s}\" in thread {:d} (holding thread: {:d})",
+					 m_name.c_str(),
+					 Log::GetThreadId(),
+					 holdingThread);
 			start = now; // Reset the timer to continue logging periodically
 		}
 
@@ -248,7 +265,7 @@ void DeadlockDetectingMutex::lock()
 
 bool DeadlockDetectingMutex::try_lock()
 {
-	auto threadId = std::this_thread::get_id();
+	auto threadId = Log::GetThreadId();
 
 	// Check if this is a recursive lock
 	if (m_recursive)
@@ -283,7 +300,7 @@ void DeadlockDetectingMutex::unlock()
 {
 	if (m_recursive)
 	{
-		auto threadId = std::this_thread::get_id();
+		auto threadId = Log::GetThreadId();
 		bool actuallyUnlock = false;
 
 		// Check if this is a recursive unlock
