@@ -78,15 +78,13 @@ int main(int argc, char** argv)
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
 
-	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
-	// deadlocks can occur
-	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(std::this_thread::get_id(), true);
-
 	// Initialise
 	StorageHelper::load();
 	Log::Init();
-	Log::SetDebugFile(StorageHelper::getData<std::string>(ID_LOG_FILE, DEFAULT_LOG_FILE).c_str());
-	Log::SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
+
+	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
+	// deadlocks can occur
+	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(std::this_thread::get_id(), true);
 
 	/*Initialize LVGL*/
 	lv_init();

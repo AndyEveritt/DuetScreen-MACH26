@@ -6,6 +6,7 @@
  */
 
 #include "Debug.h"
+#include "Configuration.h"
 #include "utils/StorageHelper.h"
 #include <ctime>
 #include <memory>
@@ -19,6 +20,20 @@ using std::make_shared;
 using std::shared_ptr;
 using std::vector;
 
+#define LOG_FORMAT_BOLD_START "\033[1m"
+#define LOG_FORMAT_BOLD_END "\033[22m"
+#define LOG_FORMAT_ITALIC_START "\033[3m"
+#define LOG_FORMAT_ITALIC_END "\033[23m"
+#define LOG_FORMAT_UNDERLINE_START "\033[4m"
+#define LOG_FORMAT_UNDERLINE_END "\033[24m"
+
+#define LOG_CONSOLE_PATTERN                                                                                            \
+	"%^[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] " LOG_FORMAT_UNDERLINE_START LOG_FORMAT_ITALIC_START                           \
+	"%@" LOG_FORMAT_UNDERLINE_END " %!()" LOG_FORMAT_ITALIC_END " %v%$"
+
+#define LOG_FILE_PATTERN "[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %@ %!() %v"
+#define LOG_UI_PATTERN "[%Y-%m-%d %H:%M:%S.%e] [%l] %v"
+
 namespace Log
 {
 	static DebugLevel s_debugLevel = DebugLevel::Info;
@@ -29,24 +44,21 @@ namespace Log
 		try
 		{
 			auto console_sink = make_shared<spdlog::sinks::stdout_color_sink_mt>();
-			console_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
+			console_sink->set_pattern(LOG_CONSOLE_PATTERN);
 
-			auto file_sink = make_shared<spdlog::sinks::rotating_file_sink_mt>("DuetScreen.log", 1024 * 1024 * 5, 3);
-			file_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
+			auto file_sink = make_shared<spdlog::sinks::rotating_file_sink_mt>(
+				StorageHelper::getData<std::string>(ID_LOG_FILE, DEFAULT_LOG_FILE),
+				DEFAULT_LOG_FILE_SIZE,
+				DEFAULT_LOG_FILE_COUNT - 1);
+			file_sink->set_pattern(LOG_FILE_PATTERN);
 
 			spdlog::sinks_init_list sinks{console_sink, file_sink};
 			s_logger = make_shared<spdlog::logger>("duetscreen", sinks);
-			s_logger->set_level(spdlog::level::trace);
 			s_logger->flush_on(spdlog::level::debug);
+			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
+			spdlog::flush_every(std::chrono::seconds(1));
 			spdlog::set_default_logger(s_logger);
 			spdlog::enable_backtrace(100);
-			spdlog::trace("Logger initialized {}, {}, {}", 1u, (uint32_t)s_debugLevel, "Hello World!");
-			spdlog::debug("Logger initialized {}, {}", 1u, 1.0f);
-			spdlog::info("Logger initialized {}", 1u, 1.0f);
-			spdlog::warn("Logger initialized {}, {}", 1u, 1.0f);
-			spdlog::error("Logger initialized {}, {}", 1u, 1.0f);
-			spdlog::critical("Logger initialized {}, {}", 1u, 1.0f);
-			spdlog::dump_backtrace();
 			LOG_INFO("Logger initialized");
 		}
 		catch (const spdlog::spdlog_ex& ex)
@@ -85,28 +97,6 @@ namespace Log
 			break;
 		default:
 			s_logger->set_level(spdlog::level::info);
-		}
-	}
-
-	void SetDebugFile(const char* filename)
-	{
-		try
-		{
-			auto file_sink = make_shared<spdlog::sinks::rotating_file_sink_mt>(filename, 1024 * 1024 * 5, 3);
-			file_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
-
-			if (s_logger)
-			{
-				auto console_sink = s_logger->sinks()[0];
-				vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
-				s_logger = make_shared<spdlog::logger>("duetscreen", sinks.begin(), sinks.end());
-				s_logger->set_level(spdlog::level::trace);
-				s_logger->flush_on(spdlog::level::debug);
-			}
-		}
-		catch (const spdlog::spdlog_ex& ex)
-		{
-			fprintf(stderr, "Failed to set debug file: %s\n", ex.what());
 		}
 	}
 

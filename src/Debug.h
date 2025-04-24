@@ -36,19 +36,25 @@ namespace Log
 	void Init();
 	void SetDebugLevel(DebugLevel level);
 	const DebugLevel& GetDebugLevel();
-	void SetDebugFile(const char* filename);
 	void CloseDebugFile();
 
 	std::shared_ptr<spdlog::logger> GetLogger();
 } // namespace Log
 
+#define CUSTOM_SPDLOG_LOGGER_CALL(logger, level, ...)                                                                  \
+	(logger)->log(spdlog::source_loc{__FILE_RELPATH__, __LINE__, SPDLOG_FUNCTION}, level, __VA_ARGS__)
+
 #if 1
-#  define LOG_VERBOSE(...) spdlog::trace(__VA_ARGS__)
-#  define LOG_DBG(...) spdlog::debug(__VA_ARGS__)
-#  define LOG_INFO(...) spdlog::info(__VA_ARGS__)
-#  define LOG_WARN(...) spdlog::warn(__VA_ARGS__)
-#  define LOG_ERROR(...) spdlog::error(__VA_ARGS__)
-#  define LOG_FATAL(...) spdlog::critical(__VA_ARGS__)
+#  define LOG_VERBOSE(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::trace, __VA_ARGS__)
+#  define LOG_DBG(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::debug, __VA_ARGS__)
+#  define LOG_INFO(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::info, __VA_ARGS__)
+#  define LOG_WARN(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::warn, __VA_ARGS__)
+#  define LOG_ERROR(...)                                                                                               \
+	  CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::err, __VA_ARGS__);                        \
+	  spdlog::dump_backtrace();
+#  define LOG_FATAL(...)                                                                                               \
+	  CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::critical, __VA_ARGS__);                   \
+	  spdlog::dump_backtrace();
 #else
 #  define LOG_VERBOSE(...)
 #  define LOG_DBG(...)
