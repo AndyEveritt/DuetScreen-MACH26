@@ -29,19 +29,25 @@ using std::vector;
 #define LOG_FORMAT_UNDERLINE_START "\033[4m"
 #define LOG_FORMAT_UNDERLINE_END "\033[24m"
 
-#define LOG_CONSOLE_PATTERN                                                                                            \
-  "%^[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] " LOG_FORMAT_UNDERLINE_START LOG_FORMAT_ITALIC_START                             \
-  "%@" LOG_FORMAT_UNDERLINE_END " %!()" LOG_FORMAT_ITALIC_END " %v%$"
-
-#define LOG_FILE_PATTERN "[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %@ %!() %v"
-
-#if DEBUG
-#  define LOG_UI_TIMESTAMP "[%Y-%m-%d %H:%M:%S.%e]"
+#if LOG_TIMESTAMPS
+#  define LOG_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S.%e] "
+#  if DEBUG
+#	define LOG_UI_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S.%e] "
+#  else
+#	define LOG_UI_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S] "
+#  endif
 #else
-#  define LOG_UI_TIMESTAMP "[%Y-%m-%d %H:%M:%S]"
+#  define LOG_TIMESTAMP_FMT ""
+#  define LOG_UI_TIMESTAMP_FMT ""
 #endif
 
-#define LOG_UI_PATTERN LOG_UI_TIMESTAMP " [%l] %v"
+#define LOG_CONSOLE_PATTERN                                                                                            \
+  "%^" LOG_TIMESTAMP_FMT "[%l] [%t] " LOG_FORMAT_UNDERLINE_START LOG_FORMAT_ITALIC_START "%@" LOG_FORMAT_UNDERLINE_END \
+  " %!()" LOG_FORMAT_ITALIC_END " %v%$"
+
+#define LOG_FILE_PATTERN LOG_TIMESTAMP_FMT "[%l] [%t] %@ %!() %v"
+
+#define LOG_UI_PATTERN LOG_UI_TIMESTAMP_FMT "[%l] %v"
 
 namespace Log
 {

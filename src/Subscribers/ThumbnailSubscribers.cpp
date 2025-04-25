@@ -31,7 +31,7 @@ bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data
 
 bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	LOG_INFO("lastModified {:s}", data);
+	LOG_DBG("lastModified {:s}", data);
 	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
@@ -205,7 +205,7 @@ bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const c
 		return false;
 	}
 
-	LOG_INFO("Receiving thumbnail information about {:s}", thumbnail->filename.c_str());
+	LOG_DBG("Receiving thumbnail information about {:s}", thumbnail->filename.c_str());
 	request->Receiving();
 	return true;
 }
@@ -313,12 +313,12 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 		LOG_WARN("Failed to parse thumbnail err {:s}", data);
 		thumbnail->context.parseErr = -1;
 	}
-	LOG_INFO("Thumbnail: offset({:d}), next({:d}), err({:d}), size({:d}), parseErr({:d})",
-			 thumbnail->context.offset,
-			 thumbnail->context.next,
-			 thumbnail->context.err,
-			 thumbnail->context.size,
-			 thumbnail->context.parseErr);
+	LOG_DBG("Thumbnail: offset({:d}), next({:d}), err({:d}), size({:d}), parseErr({:d})",
+			thumbnail->context.offset,
+			thumbnail->context.next,
+			thumbnail->context.err,
+			thumbnail->context.size,
+			thumbnail->context.parseErr);
 
 	if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
 	{
@@ -374,14 +374,14 @@ bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const 
 	for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 	{
 		Comm::ThumbnailPtr thumbnail = fileInfo->GetOrCreateThumbnail(i);
-		LOG_INFO("Thumbnail {:d}: filename({:s}) offset({:d}) size({:d}) width({:d}) height({:d}) format({})",
-				 i,
-				 thumbnail->filename.c_str(),
-				 thumbnail->meta.offset,
-				 thumbnail->meta.size,
-				 thumbnail->meta.width,
-				 thumbnail->meta.height,
-				 thumbnail->meta.imageFormat);
+		LOG_DBG("Thumbnail {:d}: filename({:s}) offset({:d}) size({:d}) width({:d}) height({:d}) format({})",
+				i,
+				thumbnail->filename.c_str(),
+				thumbnail->meta.offset,
+				thumbnail->meta.size,
+				thumbnail->meta.width,
+				thumbnail->meta.height,
+				thumbnail->meta.imageFormat);
 	}
 	return true;
 }

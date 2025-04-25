@@ -176,7 +176,7 @@ namespace Comm
 				break;
 			case ThumbnailState::Cached:
 				thumbnail->image.Close();
-				LOG_INFO("Updating thumbnail {:s}", thumbnail->filename.c_str());
+				LOG_DBG("Updating thumbnail {:s}", thumbnail->filename.c_str());
 				ThumbnailRequestComplete(thumbnail->filename.c_str());
 				Model::get().newThumbnailData(thumbnail->filename.c_str());
 				break;
@@ -226,7 +226,7 @@ namespace Comm
 				return;
 			case ThumbnailState::Cached:
 				m_currentThumbnail->image.Close();
-				LOG_INFO("Updating thumbnail {:s}", m_currentThumbnail->filename.c_str());
+				LOG_DBG("Updating thumbnail {:s}", m_currentThumbnail->filename.c_str());
 #  if 0
 				UI::FileList::GetThumbnail()->setText("");
 				UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
@@ -437,7 +437,7 @@ namespace Comm
 			return false;
 		}
 
-		LOG_INFO("Requesting file info for \"{:s}\", ", m_data->filename.c_str());
+		LOG_DBG("Requesting file info for \"{:s}\", ", m_data->filename.c_str());
 		return DUET.RequestFileInfo(m_data->filename.c_str());
 	}
 
@@ -448,10 +448,10 @@ namespace Comm
 			return false;
 		}
 
-		LOG_INFO("Requesting thumbnail for \"{:s}\", {:d}x{:d}",
-				 m_data->filename.c_str(),
-				 m_data->meta.width,
-				 m_data->meta.height);
+		LOG_DBG("Requesting thumbnail for \"{:s}\", {:d}x{:d}",
+				m_data->filename.c_str(),
+				m_data->meta.width,
+				m_data->meta.height);
 
 		if (m_data->filename.IsEmpty() || m_data->meta.offset == 0)
 		{
@@ -529,7 +529,7 @@ namespace Comm
 				break;
 			}
 		}
-		LOG_INFO("Queueing file info request for {:s}", filepath.c_str());
+		LOG_DBG("Queueing file info request for {:s}", filepath.c_str());
 		if (next)
 		{
 
@@ -626,10 +626,10 @@ namespace Comm
 		{
 			m_thumbnailRequestQueue.push_back(largestValidThumbnail);
 		}
-		LOG_INFO("Queued thumbnail request for \"{:s}\", {:d}x{:d}",
-				 filepath.c_str(),
-				 largestValidThumbnail->meta.width,
-				 largestValidThumbnail->meta.height);
+		LOG_DBG("Queued thumbnail request for \"{:s}\", {:d}x{:d}",
+				filepath.c_str(),
+				largestValidThumbnail->meta.width,
+				largestValidThumbnail->meta.height);
 		return true;
 	}
 

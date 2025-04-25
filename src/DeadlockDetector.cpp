@@ -10,6 +10,8 @@
 #include <thread>
 #include <vector>
 
+#define CHECK_FOR_DEADLOCKS DEBUG
+
 DeadlockDetector& DeadlockDetector::getInstance()
 {
 	static DeadlockDetector instance;
@@ -31,6 +33,7 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 	std::string lockName = getLockName(lockPtr);
 	LOG_VERBOSE("Thread {} attempting to acquire lock: {:s}", threadId, lockName.c_str());
 
+#if CHECK_FOR_DEADLOCKS
 	// Check if acquiring this lock might cause a deadlock
 	if (m_threadLocks.find(threadId) != m_threadLocks.end())
 	{
@@ -91,6 +94,7 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 			}
 		}
 	}
+#endif
 
 	// Record that this thread is waiting for this lock
 	m_threadWaiting[threadId] = lockPtr;

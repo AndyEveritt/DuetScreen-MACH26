@@ -6,6 +6,7 @@
 #include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "Presenter.h"
+#include "View.h"
 #include "lvgl/src/osal/lv_os.h"
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
@@ -15,7 +16,7 @@
 	while (true)                                                                                                       \
 	{                                                                                                                  \
 	  {                                                                                                                \
-		MODEL_LOCK();                                                                                                  \
+		UI_LOCK();                                                                                                     \
 		if (it == m_presenters.end())                                                                                  \
 		{                                                                                                              \
 		  break;                                                                                                       \
@@ -24,7 +25,7 @@
 	  }                                                                                                                \
 	  presenter->func(__VA_ARGS__);                                                                                    \
 	  {                                                                                                                \
-		MODEL_LOCK();                                                                                                  \
+		UI_LOCK();                                                                                                     \
 		++it;                                                                                                          \
 	  }                                                                                                                \
 	}                                                                                                                  \
@@ -61,14 +62,14 @@ Model::Model()
 
 void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
 {
-	MODEL_LOCK();
+	UI_LOCK();
 	unbind(presenter);
 	m_presenters.push_back(presenter);
 }
 
 void Model::unbind(std::shared_ptr<UI::BasePresenter> presenter)
 {
-	MODEL_LOCK();
+	UI_LOCK();
 	m_presenters.remove(presenter);
 }
 

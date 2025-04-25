@@ -62,7 +62,10 @@ namespace UpgradeHelper
 	static bool moveTmpFileToBoot()
 	{
 		struct stat sb;
-		system("rm " BOOT_FILEPATH); // Remove any previous upgrade file
+		if (system("rm " BOOT_FILEPATH) != 0)
+		{
+			LOG_WARN("Failed to remove previous upgrade file at " BOOT_FILEPATH);
+		}
 		if (stat(TMP_FILEPATH, &sb) == -1)
 		{
 			LOG_ERROR("Failed to get file stats for " TMP_FILEPATH);

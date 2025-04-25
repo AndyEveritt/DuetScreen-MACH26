@@ -169,7 +169,7 @@ int ThumbnailInit(Comm::Thumbnail& thumbnail)
 static int ThumbnailDecodeChunkPng(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 {
 	size_t ret = thumbnail.image.png.appendData(data.buffer, data.size);
-	LOG_INFO("done {:d}/{:d} {:s}\n", ret, data.size, thumbnail.filename.c_str());
+	LOG_DBG("done {:d}/{:d} {:s}\n", ret, data.size, thumbnail.filename.c_str());
 	return 0;
 }
 
@@ -212,26 +212,26 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 
 		thumbnail.image.pixel_count += pixel_decoded;
 
-		LOG_DBG("decoded {:d} bytes, done {:d}/{:d}; decoded {:d} missing {:d}({:#02x}) count {:d}/{:d}/{:d}\n",
-				ret,
-				size_done,
-				data.size,
-				pixel_decoded,
-				thumbnail.image.qoi.last_bytes_size,
-				thumbnail.image.qoi.last_bytes[0] & 0xc0,
-				thumbnail.image.qoi.pixels_count,
-				thumbnail.image.pixel_count,
-				thumbnail.meta.height * thumbnail.meta.width);
+		LOG_VERBOSE("decoded {:d} bytes, done {:d}/{:d}; decoded {:d} missing {:d}({:#02x}) count {:d}/{:d}/{:d}\n",
+					ret,
+					size_done,
+					data.size,
+					pixel_decoded,
+					thumbnail.image.qoi.last_bytes_size,
+					thumbnail.image.qoi.last_bytes[0] & 0xc0,
+					thumbnail.image.qoi.pixels_count,
+					thumbnail.image.pixel_count,
+					thumbnail.meta.height * thumbnail.meta.width);
 
 		thumbnail.image.bmp.appendPixels(rgba_buffer, pixel_decoded);
 	} while (size_done < data.size && qoi_decode_state_get(&thumbnail.image.qoi) == qoi_decoder_body);
 
-	LOG_INFO("done {:d}/{:d} pixels {:d}/{:d} {:s}",
-			 size_done,
-			 data.size,
-			 thumbnail.image.pixel_count,
-			 thumbnail.meta.height * thumbnail.meta.width,
-			 thumbnail.filename.c_str());
+	LOG_DBG("done {:d}/{:d} pixels {:d}/{:d} {:s}",
+			size_done,
+			data.size,
+			thumbnail.image.pixel_count,
+			thumbnail.meta.height * thumbnail.meta.width,
+			thumbnail.filename.c_str());
 
 	return qoi_decode_state_get(&thumbnail.image.qoi) != qoi_decoder_done;
 }

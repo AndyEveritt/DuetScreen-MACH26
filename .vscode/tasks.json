@@ -25,8 +25,7 @@
 				"isDefault": true
 			},
 			"dependsOn": [
-				"CMake: configure",
-				"Clang Format"
+				"CMake: configure"
 			]
 		},
 		{
