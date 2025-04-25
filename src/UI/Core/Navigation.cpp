@@ -56,6 +56,7 @@ namespace UI
 	 */
 	void back()
 	{
+		UI_LOCK();
 		LOG_INFO("Back button pressed");
 		ViewListItem_t currentScreen = getCurrentScreen();
 		if (currentScreen == nullptr)
@@ -84,6 +85,7 @@ namespace UI
 	 */
 	void home()
 	{
+		UI_LOCK();
 		LOG_INFO("Home button pressed");
 		for (auto screen : s_openScreens)
 		{
@@ -109,6 +111,7 @@ namespace UI
 	 */
 	void addHomeScreen(ViewListItem_t view)
 	{
+		UI_LOCK();
 		s_homeScreens.push_back(view);
 	}
 
@@ -117,6 +120,7 @@ namespace UI
 	 */
 	void clearHomeScreens()
 	{
+		UI_LOCK();
 		s_homeScreens.clear();
 	}
 
@@ -131,6 +135,7 @@ namespace UI
 	 */
 	ViewListItem_t getCurrentScreen()
 	{
+		UI_LOCK();
 		if (s_openScreens.empty())
 		{
 			LOG_WARN("No current screen");
@@ -155,6 +160,7 @@ namespace UI
 	 */
 	void openScreen(ViewListItem_t view, bool closePrevious)
 	{
+		UI_LOCK();
 		if (view == nullptr)
 		{
 			LOG_WARN("Trying to open a nullptr screen");
@@ -184,6 +190,7 @@ namespace UI
 	 */
 	void closeLastScreen()
 	{
+		UI_LOCK();
 		LOG_INFO("Closing last screen");
 #if 0
 		for (auto screen : s_homeScreens)
@@ -213,6 +220,7 @@ namespace UI
 	 */
 	void closeScreen(ViewListItem_t view, bool returnable)
 	{
+		UI_LOCK();
 		LOG_INFO("Closing screen '{:s}'", view->getName());
 		if (view->isVisible())
 		{

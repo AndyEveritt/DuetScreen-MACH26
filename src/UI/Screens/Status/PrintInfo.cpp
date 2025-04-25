@@ -27,6 +27,7 @@ namespace UI
 		, m_fanSpeed(lv_label_create(getCont()))
 		, m_speedInfo(getParent())
 	{
+		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_align(getCont(), LV_GRID_ALIGN_SPACE_AROUND, LV_GRID_ALIGN_SPACE_AROUND);
 		static int32_t printInfoColDsc[] = {LV_GRID_FR(2), LV_GRID_FR(3), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
@@ -64,6 +65,7 @@ namespace UI
 
 	bool PrintInfo::back()
 	{
+		UI_LOCK();
 		for (BaseView* subView : {&m_speedInfo})
 		{
 			if (subView->isVisible())
@@ -168,6 +170,7 @@ namespace UI
 		, m_z_height(lv_label_create(getCont()))
 		, m_layer(lv_label_create(getCont()))
 	{
+		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 

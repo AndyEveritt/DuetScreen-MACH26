@@ -67,6 +67,7 @@ namespace UI
 
 	void Heatmap::showScale(const bool show)
 	{
+		UI_LOCK();
 		lv_obj_set_flag(m_colorBar, LV_OBJ_FLAG_HIDDEN, !show);
 		m_columnDsc[2] = show ? LV_GRID_CONTENT : 0;
 	}
@@ -103,6 +104,7 @@ namespace UI
 
 	void Heatmap::setPx(size_t px, size_t py, float value)
 	{
+		UI_LOCK();
 		m_minValue = std::min(m_minValue, value);
 		m_maxValue = std::max(m_maxValue, value);
 
@@ -112,6 +114,7 @@ namespace UI
 
 	void Heatmap::setPos(float x, float y, float value)
 	{
+		UI_LOCK();
 		size_t px, py;
 		if (!m_canvas.posToPx(x, y, px, py))
 		{
@@ -123,6 +126,7 @@ namespace UI
 
 	void Heatmap::render()
 	{
+		UI_LOCK();
 		// Get the canvas dimensions
 		lv_obj_update_layout(m_canvas);
 		uint32_t width;
@@ -153,6 +157,7 @@ namespace UI
 
 	void Heatmap::renderColorBar()
 	{
+		UI_LOCK();
 		// Also render a color scale on the color bar
 		lv_obj_update_layout(m_colorBar);
 		uint32_t barWidth;
@@ -168,6 +173,7 @@ namespace UI
 
 	void Heatmap::clear()
 	{
+		UI_LOCK();
 		m_canvas.clear();
 		m_colorBar.clear();
 	}

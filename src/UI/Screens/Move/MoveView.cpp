@@ -240,6 +240,7 @@ namespace UI
 
 	void MoveView::setAxisCount(const size_t count)
 	{
+		UI_LOCK();
 		if (count == getAxisCount())
 		{
 			return;
@@ -259,6 +260,7 @@ namespace UI
 
 	std::shared_ptr<AxisItem> MoveView::getAxisItem(size_t index) const
 	{
+		UI_LOCK();
 		if (index < m_axisItems.size())
 		{
 			return m_axisItems[index];

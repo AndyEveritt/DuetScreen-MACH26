@@ -239,6 +239,7 @@ namespace UI
 
 	void DeviceSettingsView::onShow()
 	{
+		UI_LOCK();
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
 	}
@@ -319,22 +320,26 @@ namespace UI
 
 	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
 	{
+		UI_LOCK();
 		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), ipAddress.c_str()).c_str());
 	}
 
 	void NetworkSettingsView::setEnabled(bool enabled)
 	{
+		UI_LOCK();
 		lv_obj_set_state(m_enable, LV_STATE_CHECKED, enabled);
 	}
 
 	void NetworkSettingsView::setNetworkCount(size_t count)
 	{
+		UI_LOCK();
 		lv_table_set_row_count(m_networkList, count + 1);
 	}
 
 	void NetworkSettingsView::setNetworkDetails(
 		size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected)
 	{
+		UI_LOCK();
 		void* knownPtr = lv_malloc(sizeof(bool));
 		*(bool*)knownPtr = known;
 		lv_table_set_cell_user_data(m_networkList, index + 1, 2, knownPtr);
@@ -417,12 +422,14 @@ namespace UI
 
 	void NetworkSettingsView::onShow()
 	{
+		UI_LOCK();
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		getPresenter()->scanWifi();
 	}
 
 	void NetworkSettingsView::onHide()
 	{
+		UI_LOCK();
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 	}
 

@@ -212,6 +212,7 @@ namespace UI
 
 	std::shared_ptr<MessageBox> HomeView::createMessageBox()
 	{
+		UI_LOCK();
 		m_messageBoxList.emplace_back(
 			std::make_shared<MessageBox>("home_message_box", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
 		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.back();
@@ -224,6 +225,7 @@ namespace UI
 
 	std::shared_ptr<MessageBox> HomeView::getMessageBox(size_t index) const
 	{
+		UI_LOCK();
 		if (index >= getMessageBoxCount())
 		{
 			return nullptr;
@@ -235,6 +237,7 @@ namespace UI
 
 	void HomeView::popMessageBox()
 	{
+		UI_LOCK();
 		if (!m_messageBoxList.empty())
 		{
 			m_messageBoxList.erase(m_messageBoxList.begin());
@@ -243,6 +246,7 @@ namespace UI
 
 	void HomeView::showKeyboard(bool show)
 	{
+		UI_LOCK();
 		if (show)
 		{
 			lv_obj_align(m_alert.getCont(), LV_ALIGN_TOP_MID, 0, 5);

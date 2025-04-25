@@ -49,11 +49,13 @@ namespace UI
 
 	uint8_t ToolListItem::getSlotIndex() const
 	{
+		UI_LOCK();
 		return (uint8_t)m_presenter->getSlotIndex();
 	}
 
 	void ToolListItem::setSlotIndex(uint8_t index)
 	{
+		UI_LOCK();
 		m_presenter->setSlotIndex(index);
 	}
 
@@ -152,18 +154,21 @@ namespace UI
 
 	void ToolListItem::onNameEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
 		view->m_presenter->toggleState();
 	}
 
 	void ToolListItem::onStatusEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
 		view->m_presenter->toggleSubState();
 	}
 
 	void ToolListItem::onActiveStandbyEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
 		lv_obj_t* obj = lv_event_get_target_obj(e);
 
@@ -266,6 +271,7 @@ namespace UI
 
 	void ToolList::setItemCnt(size_t cnt)
 	{
+		UI_LOCK();
 		size_t currentCnt = getItemCnt();
 		if (cnt <= currentCnt)
 		{
@@ -287,6 +293,7 @@ namespace UI
 
 	std::shared_ptr<ToolListItem> ToolList::getToolListItem(size_t index) const
 	{
+		UI_LOCK();
 		if (index >= m_items.size())
 		{
 			return nullptr;

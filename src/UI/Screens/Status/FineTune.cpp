@@ -23,6 +23,7 @@ namespace UI
 		, m_fanCont(lv_obj_create(m_sliderCont))
 		, m_keyboard(lv_keyboard_create(getCont()))
 	{
+		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -54,6 +55,7 @@ namespace UI
 			m_keyboard,
 			[](lv_event_t* e)
 			{
+				UI_LOCK();
 				FineTune* view = static_cast<FineTune*>(lv_event_get_user_data(e));
 				view->showKeyboard(false);
 			},
@@ -79,6 +81,7 @@ namespace UI
 			m_sliderCont,
 			[](lv_event_t* e)
 			{
+				UI_LOCK();
 				FineTune* view = static_cast<FineTune*>(lv_event_get_user_data(e));
 				view->showKeyboard(false);
 			},
@@ -112,6 +115,7 @@ namespace UI
 	 */
 	void FineTune::setExtruderCount(size_t count)
 	{
+		UI_LOCK();
 		if (count == getExtruderCount())
 		{
 			return;
@@ -140,6 +144,7 @@ namespace UI
 
 	void FineTune::setFanCount(size_t count)
 	{
+		UI_LOCK();
 		if (count == getFanCount())
 		{
 			return;
@@ -166,6 +171,7 @@ namespace UI
 
 	void FineTune::setExtruderLabel(size_t index, const char* label)
 	{
+		UI_LOCK();
 		if (index >= m_extruders.size())
 		{
 			return;
@@ -175,6 +181,7 @@ namespace UI
 
 	void FineTune::setExtruderValue(size_t index, uint32_t value)
 	{
+		UI_LOCK();
 		if (index >= m_extruders.size() || m_extruders[index]->isFocused())
 		{
 			return;
@@ -184,6 +191,7 @@ namespace UI
 
 	void FineTune::setFanLabel(size_t index, const char* label)
 	{
+		UI_LOCK();
 		if (index >= m_fans.size())
 		{
 			return;
@@ -193,6 +201,7 @@ namespace UI
 
 	void FineTune::setFanValue(size_t index, uint32_t value)
 	{
+		UI_LOCK();
 		if (index >= m_fans.size() || m_fans[index]->isFocused())
 		{
 			return;
@@ -203,6 +212,7 @@ namespace UI
 
 	void FineTune::showKeyboard(bool show)
 	{
+		UI_LOCK();
 		lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !show);
 	}
 

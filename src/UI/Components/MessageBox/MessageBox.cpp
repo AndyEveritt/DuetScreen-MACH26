@@ -524,11 +524,13 @@ namespace UI
 
 	const char* MessageBox::getJogAxisLetter(int index) const
 	{
+		UI_LOCK();
 		return m_axisJogList[index]->getAxisLetter();
 	}
 
 	void MessageBox::setJogAxisLetter(size_t index, char letter)
 	{
+		UI_LOCK();
 		if (index >= getJogAxisCount())
 		{
 			setJogAxisCount(index + 1);
@@ -538,6 +540,7 @@ namespace UI
 
 	void MessageBox::setJogAxisPosition(size_t index, float position)
 	{
+		UI_LOCK();
 		if (index >= getJogAxisCount())
 		{
 			setJogAxisCount(index + 1);
@@ -547,6 +550,7 @@ namespace UI
 
 	void MessageBox::setJogAxisEnabled(size_t index, bool enabled)
 	{
+		UI_LOCK();
 		if (index >= getJogAxisCount())
 		{
 			setJogAxisCount(index + 1);
@@ -584,6 +588,7 @@ namespace UI
 
 	void MessageBox::setChoice(size_t index, const std::string& text)
 	{
+		UI_LOCK();
 		if (index >= getChoiceCount())
 		{
 			LOG_ERROR("Index {:d} out of range", index);

@@ -50,14 +50,7 @@ namespace UI
 		}
 
 		BaseView(const std::string& name, lv_obj_t* parent);
-
-		BaseView(const std::string& name, lv_obj_t* parent, layout_t layout)
-			: BaseView(name, parent)
-		{
-			lv_obj_set_pos(getCont(), lv_pct(layout.x), lv_pct(layout.y));
-			lv_obj_set_width(getCont(), layout.w == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.w));
-			lv_obj_set_height(getCont(), layout.h == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.h));
-		}
+		BaseView(const std::string& name, lv_obj_t* parent, layout_t layout);
 		BaseView(const std::string& name, layout_t layout)
 			: BaseView(name, lv_scr_act(), layout)
 		{
