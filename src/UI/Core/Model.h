@@ -106,9 +106,7 @@ class Model
 	/* Response methods */
 
 	void newResponse(const char* resp);
-	void newLogMessage(const Log::DebugLevel& level,
-					   const std::chrono::_V2::system_clock::time_point& time,
-					   const std::string& message);
+	void newLogMessage(const Log::DebugLevel& level, const Log::log_time_t& time, const std::string& message);
 
 	/* Sensor methods */
 

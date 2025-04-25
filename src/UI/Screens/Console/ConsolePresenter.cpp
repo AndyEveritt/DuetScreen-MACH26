@@ -17,7 +17,7 @@ namespace UI
 	}
 
 	void ConsolePresenter::newLogMessage(const Log::DebugLevel& level,
-										 const std::chrono::_V2::system_clock::time_point& time,
+										 const Log::log_time_t& time,
 										 const std::string& message)
 	{
 		m_view->addResponse(message.c_str());

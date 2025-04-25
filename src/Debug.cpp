@@ -48,19 +48,45 @@ namespace Log
 	template <typename Mutex>
 	class UiSink : public spdlog::sinks::base_sink<Mutex>
 	{
+		struct msg
+		{
+			DebugLevel level;
+			log_time_t time;
+			std::string str;
+		};
+
+	  public:
+		bool get_message(DebugLevel& level, log_time_t& time, std::string& str)
+		{
+			std::lock_guard<Mutex> lock(this->mutex_);
+			if (m_messages.empty())
+				return false;
+
+			const msg& msg = m_messages.front();
+			level = msg.level;
+			time = msg.time;
+			str = msg.str;
+			m_messages.pop_front();
+			return true;
+		}
+
 	  protected:
 		void sink_it_(const spdlog::details::log_msg& msg) override
 		{
+			// mutex is locked by base_sink
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 			std::string str(formatted.data(), formatted.size());
-			Model::get().newLogMessage(static_cast<DebugLevel>(msg.level), msg.time, str);
+			m_messages.emplace_back(static_cast<DebugLevel>(msg.level), msg.time, str);
 		}
 
 		void flush_() override {}
+
+	  private:
+		std::list<msg> m_messages;
 	};
 
-	using UiSink_mt = UiSink<spdlog::details::null_mutex>;
+	using UiSink_mt = UiSink<std::mutex>;
 
 	static DebugLevel s_debugLevel = DebugLevel::Info;
 	static shared_ptr<spdlog::logger> s_logger;
@@ -89,7 +115,7 @@ namespace Log
 			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
 			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
 			spdlog::flush_every(std::chrono::seconds(1));
-			// spdlog::enable_backtrace(100);
+			spdlog::enable_backtrace(100);
 			LOG_INFO("Logger initialized");
 		}
 		catch (const spdlog::spdlog_ex& ex)
@@ -169,6 +195,14 @@ namespace Log
 	bool IsUiLoggingEnabled()
 	{
 		return s_uiSink != nullptr;
+	}
+
+	bool GetNextUiLogMessage(DebugLevel& level, log_time_t& time, std::string& message)
+	{
+		if (s_uiSink == nullptr)
+			return false;
+
+		return s_uiSink->get_message(level, time, message);
 	}
 
 	size_t GetThreadId()

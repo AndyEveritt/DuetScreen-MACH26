@@ -306,9 +306,7 @@ void Model::newResponse(const char* resp)
 	NOTIFY_ALL_PRESENTERS(newResponse, resp);
 }
 
-void Model::newLogMessage(const Log::DebugLevel& level,
-						  const std::chrono::_V2::system_clock::time_point& time,
-						  const std::string& message)
+void Model::newLogMessage(const Log::DebugLevel& level, const Log::log_time_t& time, const std::string& message)
 {
 	NOTIFY_ALL_PRESENTERS(newLogMessage, level, time, message);
 }
