@@ -34,7 +34,14 @@ using std::vector;
   "%@" LOG_FORMAT_UNDERLINE_END " %!()" LOG_FORMAT_ITALIC_END " %v%$"
 
 #define LOG_FILE_PATTERN "[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %@ %!() %v"
-#define LOG_UI_PATTERN "[%Y-%m-%d %H:%M:%S.%e] [%l] %v"
+
+#if DEBUG
+#  define LOG_UI_TIMESTAMP "[%Y-%m-%d %H:%M:%S.%e]"
+#else
+#  define LOG_UI_TIMESTAMP "[%Y-%m-%d %H:%M:%S]"
+#endif
+
+#define LOG_UI_PATTERN LOG_UI_TIMESTAMP " [%l] %v"
 
 namespace Log
 {
@@ -76,6 +83,9 @@ namespace Log
 			s_logger = make_shared<spdlog::logger>("duetscreen", sinks);
 			s_logger->flush_on(spdlog::level::debug);
 			spdlog::set_default_logger(s_logger);
+			LOG_INFO("\n\n\n----------------------------------------------------------------------------------\n"
+					 "Program started\n"
+					 "----------------------------------------------------------------------------------\n\n\n");
 			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
 			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
 			spdlog::flush_every(std::chrono::seconds(1));

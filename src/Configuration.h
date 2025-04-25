@@ -16,7 +16,12 @@ constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
 
 /* Logging */
 constexpr const char* DEFAULT_LOG_FILE = "DuetScreen.log";
+#if SIMULATION
+constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 50; // 5MB
+#else
 constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 5; // 5MB
+#endif
+
 constexpr size_t DEFAULT_LOG_FILE_COUNT = 3;			  // 3 files
 
 /* UI */
