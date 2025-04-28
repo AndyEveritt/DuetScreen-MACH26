@@ -219,6 +219,7 @@ namespace UI
 		: SettingsSubView("device_settings_view", parent, mainSettingsView)
 		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_systemLogging(lv_checkbox_create(getCont()))
 	{
 		UI_LOCK();
 
@@ -235,6 +236,22 @@ namespace UI
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
 													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
+
+		// System Logging
+		lv_checkbox_set_text(m_systemLogging, _("settings_system_logging"));
+		lv_obj_set_state(m_systemLogging, LV_STATE_CHECKED, StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
+		lv_obj_add_event_cb(
+			m_systemLogging,
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* checkbox = (lv_obj_t*)lv_event_get_target(e);
+				bool checked = lv_obj_has_state(checkbox, LV_STATE_CHECKED);
+				StorageHelper::setData(ID_ENABLE_UI_LOGGING, checked);
+				Log::EnableUiLogging(checked);
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
 	}
 
 	void DeviceSettingsView::onShow()

@@ -52,6 +52,7 @@ namespace UI
 
 		Slider m_brightness;
 		Slider m_screensaverTimeout;
+		lv_obj_t* m_systemLogging;
 	};
 
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>
