@@ -99,7 +99,7 @@ namespace Comm
 			r = libusb_detach_kernel_driver(m_handle, 0);
 			if (r < 0)
 			{
-				fprintf(stderr, "Cannot detach kernel driver: %s\n", libusb_error_name(r));
+				LOG_ERROR("Cannot detach kernel driver: {:s}", libusb_error_name(r));
 				libusb_close(m_handle);
 				return false;
 			}
@@ -111,7 +111,7 @@ namespace Comm
 		r = libusb_claim_interface(m_handle, 0);
 		if (r < 0)
 		{
-			fprintf(stderr, "Cannot claim interface: %s\n", libusb_error_name(r));
+			LOG_ERROR("Cannot claim interface: {:s}", libusb_error_name(r));
 			libusb_close(m_handle);
 			return false;
 		}

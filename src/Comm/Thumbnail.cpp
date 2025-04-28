@@ -183,7 +183,7 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 	do
 	{
 		LOG_DBG("buffer {:p} (size {:d}, done{:d}) pixbuf {:p} (size {:d}, decoded {:d})\n",
-				data.buffer,
+				static_cast<const void*>(data.buffer),
 				data.size,
 				size_done,
 				static_cast<const void*>(rgba_buffer),
@@ -197,7 +197,7 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 								 &pixel_decoded);
 		if (ret < 0)
 		{
-			LOG_ERROR("failed qoi decoding state {:d} {:d}.\n", qoi_decode_state_get(&thumbnail.image.qoi), ret);
+			LOG_ERROR("failed qoi decoding state {:d} {:d}.\n", (int)qoi_decode_state_get(&thumbnail.image.qoi), ret);
 			return -6;
 		}
 
@@ -259,7 +259,8 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 	int ret = base64_decode((const char*)data.buffer, data.size, data.buffer);
 	if (ret < 0)
 	{
-		LOG_ERROR("decode error {:d} size {:d} data\n{:s}\n", ret, data.size, data.buffer);
+		LOG_ERROR(
+			"decode error {:d} size {:d} data\n{:s}\n", ret, data.size, reinterpret_cast<const char*>(data.buffer));
 		return -4;
 	}
 

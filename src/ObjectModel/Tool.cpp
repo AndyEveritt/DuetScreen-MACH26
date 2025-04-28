@@ -534,7 +534,7 @@ namespace OM
 		if (extruder == nullptr)
 		{
 			LOG_ERROR(
-				"Failed to get or create tool %d extruder {:d}={:d}", toolIndex, toolExtruderIndex, extruderIndex);
+				"Failed to get or create tool {:d} extruder {:d}={:d}", toolIndex, toolExtruderIndex, extruderIndex);
 			return false;
 		}
 		return true;

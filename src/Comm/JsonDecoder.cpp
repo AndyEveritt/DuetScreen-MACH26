@@ -170,7 +170,7 @@ namespace Comm
 		if (m_seq != nullptr)
 		{
 			m_seq->state = SeqStateOk;
-			LOG_DBG("seq {:s} {} DONE", m_seq->key, m_seq->state);
+			LOG_DBG("seq {:s} {:d} DONE", m_seq->key, (int)m_seq->state);
 			m_seq = nullptr;
 		}
 
@@ -198,8 +198,13 @@ namespace Comm
 	// Public functions called by the SerialIo module
 	void JsonDecoder::ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
-		LOG_VERBOSE(
-			"%s (indices [%d|%d|%d|%d]) = '%s'", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
+		LOG_VERBOSE("{:s} (indices [{:d}|{:d}|{:d}|{:d}]) = '{:s}'",
+					id.c_str(),
+					indices[0],
+					indices[1],
+					indices[2],
+					indices[3],
+					data);
 		if (StringStartsWith(id.c_str(), "result"))
 		{
 			// We might either get something like:
@@ -231,7 +236,7 @@ namespace Comm
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		LOG_VERBOSE("event: {:s}({}) data '{:s}'", searchResult->key, searchResult->val, data);
+		LOG_VERBOSE("event: {:s}({:d}) data '{:s}'", searchResult->key, (int)searchResult->val, data);
 		switch (rde)
 		{
 		// M409 section
@@ -584,7 +589,7 @@ namespace Comm
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
 		m_nextOut = 0;
-		LOG_DBG("len={:d}: {:s}", len, rxBuffer);
+		LOG_DBG("len={:d}: {:s}", len, reinterpret_cast<const char*>(rxBuffer));
 		while (len != m_nextOut)
 		{
 			char c = rxBuffer[m_nextOut];
@@ -601,7 +606,7 @@ namespace Comm
 					ParserErrorEncountered(m_lastState,
 										   m_fieldId.c_str(),
 										   m_serialIoErrors); // Notify the consumer that we ran into an error
-					LOG_ERROR("rxBuffer: {:s}", rxBuffer);
+					LOG_ERROR("rxBuffer: {:s}", reinterpret_cast<const char*>(rxBuffer));
 					m_lastState = jsBegin;
 				}
 				m_state = jsBegin; // abandon current parse (if any) and start again

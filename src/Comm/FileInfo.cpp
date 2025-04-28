@@ -169,9 +169,9 @@ namespace Comm
 				break;
 			case ThumbnailState::Data:
 			case ThumbnailState::DataWait:
-				LOG_VERBOSE("Thumbnail request in progress for {:s}, state={}",
+				LOG_VERBOSE("Thumbnail request in progress for {:s}, state={:d}",
 							thumbnail->filename.c_str(),
-							thumbnail->context.state);
+							(int)thumbnail->context.state);
 				thumbnailsRequested++;
 				break;
 			case ThumbnailState::Cached:
@@ -796,57 +796,57 @@ namespace Comm
 	{
 		MODEL_LOCK();
 		LOG_DBG("File info cache debug");
-		printf("File info cache:");
+		LOG_INFO("File info cache:");
 		for (auto& it : get()->m_cache)
 		{
 			FileInfoPtr fileInfo = it.second;
 			if (fileInfo == nullptr)
 				continue;
-			printf("  File %s:", fileInfo->filename.c_str());
-			printf("    size: %u", fileInfo->size);
-			printf("    lastModified: %s", fileInfo->lastModified.c_str());
-			printf("    height: %.3f", fileInfo->height);
-			printf("    layerHeight: %.3f", fileInfo->layerHeight);
-			printf("    thumbnails: %lu", fileInfo->GetThumbnailCount());
+			LOG_INFO("  File {:s}:", fileInfo->filename.c_str());
+			LOG_INFO("    size: {:d}", fileInfo->size);
+			LOG_INFO("    lastModified: {:s}", fileInfo->lastModified.c_str());
+			LOG_INFO("    height: {:0.3f}", fileInfo->height);
+			LOG_INFO("    layerHeight: {:0.3f}", fileInfo->layerHeight);
+			LOG_INFO("    thumbnails: {:d}", fileInfo->GetThumbnailCount());
 
 			for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 			{
 				ThumbnailPtr thumbnail = fileInfo->GetThumbnail(i);
 				if (thumbnail == nullptr)
 					continue;
-				printf("    Thumbnail %lu:", i);
-				printf("      meta:");
-				printf("        filename: %s", thumbnail->filename.c_str());
-				printf("        width(%u), height(%u), format(%d), offset(%u), size(%u)",
-					   thumbnail->meta.width,
-					   thumbnail->meta.height,
-					   thumbnail->meta.imageFormat,
-					   thumbnail->meta.offset,
-					   thumbnail->meta.size);
-				printf("      context:");
-				printf("        err(%d), parseErr(%d), size(%u), offset(%u), next(%u), state(%d)",
-					   thumbnail->context.err,
-					   thumbnail->context.parseErr,
-					   thumbnail->context.size,
-					   thumbnail->context.offset,
-					   thumbnail->context.next,
-					   thumbnail->context.state);
+				LOG_INFO("    Thumbnail {:d}:", i);
+				LOG_INFO("      meta:");
+				LOG_INFO("        filename: {:s}", thumbnail->filename.c_str());
+				LOG_INFO("        width({:d}), height({:d}), format({:d}), offset({:d}), size({:d})",
+						 thumbnail->meta.width,
+						 thumbnail->meta.height,
+						 (int)thumbnail->meta.imageFormat,
+						 thumbnail->meta.offset,
+						 thumbnail->meta.size);
+				LOG_INFO("      context:");
+				LOG_INFO("        err({:d}), parseErr({:d}), size({:d}), offset({:d}), next({:d}), state({:d})",
+						 thumbnail->context.err,
+						 thumbnail->context.parseErr,
+						 thumbnail->context.size,
+						 thumbnail->context.offset,
+						 thumbnail->context.next,
+						 (int)thumbnail->context.state);
 			}
 		}
 
-		printf("  File info request queue:");
+		LOG_INFO("  File info request queue:");
 		for (FileInfoRequest& request : m_fileInfoRequestQueue)
 		{
-			printf("    %s", request.GetData()->filename.c_str());
+			LOG_INFO("    {:s}", request.GetData()->filename.c_str());
 		}
 
-		printf("  Thumbnail request queue:");
+		LOG_INFO("  Thumbnail request queue:");
 		for (ThumbnailRequest request : m_thumbnailRequestQueue)
 		{
-			printf("    %dx%d %s",
-				   request.GetData()->meta.width,
-				   request.GetData()->meta.height,
-				   request.GetData()->filename.c_str());
+			LOG_INFO("    {:d}x{:d} {:s}",
+					 request.GetData()->meta.width,
+					 request.GetData()->meta.height,
+					 request.GetData()->filename.c_str());
 		}
 	}
 

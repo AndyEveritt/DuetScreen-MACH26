@@ -255,7 +255,7 @@ namespace Comm
 
 		if (r.status_code != HTTP_STATUS_OK)
 		{
-			LOG_ERROR("HTTP error {:d}: Likely invalid sessionKey {:d}.", r.status_code, m_sessionKey);
+			LOG_ERROR("HTTP error {:d}: Likely invalid sessionKey {:d}.", (int)r.status_code, m_sessionKey);
 			return false;
 		}
 		LOG_VERBOSE("{:s}", r.body.c_str());
@@ -283,7 +283,7 @@ namespace Comm
 		{
 			if (r.code == 401 || r.code == 403)
 			{
-				LOG_ERROR("HTTP error {:d}: Likely invalid sessionKey {:d}. Running rr_connect", r.code, m_sessionKey);
+				LOG_ERROR("HTTP error {:d}: Likely invalid sessionKey {:d}. Running rr_connect", (int)r.code, m_sessionKey);
 				Connect();
 				return Comm::Post(GetBaseUrl(), subUrl, r, queryParameters, data, m_sessionKey);
 			}
@@ -313,7 +313,7 @@ namespace Comm
 				{
 					if (r->status_code != HTTP_STATUS_OK)
 					{
-						printf("HTTP error %d: Failed to send gcode: %s", r->status_code, gcode.c_str());
+						LOG_ERROR("HTTP error {:d}: Failed to send gcode: {:s}", (int)r->status_code, gcode.c_str());
 						return false;
 					}
 					return true;
@@ -358,7 +358,7 @@ namespace Comm
 			if (contents.size() > MAX_UART_UPLOAD_SIZE)
 			{
 				LOG_WARN(
-					"File too large (%u) to upload via UART, limit is {:d}", contents.size(), MAX_UART_UPLOAD_SIZE);
+					"File too large ({:d}) to upload via UART, limit is {:d}", contents.size(), MAX_UART_UPLOAD_SIZE);
 				return false;
 			}
 
@@ -383,7 +383,7 @@ namespace Comm
 			query["name"] = filename;
 			if (!Post("/rr_upload", r, query, contents))
 			{
-				LOG_ERROR("HTTP error {:d} {:s}: Failed to upload file: {:s}", r.status_code, r.body, filename);
+				LOG_ERROR("HTTP error {:d} {:s}: Failed to upload file: {:s}", (int)r.status_code, r.body, filename);
 				return false;
 			}
 			break;
@@ -407,7 +407,7 @@ namespace Comm
 			query["name"] = filename;
 			if (!Get("/rr_download", r, query))
 			{
-				LOG_ERROR("HTTP error {:d}: Failed to download file: {:s}", r.status_code, filename);
+				LOG_ERROR("HTTP error {:d}: Failed to download file: {:s}", (int)r.status_code, filename);
 				return false;
 			}
 			contents = r.body;
@@ -441,8 +441,9 @@ namespace Comm
 						 JsonDecoder decoder;
 						 if (r->status_code != HTTP_STATUS_OK)
 						 {
-							 LOG_ERROR(
-								 "HTTP error %d: Failed to get model update for flags: %s", r->status_code, flags);
+							 LOG_ERROR("HTTP error {:d}: Failed to get model update for flags: {:s}",
+									   (int)r->status_code,
+									   flags);
 							 return false;
 						 }
 						 decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
@@ -454,7 +455,7 @@ namespace Comm
 			JsonDecoder decoder;
 			if (r.status_code != HTTP_STATUS_OK)
 			{
-				LOG_ERROR("HTTP error {:d}: Failed to get model update for flags: {:s}", r.status_code, flags);
+				LOG_ERROR("HTTP error {:d}: Failed to get model update for flags: {:s}", (int)r.status_code, flags);
 				break;
 			}
 			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
@@ -488,7 +489,7 @@ namespace Comm
 						 if (r->status_code != HTTP_STATUS_OK)
 						 {
 							 LOG_ERROR("HTTP error {:d}: Failed to get model update for key: {:s}, flags: {:s}",
-									   r->status_code,
+									   (int)r->status_code,
 									   key,
 									   flags);
 							 return false;
@@ -502,8 +503,10 @@ namespace Comm
 			JsonDecoder decoder;
 			if (r.status_code != HTTP_STATUS_OK)
 			{
-				LOG_ERROR(
-					"HTTP error %d: Failed to get model update for key: %s, flags: %s", r.status_code, key, flags);
+				LOG_ERROR("HTTP error {:d}: Failed to get model update for key: {:s}, flags: {:s}",
+						  (int)r.status_code,
+						  key,
+						  flags);
 				break;
 			}
 			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
@@ -541,7 +544,7 @@ namespace Comm
 					if (r->status_code != 200)
 					{
 						LOG_ERROR("HTTP error {:d} ({:s}): Failed to get file list for {:s}",
-								  r->status_code,
+								  (int)r->status_code,
 								  r->status_message(),
 								  dir);
 						return false;
@@ -583,8 +586,9 @@ namespace Comm
 					JsonDecoder decoder;
 					if (r->status_code != 200)
 					{
-						LOG_ERROR(
-							"HTTP error %d: Failed to get file info for file: %s", r->status_code, r->body.c_str());
+						LOG_ERROR("HTTP error {:d}: Failed to get file info for file: {:s}",
+								  (int)r->status_code,
+								  r->body.c_str());
 						return false;
 					}
 					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
@@ -608,18 +612,13 @@ namespace Comm
 					LOG_DBG("Name = {:s}", filename);
 					if (r.code != 200)
 					{
-						printf(
-							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
-								.c_str());
+						LOG_ERROR("HTTP error {:d}: Failed to get file info for file: {:s}", (int)r.code, r.body);
 						return false;
 					}
 					reader.parse(r.body, body);
 					if (body.isMember("err") && body["err"].asInt() != 0)
 					{
-						printf(
-							utils::format(
-								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
-								.c_str());
+						LOG_ERROR("Failed to get file info for file: {:s}, returned error {:d}", r.body, body["err"].asInt());
 						return false;
 					}
 					if (!body.isMember("thumbnails"))
@@ -742,8 +741,9 @@ namespace Comm
 					JsonDecoder decoder;
 					if (r->status_code != 200)
 					{
-						LOG_ERROR(
-							"HTTP error %d: Failed to get thumbnail for file: %s", r->status_code, r->body.c_str());
+						LOG_ERROR("HTTP error {:d}: Failed to get thumbnail for file: {:s}",
+								  (int)r->status_code,
+								  r->body.c_str());
 						return false;
 					}
 					decoder.SetPrefix("thumbnail:");
@@ -841,7 +841,7 @@ namespace Comm
 
 			if (r.status_code != HTTP_STATUS_OK)
 			{
-				LOG_ERROR("rr_connect failed, returned response {:d}", r.status_code);
+				LOG_ERROR("rr_connect failed, returned response {:d}", (int)r.status_code);
 				return false;
 			}
 
@@ -918,7 +918,7 @@ namespace Comm
 			hv::QueryParams query;
 			if (!Comm::Get(GetBaseUrl(), "/rr_disconnect", r, query, m_sessionKey))
 			{
-				LOG_ERROR("rr_disconnect failed, returned response {:d}", r.code);
+				LOG_ERROR("rr_disconnect failed, returned response {:d}", (int)r.code);
 				return r.code;
 			}
 			Reset();

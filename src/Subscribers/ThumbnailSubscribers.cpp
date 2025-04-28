@@ -374,14 +374,14 @@ bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const 
 	for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 	{
 		Comm::ThumbnailPtr thumbnail = fileInfo->GetOrCreateThumbnail(i);
-		LOG_DBG("Thumbnail {:d}: filename({:s}) offset({:d}) size({:d}) width({:d}) height({:d}) format({})",
+		LOG_DBG("Thumbnail {:d}: filename({:s}) offset({:d}) size({:d}) width({:d}) height({:d}) format({:d})",
 				i,
 				thumbnail->filename.c_str(),
 				thumbnail->meta.offset,
 				thumbnail->meta.size,
 				thumbnail->meta.width,
 				thumbnail->meta.height,
-				thumbnail->meta.imageFormat);
+				(int)thumbnail->meta.imageFormat);
 	}
 	return true;
 }

@@ -88,7 +88,6 @@ namespace USB
 
 		if (!file.is_open())
 		{
-			printf(utils::format("Unable to open file %s", filePath.c_str()).c_str());
 			LOG_ERROR("Unable to open file {:s}", filePath.c_str());
 			return false;
 		}
@@ -99,7 +98,6 @@ namespace USB
 		LOG_DBG("Reading {:d} bytes", size);
 		if (!file.read(contents.begin(), size))
 		{
-			printf(utils::format("Failed to read file %s", filePath.c_str()).c_str());
 			LOG_ERROR("Failed to read file {:s}", filePath.c_str());
 			return false;
 		}
