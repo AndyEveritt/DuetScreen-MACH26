@@ -55,11 +55,18 @@ Model::Model()
 #endif
 
 	registerEvent<EventType::Message>(this, &Model::message);
+	registerEvent<EventType::Heartbeat>(this, &Model::heartbeat);
+	registerEvent<EventType::Empty>(this, &Model::heartbeat);
 }
 
 void Model::message(const std::string& msg)
 {
 	LOG_INFO("Message: {:s}", msg);
+}
+
+void Model::heartbeat()
+{
+	LOG_INFO("Heartbeat");
 }
 
 void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)

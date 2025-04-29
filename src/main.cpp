@@ -111,6 +111,8 @@ int main(int argc, char** argv)
 
 	Model::get().startEventLoop();
 	Model::get().post<EventType::Message>("DuetScreen started");
+	Model::get().post<EventType::Heartbeat>();
+	Model::get().post<EventType::Empty>();
 
 	USB::UsbMonitor::getInstance().registerCallback(
 		[](const std::string& path, bool mounted)

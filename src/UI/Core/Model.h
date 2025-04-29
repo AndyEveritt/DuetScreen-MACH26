@@ -37,43 +37,55 @@ enum class EventType
 {
 	Sum,
 	Message,
-	Heartbeat, // Example of event with no args
-			   // Add more event types here
+	Heartbeat,
+	Empty,
 };
 
 // Default traits: no-argument event
 template <EventType E>
 struct EventTraits
 {
-	using data_type = std::tuple<>;
 };
+#define REGISTER_EVENT_TYPE(type, args...)                                                                             \
+	template <>                                                                                                        \
+	struct EventTraits<type>                                                                                           \
+	{                                                                                                                  \
+		struct EventData                                                                                               \
+		{                                                                                                              \
+			EventType eventType = type;                                                                                \
+			std::tuple<args> tup;                                                                                      \
+			EventData(EventType eventType)                                                                             \
+				: eventType(eventType)                                                                                 \
+			{                                                                                                          \
+			}                                                                                                          \
+			EventData(EventType eventType, std::tuple<args> tup)                                                       \
+				: eventType(eventType)                                                                                 \
+				, tup(std::move(tup))                                                                                  \
+			{                                                                                                          \
+			}                                                                                                          \
+		} data;                                                                                                        \
+		using data_type = EventData;                                                                                   \
+		EventTraits()                                                                                                  \
+			: data(type)                                                                                               \
+		{                                                                                                              \
+		}                                                                                                              \
+		EventTraits(std::tuple<args> tup)                                                                              \
+			: data(type, std::move(tup))                                                                               \
+		{                                                                                                              \
+		}                                                                                                              \
+	};
 
 // Specialize for events with arguments
-template <>
-struct EventTraits<EventType::Sum>
-{
-	using data_type = std::tuple<int, int>;
-};
-template <>
-struct EventTraits<EventType::Message>
-{
-	using data_type = std::tuple<std::string>;
-};
+REGISTER_EVENT_TYPE(EventType::Sum, int, int)
+REGISTER_EVENT_TYPE(EventType::Heartbeat)
+REGISTER_EVENT_TYPE(EventType::Empty)
+REGISTER_EVENT_TYPE(EventType::Message, std::string)
 
 // Variant covering all possible event-data tuples
-using EventData = std::variant<EventTraits<EventType::Sum>::data_type,
-							   EventTraits<EventType::Message>::data_type,
-							   EventTraits<EventType::Heartbeat>::data_type>;
-
-// Helper type trait to get first tuple element type
-template <typename T>
-struct first_tuple_element;
-
-template <typename T, typename... Rest>
-struct first_tuple_element<std::tuple<T, Rest...>>
-{
-	using type = T;
-};
+using EventData = std::variant<EventTraits<EventType::Sum>,
+							   EventTraits<EventType::Message>,
+							   EventTraits<EventType::Heartbeat>,
+							   EventTraits<EventType::Empty>>;
 
 class Model
 {
@@ -107,7 +119,7 @@ class Model
 	{
 		m_handlers[E] = [f = std::forward<Func>(func)](const EventData& data)
 		{
-			auto& tup = std::get<typename EventTraits<E>::data_type>(data);
+			auto& tup = std::get<EventTraits<E>>(data).data.tup;
 			std::apply(f, tup);
 		};
 	}
@@ -117,7 +129,7 @@ class Model
 	{
 		m_handlers[E] = [instance, memberFunc](const EventData& data)
 		{
-			auto& tup = std::get<typename EventTraits<E>::data_type>(data);
+			auto& tup = std::get<EventTraits<E>>(data).data.tup;
 			std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
 		};
 	}
@@ -125,19 +137,21 @@ class Model
 	template <EventType E, typename... Args>
 	void post(Args&&... args)
 	{
-		using Data = typename EventTraits<E>::data_type;
-		static_assert(std::is_constructible<Data, Args...>::value,
-					  "Event data type does not match the provided arguments");
-		static_assert(std::is_convertible<Data, EventData>::value, "Event data type is not convertible to EventData");
+		using Data = EventTraits<E>;
+		// static_assert(std::is_constructible<Data::data_type, Args...>::value,
+		// 			  "Event data type does not match the provided arguments");
+		// static_assert(std::is_convertible<Data, EventData>::value, "Event data type is not convertible to
+		// EventData");
 
 		std::lock_guard<std::mutex> lock(m_mutex);
-		m_eventQueue.emplace(E, Data(std::forward<Args>(args)...));
+		m_eventQueue.emplace(E, Data(std::make_tuple(std::forward<Args>(args)...)));
 		m_eventCondition.notify_one();
 	}
 
 	void runEventLoop();
 
 	void message(const std::string& message);
+	void heartbeat();
 
 	/* tasks */
 
