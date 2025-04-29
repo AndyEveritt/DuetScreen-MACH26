@@ -49,6 +49,8 @@ namespace UI
 			return;
 		}
 
+		LOG_VERBOSE("Tool index {:d}", m_slotIndex);
+
 		uint8_t count = 0;
 		uint8_t tHeaterIndex = 0;
 		m_tool = nullptr;
@@ -451,13 +453,16 @@ namespace UI
 	void ToolListPresenter::update()
 	{
 		const size_t toolCount = getTotalHeaterCount();
-		m_view->setItemCnt(toolCount);
-		for (size_t i = 0; i < m_view->getItemCnt(); ++i)
 		{
-			auto item = m_view->getToolListItem(i);
-			if (item != nullptr)
+			UI_LOCK();
+			m_view->setItemCnt(toolCount);
+			for (size_t i = 0; i < m_view->getItemCnt(); ++i)
 			{
-				item->setSlotIndex(i);
+				auto item = m_view->getToolListItem(i);
+				if (item != nullptr)
+				{
+					item->setSlotIndex(i);
+				}
 			}
 		}
 	}

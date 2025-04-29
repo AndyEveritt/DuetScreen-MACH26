@@ -232,7 +232,7 @@
 				"cwd": "${workspaceFolder}"
 			},
 			"dependsOn": [
-				"Build DuetScreen for Remote"
+				"Build DuetScreen for Remote - Release"
 			]
 		}
 	]

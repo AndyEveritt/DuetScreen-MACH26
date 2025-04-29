@@ -217,7 +217,7 @@ namespace OM::Move
 
 	std::shared_ptr<ExtruderAxis> GetExtruderAxis(const size_t index)
 	{
-		LOG_DBG("ExtruderAxis index {:d} / max {:d}\n", index, MAX_TOTAL_AXES);
+		LOG_DBG("ExtruderAxis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
@@ -236,7 +236,7 @@ namespace OM::Move
 
 	std::shared_ptr<ExtruderAxis> GetOrCreateExtruderAxis(const size_t index)
 	{
-		LOG_DBG("ExtruderAxis index {:d} / max {:d}\n", index, MAX_TOTAL_AXES);
+		LOG_DBG("ExtruderAxis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			LOG_ERROR("ExtruderAxis index {:d} greater than MAX_TOTAL_AXES", index);

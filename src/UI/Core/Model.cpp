@@ -22,6 +22,11 @@
 		  break;                                                                                                       \
 		}                                                                                                              \
 		presenter = *it;                                                                                               \
+		if (!presenter->isActive())                                                                                    \
+		{                                                                                                              \
+		  ++it;                                                                                                        \
+		  continue;                                                                                                    \
+		}                                                                                                              \
 	  }                                                                                                                \
 	  presenter->func(__VA_ARGS__);                                                                                    \
 	  {                                                                                                                \
@@ -104,6 +109,7 @@ void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
 void Model::unbind(std::shared_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
+	LOG_DBG("Unbinding presenter {:s}", presenter->getName());
 	m_presenters.remove(presenter);
 }
 

@@ -273,12 +273,20 @@ namespace UI
 	{
 		UI_LOCK();
 		size_t currentCnt = getItemCnt();
-		if (cnt <= currentCnt)
+		if (cnt == currentCnt)
 		{
+			return;
+		}
+
+		if (cnt < currentCnt)
+		{
+			LOG_DBG("Shrinking tool list from {:d} to {:d}", currentCnt, cnt);
 			m_items.resize(cnt);
 			return;
 		}
 
+		LOG_DBG("Expanding tool list from {:d} to {:d}", currentCnt, cnt);
+		m_items.reserve(cnt);
 		for (size_t i = currentCnt; i < cnt; i++)
 		{
 			m_items.emplace_back(std::make_shared<ToolListItem>(

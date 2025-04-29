@@ -73,7 +73,7 @@ def follow_remote_file(host: str, remote_path: str = "/var/log/DuetScreen.log") 
         )
 
         while True:
-            line = process.stdout.readline().decode('utf-8')
+            line = process.stdout.readline().decode('utf-8', errors='replace')
             if not line and process.poll() is not None:
                 break
             if line:
@@ -159,7 +159,7 @@ def follow_file(filepath: Path) -> Iterator[str]:
                 break
 
         try:
-            with open(current_file, 'r') as f:
+            with open(current_file, 'r', errors='replace') as f:
                 # Check if file has been rotated by comparing inodes
                 try:
                     new_inode = os.stat(current_file).st_ino
@@ -194,7 +194,6 @@ def filter_logs(filters: List[str], follow: bool = False, output_file: str = Non
     try:
         if remote_host:
             if follow:
-                # For remote following, we don't need to download files first
                 for line in follow_remote_file(remote_host):
                     if not filters or any(p.search(line) for p in patterns):
                         print(colorize(line, use_color, patterns), file=output)
@@ -212,7 +211,7 @@ def filter_logs(filters: List[str], follow: bool = False, output_file: str = Non
                     return
 
                 for log_file in log_files:
-                    with open(log_file, 'r') as f:
+                    with open(log_file, 'r', errors='replace') as f:
                         for line in f:
                             if not filters or any(p.search(line) for p in patterns):
                                 print(colorize(line.rstrip(), use_color, patterns), file=output)
@@ -226,7 +225,7 @@ def filter_logs(filters: List[str], follow: bool = False, output_file: str = Non
                     return
 
                 for log_file in log_files:
-                    with open(log_file, 'r') as f:
+                    with open(log_file, 'r', errors='replace') as f:
                         for line in f:
                             if not filters or any(p.search(line) for p in patterns):
                                 print(colorize(line.rstrip(), use_color, patterns), file=output)

@@ -58,7 +58,7 @@ namespace UI
 
 		virtual ~BaseView();
 
-		inline const char* getName() const { return m_name.c_str(); }
+		inline const std::string& getName() const { return m_name; }
 		/**
 		 * @return Get the base container for the view
 		 */
@@ -138,7 +138,14 @@ namespace UI
 		{
 		}
 
-		virtual ~View() { m_presenter->deactivate(); }
+		virtual ~View()
+		{
+			deactivate();
+			if (m_presenter)
+			{
+				m_presenter->setView(nullptr);
+			}
+		}
 
 		/**
 		 * @brief Get a pointer to the MVP model
