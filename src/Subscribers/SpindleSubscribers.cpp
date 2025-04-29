@@ -7,7 +7,7 @@
 bool SpindleSubscribers::nullSpindle(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveSpindle(indices[0], false);
-	Model::get().newSpindleData();
+	Model::get().post<EventType::SpindleData>();
 	return true;
 }
 
@@ -76,6 +76,6 @@ bool SpindleSubscribers::spindleArrayEnd(Comm::JsonDecoder* decoder, const size_
 	if (OM::RemoveSpindle(indices[0], true))
 	{
 	}
-	Model::get().newSpindleData();
+	Model::get().post<EventType::SpindleData>();
 	return true;
 }

@@ -217,7 +217,7 @@ namespace UI
 		return false;
 	}
 
-	void FilePresenter::newThumbnailData(const char* filename)
+	void FilePresenter::newThumbnailData(const std::string& filename)
 	{
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
 		{
@@ -236,7 +236,7 @@ namespace UI
 				auto item = this->m_view->getFileItem(i);
 				if (item != nullptr)
 				{
-					item->setThumbnail(GetThumbnailPath(filename).c_str());
+					item->setThumbnail(GetThumbnailPath(filename.c_str()).c_str());
 				}
 				break;
 			}

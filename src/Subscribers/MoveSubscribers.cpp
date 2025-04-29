@@ -167,14 +167,14 @@ bool MoveSubscribers::extruderStepsPerMm(Comm::JsonDecoder* decoder, const float
 
 bool MoveSubscribers::kinematicsName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Model::get().newKinematicsName();
+	Model::get().post<EventType::KinematicsName>();
 	return true;
 }
 
 bool MoveSubscribers::speedFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	OM::Move::SetSpeedFactor(data);
-	Model::get().newSpeedFactor();
+	Model::get().post<EventType::SpeedFactor>();
 	return true;
 }
 
@@ -185,55 +185,55 @@ bool MoveSubscribers::workplaceNumber(Comm::JsonDecoder* decoder, const uint32_t
 		LOG_ERROR("Failed to set workplace number = {:d}", data);
 		return false;
 	}
-	Model::get().newWorkplaceNumber();
+	Model::get().post<EventType::WorkplaceNumber>();
 	return true;
 }
 
 bool MoveSubscribers::printingAcceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::Move::SetPrintingAcceleration(data);
-	Model::get().newPrintingAcceleration(OM::Move::GetPrintingAcceleration());
+	Model::get().post<EventType::PrintingAcceleration>(OM::Move::GetPrintingAcceleration());
 	return true;
 }
 
 bool MoveSubscribers::currentMoveRequestedSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	OM::Move::SetCurrentMoveRequestedSpeed(data);
-	Model::get().newCurrentMoveRequestedSpeed();
+	Model::get().post<EventType::CurrentMoveRequestedSpeed>();
 	return true;
 }
 
 bool MoveSubscribers::currentMoveTopSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	OM::Move::SetCurrentMoveTopSpeed(data);
-	Model::get().newCurrentMoveTopSpeed();
+	Model::get().post<EventType::CurrentMoveTopSpeed>();
 	return true;
 }
 
 bool MoveSubscribers::currentMoveExtrusionRate(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	OM::Move::SetExtrusionRate(data);
-	Model::get().newCurrentMoveExtrusionSpeed();
+	Model::get().post<EventType::CurrentMoveExtrusionSpeed>();
 	return true;
 }
 
 bool MoveSubscribers::compensationFile(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetCurrentHeightmap(data);
-	Model::get().newCompensationFile();
+	Model::get().post<EventType::CompensationFile>();
 	return true;
 }
 
 bool MoveSubscribers::axesArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	OM::Move::RemoveAxis(indices[0], true);
-	Model::get().newAxesData();
+	Model::get().post<EventType::AxesData>();
 	return true;
 }
 
 bool MoveSubscribers::extrudersArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	OM::Move::RemoveExtruderAxis(indices[0], true);
-	Model::get().newExtruderData();
+	Model::get().post<EventType::ExtruderData>();
 	return true;
 }

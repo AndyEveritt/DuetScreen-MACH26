@@ -81,7 +81,7 @@ namespace UI
 		}
 	}
 
-	void HomePresenter::newResponse(const char* resp)
+	void HomePresenter::newResponse(const std::string& resp)
 	{
 		UI_LOCK();
 		if (m_view->m_consoleView.isVisible())
@@ -89,45 +89,47 @@ namespace UI
 			return;
 		}
 
-		if (resp)
+		if (resp.empty())
 		{
-			std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
-			msgBox->setTitle("Response");
-			msgBox->setText(resp);
-			msgBox->setCancelCallback(
-				[this]()
-				{
-					UI_LOCK();
-					m_view->popMessageBox();
-					if (m_view->getMessageBoxCount() > 0)
-					{
-						auto msgBox = m_view->getMessageBox(0);
-						msgBox->show();
-						msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
-					}
-				});
+			return;
+		}
 
-			msgBox->setCancelBtnText(_("msgbox_close"));
-			msgBox->setOkBtnText(_("open_console"));
-			msgBox->setOkCallback(
-				[this]()
+		std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
+		msgBox->setTitle("Response");
+		msgBox->setText(resp);
+		msgBox->setCancelCallback(
+			[this]()
+			{
+				UI_LOCK();
+				m_view->popMessageBox();
+				if (m_view->getMessageBoxCount() > 0)
 				{
-					UI_LOCK();
-					m_view->clearMessageBoxes();
-					openScreen(&m_view->m_consoleView);
-				});
-			msgBox->okVisible(true);
-			msgBox->progressVisible(true);
-			if (m_view->getMessageBoxCount() == 1)
+					auto msgBox = m_view->getMessageBox(0);
+					msgBox->show();
+					msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+				}
+			});
+
+		msgBox->setCancelBtnText(_("msgbox_close"));
+		msgBox->setOkBtnText(_("open_console"));
+		msgBox->setOkCallback(
+			[this]()
 			{
-				msgBox->show();
-				msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
-			}
-			msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
-			if (m_view->m_alert.isVisible())
-			{
-				msgBox->hide();
-			}
+				UI_LOCK();
+				m_view->clearMessageBoxes();
+				openScreen(&m_view->m_consoleView);
+			});
+		msgBox->okVisible(true);
+		msgBox->progressVisible(true);
+		if (m_view->getMessageBoxCount() == 1)
+		{
+			msgBox->show();
+			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+		}
+		msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
+		if (m_view->m_alert.isVisible())
+		{
+			msgBox->hide();
 		}
 	}
 

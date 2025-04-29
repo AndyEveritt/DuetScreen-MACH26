@@ -47,7 +47,7 @@ namespace OM
 			Directories::Reset();
 		}
 
-		Model::get().refresh();
+		Model::get().post<EventType::Refresh>();
 	}
 
 	static Debug::DebugCommand s_logOM(

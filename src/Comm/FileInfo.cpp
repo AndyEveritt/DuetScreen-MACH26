@@ -178,7 +178,7 @@ namespace Comm
 				thumbnail->image.Close();
 				LOG_DBG("Updating thumbnail {:s}", thumbnail->filename.c_str());
 				ThumbnailRequestComplete(thumbnail->filename.c_str());
-				Model::get().newThumbnailData(thumbnail->filename.c_str());
+				Model::get().post<EventType::ThumbnailData>(std::string(thumbnail->filename.c_str()));
 				break;
 			default:
 				break;

@@ -7,7 +7,7 @@
 bool SensorSubscribers::nullAnalogSensor(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveAnalogSensor(indices[0], false);
-	Model::get().newAnalogSensorData();
+	Model::get().post<EventType::AnalogSensorData>();
 	return true;
 }
 
@@ -34,7 +34,7 @@ bool SensorSubscribers::analogSensorName(Comm::JsonDecoder* decoder, const char*
 bool SensorSubscribers::nullEndstop(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveEndstop(indices[0], false);
-	Model::get().newEndstopData();
+	Model::get().post<EventType::EndstopData>();
 	return true;
 }
 
@@ -53,7 +53,7 @@ bool SensorSubscribers::analogSensorArrayEnd(Comm::JsonDecoder* decoder, const s
 	if (OM::RemoveAnalogSensor(indices[0], true))
 	{
 	}
-	Model::get().newAnalogSensorData();
+	Model::get().post<EventType::AnalogSensorData>();
 	return true;
 }
 
@@ -62,6 +62,6 @@ bool SensorSubscribers::endstopArrayEnd(Comm::JsonDecoder* decoder, const size_t
 	if (OM::RemoveEndstop(indices[0], true))
 	{
 	}
-	Model::get().newEndstopData();
+	Model::get().post<EventType::EndstopData>();
 	return true;
 }

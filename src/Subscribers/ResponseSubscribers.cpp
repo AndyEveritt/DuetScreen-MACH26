@@ -9,7 +9,7 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 	LOG_INFO("resp length={:d}", strlen(data));
 	LOG_DBG("resp: {:s}", data);
 
-	Model::get().newResponse(data);
+	Model::get().post<EventType::Response>(std::string(data));
 
 	return true;
 }

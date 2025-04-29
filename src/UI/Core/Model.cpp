@@ -40,10 +40,10 @@
 Model::Model()
 {
 	// Timers
-	m_timers.tick =
-		lv_timer_create([](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->tick(); },
-						MODEL_TICK_INTERVAL,
-						this);
+	m_timers.tick = lv_timer_create([](lv_timer_t* timer)
+									{ static_cast<Model*>(lv_timer_get_user_data(timer))->post<EventType::Tick>(); },
+									MODEL_TICK_INTERVAL,
+									this);
 
 #if !MULTITHREADED
 	m_timers.request =
@@ -54,19 +54,44 @@ Model::Model()
 		[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->receiveNewUsbData(); }, 5, this);
 #endif
 
-	registerEvent<EventType::Message>(this, &Model::message);
-	registerEvent<EventType::Heartbeat>(this, &Model::heartbeat);
-	registerEvent<EventType::Empty>(this, &Model::heartbeat);
-}
-
-void Model::message(const std::string& msg)
-{
-	LOG_INFO("Message: {:s}", msg);
-}
-
-void Model::heartbeat()
-{
-	LOG_INFO("Heartbeat");
+	registerEvent<EventType::Tick>(this, &Model::tick);
+	registerEvent<EventType::Refresh>(this, &Model::refresh);
+	registerEvent<EventType::UpdateAvailable>(this, &Model::newUpdateAvailable);
+	registerEvent<EventType::FanData>(this, &Model::newFanData);
+	registerEvent<EventType::FileData>(this, &Model::newFileData);
+	registerEvent<EventType::HeaterData>(this, &Model::newHeaterData);
+	registerEvent<EventType::JobFileName>(this, &Model::newJobFileName);
+	registerEvent<EventType::JobLastFileName>(this, &Model::newJobLastFileName);
+	registerEvent<EventType::JobPrintTime>(this, &Model::newJobPrintTime);
+	registerEvent<EventType::JobDuration>(this, &Model::newJobDuration);
+	registerEvent<EventType::JobTimeLeft>(this, &Model::newJobTimeLeft);
+	registerEvent<EventType::JobWarmupDuration>(this, &Model::newJobWarmupDuration);
+	registerEvent<EventType::JobBuild>(this, &Model::newJobBuild);
+	registerEvent<EventType::JobCurrentObject>(this, &Model::newJobCurrentObject);
+	registerEvent<EventType::JobObjectData>(this, &Model::newJobObjectData);
+	registerEvent<EventType::ThumbnailData>(this, &Model::newThumbnailData);
+	registerEvent<EventType::AxesData>(this, &Model::newAxesData);
+	registerEvent<EventType::ExtruderData>(this, &Model::newExtruderData);
+	registerEvent<EventType::KinematicsName>(this, &Model::newKinematicsName);
+	registerEvent<EventType::SpeedFactor>(this, &Model::newSpeedFactor);
+	registerEvent<EventType::WorkplaceNumber>(this, &Model::newWorkplaceNumber);
+	registerEvent<EventType::PrintingAcceleration>(this, &Model::newPrintingAcceleration);
+	registerEvent<EventType::CurrentMoveRequestedSpeed>(this, &Model::newCurrentMoveRequestedSpeed);
+	registerEvent<EventType::CurrentMoveTopSpeed>(this, &Model::newCurrentMoveTopSpeed);
+	registerEvent<EventType::CurrentMoveExtrusionSpeed>(this, &Model::newCurrentMoveExtrusionSpeed);
+	registerEvent<EventType::CompensationFile>(this, &Model::newCompensationFile);
+	registerEvent<EventType::Response>(this, &Model::newResponse);
+	registerEvent<EventType::LogMessage>(this, &Model::newLogMessage);
+	registerEvent<EventType::AnalogSensorData>(this, &Model::newAnalogSensorData);
+	registerEvent<EventType::EndstopData>(this, &Model::newEndstopData);
+	registerEvent<EventType::SpindleData>(this, &Model::newSpindleData);
+	registerEvent<EventType::NetworkName>(this, &Model::newNetworkName);
+	registerEvent<EventType::IpAddress>(this, &Model::newIpAddress);
+	registerEvent<EventType::Status>(this, &Model::newStatus);
+	registerEvent<EventType::CurrentTool>(this, &Model::newCurrentTool);
+	registerEvent<EventType::MessageBoxData>(this, &Model::newMessageBoxData);
+	registerEvent<EventType::Time>(this, &Model::newTime);
+	registerEvent<EventType::ToolData>(this, &Model::newToolData);
 }
 
 void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
@@ -281,12 +306,12 @@ MODEL_NOTIFICATION(newHeaterData)
 
 /* Job methods */
 
-void Model::newJobFileName(const char* filename)
+void Model::newJobFileName(const std::string& filename)
 {
 	NOTIFY_ALL_PRESENTERS(newJobFileName, filename);
 }
 
-void Model::newJobLastFileName(const char* filename)
+void Model::newJobLastFileName(const std::string& filename)
 {
 	NOTIFY_ALL_PRESENTERS(newJobLastFileName, filename);
 }
@@ -299,7 +324,7 @@ MODEL_NOTIFICATION(newJobBuild)
 MODEL_NOTIFICATION(newJobCurrentObject)
 MODEL_NOTIFICATION(newJobObjectData)
 
-void Model::newThumbnailData(const char* filename)
+void Model::newThumbnailData(const std::string& filename)
 {
 	NOTIFY_ALL_PRESENTERS(newThumbnailData, filename);
 }
@@ -324,7 +349,7 @@ MODEL_NOTIFICATION(newCompensationFile)
 
 /* Response methods */
 
-void Model::newResponse(const char* resp)
+void Model::newResponse(const std::string& resp)
 {
 	NOTIFY_ALL_PRESENTERS(newResponse, resp);
 }

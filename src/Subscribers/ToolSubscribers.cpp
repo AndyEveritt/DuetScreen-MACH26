@@ -7,7 +7,7 @@
 bool ToolSubscribers::nullTool(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::RemoveTool(indices[0], false);
-	Model::get().newToolData();
+	Model::get().post<EventType::ToolData>();
 	return true;
 }
 
@@ -126,7 +126,7 @@ bool ToolSubscribers::toolArrayEnd(Comm::JsonDecoder* decoder, const size_t indi
 	if (OM::RemoveTool(indices[0], true))
 	{
 	}
-	Model::get().newToolData();
+	Model::get().post<EventType::ToolData>();
 	return true;
 }
 

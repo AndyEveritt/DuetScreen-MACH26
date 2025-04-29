@@ -110,9 +110,6 @@ int main(int argc, char** argv)
 	home.show();
 
 	Model::get().startEventLoop();
-	Model::get().post<EventType::Message>("DuetScreen started");
-	Model::get().post<EventType::Heartbeat>();
-	Model::get().post<EventType::Empty>();
 
 	USB::UsbMonitor::getInstance().registerCallback(
 		[](const std::string& path, bool mounted)
@@ -126,7 +123,7 @@ int main(int argc, char** argv)
 					return;
 				}
 
-				Model::get().newUpdateAvailable(upgradeFilePath);
+				Model::get().post<EventType::UpdateAvailable>(upgradeFilePath);
 			}
 		});
 	USB::UsbMonitor::getInstance().startMonitoring();
@@ -218,7 +215,7 @@ int main(int argc, char** argv)
 			std::string msg;
 			while (Log::GetNextUiLogMessage(level, time, msg))
 			{
-				Model::get().newLogMessage(level, time, msg);
+				Model::get().post<EventType::LogMessage>(level, time, msg);
 			}
 		}
 		usleep(5 * 1000); // Sleep for 5 milliseconds

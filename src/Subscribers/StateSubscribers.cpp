@@ -12,14 +12,14 @@
 bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetPrinterName(data);
-	Model::get().newNetworkName();
+	Model::get().post<EventType::NetworkName>();
 	return true;
 }
 
 bool StateSubscribers::networkActualIP(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	Comm::DUET.SetIPAddress(data);
-	Model::get().newIpAddress();
+	Model::get().post<EventType::IpAddress>();
 	return true;
 }
 
@@ -29,7 +29,7 @@ bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, cons
 	OM::SetStatus(data);
 	if (prevStatus != OM::GetStatus())
 	{
-		Model::get().newStatus(OM::GetStatus());
+		Model::get().post<EventType::Status>(OM::GetStatus());
 	}
 	return true;
 }
@@ -37,7 +37,7 @@ bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, cons
 bool StateSubscribers::currentTool(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
 	OM::SetCurrentTool(data);
-	Model::get().newCurrentTool();
+	Model::get().post<EventType::CurrentTool>();
 	return true;
 }
 
@@ -47,7 +47,7 @@ bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* da
 		return true;
 	OM::g_currentAlert.Reset();
 
-	Model::get().newMessageBoxData(OM::g_currentAlert);
+	Model::get().post<EventType::MessageBoxData>(OM::g_currentAlert);
 	return true;
 }
 
@@ -93,7 +93,7 @@ bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* d
 
 	if (OM::g_currentAlert.seq != OM::g_lastAlertSeq)
 	{
-		Model::get().newMessageBoxData(OM::g_currentAlert);
+		Model::get().post<EventType::MessageBoxData>(OM::g_currentAlert);
 	}
 	return true;
 }
@@ -175,6 +175,6 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 	}
 	LOG_DBG("Setting system time to {:s}", data);
 	TimeHelper::setDateTime(data);
-	Model::get().newTime();
+	Model::get().post<EventType::Time>();
 	return true;
 }

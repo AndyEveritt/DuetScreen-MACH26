@@ -35,7 +35,7 @@ bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& 
 	if (data == 0)
 	{
 		OM::FileSystem::ClearFileSystem();
-		Model::get().newFileData();
+		Model::get().post<EventType::FileData>();
 	}
 	return true;
 }
@@ -134,6 +134,6 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 			}
 		}
 	}
-	Model::get().newFileData();
+	Model::get().post<EventType::FileData>();
 	return true;
 }

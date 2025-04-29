@@ -17,7 +17,7 @@
 bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::Heat::RemoveHeater(indices[0], false);
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }
 
@@ -132,7 +132,7 @@ bool HeatSubscribers::heaterArrayEnd(Comm::JsonDecoder* decoder, const size_t in
 	if (OM::Heat::RemoveHeater(indices[0], true))
 	{
 	}
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }
 
@@ -141,7 +141,7 @@ bool HeatSubscribers::bedHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t
 	if (OM::RemoveBed(indices[0], true))
 	{
 	}
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }
 
@@ -150,6 +150,6 @@ bool HeatSubscribers::chamberHeaterArrayEnd(Comm::JsonDecoder* decoder, const si
 	if (OM::RemoveChamber(indices[0], true))
 	{
 	}
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }

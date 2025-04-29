@@ -53,6 +53,6 @@ bool FanSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]
 	if (OM::RemoveFan(indices[0], true))
 	{
 	}
-	Model::get().newFanData();
+	Model::get().post<EventType::FanData>();
 	return true;
 }
