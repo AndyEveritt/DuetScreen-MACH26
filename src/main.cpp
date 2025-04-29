@@ -27,6 +27,7 @@
 #include <libusb-1.0/libusb.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <unistd.h>
 
 #if LV_USE_OS == LV_OS_PTHREAD
@@ -107,6 +108,9 @@ int main(int argc, char** argv)
 
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
+
+	Model::get().startEventLoop();
+	Model::get().post<EventType::Message>("DuetScreen started");
 
 	USB::UsbMonitor::getInstance().registerCallback(
 		[](const std::string& path, bool mounted)

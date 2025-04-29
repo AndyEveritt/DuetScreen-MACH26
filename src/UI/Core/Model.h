@@ -18,16 +18,62 @@
 #include "Subscribers/ThumbnailSubscribers.h"
 #include "Subscribers/ToolSubscribers.h"
 #include "lvgl/lvgl.h"
+#include <atomic>
+#include <condition_variable>
 #include <fmt/ostream.h>
 #include <list>
 #include <map>
 #include <mutex>
-#include <pthread.h>
+#include <queue>
+#include <tuple>
+#include <variant>
 
 namespace UI
 {
 	class BasePresenter;
 }
+
+enum class EventType
+{
+	Sum,
+	Message,
+	Heartbeat, // Example of event with no args
+			   // Add more event types here
+};
+
+// Default traits: no-argument event
+template <EventType E>
+struct EventTraits
+{
+	using data_type = std::tuple<>;
+};
+
+// Specialize for events with arguments
+template <>
+struct EventTraits<EventType::Sum>
+{
+	using data_type = std::tuple<int, int>;
+};
+template <>
+struct EventTraits<EventType::Message>
+{
+	using data_type = std::tuple<std::string>;
+};
+
+// Variant covering all possible event-data tuples
+using EventData = std::variant<EventTraits<EventType::Sum>::data_type,
+							   EventTraits<EventType::Message>::data_type,
+							   EventTraits<EventType::Heartbeat>::data_type>;
+
+// Helper type trait to get first tuple element type
+template <typename T>
+struct first_tuple_element;
+
+template <typename T, typename... Rest>
+struct first_tuple_element<std::tuple<T, Rest...>>
+{
+	using type = T;
+};
 
 class Model
 {
@@ -52,6 +98,46 @@ class Model
 	 * @param presenter
 	 */
 	void unbind(std::shared_ptr<UI::BasePresenter> presenter);
+
+	void startEventLoop();
+	void stopEventLoop();
+
+	template <EventType E, typename Func>
+	void registerEvent(Func&& func)
+	{
+		m_handlers[E] = [f = std::forward<Func>(func)](const EventData& data)
+		{
+			auto& tup = std::get<typename EventTraits<E>::data_type>(data);
+			std::apply(f, tup);
+		};
+	}
+
+	template <EventType E, typename Class, typename... Args>
+	void registerMemberEvent(Class* instance, void (Class::*memberFunc)(Args...))
+	{
+		m_handlers[E] = [instance, memberFunc](const EventData& data)
+		{
+			auto& tup = std::get<typename EventTraits<E>::data_type>(data);
+			std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
+		};
+	}
+
+	template <EventType E, typename... Args>
+	void post(Args&&... args)
+	{
+		using Data = typename EventTraits<E>::data_type;
+		static_assert(std::is_constructible<Data, Args...>::value,
+					  "Event data type does not match the provided arguments");
+		static_assert(std::is_convertible<Data, EventData>::value, "Event data type is not convertible to EventData");
+
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_eventQueue.emplace(E, Data(std::forward<Args>(args)...));
+		m_eventCondition.notify_one();
+	}
+
+	void runEventLoop();
+
+	void message(const std::string& message);
 
 	/* tasks */
 
@@ -164,7 +250,12 @@ class Model
 	ToolSubscribers m_toolSubscribers;
 	std::list<std::shared_ptr<UI::BasePresenter>> m_presenters;
 
-	pthread_mutex_t m_mutex;
+	std::queue<std::pair<EventType, EventData>> m_eventQueue;
+	std::map<EventType, std::function<void(const EventData&)>> m_handlers;
+	std::condition_variable m_eventCondition;
+	std::thread m_eventThread;
+	std::atomic<bool> m_running{false};
+	std::mutex m_mutex;
 
 	struct
 	{
@@ -172,24 +263,6 @@ class Model
 		lv_timer_t* request;
 		lv_timer_t* receive;
 	} m_timers;
-};
-
-/**
- * @brief Creates a scopped lock for the model
- * @return Return a `ModelLock` object which calls `Model::get().lock()` on construction and `Model::get().unlock()` on
- * destruction
- */
-struct ModelLock
-{
-	ModelLock()
-		: m_model(Model::get())
-	{
-		m_model.lock();
-	}
-	~ModelLock() { m_model.unlock(); }
-
-  private:
-	Model& m_model;
 };
 
 #define MODEL_LOCK()                                                                                                   \

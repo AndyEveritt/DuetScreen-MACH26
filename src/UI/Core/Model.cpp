@@ -54,10 +54,12 @@ Model::Model()
 		[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->receiveNewUsbData(); }, 5, this);
 #endif
 
-	if (!initMutex())
-	{
-		LOG_FATAL("Failed to initialise mutex");
-	}
+	registerMemberEvent<EventType::Message>(this, &Model::message);
+}
+
+void Model::message(const std::string& msg)
+{
+	LOG_INFO("Message: {:s}", msg);
 }
 
 void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
@@ -71,6 +73,64 @@ void Model::unbind(std::shared_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
 	m_presenters.remove(presenter);
+}
+
+void Model::startEventLoop()
+{
+	if (m_running)
+	{
+		LOG_WARN("Event loop already running");
+		return;
+	}
+	m_running = true;
+	m_eventThread = std::thread(&Model::runEventLoop, this);
+}
+
+void Model::stopEventLoop()
+{
+	if (!m_running)
+	{
+		LOG_WARN("Event loop not running");
+		return;
+	}
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_running = false;
+	}
+	m_eventCondition.notify_all();
+	if (m_eventThread.joinable())
+	{
+		m_eventThread.join();
+	}
+}
+
+void Model::runEventLoop()
+{
+	while (true)
+	{
+		std::pair<EventType, EventData> event;
+		{
+			std::unique_lock<std::mutex> lock(m_mutex);
+			m_eventCondition.wait(lock, [this] { return !m_eventQueue.empty() || !m_running; });
+			if (!m_running && m_eventQueue.empty())
+			{
+				LOG_DBG("Stopping event loop");
+				break;
+			}
+			event = std::move(m_eventQueue.front());
+			m_eventQueue.pop();
+		}
+
+		auto it = m_handlers.find(event.first);
+		if (it != m_handlers.end())
+		{
+			it->second(event.second);
+		}
+		else
+		{
+			LOG_WARN("No handler for event type {:d}", (int)event.first);
+		}
+	}
 }
 
 void Model::tick()
@@ -154,51 +214,6 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 			subscriber.run(decoder, indices);
 		}
 	}
-}
-
-/**
- * @brief Initializes a recursive mutex for the Model class.
- *
- * This function sets up a recursive mutex by initializing the mutex attributes,
- * setting the mutex type to recursive, and then initializing the mutex with these attributes.
- * If the initialization fails, an error code is logged and the function returns false.
- *
- * @return true if the mutex was successfully initialized, false otherwise.
- */
-bool Model::initMutex()
-{
-	pthread_mutexattr_t attr;
-
-	pthread_mutexattr_init(&attr);
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-	int ret = pthread_mutex_init(&m_mutex, &attr);
-	pthread_mutexattr_destroy(&attr);
-
-	if (ret)
-	{
-		LOG_ERROR("{:d}", ret);
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-}
-
-void Model::lock()
-{
-	LOG_VERBOSE("Attempting to lock model");
-	// lv_lock();
-	pthread_mutex_lock(&m_mutex);
-	LOG_VERBOSE("Model locked by thread {:d}", pthread_self());
-}
-
-void Model::unlock()
-{
-	LOG_VERBOSE("Unlocking model");
-	// lv_unlock();
-	pthread_mutex_unlock(&m_mutex);
-	LOG_VERBOSE("Model unlocked by thread {:d}", pthread_self());
 }
 
 void Model::refresh()
