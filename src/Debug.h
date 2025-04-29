@@ -42,7 +42,6 @@ namespace Log
 
 	void EnableUiLogging(bool enable);
 	bool IsUiLoggingEnabled();
-	bool GetNextUiLogMessage(DebugLevel& level, log_time_t& time, std::string& message);
 
 	size_t GetThreadId();
 

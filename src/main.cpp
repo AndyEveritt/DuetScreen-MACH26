@@ -210,13 +210,6 @@ int main(int argc, char** argv)
 		{
 			UI_LOCK();
 			lv_timer_handler();
-			Log::DebugLevel level;
-			Log::log_time_t time;
-			std::string msg;
-			while (Log::GetNextUiLogMessage(level, time, msg))
-			{
-				Model::get().post<EventType::LogMessage>(level, time, msg);
-			}
 		}
 		usleep(5 * 1000); // Sleep for 5 milliseconds
 	}

@@ -54,28 +54,6 @@ namespace Log
 	template <typename Mutex>
 	class UiSink : public spdlog::sinks::base_sink<Mutex>
 	{
-		struct msg
-		{
-			DebugLevel level;
-			log_time_t time;
-			std::string str;
-		};
-
-	  public:
-		bool get_message(DebugLevel& level, log_time_t& time, std::string& str)
-		{
-			std::lock_guard<Mutex> lock(this->mutex_);
-			if (m_messages.empty())
-				return false;
-
-			const msg& msg = m_messages.front();
-			level = msg.level;
-			time = msg.time;
-			str = msg.str;
-			m_messages.pop_front();
-			return true;
-		}
-
 	  protected:
 		void sink_it_(const spdlog::details::log_msg& msg) override
 		{
@@ -83,13 +61,10 @@ namespace Log
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 			std::string str(formatted.data(), formatted.size());
-			m_messages.emplace_back(static_cast<DebugLevel>(msg.level), msg.time, str);
+			Model::get().post<EventType::LogMessage>(static_cast<DebugLevel>(msg.level), msg.time, str);
 		}
 
 		void flush_() override {}
-
-	  private:
-		std::list<msg> m_messages;
 	};
 
 	using UiSink_mt = UiSink<std::mutex>;
@@ -201,14 +176,6 @@ namespace Log
 	bool IsUiLoggingEnabled()
 	{
 		return s_uiSink != nullptr;
-	}
-
-	bool GetNextUiLogMessage(DebugLevel& level, log_time_t& time, std::string& message)
-	{
-		if (s_uiSink == nullptr)
-			return false;
-
-		return s_uiSink->get_message(level, time, message);
 	}
 
 	size_t GetThreadId()
