@@ -321,7 +321,7 @@ namespace UI
 	void MessageBox::setMode(OM::Alert::Mode mode)
 	{
 		UI_LOCK();
-		LOG_INFO("Seting mode to {:d}", (uint8_t)mode);
+		LOG_INFO("Seting mode to {:d}", (int)mode);
 		m_mode = mode;
 
 		// Hide all containers

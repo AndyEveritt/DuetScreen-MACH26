@@ -17,7 +17,7 @@ size_t const SubscriberMap::getSubscriberCount(const char* key)
 const std::vector<Subscriber>& SubscriberMap::getSubscribers(const char* key)
 {
 	auto it = s_subscribers.find(key);
-	if (it->second.size() == 0)
+	if (it == s_subscribers.end())
 	{
 		static std::vector<Subscriber> empty;
 		return empty;
@@ -38,7 +38,7 @@ size_t const SubscriberMap::getArrayEndSubscriberCount(const char* key)
 const std::vector<ArrayEndSubscriber>& SubscriberMap::getArrayEndSubscribers(const char* key)
 {
 	auto it = s_arrayEndSubscribers.find(key);
-	if (it->second.size() == 0)
+	if (it == s_arrayEndSubscribers.end())
 	{
 		static std::vector<ArrayEndSubscriber> empty;
 		return empty;

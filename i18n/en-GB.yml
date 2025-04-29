@@ -333,3 +333,8 @@ en-GB:
   settings_device: ~
   settings_brightness: ~
   settings_screensaver_timeout: ~
+  update_available: ~
+  update_available_text: ~
+  update_confirm: ~
+  update_cancel: ~
+  settings_system_logging: ~

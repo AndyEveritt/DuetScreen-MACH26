@@ -52,9 +52,7 @@
                 "PROCESSOR": "T113",
                 "LOG_TIMESTAMPS": "ON",
                 "LOG_THREAD": "ON",
-                "DEBUG_BORDERS": "ON",
-                "CMAKE_C_FLAGS": "-g",
-                "CMAKE_CXX_FLAGS": "-g"
+                "DEBUG_BORDERS": "ON"
             }
         },
         {
@@ -64,7 +62,8 @@
             "inherits": "Base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "PROCESSOR": "T113"
+                "PROCESSOR": "T113",
+                "LOG_TIMESTAMPS": "ON"
             }
         }
     ],

@@ -286,7 +286,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_refresh.getCont(), 1);
 		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
 		lv_obj_set_size(m_enable, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address")).c_str());
+		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), "").c_str());
 		lv_checkbox_set_text(m_enable, _("settings_network_enable"));
 
 		// Network List

@@ -7,7 +7,7 @@
         {
             "id": "log_filters",
             "type": "promptString",
-            "description": "Log filters (space separated)"
+            "description": "Log filters (quote enclosed and space separated e.g. \"filter1\" \"filter2\"), add `-f` to follow the log file"
         }
     ],
     "configurations": [
@@ -83,6 +83,14 @@
                 "${config:buildroot_path}/output/build/duetscreen-HEAD/src": "${workspaceFolder}/src",
                 "${config:buildroot_path}/output/build/duetscreen-HEAD/libraries": "${workspaceFolder}/libraries"
             }
+        },
+        {
+            "name": "Python: Filter Local Logs",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "scripts/filter_logs.py",
+            "console": "integratedTerminal",
+            "args": "${input:log_filters}"
         },
         {
             "name": "Python: Filter Remote Logs",

@@ -132,7 +132,7 @@ useconds_t Model::receiveNewUsbData()
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	auto subscribers = getSubscribers(key);
+	auto& subscribers = getSubscribers(key);
 	if (subscribers.size() != 0)
 	{
 		LOG_DBG("found {:d} subscribers for '{:s}'", subscribers.size(), key);
@@ -145,7 +145,7 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 
 void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[])
 {
-	auto subscribers = getArrayEndSubscribers(key);
+	auto& subscribers = getArrayEndSubscribers(key);
 	if (subscribers.size() != 0)
 	{
 		LOG_DBG("found {:d} array end subscribers for '{:s}'", subscribers.size(), key);
