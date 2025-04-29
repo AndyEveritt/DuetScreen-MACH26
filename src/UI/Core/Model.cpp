@@ -54,7 +54,7 @@ Model::Model()
 		[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->receiveNewUsbData(); }, 5, this);
 #endif
 
-	registerMemberEvent<EventType::Message>(this, &Model::message);
+	registerEvent<EventType::Message>(this, &Model::message);
 }
 
 void Model::message(const std::string& msg)

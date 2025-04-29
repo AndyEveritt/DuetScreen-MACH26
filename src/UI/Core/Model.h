@@ -113,7 +113,7 @@ class Model
 	}
 
 	template <EventType E, typename Class, typename... Args>
-	void registerMemberEvent(Class* instance, void (Class::*memberFunc)(Args...))
+	void registerEvent(Class* instance, void (Class::*memberFunc)(Args...))
 	{
 		m_handlers[E] = [instance, memberFunc](const EventData& data)
 		{
