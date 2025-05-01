@@ -159,6 +159,9 @@ namespace Comm
 			ThumbnailBuf m_buf;
 		};
 
+		using FileInfoRequestPtr = std::shared_ptr<FileInfoRequest>;
+		using ThumbnailRequestPtr = std::shared_ptr<ThumbnailRequest>;
+
 		static FileInfoCache* get()
 		{
 			static FileInfoCache instance;
@@ -173,12 +176,12 @@ namespace Comm
 
 		FileInfoPtr GetFileInfo(const std::string& filepath);
 		void ReceivingFileInfoResponse(const std::string& filepath);
-		FileInfoRequest* GetFileInfoRequest(const std::string& filepath);
+		FileInfoRequestPtr GetFileInfoRequest(const std::string& filepath);
 		void FileInfoRequestComplete(const std::string& filepath); // called when the file info request is complete
 
 		ThumbnailPtr GetRequestedThumbnail(const std::string& filepath);
 		bool CancelThumbnailRequest(const std::string& filepath);
-		ThumbnailRequest* GetThumbnailRequest(const std::string& filepath);
+		ThumbnailRequestPtr GetThumbnailRequest(const std::string& filepath);
 		void ThumbnailRequestComplete(const std::string& filepath);
 
 		void ClearCache(); // clears the cache
@@ -211,8 +214,8 @@ namespace Comm
 		ThumbnailPtr GetNextThumbnail();
 
 		std::map<std::string, FileInfoPtr> m_cache; // cache of file path and their associated file info
-		std::list<FileInfoRequest> m_fileInfoRequestQueue;
-		std::list<ThumbnailRequest> m_thumbnailRequestQueue;
+		std::list<FileInfoRequestPtr> m_fileInfoRequestQueue;
+		std::list<ThumbnailRequestPtr> m_thumbnailRequestQueue;
 		int64_t m_lastRequestTime = 0;
 	};
 

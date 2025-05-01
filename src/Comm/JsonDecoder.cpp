@@ -174,23 +174,6 @@ namespace Comm
 			m_seq = nullptr;
 		}
 
-		// FileManager::EndReceivedMessage();
-
-		switch (responseType)
-		{
-		case ResponseType::unknown:
-			break;
-		case ResponseType::filelist:
-		{
-			FileListData* data = static_cast<FileListData*>(responseData);
-			if (data == nullptr)
-				break;
-			delete data;
-			break;
-		}
-		default:
-			break;
-		}
 		responseType = ResponseType::unknown;
 		responseData = nullptr;
 	}

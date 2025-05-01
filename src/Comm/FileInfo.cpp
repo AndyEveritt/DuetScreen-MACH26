@@ -80,44 +80,44 @@ namespace Comm
 		// Timeout any request that hasn't received a response within the timeout period
 		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
-			FileInfoRequest& request = *it;
+			FileInfoRequestPtr request = *it;
 			it++;
 
-			if (request.HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+			if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
 			{
-				LOG_WARN("File info request timed out for {:s}", request.GetData()->filename.c_str());
-				request.Complete(true);
+				LOG_WARN("File info request timed out for {:s}", request->GetData()->filename.c_str());
+				request->Complete(true);
 #if 0
-				LOG_WARN("Requeuing failed file info request for {:s}", request.GetData()->filename.c_str());
-				QueueFileInfoRequest(request.GetData()->filename.c_str());
+				LOG_WARN("Requeuing failed file info request for {:s}", request->GetData()->filename.c_str());
+				QueueFileInfoRequest(request->GetData()->filename.c_str());
 #endif
 			}
 		}
 
 		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 		{
-			ThumbnailRequest& request = *it;
+			ThumbnailRequestPtr request = *it;
 			it++;
 
-			if (!ThumbnailIsValid(*request.GetData()))
+			if (!ThumbnailIsValid(*request->GetData()))
 			{
 				LOG_ERROR("Invalid thumbnail");
 				m_thumbnailRequestQueue.remove(request);
 				continue;
 			}
 
-			if (request.HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+			if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
 			{
 #if DEBUG
-				ThumbnailPtr t = request.GetData();
+				ThumbnailPtr t = request->GetData();
 #endif
-				LOG_WARN("Thumbnail request timed out for {:s}", request.GetData()->filename.c_str());
+				LOG_WARN("Thumbnail request timed out for {:s}", request->GetData()->filename.c_str());
 
-				request.Complete(true);
-				std::string filename = request.GetData()->filename.c_str();
+				request->Complete(true);
+				std::string filename = request->GetData()->filename.c_str();
 				DeleteCachedThumbnail(filename.c_str());
 #if 0
-				LOG_WARN("Requeuing thumbnail request for {:s}", request.GetData()->filename.c_str());
+				LOG_WARN("Requeuing thumbnail request for {:s}", request->GetData()->filename.c_str());
 				QueueThumbnailRequest(filename);
 #endif
 			}
@@ -131,9 +131,12 @@ namespace Comm
 
 		// Start a new request if there are no requests in progress
 		size_t fileInfoRequested = 0;
-		for (FileInfoRequest& request : m_fileInfoRequestQueue)
+		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
-			if (request.IsRequested())
+			FileInfoRequestPtr request = *it;
+			it++;
+
+			if (request->IsRequested())
 			{
 				fileInfoRequested++;
 				continue;
@@ -144,7 +147,7 @@ namespace Comm
 				break;
 			}
 
-			request.RequestData();
+			request->RequestData();
 			fileInfoRequested++;
 		}
 
@@ -152,8 +155,8 @@ namespace Comm
 		size_t thumbnailsRequested = 0;
 		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 		{
-			ThumbnailRequest& request = *it;
-			ThumbnailPtr thumbnail = request.GetData();
+			ThumbnailRequestPtr request = *it;
+			ThumbnailPtr thumbnail = request->GetData();
 			if (thumbnail == nullptr)
 			{
 				// Should be impossible
@@ -167,7 +170,7 @@ namespace Comm
 			{
 			case ThumbnailState::Init:
 			case ThumbnailState::DataRequest:
-				if (!request.RequestData())
+				if (!request->RequestData())
 				{
 				}
 				thumbnailsRequested++;
@@ -365,17 +368,17 @@ namespace Comm
 		MODEL_LOCK();
 		return std::find_if(m_fileInfoRequestQueue.begin(),
 							m_fileInfoRequestQueue.end(),
-							[](const FileInfoRequest& request)
-							{ return request.IsInProgress(); }) != m_fileInfoRequestQueue.end();
+							[](const FileInfoRequestPtr request)
+							{ return request->IsInProgress(); }) != m_fileInfoRequestQueue.end();
 	}
 
 	void FileInfoCache::ReceivingFileInfoResponse(const std::string& filepath)
 	{
 		MODEL_LOCK();
-		FileInfoRequest* request = GetFileInfoRequest(filepath);
+		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
-			request = &m_fileInfoRequestQueue.emplace_front(filepath);
+			request = m_fileInfoRequestQueue.emplace_front(std::make_shared<FileInfoRequest>(filepath));
 		}
 
 		request->Receiving();
@@ -387,14 +390,14 @@ namespace Comm
 	 * @param createIfNotFound
 	 * @return
 	 */
-	FileInfoCache::FileInfoRequest* FileInfoCache::GetFileInfoRequest(const std::string& filepath)
+	FileInfoCache::FileInfoRequestPtr FileInfoCache::GetFileInfoRequest(const std::string& filepath)
 	{
 		MODEL_LOCK();
-		for (FileInfoRequest& request : m_fileInfoRequestQueue)
+		for (FileInfoRequestPtr request : m_fileInfoRequestQueue)
 		{
-			if (request.GetData()->filename.Equals(filepath.c_str()))
+			if (request->GetData()->filename.Equals(filepath.c_str()))
 			{
-				return &request;
+				return request;
 			}
 		}
 		return nullptr;
@@ -409,7 +412,7 @@ namespace Comm
 	bool FileInfoCache::IsFileInfoRequestInProgress(const std::string& filepath)
 	{
 		MODEL_LOCK();
-		FileInfoRequest* request = GetFileInfoRequest(filepath);
+		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
 			return false;
@@ -422,7 +425,7 @@ namespace Comm
 	{
 		LOG_DBG("File info request complete for {:s}", filepath.c_str());
 
-		FileInfoRequest* request = GetFileInfoRequest(filepath);
+		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 
 		if (request == nullptr)
 		{
@@ -432,7 +435,7 @@ namespace Comm
 		request->Complete();
 		m_cache[filepath] = request->GetData();
 
-		m_fileInfoRequestQueue.remove(*request);
+		m_fileInfoRequestQueue.remove(request);
 	}
 
 	bool FileInfoCache::FileInfoRequest::RequestDataInner()
@@ -511,18 +514,21 @@ namespace Comm
 	{
 		MODEL_LOCK();
 		LOG_DBG("Attempting to queue file info request for {:s}", filepath.c_str());
-		for (FileInfoRequest& request : m_fileInfoRequestQueue)
+		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
-			if (request.GetData()->filename.Equals(filepath.c_str()))
+			FileInfoRequestPtr request = *it;
+			it++;
+
+			if (request->GetData()->filename.Equals(filepath.c_str()))
 			{
-				if (request.IsInProgress())
+				if (request->IsInProgress())
 				{
 					// Request already in progress so don't remove it from queue or add it again
 					LOG_WARN("File info request for {:s} already in progress", filepath.c_str());
 					return false;
 				}
 
-				if (!next && !request.IsFailed())
+				if (!next && !request->IsFailed())
 				{
 					// Request is already in the queue but has not started
 					LOG_DBG("File info request for {:s} already queued", filepath.c_str());
@@ -540,12 +546,12 @@ namespace Comm
 
 			auto it = std::find_if(m_fileInfoRequestQueue.begin(),
 								   m_fileInfoRequestQueue.end(),
-								   [](const FileInfoRequest& request) { return !request.IsInProgress(); });
-			m_fileInfoRequestQueue.insert(it, filepath);
+								   [](const FileInfoRequestPtr request) { return !request->IsInProgress(); });
+			m_fileInfoRequestQueue.insert(it, std::make_shared<FileInfoRequest>(filepath));
 		}
 		else
 		{
-			m_fileInfoRequestQueue.push_back(filepath);
+			m_fileInfoRequestQueue.emplace_back(std::make_shared<FileInfoRequest>(filepath));
 		}
 		return true;
 	}
@@ -554,18 +560,21 @@ namespace Comm
 	{
 		MODEL_LOCK();
 		LOG_DBG("Attempting to queue thumbnail request for {:s}", filepath.c_str());
-		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
+		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 		{
-			if (request.GetData()->filename.Equals(filepath.c_str()))
+			ThumbnailRequestPtr request = *it;
+			it++;
+
+			if (request->GetData()->filename.Equals(filepath.c_str()))
 			{
-				if (request.IsInProgress())
+				if (request->IsInProgress())
 				{
 					// Request already in progress so don't remove it from queue or add it again
 					LOG_WARN("Thumbnail request for {:s} already in progress", filepath.c_str());
 					return false;
 				}
 
-				if (!next && !request.IsFailed())
+				if (!next && !request->IsFailed())
 				{
 					// Request is already in the queue but has not started
 					LOG_DBG("Thumbnail request for {:s} already queued", filepath.c_str());
@@ -582,7 +591,7 @@ namespace Comm
 		if (fileInfo == nullptr)
 		{
 			LOG_DBG("No file info found for {:s}", filepath.c_str());
-			FileInfoRequest* request = GetFileInfoRequest(filepath);
+			FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 			if (request == nullptr)
 			{
 				LOG_WARN("Request not in progress for \"{:s}\", queuing file info request", filepath.c_str());
@@ -624,12 +633,12 @@ namespace Comm
 		{
 			auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 								   m_thumbnailRequestQueue.end(),
-								   [](const ThumbnailRequest& request) { return !request.IsInProgress(); });
-			m_thumbnailRequestQueue.insert(it, largestValidThumbnail);
+								   [](const ThumbnailRequestPtr request) { return !request->IsInProgress(); });
+			m_thumbnailRequestQueue.insert(it, std::make_shared<ThumbnailRequest>(largestValidThumbnail));
 		}
 		else
 		{
-			m_thumbnailRequestQueue.push_back(largestValidThumbnail);
+			m_thumbnailRequestQueue.emplace_back(std::make_shared<ThumbnailRequest>(largestValidThumbnail));
 		}
 		LOG_DBG("Queued thumbnail request for \"{:s}\", {:d}x{:d}",
 				filepath.c_str(),
@@ -742,11 +751,12 @@ namespace Comm
 		MODEL_LOCK();
 		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 							   m_thumbnailRequestQueue.end(),
-							   [filepath](const ThumbnailRequest& request)
-							   { return request.GetData()->filename.Equals(filepath.c_str()); });
+							   [filepath](const ThumbnailRequestPtr request)
+							   { return request->GetData()->filename.Equals(filepath.c_str()); });
 		if (it != m_thumbnailRequestQueue.end())
 		{
-			return it->GetData();
+			ThumbnailRequestPtr request = *it;
+			return request->GetData();
 		}
 		return nullptr;
 	}
@@ -756,34 +766,36 @@ namespace Comm
 		MODEL_LOCK();
 		return std::find_if(m_thumbnailRequestQueue.begin(),
 							m_thumbnailRequestQueue.end(),
-							[](const ThumbnailRequest& request)
-							{ return request.IsInProgress(); }) != m_thumbnailRequestQueue.end();
+							[](const ThumbnailRequestPtr request)
+							{ return request->IsInProgress(); }) != m_thumbnailRequestQueue.end();
 	}
 
 	void FileInfoCache::ThumbnailRequestComplete(const std::string& filepath)
 	{
 		MODEL_LOCK();
-		ThumbnailRequest* request = GetThumbnailRequest(filepath);
+		ThumbnailRequestPtr request = GetThumbnailRequest(filepath);
 		if (request == nullptr)
 		{
 			return;
 		}
 
 		request->Complete();
-		m_thumbnailRequestQueue.remove(*request);
+		m_thumbnailRequestQueue.remove(request);
 	}
 
-	FileInfoCache::ThumbnailRequest* FileInfoCache::GetThumbnailRequest(const std::string& filepath)
+	FileInfoCache::ThumbnailRequestPtr FileInfoCache::GetThumbnailRequest(const std::string& filepath)
 	{
 		MODEL_LOCK();
-		for (ThumbnailRequest& request : m_thumbnailRequestQueue)
+		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
+							   m_thumbnailRequestQueue.end(),
+							   [&filepath](const ThumbnailRequestPtr& request)
+							   { return request->GetData()->filename.Equals(filepath.c_str()); });
+
+		if (it == m_thumbnailRequestQueue.end())
 		{
-			if (request.GetData()->filename.Equals(filepath.c_str()))
-			{
-				return &request;
-			}
+			return nullptr;
 		}
-		return nullptr;
+		return *it;
 	}
 
 	/**
@@ -840,18 +852,18 @@ namespace Comm
 		}
 
 		LOG_INFO("  File info request queue:");
-		for (FileInfoRequest& request : m_fileInfoRequestQueue)
+		for (FileInfoRequestPtr request : m_fileInfoRequestQueue)
 		{
-			LOG_INFO("    {:s}", request.GetData()->filename.c_str());
+			LOG_INFO("    {:s}", request->GetData()->filename.c_str());
 		}
 
 		LOG_INFO("  Thumbnail request queue:");
-		for (ThumbnailRequest request : m_thumbnailRequestQueue)
+		for (ThumbnailRequestPtr request : m_thumbnailRequestQueue)
 		{
 			LOG_INFO("    {:d}x{:d} {:s}",
-					 request.GetData()->meta.width,
-					 request.GetData()->meta.height,
-					 request.GetData()->filename.c_str());
+					 request->GetData()->meta.width,
+					 request->GetData()->meta.height,
+					 request->GetData()->filename.c_str());
 		}
 	}
 

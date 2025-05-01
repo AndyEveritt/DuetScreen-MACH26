@@ -16,7 +16,9 @@
 #include "Configuration.h"
 #include <Duet3D/General/String.h>
 #include <cstddef>
+#include <memory>
 #include <sys/types.h>
+#include <variant>
 
 namespace Comm
 {
@@ -42,6 +44,8 @@ namespace Comm
 			{
 			}
 		};
+
+		using FileListDataPtr = std::shared_ptr<FileListData>;
 
 		// Enumeration to represent the json parsing state.
 		// We don't allow nested objects or nested arrays, so we don't need a state stack.
@@ -75,7 +79,8 @@ namespace Comm
 
 		// These variables are used for the
 		ResponseType responseType = ResponseType::unknown;
-		void* responseData = nullptr;
+		std::variant<void*, FileListDataPtr, FileInfoCache::FileInfoRequestPtr, FileInfoCache::ThumbnailRequestPtr>
+			responseData = nullptr;
 
 	  private:
 		void StartReceivedMessage(void);

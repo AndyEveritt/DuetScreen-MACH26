@@ -15,7 +15,7 @@ bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data
 {
 	// TODO this is not thread safe with multiple parallel requests
 	FILEINFO_CACHE->ReceivingFileInfoResponse(data);
-	auto request = FILEINFO_CACHE->GetFileInfoRequest(data);
+	Comm::FileInfoCache::FileInfoRequestPtr request = FILEINFO_CACHE->GetFileInfoRequest(data);
 	if (request == nullptr)
 	{
 		// Should be impossible to get here
@@ -32,7 +32,7 @@ bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data
 bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	LOG_DBG("lastModified {:s}", data);
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -44,7 +44,7 @@ bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* 
 
 bool ThumbnailSubscribers::size(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -56,7 +56,7 @@ bool ThumbnailSubscribers::size(Comm::JsonDecoder* decoder, const uint32_t& data
 
 bool ThumbnailSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -68,7 +68,7 @@ bool ThumbnailSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t&
 
 bool ThumbnailSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -80,7 +80,7 @@ bool ThumbnailSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const uint3
 
 bool ThumbnailSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -92,7 +92,7 @@ bool ThumbnailSubscribers::height(Comm::JsonDecoder* decoder, const float& data,
 
 bool ThumbnailSubscribers::layerHeight(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -105,7 +105,7 @@ bool ThumbnailSubscribers::layerHeight(Comm::JsonDecoder* decoder, const float& 
 bool ThumbnailSubscribers::thumbnailsFormat(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	LOG_VERBOSE("thumbnail format {:s}", data);
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -122,7 +122,7 @@ bool ThumbnailSubscribers::thumbnailsFormat(Comm::JsonDecoder* decoder, const ch
 bool ThumbnailSubscribers::thumbnailsHeight(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	LOG_VERBOSE("thumbnail height {:d}", data);
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -135,7 +135,7 @@ bool ThumbnailSubscribers::thumbnailsHeight(Comm::JsonDecoder* decoder, const ui
 bool ThumbnailSubscribers::thumbnailsOffset(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	LOG_VERBOSE("thumbnail offset {:d}", data);
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -150,7 +150,7 @@ bool ThumbnailSubscribers::thumbnailsOffset(Comm::JsonDecoder* decoder, const ui
 bool ThumbnailSubscribers::thumbnailsSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	LOG_VERBOSE("thumbnail size {:d}", data);
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -163,7 +163,7 @@ bool ThumbnailSubscribers::thumbnailsSize(Comm::JsonDecoder* decoder, const uint
 bool ThumbnailSubscribers::thumbnailsWidth(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	LOG_VERBOSE("thumbnail width {:d}", data);
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -175,7 +175,7 @@ bool ThumbnailSubscribers::thumbnailsWidth(Comm::JsonDecoder* decoder, const uin
 
 bool ThumbnailSubscribers::generatedBy(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 	{
 		LOG_WARN("FileInfo not found");
@@ -188,7 +188,7 @@ bool ThumbnailSubscribers::generatedBy(Comm::JsonDecoder* decoder, const char* d
 
 bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Comm::FileInfoCache::ThumbnailRequest* request = FILEINFO_CACHE->GetThumbnailRequest(data);
+	Comm::FileInfoCache::ThumbnailRequestPtr request = FILEINFO_CACHE->GetThumbnailRequest(data);
 	if (request == nullptr)
 	{
 		LOG_WARN("Not expecting to receive thumbnail data for \"{:s}\", ignoring", data);
@@ -210,10 +210,11 @@ bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const c
 	return true;
 }
 
-static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder, Comm::ThumbnailPtr& thumbnail)
+static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder,
+									Comm::FileInfoCache::ThumbnailRequestPtr& request,
+									Comm::ThumbnailPtr& thumbnail)
 {
-	Comm::FileInfoCache::ThumbnailRequest* request =
-		static_cast<Comm::FileInfoCache::ThumbnailRequest*>(decoder->responseData);
+	request = std::get<Comm::FileInfoCache::ThumbnailRequestPtr>(decoder->responseData);
 	if (request == nullptr)
 	{
 		LOG_ERROR("Not expecting to receive thumbnail data");
@@ -231,8 +232,9 @@ static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder, Comm::ThumbnailP
 
 bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
-	if (!getThumbnailFromDecoder(decoder, thumbnail))
+	if (!getThumbnailFromDecoder(decoder, request, thumbnail))
 	{
 		return false;
 	}
@@ -249,18 +251,10 @@ bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const cha
 
 bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Comm::FileInfoCache::ThumbnailRequest* request =
-		static_cast<Comm::FileInfoCache::ThumbnailRequest*>(decoder->responseData);
-	if (request == nullptr)
+	Comm::FileInfoCache::ThumbnailRequestPtr request;
+	Comm::ThumbnailPtr thumbnail;
+	if (!getThumbnailFromDecoder(decoder, request, thumbnail))
 	{
-		LOG_ERROR("Not expecting to receive thumbnail data");
-		return false;
-	}
-
-	Comm::ThumbnailPtr thumbnail = request->GetData();
-	if (thumbnail == nullptr)
-	{
-		LOG_ERROR("Invalid thumbnail");
 		return false;
 	}
 
@@ -275,8 +269,9 @@ bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char*
 
 bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
-	if (!getThumbnailFromDecoder(decoder, thumbnail))
+	if (!getThumbnailFromDecoder(decoder, request, thumbnail))
 	{
 		return false;
 	}
@@ -293,18 +288,10 @@ bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char*
 
 bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Comm::FileInfoCache::ThumbnailRequest* request =
-		static_cast<Comm::FileInfoCache::ThumbnailRequest*>(decoder->responseData);
-	if (request == nullptr)
+	Comm::FileInfoCache::ThumbnailRequestPtr request;
+	Comm::ThumbnailPtr thumbnail;
+	if (!getThumbnailFromDecoder(decoder, request, thumbnail))
 	{
-		LOG_ERROR("Not expecting to receive thumbnail data");
-		return false;
-	}
-
-	Comm::ThumbnailPtr thumbnail = request->GetData();
-	if (thumbnail == nullptr)
-	{
-		LOG_ERROR("Invalid thumbnail");
 		return false;
 	}
 
@@ -362,7 +349,7 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	LOG_DBG("Thumbnail array end");
-	Comm::FileInfoPtr fileInfo = static_cast<Comm::FileInfoCache::FileInfoRequest*>(decoder->responseData)->GetData();
+	Comm::FileInfoPtr fileInfo = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData)->GetData();
 	if (fileInfo == nullptr)
 		return false;
 	fileInfo->ClearThumbnails(indices[0]);

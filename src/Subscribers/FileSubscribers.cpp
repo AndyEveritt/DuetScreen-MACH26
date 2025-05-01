@@ -23,15 +23,14 @@ bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char
 	OM::FileSystem::SetCurrentDir(data);
 	LOG_DBG("Files: current dir = {:s}", OM::FileSystem::GetCurrentDirPath().c_str());
 	decoder->responseType = Comm::JsonDecoder::ResponseType::filelist;
-	Comm::JsonDecoder::FileListData* fileData =
-		new Comm::JsonDecoder::FileListData(OM::FileSystem::GetCurrentDirPath());
+	auto fileData = std::make_shared<Comm::JsonDecoder::FileListData>(OM::FileSystem::GetCurrentDirPath());
 	decoder->responseData = fileData;
 	return true;
 }
 
 bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first = data;
+	std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first = data;
 	if (data == 0)
 	{
 		OM::FileSystem::ClearFileSystem();
@@ -43,7 +42,7 @@ bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& 
 bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	LOG_DBG("Files: type check val={:s}", data);
-	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
 	switch (*data)
 	{
 	case 'd':
@@ -60,7 +59,7 @@ bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
 	LOG_DBG("Files: item[{:d}] name={:s}", index, data);
 	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
@@ -72,7 +71,7 @@ bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
 	LOG_DBG("Files: item[{:d}] size={:d}", index, data);
 	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
@@ -83,7 +82,7 @@ bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, 
 
 bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	uint32_t index = indices[0] + static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->first;
+	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
 	LOG_DBG("Files: item[{:d}] date={:s}", index, data);
 	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
@@ -107,7 +106,7 @@ bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& d
 	{
 		return true;
 	}
-	Comm::DUET.RequestFileList(static_cast<Comm::JsonDecoder::FileListData*>(decoder->responseData)->dir.c_str(), data);
+	Comm::DUET.RequestFileList(std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->dir.c_str(), data);
 	return true;
 }
 
