@@ -292,6 +292,7 @@ namespace Comm
 		KickWatchdog();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
+		FILEINFO_CACHE->ClearCache();
 		// DUET.SendGcode("M29");
 		DUET.Reconnect();
 		ResetSeqs();

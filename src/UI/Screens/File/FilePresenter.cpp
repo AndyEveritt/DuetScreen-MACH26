@@ -217,6 +217,12 @@ namespace UI
 		return false;
 	}
 
+	void FilePresenter::refresh()
+	{
+		m_items.clear();
+		m_view->setFileCount(0);
+	}
+
 	void FilePresenter::newThumbnailData(const std::string& filename)
 	{
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)

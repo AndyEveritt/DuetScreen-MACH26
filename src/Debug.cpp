@@ -155,7 +155,7 @@ namespace Log
 		{
 			s_uiSink = make_shared<UiSink_mt>();
 			s_uiSink->set_pattern(LOG_UI_PATTERN);
-			s_uiSink->set_level(spdlog::level::info);
+			s_uiSink->set_level(spdlog::level::warn);
 			s_logger->sinks().push_back(s_uiSink);
 		}
 		else

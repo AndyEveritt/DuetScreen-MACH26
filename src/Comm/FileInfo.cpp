@@ -87,8 +87,10 @@ namespace Comm
 			{
 				LOG_WARN("File info request timed out for {:s}", request.GetData()->filename.c_str());
 				request.Complete(true);
+#if 0
 				LOG_WARN("Requeuing failed file info request for {:s}", request.GetData()->filename.c_str());
 				QueueFileInfoRequest(request.GetData()->filename.c_str());
+#endif
 			}
 		}
 
@@ -110,11 +112,14 @@ namespace Comm
 				ThumbnailPtr t = request.GetData();
 #endif
 				LOG_WARN("Thumbnail request timed out for {:s}", request.GetData()->filename.c_str());
+
 				request.Complete(true);
-				LOG_WARN("Requeuing thumbnail request for {:s}", request.GetData()->filename.c_str());
 				std::string filename = request.GetData()->filename.c_str();
 				DeleteCachedThumbnail(filename.c_str());
+#if 0
+				LOG_WARN("Requeuing thumbnail request for {:s}", request.GetData()->filename.c_str());
 				QueueThumbnailRequest(filename);
+#endif
 			}
 		}
 
@@ -493,7 +498,7 @@ namespace Comm
 		m_fileInfoRequestQueue.clear();
 		m_thumbnailRequestQueue.clear();
 		ClearAllCachedThumbnails();
-		LOG_INFO("Cache cleared");
+		LOG_DBG("Cache cleared");
 	}
 
 	/**

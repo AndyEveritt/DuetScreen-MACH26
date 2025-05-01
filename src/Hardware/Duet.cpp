@@ -83,7 +83,7 @@ namespace Comm
 
 	void Duet::Reconnect()
 	{
-		LOG_WARN("");
+		LOG_INFO("Reconnecting...");
 		Disconnect();
 		Connect();
 	}
@@ -188,7 +188,7 @@ namespace Comm
 		if (r == NULL)
 		{
 			LOG_ERROR("request \"{:s}\" failed!", req->url.c_str());
-			AsyncGetInner(req, callback);
+			// AsyncGetInner(req, callback);
 			return false;
 		}
 		LOG_DBG("Response (async): {:s} {:s}", req->url.c_str(), r->status_message());
@@ -899,6 +899,7 @@ namespace Comm
 
 	const Duet::error_code Duet::Disconnect()
 	{
+		LOG_INFO("Disconnecting from Duet");
 		SetStatus(OM::PrinterStatus::connecting);
 		switch (m_config.communicationType)
 		{

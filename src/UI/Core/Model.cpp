@@ -11,28 +11,24 @@
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
   {                                                                                                                    \
+	LOG_DBG("Notifying presenters for event: " #func);                                                                 \
+	UI_LOCK();                                                                                                         \
 	auto it = m_presenters.begin();                                                                                    \
 	std::shared_ptr<UI::BasePresenter> presenter;                                                                      \
 	while (true)                                                                                                       \
 	{                                                                                                                  \
+	  if (it == m_presenters.end())                                                                                    \
 	  {                                                                                                                \
-		UI_LOCK();                                                                                                     \
-		if (it == m_presenters.end())                                                                                  \
-		{                                                                                                              \
-		  break;                                                                                                       \
-		}                                                                                                              \
-		presenter = *it;                                                                                               \
-		if (!presenter->isActive())                                                                                    \
-		{                                                                                                              \
-		  ++it;                                                                                                        \
-		  continue;                                                                                                    \
-		}                                                                                                              \
+		break;                                                                                                         \
 	  }                                                                                                                \
+	  presenter = *it;                                                                                                 \
+	  ++it;                                                                                                            \
+	  if (!presenter->isActive())                                                                                      \
+	  {                                                                                                                \
+		continue;                                                                                                      \
+	  }                                                                                                                \
+	  LOG_DBG("Notifying presenter {:s}: " #func, presenter->getName());                                               \
 	  presenter->func(__VA_ARGS__);                                                                                    \
-	  {                                                                                                                \
-		UI_LOCK();                                                                                                     \
-		++it;                                                                                                          \
-	  }                                                                                                                \
 	}                                                                                                                  \
   }
 
@@ -144,6 +140,8 @@ void Model::stopEventLoop()
 
 void Model::runEventLoop()
 {
+	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
+
 	while (true)
 	{
 		std::pair<EventType, EventData> event;
@@ -168,6 +166,8 @@ void Model::runEventLoop()
 		{
 			LOG_WARN("No handler for event type {:d}", (int)event.first);
 		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 }
 
@@ -256,41 +256,40 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 
 void Model::refresh()
 {
-	for (auto presenter : m_presenters)
-	{
-		presenter->refresh();
-		presenter->newFanData();
-		presenter->newFileData();
-		presenter->newHeaterData();
-		presenter->newJobFileName(OM::GetJobName().c_str());
-		presenter->newJobLastFileName(OM::GetLastJobName().c_str());
-		presenter->newJobPrintTime();
-		presenter->newJobDuration();
-		presenter->newJobTimeLeft();
-		presenter->newJobWarmupDuration();
-		presenter->newJobBuild();
-		presenter->newJobCurrentObject();
-		presenter->newJobObjectData();
-		presenter->newAxesData();
-		presenter->newExtruderData();
-		presenter->newKinematicsName();
-		presenter->newSpeedFactor();
-		presenter->newWorkplaceNumber();
-		presenter->newCurrentMoveRequestedSpeed();
-		presenter->newCurrentMoveTopSpeed();
-		presenter->newCurrentMoveExtrusionSpeed();
-		presenter->newCompensationFile();
-		presenter->newAnalogSensorData();
-		presenter->newEndstopData();
-		presenter->newSpindleData();
-		presenter->newNetworkName();
-		presenter->newIpAddress();
-		presenter->newStatus(OM::GetStatus());
-		presenter->newCurrentTool();
-		presenter->newMessageBoxData(OM::g_currentAlert);
-		presenter->newTime();
-		presenter->newToolData();
-	}
+	LOG_DBG("Refreshing model");
+	NOTIFY_ALL_PRESENTERS(refresh);
+	newFanData();
+	newFanData();
+	newFileData();
+	newHeaterData();
+	newJobFileName(OM::GetJobName().c_str());
+	newJobLastFileName(OM::GetLastJobName().c_str());
+	newJobPrintTime();
+	newJobDuration();
+	newJobTimeLeft();
+	newJobWarmupDuration();
+	newJobBuild();
+	newJobCurrentObject();
+	newJobObjectData();
+	newAxesData();
+	newExtruderData();
+	newKinematicsName();
+	newSpeedFactor();
+	newWorkplaceNumber();
+	newCurrentMoveRequestedSpeed();
+	newCurrentMoveTopSpeed();
+	newCurrentMoveExtrusionSpeed();
+	newCompensationFile();
+	newAnalogSensorData();
+	newEndstopData();
+	newSpindleData();
+	newNetworkName();
+	newIpAddress();
+	newStatus(OM::GetStatus());
+	newCurrentTool();
+	newMessageBoxData(OM::g_currentAlert);
+	newTime();
+	newToolData();
 }
 
 void Model::newUpdateAvailable(const std::string& file)

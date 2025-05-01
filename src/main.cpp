@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <thread>
 #include <unistd.h>
 
 #if LV_USE_OS == LV_OS_PTHREAD
@@ -59,9 +60,9 @@ static int usb_test();
 /**********************
  *  STATIC VARIABLES
  **********************/
-static pthread_t s_responseThread;
-static pthread_t s_requestThread;
-static pthread_t s_thumbnailThread;
+static std::thread s_responseThread;
+static std::thread s_requestThread;
+static std::thread s_thumbnailThread;
 
 /**********************
  *      MACROS
@@ -79,6 +80,15 @@ int main(int argc, char** argv)
 {
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
+
+	sched_param sch;
+	int policy;
+	pthread_getschedparam(pthread_self(), &policy, &sch);
+	sch.sched_priority = 100; // Highest priority
+	if (pthread_setschedparam(pthread_self(), SCHED_OTHER, &sch) != 0)
+	{
+		LOG_WARN("Failed to set main thread priority");
+	}
 
 	lv_init();
 
@@ -130,49 +140,67 @@ int main(int argc, char** argv)
 
 	// Create a thread to handle requesting data from Duet
 #if MULTITHREADED
-	pthread_create(
-		&s_requestThread,
-		NULL,
-		[](void*) -> void*
+	s_requestThread = std::thread(
+		[]()
 		{
+			// Set high priority for request thread
+			sched_param sch;
+			int policy;
+			pthread_getschedparam(pthread_self(), &policy, &sch);
+			sch.sched_priority = 90; // High priority
+			if (pthread_setschedparam(pthread_self(), SCHED_RR, &sch) != 0)
+			{
+				LOG_WARN("Failed to set request thread priority");
+			}
+
 			while (1)
 			{
 				// Request next section of the OM
 				Model::get().requestNewData();
 				usleep(Comm::DUET.GetScaledPollInterval() * 1000);
 			}
-			return nullptr;
-		},
-		NULL);
+		});
 
 	// Create a thread to handle USB responses from Duet
-	pthread_create(
-		&s_responseThread,
-		NULL,
-		[](void*) -> void*
+	s_responseThread = std::thread(
+		[]()
 		{
+			// Set medium priority for response thread
+			sched_param sch;
+			int policy;
+			pthread_getschedparam(pthread_self(), &policy, &sch);
+			sch.sched_priority = 80; // Medium priority
+			if (pthread_setschedparam(pthread_self(), SCHED_RR, &sch) != 0)
+			{
+				LOG_WARN("Failed to set response thread priority");
+			}
+
 			while (1)
 			{
 				useconds_t delay = Model::get().receiveNewUsbData();
 				usleep(delay);
 			}
-			return nullptr;
-		},
-		NULL);
+		});
 
-	pthread_create(
-		&s_thumbnailThread,
-		NULL,
-		[](void*) -> void*
+	s_thumbnailThread = std::thread(
+		[]()
 		{
+			// Set low priority for thumbnail thread
+			sched_param sch;
+			int policy;
+			pthread_getschedparam(pthread_self(), &policy, &sch);
+			sch.sched_priority = 70; // Low priority
+			if (pthread_setschedparam(pthread_self(), SCHED_RR, &sch) != 0)
+			{
+				LOG_WARN("Failed to set thumbnail thread priority");
+			}
+
 			while (1)
 			{
 				FILEINFO_CACHE->Spin();
 				usleep(50 * 1000);
 			}
-			return nullptr;
-		},
-		NULL);
+		});
 #endif
 
 	// Screensaver task
@@ -209,6 +237,7 @@ int main(int argc, char** argv)
 	{
 		{
 			UI_LOCK();
+			// LOG_DBG("Updating UI");
 			lv_timer_handler();
 		}
 		usleep(5 * 1000); // Sleep for 5 milliseconds
