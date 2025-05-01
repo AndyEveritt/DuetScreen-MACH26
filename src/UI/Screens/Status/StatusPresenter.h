@@ -19,8 +19,8 @@ namespace UI
 		void cancelPrint();
 
 		// Subscriptions
-		virtual void newJobFileName(const char* filename) override;
-		virtual void newJobLastFileName(const char* filename) override;
+		virtual void newJobFileName(const std::string& filename) override;
+		virtual void newJobLastFileName(const std::string& filename) override;
 		virtual void newJobPrintTime() override;
 		virtual void newJobDuration() override;
 		virtual void newJobTimeLeft() override;

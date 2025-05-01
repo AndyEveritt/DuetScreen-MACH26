@@ -112,18 +112,21 @@ namespace UI
 
 	void ConsoleView::onSendEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		lv_obj_send_event(view->m_input, LV_EVENT_READY, view);
 	}
 
 	void ConsoleView::onClearEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		view->clear();
 	}
 
 	void ConsoleView::onCommandListEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		lv_event_code_t code = lv_event_get_code(e);
 		if (code == LV_EVENT_VALUE_CHANGED)
@@ -144,6 +147,7 @@ namespace UI
 
 	void ConsoleView::onKeyboardEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		lv_event_code_t code = lv_event_get_code(e);
 		switch (code)
@@ -219,6 +223,7 @@ namespace UI
 
 	void ConsoleView::onShow()
 	{
+		UI_LOCK();
 		lv_obj_scroll_to_x(m_commandList, 0, LV_ANIM_OFF);
 		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
 	}

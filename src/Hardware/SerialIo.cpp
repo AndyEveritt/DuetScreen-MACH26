@@ -30,13 +30,13 @@ namespace SerialIo
 	bool Init(const char* device, speed_t baudRate)
 	{
 #if SIMULATION
-		info("Initializing simulated UART on device: %s", device);
+		LOG_INFO("Initializing simulated UART on device: {:s}", device);
 #endif
 		s_uart = std::make_unique<UartController>();
 
 		if (!s_uart->setBaudRate(baudRate))
 		{
-			error("Failed to set baud rate");
+			LOG_ERROR("Failed to set baud rate");
 			return false;
 		}
 		s_uart->setReceiveCallback(processData);
@@ -64,7 +64,7 @@ namespace SerialIo
 		va_start(vargs, fmt);
 
 		std::string buf = utils::vformat(fmt, vargs);
-		info("Sending %s", buf.c_str());
+		LOG_INFO("Sending {:s}", buf.c_str());
 
 		if (s_uart)
 		{
@@ -95,7 +95,7 @@ namespace SerialIo
 
 	static void processData(const uint8_t* data, size_t len)
 	{
-		verbose("Received %.*s", (int)len, data);
+		LOG_VERBOSE("Received {1:.{0}s}", (int)len, reinterpret_cast<const char*>(data));
 
 		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::uart)
 		{
@@ -110,7 +110,7 @@ namespace SerialIo
 		}
 		else
 		{
-			error("Buffer overflow");
+			LOG_ERROR("Buffer overflow");
 			s_buffer.fill(0);
 			s_bufferLen = 0;
 			Comm::Reconnect();

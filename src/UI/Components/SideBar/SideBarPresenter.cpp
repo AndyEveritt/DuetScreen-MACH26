@@ -13,13 +13,13 @@ namespace UI
 {
 	void SideBarPresenter::eStop()
 	{
-		warn("EStop Pressed!");
+		LOG_WARN("EStop Pressed!");
 		Comm::DUET.SendGcode("M112 ;"
 							 "\xF0"
 							 "\x0F");
-		warn("Emergency Stop sent to Duet");
+		LOG_WARN("Emergency Stop sent to Duet");
 		Comm::DUET.SendGcode("M999");
-		warn("Restart sent to Duet");
+		LOG_WARN("Restart sent to Duet");
 	}
 
 } // namespace UI

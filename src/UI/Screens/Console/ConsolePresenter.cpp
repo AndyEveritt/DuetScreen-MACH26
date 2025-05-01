@@ -11,9 +11,16 @@ namespace UI
 		return false;
 	}
 
-	void ConsolePresenter::newResponse(const char* resp)
+	void ConsolePresenter::newResponse(const std::string& resp)
 	{
-		m_view->addResponse(resp);
+		m_view->addResponse(resp.c_str());
+	}
+
+	void ConsolePresenter::newLogMessage(const Log::DebugLevel& level,
+										 const Log::log_time_t& time,
+										 const std::string& message)
+	{
+		m_view->addResponse(message.c_str());
 	}
 
 	void ConsolePresenter::sendGcode(const char* gcode)

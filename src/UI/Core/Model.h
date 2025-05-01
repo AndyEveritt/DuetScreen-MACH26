@@ -18,15 +18,201 @@
 #include "Subscribers/ThumbnailSubscribers.h"
 #include "Subscribers/ToolSubscribers.h"
 #include "lvgl/lvgl.h"
+#include <atomic>
+#include <condition_variable>
+#include <fmt/ostream.h>
 #include <list>
 #include <map>
 #include <mutex>
-#include <pthread.h>
+#include <queue>
+#include <tuple>
+#include <variant>
 
 namespace UI
 {
 	class BasePresenter;
 }
+
+enum class EventType
+{
+	Tick,
+	Refresh,
+	UpdateAvailable,
+	FanData,
+	FileData,
+	HeaterData,
+	JobFileName,
+	JobLastFileName,
+	JobPrintTime,
+	JobDuration,
+	JobTimeLeft,
+	JobWarmupDuration,
+	JobBuild,
+	JobCurrentObject,
+	JobObjectData,
+	ThumbnailData,
+	AxesData,
+	ExtruderData,
+	KinematicsName,
+	SpeedFactor,
+	WorkplaceNumber,
+	PrintingAcceleration,
+	CurrentMoveRequestedSpeed,
+	CurrentMoveTopSpeed,
+	CurrentMoveExtrusionSpeed,
+	CompensationFile,
+	Response,
+	LogMessage,
+	AnalogSensorData,
+	EndstopData,
+	SpindleData,
+	NetworkName,
+	IpAddress,
+	Status,
+	CurrentTool,
+	MessageBoxData,
+	Time,
+	ToolData,
+};
+
+#if 0
+template <EventType E, typename... Args>
+struct EventTraits
+{
+	using tuple_type = std::tuple<Args...>;
+	struct EventData
+	{
+		EventType type = E;
+		EventData() {}
+		EventData(tuple_type&& t)
+			: tup(std::move(t))
+		{
+		}
+		tuple_type tup;
+	} data;
+
+	EventTraits() {}
+	EventTraits(tuple_type&& t)
+		: data(std::move(t))
+	{
+	}
+};
+#else
+template <EventType E>
+struct EventTraits
+{
+};
+#endif
+
+#if 1
+#  define REGISTER_EVENT_TYPE(type, args...)                                                                           \
+	  template <>                                                                                                      \
+	  struct EventTraits<type>                                                                                         \
+	  {                                                                                                                \
+		  struct EventData                                                                                             \
+		  {                                                                                                            \
+			  EventType eventType = type;                                                                              \
+			  std::tuple<args> tup;                                                                                    \
+			  EventData(EventType eventType)                                                                           \
+				  : eventType(eventType)                                                                               \
+			  {                                                                                                        \
+			  }                                                                                                        \
+			  EventData(EventType eventType, std::tuple<args> tup)                                                     \
+				  : eventType(eventType)                                                                               \
+				  , tup(std::move(tup))                                                                                \
+			  {                                                                                                        \
+			  }                                                                                                        \
+		  } data;                                                                                                      \
+		  using data_type = EventData;                                                                                 \
+		  EventTraits()                                                                                                \
+			  : data(type)                                                                                             \
+		  {                                                                                                            \
+		  }                                                                                                            \
+		  EventTraits(std::tuple<args> tup)                                                                            \
+			  : data(type, std::move(tup))                                                                             \
+		  {                                                                                                            \
+		  }                                                                                                            \
+	  };
+
+REGISTER_EVENT_TYPE(EventType::Tick)
+REGISTER_EVENT_TYPE(EventType::Refresh)
+REGISTER_EVENT_TYPE(EventType::UpdateAvailable, std::string)
+REGISTER_EVENT_TYPE(EventType::FanData)
+REGISTER_EVENT_TYPE(EventType::FileData)
+REGISTER_EVENT_TYPE(EventType::HeaterData)
+REGISTER_EVENT_TYPE(EventType::JobFileName, std::string)
+REGISTER_EVENT_TYPE(EventType::JobLastFileName, std::string)
+REGISTER_EVENT_TYPE(EventType::JobPrintTime)
+REGISTER_EVENT_TYPE(EventType::JobDuration)
+REGISTER_EVENT_TYPE(EventType::JobTimeLeft)
+REGISTER_EVENT_TYPE(EventType::JobWarmupDuration)
+REGISTER_EVENT_TYPE(EventType::JobBuild)
+REGISTER_EVENT_TYPE(EventType::JobCurrentObject)
+REGISTER_EVENT_TYPE(EventType::JobObjectData)
+REGISTER_EVENT_TYPE(EventType::ThumbnailData, std::string)
+REGISTER_EVENT_TYPE(EventType::AxesData)
+REGISTER_EVENT_TYPE(EventType::ExtruderData)
+REGISTER_EVENT_TYPE(EventType::KinematicsName)
+REGISTER_EVENT_TYPE(EventType::SpeedFactor)
+REGISTER_EVENT_TYPE(EventType::WorkplaceNumber)
+REGISTER_EVENT_TYPE(EventType::PrintingAcceleration, uint32_t)
+REGISTER_EVENT_TYPE(EventType::CurrentMoveRequestedSpeed)
+REGISTER_EVENT_TYPE(EventType::CurrentMoveTopSpeed)
+REGISTER_EVENT_TYPE(EventType::CurrentMoveExtrusionSpeed)
+REGISTER_EVENT_TYPE(EventType::CompensationFile)
+REGISTER_EVENT_TYPE(EventType::Response, std::string)
+REGISTER_EVENT_TYPE(EventType::LogMessage, Log::DebugLevel, Log::log_time_t, std::string)
+REGISTER_EVENT_TYPE(EventType::AnalogSensorData)
+REGISTER_EVENT_TYPE(EventType::EndstopData)
+REGISTER_EVENT_TYPE(EventType::SpindleData)
+REGISTER_EVENT_TYPE(EventType::NetworkName)
+REGISTER_EVENT_TYPE(EventType::IpAddress)
+REGISTER_EVENT_TYPE(EventType::Status, OM::PrinterStatus)
+REGISTER_EVENT_TYPE(EventType::CurrentTool)
+REGISTER_EVENT_TYPE(EventType::MessageBoxData, OM::Alert)
+REGISTER_EVENT_TYPE(EventType::Time)
+REGISTER_EVENT_TYPE(EventType::ToolData)
+#endif
+
+// Variant covering all possible event-data tuples
+using EventData = std::variant<EventTraits<EventType::Tick>,
+							   EventTraits<EventType::Refresh>,
+							   EventTraits<EventType::UpdateAvailable>,
+							   EventTraits<EventType::FanData>,
+							   EventTraits<EventType::FileData>,
+							   EventTraits<EventType::HeaterData>,
+							   EventTraits<EventType::JobFileName>,
+							   EventTraits<EventType::JobLastFileName>,
+							   EventTraits<EventType::JobPrintTime>,
+							   EventTraits<EventType::JobDuration>,
+							   EventTraits<EventType::JobTimeLeft>,
+							   EventTraits<EventType::JobWarmupDuration>,
+							   EventTraits<EventType::JobBuild>,
+							   EventTraits<EventType::JobCurrentObject>,
+							   EventTraits<EventType::JobObjectData>,
+							   EventTraits<EventType::ThumbnailData>,
+							   EventTraits<EventType::AxesData>,
+							   EventTraits<EventType::ExtruderData>,
+							   EventTraits<EventType::KinematicsName>,
+							   EventTraits<EventType::SpeedFactor>,
+							   EventTraits<EventType::WorkplaceNumber>,
+							   EventTraits<EventType::PrintingAcceleration>,
+							   EventTraits<EventType::CurrentMoveRequestedSpeed>,
+							   EventTraits<EventType::CurrentMoveTopSpeed>,
+							   EventTraits<EventType::CurrentMoveExtrusionSpeed>,
+							   EventTraits<EventType::CompensationFile>,
+							   EventTraits<EventType::Response>,
+							   EventTraits<EventType::LogMessage>,
+							   EventTraits<EventType::AnalogSensorData>,
+							   EventTraits<EventType::EndstopData>,
+							   EventTraits<EventType::SpindleData>,
+							   EventTraits<EventType::NetworkName>,
+							   EventTraits<EventType::IpAddress>,
+							   EventTraits<EventType::Status>,
+							   EventTraits<EventType::CurrentTool>,
+							   EventTraits<EventType::MessageBoxData>,
+							   EventTraits<EventType::Time>,
+							   EventTraits<EventType::ToolData>>;
 
 class Model
 {
@@ -52,11 +238,62 @@ class Model
 	 */
 	void unbind(std::shared_ptr<UI::BasePresenter> presenter);
 
-	/* tasks */
+	void startEventLoop();
+	void stopEventLoop();
 
-	void tick();
+	template <EventType E, typename Func>
+	void registerEvent(Func&& func)
+	{
+		m_handlers[E] = [f = std::forward<Func>(func)](const EventData& data)
+		{
+			auto& tup = std::get<EventTraits<E>>(data).data.tup;
+			std::apply(f, tup);
+		};
+	}
+
+	template <EventType E, typename Class, typename... Args>
+	void registerEvent(Class* instance, void (Class::*memberFunc)(Args...))
+	{
+		m_handlers[E] = [instance, memberFunc](const EventData& data)
+		{
+			auto& tup = std::get<EventTraits<E>>(data).data.tup;
+			std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
+		};
+	}
+
+	template <EventType E, typename... Args>
+	void post(Args&&... args)
+	{
+		using Traits = EventTraits<E>;
+
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_eventQueue.emplace(E, Traits(std::make_tuple(std::forward<Args>(args)...)));
+		m_eventCondition.notify_one();
+	}
+
+	void runEventLoop();
+
+	/* tasks */
 	void requestNewData();
 	useconds_t receiveNewUsbData();
+
+	/* Subscribers */
+
+	void runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
+	const std::vector<Subscriber>& getSubscribers(const char* key) { return SubscriberMap::getSubscribers(key); }
+	const size_t getSubscriberCount(const char* key) { return SubscriberMap::getSubscriberCount(key); }
+
+	void runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[]);
+	const std::vector<ArrayEndSubscriber>& getArrayEndSubscribers(const char* key)
+	{
+		return SubscriberMap::getArrayEndSubscribers(key);
+	}
+	const size_t getArrayEndSubscriberCount(const char* key) { return SubscriberMap::getArrayEndSubscriberCount(key); }
+
+  private:
+	Model();
+
+	void tick();
 
 	/* presenter callbacks */
 
@@ -78,8 +315,8 @@ class Model
 
 	/* Job methods */
 
-	void newJobFileName(const char* filename);
-	void newJobLastFileName(const char* filename);
+	void newJobFileName(const std::string& filename);
+	void newJobLastFileName(const std::string& filename);
 	void newJobPrintTime();
 	void newJobDuration();
 	void newJobTimeLeft();
@@ -87,7 +324,7 @@ class Model
 	void newJobBuild();
 	void newJobCurrentObject();
 	void newJobObjectData();
-	void newThumbnailData(const char* filename);
+	void newThumbnailData(const std::string& filename);
 
 	/* Move methods */
 
@@ -104,7 +341,8 @@ class Model
 
 	/* Response methods */
 
-	void newResponse(const char* resp);
+	void newResponse(const std::string& resp);
+	void newLogMessage(const Log::DebugLevel& level, const Log::log_time_t& time, const std::string& message);
 
 	/* Sensor methods */
 
@@ -128,26 +366,6 @@ class Model
 
 	void newToolData();
 
-	/* Subscribers */
-
-	void runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
-	const std::vector<Subscriber>& getSubscribers(const char* key) { return SubscriberMap::getSubscribers(key); }
-	const size_t getSubscriberCount(const char* key) { return SubscriberMap::getSubscriberCount(key); }
-
-	void runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[]);
-	const std::vector<ArrayEndSubscriber>& getArrayEndSubscribers(const char* key)
-	{
-		return SubscriberMap::getArrayEndSubscribers(key);
-	}
-	const size_t getArrayEndSubscriberCount(const char* key) { return SubscriberMap::getArrayEndSubscriberCount(key); }
-
-	void lock();
-	void unlock();
-
-  private:
-	Model();
-	bool initMutex();
-
 	DirectoriesSubscribers m_directoriesSubscribers;
 	FanSubscribers m_fanSubscribers;
 	FileSubscribers m_fileSubscribers;
@@ -162,7 +380,12 @@ class Model
 	ToolSubscribers m_toolSubscribers;
 	std::list<std::shared_ptr<UI::BasePresenter>> m_presenters;
 
-	pthread_mutex_t m_mutex;
+	std::queue<std::pair<EventType, EventData>> m_eventQueue;
+	std::map<EventType, std::function<void(const EventData&)>> m_handlers;
+	std::condition_variable m_eventCondition;
+	std::thread m_eventThread;
+	std::atomic<bool> m_running{false};
+	std::mutex m_mutex;
 
 	struct
 	{
@@ -172,24 +395,6 @@ class Model
 	} m_timers;
 };
 
-/**
- * @brief Creates a scopped lock for the model
- * @return Return a `ModelLock` object which calls `Model::get().lock()` on construction and `Model::get().unlock()` on
- * destruction
- */
-struct ModelLock
-{
-	ModelLock()
-		: m_model(Model::get())
-	{
-		m_model.lock();
-	}
-	~ModelLock() { m_model.unlock(); }
-
-  private:
-	Model& m_model;
-};
-
 #define MODEL_LOCK()                                                                                                   \
-	verbose("MODEL_LOCK requested in thread %u", std::this_thread::get_id());                                          \
+	LOG_VERBOSE("MODEL_LOCK requested in thread {}", Log::GetThreadId());                                              \
 	auto modelLock = ScopedLock(mutexModel);

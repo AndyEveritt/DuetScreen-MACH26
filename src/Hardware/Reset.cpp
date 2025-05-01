@@ -7,6 +7,7 @@
  */
 
 #include "Reset.h"
+#include "Debug.h"
 
 #include <cstdlib>
 #include <sys/reboot.h>
@@ -43,9 +44,15 @@ extern "C"
 	void EraseAndRestart() noexcept
 	{
 #if SIMULATION
-		system("rm -rf config.json");
+		if (system("rm -rf config.json") != 0)
+		{
+			LOG_ERROR("Failed to remove config.json file");
+		}
 #else
-	system("rm -rf /etc/duetscreen.json");
+	if (system("rm -rf /etc/duetscreen.json") != 0)
+	{
+		LOG_ERROR("Failed to remove /etc/duetscreen.json file");
+	}
 #endif
 
 		Restart();

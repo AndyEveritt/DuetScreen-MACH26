@@ -81,7 +81,7 @@ namespace UI
 		}
 	}
 
-	void HomePresenter::newResponse(const char* resp)
+	void HomePresenter::newResponse(const std::string& resp)
 	{
 		UI_LOCK();
 		if (m_view->m_consoleView.isVisible())
@@ -89,45 +89,47 @@ namespace UI
 			return;
 		}
 
-		if (resp)
+		if (resp.empty())
 		{
-			std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
-			msgBox->setTitle("Response");
-			msgBox->setText(resp);
-			msgBox->setCancelCallback(
-				[this]()
-				{
-					UI_LOCK();
-					m_view->popMessageBox();
-					if (m_view->getMessageBoxCount() > 0)
-					{
-						auto msgBox = m_view->getMessageBox(0);
-						msgBox->show();
-						msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
-					}
-				});
+			return;
+		}
 
-			msgBox->setCancelBtnText(_("msgbox_close"));
-			msgBox->setOkBtnText(_("open_console"));
-			msgBox->setOkCallback(
-				[this]()
+		std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
+		msgBox->setTitle("Response");
+		msgBox->setText(resp);
+		msgBox->setCancelCallback(
+			[this]()
+			{
+				UI_LOCK();
+				m_view->popMessageBox();
+				if (m_view->getMessageBoxCount() > 0)
 				{
-					UI_LOCK();
-					m_view->clearMessageBoxes();
-					openScreen(&m_view->m_consoleView);
-				});
-			msgBox->okVisible(true);
-			msgBox->progressVisible(true);
-			if (m_view->getMessageBoxCount() == 1)
+					auto msgBox = m_view->getMessageBox(0);
+					msgBox->show();
+					msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+				}
+			});
+
+		msgBox->setCancelBtnText(_("msgbox_close"));
+		msgBox->setOkBtnText(_("open_console"));
+		msgBox->setOkCallback(
+			[this]()
 			{
-				msgBox->show();
-				msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
-			}
-			msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
-			if (m_view->m_alert.isVisible())
-			{
-				msgBox->hide();
-			}
+				UI_LOCK();
+				m_view->clearMessageBoxes();
+				openScreen(&m_view->m_consoleView);
+			});
+		msgBox->okVisible(true);
+		msgBox->progressVisible(true);
+		if (m_view->getMessageBoxCount() == 1)
+		{
+			msgBox->show();
+			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+		}
+		msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
+		if (m_view->m_alert.isVisible())
+		{
+			msgBox->hide();
 		}
 	}
 
@@ -191,7 +193,7 @@ namespace UI
 			msgBox.setOkCallback(
 				[seq]()
 				{
-					info("MessageBox OK callback");
+					LOG_INFO("MessageBox OK callback");
 					Comm::DUET.SendGcodef("M292 S%u", seq);
 				});
 			break;
@@ -200,7 +202,7 @@ namespace UI
 			msgBox.setChoiceCallback(
 				[seq](size_t index)
 				{
-					info("MessageBox Choice callback");
+					LOG_INFO("MessageBox Choice callback");
 					Comm::DUET.SendGcodef("M292 R{%u} S%u", index, seq);
 				});
 			break;
@@ -341,7 +343,7 @@ namespace UI
 			break;
 		}
 		default:
-			warn("Unhandled alert mode %d", alert.mode);
+			LOG_WARN("Unhandled alert mode {}", (int)alert.mode);
 			break;
 		}
 
@@ -349,7 +351,7 @@ namespace UI
 		if (alert.flags.IsBitSet(OM::Alert::GotControls))
 		{
 			size_t count = 0;
-			dbg("axisControl %d", alert.controls);
+			LOG_DBG("axisControl {:d}", alert.controls);
 			for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 			{
 				if (!(alert.controls & (1 << i)))
@@ -360,7 +362,7 @@ namespace UI
 				m_alertAxes.push_back(axis->letter[0]);
 				msgBox.setJogAxisLetter(count, axis->letter[0]);
 				count++;
-				dbg("Axis %d, count %d", i, count);
+				LOG_DBG("Axis {:d}, count {:d}", i, count);
 			}
 			msgBox.axisJogVisible(true);
 		}
@@ -372,7 +374,7 @@ namespace UI
 			msgBox.setCancelCallback(
 				[seq]()
 				{
-					info("MessageBox Cancel callback");
+					LOG_INFO("MessageBox Cancel callback");
 					Comm::DUET.SendGcodef("M292 P1 S%u", seq);
 				});
 		}

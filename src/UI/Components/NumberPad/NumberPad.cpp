@@ -23,6 +23,7 @@ namespace UI
 		, m_clearBtn("Clear", m_textCont, LV_SYMBOL_TRASH, layout_t{LV_PCT(75), 0, LV_PCT(20), LV_PCT(80)})
 		, m_btnMatrix(lv_buttonmatrix_create(getCont()))
 	{
+		UI_LOCK();
 		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);
 
 		// Overall layout
@@ -75,10 +76,8 @@ namespace UI
 
 	void NumberPad::clear()
 	{
-		{
-			UI_LOCK();
-			lv_textarea_set_text(m_textArea, "");
-		}
+		UI_LOCK();
+		lv_textarea_set_text(m_textArea, "");
 		validateInput();
 	}
 
@@ -115,10 +114,8 @@ namespace UI
 
 	void NumberPad::setValue(int16_t value)
 	{
-		{
-			UI_LOCK();
-			lv_textarea_set_text(m_textArea, std::to_string(value).c_str());
-		}
+		UI_LOCK();
+		lv_textarea_set_text(m_textArea, std::to_string(value).c_str());
 		validateInput();
 	}
 
@@ -163,12 +160,14 @@ namespace UI
 
 	void NumberPad::clearBtnEventHandler(lv_event_t* e)
 	{
+		UI_LOCK();
 		NumberPad* np = (NumberPad*)lv_event_get_user_data(e);
 		np->clear();
 	}
 
 	void NumberPad::btnmEventHandler(lv_event_t* e)
 	{
+		UI_LOCK();
 		lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
 		lv_obj_t* ta = (lv_obj_t*)lv_event_get_user_data(e);
 		NumberPad* np = (NumberPad*)lv_obj_get_user_data(ta);

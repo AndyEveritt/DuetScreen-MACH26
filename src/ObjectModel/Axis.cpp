@@ -57,7 +57,7 @@ namespace OM::Move
 
 	std::shared_ptr<Axis> GetAxis(const size_t index)
 	{
-		dbg("Axis index %d / max %d", index, MAX_TOTAL_AXES);
+		LOG_DBG("Axis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
@@ -67,7 +67,7 @@ namespace OM::Move
 
 	std::shared_ptr<Axis> GetAxisBySlot(const size_t slot, const bool includeHidden)
 	{
-		dbg("Slot %u%s", slot, includeHidden ? " (including hidden)" : "");
+		LOG_DBG("Slot {:d}{:s}", slot, includeHidden ? " (including hidden)" : "");
 		size_t count = 0;
 		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
@@ -104,7 +104,7 @@ namespace OM::Move
 
 	std::shared_ptr<Axis> GetOrCreateAxis(const size_t index)
 	{
-		dbg("Axis index %d / max %d", index, MAX_TOTAL_AXES);
+		LOG_DBG("Axis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
@@ -146,13 +146,13 @@ namespace OM::Move
   {                                                                                                                    \
 	if (index >= MAX_TOTAL_AXES)                                                                                       \
 	{                                                                                                                  \
-	  error("axis[%d] greater than MAX_TOTAL_AXES", index);                                                            \
+	  LOG_ERROR("axis[{:d}] greater than MAX_TOTAL_AXES", index);                                                      \
 	  return false;                                                                                                    \
 	}                                                                                                                  \
 	std::shared_ptr<Axis> axis = GetOrCreateAxis(index);                                                               \
 	if (axis == nullptr)                                                                                               \
 	{                                                                                                                  \
-	  error("Could not get or create axis %d", index);                                                                 \
+	  LOG_ERROR("Could not get or create axis {:d}", index);                                                           \
 	  return false;                                                                                                    \
 	}                                                                                                                  \
 	axis->varName = val;                                                                                               \
@@ -217,7 +217,7 @@ namespace OM::Move
 
 	std::shared_ptr<ExtruderAxis> GetExtruderAxis(const size_t index)
 	{
-		dbg("ExtruderAxis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		LOG_DBG("ExtruderAxis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
@@ -236,10 +236,10 @@ namespace OM::Move
 
 	std::shared_ptr<ExtruderAxis> GetOrCreateExtruderAxis(const size_t index)
 	{
-		dbg("ExtruderAxis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		LOG_DBG("ExtruderAxis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
-			error("ExtruderAxis index %d greater than MAX_TOTAL_AXES", index);
+			LOG_ERROR("ExtruderAxis index {:d} greater than MAX_TOTAL_AXES", index);
 			return nullptr;
 		}
 		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(s_extruderAxes, index, true);
@@ -266,7 +266,7 @@ namespace OM::Move
 	std::shared_ptr<ExtruderAxis> extruder = GetOrCreateExtruderAxis(index);                                           \
 	if (extruder == nullptr)                                                                                           \
 	{                                                                                                                  \
-	  error("Could not get or create extruderAxis %d", index);                                                         \
+	  LOG_ERROR("Could not get or create extruderAxis {:d}", index);                                                   \
 	  return false;                                                                                                    \
 	}                                                                                                                  \
 	extruder->varName = val;                                                                                           \
@@ -284,7 +284,7 @@ namespace OM::Move
 		auto extruder = GetOrCreateExtruderAxis(index);
 		if (extruder == nullptr)
 		{
-			error("Could not get or create extruderAxis %d", index);
+			LOG_ERROR("Could not get or create extruderAxis {:d}", index);
 			return false;
 		}
 		extruder->filamentName.CopyAndPad(name);

@@ -19,15 +19,6 @@
             }
         },
         {
-            "name": "FreeRTOS",
-            "displayName": "FreeRTOS",
-            "description": "Sets Ninja generator, build and install directory",
-            "inherits": "Base",
-            "cacheVariables": {
-                "USE_FREERTOS": "ON"
-            }
-        },
-        {
             "name": "Simulation",
             "displayName": "Simulation",
             "description": "Configure the project to be run locally on the host machine",
@@ -41,6 +32,18 @@
             }
         },
         {
+            "name": "Simulation-Release",
+            "displayName": "Simulation-Release",
+            "description": "Configure the project to be run locally on the host machine",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "PROCESSOR": "Simulation",
+                "LOG_TIMESTAMPS": "ON",
+                "LOG_THREAD": "ON"
+            }
+        },
+        {
             "name": "T113-Debug",
             "displayName": "T113 Debug",
             "description": "Configure the project to be run on T113 with debug symbols",
@@ -49,9 +52,7 @@
                 "PROCESSOR": "T113",
                 "LOG_TIMESTAMPS": "ON",
                 "LOG_THREAD": "ON",
-                "DEBUG_BORDERS": "ON",
-                "CMAKE_C_FLAGS": "-g",
-                "CMAKE_CXX_FLAGS": "-g"
+                "DEBUG_BORDERS": "ON"
             }
         },
         {
@@ -61,7 +62,8 @@
             "inherits": "Base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "PROCESSOR": "T113"
+                "PROCESSOR": "T113",
+                "LOG_TIMESTAMPS": "ON"
             }
         }
     ],
@@ -83,6 +85,12 @@
             "description": "",
             "displayName": "",
             "configurePreset": "Simulation"
+        },
+        {
+            "name": "Simulation-Release",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "Simulation-Release"
         }
     ]
 }

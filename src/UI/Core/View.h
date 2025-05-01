@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/osal/lv_os.h"
+#include <fmt/ostream.h>
 #include <memory>
 
 #if SIMULATION
@@ -49,14 +50,7 @@ namespace UI
 		}
 
 		BaseView(const std::string& name, lv_obj_t* parent);
-
-		BaseView(const std::string& name, lv_obj_t* parent, layout_t layout)
-			: BaseView(name, parent)
-		{
-			lv_obj_set_pos(getCont(), lv_pct(layout.x), lv_pct(layout.y));
-			lv_obj_set_width(getCont(), layout.w == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.w));
-			lv_obj_set_height(getCont(), layout.h == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.h));
-		}
+		BaseView(const std::string& name, lv_obj_t* parent, layout_t layout);
 		BaseView(const std::string& name, layout_t layout)
 			: BaseView(name, lv_scr_act(), layout)
 		{
@@ -64,7 +58,7 @@ namespace UI
 
 		virtual ~BaseView();
 
-		inline const char* getName() const { return m_name.c_str(); }
+		inline const std::string& getName() const { return m_name; }
 		/**
 		 * @return Get the base container for the view
 		 */
@@ -144,7 +138,14 @@ namespace UI
 		{
 		}
 
-		virtual ~View() { m_presenter->deactivate(); }
+		virtual ~View()
+		{
+			deactivate();
+			if (m_presenter)
+			{
+				m_presenter->setView(nullptr);
+			}
+		}
 
 		/**
 		 * @brief Get a pointer to the MVP model
@@ -192,8 +193,6 @@ namespace UI
 
 } // namespace UI
 
-void lv_obj_set_flag(lv_obj_t* obj, lv_obj_flag_t flag, bool enable);
-
 #define UI_LOCK()                                                                                                      \
-	verbose("UI_LOCK requested by thread %u", std::this_thread::get_id());                                             \
+	LOG_VERBOSE("UI_LOCK requested by thread {}", Log::GetThreadId());                                                 \
 	auto uiLock = ScopedLock(mutexUi);

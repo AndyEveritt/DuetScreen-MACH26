@@ -35,6 +35,7 @@ bool StorageHelper::load()
 	}
 	catch (const std::exception& e)
 	{
+		printf("Error reading JSON file\n");
 		file.close();
 		std::ofstream recreate_file(filename_);
 		if (!recreate_file.is_open())

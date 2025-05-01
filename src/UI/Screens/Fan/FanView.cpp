@@ -20,6 +20,7 @@ namespace UI
 
 	void FanView::setFanCount(size_t count)
 	{
+		UI_LOCK();
 		if (count == getFanCount())
 		{
 			return;

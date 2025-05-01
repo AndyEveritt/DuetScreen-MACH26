@@ -33,8 +33,8 @@ namespace UI
 		virtual void newHeaterData() {}
 
 		/* Job methods */
-		virtual void newJobFileName(const char* filename) {}
-		virtual void newJobLastFileName(const char* filename) {}
+		virtual void newJobFileName(const std::string& filename) {}
+		virtual void newJobLastFileName(const std::string& filename) {}
 		virtual void newJobPrintTime() {}
 		virtual void newJobDuration() {}
 		virtual void newJobTimeLeft() {}
@@ -42,7 +42,7 @@ namespace UI
 		virtual void newJobBuild() {}
 		virtual void newJobCurrentObject() {}
 		virtual void newJobObjectData() {}
-		virtual void newThumbnailData(const char* filename) {}
+		virtual void newThumbnailData(const std::string& filename) {}
 
 		/* Move methods */
 		virtual void newAxesData() {}
@@ -57,7 +57,12 @@ namespace UI
 		virtual void newCompensationFile() {}
 
 		/* Response methods */
-		virtual void newResponse(const char* resp) {}
+		virtual void newResponse(const std::string& resp) {}
+		virtual void newLogMessage(const Log::DebugLevel& level,
+								   const Log::log_time_t& time,
+								   const std::string& message)
+		{
+		}
 
 		/* Sensor methods */
 		virtual void newAnalogSensorData() {}

@@ -18,6 +18,7 @@ namespace UI
 		, m_valueCont(lv_obj_create(getCont()))
 		, m_values{Button(name + "_value1", m_valueCont, ""), Button(name + "_value2", m_valueCont, "")}
 	{
+		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -53,6 +54,7 @@ namespace UI
 			v.setCallback(
 				[](lv_event_t* e)
 				{
+					UI_LOCK();
 					VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
 					lv_obj_t* btn = static_cast<lv_obj_t*>(lv_event_get_target(e));
 					panel->setSelectedValueIndex(
@@ -66,6 +68,7 @@ namespace UI
 		m_decrement.setCallback(
 			[](lv_event_t* e)
 			{
+				UI_LOCK();
 				VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
 				if (panel->m_valueChangeCallback)
 				{
@@ -78,6 +81,7 @@ namespace UI
 		m_increment.setCallback(
 			[](lv_event_t* e)
 			{
+				UI_LOCK();
 				VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
 				if (panel->m_valueChangeCallback)
 				{
@@ -90,6 +94,7 @@ namespace UI
 		m_reset.setCallback(
 			[](lv_event_t* e)
 			{
+				UI_LOCK();
 				VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
 				if (panel->m_resetCallback)
 				{
@@ -117,6 +122,7 @@ namespace UI
 
 	void VerticalButtonPanel::setValueLabelFmt(const std::string& fmt)
 	{
+		UI_LOCK();
 		m_fmt = fmt;
 		m_values[0].setText(utils::format(m_fmt.c_str(), m_incrementValues[0]).c_str());
 		m_values[1].setText(utils::format(m_fmt.c_str(), m_incrementValues[1]).c_str());
@@ -124,6 +130,7 @@ namespace UI
 
 	void VerticalButtonPanel::setIncrementValues(const std::array<float, 2>& values)
 	{
+		UI_LOCK();
 		m_incrementValues[0] = values[0];
 		m_incrementValues[1] = values[1];
 
@@ -138,6 +145,7 @@ namespace UI
 
 	void VerticalButtonPanel::setSelectedValueIndex(uint8_t index)
 	{
+		UI_LOCK();
 		if (index >= 2)
 		{
 			return;

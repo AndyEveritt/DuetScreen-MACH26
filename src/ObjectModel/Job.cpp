@@ -66,7 +66,7 @@ namespace OM
 			s_printRemaining.simulated = printRemaining;
 			break;
 		default:
-			warn("Unknown RemainingTimeType %d\n", (int)type);
+			LOG_WARN("Unknown RemainingTimeType {:d}\n", (int)type);
 			break;
 		}
 	}
@@ -98,7 +98,7 @@ namespace OM
 			}
 			return s_printRemaining.file;
 		default:
-			warn("Unknown RemainingTimeType %d\n", (int)type);
+			LOG_WARN("Unknown RemainingTimeType {:d}\n", (int)type);
 			return 0;
 		}
 	}
@@ -138,10 +138,10 @@ namespace OM
 	{
 		if (index >= (int)MAX_TRACKED_OBJECTS)
 		{
-			warn("JobObject index %d out of range\n", index);
+			LOG_WARN("JobObject index {:d} out of range\n", index);
 			index = -1;
 		}
-		verbose("Setting current job object index to %d", index);
+		LOG_VERBOSE("Setting current job object index to {:d}", index);
 		s_currentJobObjectIndex = index;
 	}
 
@@ -154,7 +154,7 @@ namespace OM
 	{
 		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
 		{
-			warn("JobObject index %d out of range\n", index);
+			LOG_WARN("JobObject index {:d} out of range\n", index);
 			return nullptr;
 		}
 		return GetOrCreate<JobObjectList, JobObject>(s_jobObjects, index, false);
@@ -164,7 +164,7 @@ namespace OM
 	{
 		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
 		{
-			warn("JobObject index %d out of range\n", index);
+			LOG_WARN("JobObject index {:d} out of range\n", index);
 			return nullptr;
 		}
 		return GetOrCreate<JobObjectList, JobObject>(s_jobObjects, index, true);
@@ -203,7 +203,7 @@ namespace OM
 		auto jobObject = GetJobObject(index);
 		if (jobObject == nullptr)
 		{
-			warn("Failed to get job object %d\n", index);
+			LOG_WARN("Failed to get job object {:d}\n", index);
 			return;
 		};
 		Comm::DUET.SendGcodef("M486 %c%d", active ? 'U' : 'P', index);

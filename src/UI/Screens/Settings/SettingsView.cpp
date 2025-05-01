@@ -219,6 +219,7 @@ namespace UI
 		: SettingsSubView("device_settings_view", parent, mainSettingsView)
 		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_systemLogging(lv_checkbox_create(getCont()))
 	{
 		UI_LOCK();
 
@@ -235,10 +236,27 @@ namespace UI
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
 													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
+
+		// System Logging
+		lv_checkbox_set_text(m_systemLogging, _("settings_system_logging"));
+		lv_obj_set_state(m_systemLogging, LV_STATE_CHECKED, StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
+		lv_obj_add_event_cb(
+			m_systemLogging,
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* checkbox = (lv_obj_t*)lv_event_get_target(e);
+				bool checked = lv_obj_has_state(checkbox, LV_STATE_CHECKED);
+				StorageHelper::setData(ID_ENABLE_UI_LOGGING, checked);
+				Log::EnableUiLogging(checked);
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
 	}
 
 	void DeviceSettingsView::onShow()
 	{
+		UI_LOCK();
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
 	}
@@ -268,7 +286,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_refresh.getCont(), 1);
 		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
 		lv_obj_set_size(m_enable, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address")).c_str());
+		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), "").c_str());
 		lv_checkbox_set_text(m_enable, _("settings_network_enable"));
 
 		// Network List
@@ -319,22 +337,26 @@ namespace UI
 
 	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
 	{
+		UI_LOCK();
 		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), ipAddress.c_str()).c_str());
 	}
 
 	void NetworkSettingsView::setEnabled(bool enabled)
 	{
+		UI_LOCK();
 		lv_obj_set_state(m_enable, LV_STATE_CHECKED, enabled);
 	}
 
 	void NetworkSettingsView::setNetworkCount(size_t count)
 	{
+		UI_LOCK();
 		lv_table_set_row_count(m_networkList, count + 1);
 	}
 
 	void NetworkSettingsView::setNetworkDetails(
 		size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected)
 	{
+		UI_LOCK();
 		void* knownPtr = lv_malloc(sizeof(bool));
 		*(bool*)knownPtr = known;
 		lv_table_set_cell_user_data(m_networkList, index + 1, 2, knownPtr);
@@ -417,12 +439,14 @@ namespace UI
 
 	void NetworkSettingsView::onShow()
 	{
+		UI_LOCK();
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		getPresenter()->scanWifi();
 	}
 
 	void NetworkSettingsView::onHide()
 	{
+		UI_LOCK();
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 	}
 
@@ -447,13 +471,13 @@ namespace UI
 		lv_obj_set_style_pad_column(m_debugLevelCont, 5, 0);
 		lv_label_set_text(m_debugLevelLabel, _("settings_debug_level"));
 		std::string options;
-		for (const auto& level : DebugLevelStrings)
+		for (const auto& level : Log::DebugLevelStrings)
 		{
 			options += level;
 			options += "\n";
 		}
 		lv_dropdown_set_options(m_debugLevel, options.c_str());
-		lv_dropdown_set_selected(m_debugLevel, static_cast<uint32_t>(GetDebugLevel()), false);
+		lv_dropdown_set_selected(m_debugLevel, static_cast<uint32_t>(Log::GetDebugLevel()), false);
 		lv_dropdown_set_selected_highlight(m_debugLevel, true);
 		lv_obj_add_event_cb(m_debugLevel, onDebugLevelEvent, LV_EVENT_VALUE_CHANGED, NULL);
 
@@ -483,7 +507,7 @@ namespace UI
 		UI_LOCK();
 		lv_obj_t* dropdown = (lv_obj_t*)lv_event_get_target(e);
 		size_t lvl = lv_dropdown_get_selected(dropdown);
-		SetDebugLevel(static_cast<DebugLevel>(lvl));
+		Log::SetDebugLevel(static_cast<Log::DebugLevel>(lvl));
 	}
 
 #if DEBUG_BORDERS
@@ -502,7 +526,7 @@ namespace UI
 		UI_LOCK();
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
-		info("%s SSH", checked ? "Enabling" : "Disabling");
+		LOG_INFO("{:s} SSH", checked ? "Enabling" : "Disabling");
 		StorageHelper::setData<bool>(ID_SSH_ENABLED, checked);
 		if (checked)
 		{

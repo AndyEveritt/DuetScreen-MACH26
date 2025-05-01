@@ -21,7 +21,7 @@ UartController::~UartController()
 bool UartController::open(const std::string& device)
 {
 #if SIMULATION
-	info("Simulating UART open on device: %s", device.c_str());
+	LOG_INFO("Simulating UART open on device: {:s}", device.c_str());
 	m_fd = 1; // Simulate success
 	m_running = true;
 	m_readThread = std::thread(&UartController::readLoop, this);
@@ -32,12 +32,12 @@ bool UartController::open(const std::string& device)
 		close();
 	}
 
-	info("Opening UART device %s", device.c_str());
+	LOG_INFO("Opening UART device {:s}", device.c_str());
 
 	m_fd = ::open(device.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
 	if (m_fd < 0)
 	{
-		error("Failed to open UART device %s", device.c_str());
+		LOG_ERROR("Failed to open UART device {:s}", device.c_str());
 		return false;
 	}
 
@@ -60,7 +60,7 @@ void UartController::close()
 {
 	if (isOpen())
 	{
-		info("Closing UART device");
+		LOG_INFO("Closing UART device");
 		m_running = false;
 		if (m_readThread.joinable())
 		{
@@ -82,19 +82,19 @@ bool UartController::configurePort()
 
 	if (tcgetattr(m_fd, &tty) != 0)
 	{
-		error("Error from tcgetattr");
+		LOG_ERROR("Error from tcgetattr");
 		return false;
 	}
 
 	// Set baud rate
 	if (cfsetospeed(&tty, m_currentBaudRate) != 0)
 	{
-		error("Error setting output baud rate");
+		LOG_ERROR("Error setting output baud rate");
 		return false;
 	}
 	if (cfsetispeed(&tty, m_currentBaudRate) != 0)
 	{
-		error("Error setting input baud rate");
+		LOG_ERROR("Error setting input baud rate");
 		return false;
 	}
 
@@ -116,7 +116,7 @@ bool UartController::configurePort()
 
 	if (tcsetattr(m_fd, TCSANOW, &tty) != 0)
 	{
-		error("Error from tcsetattr");
+		LOG_ERROR("Error from tcsetattr");
 		return false;
 	}
 
@@ -190,7 +190,7 @@ void UartController::setBufferSize(size_t size)
 bool UartController::send(const uint8_t* data, size_t length)
 {
 #if SIMULATION
-	info("Simulated UART send: %.*s", (int)length, data);
+	LOG_INFO("Simulated UART send: {1:.{0}s}", (int)length, data);
 	return true;
 #else
 	if (!isOpen())
@@ -209,7 +209,7 @@ bool UartController::send(const uint8_t* data, size_t length)
 			{
 				continue;
 			}
-			error("UART write error: %s", strerror(errno));
+			LOG_ERROR("UART write error: {:s}", strerror(errno));
 			return false;
 		}
 		written += ret;
@@ -259,7 +259,7 @@ void UartController::readLoop()
 		}
 		else if (bytesRead < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 		{
-			error("UART read error: %s", strerror(errno));
+			LOG_ERROR("UART read error: {:s}", strerror(errno));
 			break;
 		}
 

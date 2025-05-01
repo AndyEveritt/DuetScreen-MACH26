@@ -88,6 +88,7 @@ namespace UI
 
 	void Graph::showLegend(const bool show)
 	{
+		UI_LOCK();
 		m_columnDsc[2] = show ? s_legendSize : 0;
 		if (show)
 		{
@@ -102,6 +103,7 @@ namespace UI
 
 	Graph::range_t Graph::getXRange() const
 	{
+		UI_LOCK();
 		range_t range;
 		range.min = lv_scale_get_range_min_value(m_hScale);
 		range.max = lv_scale_get_range_max_value(m_hScale);
@@ -110,6 +112,7 @@ namespace UI
 
 	Graph::range_t Graph::getYRange() const
 	{
+		UI_LOCK();
 		range_t range;
 		range.min = lv_scale_get_range_min_value(m_vScale);
 		range.max = lv_scale_get_range_max_value(m_vScale);
@@ -118,23 +121,27 @@ namespace UI
 
 	void Graph::setXRange(Graph::range_t range)
 	{
+		UI_LOCK();
 		lv_scale_set_range(m_hScale, range.min, range.max);
-		lv_chart_set_range(m_chart, LV_CHART_AXIS_PRIMARY_X, range.min, range.max);
+		lv_chart_set_axis_range(m_chart, LV_CHART_AXIS_PRIMARY_X, range.min, range.max);
 	}
 
 	void Graph::setYRange(Graph::range_t range)
 	{
+		UI_LOCK();
 		lv_scale_set_range(m_vScale, range.min, range.max);
-		lv_chart_set_range(m_chart, LV_CHART_AXIS_PRIMARY_Y, range.min, range.max);
+		lv_chart_set_axis_range(m_chart, LV_CHART_AXIS_PRIMARY_Y, range.min, range.max);
 	}
 
 	void Graph::setXCount(int32_t count)
 	{
+		UI_LOCK();
 		lv_chart_set_point_count(m_chart, count);
 	}
 
 	void Graph::setSeriesCount(size_t count)
 	{
+		UI_LOCK();
 		if (count == m_series.size())
 		{
 			return;
@@ -151,7 +158,7 @@ namespace UI
 	{
 		if (index >= m_series.size())
 		{
-			warn("Series index out of range");
+			LOG_WARN("Series index out of range");
 			return nullptr;
 		}
 		return &m_series[index];
@@ -159,12 +166,12 @@ namespace UI
 
 	bool Graph::createSeries(lv_color_t color, const std::string& displayName)
 	{
-
+		UI_LOCK();
 		lv_chart_series_t* series = lv_chart_add_series(m_chart, color, LV_CHART_AXIS_PRIMARY_Y);
 
 		if (series == nullptr)
 		{
-			error("Failed to create series");
+			LOG_ERROR("Failed to create series");
 			return false;
 		}
 
@@ -175,22 +182,23 @@ namespace UI
 										   m_legend,
 										   displayName.c_str(),
 										   layout_t(0, 0, 100, 20));
-		legendObj.get()->setBgColor(color, LV_STATE_CHECKED);
-		legendObj.get()->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
-		legendObj.get()->setCheckable(true);
-		legendObj.get()->setChecked(true);
-		legendObj.get()->setCallback(legendEvent, LV_EVENT_CLICKED, this);
-		legendObj.get()->setUserData(new size_t(index));
+		legendObj->setBgColor(color, LV_STATE_CHECKED);
+		legendObj->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
+		legendObj->setCheckable(true);
+		legendObj->setChecked(true);
+		legendObj->setCallback(legendEvent, LV_EVENT_CLICKED, this);
+		legendObj->setUserData(new size_t(index));
 		m_series.push_back(series_t(series, color, legendObj));
 		return true;
 	}
 
 	bool Graph::updateSeriesColor(const size_t index, lv_color_t color)
 	{
+		UI_LOCK();
 		series_t* series = (series_t*)getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot update series, series not found");
+			LOG_WARN("Cannot update series, series not found");
 			return false;
 		}
 		setSeriesColor(*series, color);
@@ -199,23 +207,25 @@ namespace UI
 
 	bool Graph::updateSeriesName(const size_t index, const std::string& displayName)
 	{
+		UI_LOCK();
 		series_t* series = (series_t*)getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot update series, series not found");
+			LOG_WARN("Cannot update series, series not found");
 			return false;
 		}
-		legend_obj_t* legendObj = series->legendObj.get();
+		auto legendObj = series->legendObj;
 		legendObj->setText(displayName.c_str());
 		return true;
 	}
 
 	void Graph::showSeries(const size_t index, const bool show)
 	{
+		UI_LOCK();
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot show/hide series, series not found");
+			LOG_WARN("Cannot show/hide series, series not found");
 			return;
 		}
 		lv_chart_hide_series(m_chart, series->series, !show);
@@ -223,33 +233,36 @@ namespace UI
 
 	void Graph::clear()
 	{
+		UI_LOCK();
 		for (auto& series : m_series)
 		{
 			lv_chart_remove_series(m_chart, series.series);
-			delete (size_t*)series.legendObj.get()->getUserData();
+			delete (size_t*)series.legendObj->getUserData();
 		}
 		m_series.clear();
 	}
 
 	void Graph::clear(const size_t index)
 	{
+		UI_LOCK();
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot clear series, series not found");
+			LOG_WARN("Cannot clear series, series not found");
 			return;
 		}
 		lv_chart_remove_series(m_chart, series->series);
-		delete (std::string*)series->legendObj.get()->getUserData();
+		delete (std::string*)series->legendObj->getUserData();
 		m_series.erase(m_series.begin() + index);
 	}
 
 	void Graph::addData(const size_t index, int32_t value)
 	{
+		UI_LOCK();
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
 		{
-			warn("Cannot add data to series, series not found");
+			LOG_WARN("Cannot add data to series, series not found");
 			return;
 		}
 		lv_chart_set_next_value(m_chart, series->series, value);
@@ -257,20 +270,22 @@ namespace UI
 
 	void Graph::legendEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		Graph* g = (Graph*)lv_event_get_user_data(e);
 		lv_obj_t* btn = lv_event_get_target_obj(e);
-		size_t* index = (size_t*)lv_obj_get_user_data(btn);
+		size_t index = *(size_t*)lv_obj_get_user_data(btn);
 
 		// checked is inverted since this callback runs before the state is updated
-		g->showSeries(*index, !lv_obj_has_state(btn, LV_STATE_CHECKED));
+		g->showSeries(index, lv_obj_has_state(btn, LV_STATE_CHECKED));
 	}
 
 	void Graph::setSeriesColor(series_t& series, lv_color_t color)
 	{
+		UI_LOCK();
 		lv_chart_set_series_color(m_chart, series.series, color);
 		series.color = color;
 
-		lv_obj_t* legendObj = series.legendObj.get()->getCont();
+		auto legendObj = series.legendObj->getCont();
 		lv_obj_set_style_bg_color(legendObj, color, LV_STATE_CHECKED);
 		lv_obj_set_style_bg_color(legendObj, s_hiddenColor, LV_STATE_DEFAULT);
 	}

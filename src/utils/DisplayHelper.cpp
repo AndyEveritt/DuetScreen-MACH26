@@ -103,7 +103,7 @@ bool DisplayHelper::setBrightnessInner(unsigned int percentage)
 #if T113
 	if (ioctl(disp.m_fd, DISP_LCD_SET_BRIGHTNESS, &param) < 0)
 	{
-		error("ioctl setBrightness failed");
+		LOG_ERROR("ioctl setBrightness failed");
 		return false;
 	}
 #endif

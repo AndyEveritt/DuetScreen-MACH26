@@ -171,7 +171,7 @@ namespace OM
 				return false;
 
 			heater->status = status;
-			dbg("Heater %d state=%d %s", heaterIndex, heater->status, heater->GetHeaterStatusStr());
+			LOG_DBG("Heater {:d} state={:d} {:s}", heaterIndex, (int32_t)heater->status, heater->GetHeaterStatusStr());
 			return true;
 		}
 
@@ -189,7 +189,7 @@ namespace OM
 
 		size_t RemoveHeater(const size_t index, const bool allFollowing)
 		{
-			dbg("Removing heater %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+			LOG_DBG("Removing heater {:d} (allFollowing={:s})", index, allFollowing ? "true" : "false");
 			return Remove<HeaterList, Heater>(heaters, index, allFollowing);
 		}
 	} // namespace Heat

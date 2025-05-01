@@ -17,7 +17,7 @@
 bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::Heat::RemoveHeater(indices[0], false);
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }
 
@@ -31,7 +31,7 @@ bool HeatSubscribers::bedHeater(Comm::JsonDecoder* decoder, const int32_t& data,
 			OM::RemoveBed(i, false);
 		}
 		OM::g_lastBed = indices[0];
-		dbg("g_lastBed=%d", OM::g_lastBed);
+		LOG_DBG("g_lastBed={:d}", OM::g_lastBed);
 	}
 	return true;
 }
@@ -46,7 +46,7 @@ bool HeatSubscribers::chamberHeater(Comm::JsonDecoder* decoder, const int32_t& d
 			OM::RemoveChamber(i, false);
 		}
 		OM::g_lastChamber = indices[0];
-		dbg("g_lastChamber=%d", OM::g_lastChamber);
+		LOG_DBG("g_lastChamber={:d}", OM::g_lastChamber);
 	}
 	return true;
 }
@@ -55,7 +55,7 @@ bool HeatSubscribers::heaterCurrentTemperature(Comm::JsonDecoder* decoder, const
 {
 	if (!OM::Heat::UpdateHeaterTemp(indices[0], data))
 	{
-		error("Failed to update heater temperature; heater %d = %fC", indices[0], data);
+		LOG_ERROR("Failed to update heater temperature; heater {:d} = {:g}C", indices[0], data);
 		return false;
 	}
 	return true;
@@ -65,7 +65,7 @@ bool HeatSubscribers::heaterActiveTemperature(Comm::JsonDecoder* decoder, const 
 {
 	if (!OM::Heat::UpdateHeaterTarget(indices[0], data, true))
 	{
-		error("Failed to update heater %d active temperature to %d", indices[0], data);
+		LOG_ERROR("Failed to update heater {:d} active temperature to {:d}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -75,7 +75,7 @@ bool HeatSubscribers::heaterStandbyTemperature(Comm::JsonDecoder* decoder, const
 {
 	if (!OM::Heat::UpdateHeaterTarget(indices[0], data, false))
 	{
-		error("Failed to update heater %d standby temperature to %d", indices[0], data);
+		LOG_ERROR("Failed to update heater {:d} standby temperature to {:d}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -85,7 +85,7 @@ bool HeatSubscribers::heaterAvgPwm(Comm::JsonDecoder* decoder, const float& data
 {
 	if (!OM::Heat::UpdateHeaterPwm(indices[0], data))
 	{
-		error("Failed to update heater %d avgPwm to %.3f", indices[0], data);
+		LOG_ERROR("Failed to update heater {:d} avgPwm to {:g}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -95,7 +95,7 @@ bool HeatSubscribers::heaterMinTemperature(Comm::JsonDecoder* decoder, const flo
 {
 	if (!OM::Heat::UpdateHeaterMin(indices[0], data))
 	{
-		error("Failed to update heater %d min to %.3f", indices[0], data);
+		LOG_ERROR("Failed to update heater {:d} min to {:g}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -105,7 +105,7 @@ bool HeatSubscribers::heaterMaxTemperature(Comm::JsonDecoder* decoder, const flo
 {
 	if (!OM::Heat::UpdateHeaterMax(indices[0], data))
 	{
-		error("Failed to update heater %d max to %.3f", indices[0], data);
+		LOG_ERROR("Failed to update heater {:d} max to {:g}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -115,7 +115,7 @@ bool HeatSubscribers::heaterSensorNum(Comm::JsonDecoder* decoder, const int32_t&
 {
 	if (!OM::Heat::UpdateHeaterSensor(indices[0], data))
 	{
-		error("Failed to update heater %d sensor to %d", indices[0], data);
+		LOG_ERROR("Failed to update heater {:d} sensor to {:d}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -132,7 +132,7 @@ bool HeatSubscribers::heaterArrayEnd(Comm::JsonDecoder* decoder, const size_t in
 	if (OM::Heat::RemoveHeater(indices[0], true))
 	{
 	}
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }
 
@@ -141,7 +141,7 @@ bool HeatSubscribers::bedHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t
 	if (OM::RemoveBed(indices[0], true))
 	{
 	}
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }
 
@@ -150,6 +150,6 @@ bool HeatSubscribers::chamberHeaterArrayEnd(Comm::JsonDecoder* decoder, const si
 	if (OM::RemoveChamber(indices[0], true))
 	{
 	}
-	Model::get().newHeaterData();
+	Model::get().post<EventType::HeaterData>();
 	return true;
 }

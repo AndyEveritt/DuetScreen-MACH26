@@ -170,7 +170,7 @@ namespace UI
 		{
 			if (filament[0] != '\0')
 			{
-				warn("Failed to find filament option");
+				LOG_WARN("Failed to find filament option");
 				lv_dropdown_set_text(m_filament, filament);
 				lv_dropdown_set_selected_highlight(m_filament, false);
 				return;
@@ -295,18 +295,21 @@ namespace UI
 
 	void ToolItem::onLabelEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
 		item->getList()->toggleToolState(item->m_index);
 	}
 
 	void ToolItem::Heater::onStatusEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolItem::Heater* heater = static_cast<ToolItem::Heater*>(lv_event_get_user_data(e));
 		heater->tool.getList()->toggleHeaterState(heater->tool.m_index, heater->index);
 	}
 
 	void ToolItem::Heater::onTemperaturesSetEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolItem::Heater* heater = static_cast<ToolItem::Heater*>(lv_event_get_user_data(e));
 		lv_obj_t* obj = lv_event_get_target_obj(e);
 		heater->tool.getList()->m_presenter->configureNumberPad(
@@ -316,6 +319,7 @@ namespace UI
 
 	void ToolItem::onLoadFilamentEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
 		char selectedFilament[MAX_FILAMENT_NAME_LENGTH];
 		lv_dropdown_get_selected_str(item->m_filament, selectedFilament, sizeof(selectedFilament));
@@ -324,6 +328,7 @@ namespace UI
 
 	void ToolItem::onUnloadEvent(lv_event_t* e)
 	{
+		UI_LOCK();
 		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
 		item->getList()->unloadFilament(item->m_index);
 	}
@@ -394,7 +399,7 @@ namespace UI
 		static_assert(ARRAY_SIZE(s_listGrow) == ARRAY_SIZE(headerLabels), "Invalid array size");
 		if (ARRAY_SIZE(s_listGrow) != lv_obj_get_child_cnt(m_listHeader))
 		{
-			fatal("Invalid s_listGrow array size");
+			LOG_FATAL("Invalid s_listGrow array size");
 		}
 
 		for (size_t i = 0; i < ARRAY_SIZE(s_listGrow); i++)
@@ -509,6 +514,7 @@ namespace UI
 
 	std::shared_ptr<ToolItem> ExtrudeView::getExtruderItem(size_t index) const
 	{
+		UI_LOCK();
 		if (index < m_toolItems.size())
 		{
 			return m_toolItems[index];

@@ -1,4 +1,3 @@
-
 /**
  * @file main
  *
@@ -28,6 +27,8 @@
 #include <libusb-1.0/libusb.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
+#include <thread>
 #include <unistd.h>
 
 #if LV_USE_OS == LV_OS_PTHREAD
@@ -51,6 +52,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
+void lvgl_log_cb(lv_log_level_t level, const char* buf);
 static lv_display_t* hal_init(int32_t w, int32_t h);
 static void http_test();
 static int usb_test();
@@ -58,9 +60,9 @@ static int usb_test();
 /**********************
  *  STATIC VARIABLES
  **********************/
-static pthread_t s_responseThread;
-static pthread_t s_requestThread;
-static pthread_t s_thumbnailThread;
+static std::thread s_responseThread;
+static std::thread s_requestThread;
+static std::thread s_thumbnailThread;
 
 /**********************
  *      MACROS
@@ -79,16 +81,27 @@ int main(int argc, char** argv)
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
 
-	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
-	// deadlocks can occur
-	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(std::this_thread::get_id(), true);
+	sched_param sch;
+	int policy;
+	pthread_getschedparam(pthread_self(), &policy, &sch);
+	sch.sched_priority = 100; // Highest priority
+	if (pthread_setschedparam(pthread_self(), SCHED_OTHER, &sch) != 0)
+	{
+		LOG_WARN("Failed to set main thread priority");
+	}
+
+	lv_init();
 
 	// Initialise
 	StorageHelper::load();
-	SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, DebugLevel::Info));
+	Log::Init();
+
+	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
+	// deadlocks can occur
+	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	/*Initialize LVGL*/
-	lv_init();
+	lv_log_register_print_cb(lvgl_log_cb);
 	lv_i18n_init(lv_i18n_language_pack);
 	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());
 
@@ -106,68 +119,88 @@ int main(int argc, char** argv)
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
 
+	Model::get().startEventLoop();
+
 	USB::UsbMonitor::getInstance().registerCallback(
 		[](const std::string& path, bool mounted)
 		{
 			if (mounted)
 			{
-				info("USB drive mounted: %s", path.c_str());
+				LOG_INFO("USB drive mounted: {:s}", path.c_str());
 				std::string upgradeFilePath = path + "/DuetScreen.tar.gz";
 				if (!std::filesystem::exists(upgradeFilePath))
 				{
 					return;
 				}
 
-				Model::get().newUpdateAvailable(upgradeFilePath);
+				Model::get().post<EventType::UpdateAvailable>(upgradeFilePath);
 			}
 		});
 	USB::UsbMonitor::getInstance().startMonitoring();
 
 	// Create a thread to handle requesting data from Duet
 #if MULTITHREADED
-	pthread_create(
-		&s_requestThread,
-		NULL,
-		[](void*) -> void*
+	s_requestThread = std::thread(
+		[]()
 		{
+			// Set high priority for request thread
+			sched_param sch;
+			int policy;
+			pthread_getschedparam(pthread_self(), &policy, &sch);
+			sch.sched_priority = 90; // High priority
+			if (pthread_setschedparam(pthread_self(), SCHED_RR, &sch) != 0)
+			{
+				LOG_WARN("Failed to set request thread priority");
+			}
+
 			while (1)
 			{
 				// Request next section of the OM
 				Model::get().requestNewData();
 				usleep(Comm::DUET.GetScaledPollInterval() * 1000);
 			}
-			return nullptr;
-		},
-		NULL);
+		});
 
 	// Create a thread to handle USB responses from Duet
-	pthread_create(
-		&s_responseThread,
-		NULL,
-		[](void*) -> void*
+	s_responseThread = std::thread(
+		[]()
 		{
+			// Set medium priority for response thread
+			sched_param sch;
+			int policy;
+			pthread_getschedparam(pthread_self(), &policy, &sch);
+			sch.sched_priority = 80; // Medium priority
+			if (pthread_setschedparam(pthread_self(), SCHED_RR, &sch) != 0)
+			{
+				LOG_WARN("Failed to set response thread priority");
+			}
+
 			while (1)
 			{
 				useconds_t delay = Model::get().receiveNewUsbData();
 				usleep(delay);
 			}
-			return nullptr;
-		},
-		NULL);
+		});
 
-	pthread_create(
-		&s_thumbnailThread,
-		NULL,
-		[](void*) -> void*
+	s_thumbnailThread = std::thread(
+		[]()
 		{
+			// Set low priority for thumbnail thread
+			sched_param sch;
+			int policy;
+			pthread_getschedparam(pthread_self(), &policy, &sch);
+			sch.sched_priority = 70; // Low priority
+			if (pthread_setschedparam(pthread_self(), SCHED_RR, &sch) != 0)
+			{
+				LOG_WARN("Failed to set thumbnail thread priority");
+			}
+
 			while (1)
 			{
 				FILEINFO_CACHE->Spin();
 				usleep(50 * 1000);
 			}
-			return nullptr;
-		},
-		NULL);
+		});
 #endif
 
 	// Screensaver task
@@ -182,7 +215,7 @@ int main(int argc, char** argv)
 			{
 				if (!screensaverEnabled)
 				{
-					info("Screensaver timeout reached");
+					LOG_INFO("Screensaver timeout reached");
 					DisplayHelper::enableScreenSaver(true);
 					screensaverEnabled = true;
 				}
@@ -191,7 +224,7 @@ int main(int argc, char** argv)
 			{
 				if (screensaverEnabled)
 				{
-					info("Screensaver timeout cancelled");
+					LOG_INFO("Screensaver timeout cancelled");
 					DisplayHelper::enableScreenSaver(false);
 					screensaverEnabled = false;
 				}
@@ -204,6 +237,7 @@ int main(int argc, char** argv)
 	{
 		{
 			UI_LOCK();
+			// LOG_DBG("Updating UI");
 			lv_timer_handler();
 		}
 		usleep(5 * 1000); // Sleep for 5 milliseconds
@@ -216,6 +250,27 @@ int main(int argc, char** argv)
  *   STATIC FUNCTIONS
  **********************/
 
+void lvgl_log_cb(lv_log_level_t level, const char* buf)
+{
+	switch (level)
+	{
+	case LV_LOG_LEVEL_TRACE:
+		LOG_VERBOSE("{:s}", buf);
+		break;
+	case LV_LOG_LEVEL_INFO:
+		LOG_INFO("{:s}", buf);
+		break;
+	case LV_LOG_LEVEL_WARN:
+		LOG_WARN("{:s}", buf);
+		break;
+	case LV_LOG_LEVEL_ERROR:
+		LOG_ERROR("{:s}", buf);
+		break;
+	default:
+		break;
+	}
+}
+
 static const char* getenv_default(const char* name, const char* dflt)
 {
 	return getenv(name) ?: dflt;
@@ -227,7 +282,7 @@ static const char* getenv_default(const char* name, const char* dflt)
  */
 static lv_display_t* hal_init(int32_t w, int32_t h)
 {
-	info("Initialising display");
+	LOG_INFO("Initialising display");
 #if LV_USE_LINUX_FBDEV
 	const char* device = getenv_default("LV_LINUX_FBDEV_DEVICE", "/dev/fb0");
 	lv_display_t* disp = lv_linux_fbdev_create();

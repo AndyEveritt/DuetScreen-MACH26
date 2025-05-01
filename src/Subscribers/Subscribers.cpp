@@ -17,7 +17,7 @@ size_t const SubscriberMap::getSubscriberCount(const char* key)
 const std::vector<Subscriber>& SubscriberMap::getSubscribers(const char* key)
 {
 	auto it = s_subscribers.find(key);
-	if (it->second.size() == 0)
+	if (it == s_subscribers.end())
 	{
 		static std::vector<Subscriber> empty;
 		return empty;
@@ -38,7 +38,7 @@ size_t const SubscriberMap::getArrayEndSubscriberCount(const char* key)
 const std::vector<ArrayEndSubscriber>& SubscriberMap::getArrayEndSubscribers(const char* key)
 {
 	auto it = s_arrayEndSubscribers.find(key);
-	if (it->second.size() == 0)
+	if (it == s_arrayEndSubscribers.end())
 	{
 		static std::vector<ArrayEndSubscriber> empty;
 		return empty;
@@ -51,7 +51,7 @@ void SubscriberMap::_addSubscriber(const char* key, subscriberCb_t cb)
 	if (key == nullptr)
 		return;
 
-	verbose("Adding subscriber for key '%s' cb @ %p", key, &cb);
+	LOG_VERBOSE(fmt::format("Adding subscriber for key '{:s}' cb @ {}", key, static_cast<const void*>(&cb)));
 
 	s_subscribers[key].emplace_back(key, cb);
 }
@@ -127,10 +127,10 @@ void SubscriberMap::addArrayEndSubscriber(const char* key,
 	// Check key ends with '^', otherwise raise compiler error
 	if (key[strlen(key) - 1] != '^')
 	{
-		error("Key '%s' must end with '^' as it is provided as an array end subscriber");
+		LOG_ERROR("Key '{:s}' must end with '^' as it is provided as an array end subscriber");
 		return;
 	}
 
-	verbose("Adding array end subscriber for key '%s' cb @ %p", key, &cb);
+	LOG_VERBOSE("Adding array end subscriber for key '{:s}' cb @ {:p}", key, static_cast<const void*>(&cb));
 	s_arrayEndSubscribers[key].emplace_back(key, cb);
 }

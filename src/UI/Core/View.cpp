@@ -9,24 +9,29 @@ namespace UI
 	}
 
 	BaseView::BaseView(const std::string& name, lv_obj_t* parent)
-		: m_cont(lv_obj_create(parent))
-		, m_name(name)
+		: m_name(name)
 	{
 		UI_LOCK();
-		verbose("Creating view '%s' (%p)", getName(), m_cont);
+		m_cont = lv_obj_create(parent);
+
+		LOG_VERBOSE("Creating view '{:s}' ({})", getName(), static_cast<const void*>(m_cont));
 		lv_obj_set_style_pad_all(getCont(), 5, 0);
 		lv_obj_null_on_delete(&m_cont);
-#if DEBUG_BORDERS
-		// lv_obj_set_style_border_color(getCont(), lv_color_black(), LV_PART_MAIN);
-		// lv_obj_set_style_border_width(getCont(), 2, LV_PART_MAIN);
-		// lv_obj_set_style_border_opa(getCont(), LV_OPA_100, LV_PART_MAIN);
-#endif
+	}
+
+	BaseView::BaseView(const std::string& name, lv_obj_t* parent, layout_t layout)
+		: BaseView(name, parent)
+	{
+		UI_LOCK();
+		lv_obj_set_pos(getCont(), lv_pct(layout.x), lv_pct(layout.y));
+		lv_obj_set_width(getCont(), layout.w == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.w));
+		lv_obj_set_height(getCont(), layout.h == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : lv_pct(layout.h));
 	}
 
 	BaseView::~BaseView()
 	{
 		UI_LOCK();
-		verbose("Deleting view '%s' (%p)", getName(), m_cont);
+		LOG_VERBOSE("Deleting view '{:s}' ({})", getName(), static_cast<const void*>(m_cont));
 		lv_obj_delete(getCont());
 	}
 
@@ -178,15 +183,3 @@ namespace UI
 		return false;
 	}
 } // namespace UI
-
-void lv_obj_set_flag(lv_obj_t* obj, lv_obj_flag_t flag, bool enable)
-{
-	if (enable)
-	{
-		lv_obj_add_flag(obj, flag);
-	}
-	else
-	{
-		lv_obj_remove_flag(obj, flag);
-	}
-}

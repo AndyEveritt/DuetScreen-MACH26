@@ -47,7 +47,7 @@ namespace Comm
 		m_device = device;
 		if (!getDeviceInterface())
 		{
-			error("Failed to get device interface");
+			LOG_ERROR("Failed to get device interface");
 			return false;
 		}
 		return true;
@@ -55,17 +55,17 @@ namespace Comm
 
 	void UsbDevice::reset()
 	{
-		dbg("Resetting USB device %s", m_name);
+		LOG_DBG("Resetting USB device {:s}", m_name);
 		if (m_handle)
 		{
-			dbg("Releasing interface");
+			LOG_DBG("Releasing interface");
 			libusb_release_interface(m_handle, 0);
 			libusb_close(m_handle);
 			m_handle = nullptr;
 		}
 		if (m_device)
 		{
-			dbg("Unref device");
+			LOG_DBG("Unref device");
 			// libusb_unref_device(m_device);
 			m_device = nullptr;
 		}
@@ -81,7 +81,7 @@ namespace Comm
 
 		if (!m_device)
 		{
-			error("No USB device");
+			LOG_ERROR("No USB device");
 			return false;
 		}
 
@@ -89,7 +89,7 @@ namespace Comm
 
 		if (!m_handle)
 		{
-			error("Cannot open device");
+			LOG_ERROR("Cannot open device");
 			return false;
 		}
 
@@ -99,7 +99,7 @@ namespace Comm
 			r = libusb_detach_kernel_driver(m_handle, 0);
 			if (r < 0)
 			{
-				fprintf(stderr, "Cannot detach kernel driver: %s\n", libusb_error_name(r));
+				LOG_ERROR("Cannot detach kernel driver: {:s}", libusb_error_name(r));
 				libusb_close(m_handle);
 				return false;
 			}
@@ -111,7 +111,7 @@ namespace Comm
 		r = libusb_claim_interface(m_handle, 0);
 		if (r < 0)
 		{
-			fprintf(stderr, "Cannot claim interface: %s\n", libusb_error_name(r));
+			LOG_ERROR("Cannot claim interface: {:s}", libusb_error_name(r));
 			libusb_close(m_handle);
 			return false;
 		}
@@ -124,7 +124,7 @@ namespace Comm
 		pthread_mutex_lock(&s_usbMutex);
 		if (!m_handle)
 		{
-			warn("No USB device handle");
+			LOG_WARN("No USB device handle");
 			pthread_mutex_unlock(&s_usbMutex);
 			return -1;
 		}
@@ -138,7 +138,7 @@ namespace Comm
 			int r = libusb_bulk_transfer(m_handle, m_outEndpoint, (unsigned char*)data, len, &actual_length, 0);
 			if (r != 0)
 			{
-				error("Error sending data: %s", libusb_error_name(r));
+				LOG_ERROR("Error sending data: {:s}", libusb_error_name(r));
 				reset();
 				pthread_mutex_unlock(&s_usbMutex);
 				return -1;
@@ -155,13 +155,13 @@ namespace Comm
 	{
 		if (!m_handle)
 		{
-			warn("No USB device handle");
+			LOG_WARN("No USB device handle");
 			return -1;
 		}
 
 		if (len < m_packetSize)
 		{
-			warn("Buffer too small");
+			LOG_WARN("Buffer too small");
 			return -1;
 		}
 
@@ -172,16 +172,16 @@ namespace Comm
 		case LIBUSB_SUCCESS:
 			break;
 		case LIBUSB_ERROR_TIMEOUT:
-			warn("No more data received (timeout)");
+			LOG_WARN("No more data received (timeout)");
 			break;
 		case LIBUSB_ERROR_BUSY:
-			warn("Busy receiving data");
+			LOG_WARN("Busy receiving data");
 			break;
 		case LIBUSB_ERROR_NO_DEVICE:
-			warn("Device disconnected");
+			LOG_WARN("Device disconnected");
 			break;
 		default:
-			error("Error receiving data: %s", libusb_error_name(r));
+			LOG_ERROR("Error receiving data: {:s}", libusb_error_name(r));
 			break;
 		}
 
@@ -192,7 +192,7 @@ namespace Comm
 	{
 		if (!m_handle)
 		{
-			warn("No USB device handle");
+			LOG_WARN("No USB device handle");
 			return -1;
 		}
 		uint8_t request_type =
@@ -203,11 +203,11 @@ namespace Comm
 		int err = libusb_control_transfer(m_handle, request_type, request, value, index, nullptr, 0, 1000);
 		if (err < 0)
 		{
-			error("Failed to set DTR: %s", libusb_error_name(err));
+			LOG_ERROR("Failed to set DTR: {:s}", libusb_error_name(err));
 		}
 		else
 		{
-			dbg("DTR set successfully.");
+			LOG_DBG("DTR set successfully.");
 		}
 		return err;
 	}
@@ -235,13 +235,13 @@ namespace Comm
 						{
 							m_inEndpoint = ep_desc.bEndpointAddress;
 							m_packetSize = ep_desc.wMaxPacketSize;
-							dbg("Found IN endpoint: %x", m_inEndpoint);
+							LOG_DBG("Found IN endpoint: {:#x}", m_inEndpoint);
 							foundIn = true;
 						}
 						else
 						{
 							m_outEndpoint = ep_desc.bEndpointAddress;
-							dbg("Found OUT endpoint: %x", m_outEndpoint);
+							LOG_DBG("Found OUT endpoint: {:#x}", m_outEndpoint);
 							foundOut = true;
 						}
 					}
@@ -270,7 +270,8 @@ namespace Comm
 					{
 						if (desc.idProduct == deviceId.productId)
 						{
-							info("%s target device (Product ID: %x) found.", deviceId.name, deviceId.productId);
+							LOG_INFO(
+								"{:s} target device (Product ID: {:#x}) found.", deviceId.name, deviceId.productId);
 							return s_currentUsbDevice.init(deviceId.name, device);
 						}
 					}
@@ -291,26 +292,26 @@ namespace Comm
 
 		s_currentUsbDevice.reset();
 
-		verbose("Getting usb device list");
+		LOG_VERBOSE("Getting usb device list");
 		libusb_device** device_list;
 		ssize_t device_count = libusb_get_device_list(nullptr, &device_list);
 
 		if (device_count < 0)
 		{
-			error("Failed to get device list: %s", libusb_error_name(device_count));
+			LOG_ERROR("Failed to get device list: {:s}", libusb_error_name(device_count));
 			return false;
 		}
 
 		if (!findDuetUsbDevice(device_list, device_count))
 		{
-			error("Target device not found");
+			LOG_ERROR("Target device not found");
 			libusb_free_device_list(device_list, 1);
 			return false;
 		}
 
 		if (!s_currentUsbDevice.connect())
 		{
-			error("Failed to connect to target device");
+			LOG_ERROR("Failed to connect to target device");
 			libusb_free_device_list(device_list, 1);
 			return false;
 		}

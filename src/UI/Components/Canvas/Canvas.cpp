@@ -41,6 +41,7 @@ namespace UI
 
 	Canvas::~Canvas()
 	{
+		UI_LOCK();
 		lv_draw_buf_destroy(m_buf);
 	}
 
@@ -163,6 +164,7 @@ namespace UI
 							  std::vector<std::string>& vec,
 							  const char**& labels)
 	{
+		UI_LOCK();
 		vec.clear();
 		vec.reserve(ticks);
 		float step = (range.max - range.min) / (float)(ticks - 1);
@@ -206,6 +208,7 @@ namespace UI
 
 	bool Canvas::pxToPos(size_t px, size_t py, float& x, float& y) const
 	{
+		UI_LOCK();
 		uint32_t res_x, res_y;
 		getResolution(res_x, res_y);
 
@@ -225,6 +228,7 @@ namespace UI
 
 	bool Canvas::posToPx(float x, float y, size_t& px, size_t& py) const
 	{
+		UI_LOCK();
 		range_t xRange = getXRange();
 		range_t yRange = getYRange();
 
@@ -272,6 +276,7 @@ namespace UI
 
 	void Canvas::drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa)
 	{
+		UI_LOCK();
 		// Draw the pixel
 		lv_canvas_set_px(getCanvas(), px, py, color, LV_OPA_COVER);
 	}

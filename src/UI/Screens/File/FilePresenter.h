@@ -39,7 +39,8 @@ namespace UI
 		bool back();
 
 		// Observers
-		virtual void newThumbnailData(const char* filename) override;
+		virtual void refresh() override;
+		virtual void newThumbnailData(const std::string& filename) override;
 
 	  private:
 		void onActivate() override;

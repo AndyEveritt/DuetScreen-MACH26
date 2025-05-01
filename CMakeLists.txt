@@ -5,7 +5,6 @@ project(DuetScreen C CXX)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -14,8 +13,20 @@ set(LIBRARIES_DIR ${PROJECT_SOURCE_DIR}/libraries)
 
 # Remove ARM-specific compile and linker options
 if (PROCESSOR STREQUAL "Simulation")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+endif()
+
+# Set optimization level based on build type
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
 set(MAIN_SOURCES "")
@@ -45,6 +56,9 @@ set(JSON_BuildTests
     CACHE INTERNAL "")
 add_subdirectory(${LIBRARIES_DIR}/json)
 
+# Logging
+include(${LIBRARIES_DIR}/spdlog.cmake)
+
 # ----------------------------------------------------------------------------
 # Set source files for executable
 # ----------------------------------------------------------------------------
@@ -57,6 +71,16 @@ list(
   ${DUET_LIB_SOURCES})
 
 add_executable(DuetScreen ${MAIN_SOURCES})
+
+# Add clang-format custom target
+add_custom_target(
+    clang-format
+    COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp' -print | xargs clang-format -i
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Running clang-format"
+)
+add_dependencies(DuetScreen clang-format)
+
 target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
 target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
 
@@ -68,7 +92,9 @@ target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})
 # ----------------------------------------------------------------------------
 # Add Definitions
 # ----------------------------------------------------------------------------
-target_compile_definitions(DuetScreen PRIVATE DEBUG)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(DuetScreen PRIVATE DEBUG)
+endif()
 target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
 
 if(PROCESSOR STREQUAL "T113")
@@ -137,7 +163,9 @@ target_link_libraries(
           m
           pthread
           hv_static
-          nlohmann_json::nlohmann_json)
+          nlohmann_json::nlohmann_json
+          spdlog::spdlog
+          fmt::fmt)
 
 # Custom target to run the executable
 add_custom_target(

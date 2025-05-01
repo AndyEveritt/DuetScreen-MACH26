@@ -14,6 +14,17 @@
 
 constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
 
+/* Logging */
+#if SIMULATION
+constexpr const char* DEFAULT_LOG_FILE = "DuetScreen.log";
+constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 10; // 10MB
+#else
+constexpr const char* DEFAULT_LOG_FILE = "/var/log/DuetScreen.log";
+constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 5; // 5MB
+#endif
+
+constexpr size_t DEFAULT_LOG_FILE_COUNT = 3;			  // 3 files
+
 /* UI */
 constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in milliseconds
 constexpr size_t MODEL_TICK_HZ = 1000 / MODEL_TICK_INTERVAL;

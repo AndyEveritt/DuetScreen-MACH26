@@ -48,7 +48,7 @@ namespace UI
 					auto heater = th->heater;
 					if (heater == nullptr)
 					{
-						warn("Heater is null");
+						LOG_WARN("Heater is null");
 						return;
 					}
 					item->setHeaterName(index, heater->GetName());
@@ -124,19 +124,19 @@ namespace UI
 		auto tool = OM::GetToolBySlot(toolIndex);
 		if (tool == nullptr)
 		{
-			error("Failed to get tool %d", toolIndex);
+			LOG_ERROR("Failed to get tool {:d}", toolIndex);
 			return false;
 		}
 		auto th = tool->GetHeater(heaterIndex);
 		if (th == nullptr)
 		{
-			error("Failed to get tool %d tHeater %d", toolIndex, heaterIndex);
+			LOG_ERROR("Failed to get tool {:d} tHeater {:d}", toolIndex, heaterIndex);
 			return false;
 		}
 		auto heater = th->heater;
 		if (heater == nullptr)
 		{
-			error("Failed to get tool %d heater %d", toolIndex, heaterIndex);
+			LOG_ERROR("Failed to get tool {:d} heater {:d}", toolIndex, heaterIndex);
 			return false;
 		}
 
@@ -160,7 +160,7 @@ namespace UI
 
 		if (tool == nullptr)
 		{
-			error("Tool is null");
+			LOG_ERROR("Tool is null");
 			return;
 		}
 		tool->SetHeaterTemps(presenter->m_numberPadData.heaterIndex, np->getValue(), presenter->m_numberPadData.active);

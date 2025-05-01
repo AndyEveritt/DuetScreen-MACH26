@@ -35,8 +35,8 @@ namespace UI
 
 	void StatusPresenter::onActivate()
 	{
-		newJobFileName(OM::GetJobName().c_str());
-		newJobLastFileName(OM::GetLastJobName().c_str());
+		newJobFileName(OM::GetJobName());
+		newJobLastFileName(OM::GetLastJobName());
 		newJobPrintTime();
 		newJobDuration();
 		newJobTimeLeft();
@@ -53,14 +53,14 @@ namespace UI
 
 	void StatusPresenter::onDeactivate() {}
 
-	void StatusPresenter::newJobFileName(const char* filename)
+	void StatusPresenter::newJobFileName(const std::string& filename)
 	{
-		m_view->setFilename(filename);
+		m_view->setFilename(filename.c_str());
 	}
 
-	void StatusPresenter::newJobLastFileName(const char* filename)
+	void StatusPresenter::newJobLastFileName(const std::string& filename)
 	{
-		if (filename[0] == 0)
+		if (filename.empty())
 		{
 			return;
 		}

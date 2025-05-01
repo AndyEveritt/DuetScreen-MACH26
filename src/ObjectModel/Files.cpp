@@ -58,24 +58,24 @@ namespace OM::FileSystem
 		switch (m_type)
 		{
 		case FileSystemItemType::file:
-			verbose("Files: set file name to %s", m_name.c_str());
+			LOG_VERBOSE("Files: set file name to {:s}", m_name.c_str());
 			break;
 		case FileSystemItemType::folder:
-			verbose("Files: set folder name to %s", m_name.c_str());
+			LOG_VERBOSE("Files: set folder name to {:s}", m_name.c_str());
 			break;
 		}
 	}
 
 	FileSystemItem::~FileSystemItem()
 	{
-		dbg("Files: destructing item %s", GetPath().c_str());
+		LOG_DBG("Files: destructing item {:s}", GetPath().c_str());
 	}
 
 	std::shared_ptr<File> AddFileAt(const size_t index)
 	{
 		if (index < s_items.size())
 		{
-			dbg("Deleting item[%d]", index);
+			LOG_DBG("Deleting item[{:d}]", index);
 			s_items[index].reset();
 		}
 		std::shared_ptr<File> file = std::make_shared<File>();
@@ -87,7 +87,7 @@ namespace OM::FileSystem
 	{
 		if (index < s_items.size())
 		{
-			dbg("Deleting item[%d]", index);
+			LOG_DBG("Deleting item[{:d}]", index);
 			s_items[index].reset();
 		}
 		std::shared_ptr<Folder> folder = std::make_shared<Folder>();
@@ -145,7 +145,7 @@ namespace OM::FileSystem
 	void SetCurrentDir(const std::string& path)
 	{
 		s_currentDirPath = path;
-		info("Files: current directory = %s", s_currentDirPath.c_str());
+		LOG_INFO("Files: current directory = {:s}", s_currentDirPath.c_str());
 	}
 
 	struct
@@ -223,7 +223,7 @@ namespace OM::FileSystem
 			if (c == '/')
 				count++;
 		}
-		dbg("Files: %d", count);
+		LOG_DBG("Files: {:d}", count);
 
 		return count > 1;
 	}
@@ -234,7 +234,7 @@ namespace OM::FileSystem
 		s_inMacroFolder = path.find("macro") != std::string::npos;
 		s_callback.cb = callback;
 		s_callback.runEveryTime = runEveryTime;
-		info("Files: requesting files in %s", path.c_str());
+		LOG_INFO("Files: requesting files in {:s}", path.c_str());
 		Comm::DUET.RequestFileList(path.c_str());
 	}
 
@@ -342,7 +342,7 @@ namespace OM::FileSystem
 
 	void ClearFileSystem()
 	{
-		info("Files: clearing items");
+		LOG_INFO("Files: clearing items");
 		s_items.clear();
 	}
 

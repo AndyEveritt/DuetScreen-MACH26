@@ -35,7 +35,7 @@ namespace UI
 		MODEL_LOCK();
 		if (index >= m_items.size())
 		{
-			error("item %u out of range", index);
+			LOG_ERROR("item {:d} out of range", index);
 			return;
 		}
 
@@ -44,7 +44,7 @@ namespace UI
 		m_view->cancelStartPrint();
 		if (item == nullptr)
 		{
-			warn("item %u is null", index);
+			LOG_WARN("item {:d} is null", index);
 			return;
 		}
 
@@ -88,7 +88,7 @@ namespace UI
 		{
 			if (i >= m_items.size())
 			{
-				warn("File count mismatch");
+				LOG_WARN("File count mismatch");
 				break;
 			}
 			auto item = m_view->getFileItem(i);
@@ -217,13 +217,19 @@ namespace UI
 		return false;
 	}
 
-	void FilePresenter::newThumbnailData(const char* filename)
+	void FilePresenter::refresh()
+	{
+		m_items.clear();
+		m_view->setFileCount(0);
+	}
+
+	void FilePresenter::newThumbnailData(const std::string& filename)
 	{
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
 		{
 			if (i >= m_items.size())
 			{
-				warn("File count mismatch");
+				LOG_WARN("File count mismatch");
 				break;
 			}
 			auto file = m_items[i];
@@ -236,7 +242,7 @@ namespace UI
 				auto item = this->m_view->getFileItem(i);
 				if (item != nullptr)
 				{
-					item->setThumbnail(GetThumbnailPath(filename).c_str());
+					item->setThumbnail(GetThumbnailPath(filename.c_str()).c_str());
 				}
 				break;
 			}

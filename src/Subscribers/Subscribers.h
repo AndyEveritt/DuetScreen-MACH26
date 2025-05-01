@@ -19,7 +19,7 @@ class Subscriber
 	}
 
 	const char* getKey() const { return m_key; }
-	bool run(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+	bool run(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]) const
 	{
 		return m_cb(decoder, data, indices);
 	}
@@ -39,7 +39,7 @@ class ArrayEndSubscriber
 	}
 
 	const char* getKey() const { return m_key; }
-	bool run(Comm::JsonDecoder* decoder, const size_t indices[]) { return m_cb(decoder, indices); }
+	bool run(Comm::JsonDecoder* decoder, const size_t indices[]) const { return m_cb(decoder, indices); }
 
   private:
 	const char* m_key;

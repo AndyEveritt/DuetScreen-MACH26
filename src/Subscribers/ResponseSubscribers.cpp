@@ -6,23 +6,23 @@
 
 bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	info("resp length=%d", strlen(data));
-	dbg("resp: %s", data);
+	LOG_INFO("resp length={:d}", strlen(data));
+	LOG_DBG("resp: {:s}", data);
 
-	Model::get().newResponse(data);
+	Model::get().post<EventType::Response>(std::string(data));
 
 	return true;
 }
 
 bool ResponseSubscribers::message(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	info("%s", data);
+	LOG_INFO("{:s}", data);
 	return true;
 }
 
 bool ResponseSubscribers::seq(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	info("%s", data);
+	LOG_INFO("{:s}", data);
 	return true;
 }
 
@@ -36,10 +36,10 @@ bool ResponseSubscribers::seqReply(Comm::JsonDecoder* decoder, const int32_t& da
 	}
 
 	lastSeq = data;
-	info("%d", data);
+	LOG_INFO("{:d}", data);
 	if (Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
 	{
-		info("Requesting reply for seq %d", data);
+		LOG_INFO("Requesting reply for seq {:d}", data);
 		HttpResponse r;
 		Comm::DUET.RequestReply(r);
 		Comm::DUET.ProcessReply(r);

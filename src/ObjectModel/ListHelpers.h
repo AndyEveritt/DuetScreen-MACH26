@@ -23,14 +23,14 @@ std::shared_ptr<T> GetOrCreate(L& list, const size_t index, const bool create, c
 	{
 		if (list[i]->index == index)
 		{
-			verbose("Getting index=%d", index);
+			LOG_VERBOSE("Getting index={:d}", index);
 			return list[i];
 		}
 	}
 
 	if (create && !list.Full())
 	{
-		verbose("Creating index=%d", index);
+		LOG_VERBOSE("Creating index={:d}", index);
 		std::shared_ptr<T> elem = std::make_shared<T>();
 		elem->Reset();
 		elem->index = index;
@@ -40,7 +40,7 @@ std::shared_ptr<T> GetOrCreate(L& list, const size_t index, const bool create, c
 	}
 
 	if (!silent)
-		error("Failed to get%s index=%d", create ? " or create" : "", index);
+		LOG_ERROR("Failed to get{:s} index={:d}", create ? " or create" : "", index);
 	return nullptr;
 }
 
@@ -65,7 +65,7 @@ size_t Remove(L& list, const size_t index, const bool allFollowing)
 	// if the last element is already smaller than what we look for
 	if (list.IsEmpty() || list[list.Size() - 1]->index < index)
 	{
-		// dbg("Nothing removed");
+		// LOG_DBG("Nothing removed");
 		return 0;
 	}
 
@@ -76,7 +76,7 @@ size_t Remove(L& list, const size_t index, const bool allFollowing)
 		std::shared_ptr<T> elem = list[i];
 		if (elem->index == index || (allFollowing && elem->index > index))
 		{
-			// dbg("Removing index=%d", i);
+			// LOG_DBG("Removing index={:d}", i);
 			list.Erase(i);
 			elem.reset();
 			++removed;

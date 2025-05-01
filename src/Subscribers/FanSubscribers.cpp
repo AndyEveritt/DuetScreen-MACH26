@@ -22,7 +22,7 @@ bool FanSubscribers::actualValue(Comm::JsonDecoder* decoder, const float& data, 
 {
 	if (!OM::UpdateFanActualVal(indices[0], data))
 	{
-		error("Failed to update fan %d actualValue to %.2f", indices[0], data);
+		LOG_ERROR("Failed to update fan {:d} actualValue to {:g}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -32,7 +32,7 @@ bool FanSubscribers::requestedValue(Comm::JsonDecoder* decoder, const float& dat
 {
 	if (!OM::UpdateFanRequestedVal(indices[0], data))
 	{
-		error("Failed to update fan %d requestedValue to %.2f", indices[0], data);
+		LOG_ERROR("Failed to update fan {:d} requestedValue to {:g}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -42,7 +42,7 @@ bool FanSubscribers::rpm(Comm::JsonDecoder* decoder, const int32_t& data, const 
 {
 	if (!OM::UpdateFanRpm(indices[0], data))
 	{
-		error("Failed to update fan %d rpm to %d", indices[0], data);
+		LOG_ERROR("Failed to update fan {:d} rpm to {:d}", indices[0], data);
 		return false;
 	}
 	return true;
@@ -53,6 +53,6 @@ bool FanSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]
 	if (OM::RemoveFan(indices[0], true))
 	{
 	}
-	Model::get().newFanData();
+	Model::get().post<EventType::FanData>();
 	return true;
 }

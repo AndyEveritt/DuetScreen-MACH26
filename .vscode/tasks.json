@@ -25,8 +25,7 @@
 				"isDefault": true
 			},
 			"dependsOn": [
-				"CMake: configure",
-				"Clang Format"
+				"CMake: configure"
 			]
 		},
 		{
@@ -87,6 +86,28 @@
 				"cwd": "${config:buildroot_path}",
 				"env": {
 					"DUETSCREEN_SRC": "${workspaceFolder}",
+					"DUETSCREEN_PRESET": "T113-Debug",
+					"PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+				}
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"detail": "Builds DuetScreen for remote debugging",
+		},
+		{
+			"label": "Build DuetScreen for Remote - Release",
+			"type": "shell",
+			"command": "make duetscreen-rebuild",
+			"args": [],
+			"options": {
+				"cwd": "${config:buildroot_path}",
+				"env": {
+					"DUETSCREEN_SRC": "${workspaceFolder}",
 					"PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 				}
 			},
@@ -114,6 +135,26 @@
 			"detail": "Push the DuetScreen binary to the screen and restart the service",
 			"dependsOn": [
 				"Build DuetScreen for Remote"
+			],
+			"runOptions": {
+				"instanceLimit": 1
+			}
+		},
+		{
+			"label": "Push DuetScreen - SSH - Release",
+			"type": "shell",
+			"options": {
+				"cwd": "${config:buildroot_path}"
+			},
+			"command": "command ssh root@${config:duetscreen_ip} 'start-stop-daemon -K -n DuetScreen';scp output/target/usr/bin/DuetScreen root@${config:duetscreen_ip}:/usr/bin/DuetScreen",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"detail": "Push the DuetScreen binary to the screen and restart the service",
+			"dependsOn": [
+				"Build DuetScreen for Remote - Release"
 			],
 			"runOptions": {
 				"instanceLimit": 1
@@ -191,7 +232,7 @@
 				"cwd": "${workspaceFolder}"
 			},
 			"dependsOn": [
-				"Build DuetScreen for Remote"
+				"Build DuetScreen for Remote - Release"
 			]
 		}
 	]
