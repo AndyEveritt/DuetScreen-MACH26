@@ -182,12 +182,12 @@ namespace UI
 										   m_legend,
 										   displayName.c_str(),
 										   layout_t(0, 0, 100, 20));
-		legendObj.get()->setBgColor(color, LV_STATE_CHECKED);
-		legendObj.get()->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
-		legendObj.get()->setCheckable(true);
-		legendObj.get()->setChecked(true);
-		legendObj.get()->setCallback(legendEvent, LV_EVENT_CLICKED, this);
-		legendObj.get()->setUserData(new size_t(index));
+		legendObj->setBgColor(color, LV_STATE_CHECKED);
+		legendObj->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
+		legendObj->setCheckable(true);
+		legendObj->setChecked(true);
+		legendObj->setCallback(legendEvent, LV_EVENT_CLICKED, this);
+		legendObj->setUserData(new size_t(index));
 		m_series.push_back(series_t(series, color, legendObj));
 		return true;
 	}
@@ -214,7 +214,7 @@ namespace UI
 			LOG_WARN("Cannot update series, series not found");
 			return false;
 		}
-		legend_obj_t* legendObj = series->legendObj.get();
+		auto legendObj = series->legendObj;
 		legendObj->setText(displayName.c_str());
 		return true;
 	}
@@ -237,7 +237,7 @@ namespace UI
 		for (auto& series : m_series)
 		{
 			lv_chart_remove_series(m_chart, series.series);
-			delete (size_t*)series.legendObj.get()->getUserData();
+			delete (size_t*)series.legendObj->getUserData();
 		}
 		m_series.clear();
 	}
@@ -252,7 +252,7 @@ namespace UI
 			return;
 		}
 		lv_chart_remove_series(m_chart, series->series);
-		delete (std::string*)series->legendObj.get()->getUserData();
+		delete (std::string*)series->legendObj->getUserData();
 		m_series.erase(m_series.begin() + index);
 	}
 
@@ -273,10 +273,10 @@ namespace UI
 		UI_LOCK();
 		Graph* g = (Graph*)lv_event_get_user_data(e);
 		lv_obj_t* btn = lv_event_get_target_obj(e);
-		size_t* index = (size_t*)lv_obj_get_user_data(btn);
+		size_t index = *(size_t*)lv_obj_get_user_data(btn);
 
 		// checked is inverted since this callback runs before the state is updated
-		g->showSeries(*index, !lv_obj_has_state(btn, LV_STATE_CHECKED));
+		g->showSeries(index, lv_obj_has_state(btn, LV_STATE_CHECKED));
 	}
 
 	void Graph::setSeriesColor(series_t& series, lv_color_t color)
@@ -285,7 +285,7 @@ namespace UI
 		lv_chart_set_series_color(m_chart, series.series, color);
 		series.color = color;
 
-		lv_obj_t* legendObj = series.legendObj.get()->getCont();
+		auto legendObj = series.legendObj->getCont();
 		lv_obj_set_style_bg_color(legendObj, color, LV_STATE_CHECKED);
 		lv_obj_set_style_bg_color(legendObj, s_hiddenColor, LV_STATE_DEFAULT);
 	}
