@@ -12,7 +12,7 @@ namespace UI
 	class AxisItem : public BaseView
 	{
 	  public:
-		AxisItem(const size_t index, lv_obj_t* parent, layout_t layout);
+		AxisItem(const size_t index, MoveView* list, lv_obj_t* parent, layout_t layout);
 		virtual ~AxisItem();
 
 		const size_t getIndex() const { return m_index; }
@@ -28,7 +28,7 @@ namespace UI
 
 		size_t m_index;
 
-		MoveView* m_list;
+		MoveView* m_list = nullptr;
 
 		Button m_home;
 		Button m_relMove[8];

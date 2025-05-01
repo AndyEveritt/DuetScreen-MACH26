@@ -11,9 +11,10 @@ namespace UI
 	static constexpr uint32_t s_feedRates[] = {300, 100, 50, 20, 10, 5};						   // mm/s
 	static uint32_t s_currentFeedRateIndex = 2;
 
-	AxisItem::AxisItem(const size_t index, lv_obj_t* parent, layout_t layout)
+	AxisItem::AxisItem(const size_t index, MoveView* list, lv_obj_t* parent, layout_t layout)
 		: BaseView(utils::format("move_axis_item_%u", index), parent, layout)
 		, m_index(index)
+		, m_list(list)
 		, m_home(utils::format("move_axis_%u_home", index), getCont(), "", layout_t(0, 0, 0, 100))
 		, m_relMove{Button(utils::format("move_axis_%u_rel_move_1", index), getCont(), "", layout_t(0, 0, 0, 100)),
 					Button(utils::format("move_axis_%u_rel_move_2", index), getCont(), "", layout_t(0, 0, 0, 100)),
@@ -254,7 +255,7 @@ namespace UI
 		m_axisItems.reserve(count);
 		for (size_t i = getAxisCount(); i < count; ++i)
 		{
-			m_axisItems.emplace_back(std::make_unique<AxisItem>(i, m_listCont, layout_t(0, 0, 100, 20)));
+			m_axisItems.emplace_back(std::make_unique<AxisItem>(i, this, m_listCont, layout_t(0, 0, 100, 20)));
 		}
 	}
 
