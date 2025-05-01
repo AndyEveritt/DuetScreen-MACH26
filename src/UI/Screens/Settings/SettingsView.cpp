@@ -136,8 +136,10 @@ namespace UI
 		lv_event_code_t code = lv_event_get_code(e);
 		lv_obj_t* ta = (lv_obj_t*)lv_event_get_target(e);
 		SettingsSubView* view = (SettingsSubView*)lv_event_get_user_data(e);
-		lv_keyboard_mode_t mode =
-			lv_textarea_get_accepted_chars(ta) == "0123456789" ? LV_KEYBOARD_MODE_NUMBER : LV_KEYBOARD_MODE_TEXT_LOWER;
+		const char* acceptedChars = lv_textarea_get_accepted_chars(ta);
+		lv_keyboard_mode_t mode = (!acceptedChars || strpbrk(acceptedChars, "abcdefghijklmnopqrstuvwxyz") != nullptr)
+									  ? LV_KEYBOARD_MODE_TEXT_LOWER
+									  : LV_KEYBOARD_MODE_NUMBER;
 		if (code == LV_EVENT_FOCUSED)
 		{
 			view->getMainSettingsView()->showKeyboard(true, mode, ta);
@@ -174,6 +176,7 @@ namespace UI
 		lv_textarea_set_one_line(m_hostname, true);
 		lv_textarea_set_placeholder_text(m_hostname, _("settings_duet_hostname"));
 		lv_textarea_set_text(m_hostname, Comm::DUET.GetHostname().c_str());
+		lv_textarea_set_accepted_chars(m_hostname, "0123456789.");
 		lv_obj_add_event_cb(m_hostname, onTextAreaEvent, LV_EVENT_ALL, this);
 
 		// Password
