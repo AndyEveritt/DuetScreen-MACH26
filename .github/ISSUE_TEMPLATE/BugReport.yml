@@ -2,6 +2,7 @@ name: Bug Report
 description: File a bug report
 title: "[Bug]: "
 labels: [bug]
+type: Bug
 assignees:
 - AndyEveritt
 body:
@@ -95,6 +96,7 @@ body:
   attributes:
     label: Are you using a Single Board Computer (RaspberryPi) with your Duet?
     description: SBC - Yes or No.
+    default: 1
     options:
       - Yes I use a SBC.
       - No I do not use a SBC.
