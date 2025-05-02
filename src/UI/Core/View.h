@@ -35,6 +35,19 @@ namespace UI
 		lv_coord_t h;
 	};
 
+	enum class Padding
+	{
+		ALL,
+		HORIZONTAL,
+		VERTICAL,
+		TOP,
+		BOTTOM,
+		LEFT,
+		RIGHT,
+		COLUMN,
+		ROW,
+	};
+
 	class BasePresenter;
 
 	class BaseView

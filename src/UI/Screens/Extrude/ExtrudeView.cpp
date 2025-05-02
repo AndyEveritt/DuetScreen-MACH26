@@ -13,13 +13,12 @@ namespace UI
 	static uint32_t s_selectedExtrusionFeedRateIndex = 2;
 	static uint32_t s_selectedExtrusionFeedDistanceIndex = 2;
 
-	ToolItem::ToolItem(const size_t index, ExtrudeView* view, lv_obj_t* parent, layout_t layout)
-		: BaseView(utils::format("move_axis_item_%u", index), parent, layout)
-		, m_index(index)
+	ToolItem::ToolItem(const size_t index, lv_obj_t* parent, ExtrudeView& view)
+		: ListItem("move_axis_item", index, parent)
 		, m_selected(false)
 		, m_list(view)
 		, m_label(lv_label_create(getCont()))
-		, m_heaterList(lv_obj_create(getCont()))
+		, m_heaters(utils::format("tool_%u_heaters", index), getCont())
 		, m_filamentControls(lv_obj_create(getCont()))
 		, m_filament(lv_dropdown_create(m_filamentControls))
 		, m_unload(utils::format("extrude_unload_%u", index), m_filamentControls, _("unload"), layout_t(0, 0, 0, 100))
@@ -28,7 +27,7 @@ namespace UI
 
 		// Layout
 		constexpr lv_coord_t pad = 2;
-		lv_obj_set_height(getCont(), LV_SIZE_CONTENT);
+		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_all(getCont(), pad, 0);
 		lv_obj_set_style_pad_column(getCont(), pad, 0);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
@@ -58,9 +57,11 @@ namespace UI
 		lv_obj_set_height(m_filament, LV_SIZE_CONTENT);
 		lv_obj_set_height(m_unload.getCont(), LV_SIZE_CONTENT);
 
-		lv_obj_set_height(m_heaterList, LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(m_heaterList, pad, 0);
-		lv_obj_set_flex_flow(m_heaterList, LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_height(m_heaters, LV_SIZE_CONTENT);
+		lv_obj_set_style_pad_all(m_heaters, pad, 0);
+		m_heaters.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_heaters.setListPad(0);
+		m_heaters.setListGrow(0);
 
 		// Callbacks
 		lv_obj_add_flag(m_label, LV_OBJ_FLAG_CLICKABLE);
@@ -186,7 +187,7 @@ namespace UI
 
 	size_t ToolItem::getHeaterCount() const
 	{
-		return m_heaters.size();
+		return m_heaters.getItemCount();
 	}
 
 	void ToolItem::setSelected(const bool selected)
@@ -213,35 +214,16 @@ namespace UI
 	void ToolItem::setHeaterCount(const size_t count)
 	{
 		UI_LOCK();
-		if (count == getHeaterCount())
-		{
-			return;
-		}
-		if (count < getHeaterCount())
-		{
-			m_heaters.resize(count);
-			return;
-		}
-
-		m_heaters.reserve(count);
-		for (size_t i = getHeaterCount(); i < count; ++i)
-		{
-			m_heaters.emplace_back(std::make_shared<Heater>(i, *this, m_heaterList));
-		}
+		m_heaters.setItemCount(count, *this);
 	}
 
 	std::shared_ptr<ToolItem::Heater> ToolItem::getHeater(const size_t index)
 	{
-		if (index >= m_heaters.size())
-		{
-			return nullptr;
-		}
-		return m_heaters[index];
+		return m_heaters.getItem(index);
 	}
 
-	ToolItem::Heater::Heater(const size_t index, ToolItem& toolItem, lv_obj_t* parent)
-		: BaseView("extrude_heater", parent)
-		, index(index)
+	ToolItem::Heater::Heater(const size_t index, lv_obj_t* parent, ToolItem& toolItem)
+		: ListItem("extrude_heater", index, parent)
 		, tool(toolItem)
 		, labelCont(lv_obj_create(getCont()))
 		, label(lv_label_create(labelCont))
@@ -297,14 +279,14 @@ namespace UI
 	{
 		UI_LOCK();
 		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
-		item->getList()->toggleToolState(item->m_index);
+		item->getList().toggleToolState(item->getIndex());
 	}
 
 	void ToolItem::Heater::onStatusEvent(lv_event_t* e)
 	{
 		UI_LOCK();
 		ToolItem::Heater* heater = static_cast<ToolItem::Heater*>(lv_event_get_user_data(e));
-		heater->tool.getList()->toggleHeaterState(heater->tool.m_index, heater->index);
+		heater->tool.getList().toggleHeaterState(heater->tool.getIndex(), heater->getIndex());
 	}
 
 	void ToolItem::Heater::onTemperaturesSetEvent(lv_event_t* e)
@@ -312,9 +294,9 @@ namespace UI
 		UI_LOCK();
 		ToolItem::Heater* heater = static_cast<ToolItem::Heater*>(lv_event_get_user_data(e));
 		lv_obj_t* obj = lv_event_get_target_obj(e);
-		heater->tool.getList()->m_presenter->configureNumberPad(
-			heater->tool.m_index, heater->index, obj == heater->active);
-		heater->tool.getList()->showNumberPad(true);
+		heater->tool.getList().m_presenter->configureNumberPad(
+			heater->tool.getIndex(), heater->getIndex(), obj == heater->active);
+		heater->tool.getList().showNumberPad(true);
 	}
 
 	void ToolItem::onLoadFilamentEvent(lv_event_t* e)
@@ -323,14 +305,14 @@ namespace UI
 		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
 		char selectedFilament[MAX_FILAMENT_NAME_LENGTH];
 		lv_dropdown_get_selected_str(item->m_filament, selectedFilament, sizeof(selectedFilament));
-		item->getList()->loadFilament(item->m_index, selectedFilament);
+		item->getList().loadFilament(item->getIndex(), selectedFilament);
 	}
 
 	void ToolItem::onUnloadEvent(lv_event_t* e)
 	{
 		UI_LOCK();
 		ToolItem* item = static_cast<ToolItem*>(lv_event_get_user_data(e));
-		item->getList()->unloadFilament(item->m_index);
+		item->getList().unloadFilament(item->getIndex());
 	}
 
 	ExtrudeView::ExtrudeView(lv_obj_t* parent)
@@ -347,6 +329,7 @@ namespace UI
 		, m_headerStandby(lv_label_create(m_listHeader))
 		, m_headerFilament(lv_label_create(m_listHeader))
 		, m_headerPad(lv_obj_create(m_listHeader))
+		, m_toolItems("extrude_tool_items", m_listCont)
 		, m_feedDistCont(lv_obj_create(m_bottomBarCont))
 		, m_feedRateCont(lv_obj_create(m_bottomBarCont))
 		, m_extrudeControlCont(lv_obj_create(m_bottomBarCont))
@@ -421,8 +404,9 @@ namespace UI
 		lv_obj_set_height(m_headerPad, 0); // effectively hides it
 
 		// List
-		lv_obj_set_flex_flow(m_listCont, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_style_pad_row(m_listCont, 2, 0);
+		lv_obj_set_style_pad_all(m_listCont, 0, 0);
+		lv_obj_set_size(m_toolItems, LV_PCT(100), LV_PCT(100));
+		m_toolItems.setListPad(0);
 
 		// Bottom Bar
 		lv_obj_set_style_pad_all(m_bottomBarCont, 5, 0);
@@ -495,31 +479,13 @@ namespace UI
 	void ExtrudeView::setToolCount(const size_t count)
 	{
 		UI_LOCK();
-		if (count == getToolCount())
-		{
-			return;
-		}
-		if (count < getToolCount())
-		{
-			m_toolItems.resize(count);
-			return;
-		}
-
-		m_toolItems.reserve(count);
-		for (size_t i = getToolCount(); i < count; ++i)
-		{
-			m_toolItems.emplace_back(std::make_unique<ToolItem>(i, this, m_listCont, layout_t(0, 0, 100, 20)));
-		}
+		m_toolItems.setItemCount(count, *this);
 	}
 
-	std::shared_ptr<ToolItem> ExtrudeView::getExtruderItem(size_t index) const
+	std::shared_ptr<ToolItem> ExtrudeView::getExtruderItem(const size_t index) const
 	{
 		UI_LOCK();
-		if (index < m_toolItems.size())
-		{
-			return m_toolItems[index];
-		}
-		return nullptr;
+		return m_toolItems.getItem(index);
 	}
 
 	void ExtrudeView::toggleToolState(size_t index)

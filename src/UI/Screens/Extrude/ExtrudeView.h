@@ -2,6 +2,7 @@
 
 #include "ExtrudePresenter.h"
 #include "UI/Components/Button.h"
+#include "UI/Components/List/List.h"
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 
@@ -9,14 +10,13 @@ namespace UI
 {
 	class ExtrudeView;
 
-	class ToolItem : public BaseView
+	class ToolItem : public ListItem
 	{
 	  public:
-		ToolItem(const size_t index, ExtrudeView* view, lv_obj_t* parent, layout_t layout);
+		ToolItem(const size_t index, lv_obj_t* parent, ExtrudeView& view);
 		virtual ~ToolItem();
 
-		const size_t getIndex() const { return m_index; }
-		ExtrudeView* getList() const { return m_list; }
+		ExtrudeView& getList() const { return m_list; }
 		void setLabel(const char* name);
 		void setSelected(const bool selected);
 		void setHeaterCount(const size_t count);
@@ -35,12 +35,11 @@ namespace UI
 		static void onLoadFilamentEvent(lv_event_t* e);
 		static void onUnloadEvent(lv_event_t* e);
 
-		class Heater : BaseView
+		class Heater : public ListItem
 		{
 		  public:
-			Heater(const size_t index, ToolItem& toolItem, lv_obj_t* parent);
+			Heater(const size_t index, lv_obj_t* parent, ToolItem& toolItem);
 
-			size_t index;
 			ToolItem& tool;
 			lv_obj_t* labelCont;
 			lv_obj_t* label;
@@ -58,14 +57,12 @@ namespace UI
 
 		std::shared_ptr<Heater> getHeater(const size_t index);
 
-		size_t m_index;
 		bool m_selected;
 
-		ExtrudeView* m_list;
+		ExtrudeView& m_list;
 
 		lv_obj_t* m_label;
-		lv_obj_t* m_heaterList;
-		std::vector<std::shared_ptr<Heater>> m_heaters;
+		List<Heater> m_heaters;
 		lv_obj_t* m_filamentControls;
 		lv_obj_t* m_filament;
 		Button m_unload;
@@ -79,9 +76,9 @@ namespace UI
 
 		ExtrudeView(lv_obj_t* parent);
 
-		const size_t getToolCount() const { return m_toolItems.size(); }
+		const size_t getToolCount() const { return m_toolItems.getItemCount(); }
 		void setToolCount(const size_t count);
-		std::shared_ptr<ToolItem> getExtruderItem(size_t index) const;
+		std::shared_ptr<ToolItem> getExtruderItem(const size_t index) const;
 
 		void toggleToolState(size_t toolIndex);
 		void toggleHeaterState(size_t toolIndex, size_t heaterIndex);
@@ -114,7 +111,7 @@ namespace UI
 		lv_obj_t* m_headerStandby;
 		lv_obj_t* m_headerFilament;
 		lv_obj_t* m_headerPad;
-		std::vector<std::shared_ptr<ToolItem>> m_toolItems;
+		List<ToolItem> m_toolItems;
 
 		// Bottom Container
 		lv_obj_t* m_feedDistCont;

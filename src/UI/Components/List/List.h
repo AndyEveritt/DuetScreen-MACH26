@@ -47,9 +47,10 @@ namespace UI
 		{
 			lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 			lv_obj_set_size(m_title, LV_PCT(100), LV_SIZE_CONTENT);
-			lv_obj_set_width(m_listCont, LV_PCT(100));
+			lv_obj_set_size(m_listCont, LV_PCT(100), LV_PCT(100));
 			lv_obj_set_flex_grow(m_listCont, 1);
 
+			showTitle(false);
 			setLayout(Layout::VERTICAL);
 		}
 
@@ -57,10 +58,56 @@ namespace UI
 		{
 			UI_LOCK();
 			lv_label_set_text(m_title, title.c_str());
+			showTitle(!title.empty());
+		}
+
+		void showTitle(bool show)
+		{
+			UI_LOCK();
+			lv_obj_set_flag(m_title, LV_OBJ_FLAG_HIDDEN, !show);
+		}
+
+		void setListPad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL)
+		{
+			UI_LOCK();
+			switch (type)
+			{
+			case Padding::ALL:
+				lv_obj_set_style_pad_all(m_listCont, pad, selector);
+				break;
+			case Padding::LEFT:
+				lv_obj_set_style_pad_left(m_listCont, pad, selector);
+				break;
+			case Padding::RIGHT:
+				lv_obj_set_style_pad_right(m_listCont, pad, selector);
+				break;
+			case Padding::TOP:
+				lv_obj_set_style_pad_top(m_listCont, pad, selector);
+				break;
+			case Padding::BOTTOM:
+				lv_obj_set_style_pad_bottom(m_listCont, pad, selector);
+				break;
+			case Padding::COLUMN:
+				lv_obj_set_style_pad_column(m_listCont, pad, selector);
+				break;
+			case Padding::ROW:
+				lv_obj_set_style_pad_row(m_listCont, pad, selector);
+				break;
+			case Padding::HORIZONTAL:
+				lv_obj_set_style_pad_hor(m_listCont, pad, selector);
+				break;
+			case Padding::VERTICAL:
+				lv_obj_set_style_pad_ver(m_listCont, pad, selector);
+				break;
+			default:
+				LOG_WARN("Unknown padding type");
+				break;
+			}
 		}
 
 		void setLayout(Layout layout)
 		{
+			UI_LOCK();
 			switch (layout)
 			{
 			case Layout::VERTICAL:
@@ -73,6 +120,18 @@ namespace UI
 				LOG_WARN("Unknown layout type");
 				break;
 			}
+		}
+
+		void setListGrow(const uint8_t grow)
+		{
+			UI_LOCK();
+			lv_obj_set_flex_grow(m_listCont, grow);
+		}
+
+		void setListSize(const lv_coord_t w, const lv_coord_t h)
+		{
+			UI_LOCK();
+			lv_obj_set_size(m_listCont, w, h);
 		}
 
 		template <typename... Args>
@@ -98,7 +157,7 @@ namespace UI
 		}
 		const size_t getItemCount() const { return m_list.size(); }
 
-		std::shared_ptr<T> getItem(const size_t index)
+		std::shared_ptr<T> getItem(const size_t index) const
 		{
 			UI_LOCK();
 			if (index >= m_list.size())
