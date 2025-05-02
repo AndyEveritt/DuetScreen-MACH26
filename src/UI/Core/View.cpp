@@ -128,6 +128,44 @@ namespace UI
 		lv_obj_align(getCont(), align, x, y);
 	}
 
+	void BaseView::setPad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
+	{
+		UI_LOCK();
+		switch (type)
+		{
+		case Padding::ALL:
+			lv_obj_set_style_pad_all(m_cont, pad, selector);
+			break;
+		case Padding::LEFT:
+			lv_obj_set_style_pad_left(m_cont, pad, selector);
+			break;
+		case Padding::RIGHT:
+			lv_obj_set_style_pad_right(m_cont, pad, selector);
+			break;
+		case Padding::TOP:
+			lv_obj_set_style_pad_top(m_cont, pad, selector);
+			break;
+		case Padding::BOTTOM:
+			lv_obj_set_style_pad_bottom(m_cont, pad, selector);
+			break;
+		case Padding::COLUMN:
+			lv_obj_set_style_pad_column(m_cont, pad, selector);
+			break;
+		case Padding::ROW:
+			lv_obj_set_style_pad_row(m_cont, pad, selector);
+			break;
+		case Padding::HORIZONTAL:
+			lv_obj_set_style_pad_hor(m_cont, pad, selector);
+			break;
+		case Padding::VERTICAL:
+			lv_obj_set_style_pad_ver(m_cont, pad, selector);
+			break;
+		default:
+			LOG_WARN("Unknown padding type");
+			break;
+		}
+	}
+
 	void BaseView::setStyle(lv_style_t* style, lv_style_selector_t selector)
 	{
 		UI_LOCK();

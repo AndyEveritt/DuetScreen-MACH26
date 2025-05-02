@@ -2,6 +2,7 @@
 
 #include "MovePresenter.h"
 #include "UI/Components/Button.h"
+#include "UI/Components/List/List.h"
 #include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Core/View.h"
 
@@ -9,14 +10,13 @@ namespace UI
 {
 	class MoveView;
 
-	class AxisItem : public BaseView
+	class AxisItem : public ListItem
 	{
 	  public:
-		AxisItem(const size_t index, MoveView* list, lv_obj_t* parent, layout_t layout);
+		AxisItem(const size_t index, lv_obj_t* parent, MoveView& list);
 		virtual ~AxisItem();
 
-		const size_t getIndex() const { return m_index; }
-		MoveView* getList() const { return m_list; }
+		MoveView& getList() const { return m_list; }
 		void setAxisLetter(const char* letter);
 		void setHomed(const bool homed);
 		void setToolPosition(const float& position);
@@ -26,9 +26,7 @@ namespace UI
 		static void onHomeEvent(lv_event_t* e);
 		static void onRelMoveEvent(lv_event_t* e);
 
-		size_t m_index;
-
-		MoveView* m_list = nullptr;
+		MoveView& m_list;
 
 		Button m_home;
 		Button m_relMove[8];
@@ -43,7 +41,7 @@ namespace UI
 
 		MoveView(lv_obj_t* parent);
 
-		const size_t getAxisCount() const { return m_axisItems.size(); }
+		const size_t getAxisCount() const { return m_axisItems.getItemCount(); }
 		void setAxisCount(const size_t count);
 		std::shared_ptr<AxisItem> getAxisItem(size_t index) const;
 
@@ -77,7 +75,7 @@ namespace UI
 		lv_obj_t* m_listHeaderPadding;
 		lv_obj_t* m_toolPositionLabel;
 		lv_obj_t* m_machinePositionLabel;
-		std::vector<std::shared_ptr<AxisItem>> m_axisItems;
+		List<AxisItem> m_axisItems;
 
 		// Bottom Bar
 		lv_obj_t* m_feedRateLabel;

@@ -11,9 +11,8 @@ namespace UI
 	static constexpr uint32_t s_feedRates[] = {300, 100, 50, 20, 10, 5};						   // mm/s
 	static uint32_t s_currentFeedRateIndex = 2;
 
-	AxisItem::AxisItem(const size_t index, MoveView* list, lv_obj_t* parent, layout_t layout)
-		: BaseView(utils::format("move_axis_item_%u", index), parent, layout)
-		, m_index(index)
+	AxisItem::AxisItem(const size_t index, lv_obj_t* parent, MoveView& list)
+		: ListItem("move_axis_item", index, parent)
 		, m_list(list)
 		, m_home(utils::format("move_axis_%u_home", index), getCont(), "", layout_t(0, 0, 0, 100))
 		, m_relMove{Button(utils::format("move_axis_%u_rel_move_1", index), getCont(), "", layout_t(0, 0, 0, 100)),
@@ -30,6 +29,7 @@ namespace UI
 		// Layout
 		UI_LOCK();
 		constexpr lv_coord_t pad = 2;
+		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_all(getCont(), pad, 0);
 		lv_obj_set_style_pad_column(getCont(), pad, 0);
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
@@ -87,7 +87,7 @@ namespace UI
 	{
 		UI_LOCK();
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
-		item->getList()->m_presenter->homeAxis(item->getIndex());
+		item->getList().m_presenter->homeAxis(item->getIndex());
 	}
 
 	void AxisItem::onRelMoveEvent(lv_event_t* e)
@@ -98,7 +98,7 @@ namespace UI
 		uintptr_t index = (uintptr_t)lv_obj_get_user_data(btn);
 
 		float distance = s_relMoveValues[index];
-		item->getList()->m_presenter->moveAxisRelative(item->getIndex(), distance, s_feedRates[s_currentFeedRateIndex]);
+		item->getList().m_presenter->moveAxisRelative(item->getIndex(), distance, s_feedRates[s_currentFeedRateIndex]);
 	}
 
 	MoveView::MoveView(lv_obj_t* parent)
@@ -107,7 +107,6 @@ namespace UI
 		, m_layoutRowDsc{LV_GRID_FR(1), 30, LV_GRID_FR(3), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_topBarCont(lv_obj_create(getCont()))
 		, m_listHeader(lv_obj_create(getCont()))
-		, m_listCont(lv_obj_create(getCont()))
 		, m_bottomBarCont(lv_obj_create(getCont()))
 		, m_homeAll("move_home_all", m_topBarCont, _("home_all"), layout_t(0, 0, 0, 100))
 		, m_trueBedLevel("move_true_bed_level", m_topBarCont, _("true_bed_level"), layout_t(0, 0, 0, 100))
@@ -117,6 +116,7 @@ namespace UI
 		, m_listHeaderPadding(lv_obj_create(m_listHeader))
 		, m_toolPositionLabel(lv_label_create(m_listHeader))
 		, m_machinePositionLabel(lv_label_create(m_listHeader))
+		, m_axisItems("move_list", getCont())
 		, m_feedRateLabel(lv_label_create(m_bottomBarCont))
 		, m_feedRates{Button("move_feed_rate_1", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
 					  Button("move_feed_rate_2", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
@@ -132,7 +132,7 @@ namespace UI
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_topBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_listHeader, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		lv_obj_set_grid_cell(m_listCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
+		lv_obj_set_grid_cell(m_axisItems, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
 		lv_obj_set_grid_cell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
 
 		// Top Bar
@@ -169,8 +169,8 @@ namespace UI
 		m_disableMotors.setCallback(onDisableMotorsEvent, LV_EVENT_CLICKED, this);
 
 		// List
-		lv_obj_set_flex_flow(m_listCont, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_style_pad_row(m_listCont, 2, 0);
+		m_axisItems.setPad(0);
+		m_axisItems.setListPad(0);
 
 		// Bottom Bar
 		lv_obj_set_style_pad_all(m_bottomBarCont, pad, 0);
@@ -241,31 +241,11 @@ namespace UI
 
 	void MoveView::setAxisCount(const size_t count)
 	{
-		UI_LOCK();
-		if (count == getAxisCount())
-		{
-			return;
-		}
-		if (count < getAxisCount())
-		{
-			m_axisItems.resize(count);
-			return;
-		}
-
-		m_axisItems.reserve(count);
-		for (size_t i = getAxisCount(); i < count; ++i)
-		{
-			m_axisItems.emplace_back(std::make_unique<AxisItem>(i, this, m_listCont, layout_t(0, 0, 100, 20)));
-		}
+		m_axisItems.setItemCount(count, *this);
 	}
 
 	std::shared_ptr<AxisItem> MoveView::getAxisItem(size_t index) const
 	{
-		UI_LOCK();
-		if (index < m_axisItems.size())
-		{
-			return m_axisItems[index];
-		}
-		return nullptr;
+		return m_axisItems.getItem(index);
 	}
 } // namespace UI
