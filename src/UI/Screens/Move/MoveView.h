@@ -29,7 +29,7 @@ namespace UI
 		MoveView& m_list;
 
 		Button m_home;
-		Button m_relMove[8];
+		List<Button> m_relMove;
 		lv_obj_t* m_toolPosition;
 		lv_obj_t* m_machinePosition;
 	};
@@ -78,7 +78,6 @@ namespace UI
 		List<AxisItem> m_axisItems;
 
 		// Bottom Bar
-		lv_obj_t* m_feedRateLabel;
-		Button m_feedRates[6];
+		List<Button> m_feedRates;
 	};
 } // namespace UI
