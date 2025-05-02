@@ -85,6 +85,12 @@ namespace UI
 		lv_obj_set_flex_flow(getCont(), flow);
 	}
 
+	void BaseView::setFlexGrow(uint8_t grow)
+	{
+		UI_LOCK();
+		lv_obj_set_flex_grow(getCont(), grow);
+	}
+
 	void BaseView::setLayout(layout_t layout)
 	{
 		UI_LOCK();
@@ -92,28 +98,40 @@ namespace UI
 		lv_obj_set_size(getCont(), lv_pct(layout.w), lv_pct(layout.h));
 	}
 
-	void BaseView::setWidth(int widthPct)
+	void BaseView::setWidth(lv_coord_t width)
 	{
 		UI_LOCK();
-		lv_obj_set_width(getCont(), lv_pct(widthPct));
+		lv_obj_set_width(getCont(), lv_pct(width));
 	}
 
-	void BaseView::setHeight(int heightPct)
+	void BaseView::setHeight(lv_coord_t height)
 	{
 		UI_LOCK();
-		lv_obj_set_height(getCont(), lv_pct(heightPct));
+		lv_obj_set_height(getCont(), height);
 	}
 
-	void BaseView::setX(int xPct)
+	void BaseView::setSize(lv_coord_t width, lv_coord_t height)
 	{
 		UI_LOCK();
-		lv_obj_set_x(getCont(), lv_pct(xPct));
+		lv_obj_set_size(getCont(), width, height);
 	}
 
-	void BaseView::setY(int yPct)
+	void BaseView::setX(lv_coord_t x)
 	{
 		UI_LOCK();
-		lv_obj_set_y(getCont(), lv_pct(yPct));
+		lv_obj_set_x(getCont(), x);
+	}
+
+	void BaseView::setY(lv_coord_t y)
+	{
+		UI_LOCK();
+		lv_obj_set_y(getCont(), y);
+	}
+
+	void BaseView::setPos(lv_coord_t x, lv_coord_t y)
+	{
+		UI_LOCK();
+		lv_obj_set_pos(getCont(), x, y);
 	}
 
 	void BaseView::setFlag(lv_obj_flag_t flag, bool enable)

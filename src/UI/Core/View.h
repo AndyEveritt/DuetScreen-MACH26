@@ -85,11 +85,14 @@ namespace UI
 		layout_t getLayout();
 
 		void setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow = LV_FLEX_FLOW_ROW);
+		void setFlexGrow(uint8_t grow);
 		void setLayout(layout_t layout);
-		void setWidth(int widthPct);
-		void setHeight(int heightPct);
-		void setX(int xPct);
-		void setY(int yPct);
+		void setWidth(lv_coord_t width);
+		void setHeight(lv_coord_t height);
+		void setSize(lv_coord_t width, lv_coord_t height);
+		void setX(lv_coord_t x);
+		void setY(lv_coord_t y);
+		void setPos(lv_coord_t x, lv_coord_t y);
 		void setFlag(lv_obj_flag_t flag, bool enable);
 		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
 		void setPad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);

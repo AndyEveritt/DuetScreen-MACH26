@@ -15,14 +15,7 @@ namespace UI
 		: ListItem("move_axis_item", index, parent)
 		, m_list(list)
 		, m_home(utils::format("move_axis_%u_home", index), getCont(), "", layout_t(0, 0, 0, 100))
-		, m_relMove{Button(utils::format("move_axis_%u_rel_move_1", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_2", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_3", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_4", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_5", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_6", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_7", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("move_axis_%u_rel_move_8", index), getCont(), "", layout_t(0, 0, 0, 100))}
+		, m_relMove(utils::format("move_axis_%u_rel_move", index), getCont())
 		, m_toolPosition(lv_label_create(getCont()))
 		, m_machinePosition(lv_label_create(getCont()))
 	{
@@ -35,13 +28,26 @@ namespace UI
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_flex_grow(m_home.getCont(), 4);
-		for (Button& relMove : m_relMove)
-		{
-			relMove.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&relMove - m_relMove)));
-			relMove.setCallback(onRelMoveEvent, LV_EVENT_CLICKED, this);
-			relMove.setText(utils::format("%.1f", s_relMoveValues[&relMove - m_relMove]).c_str());
-			lv_obj_set_flex_grow(relMove.getCont(), 2);
-		}
+
+		m_relMove.setListFlow(LV_FLEX_FLOW_ROW);
+		m_relMove.setPad(0);
+		m_relMove.setListPad(0);
+		m_relMove.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_relMove.setListSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_relMove.setItemCount(ARRAY_SIZE(s_relMoveValues),
+							   [&index, this](size_t i, lv_obj_t* parent)
+							   {
+								   auto btn =
+									   std::make_shared<Button>(utils::format("axis_%u_move_rel_button_%u", index, i),
+																parent,
+																utils::format("%.1f", s_relMoveValues[i]).c_str());
+								   btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
+								   btn->setCallback(onRelMoveEvent, LV_EVENT_CLICKED, this);
+								   btn->setFlexGrow(1);
+								   lv_obj_set_height(btn->getCont(), LV_SIZE_CONTENT);
+								   return btn;
+							   });
+
 		lv_obj_set_flex_grow(m_toolPosition, 5);
 		lv_obj_set_flex_grow(m_machinePosition, 5);
 		lv_obj_set_style_text_align(m_toolPosition, LV_TEXT_ALIGN_CENTER, 0);
@@ -104,7 +110,7 @@ namespace UI
 	MoveView::MoveView(lv_obj_t* parent)
 		: View("move_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_layoutRowDsc{LV_GRID_FR(1), 30, LV_GRID_FR(3), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
+		, m_layoutRowDsc{LV_GRID_FR(1), 30, LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_topBarCont(lv_obj_create(getCont()))
 		, m_listHeader(lv_obj_create(getCont()))
 		, m_bottomBarCont(lv_obj_create(getCont()))
@@ -117,13 +123,7 @@ namespace UI
 		, m_toolPositionLabel(lv_label_create(m_listHeader))
 		, m_machinePositionLabel(lv_label_create(m_listHeader))
 		, m_axisItems("move_list", getCont())
-		, m_feedRateLabel(lv_label_create(m_bottomBarCont))
-		, m_feedRates{Button("move_feed_rate_1", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
-					  Button("move_feed_rate_2", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
-					  Button("move_feed_rate_3", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
-					  Button("move_feed_rate_4", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
-					  Button("move_feed_rate_5", m_bottomBarCont, "", layout_t(0, 0, 0, 100)),
-					  Button("move_feed_rate_6", m_bottomBarCont, "", layout_t(0, 0, 0, 100))}
+		, m_feedRates("move_feed_rates", m_bottomBarCont)
 	{
 		UI_LOCK();
 
@@ -177,18 +177,28 @@ namespace UI
 		lv_obj_set_style_pad_column(m_bottomBarCont, pad, 0);
 		lv_obj_set_flex_flow(m_bottomBarCont, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(m_bottomBarCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_flex_grow(m_feedRateLabel, 3);
-		for (Button& feedRate : m_feedRates)
-		{
-			feedRate.setText(utils::format("%u", s_feedRates[&feedRate - m_feedRates]).c_str());
-			feedRate.setCheckable(true);
-			feedRate.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&feedRate - m_feedRates)));
-			feedRate.setCallback(onFeedRateEvent, LV_EVENT_CLICKED, this);
-			lv_obj_set_flex_grow(feedRate.getCont(), 1);
-		}
-		m_feedRates[s_currentFeedRateIndex].setChecked(true);
-		lv_label_set_text(m_feedRateLabel, _("move_feedrate"));
-		lv_obj_set_style_text_align(m_feedRateLabel, LV_TEXT_ALIGN_RIGHT, 0);
+
+		assert(s_currentFeedRateIndex < ARRAY_SIZE(s_feedRates));
+
+		m_feedRates.setTitle(_("move_feedrate"));
+		m_feedRates.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_feedRates.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_feedRates.setListFlow(LV_FLEX_FLOW_ROW);
+		m_feedRates.setListPad(0);
+		m_feedRates.setItemCount(ARRAY_SIZE(s_feedRates),
+								 [this](size_t i, lv_obj_t* parent)
+								 {
+									 auto btn = std::make_shared<Button>(utils::format("move_feed_rate_%u", i),
+																		 parent,
+																		 utils::format("%u", s_feedRates[i]).c_str());
+									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
+									 btn->setCallback(onFeedRateEvent, LV_EVENT_CLICKED, this);
+									 btn->setCheckable(true);
+									 btn->setFlexGrow(1);
+									 lv_obj_set_height(btn->getCont(), LV_SIZE_CONTENT);
+									 return btn;
+								 });
+		m_feedRates.getItem(s_currentFeedRateIndex)->setChecked(true);
 	}
 
 	void MoveView::onHomeAllEvent(lv_event_t* e)
@@ -231,9 +241,9 @@ namespace UI
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
-		view->m_feedRates[s_currentFeedRateIndex].setChecked(false);
+		view->m_feedRates.getItem(s_currentFeedRateIndex)->setChecked(false);
 		s_currentFeedRateIndex = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
-		view->m_feedRates[s_currentFeedRateIndex].setChecked(true);
+		view->m_feedRates.getItem(s_currentFeedRateIndex)->setChecked(true);
 	}
 
 	void MoveView::onShow() {}

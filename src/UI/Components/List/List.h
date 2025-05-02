@@ -34,12 +34,6 @@ namespace UI
 	  public:
 		// static_assert(std::is_base_of<ListItem, T>::value, "T must inherit from ListItem");
 
-		enum class Layout
-		{
-			VERTICAL,
-			HORIZONTAL
-		};
-
 		List(const std::string& name, lv_obj_t* parent)
 			: BaseView(name, parent)
 			, m_title(lv_label_create(getCont()))
@@ -47,11 +41,10 @@ namespace UI
 		{
 			lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 			lv_obj_set_size(m_title, LV_PCT(100), LV_SIZE_CONTENT);
-			lv_obj_set_size(m_listCont, LV_PCT(100), LV_PCT(100));
-			lv_obj_set_flex_grow(m_listCont, 1);
 
 			showTitle(false);
-			setLayout(Layout::VERTICAL);
+			setListFlow(LV_FLEX_FLOW_COLUMN);
+			setListSize(LV_PCT(100), LV_PCT(100));
 		}
 
 		void setTitle(const std::string& title)
@@ -105,21 +98,10 @@ namespace UI
 			}
 		}
 
-		void setLayout(Layout layout)
+		void setListFlow(lv_flex_flow_t flow)
 		{
 			UI_LOCK();
-			switch (layout)
-			{
-			case Layout::VERTICAL:
-				lv_obj_set_flex_flow(m_listCont, LV_FLEX_FLOW_COLUMN);
-				break;
-			case Layout::HORIZONTAL:
-				lv_obj_set_flex_flow(m_listCont, LV_FLEX_FLOW_ROW);
-				break;
-			default:
-				LOG_WARN("Unknown layout type");
-				break;
-			}
+			lv_obj_set_flex_flow(m_listCont, flow);
 		}
 
 		void setListGrow(const uint8_t grow)
@@ -134,7 +116,38 @@ namespace UI
 			lv_obj_set_size(m_listCont, w, h);
 		}
 
-		template <typename... Args>
+		void setItemCount(const size_t count, std::function<std::shared_ptr<T>(size_t, lv_obj_t*)> constructor)
+		{
+			UI_LOCK();
+			const size_t currentCount = getItemCount();
+			if (count == currentCount)
+			{
+				return;
+			}
+
+			if (count < currentCount)
+			{
+				m_list.resize(count);
+			}
+
+			m_list.reserve(count);
+			for (size_t i = currentCount; i < count; i++)
+			{
+				m_list.emplace_back(constructor(i, m_listCont));
+			}
+		}
+
+		template <typename F,
+				  typename = std::enable_if_t<std::is_invocable_r_v<std::shared_ptr<T>, F, size_t, lv_obj_t*>>>
+		void setItemCount(const size_t count, F&& constructor)
+		{
+			setItemCount(count, std::function<std::shared_ptr<T>(size_t, lv_obj_t*)>(std::forward<F>(constructor)));
+		}
+
+		template <typename... Args,
+				  typename = std::enable_if_t<
+					  sizeof...(Args) != 1 ||
+					  !std::is_invocable_r_v<std::shared_ptr<T>, std::decay_t<Args>..., size_t, lv_obj_t*>>>
 		void setItemCount(const size_t count, Args&&... args)
 		{
 			UI_LOCK();
@@ -155,6 +168,7 @@ namespace UI
 				m_list.emplace_back(std::make_shared<T>(i, m_listCont, std::forward<Args>(args)...));
 			}
 		}
+
 		const size_t getItemCount() const { return m_list.size(); }
 
 		std::shared_ptr<T> getItem(const size_t index) const
@@ -166,6 +180,11 @@ namespace UI
 			}
 			return m_list.at(index);
 		}
+
+		auto begin() { return m_list.begin(); }
+		auto end() { return m_list.end(); }
+		auto begin() const { return m_list.begin(); }
+		auto end() const { return m_list.end(); }
 
 	  private:
 		lv_obj_t* m_title;
