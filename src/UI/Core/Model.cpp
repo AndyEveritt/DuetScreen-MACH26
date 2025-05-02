@@ -171,13 +171,7 @@ void Model::runEventLoop()
 	}
 }
 
-void Model::tick()
-{
-	for (auto presenter : m_presenters)
-	{
-		presenter->tick();
-	}
-}
+MODEL_NOTIFICATION(tick);
 
 void Model::requestNewData()
 {
