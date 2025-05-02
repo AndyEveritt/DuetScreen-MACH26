@@ -34,42 +34,40 @@ namespace UI
 			return;
 		}
 
-		Heatmap& graph = m_view->getHeightmap();
-
-		graph.setXRange({static_cast<int32_t>(axis0->minPosition), static_cast<int32_t>(axis0->maxPosition)});
-		graph.setYRange({static_cast<int32_t>(axis1->minPosition), static_cast<int32_t>(axis1->maxPosition)});
+		m_view->setXRange({static_cast<int32_t>(axis0->minPosition), static_cast<int32_t>(axis0->maxPosition)});
+		m_view->setYRange({static_cast<int32_t>(axis1->minPosition), static_cast<int32_t>(axis1->maxPosition)});
 
 		switch (m_mode)
 		{
 		case HeightmapRenderMode::Fixed:
-			graph.setValueRange(-0.25f, 0.25f);
+			m_view->setValueRange(-0.25f, 0.25f);
 			break;
 		case HeightmapRenderMode::Auto:
-			graph.setValueRange(static_cast<float>(m_heightmap->GetMinError()),
-								static_cast<float>(m_heightmap->GetMaxError()));
+			m_view->setValueRange(static_cast<float>(m_heightmap->GetMinError()),
+								  static_cast<float>(m_heightmap->GetMaxError()));
 			break;
 		}
 
 		uint32_t width, height;
-		graph.getResolution(width, height);
+		m_view->getResolution(width, height);
 
 		for (uint32_t px = 0; px < width; px++)
 		{
 			for (uint32_t py = 0; py < height; py++)
 			{
 				float x, y;
-				if (graph.pxToPos(px, py, x, y))
+				if (m_view->pxToPos(px, py, x, y))
 				{
 					double value = m_heightmap->GetInterpolatedPoint(x, y);
 					if (std::isnan(value))
 					{
 						continue;
 					}
-					graph.setPx(px, height - py - 1, value);
+					m_view->setPx(px, height - py - 1, value);
 				}
 			}
 		}
-		graph.renderColorBar();
+		m_view->renderColorBar();
 	}
 
 	void HeightmapPresenter::onActivate()

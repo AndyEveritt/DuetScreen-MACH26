@@ -8,41 +8,87 @@
 
 namespace UI
 {
+	class HeightmapItem : public ListItem
+	{
+	  public:
+		HeightmapItem(size_t index, lv_obj_t* parent, HeightmapView& view)
+			: ListItem("heightmap_item", index, parent)
+			, m_view(view)
+			, m_label(lv_label_create(getCont()))
+		{
+			UI_LOCK();
+			lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
+
+			lv_obj_set_size(m_label, LV_PCT(100), LV_SIZE_CONTENT);
+		}
+
+		void setLabel(const std::string& label)
+		{
+			UI_LOCK();
+			lv_label_set_text(m_label, label.c_str());
+		}
+
+	  private:
+		HeightmapView& m_view;
+
+		lv_obj_t* m_label;
+	};
+
 	HeightmapView::HeightmapView(lv_obj_t* parent)
 		: View("HeightmapView", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_graphCont(lv_obj_create(getCont()))
-		, m_listCont(lv_obj_create(getCont()))
 		, m_infoCont(lv_obj_create(getCont()))
 		, m_heightmap("heightmap", m_graphCont, layout_t(0, 0, 100, 100))
+		, m_heightmapList("heightmap_list", getCont())
 	{
 		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_graphCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_listCont, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		lv_obj_set_grid_cell(m_heightmapList, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_infoCont, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
-
-		lv_obj_t* cont = lv_obj_create(m_infoCont);
-		lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
-
-		lv_obj_t* m_scale = lv_scale_create(cont);
-		lv_obj_set_height(m_scale, 30);
-		lv_scale_set_mode(m_scale, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
-		lv_scale_set_label_show(m_scale, true);
-		lv_obj_set_style_border_width(m_scale, 2, LV_PART_MAIN);
-
-		lv_obj_t* m_scale2 = lv_scale_create(cont);
-		lv_obj_set_height(m_scale2, LV_SIZE_CONTENT);
-		lv_scale_set_mode(m_scale2, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
-		lv_scale_set_label_show(m_scale2, true);
-		lv_obj_set_style_border_width(m_scale2, 2, LV_PART_MAIN);
 
 		// m_heightmap.setXRange({-200, 200});
 		m_heightmap.setTitle("Heightmap");
+
+		// List
+		m_heightmapList.setTitle(_("heightmap_list_header"));
+		m_heightmapList.setItemCount(5, *this);
+
+		setHeightmapName(0, "Heightmap 0");
+		setHeightmapName(1, "Heightmap 1");
+		setHeightmapName(2, "Heightmap 2");
+		setHeightmapName(3, "Heightmap 3");
+		setHeightmapName(4, "Heightmap 4");
+	}
+
+	const size_t HeightmapView::getHeightmapCount() const
+	{
+		UI_LOCK();
+		return m_heightmapList.getItemCount();
+	}
+
+	void HeightmapView::setHeightmapCount(const size_t count)
+	{
+		UI_LOCK();
+		m_heightmapList.setItemCount(count, *this);
+	}
+
+	void HeightmapView::setHeightmapName(const size_t index, const std::string& name)
+	{
+		UI_LOCK();
+
+		auto item = m_heightmapList.getItem(index);
+		if (item == nullptr)
+		{
+			LOG_WARN("Can't set heightmap {:d} name to {:s}, index invalid", index, name);
+			return;
+		}
+
+		item->setLabel(name);
 	}
 
 	void HeightmapView::onShow() {}
