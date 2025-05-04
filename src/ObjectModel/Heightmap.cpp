@@ -23,9 +23,9 @@ namespace OM
 	static std::map<std::string, std::shared_ptr<Heightmap>> s_heightmapCache;
 	static std::string s_emptyStr = "";
 
-	static std::string GetLocalFilePath(const char* filename)
+	static std::string GetLocalFilePath(const std::string& filename)
 	{
-		return utils::format("/tmp/heightmaps/%s", filename);
+		return utils::format("/tmp/heightmaps/%s", filename.c_str());
 	}
 
 	HeightmapMeta::HeightmapMeta()
@@ -125,19 +125,14 @@ namespace OM
 		}
 	}
 
-	Heightmap::Heightmap()
+	Heightmap::Heightmap(const std::string& filename)
+		: m_fileName(filename)
 	{
-		m_fileName = "";
-	}
-
-	Heightmap::Heightmap(const char* filename)
-	{
-		LoadFromDuet(filename);
+		LoadFromDuet();
 	}
 
 	void Heightmap::Reset()
 	{
-		m_fileName = "";
 		m_heightmap.clear();
 		meta.Reset();
 		m_minError = 0.0f;
@@ -147,25 +142,24 @@ namespace OM
 		m_area = 0.0f;
 	}
 
-	bool Heightmap::LoadFromDuet(const char* filename)
+	bool Heightmap::LoadFromDuet()
 	{
 		Reset();
-		m_fileName = filename;
 		std::string csvContents;
-		if (!Comm::DUET.DownloadFile((Directories::GetSystemDirectory() + filename).c_str(), csvContents))
+		if (!Comm::DUET.DownloadFile((Directories::GetSystemDirectory() + m_fileName).c_str(), csvContents))
 		{
-			LOG_ERROR("Failed to download heightmap file {:s}", filename);
+			LOG_ERROR("Failed to download heightmap file {:s}", m_fileName);
 			return false;
 		}
 
 		if (csvContents.find("RepRapFirmware height map") == std::string::npos)
 		{
-			LOG_WARN("CSV file \"{:s}\" not a heightmap", filename);
+			LOG_WARN("CSV file \"{:s}\" not a heightmap", m_fileName);
 			return false;
 		}
 
 		// Write the file to disk
-		std::string localFilePath = GetLocalFilePath(filename);
+		std::string localFilePath = GetLocalFilePath(m_fileName);
 		std::ofstream file(localFilePath.c_str(), std::ios::out | std::ios::binary);
 		if (!file.is_open())
 		{
@@ -493,7 +487,7 @@ namespace OM
 		return s_currentHeightmapName;
 	}
 
-	std::shared_ptr<Heightmap> GetHeightmapData(const char* filename)
+	std::shared_ptr<Heightmap> GetHeightmapData(const std::string& filename)
 	{
 		auto it = s_heightmapCache.find(filename);
 		if (it == s_heightmapCache.end())

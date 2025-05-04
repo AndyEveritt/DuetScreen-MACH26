@@ -57,6 +57,7 @@ namespace UI
 		// List
 		m_heightmapList.setTitle(_("heightmap_list_header"));
 		m_heightmapList.setItemCount(5, *this);
+		m_heightmapList.setListGrow(1);
 
 		setHeightmapName(0, "Heightmap 0");
 		setHeightmapName(1, "Heightmap 1");

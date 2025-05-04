@@ -8,9 +8,9 @@
 #pragma once
 
 #include "FineTunePresenter.h"
-#include "UI/Components/Button.h"
+#include "UI/Components/Button/Button.h"
 #include "UI/Components/Slider.h"
-#include "UI/Components/VerticalButtonPanel.h"
+#include "UI/Components/Button/VerticalButtonPanel.h"
 #include "UI/Core/View.h"
 
 namespace UI

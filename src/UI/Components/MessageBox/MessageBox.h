@@ -9,7 +9,7 @@
 
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Axis.h"
-#include "UI/Components/Button.h"
+#include "UI/Components/Button/Button.h"
 #include "UI/Core/View.h"
 #include <functional>
 #include <map>

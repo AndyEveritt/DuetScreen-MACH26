@@ -8,7 +8,7 @@
 #pragma once
 
 #include "UI/Core/View.h"
-#include "UI/Components/Button.h"
+#include "UI/Components/Button/Button.h"
 
 namespace UI
 {

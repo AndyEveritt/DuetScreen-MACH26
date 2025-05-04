@@ -29,6 +29,6 @@ namespace UI
 		virtual void onActivate() override;
 
 		std::shared_ptr<OM::Heightmap> m_heightmap;
-		HeightmapRenderMode m_mode;
+		HeightmapRenderMode m_mode = HeightmapRenderMode::Fixed;
 	};
 } // namespace UI

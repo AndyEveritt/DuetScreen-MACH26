@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SettingsPresenter.h"
-#include "UI/Components/Button.h"
+#include "UI/Components/Button/Button.h"
 #include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Components/Slider.h"
 #include "UI/Core/View.h"

@@ -1,7 +1,8 @@
 target_sources(
   DuetScreen
   PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/Button.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Button/Button.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Button/VerticalButtonPanel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Canvas/Canvas.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Graph/Graph.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Heatmap/Heatmap.cpp
@@ -11,5 +12,4 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBarPresenter.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolList.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolListPresenter.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/VerticalButtonPanel.cpp
 )

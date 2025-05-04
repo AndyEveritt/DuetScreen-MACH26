@@ -22,6 +22,7 @@ namespace UI
 		if (m_heightmap == nullptr || !m_heightmap->IsValid())
 		{
 			LOG_WARN("Heightmap is not valid");
+			m_view->clear();
 			return;
 		}
 
@@ -72,7 +73,12 @@ namespace UI
 
 	void HeightmapPresenter::onActivate()
 	{
-		auto map = OM::GetHeightmapData("heightmap.csv");
+		std::shared_ptr<OM::Heightmap> map = OM::GetHeightmapData("heightmap.csv");
+		if (!map->IsValid())
+		{
+			map->LoadFromDuet();
+		}
+
 		setHeightmap(map);
 		render();
 	}

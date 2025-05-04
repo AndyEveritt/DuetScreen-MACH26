@@ -1,7 +1,7 @@
 #pragma once
 
 #include "HeightmapPresenter.h"
-#include "UI/Components/Button.h"
+#include "UI/Components/Button/Button.h"
 #include "UI/Components/Heatmap/Heatmap.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
@@ -36,6 +36,7 @@ namespace UI
 		bool pxToPos(size_t px, size_t py, float& x, float& y) const { return m_heightmap.pxToPos(px, py, x, y); }
 		void setPx(size_t px, size_t py, float value) { m_heightmap.setPx(px, py, value); }
 		void renderColorBar() { m_heightmap.renderColorBar(); }
+		void clear() { m_heightmap.clear(); }
 
 		/* Statistics */
 		void setStatistics(

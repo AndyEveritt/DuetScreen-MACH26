@@ -2,7 +2,7 @@
 
 namespace UI
 {
-	Button::Button(const std::string& name, lv_obj_t* parent, const char* text)
+	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text)
 		: BaseView(name, parent)
 		, m_button(lv_button_create(getCont()))
 		, m_label(lv_label_create(m_button))
@@ -11,7 +11,7 @@ namespace UI
 		init(text);
 	}
 
-	Button::Button(const std::string& name, lv_obj_t* parent, const char* text, layout_t layout)
+	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout)
 		: BaseView(name, parent, layout)
 		, m_button(lv_button_create(getCont()))
 		, m_label(lv_label_create(m_button))
@@ -20,7 +20,7 @@ namespace UI
 		init(text);
 	}
 
-	void Button::init(const char* text)
+	void Button::init(const std::string& text)
 	{
 		UI_LOCK();
 		lv_obj_set_user_data(m_button, this);
@@ -38,16 +38,16 @@ namespace UI
 		lv_obj_set_style_border_width(m_button, 0, 0);
 
 		// Initialise the label obj
-		lv_label_set_text(m_label, text);
+		lv_label_set_text(m_label, text.c_str());
 		lv_obj_set_pos(m_label, 0, 0);
 		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_set_style_align(m_label, LV_ALIGN_CENTER, 0);
 	}
 
-	void Button::setText(const char* text)
+	void Button::setText(const std::string& text)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_label, text);
+		lv_label_set_text(m_label, text.c_str());
 		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_center(m_label);
 		if (m_icon != nullptr)
