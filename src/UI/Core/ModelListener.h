@@ -23,6 +23,9 @@ namespace UI
 
 		virtual void newUpdateAvailable(const std::string& file) {}
 
+		/* Directory methods */
+		virtual void newDirectories() {}
+
 		/* Fan methods */
 		virtual void newFanData() {}
 

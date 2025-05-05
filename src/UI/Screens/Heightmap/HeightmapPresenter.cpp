@@ -71,8 +71,73 @@ namespace UI
 		m_view->renderColorBar();
 	}
 
+	void HeightmapPresenter::setActiveHeightmap(const size_t index)
+	{
+		if (index >= m_heightmapFiles.size())
+		{
+			LOG_ERROR("Invalid heightmap index {:d}", index);
+			return;
+		}
+
+		const std::string& name = m_heightmapFiles[index]->GetName();
+		LOG_INFO("Loading heightmap {:s}", name);
+		m_heightmap = OM::GetHeightmapData(name);
+		m_heightmap->LoadFromDuet();
+		render();
+	}
+
+	void HeightmapPresenter::toggleHeightmap(const size_t index)
+	{
+		if (index >= m_heightmapFiles.size())
+		{
+			LOG_ERROR("Invalid heightmap index {:d}", index);
+			return;
+		}
+
+		const std::string& name = m_heightmapFiles[index]->GetName();
+		LOG_INFO("Toggling heightmap {:s}", name);
+		OM::ToggleHeightmap(name.c_str());
+	}
+
+	void HeightmapPresenter::newCompensationFile()
+	{
+		LOG_INFO("New compensation file");
+		updateHeightmapList();
+		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
+	}
+
+	void HeightmapPresenter::newDirectories()
+	{
+		LOG_INFO("New directories");
+		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
+	}
+
+	void HeightmapPresenter::updateHeightmapList()
+	{
+		UI_LOCK();
+		m_heightmapFiles = OM::GetHeightmapFiles();
+		OM::FileSystem::SortFilesBy(m_heightmapFiles, OM::FileSystem::SortBy::NAME, false);
+		m_view->setHeightmapCount(m_heightmapFiles.size());
+
+		bool selected = false;
+		for (size_t i = 0; i < m_heightmapFiles.size(); i++)
+		{
+			m_view->setHeightmapName(i, m_heightmapFiles[i]->GetName());
+			if (m_heightmapFiles[i]->GetName() == OM::GetCurrentHeightmap())
+			{
+				selected = true;
+				m_view->setSelectedHeightmap(i);
+			}
+		}
+		if (!selected)
+		{
+			m_view->setSelectedHeightmap(-1);
+		}
+	}
+
 	void HeightmapPresenter::onActivate()
 	{
+		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
 		std::shared_ptr<OM::Heightmap> map = OM::GetHeightmapData("heightmap.csv");
 		if (!map->IsValid())
 		{

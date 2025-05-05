@@ -114,7 +114,7 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 {
 	{
 		MODEL_LOCK();
-		OM::FileSystem::SortFileSystem();
+		OM::FileSystem::SortFileSystem(OM::FileSystem::SortBy::DATE, true);
 		for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
 		{
 			std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(i);

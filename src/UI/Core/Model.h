@@ -73,17 +73,25 @@ enum class EventType
 	MessageBoxData,
 	Time,
 	ToolData,
+	Directories
 };
 
-#if 0
+// This is an attempt to use templates instead of macros but it doesn't currently work
+#define DEV_EVENT_TRAIT_TEMPLATE 0
+
+#if DEV_EVENT_TRAIT_TEMPLATE
 template <EventType E, typename... Args>
 struct EventTraits
 {
-	using tuple_type = std::tuple<Args...>;
+	using tuple_type = std::tuple<std::decay_t<Args>...>;
 	struct EventData
 	{
 		EventType type = E;
 		EventData() {}
+		EventData(const tuple_type& t)
+			: tup(t)
+		{
+		}
 		EventData(tuple_type&& t)
 			: tup(std::move(t))
 		{
@@ -92,32 +100,74 @@ struct EventTraits
 	} data;
 
 	EventTraits() {}
+	EventTraits(const tuple_type& t)
+		: data(t)
+	{
+	}
 	EventTraits(tuple_type&& t)
 		: data(std::move(t))
 	{
 	}
 };
+
+using EventData = std::variant<EventTraits<EventType::Tick>,
+							   EventTraits<EventType::Refresh>,
+							   EventTraits<EventType::UpdateAvailable, std::string>,
+							   EventTraits<EventType::FanData>,
+							   EventTraits<EventType::FileData>,
+							   EventTraits<EventType::HeaterData>,
+							   EventTraits<EventType::JobFileName, std::string>,
+							   EventTraits<EventType::JobLastFileName, std::string>,
+							   EventTraits<EventType::JobPrintTime>,
+							   EventTraits<EventType::JobDuration>,
+							   EventTraits<EventType::JobTimeLeft>,
+							   EventTraits<EventType::JobWarmupDuration>,
+							   EventTraits<EventType::JobBuild>,
+							   EventTraits<EventType::JobCurrentObject>,
+							   EventTraits<EventType::JobObjectData>,
+							   EventTraits<EventType::ThumbnailData>,
+							   EventTraits<EventType::AxesData>,
+							   EventTraits<EventType::ExtruderData>,
+							   EventTraits<EventType::KinematicsName>,
+							   EventTraits<EventType::SpeedFactor>,
+							   EventTraits<EventType::WorkplaceNumber>,
+							   EventTraits<EventType::PrintingAcceleration, uint32_t>,
+							   EventTraits<EventType::CurrentMoveRequestedSpeed>,
+							   EventTraits<EventType::CurrentMoveTopSpeed>,
+							   EventTraits<EventType::CurrentMoveExtrusionSpeed>,
+							   EventTraits<EventType::CompensationFile>,
+							   EventTraits<EventType::Response, std::string>,
+							   EventTraits<EventType::LogMessage, Log::DebugLevel, Log::log_time_t, std::string>,
+							   EventTraits<EventType::AnalogSensorData>,
+							   EventTraits<EventType::EndstopData>,
+							   EventTraits<EventType::SpindleData>,
+							   EventTraits<EventType::NetworkName>,
+							   EventTraits<EventType::IpAddress>,
+							   EventTraits<EventType::Status, OM::PrinterStatus>,
+							   EventTraits<EventType::CurrentTool>,
+							   EventTraits<EventType::MessageBoxData, OM::Alert>,
+							   EventTraits<EventType::Time>,
+							   EventTraits<EventType::ToolData>,
+							   EventTraits<EventType::Directories>>;
 #else
 template <EventType E>
 struct EventTraits
 {
 };
-#endif
-
-#if 1
 #  define REGISTER_EVENT_TYPE(type, args...)                                                                           \
 	  template <>                                                                                                      \
 	  struct EventTraits<type>                                                                                         \
 	  {                                                                                                                \
+		  using tuple_type = std::tuple<args>;                                                                         \
 		  struct EventData                                                                                             \
 		  {                                                                                                            \
 			  EventType eventType = type;                                                                              \
-			  std::tuple<args> tup;                                                                                    \
+			  tuple_type tup;                                                                                          \
 			  EventData(EventType eventType)                                                                           \
 				  : eventType(eventType)                                                                               \
 			  {                                                                                                        \
 			  }                                                                                                        \
-			  EventData(EventType eventType, std::tuple<args> tup)                                                     \
+			  EventData(EventType eventType, tuple_type tup)                                                           \
 				  : eventType(eventType)                                                                               \
 				  , tup(std::move(tup))                                                                                \
 			  {                                                                                                        \
@@ -128,7 +178,7 @@ struct EventTraits
 			  : data(type)                                                                                             \
 		  {                                                                                                            \
 		  }                                                                                                            \
-		  EventTraits(std::tuple<args> tup)                                                                            \
+		  EventTraits(tuple_type tup)                                                                                  \
 			  : data(type, std::move(tup))                                                                             \
 		  {                                                                                                            \
 		  }                                                                                                            \
@@ -172,7 +222,7 @@ REGISTER_EVENT_TYPE(EventType::CurrentTool)
 REGISTER_EVENT_TYPE(EventType::MessageBoxData, OM::Alert)
 REGISTER_EVENT_TYPE(EventType::Time)
 REGISTER_EVENT_TYPE(EventType::ToolData)
-#endif
+REGISTER_EVENT_TYPE(EventType::Directories)
 
 // Variant covering all possible event-data tuples
 using EventData = std::variant<EventTraits<EventType::Tick>,
@@ -212,7 +262,9 @@ using EventData = std::variant<EventTraits<EventType::Tick>,
 							   EventTraits<EventType::CurrentTool>,
 							   EventTraits<EventType::MessageBoxData>,
 							   EventTraits<EventType::Time>,
-							   EventTraits<EventType::ToolData>>;
+							   EventTraits<EventType::ToolData>,
+							   EventTraits<EventType::Directories>>;
+#endif
 
 class Model
 {
@@ -256,7 +308,11 @@ class Model
 	{
 		m_handlers[E] = [instance, memberFunc](const EventData& data)
 		{
+#if DEV_EVENT_TRAIT_TEMPLATE
+			auto& tup = std::get<EventTraits<E, Args...>>(data).data.tup;
+#else
 			auto& tup = std::get<EventTraits<E>>(data).data.tup;
+#endif
 			std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
 		};
 	}
@@ -264,10 +320,15 @@ class Model
 	template <EventType E, typename... Args>
 	void post(Args&&... args)
 	{
+#if DEV_EVENT_TRAIT_TEMPLATE
+		using Traits = EventTraits<E, Args...>;
+#else
 		using Traits = EventTraits<E>;
+#endif
+		using decayed_tuple = typename Traits::tuple_type;
 
 		std::lock_guard<std::mutex> lock(m_mutex);
-		m_eventQueue.emplace(E, Traits(std::make_tuple(std::forward<Args>(args)...)));
+		m_eventQueue.emplace(E, Traits(decayed_tuple(std::forward<Args>(args)...)));
 		m_eventCondition.notify_one();
 	}
 
@@ -300,6 +361,9 @@ class Model
 	void refresh();
 
 	void newUpdateAvailable(const std::string& file);
+
+	/* Directory methods */
+	void newDirectories();
 
 	/* Fan methods */
 

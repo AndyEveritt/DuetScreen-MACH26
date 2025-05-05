@@ -17,12 +17,7 @@ namespace UI
 			MACROS
 		};
 
-		enum class SortBy
-		{
-			NAME,
-			DATE,
-			SIZE
-		};
+		using SortBy = OM::FileSystem::SortBy;
 
 		// Actions
 		void setBaseFolder(BaseFolder folder) { m_baseFolder = folder; }

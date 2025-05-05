@@ -23,7 +23,7 @@ namespace UI
 
 		void setHeightmapCount(const size_t count);
 		const size_t getHeightmapCount() const;
-		void setSelectedHeightmap(const size_t index);
+		void setSelectedHeightmap(const int32_t index);
 		void setHeightmapName(const size_t index, const std::string& name);
 
 		/* Heightmap methods */

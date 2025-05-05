@@ -177,45 +177,7 @@ namespace UI
 
 	void FilePresenter::sortFiles()
 	{
-		auto first = m_items.begin();
-		auto last = m_items.end();
-		if (first != last)
-		{			// Ensure the range is not empty
-			--last; // Point to the last valid item
-			while (std::distance(first, last) > 0)
-			{
-				auto temp = last;
-				while (temp != first)
-				{
-					auto prev = std::prev(temp);
-					if (
-						[this](std::shared_ptr<OM::FileSystem::FileSystemItem> L,
-							   std::shared_ptr<OM::FileSystem::FileSystemItem> R) -> bool
-						{
-							if (L->GetType() == R->GetType())
-							{
-								switch (m_sortBy)
-								{
-								case SortBy::NAME:
-									return m_sortOrder ? (L->GetName() > R->GetName()) : (L->GetName() < R->GetName());
-								case SortBy::DATE:
-									return m_sortOrder ? (L->GetDate() > R->GetDate()) : (L->GetDate() < R->GetDate());
-								case SortBy::SIZE:
-									return m_sortOrder ? (L->GetSize() > R->GetSize()) : (L->GetSize() < R->GetSize());
-								default:
-									return false;
-								}
-							}
-							return L->GetType() < R->GetType();
-						}(*temp, *prev))
-					{
-						std::iter_swap(temp, prev);
-					}
-					--temp;
-				}
-				++first;
-			}
-		}
+		OM::FileSystem::SortFilesBy(m_items, m_sortBy, m_sortOrder);
 	}
 
 	void FilePresenter::setSort(SortBy by, bool descending)

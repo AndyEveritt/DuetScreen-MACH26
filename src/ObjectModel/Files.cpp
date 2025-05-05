@@ -18,7 +18,7 @@
 namespace OM::FileSystem
 {
 	static std::string s_currentDirPath;
-	static std::vector<std::shared_ptr<FileSystemItem>> s_items;
+	static std::vector<ItemPtr> s_items;
 	static struct
 	{
 		std::function<void()> cb;
@@ -71,26 +71,26 @@ namespace OM::FileSystem
 		LOG_DBG("Files: destructing item {:s}", GetPath().c_str());
 	}
 
-	std::shared_ptr<File> AddFileAt(const size_t index)
+	FilePtr AddFileAt(const size_t index)
 	{
 		if (index < s_items.size())
 		{
 			LOG_DBG("Deleting item[{:d}]", index);
 			s_items[index].reset();
 		}
-		std::shared_ptr<File> file = std::make_shared<File>();
+		FilePtr file = std::make_shared<File>();
 		s_items.insert(s_items.begin() + index, file);
 		return file;
 	}
 
-	std::shared_ptr<Folder> AddFolderAt(const size_t index)
+	FolderPtr AddFolderAt(const size_t index)
 	{
 		if (index < s_items.size())
 		{
 			LOG_DBG("Deleting item[{:d}]", index);
 			s_items[index].reset();
 		}
-		std::shared_ptr<Folder> folder = std::make_shared<Folder>();
+		FolderPtr folder = std::make_shared<Folder>();
 		s_items.insert(s_items.begin() + index, folder);
 		return folder;
 	}
@@ -100,19 +100,19 @@ namespace OM::FileSystem
 		return s_items.size();
 	}
 
-	const std::vector<std::shared_ptr<FileSystemItem>>& GetItems()
+	const std::vector<ItemPtr>& GetItems()
 	{
 		return s_items;
 	}
 
-	std::shared_ptr<FileSystemItem> GetItem(const size_t index)
+	ItemPtr GetItem(const size_t index)
 	{
 		if (index >= GetItemCount())
 			return nullptr;
 		return s_items[index];
 	}
 
-	std::shared_ptr<File> GetFile(const std::string& name)
+	FilePtr GetFile(const std::string& name)
 	{
 		for (const auto& item : s_items)
 		{
@@ -127,7 +127,7 @@ namespace OM::FileSystem
 		return nullptr;
 	}
 
-	std::shared_ptr<Folder> GetSubFolder(const std::string& name)
+	FolderPtr GetSubFolder(const std::string& name)
 	{
 		for (const auto& item : s_items)
 		{
@@ -148,20 +148,17 @@ namespace OM::FileSystem
 		LOG_INFO("Files: current directory = {:s}", s_currentDirPath.c_str());
 	}
 
-	struct
+	void SortFileSystem(const SortBy by, const bool descending)
 	{
-		bool operator()(std::shared_ptr<FileSystemItem> L, std::shared_ptr<FileSystemItem> R)
-		{
-			if (L->GetType() == R->GetType())
-				return L->GetDate() > R->GetDate();
-			return L->GetType() < R->GetType();
-		}
-	} SortItem;
+		if (s_items.empty())
+			return;
+		SortFilesBy(s_items, by, descending);
+	}
 
-	void SortFileSystem()
+	void SortFilesBy(std::vector<ItemPtr>& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc)
 	{
-		auto first = s_items.begin();
-		auto last = s_items.end();
+		auto first = items.begin();
+		auto last = items.end();
 		if (first != last)
 		{			// Ensure the range is not empty
 			--last; // Point to the last valid item
@@ -171,7 +168,7 @@ namespace OM::FileSystem
 				while (temp != first)
 				{
 					auto prev = std::prev(temp);
-					if (SortItem(*temp, *prev))
+					if (sortFunc(*temp, *prev))
 					{
 						std::iter_swap(temp, prev);
 					}
@@ -179,6 +176,42 @@ namespace OM::FileSystem
 				}
 				++first;
 			}
+		}
+	}
+
+	void SortFilesBy(std::vector<ItemPtr>& items, const SortBy by, const bool descending)
+	{
+		switch (by)
+		{
+		case SortBy::NAME:
+			SortFilesBy(items,
+						[descending](ItemPtr L, ItemPtr R)
+						{
+							if (L->GetType() == R->GetType())
+								return descending == L->GetName() > R->GetName();
+							return L->GetType() < R->GetType();
+						});
+			break;
+		case SortBy::DATE:
+			SortFilesBy(items,
+						[descending](ItemPtr L, ItemPtr R)
+						{
+							if (L->GetType() == R->GetType())
+								return descending == L->GetDate() > R->GetDate();
+							return L->GetType() < R->GetType();
+						});
+			break;
+		case SortBy::SIZE:
+			SortFilesBy(items,
+						[descending](ItemPtr L, ItemPtr R)
+						{
+							if (L->GetType() == R->GetType())
+								return descending == L->GetSize() > R->GetSize();
+							return L->GetType() < R->GetType();
+						});
+			break;
+		default:
+			break;
 		}
 	}
 

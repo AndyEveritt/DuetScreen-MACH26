@@ -93,6 +93,7 @@ Model::Model()
 	registerEvent<EventType::MessageBoxData>(this, &Model::newMessageBoxData);
 	registerEvent<EventType::Time>(this, &Model::newTime);
 	registerEvent<EventType::ToolData>(this, &Model::newToolData);
+	registerEvent<EventType::Directories>(this, &Model::newDirectories);
 }
 
 void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
@@ -290,6 +291,10 @@ void Model::newUpdateAvailable(const std::string& file)
 {
 	NOTIFY_ALL_PRESENTERS(newUpdateAvailable, file);
 }
+
+/* Directory methods */
+
+MODEL_NOTIFICATION(newDirectories)
 
 /* Fan methods */
 

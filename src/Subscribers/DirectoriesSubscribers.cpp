@@ -9,6 +9,7 @@
 #include "Debug.h"
 
 #include "ObjectModel/Directories.h"
+#include "UI/Core/Model.h"
 
 bool DirectoriesSubscribers::filaments(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
@@ -49,5 +50,6 @@ bool DirectoriesSubscribers::system(Comm::JsonDecoder* decoder, const char* data
 bool DirectoriesSubscribers::web(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::Directories::SetWebDirectory(data);
+	Model::get().post<EventType::Directories>();
 	return true;
 }

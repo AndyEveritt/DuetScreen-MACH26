@@ -84,15 +84,28 @@ namespace OM::FileSystem
 		FileSystemItemType GetType() const override { return FileSystemItemType::folder; }
 	};
 
-	std::shared_ptr<File> AddFileAt(const size_t index);
-	std::shared_ptr<Folder> AddFolderAt(const size_t index);
+	using ItemPtr = std::shared_ptr<FileSystemItem>;
+	using FilePtr = std::shared_ptr<File>;
+	using FolderPtr = std::shared_ptr<Folder>;
+
+	enum class SortBy
+	{
+		NAME,
+		DATE,
+		SIZE
+	};
+
+	FilePtr AddFileAt(const size_t index);
+	FolderPtr AddFolderAt(const size_t index);
 	const size_t GetItemCount();
-	const std::vector<std::shared_ptr<FileSystemItem>>& GetItems();
-	std::shared_ptr<FileSystemItem> GetItem(const size_t index);
-	std::shared_ptr<File> GetFile(const std::string& name);
-	std::shared_ptr<Folder> GetSubFolder(const std::string& name);
+	const std::vector<ItemPtr>& GetItems();
+	ItemPtr GetItem(const size_t index);
+	FilePtr GetFile(const std::string& name);
+	FolderPtr GetSubFolder(const std::string& name);
 	void SetCurrentDir(const std::string& path);
-	void SortFileSystem();
+	void SortFileSystem(const SortBy by, const bool descending);
+	void SortFilesBy(std::vector<ItemPtr>& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc);
+	void SortFilesBy(std::vector<ItemPtr>& items, const SortBy sortBy, const bool descending);
 	std::string GetParentDirPath();
 	std::string GetCurrentDirName();
 	std::string& GetCurrentDirPath();
