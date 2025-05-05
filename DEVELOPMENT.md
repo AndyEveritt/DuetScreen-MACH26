@@ -1,5 +1,13 @@
 # Development
 
+## Get started
+
+Clone the project and the related sub modules:
+
+```bash
+git clone --recursive https://github.com/Duet3D/DuetScreen.git
+```
+
 The following steps are required to setup VSCode as the development environment for the project.
 - Copy `.vscode/settings.json.default` to `.vscode/settings.json`
 - If you want to debug code running on the physical screen then you will need to:
