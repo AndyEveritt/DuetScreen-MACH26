@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "FileView.h"
 #include "Hardware/Duet.h"
+#include "ObjectModel/Directories.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "lv_i18n/lv_i18n.h"
@@ -10,23 +11,52 @@
 
 namespace UI
 {
-	const char* FilePresenter::getBaseFolderPath() const
+	static std::string s_emptyStr = "";
+
+	static const OM::Directories::DirectoryType getBaseFolderType(FilePresenter::BaseFolder folder)
+	{
+		switch (folder)
+		{
+		case FilePresenter::BaseFolder::GCODES:
+			return OM::Directories::DirectoryType::GCODES;
+		case FilePresenter::BaseFolder::MACROS:
+			return OM::Directories::DirectoryType::MACROS;
+		default:
+			LOG_ERROR("Invalid base folder type");
+			return OM::Directories::DirectoryType::GCODES;
+		}
+	}
+
+	const std::string& FilePresenter::getBaseFolderPath() const
 	{
 		switch (m_baseFolder)
 		{
 		case BaseFolder::GCODES:
-			return DEFAULT_GCODES_PATH;
+			return OM::Directories::GetGcodesDirectory();
 		case BaseFolder::MACROS:
-			return DEFAULT_MACROS_PATH;
+			return OM::Directories::GetMacrosDirectory();
 		default:
-			return nullptr;
+			return s_emptyStr;
 		}
 	}
 
-	void FilePresenter::setFolder(const char* folder)
+	void FilePresenter::setFolder(const std::string& folder)
 	{
-		m_currentFolder = folder;
-		m_view->setFolder(folder);
+		if (folder.starts_with(getBaseFolderPath()))
+		{
+			m_currentFolder = folder.substr(getBaseFolderPath().length() + 1);
+		}
+		else
+		{
+			m_currentFolder = folder;
+		}
+		if (!m_currentFolder.empty() && m_currentFolder.back() != '/')
+		{
+			m_currentFolder += '/';
+		}
+
+		LOG_DBG("set folder to {:s}", m_currentFolder);
+		m_view->setFolder(getBaseFolderPath() + m_currentFolder);
 		requestFiles();
 	}
 
@@ -50,7 +80,7 @@ namespace UI
 
 		if (item->GetType() == OM::FileSystem::FileSystemItemType::folder)
 		{
-			setFolder(item->GetPath().c_str());
+			setFolder(item->GetPath());
 			return;
 		}
 
@@ -124,14 +154,15 @@ namespace UI
 		m_items.clear();
 		m_view->setFileCount(0);
 		OM::FileSystem::RequestFiles(
-			m_currentFolder.c_str(),
+			getBaseFolderType(m_baseFolder),
+			m_currentFolder,
 			[this]()
 			{
 				{
 					MODEL_LOCK();
 					m_items = OM::FileSystem::GetItems();
 				}
-				this->m_view->setFolder(this->m_currentFolder.c_str());
+				this->m_view->setFolder(getBaseFolderPath() + this->m_currentFolder);
 				this->sortFiles();
 				this->displayFiles();
 			},
@@ -208,10 +239,20 @@ namespace UI
 			return false; // Already at the root folder
 		}
 
-		size_t pos = m_currentFolder.find_last_of('/');
+		if (m_currentFolder.empty())
+		{
+			return false;
+		}
+
+		size_t pos = m_currentFolder.substr(0, m_currentFolder.size() - 1).find_last_of('/');
 		if (pos != std::string::npos)
 		{
-			setFolder(m_currentFolder.substr(0, pos).c_str());
+			setFolder(m_currentFolder.substr(0, pos));
+			return true;
+		}
+		else
+		{
+			setFolder("");
 			return true;
 		}
 		return false;
@@ -253,6 +294,6 @@ namespace UI
 	{
 		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
 				StorageHelper::getData(ID_FILE_SORT_DESCENDING, true));
-		setFolder(getBaseFolderPath());
+		setFolder("");
 	}
 } // namespace UI

@@ -214,7 +214,14 @@ static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder,
 									Comm::FileInfoCache::ThumbnailRequestPtr& request,
 									Comm::ThumbnailPtr& thumbnail)
 {
-	request = std::get<Comm::FileInfoCache::ThumbnailRequestPtr>(decoder->responseData);
+	try
+	{
+		request = std::get<Comm::FileInfoCache::ThumbnailRequestPtr>(decoder->responseData);
+	}
+	catch (const std::bad_variant_access&)
+	{
+		return false;
+	}
 	if (request == nullptr)
 	{
 		LOG_ERROR("Not expecting to receive thumbnail data");

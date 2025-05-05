@@ -506,9 +506,9 @@ namespace OM
 		return count - s_heightmapCache.size();
 	}
 
-	void RequestHeightmapFiles()
+	void RequestHeightmapFiles(std::function<void()> callback)
 	{
-		FileSystem::RequestFiles("/sys", nullptr);
+		FileSystem::RequestFiles(Directories::DirectoryType::SYSTEM, "", callback);
 		ClearHeightmapCache();
 	}
 

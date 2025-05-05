@@ -50,7 +50,7 @@ namespace UI
 		void setFileCount(const size_t count);
 		std::shared_ptr<FileItem> getFileItem(size_t index) const;
 
-		void setFolder(const char* path);
+		void setFolder(const std::string& path);
 		bool cancelStartPrint();
 		void confirmStartPrint(const char* filename, const char* date, const char* size, const char* thumbnail);
 		void confirmRunMacro(const char* filename);

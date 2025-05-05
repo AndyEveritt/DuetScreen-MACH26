@@ -228,14 +228,17 @@ namespace OM::FileSystem
 		return count > 1;
 	}
 
-	void RequestFiles(const std::string& path, std::function<void()> callback, bool runEveryTime)
+	void RequestFiles(OM::Directories::DirectoryType baseFolder,
+					  const std::string& path,
+					  std::function<void()> callback,
+					  bool runEveryTime)
 	{
 		s_usbFolder = false;
-		s_inMacroFolder = path.find("macro") != std::string::npos;
+		s_inMacroFolder = baseFolder == OM::Directories::DirectoryType::MACROS;
 		s_callback.cb = callback;
 		s_callback.runEveryTime = runEveryTime;
 		LOG_INFO("Files: requesting files in {:s}", path.c_str());
-		Comm::DUET.RequestFileList(path.c_str());
+		Comm::DUET.RequestFileList(OM::Directories::GetDirectory(baseFolder) + path);
 	}
 
 	void RunCallback(const size_t next)

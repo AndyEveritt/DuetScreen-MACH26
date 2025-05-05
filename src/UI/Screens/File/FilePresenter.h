@@ -26,8 +26,8 @@ namespace UI
 
 		// Actions
 		void setBaseFolder(BaseFolder folder) { m_baseFolder = folder; }
-		const char* getBaseFolderPath() const;
-		void setFolder(const char* folder);
+		const std::string& getBaseFolderPath() const;
+		void setFolder(const std::string& folder);
 		void itemClicked(const size_t index);
 		void startPrint();
 		void runMacro();

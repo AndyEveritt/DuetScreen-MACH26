@@ -18,6 +18,32 @@ namespace OM::Directories
 	static std::string s_system;
 	static std::string s_web;
 
+	static std::string s_emptyStr = "";
+
+	const std::string& GetDirectory(DirectoryType type)
+	{
+		switch (type)
+		{
+		case DirectoryType::FILAMENTS:
+			return GetFilamentsDirectory();
+		case DirectoryType::FIRMWARE:
+			return GetFirmwareDirectory();
+		case DirectoryType::GCODES:
+			return GetGcodesDirectory();
+		case DirectoryType::MACROS:
+			return GetMacrosDirectory();
+		case DirectoryType::MENU:
+			return GetMenuDirectory();
+		case DirectoryType::SYSTEM:
+			return GetSystemDirectory();
+		case DirectoryType::WEB:
+			return GetWebDirectory();
+		default:
+			LOG_ERROR("Invalid directory type");
+			return s_emptyStr;
+		}
+	}
+
 	const std::string& GetFilamentsDirectory()
 	{
 		return s_filaments;

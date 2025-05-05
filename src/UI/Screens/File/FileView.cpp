@@ -200,10 +200,10 @@ namespace UI
 		return nullptr;
 	}
 
-	void FileView::setFolder(const char* folder)
+	void FileView::setFolder(const std::string& folder)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_listHeader, utils::format(_("file_header"), folder).c_str());
+		lv_label_set_text(m_listHeader, utils::format(_("file_header"), folder.c_str()).c_str());
 	}
 
 	void FileView::onItemClicked(size_t index, bool isFolder)

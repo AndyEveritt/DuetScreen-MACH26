@@ -7,14 +7,14 @@
 bool JobSubscribers::currentFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetJobName(data);
-	Model::get().post<EventType::JobFileName>(std::string(data));
+	Model::get().post<EventType::JobFileName>(OM::GetJobName());
 	return true;
 }
 
 bool JobSubscribers::lastFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	OM::SetLastJobName(data);
-	Model::get().post<EventType::JobLastFileName>(std::string(data));
+	Model::get().post<EventType::JobLastFileName>(OM::GetLastJobName());
 	return true;
 }
 

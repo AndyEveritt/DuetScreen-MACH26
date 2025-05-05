@@ -519,9 +519,10 @@ namespace Comm
 		return;
 	}
 
-	bool Duet::RequestFileList(const char* dir, const size_t first)
+	bool Duet::RequestFileList(const std::string& dir, const size_t first)
 	{
 		bool ret = true;
+		LOG_DBG("dir = {:s}, first = {:d}", dir, first);
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:

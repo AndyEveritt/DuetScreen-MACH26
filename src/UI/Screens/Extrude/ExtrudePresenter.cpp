@@ -169,7 +169,8 @@ namespace UI
 	void ExtrudePresenter::onActivate()
 	{
 		MODEL_LOCK();
-		OM::FileSystem::RequestFiles("/filaments",
+		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
+									 "",
 									 [this]()
 									 {
 										 {

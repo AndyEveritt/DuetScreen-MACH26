@@ -8,6 +8,7 @@
 #ifndef JNI_OBJECTMODEL_FILES_HPP_
 #define JNI_OBJECTMODEL_FILES_HPP_
 
+#include "ObjectModel/Directories.h"
 #include <functional>
 #include <memory>
 #include <string>
@@ -96,7 +97,10 @@ namespace OM::FileSystem
 	std::string GetCurrentDirName();
 	std::string& GetCurrentDirPath();
 	bool IsInSubFolder();
-	void RequestFiles(const std::string& path, std::function<void()> callback, bool runEveryTime = false);
+	void RequestFiles(const OM::Directories::DirectoryType baseFolder,
+					  const std::string& path,
+					  std::function<void()> callback,
+					  bool runEveryTime = false);
 	void RunCallback(const size_t next);
 	void RequestUsbFiles(const std::string& path);
 	bool IsMacroFolder();

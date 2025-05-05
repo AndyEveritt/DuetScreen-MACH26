@@ -120,7 +120,7 @@ namespace OM
 	std::shared_ptr<Heightmap> GetHeightmapData(const std::string& filename);
 	size_t ClearHeightmapCache();
 
-	void RequestHeightmapFiles();
+	void RequestHeightmapFiles(std::function<void()> callback = nullptr);
 	std::vector<std::shared_ptr<FileSystem::FileSystemItem>> GetHeightmapFiles();
 } // namespace OM
 
