@@ -121,7 +121,7 @@
 			"detail": "Builds DuetScreen for remote debugging",
 		},
 		{
-			"label": "Push DuetScreen - SSH",
+			"label": "Push DuetScreen - SSH - Debug",
 			"type": "shell",
 			"options": {
 				"cwd": "${config:buildroot_path}"
