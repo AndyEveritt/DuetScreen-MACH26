@@ -36,6 +36,16 @@ There are a few methods to connect the Duet3D screen to a WiFi network. The reco
     - The GUI is currently placeholder and has some known issues.
 
 
+## Powering the Duet3D screen
+The Duet3D screen can be powered in the following ways:
+- **5V_IN**: This is the recommended method. 
+- **USB-C**: Relies on the connected host/device to supply sufficient power.
+- **UART5**: This is a legacy method for compatibility with PanelDue wiring. It is not recommended for new installations.
+
+> [!WARNING]
+> All the power methods are **NOT** isolated. This means that if you connect the screen to a mainboard, the mainboard must be powered by the same power supply as the screen. If you do not do this, you may damage the screen or the mainboard.
+> - The screen is designed to be powered by a 5V power supply. If you are using a 12V or 24V power supply, you will need to use a buck converter to step down the voltage to 5V. **You will likely damage the screen and any connected devices if you do not do this**.
+
 ## Connecting to a Duet3D mainboard
 Multiple methods are available to connect the Duet3D screen to a mainboard. The recommended method is to use a USB cable. This allows for the best performance and is the easiest to set up.
 
@@ -46,6 +56,12 @@ Multiple methods are available to connect the Duet3D screen to a mainboard. The 
 2. In the GUI, select the USB connection method.
 
 ### WiFi
+> [!NOTE]
+> The screen has a built-in WiFi module, it also supports external WiFi modules with the `RTL8188FU` chipset.
+> - If using the built-in WiFi module, the USB-C port must be set to USB host mode.
+> - If using an external WiFi module, connect it to the USB-A port on the screen, or use the USB-C port and set it to USB host mode.
+> - There are multiple variants of the `RTL8188` chipset. Currently the screen only supports `RTL8188FU`. Other variants are unlikely to work.
+
 1. Ensure the Duet3D screen is connected to the same WiFi network as the mainboard.
     - See the [Connecting the Duet3D screen to a WiFi network](#connecting-the-duet3d-screen-to-a-wifi-network) section above.
 2. In the GUI, select the WiFi connection method.
@@ -78,3 +94,16 @@ Several methods are available to update the Duet3D screen.
 Occasionally, an update may require the whole microSD card to be reflashed. This will be indicated in the release notes. In this case, follow the instructions in the [Flashing a new Duet3D screen](#flashing-a-new-duet3d-screen) section above.
 
 
+## USB Ports
+The Duet3D screen has two USB ports:
+- USB-A: This port is also a host port. 
+    - It can be used to connect to a Duet3D mainboard, wifi modules, or USB flash drives.
+- USB-C: This port can be a host or device port.
+    - It can be used to connect to a Duet3D mainboard, wifi modules, or USB flash drives in host mode.
+    - It can be used to connect to a PC in device mode.
+    - It can be used to power the screen in either mode (assuming the attached device/host is able to supply power).
+
+USB hubs are supported **if they are NOT smart**. A smart hub is one that requires a driver to work. This includes most USB-C hubs. If you are using a USB-C hub, make sure it is a dumb hub. A dumb hub is one that does not require a driver to work. This includes most USB-A hubs. If in doubt, use a USB-A hub.
+
+## Building the project
+Notes on how to build the project are found in [DEVELOPMENT.md](DEVELOPMENT.md).
