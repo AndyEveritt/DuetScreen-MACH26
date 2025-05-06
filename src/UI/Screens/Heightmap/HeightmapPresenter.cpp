@@ -69,6 +69,12 @@ namespace UI
 			}
 		}
 		m_view->renderColorBar();
+		m_view->setStatistics(m_heightmap->GetPointCount(),
+							  m_heightmap->GetArea() / 100,
+							  m_heightmap->GetMinError(),
+							  m_heightmap->GetMaxError(),
+							  m_heightmap->GetMeanError(),
+							  m_heightmap->GetStdDev());
 	}
 
 	void HeightmapPresenter::setActiveHeightmap(const size_t index)

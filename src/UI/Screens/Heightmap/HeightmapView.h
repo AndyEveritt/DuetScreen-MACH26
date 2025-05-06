@@ -36,7 +36,7 @@ namespace UI
 		bool pxToPos(size_t px, size_t py, float& x, float& y) const { return m_heightmap.pxToPos(px, py, x, y); }
 		void setPx(size_t px, size_t py, float value) { m_heightmap.setPx(px, py, value); }
 		void renderColorBar() { m_heightmap.renderColorBar(); }
-		void clear() { m_heightmap.clear(); }
+		void clear();
 
 		/* Statistics */
 		void setStatistics(
@@ -64,5 +64,13 @@ namespace UI
 
 		// List
 		List<HeightmapItem> m_heightmapList;
+
+		// Statistics
+		lv_obj_t* m_numPoints;
+		lv_obj_t* m_area;
+		lv_obj_t* m_minError;
+		lv_obj_t* m_maxError;
+		lv_obj_t* m_meanError;
+		lv_obj_t* m_stdDev;
 	};
 } // namespace UI

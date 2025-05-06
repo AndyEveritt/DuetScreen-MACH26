@@ -89,6 +89,12 @@ namespace UI
 		, m_infoCont(lv_obj_create(getCont()))
 		, m_heightmap("heightmap", m_graphCont, layout_t(0, 0, 100, 100))
 		, m_heightmapList("heightmap_list", getCont())
+		, m_numPoints(lv_label_create(m_infoCont))
+		, m_area(lv_label_create(m_infoCont))
+		, m_minError(lv_label_create(m_infoCont))
+		, m_maxError(lv_label_create(m_infoCont))
+		, m_meanError(lv_label_create(m_infoCont))
+		, m_stdDev(lv_label_create(m_infoCont))
 	{
 		UI_LOCK();
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
@@ -96,7 +102,7 @@ namespace UI
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_graphCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_heightmapList, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_infoCont, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
+		lv_obj_set_grid_cell(m_infoCont, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 1, 1);
 
 		// m_heightmap.setXRange({-200, 200});
 		m_heightmap.setTitle("Heightmap");
@@ -104,6 +110,16 @@ namespace UI
 		// List
 		m_heightmapList.setTitle(_("heightmap_list_header"));
 		m_heightmapList.setListGrow(1);
+
+		// Statistics
+		lv_obj_set_size(m_infoCont, LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_flex_flow(m_infoCont, LV_FLEX_FLOW_ROW_WRAP);
+		lv_obj_set_flex_align(m_infoCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		for (size_t i = 0; i < lv_obj_get_child_cnt(m_infoCont); i++)
+		{
+			lv_obj_t* child = lv_obj_get_child(m_infoCont, i);
+			lv_obj_set_size(child, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		}
 	}
 
 	const size_t HeightmapView::getHeightmapCount() const
@@ -144,6 +160,26 @@ namespace UI
 			}
 			item->setSelected(item->getIndex() == index);
 		}
+	}
+
+	void HeightmapView::clear()
+	{
+		UI_LOCK();
+		m_heightmap.clear();
+
+		setStatistics(0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	}
+
+	void HeightmapView::setStatistics(
+		size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_numPoints, utils::format(_("heightmap_num_points"), numPoints).c_str());
+		lv_label_set_text(m_area, utils::format(_("heightmap_area"), area).c_str());
+		lv_label_set_text(m_minError, utils::format(_("heightmap_min_error"), minError).c_str());
+		lv_label_set_text(m_maxError, utils::format(_("heightmap_max_error"), maxError).c_str());
+		lv_label_set_text(m_meanError, utils::format(_("heightmap_mean_error"), meanError).c_str());
+		lv_label_set_text(m_stdDev, utils::format(_("heightmap_std_dev"), stdDev).c_str());
 	}
 
 	void HeightmapView::onShow() {}

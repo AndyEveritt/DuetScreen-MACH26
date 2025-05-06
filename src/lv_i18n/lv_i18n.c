@@ -130,6 +130,15 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"sort_by_name", "Name"},
     {"sort_by_date", "Date"},
     {"sort_by_size", "Size"},
+    {"heightmap_unload", "Unload"},
+    {"heightmap_load", "Load"},
+    {"heightmap_list_header", "Heightmaps"},
+    {"heightmap_num_points", "Number of points: %u"},
+    {"heightmap_area", "Probe area: %.2f cm^2"},
+    {"heightmap_min_error", "Min deviation: %.2f mm"},
+    {"heightmap_max_error", "Max deviation: %.2f mm"},
+    {"heightmap_mean_error", "Mean error: %.2f mm"},
+    {"heightmap_std_dev", "RMS error: %.2f mm"},
     {NULL, NULL} // End mark
 };
 
