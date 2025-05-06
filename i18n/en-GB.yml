@@ -347,3 +347,6 @@ en-GB:
   heightmap_max_error: 'Max deviation: %.2f mm'
   heightmap_mean_error: 'Mean error: %.2f mm'
   heightmap_std_dev: 'RMS error: %.2f mm'
+  heightmap_fixed: Fixed
+  heightmap_auto: Auto
+  heightmap_render_mode: 'Render Mode:'

@@ -7,20 +7,21 @@ namespace UI
 {
 	class HeightmapView;
 
-	enum class HeightmapRenderMode
-	{
-		Fixed = 0,
-		Auto,
-	};
-
 	class HeightmapPresenter : public Presenter<HeightmapView>
 	{
 	  public:
+		enum class HeightmapRenderMode
+		{
+			Fixed = 0,
+			Auto,
+		};
+
 		PRESENTER_CONSTRUCTOR(HeightmapPresenter, HeightmapView)
 
 		// Actions
 		void setHeightmap(const std::shared_ptr<OM::Heightmap>& heightmap);
 		void setRenderMode(HeightmapRenderMode mode);
+		HeightmapRenderMode getRenderMode() const { return m_mode; }
 		void render();
 		void setActiveHeightmap(const size_t index);
 		void toggleHeightmap(const size_t index);

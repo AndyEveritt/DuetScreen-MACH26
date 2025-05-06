@@ -116,6 +116,18 @@ namespace UI
 		lv_obj_set_size(getCont(), width, height);
 	}
 
+	void BaseView::setMinWidth(lv_coord_t width, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_min_width(getCont(), width, selector);
+	}
+
+	void BaseView::setMinHeight(lv_coord_t height, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_min_height(getCont(), height, selector);
+	}
+
 	void BaseView::setX(lv_coord_t x)
 	{
 		UI_LOCK();

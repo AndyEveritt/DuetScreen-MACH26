@@ -90,6 +90,8 @@ namespace UI
 		void setWidth(lv_coord_t width);
 		void setHeight(lv_coord_t height);
 		void setSize(lv_coord_t width, lv_coord_t height);
+		void setMinWidth(lv_coord_t width, lv_style_selector_t selector = LV_PART_MAIN);
+		void setMinHeight(lv_coord_t height, lv_style_selector_t selector = LV_PART_MAIN);
 		void setX(lv_coord_t x);
 		void setY(lv_coord_t y);
 		void setPos(lv_coord_t x, lv_coord_t y);

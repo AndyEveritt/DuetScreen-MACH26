@@ -11,6 +11,38 @@ namespace UI
 {
 	class HeightmapItem;
 
+	class HeightmapRenderMode : public BaseView
+	{
+	  public:
+		HeightmapRenderMode(lv_obj_t* parent, HeightmapPresenter& presenter);
+		void setRenderMode(HeightmapPresenter::HeightmapRenderMode mode);
+
+	  private:
+		HeightmapPresenter& m_presenter;
+
+		lv_obj_t* m_title;
+		lv_obj_t* m_btns;
+
+		Button m_fixed;
+		Button m_auto;
+	};
+
+	class HeightmapStatistics : public BaseView
+	{
+	  public:
+		HeightmapStatistics(const std::string& name, lv_obj_t* parent);
+		void setStatistics(
+			size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev);
+
+	  private:
+		lv_obj_t* m_numPoints;
+		lv_obj_t* m_area;
+		lv_obj_t* m_minError;
+		lv_obj_t* m_maxError;
+		lv_obj_t* m_meanError;
+		lv_obj_t* m_stdDev;
+	};
+
 	class HeightmapView : public View<HeightmapPresenter>
 	{
 	  public:
@@ -52,12 +84,7 @@ namespace UI
 		Heatmap& getHeightmap() { return m_heightmap; }
 
 		int32_t m_layoutColDsc[4];
-		int32_t m_layoutRowDsc[3];
-
-		// Containers
-		lv_obj_t* m_graphCont;
-		lv_obj_t* m_listCont;
-		lv_obj_t* m_infoCont;
+		int32_t m_layoutRowDsc[4];
 
 		// Graph
 		Heatmap m_heightmap;
@@ -66,11 +93,8 @@ namespace UI
 		List<HeightmapItem> m_heightmapList;
 
 		// Statistics
-		lv_obj_t* m_numPoints;
-		lv_obj_t* m_area;
-		lv_obj_t* m_minError;
-		lv_obj_t* m_maxError;
-		lv_obj_t* m_meanError;
-		lv_obj_t* m_stdDev;
+		HeightmapStatistics m_statistics;
+
+		HeightmapRenderMode m_renderMode;
 	};
 } // namespace UI

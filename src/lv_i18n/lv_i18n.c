@@ -139,6 +139,9 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"heightmap_max_error", "Max deviation: %.2f mm"},
     {"heightmap_mean_error", "Mean error: %.2f mm"},
     {"heightmap_std_dev", "RMS error: %.2f mm"},
+    {"heightmap_fixed", "Fixed"},
+    {"heightmap_auto", "Auto"},
+    {"heightmap_render_mode", "Render Mode:"},
     {NULL, NULL} // End mark
 };
 

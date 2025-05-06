@@ -110,23 +110,13 @@ namespace UI
 	void Button::setCheckable(bool checkable)
 	{
 		UI_LOCK();
-		if (checkable)
-		{
-			lv_obj_add_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
-		}
-		else
-		{
-			lv_obj_remove_flag(m_button, LV_OBJ_FLAG_CHECKABLE);
-		}
+		lv_obj_set_flag(m_button, LV_OBJ_FLAG_CHECKABLE, checkable);
 	}
 
 	void Button::setChecked(const bool checked)
 	{
 		UI_LOCK();
-		if (lv_obj_has_flag(m_button, LV_OBJ_FLAG_CHECKABLE))
-		{
-			lv_obj_set_state(m_button, LV_STATE_CHECKED, checked);
-		}
+		lv_obj_set_state(m_button, LV_STATE_CHECKED, checked);
 	}
 
 	const bool Button::getChecked() const
