@@ -143,6 +143,8 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"heightmap_auto", "Auto"},
     {"heightmap_render_mode", "Render Mode:"},
     {"heightmap_title", "Heightmap: %s"},
+    {"connected_message", "Connected to Duet"},
+    {"disconnected_message", "Disconnected from Duet"},
     {NULL, NULL} // End mark
 };
 

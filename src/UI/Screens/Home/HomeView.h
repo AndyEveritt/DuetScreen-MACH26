@@ -33,7 +33,7 @@ namespace UI
 			return view;
 		}
 
-		virtual void refresh() override;
+		void clear();
 
 		std::shared_ptr<MessageBox> createMessageBox();
 		size_t getMessageBoxCount() const { return m_messageBoxList.size(); }

@@ -16,6 +16,7 @@ namespace UI
 
 		// Observers
 		virtual void newFanData() override;
+		void disconnected() override;
 
 	  private:
 	};

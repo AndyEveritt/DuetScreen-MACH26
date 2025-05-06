@@ -183,9 +183,12 @@ namespace UI
 		// m_presenter->init();
 	}
 
-	void HomeView::refresh()
+	void HomeView::clear()
 	{
 		m_graph.clear();
+		m_toolList.setItemCnt(0);
+		clearMessageBoxes();
+		m_toolList.hideNumberPad();
 	}
 
 	void HomeView::onShow()

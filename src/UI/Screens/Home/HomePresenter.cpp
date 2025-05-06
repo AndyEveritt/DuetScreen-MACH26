@@ -50,10 +50,10 @@ namespace UI
 		}
 	}
 
-	void HomePresenter::refresh()
+	void HomePresenter::disconnected()
 	{
 		UI_LOCK();
-		m_view->refresh();
+		m_view->clear();
 		m_alertAxes.clear();
 	}
 

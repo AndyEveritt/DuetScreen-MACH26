@@ -17,6 +17,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
+#include "UI/Core/Model.h"
 #include "utils/StorageHelper.h"
 #include "utils/TimeHelper.h"
 #include "utils/utils.h"
@@ -843,7 +844,7 @@ namespace Comm
 			if (r.status_code != HTTP_STATUS_OK)
 			{
 				LOG_ERROR("rr_connect failed, returned response {:d}", (int)r.status_code);
-				return false;
+				break;
 			}
 
 			LOG_VERBOSE("parsing rr_connect response");
@@ -851,13 +852,13 @@ namespace Comm
 			if (body.is_discarded())
 			{
 				LOG_ERROR("Failed to parse JSON response from rr_connect");
-				return false;
+				break;
 			}
 
 			if (body.contains("err") && body["err"].get<int>() != 0)
 			{
 				LOG_ERROR("rr_connect failed, returned error {:d}", body["err"].get<int>());
-				return false;
+				break;
 			}
 
 			if (body.contains("sessionTimeout"))
@@ -880,6 +881,7 @@ namespace Comm
 			}
 			LOG_INFO("rr_connect succeeded");
 			ret = true;
+			break;
 		}
 		case CommunicationType::usb:
 		{
@@ -895,49 +897,62 @@ namespace Comm
 			break;
 		}
 
+		m_connected = ret;
+		if (m_connected)
+		{
+			Model::get().post<EventType::Connected>();
+		}
+
 		return ret;
 	}
 
-	const Duet::error_code Duet::Disconnect()
+	const bool Duet::Disconnect()
 	{
+		if (!m_connected)
+		{
+			return true;
+		}
 		LOG_INFO("Disconnecting from Duet");
+		m_connected = false;
 		SetStatus(OM::PrinterStatus::connecting);
+
+		bool ret = false;
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 			SerialIo::Shutdown();
+			ret = true;
 			break;
 		case CommunicationType::network:
 		{
-#if 0
-			ClearThreadPool();
 			if (m_sessionKey == sm_noSessionKey)
 			{
-				Reset();
-				return 0;
+				break;
 			}
 			HttpResponse r;
 			hv::QueryParams query;
-			if (!Comm::Get(GetBaseUrl(), "/rr_disconnect", r, query, m_sessionKey))
+			if (!Get("/rr_disconnect", r, query))
 			{
-				LOG_ERROR("rr_disconnect failed, returned response {:d}", (int)r.code);
-				return r.code;
+				LOG_ERROR("rr_disconnect failed, returned response {:d}", (int)r.status_code);
+				ret = false;
+				break;
 			}
-			Reset();
-			return r.code;
-#else
-			return 200;
-#endif
+			ret = true;
+			break;
 		}
 		case CommunicationType::usb:
 		{
 			getCurrentUsbDevice().reset();
+			ret = true;
 			break;
 		}
 		default:
 			break;
 		}
-		return 0;
+
+		Reset();
+		Model::get().post<EventType::Disconnected>();
+		return ret;
 	}
 
 	const std::string& Duet::GetBaseUrl() const

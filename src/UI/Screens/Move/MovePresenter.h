@@ -24,6 +24,7 @@ namespace UI
 
 		// Observers
 		void newAxesData() override;
+		void disconnected() override;
 
 	  protected:
 		void onActivate() override { newAxesData(); }

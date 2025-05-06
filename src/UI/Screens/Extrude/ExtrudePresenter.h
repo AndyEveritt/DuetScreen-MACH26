@@ -26,6 +26,7 @@ namespace UI
 
 		// Observers
 		void newToolData() override;
+		void disconnected() override;
 
 	  protected:
 		void onActivate() override;

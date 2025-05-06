@@ -142,9 +142,9 @@ namespace UI
 		}
 	}
 
-	void HeightmapPresenter::refresh()
+	void HeightmapPresenter::disconnected()
 	{
-		LOG_DBG("Refresh");
+		LOG_DBG("Disconnect");
 		if (m_heightmap != nullptr)
 		{
 			m_heightmap = nullptr;

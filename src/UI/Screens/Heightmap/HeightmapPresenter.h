@@ -30,7 +30,7 @@ namespace UI
 		void newCompensationFile() override;
 		void newDirectories() override;
 		void newAxesData() override;
-		void refresh() override;
+		void disconnected() override;
 
 	  private:
 		virtual void onActivate() override;

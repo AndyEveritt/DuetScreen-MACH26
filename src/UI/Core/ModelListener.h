@@ -17,7 +17,9 @@ namespace UI
 
 		Model& getModel() const { return m_model; }
 
-		virtual void refresh() {}
+		virtual void connected() {}
+
+		virtual void disconnected() {}
 
 		virtual void tick() {}
 

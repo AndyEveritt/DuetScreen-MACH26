@@ -61,6 +61,11 @@ namespace UI
 		}
 	}
 
+	void ExtrudePresenter::disconnected()
+	{
+		m_view->setToolCount(0);
+	}
+
 	void ExtrudePresenter::updateFilamentList()
 	{
 		for (size_t i = 0; i < m_view->getToolCount(); i++)

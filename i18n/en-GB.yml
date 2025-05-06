@@ -351,3 +351,5 @@ en-GB:
   heightmap_auto: Auto
   heightmap_render_mode: 'Render Mode:'
   heightmap_title: 'Heightmap: %s'
+  connected_message: Connected to Duet
+  disconnected_message: Disconnected from Duet

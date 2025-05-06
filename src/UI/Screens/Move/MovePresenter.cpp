@@ -79,4 +79,9 @@ namespace UI
 			item->setMachinePosition(axis->machinePosition);
 		}
 	}
+
+	void MovePresenter::disconnected()
+	{
+		m_view->setAxisCount(0);
+	}
 } // namespace UI

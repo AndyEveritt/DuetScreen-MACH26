@@ -103,7 +103,9 @@ namespace Comm
 
 		// Network methods
 		const bool Connect(bool useSessionKey = true);
-		const error_code Disconnect();
+		const bool Disconnect();
+		const bool IsConnected() const { return m_connected; }
+		const bool IsSbcMode() const { return m_sbcMode; }
 
 		const std::string& GetBaseUrl() const;
 
@@ -143,6 +145,7 @@ namespace Comm
 		uint32_t m_sessionKey;
 		int32_t m_sessionTimeout;
 		bool m_sbcMode;
+		bool m_connected = false;
 
 		static constexpr uint32_t sm_noSessionKey = 0;
 	};

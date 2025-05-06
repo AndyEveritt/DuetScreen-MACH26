@@ -7,6 +7,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "Presenter.h"
 #include "View.h"
+#include "lv_i18n/lv_i18n.h"
 #include "lvgl/src/osal/lv_os.h"
 
 #define NOTIFY_ALL_PRESENTERS(func, ...)                                                                               \
@@ -22,13 +23,14 @@
 		break;                                                                                                         \
 	  }                                                                                                                \
 	  presenter = *it;                                                                                                 \
-	  ++it;                                                                                                            \
 	  if (!presenter->isActive())                                                                                      \
 	  {                                                                                                                \
+		++it;                                                                                                          \
 		continue;                                                                                                      \
 	  }                                                                                                                \
 	  LOG_DBG("Notifying presenter {:s}: " #func, presenter->getName());                                               \
 	  presenter->func(__VA_ARGS__);                                                                                    \
+	  ++it;                                                                                                            \
 	}                                                                                                                  \
   }
 
@@ -56,7 +58,8 @@ Model::Model()
 #endif
 
 	registerEvent<EventType::Tick>(this, &Model::tick);
-	registerEvent<EventType::Refresh>(this, &Model::refresh);
+	registerEvent<EventType::Connected>(this, &Model::connected);
+	registerEvent<EventType::Disconnected>(this, &Model::disconnected);
 	registerEvent<EventType::UpdateAvailable>(this, &Model::newUpdateAvailable);
 	registerEvent<EventType::FanData>(this, &Model::newFanData);
 	registerEvent<EventType::FileData>(this, &Model::newFileData);
@@ -249,42 +252,18 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 	}
 }
 
-void Model::refresh()
+void Model::connected()
 {
-	LOG_DBG("Refreshing model");
-	NOTIFY_ALL_PRESENTERS(refresh);
-	newFanData();
-	newFanData();
-	newFileData();
-	newHeaterData();
-	newJobFileName(OM::GetJobName().c_str());
-	newJobLastFileName(OM::GetLastJobName().c_str());
-	newJobPrintTime();
-	newJobDuration();
-	newJobTimeLeft();
-	newJobWarmupDuration();
-	newJobBuild();
-	newJobCurrentObject();
-	newJobObjectData();
-	newAxesData();
-	newExtruderData();
-	newKinematicsName();
-	newSpeedFactor();
-	newWorkplaceNumber();
-	newCurrentMoveRequestedSpeed();
-	newCurrentMoveTopSpeed();
-	newCurrentMoveExtrusionSpeed();
-	newCompensationFile();
-	newAnalogSensorData();
-	newEndstopData();
-	newSpindleData();
-	newNetworkName();
-	newIpAddress();
-	newStatus(OM::GetStatus());
-	newCurrentTool();
-	newMessageBoxData(OM::g_currentAlert);
-	newTime();
-	newToolData();
+	LOG_DBG("Connected event");
+	NOTIFY_ALL_PRESENTERS(connected);
+	post<EventType::Response>(_("connected_message"));
+}
+
+void Model::disconnected()
+{
+	LOG_DBG("Disconnected event");
+	NOTIFY_ALL_PRESENTERS(disconnected);
+	post<EventType::Response>(_("disconnected_message"));
 }
 
 void Model::newUpdateAvailable(const std::string& file)

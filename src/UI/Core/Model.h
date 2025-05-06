@@ -36,7 +36,8 @@ namespace UI
 enum class EventType
 {
 	Tick,
-	Refresh,
+	Connected,
+	Disconnected,
 	UpdateAvailable,
 	FanData,
 	FileData,
@@ -185,7 +186,8 @@ struct EventTraits
 	  };
 
 REGISTER_EVENT_TYPE(EventType::Tick)
-REGISTER_EVENT_TYPE(EventType::Refresh)
+REGISTER_EVENT_TYPE(EventType::Connected)
+REGISTER_EVENT_TYPE(EventType::Disconnected)
 REGISTER_EVENT_TYPE(EventType::UpdateAvailable, std::string)
 REGISTER_EVENT_TYPE(EventType::FanData)
 REGISTER_EVENT_TYPE(EventType::FileData)
@@ -226,7 +228,8 @@ REGISTER_EVENT_TYPE(EventType::Directories)
 
 // Variant covering all possible event-data tuples
 using EventData = std::variant<EventTraits<EventType::Tick>,
-							   EventTraits<EventType::Refresh>,
+							   EventTraits<EventType::Connected>,
+							   EventTraits<EventType::Disconnected>,
 							   EventTraits<EventType::UpdateAvailable>,
 							   EventTraits<EventType::FanData>,
 							   EventTraits<EventType::FileData>,
@@ -358,7 +361,8 @@ class Model
 
 	/* presenter callbacks */
 
-	void refresh();
+	void connected();
+	void disconnected();
 
 	void newUpdateAvailable(const std::string& file);
 

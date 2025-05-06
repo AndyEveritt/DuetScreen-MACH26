@@ -17,7 +17,7 @@ namespace UI
 		virtual void init() override;
 
 		void tick() override;
-		virtual void refresh() override;
+		virtual void disconnected() override;
 
 		void update();
 

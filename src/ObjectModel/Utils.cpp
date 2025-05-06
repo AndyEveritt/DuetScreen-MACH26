@@ -29,25 +29,22 @@ namespace OM
 {
 	void RemoveAll()
 	{
-		{
-			MODEL_LOCK();
-			g_currentAlert.Reset();
-			g_lastAlertSeq = 0;
-			Move::RemoveAxis(0, true);
-			Move::RemoveExtruderAxis(0, true);
-			RemoveBed(0, true);
-			RemoveChamber(0, true);
-			RemoveFan(0, true);
-			Heat::RemoveHeater(0, true);
-			RemoveAnalogSensor(0, true);
-			RemoveEndstop(0, true);
-			RemoveSpindle(0, true);
-			RemoveTool(0, true);
-			ClearCurrentHeightmap();
-			Directories::Reset();
-		}
-
-		Model::get().post<EventType::Refresh>();
+		MODEL_LOCK();
+		g_currentAlert.Reset();
+		g_lastAlertSeq = 0;
+		Move::RemoveAxis(0, true);
+		Move::RemoveExtruderAxis(0, true);
+		RemoveBed(0, true);
+		RemoveChamber(0, true);
+		RemoveFan(0, true);
+		Heat::RemoveHeater(0, true);
+		RemoveAnalogSensor(0, true);
+		RemoveEndstop(0, true);
+		RemoveSpindle(0, true);
+		RemoveTool(0, true);
+		ClearCurrentHeightmap();
+		ClearHeightmapCache();
+		Directories::Reset();
 	}
 
 	static Debug::DebugCommand s_logOM(

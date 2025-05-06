@@ -30,4 +30,9 @@ namespace UI
 				return true;
 			});
 	}
+
+	void FanPresenter::disconnected()
+	{
+		m_view->setFanCount(0);
+	}
 } // namespace UI

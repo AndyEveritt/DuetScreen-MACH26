@@ -220,7 +220,7 @@ namespace UI
 		return false;
 	}
 
-	void FilePresenter::refresh()
+	void FilePresenter::disconnected()
 	{
 		m_items.clear();
 		m_view->setFileCount(0);

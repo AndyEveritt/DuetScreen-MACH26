@@ -32,10 +32,10 @@ namespace OM
 			NumberFloat = 6,
 			Text = 7,
 			Max
-		} mode;
-		uint32_t seq;
-		uint32_t controls;
-		float timeout;
+		} mode = Mode::None;
+		uint32_t seq = 0;
+		uint32_t controls = 0;
+		float timeout = 0.0f;
 		Bitmap<uint8_t> flags;
 		String<ALERT_TITLE_LENGTH> title;
 		String<ALERT_TEXT_LENGTH> text;
@@ -51,7 +51,7 @@ namespace OM
 
 		bool cancelButton;
 		String<ALERT_CHOICES_TEXT_LENGTH> choices[ALERT_MAX_CHOICES];
-		size_t choices_count;
+		size_t choices_count = 0;
 
 		struct Limits
 		{
