@@ -206,11 +206,14 @@ namespace UI
 		lv_obj_set_grid_cell(m_renderMode, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);
 		lv_obj_set_grid_cell(m_statistics, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 2, 1);
 
+		m_heightmap.setResolution(200, 200);
+
 		// List
 		m_heightmapList.setTitle(_("heightmap_list_header"));
 		m_heightmapList.setListGrow(1);
 
 		clear();
+		drawGrid();
 	}
 
 	const size_t HeightmapView::getHeightmapCount() const
@@ -257,6 +260,21 @@ namespace UI
 	{
 		UI_LOCK();
 		m_heightmap.setTitle(utils::format(_("heightmap_title"), name.c_str()));
+	}
+
+	void HeightmapView::addMeasurementPoint(float x, float y)
+	{
+		UI_LOCK();
+		size_t px, py;
+		if (!m_heightmap.posToPx(x, y, px, py))
+		{
+			LOG_WARN("Measurement ({:g}, {:g}) not within axis bounds", x, y);
+			return;
+		}
+		uint32_t width, height;
+		m_heightmap.getResolution(width, height);
+		m_heightmap.getCanvas().drawCirclePx(
+			{(int32_t)px, (int32_t)(height - py)}, 1, lv_palette_main(LV_PALETTE_GREY), LV_OPA_20);
 	}
 
 	void HeightmapView::clear()

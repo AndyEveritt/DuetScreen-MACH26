@@ -50,8 +50,11 @@ namespace UI
 		void setPx(size_t px, size_t py, float value);
 		void setPos(float x, float y, float value);
 
+		void drawGrid() { m_canvas.drawGrid(); }
 		void render();
 		void renderColorBar();
+
+		Canvas& getCanvas() { return m_canvas; }
 
 		void clear();
 

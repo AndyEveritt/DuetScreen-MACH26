@@ -68,7 +68,9 @@ namespace UI
 		void setResolution(uint32_t width, uint32_t height) { m_heightmap.setResolution(width, height); }
 		bool pxToPos(size_t px, size_t py, float& x, float& y) const { return m_heightmap.pxToPos(px, py, x, y); }
 		void setPx(size_t px, size_t py, float value) { m_heightmap.setPx(px, py, value); }
+		void drawGrid() { m_heightmap.drawGrid(); }
 		void renderColorBar() { m_heightmap.renderColorBar(); }
+		void addMeasurementPoint(float x, float y);
 		void clear();
 
 		/* Statistics */

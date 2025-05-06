@@ -41,7 +41,10 @@ namespace UI
 		void setYRange(range_float_t range);
 
 		bool pxToPos(size_t px, size_t py, float& x, float& y) const;
+		bool pxToPos(lv_point_t p, float& x, float& y) const;
 		bool posToPx(float x, float y, size_t& px, size_t& py) const;
+		bool posToPx(float x, float y, int32_t& px, int32_t& py) const;
+		bool posToPx(float x, float y, lv_point_t& p) const;
 
 		void setTitle(const std::string& title);
 
@@ -52,13 +55,18 @@ namespace UI
 		bool getResolution(uint32_t& width, uint32_t& height) const;
 		void setResolution(uint32_t width, uint32_t height);
 
+		void drawGrid();
 		void drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa);
-		void drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa);
-		void drawRectPx(lv_area_t area, lv_color_t color, lv_opa_t opa);
+		void drawRect(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa);
+		void drawRectPx(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa);
+		void drawLine(lv_point_precise_t p1, lv_point_precise_t p2, lv_color_t color, lv_opa_t opa);
+		void drawLinePx(lv_point_precise_t p1, lv_point_precise_t p2, lv_color_t color, lv_opa_t opa);
+		void drawCircle(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa);
+		void drawCirclePx(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa);
 
 		lv_color_t getPx(size_t px, size_t py) const;
 
-		lv_obj_t* getCanvas() const { return m_canvas; }
+		lv_obj_t* getCanvasObj() const { return m_canvas; }
 
 		void clear();
 

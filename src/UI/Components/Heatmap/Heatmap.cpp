@@ -167,7 +167,7 @@ namespace UI
 		{
 			float percent = 1.0f - (float)y / barHeight;
 			lv_color_t color = GetColorForPercent(percent);
-			lv_canvas_set_px(m_colorBar.getCanvas(), 0, y, color, LV_OPA_COVER);
+			m_colorBar.drawPx(0, y, color, LV_OPA_COVER);
 		}
 	}
 

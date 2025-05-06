@@ -4,6 +4,8 @@
 #include "lv_i18n/lv_i18n.h"
 #include <cmath>
 
+#define RENDER_MEASUREMENT_POINTS 0
+
 namespace UI
 {
 	void HeightmapPresenter::setRenderMode(HeightmapRenderMode mode)
@@ -50,6 +52,8 @@ namespace UI
 			break;
 		}
 
+		m_view->drawGrid();
+
 		uint32_t width, height;
 		m_view->getResolution(width, height);
 
@@ -70,6 +74,16 @@ namespace UI
 			}
 		}
 		m_view->renderColorBar();
+
+#if RENDER_MEASUREMENT_POINTS
+		const auto& measurements = m_heightmap->GetPoints();
+		for (size_t i = 0; i < measurements.size(); i++)
+		{
+			const auto& point = measurements[i];
+			m_view->addMeasurementPoint(point.x, point.y);
+		}
+#endif
+
 		m_view->setStatistics(m_heightmap->GetPointCount(),
 							  m_heightmap->GetArea() / 100,
 							  m_heightmap->GetMinError(),

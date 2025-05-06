@@ -226,6 +226,12 @@ namespace UI
 		return true;
 	}
 
+	bool Canvas::pxToPos(lv_point_t p, float& x, float& y) const
+	{
+		UI_LOCK();
+		return pxToPos(p.x, p.y, x, y);
+	}
+
 	bool Canvas::posToPx(float x, float y, size_t& px, size_t& py) const
 	{
 		UI_LOCK();
@@ -243,6 +249,32 @@ namespace UI
 		px = (size_t)((x - xRange.min) * (float)res_x / (xRange.max - xRange.min));
 		py = (size_t)((y - yRange.min) * (float)res_y / (yRange.max - yRange.min));
 
+		return true;
+	}
+
+	bool Canvas::posToPx(float x, float y, int32_t& px, int32_t& py) const
+	{
+		UI_LOCK();
+		size_t pxSize, pySize;
+		if (!posToPx(x, y, pxSize, pySize))
+		{
+			return false;
+		}
+		px = (int32_t)pxSize;
+		py = (int32_t)pySize;
+		return true;
+	}
+
+	bool Canvas::posToPx(float x, float y, lv_point_t& p) const
+	{
+		UI_LOCK();
+		size_t pxSize, pySize;
+		if (!posToPx(x, y, pxSize, pySize))
+		{
+			return false;
+		}
+		p.x = (int32_t)pxSize;
+		p.y = (int32_t)pySize;
 		return true;
 	}
 
@@ -274,40 +306,69 @@ namespace UI
 		lv_canvas_set_draw_buf(m_canvas, m_buf);
 	}
 
+	void Canvas::drawGrid()
+	{
+		UI_LOCK();
+		LOG_DBG("Drawing grid");
+
+		uint32_t res_x, res_y;
+		if (!getResolution(res_x, res_y))
+		{
+			LOG_WARN("Canvas resolution not set");
+			return;
+		}
+
+		constexpr size_t lines = 5;
+
+		for (size_t i = 0; i < lines; i++)
+		{
+			drawLinePx({(int32_t)(i * (res_x / (lines - 1))), 0},
+					   {(int32_t)(i * (res_x / (lines - 1))), (int32_t)res_y},
+					   lv_palette_main(LV_PALETTE_GREY),
+					   LV_OPA_30);
+			drawLinePx({0, (int32_t)(i * (res_y / (lines - 1)))},
+					   {(int32_t)res_x, (int32_t)(i * (res_y / (lines - 1)))},
+					   lv_palette_main(LV_PALETTE_GREY),
+					   LV_OPA_30);
+		}
+	}
+
 	void Canvas::drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa)
 	{
 		UI_LOCK();
 		// Draw the pixel
-		lv_canvas_set_px(getCanvas(), px, py, color, LV_OPA_COVER);
+		lv_canvas_set_px(getCanvasObj(), px, py, color, LV_OPA_COVER);
 	}
 
-	void Canvas::drawRect(lv_area_t area, lv_color_t color, lv_opa_t opa)
+	void Canvas::drawRect(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa)
 	{
 		UI_LOCK();
+		LOG_DBG("area: ({:d}, {:d}), ({:d}, {:d}), radius: {:d}", area.x1, area.y1, area.x2, area.y2, radius);
 
-		// Get the X and Y range
-		range_t xRange = getXRange();
-		range_t yRange = getYRange();
+		if (!posToPx((float)area.x1, (float)area.y1, area.x1, area.y1))
+		{
+			LOG_WARN("invalid point ({:d}, {:d})", area.x1, area.y1);
+			return;
+		}
+		if (!posToPx((float)area.x2, (float)area.y2, area.x2, area.y2))
+		{
+			LOG_WARN("invalid point ({:d}, {:d})", area.x2, area.y2);
+			return;
+		}
 
-		// Convert the area to pixel coordinates
-		uint32_t res_x, res_y;
-		getResolution(res_x, res_y);
-
-		area.x1 = (area.x1 - xRange.min) * (int32_t)res_x / (xRange.max - xRange.min);
-		area.x2 = (area.x2 - xRange.min) * (int32_t)res_x / (xRange.max - xRange.min);
-		area.y1 = (area.y1 - yRange.min) * (int32_t)res_y / (yRange.max - yRange.min);
-		area.y2 = (area.y2 - yRange.min) * (int32_t)res_y / (yRange.max - yRange.min);
-
-		drawRectPx(area, color, opa);
+		drawRectPx(area, radius, color, opa);
 	}
 
-	void Canvas::drawRectPx(lv_area_t area, lv_color_t color, lv_opa_t opa)
+	void Canvas::drawRectPx(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa)
 	{
 		UI_LOCK();
-		lv_draw_rect_dsc_t rect_dsc;
-		lv_draw_rect_dsc_init(&rect_dsc);
-		rect_dsc.bg_opa = opa;
-		rect_dsc.bg_color = color;
+		LOG_DBG("area: ({:d}, {:d}), ({:d}, {:d}), radius: {:d}", area.x1, area.y1, area.x2, area.y2, radius);
+
+		lv_draw_rect_dsc_t dsc;
+		lv_draw_rect_dsc_init(&dsc);
+		dsc.bg_opa = opa;
+		dsc.bg_color = color;
+		dsc.radius = radius;
 
 		lv_layer_t layer;
 		lv_canvas_init_layer(m_canvas, &layer);
@@ -319,11 +380,76 @@ namespace UI
 		area.x2 = std::min(area.x2, (int32_t)res_x - 1);
 		area.y2 = std::min(area.y2, (int32_t)res_y - 1);
 
-		lv_draw_rect(&layer, &rect_dsc, &area);
+		lv_draw_rect(&layer, &dsc, &area);
 
-		lv_draw_rect(&layer, &rect_dsc, &area);
+		lv_draw_rect(&layer, &dsc, &area);
 
 		lv_canvas_finish_layer(m_canvas, &layer);
+	}
+
+	void Canvas::drawLine(lv_point_precise_t p1, lv_point_precise_t p2, lv_color_t color, lv_opa_t opa)
+	{
+		UI_LOCK();
+		LOG_DBG("p1: ({}, {}), p2: ({}, {})", p1.x, p1.y, p2.x, p2.y);
+
+		if (!posToPx(p1.x, p1.y, p1.x, p1.y))
+		{
+			LOG_WARN("invalid point ({}, {})", p1.x, p1.y);
+			return;
+		}
+		if (!posToPx(p2.x, p2.y, p2.x, p2.y))
+		{
+			LOG_WARN("invalid point ({}, {})", p2.x, p2.y);
+			return;
+		}
+		drawLinePx(p1, p2, color, opa);
+	}
+
+	void Canvas::drawLinePx(lv_point_precise_t p1, lv_point_precise_t p2, lv_color_t color, lv_opa_t opa)
+	{
+		UI_LOCK();
+		LOG_DBG("p1: ({}, {}), p2: ({}, {})", p1.x, p1.y, p2.x, p2.y);
+
+		lv_draw_line_dsc_t line_dsc;
+		lv_draw_line_dsc_init(&line_dsc);
+		line_dsc.p1 = p1;
+		line_dsc.p2 = p2;
+		line_dsc.width = 1;
+		line_dsc.opa = opa;
+		line_dsc.color = color;
+
+		lv_layer_t layer;
+		lv_canvas_init_layer(m_canvas, &layer);
+
+		lv_draw_line(&layer, &line_dsc);
+
+		lv_canvas_finish_layer(m_canvas, &layer);
+	}
+
+	void Canvas::drawCircle(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa)
+	{
+		UI_LOCK();
+		LOG_DBG("center: ({:d}, {:d}), radius: {:d}", center.x, center.y, radius);
+		if (!posToPx(center.x, center.y, center.x, center.y))
+		{
+			LOG_WARN("invalid point ({:d}, {:d})", center.x, center.y);
+			return;
+		}
+		drawCirclePx(center, radius, color, opa);
+	}
+
+	void Canvas::drawCirclePx(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa)
+	{
+		UI_LOCK();
+		LOG_DBG("center: ({:d}, {:d}), radius: {:d}", center.x, center.y, radius);
+
+		lv_area_t area;
+		area.x1 = center.x - radius;
+		area.y1 = center.y - radius;
+		area.x2 = center.x + radius;
+		area.y2 = center.y + radius;
+
+		drawRectPx(area, LV_RADIUS_CIRCLE, color, opa);
 	}
 
 	lv_color_t Canvas::getPx(size_t px, size_t py) const
