@@ -36,7 +36,7 @@ namespace UI
 		void setXRange(range_t range) { m_canvas.setXRange(range); }
 		void setYRange(range_t range) { m_canvas.setYRange(range); }
 
-		void setTitle(const char* title);
+		void setTitle(const std::string& title);
 		void showScale(const bool show);
 
 		void setValueRange(float min, float max);

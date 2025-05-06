@@ -35,6 +35,7 @@ namespace UI
 			return;
 		}
 
+		m_view->setShownHeightmapName(m_heightmap->GetFileName());
 		m_view->setXRange({static_cast<int32_t>(axis0->minPosition), static_cast<int32_t>(axis0->maxPosition)});
 		m_view->setYRange({static_cast<int32_t>(axis1->minPosition), static_cast<int32_t>(axis1->maxPosition)});
 

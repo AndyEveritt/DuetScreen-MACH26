@@ -88,10 +88,10 @@ namespace UI
 		// lv_obj_set_style
 	}
 
-	void Canvas::setTitle(const char* title)
+	void Canvas::setTitle(const std::string& title)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_title, title);
+		lv_label_set_text(m_title, title.c_str());
 	}
 
 	void Canvas::showTitle(const bool show)

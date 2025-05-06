@@ -206,15 +206,11 @@ namespace UI
 		lv_obj_set_grid_cell(m_renderMode, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);
 		lv_obj_set_grid_cell(m_statistics, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 2, 1);
 
-		// m_heightmap.setXRange({-200, 200});
-		m_heightmap.setTitle("Heightmap");
-
 		// List
 		m_heightmapList.setTitle(_("heightmap_list_header"));
 		m_heightmapList.setListGrow(1);
 
-		// Statistics
-		m_statistics.setStatistics(0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		clear();
 	}
 
 	const size_t HeightmapView::getHeightmapCount() const
@@ -257,11 +253,18 @@ namespace UI
 		}
 	}
 
+	void HeightmapView::setShownHeightmapName(const std::string& name)
+	{
+		UI_LOCK();
+		m_heightmap.setTitle(utils::format(_("heightmap_title"), name.c_str()));
+	}
+
 	void HeightmapView::clear()
 	{
 		UI_LOCK();
 		m_heightmap.clear();
 
+		setShownHeightmapName("");
 		setStatistics(0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	}
 

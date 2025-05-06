@@ -350,3 +350,4 @@ en-GB:
   heightmap_fixed: Fixed
   heightmap_auto: Auto
   heightmap_render_mode: 'Render Mode:'
+  heightmap_title: 'Heightmap: %s'

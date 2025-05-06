@@ -142,6 +142,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"heightmap_fixed", "Fixed"},
     {"heightmap_auto", "Auto"},
     {"heightmap_render_mode", "Render Mode:"},
+    {"heightmap_title", "Heightmap: %s"},
     {NULL, NULL} // End mark
 };
 

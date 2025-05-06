@@ -43,7 +43,7 @@ namespace UI
 		bool pxToPos(size_t px, size_t py, float& x, float& y) const;
 		bool posToPx(float x, float y, size_t& px, size_t& py) const;
 
-		void setTitle(const char* title);
+		void setTitle(const std::string& title);
 
 		void showTitle(const bool show);
 		void showXScale(const bool show);
