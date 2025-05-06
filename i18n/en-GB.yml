@@ -269,8 +269,8 @@ en-GB:
   gcode_M998_desc: ~
   gcode_M999_desc: ~
   gcode_T_desc: ~
-  folder: ~
-  file: ~
+  folder: Folder
+  file: File
   settings_network_ip_address: 'IP Address: %s'
   settings_connectivity_header: Connectivity
   settings_network: Network
@@ -309,7 +309,7 @@ en-GB:
   status_remaining_time: 'Remaining: %s'
   status_layer: 'Z: %.2f/%.2f mm'
   status_fan_speed: '%u%%'
-  print_again: ~
+  print_again: Print Again
   file_run_macro_title: Run Macro
   file_run_macro_message: Do you want to run %s?
   settings_restart: Restart
@@ -324,20 +324,20 @@ en-GB:
   fine_tune_extruder: Extruder %u
   fine_tune_fan: Fan %u
   fine_tune: Fine Tune
-  fan_header: ~
-  max: ~
-  fan: ~
+  fan_header: Fans
+  max: Max
+  fan: Fan
   sort_by_name: Name
   sort_by_date: Date
   sort_by_size: Size
-  settings_device: ~
-  settings_brightness: ~
-  settings_screensaver_timeout: ~
-  update_available: ~
-  update_available_text: ~
-  update_confirm: ~
-  update_cancel: ~
-  settings_system_logging: ~
+  settings_device: Device
+  settings_brightness: Brightness
+  settings_screensaver_timeout: Screensaver Timeout
+  update_available: Update Available
+  update_available_text: Confirm to install the update
+  update_confirm: Update
+  update_cancel: Cancel
+  settings_system_logging: Log system messages to console
   heightmap_unload: Unload
   heightmap_load: Load
   heightmap_list_header: Heightmaps

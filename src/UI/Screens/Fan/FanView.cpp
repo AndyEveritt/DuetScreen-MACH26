@@ -74,7 +74,7 @@ namespace UI
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_flex_grow(m_slider.getCont(), 1);
 
-		m_slider.setLabel(utils::format(_("fan"), index).c_str());
+		m_slider.setLabel(_("fan"));
 		m_slider.setRange(0, 100);
 		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter->setFanSpeed(m_index, value); });
 
