@@ -128,7 +128,6 @@ namespace OM
 	Heightmap::Heightmap(const std::string& filename)
 		: m_fileName(filename)
 	{
-		LoadFromDuet();
 	}
 
 	void Heightmap::Reset()
@@ -508,6 +507,7 @@ namespace OM
 
 	void RequestHeightmapFiles(std::function<void()> callback)
 	{
+		LOG_DBG("Requesting heightmap files from Duet");
 		FileSystem::RequestFiles(Directories::DirectoryType::SYSTEM, "", callback);
 		ClearHeightmapCache();
 	}

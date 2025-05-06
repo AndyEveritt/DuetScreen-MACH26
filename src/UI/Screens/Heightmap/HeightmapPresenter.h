@@ -29,6 +29,8 @@ namespace UI
 		// Observers
 		void newCompensationFile() override;
 		void newDirectories() override;
+		void newAxesData() override;
+		void refresh() override;
 
 	  private:
 		virtual void onActivate() override;

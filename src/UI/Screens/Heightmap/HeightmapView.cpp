@@ -213,7 +213,6 @@ namespace UI
 		m_heightmapList.setListGrow(1);
 
 		clear();
-		drawGrid();
 	}
 
 	const size_t HeightmapView::getHeightmapCount() const
@@ -283,6 +282,7 @@ namespace UI
 		m_heightmap.clear();
 
 		setShownHeightmapName("");
+		drawGrid();
 		setStatistics(0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	}
 

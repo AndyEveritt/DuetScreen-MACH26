@@ -129,13 +129,33 @@ namespace UI
 
 	void HeightmapPresenter::newDirectories()
 	{
-		LOG_INFO("New directories");
+		LOG_DBG("New directories");
 		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
+	}
+
+	void HeightmapPresenter::newAxesData()
+	{
+		LOG_DBG("New axes data");
+		if (m_heightmap != nullptr && m_heightmap->IsValid())
+		{
+			render();
+		}
+	}
+
+	void HeightmapPresenter::refresh()
+	{
+		LOG_DBG("Refresh");
+		if (m_heightmap != nullptr)
+		{
+			m_heightmap = nullptr;
+			m_view->clear();
+			m_view->setHeightmapCount(0);
+		}
 	}
 
 	void HeightmapPresenter::updateHeightmapList()
 	{
-		UI_LOCK();
+		// UI_LOCK();
 		m_heightmapFiles = OM::GetHeightmapFiles();
 		OM::FileSystem::SortFilesBy(m_heightmapFiles, OM::FileSystem::SortBy::NAME, false);
 		m_view->setHeightmapCount(m_heightmapFiles.size());
@@ -159,12 +179,9 @@ namespace UI
 	void HeightmapPresenter::onActivate()
 	{
 		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
-		std::shared_ptr<OM::Heightmap> map = OM::GetHeightmapData("heightmap.csv");
-		if (!map->IsValid())
-		{
-			map->LoadFromDuet();
-		}
-
+		const std::string& currentHeightmap = OM::GetCurrentHeightmap();
+		std::shared_ptr<OM::Heightmap> map = OM::GetHeightmapData(currentHeightmap);
+		map->LoadFromDuet();
 		setHeightmap(map);
 		render();
 	}
