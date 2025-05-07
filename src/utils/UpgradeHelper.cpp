@@ -102,6 +102,17 @@ namespace UpgradeHelper
 			LOG_ERROR("Failed to copy file from USB");
 			return false;
 		}
+
+		struct stat file_stat;
+		if (stat(filePath.c_str(), &file_stat) != 0)
+		{
+			LOG_ERROR("Error getting file stats for {:s}", filePath.c_str());
+			return false;
+		}
+
+		time_t lastModified = file_stat.st_mtime;
+		StorageHelper::setData(ID_UPGRADE_FILE_LAST_MODIFIED, lastModified);
+
 		return upgradeFromTmp();
 	}
 

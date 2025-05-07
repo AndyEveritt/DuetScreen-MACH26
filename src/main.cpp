@@ -133,6 +133,21 @@ int main(int argc, char** argv)
 					return;
 				}
 
+				struct stat file_stat;
+				if (stat(upgradeFilePath.c_str(), &file_stat) != 0)
+				{
+					LOG_ERROR("Error getting file stats for {:s}", upgradeFilePath.c_str());
+					return;
+				}
+
+				time_t lastModified = file_stat.st_mtime;
+				time_t savedModified = StorageHelper::getData(ID_UPGRADE_FILE_LAST_MODIFIED, 0);
+
+				if (lastModified == savedModified)
+				{
+					return;
+				}
+
 				Model::get().post<EventType::UpdateAvailable>(upgradeFilePath);
 			}
 		});
