@@ -1,6 +1,5 @@
 #include "Debug.h"
 
-#define QOI_IMPLEMENTATION 1
 #include "Thumbnail.h"
 
 extern "C"
@@ -182,7 +181,7 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 
 	do
 	{
-		LOG_DBG("buffer {:p} (size {:d}, done{:d}) pixbuf {:p} (size {:d}, decoded {:d})\n",
+		LOG_DBG("buffer {:p} (size {:d}, done {:d}) pixbuf {:p} (size {:d}, decoded {:d})\n",
 				static_cast<const void*>(data.buffer),
 				data.size,
 				size_done,

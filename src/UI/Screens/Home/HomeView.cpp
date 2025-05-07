@@ -171,7 +171,7 @@ namespace UI
 		// lv_obj_t* image2 = lv_image_create(cont);
 		// lv_obj_set_size(image2, 100, 100);
 		// lv_obj_align(image2, LV_ALIGN_CENTER, 0, 0);
-		// lv_image_set_src(image2, IMAGE_ASSET("024_controls.bmp"));
+		// lv_image_set_src(image2, IMAGE_ASSET("qoi.bmp"));
 		// lv_image_set_inner_align(image2, LV_IMAGE_ALIGN_STRETCH);
 
 		// lv_obj_t* player = lv_ffmpeg_player_create(cont);

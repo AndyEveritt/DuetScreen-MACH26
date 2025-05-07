@@ -254,6 +254,8 @@ how chunks are en-/decoded. */
 #define QOI_LINEAR 1
 
 #include "Pixel.h"
+#include <stdlib.h>
+#include <string.h>
 
 enum qoi_decoder_state {
 	qoi_decoder_header,
