@@ -73,11 +73,19 @@ jobs:
           name: DuetScreen-${{ matrix.os }}
           path: artifacts/*
 
+      - name: Check Branch
+        if: matrix.os == 'ubuntu-latest'
+        id: check_branch
+        run: |
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          echo "IS_MASTER=$([[ "$BRANCH_NAME" == "master" ]] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
         with:
           files: artifacts/*
           body: ${{ env.CHANGELOG }}
+          prerelease: ${{ steps.check_branch.outputs.IS_MASTER != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
