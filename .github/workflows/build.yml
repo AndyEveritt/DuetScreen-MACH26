@@ -41,6 +41,7 @@ jobs:
           vcpkg install libusb:x64-windows
           vcpkg install ffmpeg:x64-windows
           vcpkg install freetype:x64-windows
+          vcpkg install spdlog:x64-windows
           vcpkg integrate install
 
       - name: Configure CMake (Linux)
