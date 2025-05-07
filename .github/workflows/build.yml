@@ -23,40 +23,15 @@ jobs:
       - name: Generate Changelog
         if: matrix.os == 'ubuntu-latest'
         id: changelog
-        run: |
-          VERSION_INFO=$(cat version_compatibility.json)
-          MIN_VERSION=$(echo $VERSION_INFO | jq -r .minCompatibleVersion)
-          MAX_VERSION=$(echo $VERSION_INFO | jq -r .maxCompatibleVersion)
-          
+        run: |   
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          echo "Version Compatibility:" >> $GITHUB_ENV
-          echo "- Minimum Compatible RRF Version: $MIN_VERSION" >> $GITHUB_ENV
-          if [ "$MAX_VERSION" != "null" ]; then
-            echo "- Maximum Compatible RRF Version: $MAX_VERSION" >> $GITHUB_ENV
-          fi
-          echo "" >> $GITHUB_ENV
-          echo "Changes:" >> $GITHUB_ENV
-          ./scripts/changelog.sh >> $GITHUB_ENV
+          ./scripts/release_notes.sh >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Install Linux Dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            cmake \
-            ninja-build \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libusb-1.0-0-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            libavutil-dev \
-            libswscale-dev \
-            libfreetype-dev \
-            pkg-config \
-            jq
+          ./scripts/install_prerequisites.sh
 
       - name: Install Windows Dependencies
         if: matrix.os == 'windows-latest'
