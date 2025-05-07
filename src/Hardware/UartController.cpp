@@ -190,7 +190,7 @@ void UartController::setBufferSize(size_t size)
 bool UartController::send(const uint8_t* data, size_t length)
 {
 #if SIMULATION
-	LOG_INFO("Simulated UART send: {1:.{0}s}", (int)length, data);
+	LOG_INFO("Simulated UART send: {:.{}s}", reinterpret_cast<const char*>(data), (int)length);
 	return true;
 #else
 	if (!isOpen())
