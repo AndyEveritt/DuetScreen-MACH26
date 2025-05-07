@@ -34,6 +34,7 @@ namespace UI
 		bool back();
 
 		// Observers
+		virtual void connected() override;
 		virtual void disconnected() override;
 		virtual void newThumbnailData(const std::string& filename) override;
 

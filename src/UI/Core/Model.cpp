@@ -184,6 +184,8 @@ void Model::requestNewData()
 
 useconds_t Model::receiveNewUsbData()
 {
+	static constexpr useconds_t s_reconnectDelay = 1000 * 1000; // 1s
+	static constexpr useconds_t s_pollInterval = 5 * 1000;		// 5ms
 	static constexpr size_t bufferSize = 32768;
 	static Comm::JsonDecoder decoder;
 	static BYTE buffer[bufferSize];
@@ -191,14 +193,15 @@ useconds_t Model::receiveNewUsbData()
 
 	if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::usb)
 	{
-		return 500 * 1000;
+		return s_reconnectDelay;
 	}
 
 	if (!Comm::getCurrentUsbDevice().isConnected())
 	{
 		LOG_VERBOSE("USB device disconnected");
-		return 500 * 1000;
+		return s_reconnectDelay;
 	}
+
 	int len = Comm::getCurrentUsbDevice().receive(buffer + bufferLen, bufferSize - bufferLen);
 
 	if (len > 0)
@@ -208,23 +211,26 @@ useconds_t Model::receiveNewUsbData()
 		{
 			LOG_ERROR("Buffer overflow");
 			bufferLen = 0;
-			return 5 * 1000;
+			return s_pollInterval;
 		}
 	}
 	else if (len < 0)
 	{
 		LOG_ERROR("Error receiving data");
 		bufferLen = 0;
-		return 5 * 1000;
+		memset(buffer, 0, bufferSize);
+		return s_reconnectDelay;
 	}
-	if (buffer[bufferLen - 1] == '\n')
+
+	if (bufferLen > 0 && buffer[bufferLen - 1] == '\n')
 	{
 		// Process the data
 		LOG_DBG("Received {:d} bytes", bufferLen);
 		decoder.CheckInput(buffer, bufferLen);
 		bufferLen = 0;
+		memset(buffer, 0, bufferSize);
 	}
-	return 5 * 1000;
+	return s_pollInterval;
 }
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])

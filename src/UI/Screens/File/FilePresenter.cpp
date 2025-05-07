@@ -220,6 +220,11 @@ namespace UI
 		return false;
 	}
 
+	void FilePresenter::connected()
+	{
+		requestFiles();
+	}
+
 	void FilePresenter::disconnected()
 	{
 		m_items.clear();

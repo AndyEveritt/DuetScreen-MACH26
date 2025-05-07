@@ -297,6 +297,11 @@ namespace Comm
 
 	void Duet::SendGcode(const std::string& gcode)
 	{
+		if (!m_connected)
+		{
+			LOG_DBG("Not connected to Duet, cannot send gcode: {:s}", gcode);
+			return;
+		}
 		LOG_DBG("Sending gcode: {:s}", gcode.c_str());
 		switch (m_config.communicationType)
 		{
@@ -329,7 +334,7 @@ namespace Comm
 			if (!usb.isConnected())
 			{
 				LOG_WARN("USB device not connected");
-				connectUsbDevice();
+				return;
 			}
 			usb.send(gcode.c_str());
 			break;
@@ -364,7 +369,7 @@ namespace Comm
 				return false;
 			}
 
-			SendGcodef("M28 \"%s\"", filename);
+			SendGcodef("M28 \"%s\"\n", filename);
 			size_t prevPosition = 0;
 			size_t position = contents.find("\n"); // Find the first occurrence of \n
 			std::string line;
@@ -573,7 +578,7 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M36 \"%s\"", filename);
+			SendGcodef("M36 \"%s\"\n", filename);
 			break;
 		case CommunicationType::network:
 		{
@@ -730,7 +735,7 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M36.1 P\"%s\" S%d", filename, offset);
+			SendGcodef("M36.1 P\"%s\" S%d\n", filename, offset);
 			break;
 		case CommunicationType::network:
 		{
@@ -888,11 +893,10 @@ namespace Comm
 		}
 		case CommunicationType::usb:
 		{
-
 			ret = connectUsbDevice();
 			if (ret)
 			{
-				SendGcode("M575 P0 S0");
+				SendGcode("M575 P0 S0\n");
 			}
 			break;
 		}

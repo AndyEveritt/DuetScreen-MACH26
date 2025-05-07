@@ -11,7 +11,6 @@ namespace Comm
 {
 	static UsbDevice s_currentUsbDevice;
 	static libusb_context* s_context = nullptr;
-	static pthread_mutex_t s_usbMutex = PTHREAD_MUTEX_INITIALIZER;
 
 	static const uint16_t vendorId = 0x1d50;
 	struct UsbDeviceId
@@ -19,6 +18,8 @@ namespace Comm
 		const char* name;
 		uint16_t productId;
 	};
+
+	std::recursive_mutex s_usbMutex;
 
 	static UsbDeviceId s_deviceIds[] = {
 		{"Duet 2", 0x60ec},
@@ -43,6 +44,7 @@ namespace Comm
 
 	bool UsbDevice::init(const char* name, libusb_device* device)
 	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		m_name = name;
 		m_device = device;
 		if (!getDeviceInterface())
@@ -55,6 +57,7 @@ namespace Comm
 
 	void UsbDevice::reset()
 	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		LOG_DBG("Resetting USB device {:s}", m_name);
 		if (m_handle)
 		{
@@ -77,6 +80,7 @@ namespace Comm
 
 	bool UsbDevice::connect()
 	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		int r;
 
 		if (!m_device)
@@ -121,11 +125,10 @@ namespace Comm
 
 	int UsbDevice::send(const char* data)
 	{
-		pthread_mutex_lock(&s_usbMutex);
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
-			pthread_mutex_unlock(&s_usbMutex);
 			return -1;
 		}
 		int full_length = 0;
@@ -140,19 +143,18 @@ namespace Comm
 			{
 				LOG_ERROR("Error sending data: {:s}", libusb_error_name(r));
 				reset();
-				pthread_mutex_unlock(&s_usbMutex);
 				return -1;
 			}
 			len -= actual_length;
 			data += actual_length;
 			full_length += actual_length;
 		}
-		pthread_mutex_unlock(&s_usbMutex);
 		return full_length;
 	}
 
 	int UsbDevice::receive(unsigned char* data, size_t len)
 	{
+		// std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
@@ -170,26 +172,30 @@ namespace Comm
 		switch (r)
 		{
 		case LIBUSB_SUCCESS:
-			break;
+			return actual_length;
 		case LIBUSB_ERROR_TIMEOUT:
-			LOG_WARN("No more data received (timeout)");
-			break;
+			LOG_DBG("No more data received (timeout)");
+			return 0;
 		case LIBUSB_ERROR_BUSY:
 			LOG_WARN("Busy receiving data");
-			break;
+			return 0;
 		case LIBUSB_ERROR_NO_DEVICE:
 			LOG_WARN("Device disconnected");
-			break;
+			reset();
+			return -2;
+		case LIBUSB_ERROR_IO:
+		case LIBUSB_ERROR_PIPE:
+		case LIBUSB_ERROR_OVERFLOW:
 		default:
 			LOG_ERROR("Error receiving data: {:s}", libusb_error_name(r));
-			break;
+			reset();
+			return -2;
 		}
-
-		return actual_length;
 	}
 
 	int UsbDevice::setDtr(bool state)
 	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
@@ -214,6 +220,7 @@ namespace Comm
 
 	bool UsbDevice::getDeviceInterface()
 	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		libusb_config_descriptor* config_desc;
 		libusb_get_active_config_descriptor(m_device, &config_desc);
 
@@ -258,6 +265,7 @@ namespace Comm
 
 	static bool findDuetUsbDevice(libusb_device** device_list, ssize_t device_count)
 	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		for (ssize_t i = 0; i < device_count; ++i)
 		{
 			libusb_device* device = device_list[i];
@@ -268,6 +276,10 @@ namespace Comm
 				{
 					for (UsbDeviceId deviceId : s_deviceIds)
 					{
+						LOG_DBG("Found device {:s} (Vendor ID: {:#x}, Product ID: {:#x})",
+								deviceId.name,
+								vendorId,
+								desc.idProduct);
 						if (desc.idProduct == deviceId.productId)
 						{
 							LOG_INFO(
@@ -283,14 +295,18 @@ namespace Comm
 
 	int usbInit()
 	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		return libusb_init(nullptr);
 	}
 
 	bool connectUsbDevice()
 	{
-		int r;
-
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		// Reset any existing connection first
 		s_currentUsbDevice.reset();
+
+		// Small delay to allow USB reset to complete
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 		LOG_VERBOSE("Getting usb device list");
 		libusb_device** device_list;
