@@ -32,8 +32,7 @@ namespace OM
 		MODEL_LOCK();
 		g_currentAlert.Reset();
 		g_lastAlertSeq = 0;
-		Move::RemoveAxis(0, true);
-		Move::RemoveExtruderAxis(0, true);
+		Move::Reset();
 		RemoveBed(0, true);
 		RemoveChamber(0, true);
 		RemoveFan(0, true);

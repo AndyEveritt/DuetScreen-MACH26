@@ -204,7 +204,7 @@ REGISTER_EVENT_TYPE(EventType::JobObjectData)
 REGISTER_EVENT_TYPE(EventType::ThumbnailData, std::string)
 REGISTER_EVENT_TYPE(EventType::AxesData)
 REGISTER_EVENT_TYPE(EventType::ExtruderData)
-REGISTER_EVENT_TYPE(EventType::KinematicsName)
+REGISTER_EVENT_TYPE(EventType::KinematicsName, std::string)
 REGISTER_EVENT_TYPE(EventType::SpeedFactor)
 REGISTER_EVENT_TYPE(EventType::WorkplaceNumber)
 REGISTER_EVENT_TYPE(EventType::PrintingAcceleration, uint32_t)
@@ -398,7 +398,7 @@ class Model
 
 	void newAxesData();
 	void newExtruderData();
-	void newKinematicsName();
+	void newKinematicsName(const std::string& kinematicsName);
 	void newSpeedFactor();
 	void newWorkplaceNumber();
 	void newPrintingAcceleration(const uint32_t& accel);

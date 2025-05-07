@@ -68,6 +68,7 @@ namespace UI
 	void AxisItem::setAxisLetter(const char* letter)
 	{
 		UI_LOCK();
+		m_axisLetter = letter;
 		m_home.setText(utils::format(_("move_axis_home"), letter).c_str());
 	}
 
@@ -87,6 +88,14 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_label_set_text(m_machinePosition, utils::format("(%.2f)", position).c_str());
+	}
+
+	void AxisItem::disableHome(const bool disabled)
+	{
+		UI_LOCK();
+		m_home.setInvalid(disabled);
+		m_home.setText(disabled ? m_axisLetter.c_str()
+								: utils::format(_("move_axis_home"), m_axisLetter.c_str()).c_str());
 	}
 
 	void AxisItem::onHomeEvent(lv_event_t* e)

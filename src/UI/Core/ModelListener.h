@@ -52,7 +52,7 @@ namespace UI
 		/* Move methods */
 		virtual void newAxesData() {}
 		virtual void newExtruderData() {}
-		virtual void newKinematicsName() {}
+		virtual void newKinematicsName(const std::string& kinematicsName) {}
 		virtual void newSpeedFactor() {}
 		virtual void newWorkplaceNumber() {}
 		virtual void newPrintingAcceleration(const uint32_t& accel) {}

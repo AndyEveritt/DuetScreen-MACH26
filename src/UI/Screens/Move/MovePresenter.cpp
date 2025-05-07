@@ -77,6 +77,7 @@ namespace UI
 			item->setHomed(axis->homed);
 			item->setToolPosition(axis->userPosition);
 			item->setMachinePosition(axis->machinePosition);
+			item->disableHome(OM::Move::GetKinematics().IsDelta());
 		}
 	}
 

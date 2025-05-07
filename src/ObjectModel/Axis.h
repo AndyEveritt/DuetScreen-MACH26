@@ -68,6 +68,16 @@ namespace OM::Move
 		void Reset();
 	};
 
+	struct Kinematics
+	{
+		std::string name;
+
+		void Reset() { name.clear(); }
+		bool IsDelta() const { return name == "delta" || name == "linearDelta"; } // name changed in RRF3.7
+	};
+
+	void Reset();
+
 	std::shared_ptr<Axis> GetAxis(const size_t index);
 	std::shared_ptr<Axis> GetAxisBySlot(const size_t slot, const bool includeHidden = false);
 	std::shared_ptr<Axis> GetAxisByLetter(const char letter);
@@ -116,4 +126,7 @@ namespace OM::Move
 	void SetCurrentMoveRequestedSpeed(float speed);
 	const float GetCurrentMoveTopSpeed();
 	void SetCurrentMoveTopSpeed(float speed);
+
+	void SetKinematicsName(const std::string& name);
+	const Kinematics& GetKinematics();
 } // namespace OM::Move

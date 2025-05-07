@@ -316,7 +316,12 @@ void Model::newThumbnailData(const std::string& filename)
 
 MODEL_NOTIFICATION(newAxesData)
 MODEL_NOTIFICATION(newExtruderData)
-MODEL_NOTIFICATION(newKinematicsName)
+
+void Model::newKinematicsName(const std::string& kinematicsName)
+{
+	NOTIFY_ALL_PRESENTERS(newKinematicsName, kinematicsName);
+}
+
 MODEL_NOTIFICATION(newSpeedFactor)
 MODEL_NOTIFICATION(newWorkplaceNumber)
 

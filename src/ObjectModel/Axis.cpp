@@ -16,19 +16,19 @@
 #include "Debug.h"
 #include "ListHelpers.h"
 
-typedef Vector<std::shared_ptr<OM::Move::Axis>, MAX_TOTAL_AXES> AxisList;
-typedef Vector<std::shared_ptr<OM::Move::ExtruderAxis>, MAX_TOTAL_AXES> ExtruderAxisList;
-static AxisList s_axes;
-static ExtruderAxisList s_extruderAxes;
-static uint8_t s_currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
-static uint32_t s_printingAcceleration = 0;
-
 namespace OM::Move
 {
+	typedef Vector<std::shared_ptr<Axis>, MAX_TOTAL_AXES> AxisList;
+	typedef Vector<std::shared_ptr<ExtruderAxis>, MAX_TOTAL_AXES> ExtruderAxisList;
+	static AxisList s_axes;
+	static ExtruderAxisList s_extruderAxes;
 	static float s_extrusionRate = 0.0f;
 	static float s_speedFactor = 100.0f;
 	static float s_currentMoveRequestedSpeed = 0.0f;
 	static float s_currentMoveTopSpeed = 0.0f;
+	static uint8_t s_currentWorkplaceNumber = Workplaces::MaxTotalWorkplaces;
+	static uint32_t s_printingAcceleration = 0;
+	static Kinematics s_kinematics;
 
 	void Axis::Reset()
 	{
@@ -215,6 +215,19 @@ namespace OM::Move
 		stepsPerMm = 0.0f;
 	}
 
+	void Reset()
+	{
+		RemoveAxis(0, true);
+		RemoveExtruderAxis(0, true);
+		s_currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
+		s_kinematics.Reset();
+		SetSpeedFactor(100.0f);
+		SetCurrentMoveRequestedSpeed(0.0f);
+		SetCurrentMoveTopSpeed(0.0f);
+		SetExtrusionRate(0.0f);
+		SetPrintingAcceleration(0);
+	}
+
 	std::shared_ptr<ExtruderAxis> GetExtruderAxis(const size_t index)
 	{
 		LOG_DBG("ExtruderAxis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
@@ -356,5 +369,15 @@ namespace OM::Move
 	void SetCurrentMoveTopSpeed(float speed)
 	{
 		s_currentMoveTopSpeed = speed;
+	}
+
+	void SetKinematicsName(const std::string& name)
+	{
+		s_kinematics.name = name;
+	}
+
+	const Kinematics& GetKinematics()
+	{
+		return s_kinematics;
 	}
 } // namespace OM::Move

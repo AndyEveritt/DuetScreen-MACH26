@@ -21,6 +21,7 @@ namespace UI
 		void setHomed(const bool homed);
 		void setToolPosition(const float& position);
 		void setMachinePosition(const float& position);
+		void disableHome(const bool show);
 
 	  private:
 		static void onHomeEvent(lv_event_t* e);
@@ -32,6 +33,8 @@ namespace UI
 		List<Button> m_relMove;
 		lv_obj_t* m_toolPosition;
 		lv_obj_t* m_machinePosition;
+
+		std::string m_axisLetter;
 	};
 
 	class MoveView : public View<MovePresenter>

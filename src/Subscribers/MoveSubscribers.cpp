@@ -167,7 +167,8 @@ bool MoveSubscribers::extruderStepsPerMm(Comm::JsonDecoder* decoder, const float
 
 bool MoveSubscribers::kinematicsName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Model::get().post<EventType::KinematicsName>();
+	OM::Move::SetKinematicsName(data);
+	Model::get().post<EventType::KinematicsName>(OM::Move::GetKinematics().name);
 	return true;
 }
 
