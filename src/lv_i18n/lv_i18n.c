@@ -143,6 +143,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"update_available_text", "Confirm to install the update"},
     {"update_confirm", "Update"},
     {"update_cancel", "Cancel"},
+    {"settings_system_logging", "Log system messages to console"},
     {"heightmap_unload", "Unload"},
     {"heightmap_load", "Load"},
     {"heightmap_list_header", "Heightmaps"},
