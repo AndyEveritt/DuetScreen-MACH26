@@ -3,6 +3,10 @@ if [ -f out/update.tar.gz ]; then
     rm "out/update.tar.gz"
 fi
 
+if [ -f out/DuetScreen.tar.gz ]; then
+    rm "out/DuetScreen.tar.gz"
+fi
+
 # Copy binary
 mkdir -p out/update/usr/bin
 cp ../buildroot-duetscreen/output/target/usr/bin/DuetScreen out/update/usr/bin
@@ -23,4 +27,5 @@ chmod +x out/update/post-update
 
 cd out/update
 tar -czf ../update.tar.gz *
+cp ../update.tar.gz ../DuetScreen.tar.gz
 cd -

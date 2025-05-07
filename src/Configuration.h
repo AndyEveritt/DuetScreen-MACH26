@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <termios.h>
 
-constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
+#define UPGRADE_FILE_NAME "DuetScreen"
 
 /* Logging */
 #if SIMULATION

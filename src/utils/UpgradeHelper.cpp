@@ -6,6 +6,7 @@
  */
 
 #include "UpgradeHelper.h"
+#include "Configuration.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
@@ -15,7 +16,7 @@
 #define USB_BASE_DIR "/media/usb"
 #define UPGRADE_EXT ".tar.gz"
 static constexpr size_t UPGRADE_EXT_SIZE = sizeof(UPGRADE_EXT) - 1;
-#define UPGRADE_FILE "DuetScreen" UPGRADE_EXT
+#define UPGRADE_FILE UPGRADE_FILE_NAME UPGRADE_EXT
 #define TMP_FILEPATH "/tmp/" UPGRADE_FILE
 #define BOOT_FILEPATH "/boot/update.tar.gz"
 
