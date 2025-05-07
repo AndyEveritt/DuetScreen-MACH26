@@ -85,11 +85,15 @@ Several methods are available to update the Duet3D screen.
     - Copy the update file (`DuetScreen.tar.gz`) to the root directory of a USB flash drive.
     - Insert the USB flash drive into the Duet3D screen.
     - In the GUI you will be prompted to update the screen.
+    - If the update is successful, the screen will automatically reboot. This will appear as a brief flash and the GUI will return to the home screen.
 
 2. **Force Update**
-    - If the GUI is not working, you can force an update by renaming the update file to `update.tar.gz` and placing it in the root directory of the flash drive or microSD card.
+    - If the GUI is not working, you can force an update by renaming the update file to `update.tar.gz` and placing it in the **root directory of the USB flash drive OR microSD** card.
     - Insert the USB flash drive or microSD card into the Duet3D screen.
     - *(If using a microSD card)* Power on the screen and it will automatically update.
+    - The update will have succeeded if the `update.tar.gz` file is removed from the root directory of the flash drive or microSD card.
+3. **Fallback**
+    - If the screen is still not working, you will have to reflash the microSD card with the latest image.
 
 Occasionally, an update may require the whole microSD card to be reflashed. This will be indicated in the release notes. In this case, follow the instructions in the [Flashing a new Duet3D screen](#flashing-a-new-duet3d-screen) section above.
 
