@@ -82,7 +82,7 @@ Multiple methods are available to connect the Duet3D screen to a mainboard. The 
 Several methods are available to update the Duet3D screen.
 
 1. **Using the GUI**
-    - Copy the update file (`duetscreen.tar.gz`) to the root directory of a USB flash drive.
+    - Copy the update file (`DuetScreen.tar.gz`) to the root directory of a USB flash drive.
     - Insert the USB flash drive into the Duet3D screen.
     - In the GUI you will be prompted to update the screen.
 
