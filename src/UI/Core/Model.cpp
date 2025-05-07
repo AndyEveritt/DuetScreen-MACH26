@@ -220,6 +220,7 @@ useconds_t Model::receiveNewUsbData()
 	if (buffer[bufferLen - 1] == '\n')
 	{
 		// Process the data
+		LOG_DBG("Received {:d} bytes", bufferLen);
 		decoder.CheckInput(buffer, bufferLen);
 		bufferLen = 0;
 	}

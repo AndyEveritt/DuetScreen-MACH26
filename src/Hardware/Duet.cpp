@@ -297,6 +297,7 @@ namespace Comm
 
 	void Duet::SendGcode(const std::string& gcode)
 	{
+		LOG_DBG("Sending gcode: {:s}", gcode.c_str());
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
@@ -528,7 +529,7 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M20 S3 P\"%s\" R%d\n", dir, first);
+			SendGcodef("M20 S3 P\"%s\" R%d\n", dir.c_str(), first);
 			break;
 		case CommunicationType::network:
 		{
@@ -571,6 +572,7 @@ namespace Comm
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
+		case CommunicationType::usb:
 			SendGcodef("M36 \"%s\"", filename);
 			break;
 		case CommunicationType::network:
@@ -727,6 +729,7 @@ namespace Comm
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
+		case CommunicationType::usb:
 			SendGcodef("M36.1 P\"%s\" S%d", filename, offset);
 			break;
 		case CommunicationType::network:

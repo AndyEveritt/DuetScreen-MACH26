@@ -38,6 +38,7 @@ namespace Comm
 
 	std::shared_ptr<Thumbnail> FileInfo::GetThumbnail(size_t index)
 	{
+		MODEL_LOCK();
 		if (index >= m_thumbnails.size())
 		{
 			return nullptr;
@@ -48,6 +49,7 @@ namespace Comm
 
 	std::shared_ptr<Thumbnail> FileInfo::GetOrCreateThumbnail(size_t index)
 	{
+		MODEL_LOCK();
 		if (index >= m_thumbnails.size())
 		{
 			m_thumbnails.resize(index + 1);
@@ -59,6 +61,7 @@ namespace Comm
 
 	size_t FileInfo::ClearThumbnails(size_t fromIndex)
 	{
+		MODEL_LOCK();
 		size_t count = m_thumbnails.size() - fromIndex;
 		m_thumbnails.resize(fromIndex);
 		return count;
@@ -78,48 +81,54 @@ namespace Comm
 		int64_t now = TimeHelper::getCurrentTime();
 
 		// Timeout any request that hasn't received a response within the timeout period
-		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
-			FileInfoRequestPtr request = *it;
-			it++;
-
-			if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+			MODEL_LOCK();
+			for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 			{
-				LOG_WARN("File info request timed out for {:s}", request->GetData()->filename.c_str());
-				request->Complete(true);
+				FileInfoRequestPtr request = *it;
+				it++;
+
+				if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+				{
+					LOG_WARN("File info request timed out for {:s}", request->GetData()->filename.c_str());
+					request->Complete(true);
 #if 0
 				LOG_WARN("Requeuing failed file info request for {:s}", request->GetData()->filename.c_str());
 				QueueFileInfoRequest(request->GetData()->filename.c_str());
 #endif
+				}
 			}
 		}
 
-		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 		{
-			ThumbnailRequestPtr request = *it;
-			it++;
-
-			if (!ThumbnailIsValid(*request->GetData()))
+			MODEL_LOCK();
+			for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 			{
-				LOG_ERROR("Invalid thumbnail");
-				m_thumbnailRequestQueue.remove(request);
-				continue;
-			}
+				ThumbnailRequestPtr request = *it;
+				it++;
 
-			if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
-			{
+				if (!ThumbnailIsValid(*request->GetData()))
+				{
+					LOG_ERROR("Invalid thumbnail");
+					m_thumbnailRequestQueue.remove(request);
+					continue;
+				}
+
+				if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+				{
 #if DEBUG
-				ThumbnailPtr t = request->GetData();
+					ThumbnailPtr t = request->GetData();
 #endif
-				LOG_WARN("Thumbnail request timed out for {:s}", request->GetData()->filename.c_str());
+					LOG_WARN("Thumbnail request timed out for {:s}", request->GetData()->filename.c_str());
 
-				request->Complete(true);
-				std::string filename = request->GetData()->filename.c_str();
-				DeleteCachedThumbnail(filename.c_str());
+					request->Complete(true);
+					std::string filename = request->GetData()->filename.c_str();
+					DeleteCachedThumbnail(filename.c_str());
 #if 0
 				LOG_WARN("Requeuing thumbnail request for {:s}", request->GetData()->filename.c_str());
 				QueueThumbnailRequest(filename);
 #endif
+				}
 			}
 		}
 
@@ -131,70 +140,76 @@ namespace Comm
 
 		// Start a new request if there are no requests in progress
 		size_t fileInfoRequested = 0;
-		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
-			FileInfoRequestPtr request = *it;
-			it++;
-
-			if (request->IsRequested())
+			MODEL_LOCK();
+			for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 			{
+				FileInfoRequestPtr request = *it;
+				it++;
+
+				if (request->IsRequested())
+				{
+					fileInfoRequested++;
+					continue;
+				}
+
+				if (fileInfoRequested >= MAX_FILEINFO_REQUESTS)
+				{
+					break;
+				}
+
+				request->RequestData();
 				fileInfoRequested++;
-				continue;
 			}
-
-			if (fileInfoRequested >= MAX_FILEINFO_REQUESTS)
-			{
-				break;
-			}
-
-			request->RequestData();
-			fileInfoRequested++;
 		}
 
 		// Start a new thumbnail request if there are none in progress
 		size_t thumbnailsRequested = 0;
-		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 		{
-			ThumbnailRequestPtr request = *it;
-			ThumbnailPtr thumbnail = request->GetData();
-			if (thumbnail == nullptr)
+			MODEL_LOCK();
+			for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 			{
-				// Should be impossible
-				LOG_ERROR("Null thumbnail");
-				continue;
-			}
-
-			++it;
-
-			switch (thumbnail->context.state)
-			{
-			case ThumbnailState::Init:
-			case ThumbnailState::DataRequest:
-				if (!request->RequestData())
+				ThumbnailRequestPtr request = *it;
+				ThumbnailPtr thumbnail = request->GetData();
+				if (thumbnail == nullptr)
 				{
+					// Should be impossible
+					LOG_ERROR("Null thumbnail");
+					continue;
 				}
-				thumbnailsRequested++;
-				break;
-			case ThumbnailState::Data:
-			case ThumbnailState::DataWait:
-				LOG_VERBOSE("Thumbnail request in progress for {:s}, state={:d}",
-							thumbnail->filename.c_str(),
-							(int)thumbnail->context.state);
-				thumbnailsRequested++;
-				break;
-			case ThumbnailState::Cached:
-				thumbnail->image.Close();
-				LOG_DBG("Updating thumbnail {:s}", thumbnail->filename.c_str());
-				ThumbnailRequestComplete(thumbnail->filename.c_str());
-				Model::get().post<EventType::ThumbnailData>(std::string(thumbnail->filename.c_str()));
-				break;
-			default:
-				break;
-			}
 
-			if (thumbnailsRequested >= MAX_THUMBNAIL_REQUESTS)
-			{
-				break;
+				++it;
+
+				switch (thumbnail->context.state)
+				{
+				case ThumbnailState::Init:
+				case ThumbnailState::DataRequest:
+					if (!request->RequestData())
+					{
+					}
+					thumbnailsRequested++;
+					break;
+				case ThumbnailState::Data:
+				case ThumbnailState::DataWait:
+					LOG_VERBOSE("Thumbnail request in progress for {:s}, state={:d}",
+								thumbnail->filename.c_str(),
+								(int)thumbnail->context.state);
+					thumbnailsRequested++;
+					break;
+				case ThumbnailState::Cached:
+					thumbnail->image.Close();
+					LOG_DBG("Updating thumbnail {:s}", thumbnail->filename.c_str());
+					ThumbnailRequestComplete(thumbnail->filename.c_str());
+					Model::get().post<EventType::ThumbnailData>(std::string(thumbnail->filename.c_str()));
+					break;
+				default:
+					break;
+				}
+
+				if (thumbnailsRequested >= MAX_THUMBNAIL_REQUESTS)
+				{
+					break;
+				}
 			}
 		}
 // Check if a request has finished
@@ -423,6 +438,7 @@ namespace Comm
 
 	void FileInfoCache::FileInfoRequestComplete(const std::string& filepath)
 	{
+		MODEL_LOCK();
 		LOG_DBG("File info request complete for {:s}", filepath.c_str());
 
 		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
@@ -440,6 +456,7 @@ namespace Comm
 
 	bool FileInfoCache::FileInfoRequest::RequestDataInner()
 	{
+		MODEL_LOCK();
 		if (m_data == nullptr)
 		{
 			return false;
@@ -451,6 +468,7 @@ namespace Comm
 
 	bool FileInfoCache::ThumbnailRequest::RequestDataInner()
 	{
+		MODEL_LOCK();
 		if (m_data == nullptr)
 		{
 			return false;
@@ -495,6 +513,7 @@ namespace Comm
 
 	void FileInfoCache::ClearCache()
 	{
+		MODEL_LOCK();
 		LOG_INFO("Clearing file info cache");
 
 		m_cache.clear();
