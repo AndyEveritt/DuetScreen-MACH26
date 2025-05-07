@@ -16,6 +16,14 @@ namespace UI
 			Auto,
 		};
 
+		struct AxisRange
+		{
+			float min = 0.0f;
+			float max = 0.0f;
+
+			bool operator==(const AxisRange& other) const { return min == other.min && max == other.max; }
+		};
+
 		PRESENTER_CONSTRUCTOR(HeightmapPresenter, HeightmapView)
 
 		// Actions
@@ -40,5 +48,7 @@ namespace UI
 		std::shared_ptr<OM::Heightmap> m_heightmap;
 		std::vector<OM::FileSystem::ItemPtr> m_heightmapFiles;
 		HeightmapRenderMode m_mode = HeightmapRenderMode::Fixed;
+		AxisRange m_axis0Range;
+		AxisRange m_axis1Range;
 	};
 } // namespace UI

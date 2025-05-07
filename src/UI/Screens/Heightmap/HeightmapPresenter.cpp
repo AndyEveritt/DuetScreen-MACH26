@@ -37,9 +37,14 @@ namespace UI
 			return;
 		}
 
+		LOG_DBG("Rendering heightmap {:s}", m_heightmap->GetFileName());
+
 		m_view->setShownHeightmapName(m_heightmap->GetFileName());
 		m_view->setXRange({static_cast<int32_t>(axis0->minPosition), static_cast<int32_t>(axis0->maxPosition)});
 		m_view->setYRange({static_cast<int32_t>(axis1->minPosition), static_cast<int32_t>(axis1->maxPosition)});
+
+		m_axis0Range = {axis0->minPosition, axis0->maxPosition};
+		m_axis1Range = {axis1->minPosition, axis1->maxPosition};
 
 		switch (m_mode)
 		{
@@ -136,6 +141,22 @@ namespace UI
 	void HeightmapPresenter::newAxesData()
 	{
 		LOG_DBG("New axes data");
+		auto axis0 = m_heightmap->meta.GetAxis(0);
+		auto axis1 = m_heightmap->meta.GetAxis(1);
+
+		if (axis0 == nullptr || axis1 == nullptr)
+		{
+			LOG_WARN("Heightmap axes are not valid");
+			return;
+		}
+
+		if (m_axis0Range == AxisRange(axis0->minPosition, axis0->maxPosition) &&
+			m_axis1Range == AxisRange(axis1->minPosition, axis1->maxPosition))
+		{
+			LOG_VERBOSE("No change in axis range");
+			return;
+		}
+
 		if (m_heightmap != nullptr && m_heightmap->IsValid())
 		{
 			render();
