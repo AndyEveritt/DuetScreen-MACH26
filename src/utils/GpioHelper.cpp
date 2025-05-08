@@ -11,9 +11,6 @@
 #  include <gpiod.h>
 #endif
 
-const int GPIO_USB_SELECT = 193; // PG1
-const int GPIO_USB_STATE = 194;	 // PG2
-
 int GpioHelper::togglePin(int pin)
 {
 #if T113

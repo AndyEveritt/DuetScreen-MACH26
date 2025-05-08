@@ -91,6 +91,18 @@ namespace UI
 		lv_obj_set_flex_grow(getCont(), grow);
 	}
 
+	void BaseView::setFlexFlow(lv_flex_flow_t flow)
+	{
+		UI_LOCK();
+		lv_obj_set_flex_flow(getCont(), flow);
+	}
+
+	void BaseView::setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid)
+	{
+		UI_LOCK();
+		lv_obj_set_flex_align(getCont(), main, cross, mid);
+	}
+
 	void BaseView::setLayout(layout_t layout)
 	{
 		UI_LOCK();
@@ -194,6 +206,12 @@ namespace UI
 			LOG_WARN("Unknown padding type");
 			break;
 		}
+	}
+
+	void BaseView::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
+	{
+		UI_LOCK();
+		lv_obj_add_event_cb(getCont(), cb, code, userData);
 	}
 
 	void BaseView::setStyle(lv_style_t* style, lv_style_selector_t selector)

@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Hardware/Duet.h"
 #include "SettingsPresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Input/DropdownMenu.h"
+#include "UI/Components/Input/TextBox.h"
 #include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Components/Slider.h"
 #include "UI/Core/View.h"
@@ -28,15 +31,44 @@ namespace UI
 	  public:
 		DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
-	  private:
-		static void onSaveEvent(lv_event_t* e);
+		class UsbSettings : public BaseView
+		{
+		  public:
+			UsbSettings(DuetSettingsView& parent);
 
-		lv_obj_t* m_connectionMethod;
-		lv_obj_t* m_hostname;
-		lv_obj_t* m_password;
-		lv_obj_t* m_pollInterval;
-		lv_obj_t* m_infoTimeout;
-		Button m_save;
+		  private:
+		};
+
+		class WifiSettings : public BaseView
+		{
+		  public:
+			WifiSettings(DuetSettingsView& parent);
+
+		  private:
+			TextBox m_hostname;
+			TextBox m_password;
+		};
+
+		class UartSettings : public BaseView
+		{
+		  public:
+			UartSettings(DuetSettingsView& parent);
+
+		  private:
+		};
+
+	  private:
+		static void onConnectionMethodEvent(lv_event_t* e);
+
+		void showConnectionMethodSettings(const Comm::CommunicationType method);
+		virtual void onShow() override;
+
+		DropdownMenu m_connectionMethod;
+		UsbSettings m_usbSettings;
+		WifiSettings m_wifiSettings;
+		UartSettings m_uartSettings;
+		Slider m_pollInterval;
+		Slider m_infoTimeout;
 	};
 
 	class DeviceSettingsView : public SettingsSubView
@@ -129,6 +161,9 @@ namespace UI
 	 */
 	class SettingsView : public View<SettingsPresenter>
 	{
+		friend class SettingsSubView;
+		friend class DuetSettingsView;
+
 	  public:
 		SettingsView(lv_obj_t* parent);
 
@@ -146,11 +181,17 @@ namespace UI
 	  private:
 		static void onWindowSelectEvent(lv_event_t* e);
 
+		lv_obj_t* getKeyboard() const { return m_keyboard; }
+
 		virtual void onShow() override;
 		virtual void onHide() override;
 
+		int32_t m_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_TEMPLATE_LAST};
+		int32_t m_layoutRowDsc[3] = {LV_GRID_FR(2), 0, LV_GRID_TEMPLATE_LAST};
+
 		lv_obj_t* m_settingsList;
 		lv_obj_t* m_subWindow;
+		lv_obj_t* m_keyboard;
 
 		lv_obj_t* m_connectivityHeader;
 		lv_obj_t* m_duetSettings;
@@ -165,9 +206,5 @@ namespace UI
 		DeveloperSettingsView m_developerSettingsView;
 
 		SettingsSubView* m_currentSubView;
-
-		lv_obj_t* m_keyboard;
-		int32_t m_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_TEMPLATE_LAST};
-		int32_t m_layoutRowDsc[3] = {LV_GRID_FR(2), 0, LV_GRID_TEMPLATE_LAST};
 	};
 } // namespace UI

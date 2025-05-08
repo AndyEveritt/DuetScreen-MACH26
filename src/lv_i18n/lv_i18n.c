@@ -63,8 +63,8 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"move_feedrate", "Feedrate (mm/s)"},
     {"settings_duet", "Duet"},
     {"save", "Save"},
-    {"settings_duet_hostname", "Hostname/IP"},
-    {"settings_duet_password", "Password"},
+    {"settings_duet_hostname", "IP Address: "},
+    {"settings_duet_password", "Password: "},
     {"settings_duet_poll_interval", "Poll Interval (ms)"},
     {"unload", "Unload"},
     {"retract", "Retract"},
@@ -159,6 +159,9 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"heightmap_title", "Heightmap: %s"},
     {"connected_message", "Connected to Duet"},
     {"disconnected_message", "Disconnected from Duet"},
+    {"settings_duet_connection_method", "Connection Method: "},
+    {"settings_duet_hostname_prompt", "Enter IP Address"},
+    {"settings_duet_password_prompt", "Enter Password"},
     {NULL, NULL} // End mark
 };
 

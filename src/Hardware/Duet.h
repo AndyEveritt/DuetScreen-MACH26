@@ -18,7 +18,7 @@
 
 namespace Comm
 {
-	constexpr const char* const duetCommunicationTypeNames[] = {"UART", "Network", "USB"};
+	constexpr const char* const duetCommunicationTypeNames[] = {"USB", "Network", "UART"};
 
 	typedef struct
 	{
@@ -41,9 +41,9 @@ namespace Comm
 	enum class CommunicationType
 	{
 		none = -1,
-		uart,
-		network,
 		usb,
+		network,
+		uart,
 		COUNT
 	};
 

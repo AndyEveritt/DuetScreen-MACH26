@@ -77,6 +77,8 @@ namespace UI
 
 		void setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow = LV_FLEX_FLOW_ROW);
 		void setFlexGrow(uint8_t grow);
+		void setFlexFlow(lv_flex_flow_t flow);
+		void setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid);
 		void setLayout(layout_t layout);
 		void setWidth(lv_coord_t width);
 		void setHeight(lv_coord_t height);
@@ -90,7 +92,10 @@ namespace UI
 		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
 		void setPad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);
 
+		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
+
 		virtual void setStyle(lv_style_t* style, lv_style_selector_t selector);
+		void show(bool display) { display ? show() : hide(); }
 		virtual void show();
 		virtual void hide();
 		bool isVisible();
@@ -161,7 +166,7 @@ namespace UI
 		 *
 		 * @note This function calls the `onShow()` virtual method before showing the view.
 		 */
-		void show() override
+		void show() final
 		{
 			activate();
 			BaseViewType::show();
@@ -172,7 +177,7 @@ namespace UI
 		 *
 		 * @note This function calls the `onHide()` virtual method before hiding the view.
 		 */
-		void hide() override
+		void hide() final
 		{
 			deactivate();
 			BaseViewType::hide();

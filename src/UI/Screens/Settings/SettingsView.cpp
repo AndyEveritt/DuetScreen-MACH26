@@ -14,6 +14,7 @@ namespace UI
 		: View("settings_view", parent, layout_t(0, 0, 100, 100))
 		, m_settingsList(lv_list_create(getCont()))
 		, m_subWindow(lv_obj_create(getCont()))
+		, m_keyboard(lv_keyboard_create(getCont()))
 		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header")))
 		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet")))
 		, m_deviceSettings(lv_list_add_button(m_settingsList, NULL, _("settings_device")))
@@ -25,7 +26,6 @@ namespace UI
 		, m_networkSettingsView(m_subWindow, *this)
 		, m_developerSettingsView(m_subWindow, *this)
 		, m_currentSubView(&m_duetSettingsView)
-		, m_keyboard(lv_keyboard_create(getCont()))
 	{
 		UI_LOCK();
 		// Layout
@@ -45,6 +45,9 @@ namespace UI
 		lv_obj_add_event_cb(m_deviceSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_networkSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_developerSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
+
+		// Sub window
+		lv_obj_set_style_pad_all(m_subWindow, 0, LV_PART_MAIN);
 	}
 
 	void SettingsView::onWindowSelectEvent(lv_event_t* e)
@@ -121,10 +124,8 @@ namespace UI
 		, m_mainSettingsView(mainSettingsView)
 	{
 		UI_LOCK();
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-
-		setPad(0);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 	}
 
 	std::shared_ptr<SettingsPresenter> SettingsSubView::getMainSettingsPresenter() const
@@ -155,12 +156,12 @@ namespace UI
 
 	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView("duet_settings_view", parent, mainSettingsView)
-		, m_connectionMethod(lv_dropdown_create(getCont()))
-		, m_hostname(lv_textarea_create(getCont()))
-		, m_password(lv_textarea_create(getCont()))
-		, m_pollInterval(lv_textarea_create(getCont()))
-		, m_infoTimeout(lv_textarea_create(getCont()))
-		, m_save("duet_settings_save", getCont(), _("save"))
+		, m_connectionMethod("duet_settings_connection_method", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_usbSettings(*this)
+		, m_wifiSettings(*this)
+		, m_uartSettings(*this)
+		, m_pollInterval("duet_settings_poll_interval", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_infoTimeout("duet_settings_info_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
@@ -171,53 +172,115 @@ namespace UI
 			options += _(method);
 			options += "\n";
 		}
-		lv_dropdown_set_options(m_connectionMethod, options.c_str());
-		lv_dropdown_set_selected(m_connectionMethod, (uint32_t)Comm::DUET.GetCommunicationType(), false);
-
-		// Hostname
-		lv_textarea_set_one_line(m_hostname, true);
-		lv_textarea_set_placeholder_text(m_hostname, _("settings_duet_hostname"));
-		lv_textarea_set_text(m_hostname, Comm::DUET.GetHostname().c_str());
-		lv_textarea_set_accepted_chars(m_hostname, "0123456789.");
-		lv_obj_add_event_cb(m_hostname, onTextAreaEvent, LV_EVENT_ALL, this);
-
-		// Password
-		lv_textarea_set_one_line(m_password, true);
-		lv_textarea_set_placeholder_text(m_password, _("settings_duet_password"));
-		lv_textarea_set_password_mode(m_password, true);
-		lv_textarea_set_text(m_password, Comm::DUET.GetPassword().c_str());
-		lv_obj_add_event_cb(m_password, onTextAreaEvent, LV_EVENT_ALL, this);
+		m_connectionMethod.setLabel(_("settings_duet_connection_method"));
+		m_connectionMethod.setOptions(options);
+		m_connectionMethod.addEventCallback(onConnectionMethodEvent, LV_EVENT_VALUE_CHANGED, this);
+		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType(), LV_ANIM_OFF);
 
 		// Poll Interval
-		lv_textarea_set_one_line(m_pollInterval, true);
-		lv_textarea_set_placeholder_text(m_pollInterval, _("settings_duet_poll_interval"));
-		lv_textarea_set_accepted_chars(m_pollInterval, "0123456789");
-		lv_textarea_set_text(m_pollInterval, utils::format("%u", Comm::DUET.GetPollInterval()).c_str());
-		lv_obj_add_event_cb(m_pollInterval, onTextAreaEvent, LV_EVENT_ALL, this);
+		m_pollInterval.setLabel(_("settings_duet_poll_interval"));
+		m_pollInterval.setOutOfRangeMode(Slider::OutOfRange::UPPER);
+		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL, 2000);
+		m_pollInterval.setValue(Comm::DUET.GetPollInterval());
+		m_pollInterval.setValueChangedCallback([](int32_t value) { Comm::DUET.SetPollInterval((uint32_t)value); });
+		m_pollInterval.setKeyboard(getMainSettingsView().getKeyboard());
+		m_pollInterval.setFocusedCallback([this](bool focused)
+										  { getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER); });
 
 		// Info Timeout
-		lv_textarea_set_one_line(m_infoTimeout, true);
-		lv_textarea_set_placeholder_text(m_infoTimeout, _("settings_duet_info_timeout"));
-		lv_textarea_set_accepted_chars(m_infoTimeout, "0123456789");
-		lv_textarea_set_text(
-			m_infoTimeout, utils::format("%u", StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT)).c_str());
-		lv_obj_add_event_cb(m_infoTimeout, onTextAreaEvent, LV_EVENT_ALL, this);
-
-		// Save
-		lv_obj_set_height(m_save.getCont(), LV_SIZE_CONTENT);
-		m_save.setCallback(onSaveEvent, LV_EVENT_CLICKED, this);
+		m_infoTimeout.setLabel(_("settings_duet_info_timeout"));
+		m_infoTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
+		m_infoTimeout.setRange(0, 60 * 1000);
+		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+		m_infoTimeout.setValueChangedCallback([](int32_t value)
+											  { StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)value); });
+		m_infoTimeout.setKeyboard(getMainSettingsView().getKeyboard());
+		m_infoTimeout.setFocusedCallback(
+			[this](bool focused)
+			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_infoTimeout.getInput()); });
 	}
 
-	void DuetSettingsView::onSaveEvent(lv_event_t* e)
+	DuetSettingsView::UsbSettings::UsbSettings(DuetSettingsView& parent)
+		: BaseView("duet_settings_usb", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+	{
+		UI_LOCK();
+	}
+
+	DuetSettingsView::WifiSettings::WifiSettings(DuetSettingsView& parent)
+		: BaseView("duet_settings_wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_hostname("duet_settings_hostname", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_password("duet_settings_password", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+	{
+		UI_LOCK();
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		m_hostname.setOneLine(true);
+		m_hostname.setLabel(_("settings_duet_hostname"));
+		m_hostname.setPlaceholderText(_("settings_duet_hostname_prompt"));
+		m_hostname.setAcceptedChars("0123456789.");
+		m_hostname.setText(Comm::DUET.GetHostname());
+		m_hostname.addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
+		m_hostname.addConfirmEventCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* ta = (lv_obj_t*)lv_event_get_target(e);
+				Comm::DUET.SetHostname(lv_textarea_get_text(ta));
+			},
+			nullptr);
+
+		m_password.setOneLine(true);
+		m_password.setLabel(_("settings_duet_password"));
+		m_password.setPlaceholderText(_("settings_duet_password_prompt"));
+		m_password.setPasswordMode(true);
+		m_password.setText(Comm::DUET.GetPassword());
+		m_password.addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
+		m_password.addConfirmEventCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* ta = (lv_obj_t*)lv_event_get_target(e);
+				Comm::DUET.SetPassword(lv_textarea_get_text(ta));
+			},
+			nullptr);
+	}
+
+	DuetSettingsView::UartSettings::UartSettings(DuetSettingsView& parent)
+		: BaseView("duet_settings_uart", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+	{
+		UI_LOCK();
+	}
+
+	void DuetSettingsView::onConnectionMethodEvent(lv_event_t* e)
 	{
 		UI_LOCK();
 		DuetSettingsView* view = (DuetSettingsView*)lv_event_get_user_data(e);
+		Comm::DUET.SetCommunicationType((Comm::CommunicationType)(view->m_connectionMethod.getSelected()));
+		view->showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
+	}
 
-		Comm::DUET.SetCommunicationType((Comm::CommunicationType)lv_dropdown_get_selected(view->m_connectionMethod));
-		Comm::DUET.SetHostname(lv_textarea_get_text(view->m_hostname));
-		Comm::DUET.SetPassword(lv_textarea_get_text(view->m_password));
-		Comm::DUET.SetPollInterval(atoi(lv_textarea_get_text(view->m_pollInterval)));
-		StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)atoi(lv_textarea_get_text(view->m_infoTimeout)));
+	void DuetSettingsView::showConnectionMethodSettings(const Comm::CommunicationType method)
+	{
+		UI_LOCK();
+
+		m_usbSettings.show(method == Comm::CommunicationType::usb);
+		m_wifiSettings.show(method == Comm::CommunicationType::network);
+		m_uartSettings.show(method == Comm::CommunicationType::uart);
+		lv_obj_move_foreground(m_usbSettings);
+		lv_obj_move_foreground(m_wifiSettings);
+		lv_obj_move_foreground(m_uartSettings);
+		lv_obj_move_to_index(m_usbSettings, 1);
+		lv_obj_move_to_index(m_wifiSettings, 1);
+		lv_obj_move_to_index(m_uartSettings, 1);
+	}
+
+	void DuetSettingsView::onShow()
+	{
+		UI_LOCK();
+		m_pollInterval.setValue(Comm::DUET.GetPollInterval());
+		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+		showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
 	}
 
 	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)

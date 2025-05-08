@@ -117,6 +117,7 @@ namespace UI
 			UI_LOCK();
 			return lv_slider_get_max_value(m_slider);
 		}
+		lv_obj_t* getInput() const { return m_input; }
 
 		bool isFocused() const { return m_focused; }
 
