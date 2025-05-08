@@ -8,28 +8,25 @@
 
 namespace UI
 {
+	class SettingsView;
+
 	class SettingsSubView : public BaseView
 	{
 	  public:
-		SettingsSubView(const std::string& name, lv_obj_t* parent)
-			: SettingsSubView(name, parent, nullptr)
-		{
-		}
-		SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView* mainSettingsView);
+		SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView);
 
-		void setMainSettingsView(SettingsView* mainSettingsView) { m_mainSettingsView = mainSettingsView; }
-		SettingsView* getMainSettingsView() const { return m_mainSettingsView; }
+		SettingsView& getMainSettingsView() const { return m_mainSettingsView; }
 		std::shared_ptr<SettingsPresenter> getMainSettingsPresenter() const;
 
 	  protected:
 		static void onTextAreaEvent(lv_event_t* e);
-		SettingsView* m_mainSettingsView;
+		SettingsView& m_mainSettingsView;
 	};
 
 	class DuetSettingsView : public SettingsSubView
 	{
 	  public:
-		DuetSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView);
+		DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
 	  private:
 		static void onSaveEvent(lv_event_t* e);
@@ -45,7 +42,7 @@ namespace UI
 	class DeviceSettingsView : public SettingsSubView
 	{
 	  public:
-		DeviceSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView);
+		DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
 	  private:
 		void onShow() override;
@@ -58,7 +55,7 @@ namespace UI
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>
 	{
 	  public:
-		NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView);
+		NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
 		void setIpAddress(const std::string& ipAddress);
 		void setEnabled(bool enabled);
@@ -89,7 +86,7 @@ namespace UI
 	class DeveloperSettingsView : public SettingsSubView
 	{
 	  public:
-		DeveloperSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView);
+		DeveloperSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
 	  private:
 		static void onDebugLevelEvent(lv_event_t* e);
@@ -167,7 +164,7 @@ namespace UI
 		NetworkSettingsView m_networkSettingsView;
 		DeveloperSettingsView m_developerSettingsView;
 
-		BaseView* m_currentSubView;
+		SettingsSubView* m_currentSubView;
 
 		lv_obj_t* m_keyboard;
 		int32_t m_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_TEMPLATE_LAST};

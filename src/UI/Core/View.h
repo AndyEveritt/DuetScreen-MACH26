@@ -53,15 +53,6 @@ namespace UI
 	class BaseView
 	{
 	  public:
-		BaseView(const std::string& name, BaseView* parent)
-			: BaseView(name, parent->getCont())
-		{
-		}
-		BaseView(const std::string& name, BaseView* parent, layout_t layout)
-			: BaseView(name, parent->getCont(), layout)
-		{
-		}
-
 		BaseView(const std::string& name, lv_obj_t* parent);
 		BaseView(const std::string& name, lv_obj_t* parent, layout_t layout);
 		BaseView(const std::string& name, layout_t layout)
@@ -131,29 +122,10 @@ namespace UI
 		static_assert(std::is_base_of<BasePresenter, T>::value, "T must derive from Presenter");
 
 	  public:
-		View(const std::string& name, BaseView* parent)
-			: BaseViewType(name, parent)
+		template <typename... Args>
+		View(const std::string& name, lv_obj_t* parent, Args&&... args)
+			: BaseViewType(name, parent, std::forward<Args>(args)...)
 			, m_presenter(std::make_shared<T>(this))
-		{
-		}
-		View(const std::string& name, BaseViewType* parent, layout_t layout)
-			: BaseViewType(name, parent, layout)
-			, m_presenter(std::make_shared<T>(this))
-		{
-		}
-
-		View(const std::string& name, lv_obj_t* parent)
-			: BaseViewType(name, parent)
-			, m_presenter(std::make_shared<T>(this))
-		{
-		}
-		View(const std::string& name, lv_obj_t* parent, layout_t layout)
-			: BaseViewType(name, parent, layout)
-			, m_presenter(std::make_shared<T>(this))
-		{
-		}
-		View(const std::string& name, layout_t layout)
-			: View(name, lv_screen_active(), layout)
 		{
 		}
 

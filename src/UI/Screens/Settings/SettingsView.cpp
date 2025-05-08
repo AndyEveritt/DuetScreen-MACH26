@@ -20,10 +20,10 @@ namespace UI
 		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network")))
 		, m_devHeader(lv_list_add_text(m_settingsList, _("settings_dev_header")))
 		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer")))
-		, m_duetSettingsView(m_subWindow, this)
-		, m_deviceSettingsView(m_subWindow, this)
-		, m_networkSettingsView(m_subWindow, this)
-		, m_developerSettingsView(m_subWindow, this)
+		, m_duetSettingsView(m_subWindow, *this)
+		, m_deviceSettingsView(m_subWindow, *this)
+		, m_networkSettingsView(m_subWindow, *this)
+		, m_developerSettingsView(m_subWindow, *this)
 		, m_currentSubView(&m_duetSettingsView)
 		, m_keyboard(lv_keyboard_create(getCont()))
 	{
@@ -51,8 +51,8 @@ namespace UI
 	{
 		UI_LOCK();
 		SettingsView* view = (SettingsView*)lv_event_get_user_data(e);
-		BaseView* subView = (BaseView*)lv_obj_get_user_data(lv_event_get_target_obj(e));
-		BaseView* currentSubView = view->m_currentSubView;
+		SettingsSubView* subView = (SettingsSubView*)lv_obj_get_user_data(lv_event_get_target_obj(e));
+		SettingsSubView* currentSubView = view->m_currentSubView;
 
 		if (currentSubView == subView)
 		{
@@ -116,18 +116,20 @@ namespace UI
 		m_currentSubView->show();
 	}
 
-	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView* mainSettingsView)
+	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView)
 		: BaseView(name, parent, layout_t(0, 0, 100, 100))
 		, m_mainSettingsView(mainSettingsView)
 	{
 		UI_LOCK();
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN_WRAP);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
+		setPad(0);
 	}
 
 	std::shared_ptr<SettingsPresenter> SettingsSubView::getMainSettingsPresenter() const
 	{
-		return m_mainSettingsView->getPresenter();
+		return m_mainSettingsView.getPresenter();
 	}
 
 	void SettingsSubView::onTextAreaEvent(lv_event_t* e)
@@ -142,16 +144,16 @@ namespace UI
 									  : LV_KEYBOARD_MODE_NUMBER;
 		if (code == LV_EVENT_FOCUSED)
 		{
-			view->getMainSettingsView()->showKeyboard(true, mode, ta);
+			view->getMainSettingsView().showKeyboard(true, mode, ta);
 		}
 
 		if (code == LV_EVENT_DEFOCUSED)
 		{
-			view->getMainSettingsView()->showKeyboard(false);
+			view->getMainSettingsView().showKeyboard(false);
 		}
 	}
 
-	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
+	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView("duet_settings_view", parent, mainSettingsView)
 		, m_connectionMethod(lv_dropdown_create(getCont()))
 		, m_hostname(lv_textarea_create(getCont()))
@@ -218,7 +220,7 @@ namespace UI
 		StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)atoi(lv_textarea_get_text(view->m_infoTimeout)));
 	}
 
-	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
+	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView("device_settings_view", parent, mainSettingsView)
 		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
@@ -264,8 +266,8 @@ namespace UI
 		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
 	}
 
-	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
-		: View("network_settings_view", parent)
+	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+		: View("network_settings_view", parent, mainSettingsView)
 		, m_topBar(lv_obj_create(getCont()))
 		, m_ipAddress(lv_label_create(m_topBar))
 		, m_enable(lv_checkbox_create(m_topBar))
@@ -276,7 +278,6 @@ namespace UI
 		, m_passwordSsid(nullptr)
 	{
 		UI_LOCK();
-		setMainSettingsView(mainSettingsView);
 
 		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
@@ -387,7 +388,7 @@ namespace UI
 		uint32_t col;
 		lv_table_get_selected_cell(view->m_networkList, &row, &col);
 
-		view->getMainSettingsView()->showKeyboard(false);
+		view->getMainSettingsView().showKeyboard(false);
 
 		if (row == 0)
 		{
@@ -406,7 +407,7 @@ namespace UI
 		{
 			lv_textarea_set_text(view->m_passwordInput, "");
 			lv_label_set_text(view->m_passwordSsid, ssid);
-			view->getMainSettingsView()->showKeyboard(true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput);
+			view->getMainSettingsView().showKeyboard(true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput);
 			lv_obj_remove_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 			return;
 		}
@@ -418,7 +419,7 @@ namespace UI
 	{
 		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
-		view->getMainSettingsView()->showKeyboard(false);
+		view->getMainSettingsView().showKeyboard(false);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 	}
 
@@ -426,7 +427,7 @@ namespace UI
 	{
 		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
-		view->getMainSettingsView()->showKeyboard(false);
+		view->getMainSettingsView().showKeyboard(false);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		view->getPresenter()->connectToNetwork(lv_label_get_text(view->m_passwordSsid),
 											   lv_textarea_get_text(view->m_passwordInput));
@@ -453,7 +454,7 @@ namespace UI
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 	}
 
-	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView* mainSettingsView)
+	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView("developer_settings_view", parent, mainSettingsView)
 		, m_debugLevelCont(lv_obj_create(getCont()))
 		, m_debugLevelLabel(lv_label_create(m_debugLevelCont))
