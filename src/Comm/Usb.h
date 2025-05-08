@@ -1,7 +1,6 @@
 #pragma once
 
 #include "libusb-1.0/libusb.h"
-#include <mutex>
 
 namespace Comm
 {
@@ -35,9 +34,6 @@ namespace Comm
 		uint8_t m_inEndpoint;
 		uint8_t m_outEndpoint;
 		uint16_t m_packetSize;
-
-		std::recursive_mutex m_controlMutex;
-		std::mutex m_sendMutex;
 	};
 
 	int usbInit();

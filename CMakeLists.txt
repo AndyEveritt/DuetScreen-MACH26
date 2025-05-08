@@ -167,6 +167,10 @@ target_link_libraries(
           spdlog::spdlog
           fmt::fmt)
 
+if (PROCESSOR STREQUAL "T113")
+  target_link_libraries(DuetScreen PRIVATE gpiod)
+endif()
+
 # Custom target to run the executable
 add_custom_target(
   binary_size ALL

@@ -21,6 +21,7 @@
 #include "lvgl/lvgl.h"
 #include "lvgl/src/core/lv_global.h"
 #include "utils/DisplayHelper.h"
+#include "utils/GpioHelper.h"
 #include "utils/StorageHelper.h"
 #include "utils/UpgradeHelper.h"
 #include <filesystem>
@@ -118,6 +119,9 @@ int main(int argc, char** argv)
 
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
+
+	GpioHelper::setPinValue(GPIO_USB_SELECT, 1);
+	GpioHelper::setPinValue(GPIO_USB_STATE, 1);
 
 	Model::get().startEventLoop();
 
