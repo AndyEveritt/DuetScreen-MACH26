@@ -82,6 +82,24 @@ namespace UpgradeHelper
 		return true;
 	}
 
+	static bool createUpgradeCompleteFile(const std::string& usbPath)
+	{
+		if (usbPath.rfind(USB_BASE_DIR, 0) != 0)
+		{
+			LOG_ERROR("File path {:s} is not on USB", usbPath.c_str());
+			return false;
+		}
+
+		FILE* file = fopen((usbPath + "/upgraded").c_str(), "w");
+		if (file == nullptr)
+		{
+			LOG_ERROR("Failed to create upgrade complete file");
+			return false;
+		}
+		fclose(file);
+		return true;
+	}
+
 	static bool upgradeFromTmp()
 	{
 		if (!moveTmpFileToBoot())
@@ -113,6 +131,7 @@ namespace UpgradeHelper
 		time_t lastModified = file_stat.st_mtime;
 		StorageHelper::setData(ID_UPGRADE_FILE_LAST_MODIFIED, lastModified);
 
+		createUpgradeCompleteFile(filePath.substr(0, filePath.find_last_of('/')));
 		return upgradeFromTmp();
 	}
 

@@ -51,9 +51,12 @@ Multiple methods are available to connect the Duet3D screen to a mainboard. The 
 
 ### USB
 1. Connect the Duet3D screen to the mainboard using a USB cable.
-    - Both the USB-A and USB-C ports on the screen can be used.
-    - If using the USB-C port, make sure to set the screen to USB host mode.
+    - **Either** the **USB-A** and **USB-C** ports on the screen can be used.
+    - If using the **USB-C** port, make sure to set the screen to USB **host mode**.
 2. In the GUI, select the USB connection method.
+
+> [!NOTE]
+> When the Duet3D screen detects a USB connection to a Duet3D mainboard, it will automatically send `M575 P0 S0` to configure the mainboard for USB communication.
 
 ### WiFi
 > [!NOTE]
@@ -86,6 +89,7 @@ Several methods are available to update the Duet3D screen.
     - Insert the USB flash drive into the Duet3D screen.
     - In the GUI you will be prompted to update the screen.
     - If the update is successful, the screen will automatically reboot. This will appear as a brief flash and the GUI will return to the home screen.
+    - The update will create an empty file called `upgraded` in the root directory of the USB flash drive. This file is used to indicate that the update was successful.
 
 2. **Force Update**
     - If the GUI is not working, you can force an update by renaming the update file to `update.tar.gz` and placing it in the **root directory of the USB flash drive OR microSD** card.
@@ -106,6 +110,9 @@ The Duet3D screen has two USB ports:
     - It can be used to connect to a Duet3D mainboard, wifi modules, or USB flash drives in host mode.
     - It can be used to connect to a PC in device mode.
     - It can be used to power the screen in either mode (assuming the attached device/host is able to supply power).
+
+> [!WARNING]
+> A Duet3D mainboard **CANNOT** provide power to the screen via the USB-C. If connecting to a Duet3D mainboard this 
 
 USB hubs are supported **if they are NOT smart**. A smart hub is one that requires a driver to work. This includes most USB-C hubs. If you are using a USB-C hub, make sure it is a dumb hub. A dumb hub is one that does not require a driver to work. This includes most USB-A hubs. If in doubt, use a USB-A hub.
 
