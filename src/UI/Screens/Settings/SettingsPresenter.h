@@ -7,12 +7,26 @@ namespace UI
 	class SettingsView;
 	class NetworkSettingsView;
 
+	enum class UsbMode
+	{
+		Host,
+		Device,
+		InternalWiFi
+	};
+
 	class SettingsPresenter : public Presenter<SettingsView>
 	{
 	  public:
 		PRESENTER_CONSTRUCTOR(SettingsPresenter, SettingsView)
 
+		// Actions
+		void setUsbMode(UsbMode mode);
+
 	  private:
+		virtual void onInit() override;
+
+		void setUsbHost(bool host);
+		void setUsbMux(bool usbc);
 	};
 
 	class NetworkSettingsPresenter : public Presenter<NetworkSettingsView>

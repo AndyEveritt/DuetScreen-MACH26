@@ -79,6 +79,9 @@ namespace UI
 	  private:
 		void onShow() override;
 
+		DropdownMenu m_language;
+		DropdownMenu m_theme;
+		DropdownMenu m_usbMode;
 		Slider m_brightness;
 		Slider m_screensaverTimeout;
 		lv_obj_t* m_systemLogging;
@@ -163,6 +166,7 @@ namespace UI
 	{
 		friend class SettingsSubView;
 		friend class DuetSettingsView;
+		friend class DeviceSettingsView;
 
 	  public:
 		SettingsView(lv_obj_t* parent);
@@ -178,7 +182,7 @@ namespace UI
 
 		virtual bool back() override;
 
-	  private:
+	  protected:
 		static void onWindowSelectEvent(lv_event_t* e);
 
 		lv_obj_t* getKeyboard() const { return m_keyboard; }

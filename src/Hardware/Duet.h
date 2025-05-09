@@ -18,7 +18,7 @@
 
 namespace Comm
 {
-	constexpr const char* const duetCommunicationTypeNames[] = {"USB", "Network", "UART"};
+	constexpr const char* const duetCommunicationTypeNames[] = {"usb", "network", "uart"};
 
 	typedef struct
 	{

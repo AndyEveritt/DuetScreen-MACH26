@@ -22,7 +22,8 @@ namespace UI
 		lv_obj_t* getDropdownMenu() const { return m_dropdown; }
 
 		void setOptions(const std::string& options);
-		void addOption(const std::string& option, uint32_t pos);
+		void setOptions(const std::vector<std::string>& options);
+		void addOption(const std::string& option, uint32_t pos = LV_DROPDOWN_POS_LAST);
 		void clearOptions();
 		void setSelected(uint32_t selected, lv_anim_enable_t anim_en = LV_ANIM_OFF);
 		void setDir(lv_dir_t dir);

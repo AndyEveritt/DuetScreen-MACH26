@@ -13,7 +13,7 @@
 
 namespace UI
 {
-	void HomePresenter::init()
+	void HomePresenter::onInit()
 	{
 		USB::UsbMonitor::getInstance().registerCallback(
 			[this](const std::string& path, bool mounted)

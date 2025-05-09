@@ -14,8 +14,6 @@ namespace UI
 		// using Presenter::Presenter;
 		PRESENTER_CONSTRUCTOR(HomePresenter, HomeView)
 
-		virtual void init() override;
-
 		void tick() override;
 		virtual void disconnected() override;
 
@@ -27,6 +25,8 @@ namespace UI
 		virtual void newMessageBoxData(const OM::Alert& alert) override;
 
 	  protected:
+		virtual void onInit() override;
+
 		std::vector<char> m_alertAxes;
 		std::string m_updateFile;
 	};

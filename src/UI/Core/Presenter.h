@@ -21,7 +21,7 @@ namespace UI
 	class BasePresenter : public ModelListener
 	{
 	  public:
-		virtual void init() {}
+		void init() { onInit(); }
 		void activate()
 		{
 			onActivate();
@@ -42,6 +42,7 @@ namespace UI
 		bool isActive() const { return m_active; }
 
 	  protected:
+		virtual void onInit() {}
 		virtual void onActivate() {}
 		virtual void onDeactivate() {}
 

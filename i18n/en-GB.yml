@@ -293,7 +293,7 @@ en-GB:
   msgbox_warning_text_length: Input must be between %d and %d characters
   file_start_print_title: Start Print
   file_start_print_message: 'File: %s\nDate: %s\nSize: %s'
-  settings_duet_info_timeout: ~
+  settings_duet_info_timeout: Notification Timeout (ms)
   pause: Pause
   resume: Resume
   cancel: Cancel
@@ -315,8 +315,8 @@ en-GB:
   settings_restart: Restart
   settings_erase_and_restart: Erase and Restart
   settings_reboot: Reboot
-  fine_tune_babystep_increment: ~
-  fine_tune_babystep_decrement: ~
+  fine_tune_babystep_increment: +
+  fine_tune_babystep_decrement: '-'
   fine_tune_babystep_reset: Reset %.3fmm
   fine_tune_speed_factor: Speed Factor
   fine_tune_extruder_header: Extrusion Factor
@@ -356,3 +356,14 @@ en-GB:
   settings_duet_connection_method: 'Connection Method: '
   settings_duet_hostname_prompt: Enter IP Address
   settings_duet_password_prompt: Enter Password
+  usb: USB
+  network: Network
+  uart: UART
+  settings_language: Language
+  settings_language_en: English
+  settings_theme: Theme
+  settings_theme_light: Light
+  settings_usb_mode: USB-C Mode
+  settings_usb_mode_host: USB-C Host
+  settings_usb_mode_device: USB-C Device
+  settings_usb_mode_internal_wifi: Internal WiFi

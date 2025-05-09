@@ -166,11 +166,10 @@ namespace UI
 		UI_LOCK();
 
 		// Connection Method
-		std::string options;
+		std::vector<std::string> options;
 		for (const auto& method : Comm::duetCommunicationTypeNames)
 		{
-			options += _(method);
-			options += "\n";
+			options.push_back(_(method));
 		}
 		m_connectionMethod.setLabel(_("settings_duet_connection_method"));
 		m_connectionMethod.setOptions(options);
@@ -190,7 +189,7 @@ namespace UI
 		// Info Timeout
 		m_infoTimeout.setLabel(_("settings_duet_info_timeout"));
 		m_infoTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-		m_infoTimeout.setRange(0, 60 * 1000);
+		m_infoTimeout.setRange(0, 5000);
 		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 		m_infoTimeout.setValueChangedCallback([](int32_t value)
 											  { StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)value); });
@@ -285,11 +284,36 @@ namespace UI
 
 	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView("device_settings_view", parent, mainSettingsView)
+		, m_language("device_settings_language", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_theme("device_settings_theme", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_usbMode("device_settings_usb_mode", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_systemLogging(lv_checkbox_create(getCont()))
 	{
 		UI_LOCK();
+
+		m_language.setLabel(_("settings_language"));
+		m_language.setOptions(_("settings_language_en"));
+
+		m_theme.setLabel(_("settings_theme"));
+		m_theme.setOptions(_("settings_theme_light"));
+
+		m_usbMode.setLabel(_("settings_usb_mode"));
+		m_usbMode.setOptions(
+			{_("settings_usb_mode_host"), _("settings_usb_mode_device"), _("settings_usb_mode_internal_wifi")});
+		m_usbMode.addEventCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
+				DeviceSettingsView* view = (DeviceSettingsView*)lv_event_get_user_data(e);
+				int32_t selected = view->m_usbMode.getSelected();
+				view->getMainSettingsPresenter()->setUsbMode((UsbMode(selected)));
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
+		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 
 		// Brightness
 		m_brightness.setRange(0, 100);
@@ -297,6 +321,10 @@ namespace UI
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_brightness.setValueChangedCallback([](uint32_t value) { DisplayHelper::setBrightness(value); });
 		m_brightness.setSendMode(Slider::SendMode::VALUE_CHANGED);
+		m_brightness.setKeyboard(getMainSettingsView().getKeyboard());
+		m_brightness.setFocusedCallback(
+			[this](bool focused)
+			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_brightness.getInput()); });
 
 		// Screensaver Timeout
 		m_screensaverTimeout.setLabel(_("settings_screensaver_timeout"));
@@ -304,6 +332,10 @@ namespace UI
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
 													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
+		m_screensaverTimeout.setKeyboard(getMainSettingsView().getKeyboard());
+		m_screensaverTimeout.setFocusedCallback(
+			[this](bool focused)
+			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_screensaverTimeout.getInput()); });
 
 		// System Logging
 		lv_checkbox_set_text(m_systemLogging, _("settings_system_logging"));

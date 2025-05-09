@@ -49,6 +49,21 @@ namespace UI
 		lv_dropdown_set_options(m_dropdown, options.c_str());
 	}
 
+	void DropdownMenu::setOptions(const std::vector<std::string>& options)
+	{
+		UI_LOCK();
+		std::string opt;
+		for (size_t i = 0; i < options.size(); ++i)
+		{
+			opt += options[i];
+			if (i < options.size() - 1)
+			{
+				opt += "\n";
+			}
+		}
+		lv_dropdown_set_options(m_dropdown, opt.c_str());
+	}
+
 	void DropdownMenu::addOption(const std::string& option, uint32_t pos)
 	{
 		UI_LOCK();

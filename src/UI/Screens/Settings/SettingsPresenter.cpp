@@ -1,9 +1,51 @@
 #include "SettingsPresenter.h"
+#include "Pins.h"
 #include "SettingsView.h"
+#include "utils/GpioHelper.h"
 #include "utils/NetworkHelper.h"
+#include "utils/StorageHelper.h"
 
 namespace UI
 {
+	void SettingsPresenter::setUsbMode(UsbMode mode)
+	{
+		LOG_DBG("Setting USB mode to {:d}", static_cast<int>(mode));
+		switch (mode)
+		{
+		case UsbMode::Host:
+			setUsbHost(true);
+			setUsbMux(true);
+			break;
+		case UsbMode::Device:
+			setUsbHost(false);
+			setUsbMux(true);
+			break;
+		case UsbMode::InternalWiFi:
+			setUsbHost(true);
+			setUsbMux(false);
+			break;
+		}
+		LOG_INFO("USB mode set to {:d}", static_cast<int>(mode));
+		StorageHelper::setData(ID_USB_MODE, static_cast<int>(mode));
+	}
+
+	void SettingsPresenter::setUsbHost(bool host)
+	{
+		GpioHelper::setPinValue(GPIO_USB_STATE, host ? 0 : 1);
+	}
+
+	void SettingsPresenter::setUsbMux(bool usbc)
+	{
+		GpioHelper::setPinValue(GPIO_USB_SELECT, usbc ? 1 : 0);
+	}
+
+	void SettingsPresenter::onInit()
+	{
+		// Set the USB mode based on the stored value
+		int usbMode = StorageHelper::getData(ID_USB_MODE, 0);
+		setUsbMode(static_cast<UsbMode>(usbMode));
+	}
+
 	void NetworkSettingsPresenter::setWifiEnabled(bool enabled)
 	{
 		NetworkHelper::enable(enabled);
