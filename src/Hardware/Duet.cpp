@@ -158,7 +158,7 @@ namespace Comm
 		return static_cast<uint32_t>(m_config.pollInterval * m_pollIntervalScale);
 	}
 
-	void Duet::PrepareRequest(HttpRequest& req, const char* subUrl, hv::QueryParams& queryParameters)
+	void Duet::PrepareRequest(HttpRequest& req, const std::string& subUrl, hv::QueryParams& queryParameters)
 	{
 		req.method = HTTP_GET;
 		req.host = GetBaseUrl();
@@ -198,15 +198,21 @@ namespace Comm
 		return true;
 	}
 
-	bool Duet::AsyncGet(const char* path,
+	bool Duet::AsyncGet(const std::string& path,
 						hv::QueryParams& queryParameters,
 						HttpResponseCallback callback,
 						bool queue = false)
 	{
 #if 1
+		if (!IsConnected() && path != "/rr_connect")
+		{
+			LOG_DBG("Not connected to Duet, cannot send get request {:s}", path);
+			return false;
+		}
+
 		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
-			(strncmp(path, "/rr_connect", 11) != 0))
+			(path != "/rr_connect"))
 		{
 			if (!Connect())
 			{
@@ -231,11 +237,17 @@ namespace Comm
 	Tries to make a get request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
 	again
 	*/
-	bool Duet::Get(const char* path, HttpResponse& r, hv::QueryParams& queryParameters)
+	bool Duet::Get(const std::string& path, HttpResponse& r, hv::QueryParams& queryParameters)
 	{
+		if (!IsConnected() && path != "/rr_connect")
+		{
+			LOG_DBG("Not connected to Duet, cannot send get request {:s}", path);
+			return false;
+		}
+
 		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
-			(strncmp(path, "/rr_connect", 11) != 0))
+			(path != "/rr_connect"))
 		{
 			if (!Connect())
 			{
@@ -268,7 +280,10 @@ namespace Comm
 	Tries to make a post request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
 	again
 	*/
-	bool Duet::Post(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters, const std::string& data)
+	bool Duet::Post(const std::string& subUrl,
+					HttpResponse& r,
+					hv::QueryParams& queryParameters,
+					const std::string& data)
 	{
 #if 0
 		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
@@ -297,7 +312,7 @@ namespace Comm
 
 	void Duet::SendGcode(const std::string& gcode)
 	{
-		if (!m_connected)
+		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot send gcode: {:s}", gcode);
 			return;
@@ -354,6 +369,12 @@ namespace Comm
 
 	bool Duet::UploadFile(const char* filename, const std::string& contents)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot upload file {:s}", filename);
+			return false;
+		}
+
 		LOG_INFO("Uploading file {:s}: {:d} bytes", filename, contents.size());
 		// TODO add sleep
 
@@ -403,6 +424,12 @@ namespace Comm
 
 	bool Duet::DownloadFile(const char* filename, std::string& contents)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot download file {:s}", filename);
+			return false;
+		}
+
 		LOG_INFO("Downloading file {:s}", filename);
 		switch (m_config.communicationType)
 		{

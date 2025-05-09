@@ -126,12 +126,18 @@ namespace Comm
 	  private:
 		Duet();
 
-		void PrepareRequest(HttpRequest& req, const char* subUrl, hv::QueryParams& queryParameters);
-		bool AsyncGet(const char* subUrl, hv::QueryParams& queryParameters, HttpResponseCallback callback, bool queue);
+		void PrepareRequest(HttpRequest& req, const std::string& subUrl, hv::QueryParams& queryParameters);
+		bool AsyncGet(const std::string& subUrl,
+					  hv::QueryParams& queryParameters,
+					  HttpResponseCallback callback,
+					  bool queue);
 		void AsyncGetInner(const HttpRequestPtr& req, HttpResponseCallback callback);
 		bool AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback);
-		bool Get(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
-		bool Post(const char* subUrl, HttpResponse& r, hv::QueryParams& queryParameters, const std::string& data);
+		bool Get(const std::string& subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
+		bool Post(const std::string& subUrl,
+				  HttpResponse& r,
+				  hv::QueryParams& queryParameters,
+				  const std::string& data);
 		void saveConfig();
 
 		DuetConfig m_config;
