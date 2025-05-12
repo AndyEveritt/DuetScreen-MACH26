@@ -184,8 +184,9 @@ namespace UI
 		m_pollInterval.setValue(Comm::DUET.GetPollInterval());
 		m_pollInterval.setValueChangedCallback([](int32_t value) { Comm::DUET.SetPollInterval((uint32_t)value); });
 		m_pollInterval.setKeyboard(getMainSettingsView().getKeyboard());
-		m_pollInterval.setFocusedCallback([this](bool focused)
-										  { getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER); });
+		m_pollInterval.setFocusedCallback(
+			[this](bool focused)
+			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_pollInterval.getInput()); });
 
 		// Info Timeout
 		m_infoTimeout.setLabel(_("settings_duet_info_timeout"));
