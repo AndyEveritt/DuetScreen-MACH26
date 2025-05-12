@@ -61,15 +61,19 @@ void UartController::close()
 	if (isOpen())
 	{
 		LOG_INFO("Closing UART device");
+		// Signal the read thread to stop first
 		m_running = false;
-		if (m_readThread.joinable())
-		{
-			m_readThread.join();
-		}
+
+		// Close the file descriptor to interrupt any blocking read
 #if !SIMULATION
 		::close(m_fd);
 #endif
 		m_fd = -1;
+
+		if (m_readThread.joinable())
+		{
+			m_readThread.join();
+		}
 	}
 }
 
@@ -222,7 +226,6 @@ bool UartController::send(const uint8_t* data, size_t length)
 void UartController::readLoop()
 {
 #if SIMULATION
-	// Simulate periodic data reception
 	std::vector<uint8_t> buffer(m_bufferSize);
 	while (m_running)
 	{
@@ -237,21 +240,39 @@ void UartController::readLoop()
 	}
 #else
 	std::vector<uint8_t> buffer(m_bufferSize);
+	fd_set readfds;
+	struct timeval tv;
 
 	while (m_running)
 	{
+		FD_ZERO(&readfds);
+		FD_SET(m_fd, &readfds);
+
+		tv.tv_sec = 0;
+		tv.tv_usec = 100000; // 100ms timeout
+
+		int ret = select(m_fd + 1, &readfds, nullptr, nullptr, &tv);
+		if (ret < 0)
+		{
+			if (errno == EINTR)
+				continue;
+			LOG_ERROR("UART select error: {:s}", strerror(errno));
+			break;
+		}
+
+		if (ret == 0 || !m_running)
+			continue;
+
 		ssize_t bytesRead = read(m_fd, buffer.data(), buffer.size());
 
 		if (bytesRead > 0)
 		{
-			// Make a local copy of callback with lock protection
 			DataCallback callback;
 			{
 				std::lock_guard<std::mutex> lock(m_callbackMutex);
 				callback = m_receiveCallback;
 			}
 
-			// Only call if we have a valid callback
 			if (callback)
 			{
 				callback(buffer.data(), bytesRead);
@@ -261,12 +282,6 @@ void UartController::readLoop()
 		{
 			LOG_ERROR("UART read error: {:s}", strerror(errno));
 			break;
-		}
-
-		// Add a small delay to avoid consuming CPU when no data is available
-		if (bytesRead <= 0)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 	}
 #endif

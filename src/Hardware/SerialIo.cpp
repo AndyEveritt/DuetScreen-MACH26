@@ -48,7 +48,6 @@ namespace SerialIo
 	{
 		if (s_uart)
 		{
-			s_uart->close();
 			s_uart.reset();
 		}
 	}
@@ -95,7 +94,7 @@ namespace SerialIo
 
 	static void processData(const uint8_t* data, size_t len)
 	{
-		LOG_VERBOSE("Received {1:.{0}s}", (int)len, reinterpret_cast<const char*>(data));
+		LOG_VERBOSE("Received ({0:d}) '{1:.{0}s}'", (int)len, reinterpret_cast<const char*>(data));
 
 		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::uart)
 		{
@@ -113,7 +112,6 @@ namespace SerialIo
 			LOG_ERROR("Buffer overflow");
 			s_buffer.fill(0);
 			s_bufferLen = 0;
-			Comm::Reconnect();
 			return;
 		}
 
