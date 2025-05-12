@@ -271,6 +271,7 @@ namespace UI
 		lv_style_set_border_color(&m_targetTempStyle, lv_color_hex(0xD3D3D3)); // Light grey color
 		lv_style_set_border_width(&m_targetTempStyle, 2);
 		lv_style_set_radius(&m_targetTempStyle, 5);
+		lv_style_set_pad_ver(&m_targetTempStyle, 0);
 		lv_obj_add_style(active, &m_targetTempStyle, 0);
 		lv_obj_add_style(standby, &m_targetTempStyle, 0);
 	}

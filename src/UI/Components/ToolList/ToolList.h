@@ -50,6 +50,9 @@ namespace UI
 		lv_obj_t* m_currentTemp;
 		lv_obj_t* m_activeTemp;
 		lv_obj_t* m_standbyTemp;
+
+		lv_style_t m_targetTempStyle;
+
 		bool m_selected;
 	};
 

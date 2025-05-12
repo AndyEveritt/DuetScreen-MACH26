@@ -45,6 +45,14 @@ namespace UI
 		// Styles
 		lv_obj_set_style_bg_color(
 			getCont(), lv_color_darken(lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN), 20), LV_STATE_CHECKED);
+
+		lv_style_init(&m_targetTempStyle);
+		lv_style_set_border_color(&m_targetTempStyle, lv_color_hex(0xD3D3D3)); // Light grey color
+		lv_style_set_border_width(&m_targetTempStyle, 2);
+		lv_style_set_radius(&m_targetTempStyle, 5);
+		lv_style_set_pad_ver(&m_targetTempStyle, 0);
+		lv_obj_add_style(m_activeTemp, &m_targetTempStyle, 0);
+		lv_obj_add_style(m_standbyTemp, &m_targetTempStyle, 0);
 	}
 
 	uint8_t ToolListItem::getSlotIndex() const
