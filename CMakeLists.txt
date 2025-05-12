@@ -12,9 +12,9 @@ set(LIBRARIES_DIR ${PROJECT_SOURCE_DIR}/libraries)
 # set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 # Remove ARM-specific compile and linker options
-if (PROCESSOR STREQUAL "Simulation")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+if(PROCESSOR STREQUAL "Simulation")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 endif()
 
 # Set optimization level based on build type
@@ -65,20 +65,17 @@ include(${LIBRARIES_DIR}/spdlog.cmake)
 file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
      ${LIBRARIES_DIR}/Duet3D/**.cpp)
 
-list(
-  APPEND
-  MAIN_SOURCES
-  ${DUET_LIB_SOURCES})
+list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
 
 add_executable(DuetScreen ${MAIN_SOURCES})
 
 # Add clang-format custom target
 add_custom_target(
-    clang-format
-    COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp' -print | xargs clang-format -i
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Running clang-format"
-)
+  clang-format
+  COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
+          -print | xargs clang-format -i
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Running clang-format")
 add_dependencies(DuetScreen clang-format)
 
 target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
@@ -167,8 +164,8 @@ target_link_libraries(
           spdlog::spdlog
           fmt::fmt)
 
-if (PROCESSOR STREQUAL "T113")
-  target_link_libraries(DuetScreen PRIVATE gpiod)
+if(PROCESSOR STREQUAL "T113")
+  target_link_libraries(DuetScreen PRIVATE gpiod wpa_client)
 endif()
 
 # Custom target to run the executable

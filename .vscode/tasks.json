@@ -8,7 +8,7 @@
 			"preset": "${command:cmake.activeConfigurePresetName}",
 			"problemMatcher": [],
 			"detail": "CMake template configure task",
-			"group": "build",
+			"group": "build"
 		},
 		{
 			"type": "cmake",
@@ -97,7 +97,7 @@
 			"problemMatcher": [
 				"$gcc"
 			],
-			"detail": "Builds DuetScreen for remote debugging",
+			"detail": "Builds DuetScreen for remote debugging"
 		},
 		{
 			"label": "Build DuetScreen for Remote - Release",
@@ -118,7 +118,7 @@
 			"problemMatcher": [
 				"$gcc"
 			],
-			"detail": "Builds DuetScreen for remote debugging",
+			"detail": "Builds DuetScreen for remote debugging"
 		},
 		{
 			"label": "Push DuetScreen - SSH - Debug",
@@ -175,7 +175,7 @@
 			"detail": "Push the DuetScreen assets to the screen",
 			"dependsOn": [],
 			"runOptions": {
-				"instanceLimit": 1,
+				"instanceLimit": 1
 			}
 		},
 		{
@@ -193,7 +193,7 @@
 			"detail": "Push the DuetScreen libraries to the screen",
 			"dependsOn": [],
 			"runOptions": {
-				"instanceLimit": 1,
+				"instanceLimit": 1
 			}
 		},
 		{
@@ -201,26 +201,20 @@
 			"type": "shell",
 			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S20DuetScreen start'",
 			"problemMatcher": [],
-			"isBackground": true,
-			// "dependsOn": [
-			// 	"Push DuetScreen - SSH"
-			// ],
+			"isBackground": true
 		},
 		{
 			"label": "Start gdbserver on DuetScreen",
 			"type": "shell",
 			"command": "command ssh root@${config:duetscreen_ip} 'gdbserver :3000 DuetScreen'",
 			"problemMatcher": [],
-			"isBackground": true,
-			// "dependsOn": [
-			// 	"Push DuetScreen - SSH"
-			// ],
+			"isBackground": true
 		},
 		{
 			"label": "Upload config.json",
 			"type": "shell",
 			"command": "scp config.json root@${config:duetscreen_ip}:/etc/duetscreen.json",
-			"problemMatcher": [],
+			"problemMatcher": []
 		},
 		{
 			"label": "Create update.tar.gz",

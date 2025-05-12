@@ -17,220 +17,107 @@
 #include <string>
 #include <vector>
 
+#if T113
+#  include <wpa_ctrl.h>
+#endif
+
 namespace NetworkHelper
 {
 	static const std::string INTERFACE = "wlan0";
-	static constexpr const char* s_scanCommand = "iw dev wlan0 scan";
-	static constexpr const char* s_signal = "signal: ";
-	static constexpr const char* s_dBm = " dBm";
-	static constexpr const char* s_ssid = "SSID: ";
 	static constexpr const char* s_wpa_supplicant = "/etc/wpa_supplicant.conf";
+	static constexpr const char* s_ctrl_path = "/var/run/wpa_supplicant";
+	static constexpr int s_timeout_ms = 10000;
 
+	static struct wpa_ctrl* s_ctrl_conn = nullptr;
+	static struct wpa_ctrl* s_monitor_conn = nullptr;
 	static std::vector<WiFiNetwork> s_networks;
 
-	static std::string readCommandOutput(FILE* pipe)
+#if T113
+	static bool initWPAControl()
 	{
-		constexpr size_t BUFFER_SIZE = 256;
-		char buffer[BUFFER_SIZE];
-		std::string output;
-		std::vector<char> dynamic_buffer;
+		if (s_ctrl_conn != nullptr)
+			return true;
 
-		while (true)
+		std::string ctrl_path = std::string(s_ctrl_path) + "/" + INTERFACE;
+		s_ctrl_conn = wpa_ctrl_open(ctrl_path.c_str());
+		if (s_ctrl_conn == nullptr)
 		{
-			errno = 0;
-			if (fgets(buffer, BUFFER_SIZE, pipe) == nullptr)
-			{
-				// Handle remaining data in dynamic_buffer
-				if (!dynamic_buffer.empty())
-				{
-					output.append(dynamic_buffer.data(), dynamic_buffer.size());
-				}
-
-				if (feof(pipe))
-					break;
-				if (ferror(pipe) && errno == EINTR)
-					continue;
-				LOG_ERROR("Failed to read command output");
-				return "";
-			}
-
-			// Check if we got a complete line
-			size_t len = strlen(buffer);
-			if (len > 0 && buffer[len - 1] == '\n')
-			{
-				output += buffer;
-			}
-			else
-			{
-				// Store partial line in dynamic buffer
-				dynamic_buffer.insert(dynamic_buffer.end(), buffer, buffer + len);
-			}
+			LOG_ERROR("Failed to connect to wpa_supplicant");
+			return false;
 		}
 
-		return output;
+		s_monitor_conn = wpa_ctrl_open(ctrl_path.c_str());
+		if (s_monitor_conn == nullptr)
+		{
+			wpa_ctrl_close(s_ctrl_conn);
+			s_ctrl_conn = nullptr;
+			LOG_ERROR("Failed to open monitor connection");
+			return false;
+		}
+
+		if (wpa_ctrl_attach(s_monitor_conn) != 0)
+		{
+			wpa_ctrl_close(s_monitor_conn);
+			wpa_ctrl_close(s_ctrl_conn);
+			s_monitor_conn = nullptr;
+			s_ctrl_conn = nullptr;
+			LOG_ERROR("Failed to attach to wpa_supplicant");
+			return false;
+		}
+
+		return true;
 	}
 
-	static std::string executeCommandWithOutput(const std::string& command)
+	static void closeWPAControl()
 	{
-#if SIMULATION
-		LOG_INFO("Simulating command: {:s}", command.c_str());
+		if (s_monitor_conn != nullptr)
+		{
+			wpa_ctrl_detach(s_monitor_conn);
+			wpa_ctrl_close(s_monitor_conn);
+			s_monitor_conn = nullptr;
+		}
+		if (s_ctrl_conn != nullptr)
+		{
+			wpa_ctrl_close(s_ctrl_conn);
+			s_ctrl_conn = nullptr;
+		}
+	}
+
+	static std::string sendCommand(const std::string& cmd)
+	{
+		if (!initWPAControl())
+			return "";
+
+		char buf[4096];
+		size_t len = sizeof(buf) - 1;
+
+		int ret = wpa_ctrl_request(s_ctrl_conn, cmd.c_str(), cmd.length(), buf, &len, nullptr);
+		if (ret < 0)
+		{
+			LOG_ERROR("Failed to send command: {:s}", cmd.c_str());
+			return "";
+		}
+
+		buf[len] = '\0';
+		return std::string(buf);
+	}
+#else
+	static bool initWPAControl()
+	{
+		return false;
+	}
+	static void closeWPAControl() {}
+	static std::string sendCommand(const std::string&)
+	{
 		return "";
-#else
-		std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
-		if (!pipe)
-		{
-			LOG_ERROR("Failed to run command: {:s}", command.c_str());
-			return "";
-		}
-
-		std::string output = readCommandOutput(pipe.get());
-		int status = pclose(pipe.release());
-		if (WIFEXITED(status))
-		{
-			if (WEXITSTATUS(status) != 0)
-			{
-				LOG_ERROR("Command failed with exit code: {:d}", WEXITSTATUS(status));
-				return "";
-			}
-		}
-		else
-		{
-			LOG_ERROR("Command terminated abnormally");
-			return "";
-		}
-		return output;
+	}
 #endif
-	}
-
-	int executeCommand(const std::string& command, int retries = 3, int delay_ms = 500)
-	{
-		int result = -1;
-
-		for (int attempt = 0; attempt < retries; ++attempt)
-		{
-#if SIMULATION
-			LOG_INFO("Simulating command: {:s}", command.c_str());
-			result = 0;
-#else
-			result = system(command.c_str());
-#endif
-			if (WIFEXITED(result) && WEXITSTATUS(result) == 0)
-			{
-				return 0;
-			}
-
-			if (attempt < retries - 1)
-			{
-				LOG_ERROR("Command failed (attempt {:d}), retrying in {:d}ms...", attempt + 1, delay_ms);
-				usleep(delay_ms * 1000);
-				delay_ms *= 2; // Exponential backoff
-			}
-		}
-		return result;
-	}
-
-	static std::vector<int> getNetworkIds(const std::string& target_ssid)
-	{
-		std::vector<int> ids;
-		std::string command = "wpa_cli -i " + INTERFACE + " list_networks";
-#if SIMULATION
-		std::string output = "network id / ssid / bssid / flags\n"
-							 "0\t\"MyNetwork\"\tany\t[DISABLED]\n"
-							 "1\t\"MyCurrentNetwork\"\t00:00:00:00:00:01\t[CURRENT]\n"
-							 "2\t\"MyOtherNetwork\"\t00:00:00:00:00:01\t\n";
-#else
-		std::string output = executeCommandWithOutput(command);
-#endif
-
-		std::istringstream iss(output);
-		std::string line;
-		bool header = true;
-
-		while (getline(iss, line))
-		{
-			if (header)
-			{
-				header = false;
-				continue;
-			}
-
-			std::vector<std::string> fields;
-			std::stringstream lineStream(line);
-			std::string field;
-
-			while (getline(lineStream, field, '\t'))
-			{
-				if (!field.empty())
-				{
-					fields.push_back(field);
-				}
-			}
-
-			if (fields.size() >= 4)
-			{
-				std::string idStr = fields[0];
-				std::string ssid = fields[1];
-
-				// Remove quotes from SSID if present
-				if (ssid.size() >= 2 && ssid.front() == '"' && ssid.back() == '"')
-				{
-					ssid = ssid.substr(1, ssid.size() - 2);
-				}
-
-				if (ssid == target_ssid)
-				{
-					try
-					{
-						ids.push_back(stoi(idStr));
-					}
-					catch (const std::exception& e)
-					{
-						LOG_ERROR("Invalid network ID: {:s}", idStr.c_str());
-					}
-				}
-			}
-		}
-		return ids;
-	}
-
-	static int32_t getNetworkId(const std::string& ssid)
-	{
-		std::vector<WiFiNetwork> networks = getKnownWiFiNetworks();
-		for (const WiFiNetwork& network : networks)
-		{
-			if (network.ssid == ssid)
-			{
-				return network.id;
-			}
-		}
-		return -1;
-	}
-
-	static void connectToNetworkById(int32_t id)
-	{
-		LOG_INFO("Connecting to network id={:d}", id);
-		std::string command = "wpa_cli select_network " + std::to_string(id);
-		int32_t errorCode = executeCommand(command.c_str());
-		if (errorCode != 0)
-		{
-			LOG_ERROR("Failed to connect to network id={:d}, code={:d}", id, errorCode);
-		}
-	}
-
-	static void save()
-	{
-		LOG_INFO("Saving wpa_supplicant configuration");
-		int32_t errorCode = executeCommand("wpa_cli save_config");
-		if (errorCode != 0)
-		{
-			LOG_ERROR("Failed to save wpa_supplicant configuration, code={:d}", errorCode);
-		}
-	}
 
 	void enable(bool enable)
 	{
 		LOG_INFO("{:s} WiFi", enable ? "Enabling" : "Disabling");
-		int32_t errorCode = executeCommand("ip link set " + INTERFACE + (enable ? " up" : " down"));
+		std::string cmd = "ip link set " + INTERFACE + (enable ? " up" : " down");
+		int32_t errorCode = system(cmd.c_str());
 		if (errorCode != 0)
 		{
 			LOG_ERROR("Failed to {:s} WiFi, code={:d}", enable ? "enable" : "disable", errorCode);
@@ -239,40 +126,41 @@ namespace NetworkHelper
 
 	bool isEnabled()
 	{
-		std::string command = "ip link show " + INTERFACE + " | grep UP";
-		std::string output = executeCommandWithOutput(command);
-		return output.find("UP") != std::string::npos;
+		std::string output = sendCommand("STATUS");
+		return output.find("wpa_state=COMPLETED") != std::string::npos;
 	}
 
 	void reconfigure()
 	{
 		LOG_INFO("Reconfiguring wpa_supplicant");
-		int32_t errorCode = executeCommand("wpa_cli reconfigure");
-		if (errorCode != 0)
-		{
-			LOG_ERROR("Failed to reconfigure wpa_supplicant, code={:d}", errorCode);
-		}
+		sendCommand("RECONFIGURE");
 	}
 
 	std::string getIpAddress()
 	{
-		std::string command = "ip addr show " + INTERFACE + " | awk '/inet / {print $2}' | cut -d/ -f1";
-		std::string output = executeCommandWithOutput(command);
-		return output;
+		std::string result;
+		std::string output = sendCommand("STATUS");
+
+		size_t pos = output.find("ip_address=");
+		if (pos != std::string::npos)
+		{
+			size_t end = output.find('\n', pos);
+			if (end != std::string::npos)
+			{
+				result = output.substr(pos + 11, end - (pos + 11));
+			}
+		}
+		return result;
 	}
 
 	std::vector<WiFiNetwork> getKnownWiFiNetworks()
 	{
 		LOG_INFO("Getting known WiFi networks");
 		std::vector<WiFiNetwork> networks;
-		// reconfigure();
 
-		// sleep(1);
-		std::string output = executeCommandWithOutput("wpa_cli -i " + INTERFACE + " list_networks");
-
+		std::string output = sendCommand("LIST_NETWORKS");
 		std::istringstream stream(output);
 		std::string line;
-
 		bool header = true;
 
 		while (std::getline(stream, line))
@@ -283,34 +171,19 @@ namespace NetworkHelper
 				continue;
 			}
 
-			std::vector<std::string> fields;
-			std::stringstream lineStream(line);
-			std::string field;
-
-			while (getline(lineStream, field, '\t'))
+			std::istringstream iss(line);
+			std::string idStr, ssid, bssid, flags;
+			if (iss >> idStr >> ssid >> bssid >> flags)
 			{
-				if (!field.empty())
-				{
-					fields.push_back(field);
-				}
-			}
-
-			if (fields.size() >= 3)
-			{
-				std::string idStr = fields[0];
-				std::string ssid = fields[1];
-				std::string flags = fields.size() >= 4 ? fields[3] : "";
-
-				// Remove quotes from SSID if present
+				WiFiNetwork network;
+				// Remove quotes if present
 				if (ssid.size() >= 2 && ssid.front() == '"' && ssid.back() == '"')
 				{
 					ssid = ssid.substr(1, ssid.size() - 2);
 				}
-
-				WiFiNetwork network;
 				network.ssid = ssid;
-				network.id = stoi(idStr);
-				network.connected = flags.find("[CURRENT]") != std::string::npos;
+				network.id = std::stoi(idStr);
+				network.connected = (flags.find("[CURRENT]") != std::string::npos);
 				networks.push_back(network);
 				LOG_INFO("Found known network: \"{:s}\", id: {:d}, current: {:d}",
 						 network.ssid.c_str(),
@@ -323,106 +196,101 @@ namespace NetworkHelper
 
 	std::vector<WiFiNetwork> scanWiFiNetworks()
 	{
-		std::vector<WiFiNetwork> knownNetworks = getKnownWiFiNetworks();
-		LOG_INFO("Found {:d} known networks", knownNetworks.size());
-
-		// sleep(2);
 		LOG_INFO("Scanning for WiFi networks");
 		std::vector<WiFiNetwork> networks;
-		std::string output = executeCommandWithOutput("iw dev " + INTERFACE + " scan");
+		std::vector<WiFiNetwork> knownNetworks = getKnownWiFiNetworks();
 
+		sendCommand("SCAN");
+		usleep(500000); // Wait 500 milliseconds for scan to complete
+
+		std::string output = sendCommand("SCAN_RESULTS");
 		std::istringstream stream(output);
 		std::string line;
-		WiFiNetwork network;
+		bool header = true;
 
 		while (std::getline(stream, line))
 		{
-			if (line.find(s_signal) != std::string::npos)
+			if (header)
 			{
-				size_t start = line.find(s_signal) + strlen(s_signal);
-				size_t end = line.find(s_dBm);
-				network.signal_level = atoi(line.substr(start, end - start).c_str());
+				header = false;
+				continue;
 			}
-			else if (line.find(s_ssid) != std::string::npos)
+
+			std::istringstream iss(line);
+			std::string bssid, freq, signal, flags, ssid;
+			if (iss >> bssid >> freq >> signal >> flags)
 			{
-				size_t start = line.find(s_ssid) + strlen(s_ssid);
-				size_t end = line.length();
-				network.ssid = line.substr(start);
-				if (network.ssid.c_str()[0] != '\0')
+				// Rest of the line is SSID
+				std::getline(iss, ssid);
+				while (!ssid.empty() && (ssid[0] == ' ' || ssid[0] == '\t'))
 				{
+					ssid.erase(0, 1);
+				}
+
+				if (!ssid.empty())
+				{
+					WiFiNetwork network;
+					network.ssid = ssid;
+					network.signal_level = std::stoi(signal);
 					network.id = -1;
-					for (const WiFiNetwork& knownNetwork : knownNetworks)
+
+					// Check if this is a known network
+					for (const WiFiNetwork& known : knownNetworks)
 					{
-						if (network.ssid == knownNetwork.ssid)
+						if (network.ssid == known.ssid)
 						{
-							LOG_INFO("Network: \"{:s}\" matches known network \"{:s}\"",
-									 network.ssid.c_str(),
-									 knownNetwork.ssid.c_str());
-							network.id = knownNetwork.id;
-							network.connected = knownNetwork.connected;
+							network.id = known.id;
+							network.connected = known.connected;
 							break;
 						}
 					}
+
+					networks.push_back(network);
 					LOG_INFO("Found network: \"{:s}\", signal: {:d} dBm, id: {:d}, {:s}",
 							 network.ssid.c_str(),
 							 network.signal_level,
 							 network.id,
 							 network.connected ? "connected" : "disconnected");
-					networks.push_back(network);
-					network.clear();
 				}
 			}
 		}
 
-		LOG_INFO("Sorting networks by signal level");
+		// Sort networks by signal strength and connection status
 		std::sort(networks.begin(),
 				  networks.end(),
 				  [](const WiFiNetwork& a, const WiFiNetwork& b)
 				  {
 					  if (a.connected != b.connected)
-					  {
 						  return a.connected;
-					  }
 					  if (a.id > b.id)
-					  {
 						  return true;
-					  }
 					  return a.signal_level > b.signal_level;
 				  });
+
 		return networks;
 	}
 
 	bool isNetworkKnown(const std::string& ssid)
 	{
-		std::ifstream wpa_supplicant(s_wpa_supplicant);
-		if (!wpa_supplicant.is_open())
-		{
-			LOG_ERROR("Failed to open wpa_supplicant.conf");
-			return false;
-		}
-
-		std::string line;
-		while (std::getline(wpa_supplicant, line))
-		{
-			if (line.find("ssid=\"" + ssid + "\"") != std::string::npos)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		std::vector<WiFiNetwork> networks = getKnownWiFiNetworks();
+		return std::any_of(
+			networks.begin(), networks.end(), [&ssid](const WiFiNetwork& network) { return network.ssid == ssid; });
 	}
 
 	void connect(const std::string& ssid)
 	{
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid.c_str());
-		int32_t id = getNetworkId(ssid);
-		if (id == -1)
+		std::vector<WiFiNetwork> networks = getKnownWiFiNetworks();
+		for (const WiFiNetwork& network : networks)
 		{
-			LOG_ERROR("Failed to get network id for \"{:s}\"", ssid.c_str());
-			return;
+			if (network.ssid == ssid)
+			{
+				std::string cmd = "SELECT_NETWORK " + std::to_string(network.id);
+				sendCommand(cmd);
+				return;
+			}
 		}
-		connectToNetworkById(id);
+		LOG_ERROR("Network \"{:s}\" not found in known networks", ssid.c_str());
 	}
 
 	void connect(const std::string& ssid, const std::string& password)
@@ -430,60 +298,50 @@ namespace NetworkHelper
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid.c_str());
 		if (!isNetworkKnown(ssid))
 		{
-			LOG_INFO("Network \"{:s}\" is not known, saving details", ssid.c_str());
-			std::string command = "wpa_passphrase " + ssid + " " + password + " >>" + s_wpa_supplicant;
-			int32_t errorCode = executeCommand(command);
-			if (errorCode != 0)
-			{
-				LOG_ERROR("Failed to save details for network \"{:s}\", code={:d}", ssid.c_str(), errorCode);
-				return;
-			}
-			reconfigure();
-			sleep(2);
-		}
+			std::string cmd = "ADD_NETWORK";
+			std::string output = sendCommand(cmd);
+			int networkId = std::stoi(output);
 
-		int32_t id = getNetworkId(ssid);
-		if (id == -1)
-		{
-			LOG_ERROR("Failed to get network id for \"{:s}\"", ssid.c_str());
-			return;
+			cmd = "SET_NETWORK " + std::to_string(networkId) + " ssid \"" + ssid + "\"";
+			sendCommand(cmd);
+
+			cmd = "SET_NETWORK " + std::to_string(networkId) + " psk \"" + password + "\"";
+			sendCommand(cmd);
+
+			cmd = "ENABLE_NETWORK " + std::to_string(networkId);
+			sendCommand(cmd);
+
+			sendCommand("SAVE_CONFIG");
 		}
-		connectToNetworkById(id);
+		connect(ssid);
 	}
 
 	void disconnect()
 	{
 		LOG_INFO("Disconnecting from WiFi network");
-		int32_t errorCode = executeCommand("wpa_cli disconnect");
+		sendCommand("DISCONNECT");
 	}
 
 	void reconnect()
 	{
 		LOG_INFO("Reconnecting to WiFi network");
-		int32_t errorCode = executeCommand("wpa_cli reconnect");
-		if (errorCode != 0)
-		{
-			LOG_ERROR("Failed to restart wpa_supplicant, code={:d}", errorCode);
-		}
+		sendCommand("RECONNECT");
 	}
 
 	void forgetNetwork(const std::string& ssid)
 	{
 		LOG_INFO("Forgetting network \"{:s}\"", ssid.c_str());
-		int32_t id = getNetworkId(ssid);
-		if (id == -1)
+		std::vector<WiFiNetwork> networks = getKnownWiFiNetworks();
+		for (const WiFiNetwork& network : networks)
 		{
-			LOG_ERROR("Failed to get network id for \"{:s}\"", ssid.c_str());
-			return;
+			if (network.ssid == ssid)
+			{
+				std::string cmd = "REMOVE_NETWORK " + std::to_string(network.id);
+				sendCommand(cmd);
+				sendCommand("SAVE_CONFIG");
+				return;
+			}
 		}
-		std::string command = "wpa_cli remove_network " + std::to_string(id);
-		int32_t errorCode = executeCommand(command.c_str());
-		if (errorCode != 0)
-		{
-			LOG_ERROR("Failed to forget network \"{:s}\", code={:d}", ssid.c_str(), errorCode);
-			return;
-		}
-		save();
-		reconfigure();
+		LOG_ERROR("Network \"{:s}\" not found in known networks", ssid.c_str());
 	}
 } // namespace NetworkHelper
