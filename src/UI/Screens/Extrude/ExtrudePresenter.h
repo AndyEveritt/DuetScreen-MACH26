@@ -25,11 +25,17 @@ namespace UI
 		// ExtrudeItem actions
 
 		// Observers
-		void newToolData() override;
-		void disconnected() override;
+		void newToolData();
+		void disconnected();
 
 	  protected:
 		void onActivate() override;
+
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::ToolData>(this, &ExtrudePresenter::newToolData);
+			registerEventListener<EventType::Disconnected>(this, &ExtrudePresenter::disconnected);
+		}
 
 	  private:
 		static void numberPadConfirmCallback(lv_event_t* e);

@@ -18,10 +18,10 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR(FineTunePresenter, FineTune)
 
-		virtual void newSpeedFactor() override;
-		virtual void newExtruderData() override;
-		virtual void newFanData() override;
-		virtual void newAxesData() override;
+		void newSpeedFactor();
+		void newExtruderData();
+		void newFanData();
+		void newAxesData();
 
 		// Actions
 		void babystep(float change);
@@ -32,5 +32,15 @@ namespace UI
 
 	  protected:
 		virtual void onActivate() override;
+
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::SpeedFactor>(this, &FineTunePresenter::newSpeedFactor);
+			registerEventListener<EventType::ExtruderData>(this, &FineTunePresenter::newExtruderData);
+			registerEventListener<EventType::FanData>(this, &FineTunePresenter::newFanData);
+			registerEventListener<EventType::AxesData>(this, &FineTunePresenter::newAxesData);
+		}
+
+	  private:
 	};
 } // namespace UI

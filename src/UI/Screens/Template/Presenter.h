@@ -15,6 +15,9 @@ namespace UI
 
 		// Observers
 
-	  private:
+	  protected:
+		virtual void onInit() override {}
+		virtual void onActivate() override {}
+		virtual void onDeactivate() override {}
 	};
 } // namespace UI

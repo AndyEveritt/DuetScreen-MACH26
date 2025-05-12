@@ -23,10 +23,18 @@ namespace UI
 		void moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate);
 
 		// Observers
-		void newAxesData() override;
-		void disconnected() override;
+		void newAxesData();
+		void disconnected();
 
 	  protected:
 		void onActivate() override { newAxesData(); }
+
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
+			registerEventListener<EventType::Disconnected>(this, &MovePresenter::disconnected);
+		}
+
+	  private:
 	};
 } // namespace UI

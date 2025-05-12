@@ -14,15 +14,15 @@ namespace UI
 		// using Presenter::Presenter;
 		PRESENTER_CONSTRUCTOR(HomePresenter, HomeView)
 
-		void tick() override;
-		virtual void disconnected() override;
+		void tick();
+		virtual void disconnected();
 
 		void update();
 
-		virtual void newUpdateAvailable(const std::string& file) override;
-		virtual void newAxesData() override;
-		virtual void newResponse(const std::string& response) override;
-		virtual void newMessageBoxData(const OM::Alert& alert) override;
+		void newUpdateAvailable(const std::string& file);
+		void newAxesData();
+		void newResponse(const std::string& response);
+		void newMessageBoxData(const OM::Alert& alert);
 
 	  protected:
 		virtual void onInit() override;

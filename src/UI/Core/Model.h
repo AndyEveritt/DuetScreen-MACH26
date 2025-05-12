@@ -269,6 +269,8 @@ using EventData = std::variant<EventTraits<EventType::Tick>,
 							   EventTraits<EventType::Directories>>;
 #endif
 
+using EventCallback = std::function<void(const EventData&)>;
+
 class Model
 {
   public:
@@ -297,27 +299,29 @@ class Model
 	void stopEventLoop();
 
 	template <EventType E, typename Func>
-	void registerEvent(Func&& func)
+	void addEventListener(Func&& func)
 	{
-		m_handlers[E] = [f = std::forward<Func>(func)](const EventData& data)
-		{
-			auto& tup = std::get<EventTraits<E>>(data).data.tup;
-			std::apply(f, tup);
-		};
+		m_handlers[E].emplace_back(
+			[f = std::forward<Func>(func)](const EventData& data)
+			{
+				auto& tup = std::get<EventTraits<E>>(data).data.tup;
+				std::apply(f, tup);
+			});
 	}
 
 	template <EventType E, typename Class, typename... Args>
-	void registerEvent(Class* instance, void (Class::*memberFunc)(Args...))
+	void addEventListener(Class* instance, void (Class::*memberFunc)(Args...))
 	{
-		m_handlers[E] = [instance, memberFunc](const EventData& data)
-		{
+		m_handlers[E].emplace_back(
+			[instance, memberFunc](const EventData& data)
+			{
 #if DEV_EVENT_TRAIT_TEMPLATE
-			auto& tup = std::get<EventTraits<E, Args...>>(data).data.tup;
+				auto& tup = std::get<EventTraits<E, Args...>>(data).data.tup;
 #else
-			auto& tup = std::get<EventTraits<E>>(data).data.tup;
+				auto& tup = std::get<EventTraits<E>>(data).data.tup;
 #endif
-			std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
-		};
+				std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
+			});
 	}
 
 	template <EventType E, typename... Args>
@@ -449,7 +453,7 @@ class Model
 	std::list<std::shared_ptr<UI::BasePresenter>> m_presenters;
 
 	std::queue<std::pair<EventType, EventData>> m_eventQueue;
-	std::map<EventType, std::function<void(const EventData&)>> m_handlers;
+	std::map<EventType, std::vector<EventCallback>> m_handlers;
 	std::condition_variable m_eventCondition;
 	std::thread m_eventThread;
 	std::atomic<bool> m_running{false};

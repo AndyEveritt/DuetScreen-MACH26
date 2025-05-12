@@ -27,8 +27,8 @@ namespace UI
 		int8_t getSlotIndex() const;
 		void setSlotIndex(int8_t index);
 
-		void newToolData() override;
-		void newHeaterData() override;
+		void newToolData();
+		void newHeaterData();
 
 		void update();
 
@@ -38,6 +38,11 @@ namespace UI
 		void toggleSubState();
 
 	  private:
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::ToolData>(this, &ToolListItemPresenter::newToolData);
+			registerEventListener<EventType::HeaterData>(this, &ToolListItemPresenter::newHeaterData);
+		}
 		static void numberPadConfirmCallback(lv_event_t* e);
 
 		bool updateView(const std::shared_ptr<OM::Tool> tool,
@@ -71,8 +76,8 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR(ToolListPresenter, ToolList)
 
-		void newToolData() override;
-		void newHeaterData() override;
+		void newToolData();
+		void newHeaterData();
 
 		void update();
 
@@ -81,5 +86,10 @@ namespace UI
 								   const bool addChambers = true);
 
 	  private:
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::ToolData>(this, &ToolListPresenter::newToolData);
+			registerEventListener<EventType::HeaterData>(this, &ToolListPresenter::newHeaterData);
+		}
 	};
 } // namespace UI

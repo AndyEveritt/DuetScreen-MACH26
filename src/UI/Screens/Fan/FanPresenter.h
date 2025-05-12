@@ -15,9 +15,14 @@ namespace UI
 		void setFanSpeed(size_t slot, uint32_t value);
 
 		// Observers
-		virtual void newFanData() override;
-		void disconnected() override;
+		void newFanData();
+		void disconnected();
 
 	  private:
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::FanData>(this, &FanPresenter::newFanData);
+			registerEventListener<EventType::Disconnected>(this, &FanPresenter::disconnected);
+		}
 	};
 } // namespace UI

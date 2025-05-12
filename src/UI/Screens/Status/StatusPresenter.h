@@ -19,24 +19,45 @@ namespace UI
 		void cancelPrint();
 
 		// Subscriptions
-		virtual void newJobFileName(const std::string& filename) override;
-		virtual void newJobLastFileName(const std::string& filename) override;
-		virtual void newJobPrintTime() override;
-		virtual void newJobDuration() override;
-		virtual void newJobTimeLeft() override;
-		virtual void newCurrentMoveRequestedSpeed() override;
-		virtual void newCurrentMoveTopSpeed() override;
-		virtual void newCurrentMoveExtrusionSpeed() override;
-		virtual void newAxesData() override;
-		virtual void newExtruderData() override;
-		virtual void newSpeedFactor() override;
-		virtual void newHeaterData() override;
-		virtual void newFanData() override;
-		virtual void newStatus(const OM::PrinterStatus status) override;
+		void newJobFileName(const std::string& filename);
+		void newJobLastFileName(const std::string& filename);
+		void newJobPrintTime();
+		void newJobDuration();
+		void newJobTimeLeft();
+		void newCurrentMoveRequestedSpeed();
+		void newCurrentMoveTopSpeed();
+		void newCurrentMoveExtrusionSpeed();
+		void newAxesData();
+		void newExtruderData();
+		void newSpeedFactor();
+		void newHeaterData();
+		void newFanData();
+		void newStatus(const OM::PrinterStatus status);
 
 	  private:
 		void onActivate() override;
 		void onDeactivate() override;
+
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::JobFileName>(this, &StatusPresenter::newJobFileName);
+			registerEventListener<EventType::JobLastFileName>(this, &StatusPresenter::newJobLastFileName);
+			registerEventListener<EventType::JobPrintTime>(this, &StatusPresenter::newJobPrintTime);
+			registerEventListener<EventType::JobDuration>(this, &StatusPresenter::newJobDuration);
+			registerEventListener<EventType::JobTimeLeft>(this, &StatusPresenter::newJobTimeLeft);
+			registerEventListener<EventType::CurrentMoveRequestedSpeed>(this,
+																		&StatusPresenter::newCurrentMoveRequestedSpeed);
+			registerEventListener<EventType::CurrentMoveTopSpeed>(this, &StatusPresenter::newCurrentMoveTopSpeed);
+			registerEventListener<EventType::CurrentMoveExtrusionSpeed>(this,
+																		&StatusPresenter::newCurrentMoveExtrusionSpeed);
+			registerEventListener<EventType::AxesData>(this, &StatusPresenter::newAxesData);
+			registerEventListener<EventType::ExtruderData>(this, &StatusPresenter::newExtruderData);
+			registerEventListener<EventType::SpeedFactor>(this, &StatusPresenter::newSpeedFactor);
+			registerEventListener<EventType::HeaterData>(this, &StatusPresenter::newHeaterData);
+			registerEventListener<EventType::FanData>(this, &StatusPresenter::newFanData);
+			registerEventListener<EventType::Status>(this, &StatusPresenter::newStatus);
+		}
+
 		lv_timer_t* m_updateTimer;
 	};
 } // namespace UI

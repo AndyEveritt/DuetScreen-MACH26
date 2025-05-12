@@ -19,5 +19,8 @@ namespace UI
 		PRESENTER_CONSTRUCTOR({{file_name}}, MyView);
 
 	  protected:
+		virtual void onInit() override {}
+		virtual void onActivate() override {}
+		virtual void onDeactivate() override {}
 	};
 } // namespace UI

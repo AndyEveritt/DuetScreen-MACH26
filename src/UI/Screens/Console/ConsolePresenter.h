@@ -16,12 +16,16 @@ namespace UI
 		void sendGcode(const char* gcode);
 
 		// Observers
-		void newResponse(const std::string& resp) override;
-		void newLogMessage(const Log::DebugLevel& level,
-						   const Log::log_time_t& time,
-						   const std::string& message) override;
+		void newResponse(const std::string& resp);
+		void newLogMessage(const Log::DebugLevel& level, const Log::log_time_t& time, const std::string& message);
 
 	  private:
 		void onActivate() override;
+
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::Response>(this, &ConsolePresenter::newResponse);
+			registerEventListener<EventType::LogMessage>(this, &ConsolePresenter::newLogMessage);
+		}
 	};
 } // namespace UI

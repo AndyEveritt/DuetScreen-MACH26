@@ -46,7 +46,6 @@ namespace UI
 		newAxesData();
 		newExtruderData();
 		newSpeedFactor();
-		newToolData();
 		newFanData();
 		newStatus(OM::GetStatus());
 	}

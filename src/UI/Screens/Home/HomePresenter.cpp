@@ -15,6 +15,13 @@ namespace UI
 {
 	void HomePresenter::onInit()
 	{
+		registerEventListener<EventType::Tick>(this, &HomePresenter::tick);
+		registerEventListener<EventType::Disconnected>(this, &HomePresenter::disconnected);
+		registerEventListener<EventType::UpdateAvailable>(this, &HomePresenter::newUpdateAvailable);
+		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
+		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
+		registerEventListener<EventType::MessageBoxData>(this, &HomePresenter::newMessageBoxData);
+
 		USB::UsbMonitor::getInstance().registerCallback(
 			[this](const std::string& path, bool mounted)
 			{

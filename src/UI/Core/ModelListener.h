@@ -17,77 +17,33 @@ namespace UI
 
 		Model& getModel() const { return m_model; }
 
-		virtual void connected() {}
-
-		virtual void disconnected() {}
-
-		virtual void tick() {}
-
-		virtual void newUpdateAvailable(const std::string& file) {}
-
-		/* Directory methods */
-		virtual void newDirectories() {}
-
-		/* Fan methods */
-		virtual void newFanData() {}
-
-		/* File methods */
-		virtual void newFileData() {}
-
-		/* Heater methods */
-		virtual void newHeaterData() {}
-
-		/* Job methods */
-		virtual void newJobFileName(const std::string& filename) {}
-		virtual void newJobLastFileName(const std::string& filename) {}
-		virtual void newJobPrintTime() {}
-		virtual void newJobDuration() {}
-		virtual void newJobTimeLeft() {}
-		virtual void newJobWarmupDuration() {}
-		virtual void newJobBuild() {}
-		virtual void newJobCurrentObject() {}
-		virtual void newJobObjectData() {}
-		virtual void newThumbnailData(const std::string& filename) {}
-
-		/* Move methods */
-		virtual void newAxesData() {}
-		virtual void newExtruderData() {}
-		virtual void newKinematicsName(const std::string& kinematicsName) {}
-		virtual void newSpeedFactor() {}
-		virtual void newWorkplaceNumber() {}
-		virtual void newPrintingAcceleration(const uint32_t& accel) {}
-		virtual void newCurrentMoveRequestedSpeed() {}
-		virtual void newCurrentMoveTopSpeed() {}
-		virtual void newCurrentMoveExtrusionSpeed() {}
-		virtual void newCompensationFile() {}
-
-		/* Response methods */
-		virtual void newResponse(const std::string& resp) {}
-		virtual void newLogMessage(const Log::DebugLevel& level,
-								   const Log::log_time_t& time,
-								   const std::string& message)
+		EventCallback getEventHandler(EventType eventType)
 		{
+			auto it = m_handlers.find(eventType);
+			if (it != m_handlers.end())
+			{
+				return it->second;
+			}
+			return nullptr;
 		}
 
-		/* Sensor methods */
-		virtual void newAnalogSensorData() {}
-		virtual void newEndstopData() {}
-
-		/* Spindle methods */
-		virtual void newSpindleData() {}
-
-		/* State methods */
-		virtual void newNetworkName() {}
-		virtual void newIpAddress() {}
-		virtual void newStatus(const OM::PrinterStatus status) {}
-		virtual void newCurrentTool() {}
-		virtual void newMessageBoxData(const OM::Alert& alert) {}
-		virtual void newTime() {}
-
-		/* Tool methods */
-		virtual void newToolData() {}
-
 	  protected:
+		template <EventType E, typename Class, typename... Args>
+		void registerEventListener(Class* instance, void (Class::*memberFunc)(Args...))
+		{
+			m_handlers[E] = [instance, memberFunc](const EventData& data)
+			{
+#if DEV_EVENT_TRAIT_TEMPLATE
+				auto& tup = std::get<EventTraits<E, Args...>>(data).data.tup;
+#else
+				auto& tup = std::get<EventTraits<E>>(data).data.tup;
+#endif
+				std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
+			};
+		}
+
 		Model& m_model;
+
+		std::map<EventType, EventCallback> m_handlers;
 	};
 } // namespace UI
