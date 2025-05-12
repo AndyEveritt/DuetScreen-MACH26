@@ -201,7 +201,7 @@ namespace NetworkHelper
 		std::vector<WiFiNetwork> knownNetworks = getKnownWiFiNetworks();
 
 		sendCommand("SCAN");
-		usleep(500000); // Wait 500 milliseconds for scan to complete
+		usleep(100000); // Wait 100 milliseconds for scan to complete
 
 		std::string output = sendCommand("SCAN_RESULTS");
 		std::istringstream stream(output);
