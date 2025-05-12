@@ -7,6 +7,7 @@
 #include "lv_i18n/lv_i18n.h"
 #include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
+#include "version.h"
 
 namespace UI
 {
@@ -284,6 +285,8 @@ namespace UI
 
 	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView("device_settings_view", parent, mainSettingsView)
+		, m_firmwareVersion(lv_label_create(getCont()))
+		, m_buildTime(lv_label_create(getCont()))
 		, m_language("device_settings_language", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_theme("device_settings_theme", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_usbMode("device_settings_usb_mode", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
@@ -292,6 +295,9 @@ namespace UI
 		, m_systemLogging(lv_checkbox_create(getCont()))
 	{
 		UI_LOCK();
+
+		lv_label_set_text(m_firmwareVersion, utils::format(_("settings_firmware_version"), FIRMWARE_VERSION).c_str());
+		lv_label_set_text(m_buildTime, utils::format(_("settings_build_time"), __DATE__, __TIME__).c_str());
 
 		m_language.setLabel(_("settings_language"));
 		m_language.setOptions(_("settings_language_en"));

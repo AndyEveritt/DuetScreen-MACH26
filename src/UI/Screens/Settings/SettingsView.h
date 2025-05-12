@@ -79,6 +79,8 @@ namespace UI
 	  private:
 		void onShow() override;
 
+		lv_obj_t* m_firmwareVersion;
+		lv_obj_t* m_buildTime;
 		DropdownMenu m_language;
 		DropdownMenu m_theme;
 		DropdownMenu m_usbMode;
