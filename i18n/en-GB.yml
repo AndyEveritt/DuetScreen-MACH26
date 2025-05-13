@@ -385,3 +385,4 @@ en-GB:
   simulating: Simulating
   starting: Starting
   updating: Updating
+  heightmap_not_supported: Heightmap not supported in %s mode

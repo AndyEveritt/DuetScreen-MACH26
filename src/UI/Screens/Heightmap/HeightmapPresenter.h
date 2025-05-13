@@ -39,6 +39,7 @@ namespace UI
 		void newDirectories();
 		void newAxesData();
 		void disconnected();
+		void connected();
 
 	  private:
 		virtual void onActivate() override;
@@ -49,9 +50,11 @@ namespace UI
 			registerEventListener<EventType::Directories>(this, &HeightmapPresenter::newDirectories);
 			registerEventListener<EventType::AxesData>(this, &HeightmapPresenter::newAxesData);
 			registerEventListener<EventType::Disconnected>(this, &HeightmapPresenter::disconnected);
+			registerEventListener<EventType::Connected>(this, &HeightmapPresenter::connected);
 		}
 
 		void updateHeightmapList();
+		bool checkMode();
 
 		std::shared_ptr<OM::Heightmap> m_heightmap;
 		std::vector<OM::FileSystem::ItemPtr> m_heightmapFiles;

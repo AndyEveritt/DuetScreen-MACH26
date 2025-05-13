@@ -51,6 +51,10 @@ namespace UI
 		void setPos(float x, float y, float value);
 
 		void drawGrid() { m_canvas.drawGrid(); }
+		void drawLabel(int32_t x, int32_t y, const std::string& label, lv_color_t color, lv_opa_t opa)
+		{
+			m_canvas.drawLabelPx({x, y}, label, color, opa);
+		}
 		void render();
 		void renderColorBar();
 

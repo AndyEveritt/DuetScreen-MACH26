@@ -1,5 +1,6 @@
 #include "HeightmapPresenter.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
 #include "HeightmapView.h"
 #include "lv_i18n/lv_i18n.h"
 #include <cmath>
@@ -21,6 +22,11 @@ namespace UI
 
 	void HeightmapPresenter::render()
 	{
+		if (!checkMode())
+		{
+			return;
+		}
+
 		if (m_heightmap == nullptr || !m_heightmap->IsValid())
 		{
 			LOG_WARN("Heightmap is not valid");
@@ -174,6 +180,12 @@ namespace UI
 		}
 	}
 
+	void HeightmapPresenter::connected()
+	{
+		LOG_DBG("Connected");
+		checkMode();
+	}
+
 	void HeightmapPresenter::updateHeightmapList()
 	{
 		// UI_LOCK();
@@ -195,6 +207,25 @@ namespace UI
 		{
 			m_view->setSelectedHeightmap(-1);
 		}
+	}
+
+	bool HeightmapPresenter::checkMode()
+	{
+		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::network)
+		{
+			LOG_WARN("Heightmap not supported in this mode");
+			uint32_t width, height;
+			m_view->getResolution(width, height);
+			m_view->clear();
+			m_view->drawLabel(width / 2,
+							  height / 2,
+							  utils::format(_("heightmap_not_supported"), _(Comm::DUET.GetCommunicationTypeName())),
+							  lv_palette_main(LV_PALETTE_RED),
+							  LV_OPA_100);
+			return false;
+		}
+
+		return true;
 	}
 
 	void HeightmapPresenter::onActivate()

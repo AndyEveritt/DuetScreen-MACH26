@@ -70,6 +70,10 @@ namespace UI
 		void setPx(size_t px, size_t py, float value) { m_heightmap.setPx(px, py, value); }
 		void drawGrid() { m_heightmap.drawGrid(); }
 		void renderColorBar() { m_heightmap.renderColorBar(); }
+		void drawLabel(size_t px, size_t py, const std::string& label, lv_color_t color, lv_opa_t opa)
+		{
+			m_heightmap.drawLabel(px, py, label, color, opa);
+		}
 		void addMeasurementPoint(float x, float y);
 		void clear();
 

@@ -63,6 +63,7 @@ namespace UI
 		void drawLinePx(lv_point_precise_t p1, lv_point_precise_t p2, lv_color_t color, lv_opa_t opa);
 		void drawCircle(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa);
 		void drawCirclePx(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa);
+		void drawLabelPx(lv_point_t pos, const std::string& label, lv_color_t color, lv_opa_t opa);
 
 		lv_color_t getPx(size_t px, size_t py) const;
 

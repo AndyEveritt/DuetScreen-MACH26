@@ -452,6 +452,39 @@ namespace UI
 		drawRectPx(area, LV_RADIUS_CIRCLE, color, opa);
 	}
 
+	void Canvas::drawLabelPx(lv_point_t pos, const std::string& label, lv_color_t color, lv_opa_t opa)
+	{
+		UI_LOCK();
+		LOG_DBG("pos: ({:d}, {:d}), label: {:s}", pos.x, pos.y, label.c_str());
+
+		lv_draw_label_dsc_t dsc;
+		lv_draw_label_dsc_init(&dsc);
+		dsc.color = color;
+		dsc.opa = opa;
+		dsc.font = &lv_font_montserrat_14;
+		dsc.text = label.c_str();
+		dsc.align = LV_TEXT_ALIGN_CENTER;
+
+		lv_layer_t layer;
+		lv_canvas_init_layer(m_canvas, &layer);
+
+		uint32_t res_x, res_y;
+		getResolution(res_x, res_y);
+
+		lv_point_t txt_size;
+		lv_text_get_size(&txt_size, dsc.text, dsc.font, 0, 0, (int32_t)res_x, LV_TEXT_FLAG_NONE);
+
+		lv_area_t area;
+		area.x1 = pos.x - txt_size.x / 2;
+		area.y1 = pos.y - txt_size.y / 2;
+		area.x2 = pos.x + txt_size.x / 2;
+		area.y2 = pos.y + txt_size.y / 2;
+
+		lv_draw_label(&layer, &dsc, &area);
+
+		lv_canvas_finish_layer(m_canvas, &layer);
+	}
+
 	lv_color_t Canvas::getPx(size_t px, size_t py) const
 	{
 		lv_color32_t color32 = lv_canvas_get_px(m_canvas, px, py);

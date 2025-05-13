@@ -194,6 +194,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"simulating", "Simulating"},
     {"starting", "Starting"},
     {"updating", "Updating"},
+    {"heightmap_not_supported", "Heightmap not supported in %s mode"},
     {NULL, NULL} // End mark
 };
 
