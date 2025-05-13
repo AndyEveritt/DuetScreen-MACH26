@@ -12,25 +12,32 @@
     ],
     "configurations": [
         {
-            "name": "Debug DuetScreen",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
+            "name": "Debug DuetScreen",
             "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/DuetScreen",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "CMake: build",
-            "stopAtEntry": false,
-            "linux": {
-                "MIMode": "gdb",
-                "miDebuggerPath": "/usr/bin/gdb"
-            },
-            "osx": {
-                "MIMode": "lldb"
-            },
-            "windows": {
-                "MIMode": "gdb",
-                "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
-            },
+            "preLaunchTask": "CMake: build"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "(WIP) Remote Debug DuetScreen - LLDB",
+            "program": "${config:buildroot_path}/output/build/duetscreen-HEAD/out/build/T113-Debug/DuetScreen",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Start gdbserver on DuetScreen",
+            "targetCreateCommands": [
+                "target create ${config:buildroot_path}/output/build/duetscreen-HEAD/out/build/T113-Debug/DuetScreen"
+            ],
+            "processCreateCommands": [
+                "gdb-remote ${config:duetscreen_ip}:3000",
+                "settings set target.source-map ${config:buildroot_path}/output/build/duetscreen-HEAD ${workspaceFolder}"
+            ],
+            // "sourceMap": {
+            //     "${config:buildroot_path}/output/build/duetscreen-HEAD/src": "${workspaceFolder}/src"
+            // }
         },
         {
             "name": "Remote Debug DuetScreen",
