@@ -243,16 +243,18 @@ namespace UI
 		return this;
 	}
 
-	void BaseView::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
+	BaseView* BaseView::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
 	{
 		UI_LOCK();
 		lv_obj_add_event_cb(getCont(), cb, code, userData);
+		return this;
 	}
 
-	void BaseView::setStyle(lv_style_t* style, lv_style_selector_t selector)
+	BaseView* BaseView::addStyle(lv_style_t* style, lv_style_selector_t selector)
 	{
 		UI_LOCK();
 		lv_obj_add_style(getCont(), style, selector);
+		return this;
 	}
 
 	/**

@@ -47,6 +47,12 @@ namespace UI
 			lv_obj_set_style_text_align(obj, i == 0 ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
 		}
 
+		lv_style_init(&m_listStyle);
+		lv_style_set_border_width(&m_listStyle, 0);
+		m_heaters.addStyle(&m_listStyle);
+		m_heaters.addListStyle(&m_listStyle);
+		lv_obj_add_style(m_filamentControls, &m_listStyle, 0);
+
 		// Filament controls
 		lv_obj_set_flex_flow(m_filamentControls, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(m_filamentControls, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -250,6 +256,7 @@ namespace UI
 		lv_obj_set_flex_flow(labelCont, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(labelCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_style_pad_all(labelCont, 2, 0);
+		lv_obj_set_style_border_width(labelCont, 0, 0);
 		for (size_t i = 0; i < lv_obj_get_child_count(labelCont); i++)
 		{
 			lv_obj_t* obj = lv_obj_get_child(labelCont, i);

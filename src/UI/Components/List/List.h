@@ -110,6 +110,12 @@ namespace UI
 			lv_obj_set_flex_grow(m_listCont, grow);
 		}
 
+		void addListStyle(lv_style_t* style, lv_style_selector_t selector = LV_PART_MAIN)
+		{
+			UI_LOCK();
+			lv_obj_add_style(m_listCont, style, selector);
+		}
+
 		void setListSize(const lv_coord_t w, const lv_coord_t h)
 		{
 			UI_LOCK();

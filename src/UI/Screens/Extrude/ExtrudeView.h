@@ -66,6 +66,8 @@ namespace UI
 		lv_obj_t* m_filamentControls;
 		lv_obj_t* m_filament;
 		Button m_unload;
+
+		lv_style_t m_listStyle;
 	};
 
 	class ExtrudeView : public View<ExtrudePresenter>

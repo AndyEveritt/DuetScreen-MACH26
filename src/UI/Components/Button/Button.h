@@ -15,7 +15,6 @@ namespace UI
 		void setCallback(lv_event_cb_t event_cb, lv_event_code_t filter, void* user_data);
 		void setUserData(void* user_data);
 		void* getUserData() const;
-		virtual void setStyle(lv_style_t* style, lv_style_selector_t selector) override;
 		void setIcon(lv_img_dsc_t* icon);
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);

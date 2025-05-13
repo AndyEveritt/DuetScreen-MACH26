@@ -75,13 +75,6 @@ namespace UI
 		return lv_obj_get_user_data(m_button);
 	}
 
-	void Button::setStyle(lv_style_t* style, lv_style_selector_t selector)
-	{
-		UI_LOCK();
-		lv_obj_add_style(m_button, style, selector);
-		lv_obj_add_style(m_label, style, selector);
-	}
-
 	void Button::setIcon(lv_img_dsc_t* icon)
 	{
 		UI_LOCK();
