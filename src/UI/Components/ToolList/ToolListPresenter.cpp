@@ -31,16 +31,6 @@ namespace UI
 		m_slotIndex = index;
 	}
 
-	void ToolListItemPresenter::newToolData()
-	{
-		update();
-	}
-
-	void ToolListItemPresenter::newHeaterData()
-	{
-		update();
-	}
-
 	void ToolListItemPresenter::update()
 	{
 		if (m_slotIndex < 0)
@@ -243,14 +233,19 @@ namespace UI
 				LOG_ERROR("Tool is null");
 				return;
 			}
-			if (m_tHeater == nullptr)
+			if (m_tHeater != nullptr)
 			{
-				LOG_ERROR("Tool heater is null");
-				return;
+				m_tool->SetHeaterTemps(m_tHeater->index, value, m_setActiveTemp);
+				break;
+			}
+			if (m_spindle != nullptr)
+			{
+				m_tool->UpdateSpindleTarget(value);
+				break;
 			}
 
-			m_tool->SetHeaterTemps(m_tHeater->index, value, m_setActiveTemp);
-			break;
+			LOG_ERROR("Tool heater and spindle are null");
+			return;
 		}
 		case SlotType::Bed:
 		{
@@ -297,12 +292,13 @@ namespace UI
 
 			if (m_spindle != nullptr)
 			{
-				header = utils::format(_("tool_list_numpad_header_tool_heater"),
+				header = utils::format(_("tool_list_numpad_header_tool_spindle"),
 									   m_tool->index,
-									   m_tHeater->index,
+									   m_spindle->index,
 									   active ? _("active") : _("standby"));
+				break;
 			}
-			LOG_WARN("Tool heater is null");
+			LOG_WARN("Tool heater and spindle are null");
 			return false;
 		}
 		case SlotType::Bed:
@@ -336,7 +332,7 @@ namespace UI
 		{
 			np.setMinValue(m_spindle->min);
 			np.setMaxValue(m_spindle->max);
-			// TODO Set confirm callback
+			np.setConfirmCallback(numberPadConfirmCallback, this);
 			return true;
 		}
 
@@ -438,16 +434,6 @@ namespace UI
 			return;
 		}
 		presenter->setTemp(np->getValue());
-	}
-
-	void ToolListPresenter::newToolData()
-	{
-		update();
-	}
-
-	void ToolListPresenter::newHeaterData()
-	{
-		update();
 	}
 
 	void ToolListPresenter::update()

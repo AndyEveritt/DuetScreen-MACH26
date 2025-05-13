@@ -27,9 +27,6 @@ namespace UI
 		int8_t getSlotIndex() const;
 		void setSlotIndex(int8_t index);
 
-		void newToolData();
-		void newHeaterData();
-
 		void update();
 
 		void setTemp(int32_t value);
@@ -40,8 +37,8 @@ namespace UI
 	  private:
 		virtual void onInit() override
 		{
-			registerEventListener<EventType::ToolData>(this, &ToolListItemPresenter::newToolData);
-			registerEventListener<EventType::HeaterData>(this, &ToolListItemPresenter::newHeaterData);
+			registerEventListener<EventType::ToolData>(this, &ToolListItemPresenter::update);
+			registerEventListener<EventType::HeaterData>(this, &ToolListItemPresenter::update);
 		}
 		static void numberPadConfirmCallback(lv_event_t* e);
 
@@ -76,9 +73,6 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR(ToolListPresenter, ToolList)
 
-		void newToolData();
-		void newHeaterData();
-
 		void update();
 
 		size_t getTotalHeaterCount(const bool addTools = true,
@@ -88,8 +82,8 @@ namespace UI
 	  private:
 		virtual void onInit() override
 		{
-			registerEventListener<EventType::ToolData>(this, &ToolListPresenter::newToolData);
-			registerEventListener<EventType::HeaterData>(this, &ToolListPresenter::newHeaterData);
+			registerEventListener<EventType::ToolData>(this, &ToolListPresenter::update);
+			registerEventListener<EventType::HeaterData>(this, &ToolListPresenter::update);
 		}
 	};
 } // namespace UI
