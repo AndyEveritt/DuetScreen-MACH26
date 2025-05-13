@@ -21,6 +21,15 @@
             "preLaunchTask": "CMake: build"
         },
         {
+            // This configuration does not work yet.
+            // Issues:
+            // - Source mapping does not work fully
+            //  - Breakpoints need to be set in the buildroot source directory, but vscode stops in the workspace directory
+            // - Not all breakpoints are hit
+            // - A SIGTRAP is received whenever a thread is joined
+            // Fix:
+            // - It is suspected that the version of gdbserver on the DuetScreen is not compatible with lldb
+            // - Possibly compiling lldb-server on the DuetScreen will fix this
             "type": "lldb",
             "request": "launch",
             "name": "(WIP) Remote Debug DuetScreen - LLDB",
