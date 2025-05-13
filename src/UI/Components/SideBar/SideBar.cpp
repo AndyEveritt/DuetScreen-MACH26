@@ -43,6 +43,8 @@ namespace UI
 		m_macrosBtn.setCallback(macrosBtnEvent, LV_EVENT_CLICKED, this);
 		m_consoleBtn.setCallback(consoleBtnEvent, LV_EVENT_CLICKED, this);
 		m_eStopBtn.setCallback(eStopBtnEvent, LV_EVENT_CLICKED, this);
+
+		m_eStopBtn.setBgColor(lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN);
 	}
 
 	void SideBar::backBtnEvent(lv_event_t* e)
