@@ -78,99 +78,114 @@ namespace UI
 		return layout;
 	}
 
-	void BaseView::setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow)
+	BaseView* BaseView::setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow)
 	{
 		UI_LOCK();
 		lv_obj_set_layout(getCont(), style);
 		lv_obj_set_flex_flow(getCont(), flow);
+		return this;
 	}
 
-	void BaseView::setFlexGrow(uint8_t grow)
+	BaseView* BaseView::setFlexGrow(uint8_t grow)
 	{
 		UI_LOCK();
 		lv_obj_set_flex_grow(getCont(), grow);
+		return this;
 	}
 
-	void BaseView::setFlexFlow(lv_flex_flow_t flow)
+	BaseView* BaseView::setFlexFlow(lv_flex_flow_t flow)
 	{
 		UI_LOCK();
 		lv_obj_set_flex_flow(getCont(), flow);
+		return this;
 	}
 
-	void BaseView::setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid)
+	BaseView* BaseView::setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid)
 	{
 		UI_LOCK();
 		lv_obj_set_flex_align(getCont(), main, cross, mid);
+		return this;
 	}
 
-	void BaseView::setLayout(layout_t layout)
+	BaseView* BaseView::setLayout(layout_t layout)
 	{
 		UI_LOCK();
 		lv_obj_set_pos(getCont(), lv_pct(layout.x), lv_pct(layout.y));
 		lv_obj_set_size(getCont(), lv_pct(layout.w), lv_pct(layout.h));
+		return this;
 	}
 
-	void BaseView::setWidth(lv_coord_t width)
+	BaseView* BaseView::setWidth(lv_coord_t width)
 	{
 		UI_LOCK();
 		lv_obj_set_width(getCont(), lv_pct(width));
+		return this;
 	}
 
-	void BaseView::setHeight(lv_coord_t height)
+	BaseView* BaseView::setHeight(lv_coord_t height)
 	{
 		UI_LOCK();
 		lv_obj_set_height(getCont(), height);
+		return this;
 	}
 
-	void BaseView::setSize(lv_coord_t width, lv_coord_t height)
+	BaseView* BaseView::setSize(lv_coord_t width, lv_coord_t height)
 	{
 		UI_LOCK();
 		lv_obj_set_size(getCont(), width, height);
+		return this;
 	}
 
-	void BaseView::setMinWidth(lv_coord_t width, lv_style_selector_t selector)
+	BaseView* BaseView::setMinWidth(lv_coord_t width, lv_style_selector_t selector)
 	{
 		UI_LOCK();
 		lv_obj_set_style_min_width(getCont(), width, selector);
+		return this;
 	}
 
-	void BaseView::setMinHeight(lv_coord_t height, lv_style_selector_t selector)
+	BaseView* BaseView::setMinHeight(lv_coord_t height, lv_style_selector_t selector)
 	{
 		UI_LOCK();
 		lv_obj_set_style_min_height(getCont(), height, selector);
+		return this;
 	}
 
-	void BaseView::setX(lv_coord_t x)
+	BaseView* BaseView::setX(lv_coord_t x)
 	{
 		UI_LOCK();
 		lv_obj_set_x(getCont(), x);
+		return this;
 	}
 
-	void BaseView::setY(lv_coord_t y)
+	BaseView* BaseView::setY(lv_coord_t y)
 	{
 		UI_LOCK();
 		lv_obj_set_y(getCont(), y);
+		return this;
 	}
 
-	void BaseView::setPos(lv_coord_t x, lv_coord_t y)
+	BaseView* BaseView::setPos(lv_coord_t x, lv_coord_t y)
 	{
 		UI_LOCK();
 		lv_obj_set_pos(getCont(), x, y);
+		return this;
 	}
 
-	void BaseView::setFlag(lv_obj_flag_t flag, bool enable)
+	BaseView* BaseView::setFlag(lv_obj_flag_t flag, bool enable)
 	{
 		UI_LOCK();
 		lv_obj_set_flag(getCont(), flag, enable);
+		return this;
 	}
 
-	void BaseView::setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y)
+	BaseView* BaseView::setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y)
 	{
 		UI_LOCK();
 		lv_obj_align(getCont(), align, x, y);
+		return this;
 	}
 
-	void BaseView::setPad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
+	BaseView* BaseView::setPad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
 	{
 		UI_LOCK();
 		switch (type)
@@ -206,6 +221,7 @@ namespace UI
 			LOG_WARN("Unknown padding type");
 			break;
 		}
+		return this;
 	}
 
 	void BaseView::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
