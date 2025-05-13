@@ -24,7 +24,7 @@ namespace UI
 		, m_btnMatrix(lv_buttonmatrix_create(getCont()))
 	{
 		UI_LOCK();
-		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		// Overall layout
 		lv_obj_set_flex_grow(m_textCont, 0);		  // Don't grow the text area

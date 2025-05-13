@@ -75,10 +75,18 @@ namespace UI
 		uint32_t getChildCnt() const;
 		layout_t getLayout();
 
-		BaseView* setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow = LV_FLEX_FLOW_ROW);
+		BaseView* setLayoutStyle(lv_layout_t style);
 		BaseView* setFlexGrow(uint8_t grow);
 		BaseView* setFlexFlow(lv_flex_flow_t flow);
 		BaseView* setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid);
+		BaseView* setGridDsc(const int32_t col_dsc[], const int32_t row_dsc[]);
+		BaseView* setGridCell(lv_obj_t* obj,
+							  lv_grid_align_t x_align,
+							  int32_t col_pos,
+							  int32_t col_span,
+							  lv_grid_align_t y_align,
+							  int32_t row_pos,
+							  int32_t row_span);
 		BaseView* setLayout(layout_t layout);
 		BaseView* setWidth(lv_coord_t width);
 		BaseView* setHeight(lv_coord_t height);

@@ -12,11 +12,15 @@ namespace UI
 	static constexpr lv_coord_t s_windowSelectorItemWidth = 30;	 // %
 	static constexpr lv_coord_t s_windowSelectorItemHeight = 25; // %
 
-	static constexpr int32_t s_layoutColDsc[3] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
-	static constexpr int32_t s_layoutRowDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+	static constexpr int32_t s_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+	static constexpr int32_t s_layoutRowDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+
+	static constexpr int32_t s_mainWindowLayoutColDsc[3] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
+	static constexpr int32_t s_mainWindowLayoutRowDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
 	HomeView::HomeView()
 		: View("HomeView", lv_screen_active(), layout_t(0, 0, 100, 100))
+		, m_statusBar(getCont())
 		, m_sideBar("sidebar", getCont())
 		, m_mainWindow(lv_obj_create(getCont()))
 		, m_toolList("home_tool_list", m_mainWindow)
@@ -74,13 +78,20 @@ namespace UI
 		lv_obj_add_style(getCont(), &Styles::instance().debugBorders.style, LV_PART_MAIN);
 #endif
 
-		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_ROW);
+		setLayoutStyle(LV_LAYOUT_GRID);
+		setGridDsc(s_layoutColDsc, s_layoutRowDsc);
+		setGridCell(m_statusBar, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_sideBar, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+		setGridCell(m_mainWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+
 		lv_obj_set_flex_grow(m_mainWindow, 1);
 		lv_obj_set_height(m_mainWindow, LV_PCT(100));
+		lv_obj_set_style_pad_all(m_mainWindow, 0, LV_PART_MAIN);
+		lv_obj_set_style_border_width(m_mainWindow, 0, LV_PART_MAIN);
 
 		// Main Window Layout
 		lv_obj_set_layout(m_mainWindow, LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(m_mainWindow, s_layoutColDsc, s_layoutRowDsc);
+		lv_obj_set_grid_dsc_array(m_mainWindow, s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
 		lv_obj_set_grid_cell(m_toolList.getCont(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_graph.getCont(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_windowSelect, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
@@ -194,12 +205,15 @@ namespace UI
 	void HomeView::onShow()
 	{
 		// m_heightmapView.show();
+		m_toolList.activate();
+		m_statusBar.activate();
 	}
 
 	void HomeView::onHide()
 	{
 		// Clear the tool list
 		m_graph.clear();
+		m_toolList.deactivate();
 		m_toolList.setItemCnt(0);
 		m_toolList.hideNumberPad();
 	}

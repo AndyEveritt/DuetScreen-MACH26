@@ -6,6 +6,7 @@
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Components/SideBar/SideBar.h"
+#include "UI/Components/StatusBar/StatusBar.h"
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"
@@ -62,6 +63,7 @@ namespace UI
 
 		static void onWindowSelectEvent(lv_event_t* e);
 
+		StatusBar m_statusBar;
 		SideBar m_sideBar;
 		lv_obj_t* m_mainWindow;
 		ToolList m_toolList;

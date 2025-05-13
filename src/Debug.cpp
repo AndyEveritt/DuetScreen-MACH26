@@ -9,6 +9,7 @@
 #include "Configuration.h"
 #include "UI/Core/Model.h"
 #include "utils/StorageHelper.h"
+#include "version.h"
 #include <ctime>
 #include <memory>
 #include <spdlog/details/os.h>
@@ -92,6 +93,8 @@ namespace Log
 			spdlog::set_default_logger(s_logger);
 			LOG_INFO("\n\n\n----------------------------------------------------------------------------------\n"
 					 "Program started\n"
+					 "Version: " FIRMWARE_VERSION "\n"
+					 "Build date: " __DATE__ " " __TIME__ "\n"
 					 "----------------------------------------------------------------------------------\n\n\n");
 			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
 			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));

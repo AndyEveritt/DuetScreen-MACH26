@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UI/Core/Presenter.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "UI/Core/Presenter.h"
 
 namespace UI
 {

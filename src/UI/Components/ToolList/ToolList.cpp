@@ -247,7 +247,7 @@ namespace UI
 	void ToolList::init()
 	{
 		UI_LOCK();
-		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_style_pad_row(getCont(), 0, 0);
 		// lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
 		lv_obj_remove_flag(m_header, LV_OBJ_FLAG_SCROLLABLE);

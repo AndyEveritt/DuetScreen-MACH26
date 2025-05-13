@@ -12,6 +12,8 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/NumberPad/NumberPad.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBar.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBarPresenter.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/StatusBar/StatusBar.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/StatusBar/StatusBarPresenter.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolList.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolListPresenter.cpp
 )

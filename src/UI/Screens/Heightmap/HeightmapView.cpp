@@ -18,7 +18,7 @@ namespace UI
 			, m_load("heightmap_load", getCont(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		{
 			UI_LOCK();
-			setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_ROW);
+			setFlexFlow(LV_FLEX_FLOW_ROW);
 			lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 			lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
 			lv_obj_set_height(m_label, LV_SIZE_CONTENT);
@@ -90,7 +90,7 @@ namespace UI
 		, m_auto("heightmap_auto", m_btns, _("heightmap_auto"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
-		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_COLUMN);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		lv_label_set_text(m_title, _("heightmap_render_mode"));
 
 		lv_obj_set_flex_flow(m_btns, LV_FLEX_FLOW_ROW);

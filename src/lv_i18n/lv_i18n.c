@@ -178,6 +178,22 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"settings_usb_mode_internal_wifi", "Internal WiFi"},
     {"settings_firmware_version", "Firmware Version: %s"},
     {"settings_build_time", "Firmware built on: %s %s"},
+    {"settings_display_connected_message", "Display Connection Message"},
+    {"connected", "Connected"},
+    {"disconnected", "Disconnected"},
+    {"busy", "Busy"},
+    {"cancelling", "Cancelling"},
+    {"changingTool", "Changing Tool"},
+    {"connecting", "Connecting"},
+    {"halted", "Halted"},
+    {"idle", "Idle"},
+    {"paused", "Paused"},
+    {"pausing", "Pausing"},
+    {"processing", "Processing"},
+    {"resuming", "Resuming"},
+    {"simulating", "Simulating"},
+    {"starting", "Starting"},
+    {"updating", "Updating"},
     {NULL, NULL} // End mark
 };
 

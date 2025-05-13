@@ -1,0 +1,35 @@
+#include "StatusBarPresenter.h"
+#include "Debug.h"
+#include "Hardware/Duet.h"
+#include "StatusBar.h"
+#include "lv_i18n/lv_i18n.h"
+#include "utils/StorageHelper.h"
+
+namespace UI
+{
+	void StatusBarPresenter::connected()
+	{
+		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("connected")));
+	}
+
+	void StatusBarPresenter::disconnected()
+	{
+		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("disconnected")));
+	}
+
+	void StatusBarPresenter::newDuetName()
+	{
+		m_view->setDuetName(OM::GetPrinterName());
+	}
+
+	void StatusBarPresenter::newStatus(const OM::PrinterStatus& status)
+	{
+		m_view->setDuetStatus(
+			utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _(OM::GetStatusText())));
+	}
+
+	void StatusBarPresenter::newTime()
+	{
+		// m_view->setTime(TimeHelper::getCurrentTimeString());
+	}
+} // namespace UI

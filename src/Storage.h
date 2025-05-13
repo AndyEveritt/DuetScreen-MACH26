@@ -30,6 +30,7 @@ constexpr const char* ID_BUZZER_ENABLED = "buzzer_enabled";
 constexpr const char* ID_SYS_LANG_CODE_KEY = "sys:lang_code";
 constexpr const char* ID_SYS_BRIGHTNESS_KEY = "sys:brightness";
 constexpr const char* ID_USB_MODE = "sys:usb_mode";
+constexpr const char* ID_DISPLAY_CONNECTED_MESSAGE = "sys:display_connected_message";
 
 constexpr const char* ID_WEBCAM_URL = "webcam:url_%d";
 constexpr const char* ID_ACTIVE_WEBCAM_INDEX = "webcam:active_index";

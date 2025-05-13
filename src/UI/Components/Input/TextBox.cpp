@@ -16,7 +16,7 @@ namespace UI
 		, m_textArea(lv_textarea_create(getCont()))
 	{
 		UI_LOCK();
-		setLayoutStyle(LV_LAYOUT_FLEX, LV_FLEX_FLOW_ROW);
+		setFlexFlow(LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		// Label

@@ -28,15 +28,15 @@ namespace UI
 		UI_LOCK();
 		LOG_VERBOSE("Creating SideBar");
 
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_style_pad_row(getCont(), 0, 0);
-		lv_obj_set_style_pad_all(getCont(), 0, 0);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setPad(0, LV_PART_MAIN, Padding::ALL);
+		setPad(0, LV_PART_MAIN, Padding::ROW);
 
-		lv_obj_set_flex_grow(m_backBtn.getCont(), 1);
-		lv_obj_set_flex_grow(m_homeBtn.getCont(), 1);
-		lv_obj_set_flex_grow(m_macrosBtn.getCont(), 1);
-		lv_obj_set_flex_grow(m_consoleBtn.getCont(), 1);
-		lv_obj_set_flex_grow(m_eStopBtn.getCont(), 2);
+		m_backBtn.setFlexGrow(1);
+		m_homeBtn.setFlexGrow(1);
+		m_macrosBtn.setFlexGrow(1);
+		m_consoleBtn.setFlexGrow(1);
+		m_eStopBtn.setFlexGrow(2);
 
 		m_backBtn.setCallback(backBtnEvent, LV_EVENT_CLICKED, this);
 		m_homeBtn.setCallback(homeBtnEvent, LV_EVENT_CLICKED, this);

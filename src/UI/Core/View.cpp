@@ -78,11 +78,10 @@ namespace UI
 		return layout;
 	}
 
-	BaseView* BaseView::setLayoutStyle(lv_layout_t style, lv_flex_flow_t flow)
+	BaseView* BaseView::setLayoutStyle(lv_layout_t style)
 	{
 		UI_LOCK();
 		lv_obj_set_layout(getCont(), style);
-		lv_obj_set_flex_flow(getCont(), flow);
 		return this;
 	}
 
@@ -104,6 +103,26 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_obj_set_flex_align(getCont(), main, cross, mid);
+		return this;
+	}
+
+	BaseView* BaseView::setGridDsc(const int32_t col_dsc[], const int32_t row_dsc[])
+	{
+		UI_LOCK();
+		lv_obj_set_grid_dsc_array(getCont(), col_dsc, row_dsc);
+		return this;
+	}
+
+	BaseView* BaseView::setGridCell(lv_obj_t* obj,
+									lv_grid_align_t x_align,
+									int32_t col_pos,
+									int32_t col_span,
+									lv_grid_align_t y_align,
+									int32_t row_pos,
+									int32_t row_span)
+	{
+		UI_LOCK();
+		lv_obj_set_grid_cell(obj, x_align, col_pos, col_span, y_align, row_pos, row_span);
 		return this;
 	}
 

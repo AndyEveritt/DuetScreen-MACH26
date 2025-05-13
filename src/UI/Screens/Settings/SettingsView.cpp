@@ -294,6 +294,7 @@ namespace UI
 		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_systemLogging(lv_checkbox_create(getCont()))
+		, m_displayConnectedMessage(lv_checkbox_create(getCont()))
 	{
 		UI_LOCK();
 
@@ -356,6 +357,22 @@ namespace UI
 				bool checked = lv_obj_has_state(checkbox, LV_STATE_CHECKED);
 				StorageHelper::setData(ID_ENABLE_UI_LOGGING, checked);
 				Log::EnableUiLogging(checked);
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
+
+		// Display Connected Message
+		lv_checkbox_set_text(m_displayConnectedMessage, _("settings_display_connected_message"));
+		lv_obj_set_state(
+			m_displayConnectedMessage, LV_STATE_CHECKED, StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true));
+		lv_obj_add_event_cb(
+			m_displayConnectedMessage,
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* checkbox = (lv_obj_t*)lv_event_get_target(e);
+				bool checked = lv_obj_has_state(checkbox, LV_STATE_CHECKED);
+				StorageHelper::setData(ID_DISPLAY_CONNECTED_MESSAGE, checked);
 			},
 			LV_EVENT_VALUE_CHANGED,
 			this);

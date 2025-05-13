@@ -9,6 +9,7 @@
 #include "View.h"
 #include "lv_i18n/lv_i18n.h"
 #include "lvgl/src/osal/lv_os.h"
+#include "utils/StorageHelper.h"
 
 Model::Model()
 {
@@ -226,11 +227,17 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 void Model::connected()
 {
 	LOG_DBG("Connected event");
-	post<EventType::Response>(_("connected_message"));
+	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
+	{
+		post<EventType::Response>(_("connected_message"));
+	}
 }
 
 void Model::disconnected()
 {
 	LOG_DBG("Disconnected event");
-	post<EventType::Response>(_("disconnected_message"));
+	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
+	{
+		post<EventType::Response>(_("disconnected_message"));
+	}
 }

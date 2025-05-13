@@ -77,6 +77,7 @@ namespace Comm
 
 		void SetCommunicationType(CommunicationType type);
 		const CommunicationType GetCommunicationType() const;
+		const char* GetCommunicationTypeName() const;
 		void SetPollInterval(uint32_t interval);
 		void ScalePollIntervalScale(float scale);
 		const uint32_t GetPollInterval() const;

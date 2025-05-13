@@ -114,6 +114,16 @@ namespace Comm
 		return m_config.communicationType;
 	}
 
+	const char* Duet::GetCommunicationTypeName() const
+	{
+		CommunicationType type = m_config.communicationType;
+		if (type >= CommunicationType::COUNT || type <= CommunicationType::none)
+		{
+			return "unknown";
+		}
+		return duetCommunicationTypeNames[(int)type];
+	}
+
 	void Duet::SetPollInterval(uint32_t interval)
 	{
 		if (interval < MIN_PRINTER_POLL_INTERVAL)
