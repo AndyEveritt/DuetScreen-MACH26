@@ -111,5 +111,7 @@ namespace UI
 		std::vector<std::shared_ptr<ToolListItem>> m_items;
 
 		ToolListNumPad m_numberPad;
+
+		lv_style_t m_headerStyle;
 	};
 } // namespace UI

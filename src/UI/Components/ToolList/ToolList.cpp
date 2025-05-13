@@ -25,7 +25,9 @@ namespace UI
 		activate();
 
 		UI_LOCK();
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
+		setPad(5, LV_PART_MAIN, Padding::ALL);
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		setFlexAlign(LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		lv_obj_set_flex_grow(m_label, 4);
 		lv_obj_set_flex_grow(m_status, 3);
@@ -51,8 +53,12 @@ namespace UI
 		lv_style_set_border_width(&m_targetTempStyle, 2);
 		lv_style_set_radius(&m_targetTempStyle, 5);
 		lv_style_set_pad_ver(&m_targetTempStyle, 0);
+		lv_style_set_min_height(&m_targetTempStyle, 30);
+		lv_style_set_text_align(&m_targetTempStyle, LV_TEXT_ALIGN_CENTER);
 		lv_obj_add_style(m_activeTemp, &m_targetTempStyle, 0);
 		lv_obj_add_style(m_standbyTemp, &m_targetTempStyle, 0);
+
+		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_LEFT, 0);
 	}
 
 	uint8_t ToolListItem::getSlotIndex() const
@@ -248,14 +254,25 @@ namespace UI
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+
+		lv_style_init(&m_headerStyle);
+		lv_style_set_pad_all(&m_headerStyle, 0);
+		lv_style_set_text_align(&m_headerStyle, LV_TEXT_ALIGN_CENTER);
+		lv_style_set_size(&m_headerStyle, LV_PCT(100), LV_SIZE_CONTENT);
+
+		lv_obj_add_style(m_header, &m_headerStyle, 0);
+		lv_obj_add_style(m_list, &m_headerStyle, 0);
+
+		lv_obj_set_style_bg_color(m_header, lv_palette_lighten(LV_PALETTE_BLUE, 2), 0);
+
 		lv_obj_set_style_pad_row(getCont(), 0, 0);
 		// lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
 		lv_obj_remove_flag(m_header, LV_OBJ_FLAG_SCROLLABLE);
 		lv_obj_add_flag(m_list, LV_OBJ_FLAG_SCROLLABLE);
 
 		lv_obj_set_flex_flow(m_list, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_style_pad_row(m_list, 0, 0);
-		lv_obj_set_style_pad_all(m_list, 0, 0);
+		lv_obj_set_style_pad_all(m_header, 5, 0);
+		lv_obj_set_style_pad_row(m_list, 2, LV_PART_MAIN);
 
 		lv_obj_set_size(m_header, LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_size(m_list, LV_PCT(100), LV_SIZE_CONTENT);
@@ -272,6 +289,7 @@ namespace UI
 		lv_label_set_text(m_headerActive, _("toollist_active"));
 		lv_label_set_text(m_headerStandby, _("toollist_standby"));
 
+		lv_obj_set_style_text_align(m_headerTool, LV_TEXT_ALIGN_LEFT, 0);
 		// Number Pad
 
 		m_numberPad.hide();

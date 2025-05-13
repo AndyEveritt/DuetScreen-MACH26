@@ -233,10 +233,10 @@ namespace UI
 		, standby(lv_label_create(getCont()))
 	{
 		UI_LOCK();
-		lv_obj_set_style_pad_all(getCont(), 2, 0);
-		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setPad(2, LV_PART_MAIN, Padding::ALL);
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		for (size_t i = 0; i < lv_obj_get_child_count(getCont()); i++)
 		{
@@ -272,6 +272,8 @@ namespace UI
 		lv_style_set_border_width(&m_targetTempStyle, 2);
 		lv_style_set_radius(&m_targetTempStyle, 5);
 		lv_style_set_pad_ver(&m_targetTempStyle, 0);
+		lv_style_set_min_height(&m_targetTempStyle, 30);
+		lv_style_set_height(&m_targetTempStyle, LV_PCT(100));
 		lv_obj_add_style(active, &m_targetTempStyle, 0);
 		lv_obj_add_style(standby, &m_targetTempStyle, 0);
 	}
@@ -403,6 +405,7 @@ namespace UI
 			}
 		}
 		lv_obj_set_height(m_headerPad, 0); // effectively hides it
+		lv_obj_set_style_bg_color(m_listHeader, lv_palette_lighten(LV_PALETTE_BLUE, 2), 0);
 
 		// List
 		lv_obj_set_style_pad_all(m_listCont, 0, 0);
