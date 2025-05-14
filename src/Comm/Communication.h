@@ -51,7 +51,7 @@ namespace Comm
 	void KickWatchdog();
 
 	Seq* GetNextSeq(struct Seq* current);
-	void sendNext();
+	bool sendNext();
 	void init();
 } // namespace Comm
 

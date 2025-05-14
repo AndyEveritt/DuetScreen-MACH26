@@ -172,8 +172,8 @@ int main(int argc, char** argv)
 			while (1)
 			{
 				// Request next section of the OM
-				Model::get().requestNewData();
-				usleep(Comm::DUET.GetScaledPollInterval() * 1000);
+				useconds_t delay = Model::get().requestNewData();
+				usleep(delay);
 			}
 		});
 

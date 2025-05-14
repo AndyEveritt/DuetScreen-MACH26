@@ -142,9 +142,14 @@ void Model::runEventLoop()
 	}
 }
 
-void Model::requestNewData()
+useconds_t Model::requestNewData()
 {
-	Comm::sendNext();
+	bool seqAvailable = Comm::sendNext();
+	if (seqAvailable && Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
+	{
+		return 50 * 1000; // 50ms
+	}
+	return Comm::DUET.GetScaledPollInterval() * 1000; // Poll interval in microseconds
 }
 
 useconds_t Model::receiveNewUsbData()

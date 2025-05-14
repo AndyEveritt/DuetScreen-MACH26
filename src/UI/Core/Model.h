@@ -342,7 +342,7 @@ class Model
 	void runEventLoop();
 
 	/* tasks */
-	void requestNewData();
+	useconds_t requestNewData();
 	useconds_t receiveNewUsbData();
 
 	/* Subscribers */

@@ -309,7 +309,21 @@ namespace Comm
 
 	//------------------------------------------------------------------------------------------------------------------
 
-	void sendNext()
+	/**
+	 * @brief Sends the next request in sequence to the Duet mainboard
+	 *
+	 * This function handles the communication sequence with the Duet printer by:
+	 * 1. Checking if the printer has timed out based on the last response time
+	 * 2. Initiating a reconnection if a timeout is detected
+	 * 3. Sending the next request in sequence or falling back to frequently changing data
+	 *
+	 * @return true if a regular sequence request was sent
+	 * @return false if falling back to requesting frequently changing data
+	 *
+	 * @note Manages printer timeout detection and automatic reconnection
+	 * @warning Currently allows sending the same request multiple times in a row (TODO)
+	 */
+	bool sendNext()
 	{
 		const long long now = TimeHelper::getCurrentTime();
 		const long long expectedResponseBy =
@@ -331,11 +345,13 @@ namespace Comm
 		{
 			LOG_INFO("requesting {:s}", g_currentReqSeq->key);
 			Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
+			return true;
 		}
 		else
 		{
 			LOG_INFO("requesting frequently changing data");
 			Comm::DUET.RequestModel("d99f");
+			return false;
 		}
 	}
 
