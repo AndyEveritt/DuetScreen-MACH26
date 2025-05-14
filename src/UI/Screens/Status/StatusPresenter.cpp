@@ -1,4 +1,5 @@
 #include "StatusPresenter.h"
+#include "Comm/FileInfo.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/BedOrChamber.h"
@@ -9,6 +10,7 @@
 #include "ObjectModel/Tool.h"
 #include "StatusView.h"
 #include "UI/Core/Navigation.h"
+#include "lv_i18n/lv_i18n.h"
 
 namespace UI
 {
@@ -48,6 +50,20 @@ namespace UI
 		newSpeedFactor();
 		newFanData();
 		newStatus(OM::GetStatus());
+
+		std::string filename = OM::GetJobName();
+		if (filename.empty())
+		{
+			LOG_DBG("No current job name");
+			filename = OM::GetLastJobName();
+		}
+		if (filename.empty())
+		{
+			LOG_DBG("No job name");
+			return;
+		}
+
+		setOrRequestThumbnail(filename);
 	}
 
 	void StatusPresenter::onDeactivate() {}
@@ -55,6 +71,18 @@ namespace UI
 	void StatusPresenter::newJobFileName(const std::string& filename)
 	{
 		m_view->setFilename(filename.c_str());
+		setOrRequestThumbnail(filename);
+	}
+
+	void StatusPresenter::newThumbnailData(const std::string& filename)
+	{
+		if (!filename.empty() && filename != OM::GetJobName() && filename != OM::GetLastJobName())
+		{
+			// Thumbnail is not for the current job
+			return;
+		}
+
+		m_view->setThumbnail(GetThumbnailPath(filename.c_str()).c_str());
 	}
 
 	void StatusPresenter::newJobLastFileName(const std::string& filename)
@@ -63,7 +91,8 @@ namespace UI
 		{
 			return;
 		}
-		m_view->setFilename(utils::format("Printed: %s", filename).c_str());
+		m_view->setFilename(utils::format(_("status_printed_header"), filename.c_str()).c_str());
+		setOrRequestThumbnail(filename);
 	}
 
 	void StatusPresenter::newJobPrintTime() {}
@@ -238,5 +267,22 @@ namespace UI
 			m_view->setCancel(StatusView::DISABLED);
 			break;
 		}
+	}
+
+	void StatusPresenter::setOrRequestThumbnail(const std::string& filename)
+	{
+		if (filename.empty())
+		{
+			return;
+		}
+
+		if (IsThumbnailCached(filename.c_str()))
+		{
+			newThumbnailData(filename);
+			return;
+		}
+
+		LOG_DBG("Requesting thumbnail for '{:s}'", filename.c_str());
+		FILEINFO_CACHE->QueueThumbnailRequest(filename, true);
 	}
 } // namespace UI

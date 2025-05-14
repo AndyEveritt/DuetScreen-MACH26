@@ -24,8 +24,7 @@ namespace UI
 		, m_filename(lv_label_create(m_header))
 		// Create all information widgets
 		, m_thumbnail(lv_image_create(m_centerCont))
-		, m_printInfoCont(lv_obj_create(m_centerCont))
-		, m_printInfo(m_printInfoCont)
+		, m_printInfo(m_centerCont)
 		// Create control buttons last
 		, m_pauseBtn("print_pause", m_footer, _("pause"))
 		, m_resumeBtn("print_resume", m_footer, _("resume"))
@@ -64,11 +63,12 @@ namespace UI
 		lv_obj_set_flex_flow(m_centerCont, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(m_centerCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_size(m_thumbnail, LV_PCT(25), LV_PCT(100));
-		lv_obj_set_flex_grow(m_printInfoCont, 1);
-		lv_obj_set_height(m_printInfoCont, LV_PCT(100));
+		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_CONTAIN);
+		lv_obj_set_flex_grow(m_printInfo, 1);
+		lv_obj_set_height(m_printInfo, LV_PCT(100));
 
 		// Print information
-		lv_obj_set_style_pad_all(m_printInfoCont, 0, 0);
+		lv_obj_set_style_pad_all(m_printInfo, 0, 0);
 
 		// Footer
 		lv_obj_set_layout(m_footer, LV_LAYOUT_FLEX);
@@ -166,13 +166,14 @@ namespace UI
 	void StatusView::setFilename(const char* filename)
 	{
 		UI_LOCK();
+		LOG_DBG("'{:s}'", filename);
 		lv_label_set_text(m_filename, filename);
 	}
 
 	void StatusView::updateProgress(uint32_t percent)
 	{
 		UI_LOCK();
-
+		LOG_DBG("{:d}", percent);
 		percent = percent > 100 ? 100 : percent;
 
 		lv_arc_set_value(m_progress, percent);
@@ -229,9 +230,10 @@ namespace UI
 		m_printInfo.updateFanSpeed(speed);
 	}
 
-	void StatusView::setThumbnail(lv_img_dsc_t* img)
+	void StatusView::setThumbnail(const char* img)
 	{
 		UI_LOCK();
+		LOG_DBG("'{:s}'", img);
 		lv_image_set_src(m_thumbnail, img);
 	}
 

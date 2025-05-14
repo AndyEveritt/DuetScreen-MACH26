@@ -21,6 +21,7 @@ namespace UI
 		// Subscriptions
 		void newJobFileName(const std::string& filename);
 		void newJobLastFileName(const std::string& filename);
+		void newThumbnailData(const std::string& filename);
 		void newJobPrintTime();
 		void newJobDuration();
 		void newJobTimeLeft();
@@ -43,6 +44,7 @@ namespace UI
 			registerEventListener<EventType::JobFileName>(this, &StatusPresenter::newJobFileName);
 			registerEventListener<EventType::JobLastFileName>(this, &StatusPresenter::newJobLastFileName);
 			registerEventListener<EventType::JobPrintTime>(this, &StatusPresenter::newJobPrintTime);
+			registerEventListener<EventType::ThumbnailData>(this, &StatusPresenter::newThumbnailData);
 			registerEventListener<EventType::JobDuration>(this, &StatusPresenter::newJobDuration);
 			registerEventListener<EventType::JobTimeLeft>(this, &StatusPresenter::newJobTimeLeft);
 			registerEventListener<EventType::CurrentMoveRequestedSpeed>(this,
@@ -57,6 +59,8 @@ namespace UI
 			registerEventListener<EventType::FanData>(this, &StatusPresenter::newFanData);
 			registerEventListener<EventType::Status>(this, &StatusPresenter::newStatus);
 		}
+
+		void setOrRequestThumbnail(const std::string& filename);
 
 		lv_timer_t* m_updateTimer;
 	};

@@ -108,6 +108,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"cancel", "Cancel"},
     {"print_cancel_title", "Cancel Print"},
     {"print_cancel_message", "Are you sure you want to cancel the print?"},
+    {"status_printed_header", "Printed: %s"},
     {"status_tool_temp", "%.1f/%d"},
     {"status_bed_temp", "%.1f/%d"},
     {"status_speed", "%.1f/%.1f mm/s"},

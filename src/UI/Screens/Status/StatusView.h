@@ -34,7 +34,7 @@ namespace UI
 		void updateRemainingTime(uint32_t remaining);
 		void updateLayer(float height, float maxHeight);
 		void updateFanSpeed(uint32_t speed);
-		void setThumbnail(lv_img_dsc_t* img);
+		void setThumbnail(const char* img);
 
 		void setPause(ControlVisibility visibility);
 		void setResume(ControlVisibility visibility);
@@ -64,7 +64,6 @@ namespace UI
 
 		// Print information widgets
 		lv_obj_t* m_thumbnail;
-		lv_obj_t* m_printInfoCont;
 		PrintInfo m_printInfo;
 
 		// Control buttons
