@@ -12,9 +12,30 @@
     ],
     "configurations": [
         {
+            "name": "Debug DuetScreen",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/DuetScreen",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "CMake: build",
+            "stopAtEntry": false,
+            "linux": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
+            },
+        },
+        {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug DuetScreen",
+            "name": "Debug DuetScreen - LLDB",
             "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/DuetScreen",
             "args": [],
             "cwd": "${workspaceFolder}",
