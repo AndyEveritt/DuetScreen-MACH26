@@ -22,10 +22,6 @@ namespace UI
 		lv_obj_set_align(m_duetStatus, LV_ALIGN_LEFT_MID);
 		lv_obj_set_align(m_duetName, LV_ALIGN_CENTER);
 		lv_obj_set_align(m_time, LV_ALIGN_RIGHT_MID);
-
-		setDuetName("");
-		setDuetStatus("disconnected");
-		setTime("");
 	}
 
 	void StatusBar::setDuetName(const std::string& name)

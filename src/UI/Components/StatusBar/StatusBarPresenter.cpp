@@ -7,6 +7,13 @@
 
 namespace UI
 {
+	void StatusBarPresenter::onActivate()
+	{
+		newDuetName();
+		newStatus(OM::GetStatus());
+		newTime();
+	}
+
 	void StatusBarPresenter::connected()
 	{
 		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("connected")));
@@ -30,6 +37,7 @@ namespace UI
 
 	void StatusBarPresenter::newTime()
 	{
+		m_view->setTime("");
 		// m_view->setTime(TimeHelper::getCurrentTimeString());
 	}
 } // namespace UI

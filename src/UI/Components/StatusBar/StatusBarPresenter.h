@@ -28,7 +28,7 @@ namespace UI
 			registerEventListener<EventType::Status>(this, &StatusBarPresenter::newStatus);
 			registerEventListener<EventType::Time>(this, &StatusBarPresenter::newTime);
 		}
-		virtual void onActivate() override {}
+		virtual void onActivate() override;
 		virtual void onDeactivate() override {}
 	};
 } // namespace UI
