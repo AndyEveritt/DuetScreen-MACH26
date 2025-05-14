@@ -28,6 +28,7 @@ namespace UI
 		void newCurrentMoveRequestedSpeed();
 		void newCurrentMoveTopSpeed();
 		void newCurrentMoveExtrusionSpeed();
+		void updateLayerInfo();
 		void newAxesData();
 		void newExtruderData();
 		void newSpeedFactor();
@@ -52,6 +53,7 @@ namespace UI
 			registerEventListener<EventType::CurrentMoveTopSpeed>(this, &StatusPresenter::newCurrentMoveTopSpeed);
 			registerEventListener<EventType::CurrentMoveExtrusionSpeed>(this,
 																		&StatusPresenter::newCurrentMoveExtrusionSpeed);
+			registerEventListener<EventType::JobHeight>(this, &StatusPresenter::updateLayerInfo);
 			registerEventListener<EventType::AxesData>(this, &StatusPresenter::newAxesData);
 			registerEventListener<EventType::ExtruderData>(this, &StatusPresenter::newExtruderData);
 			registerEventListener<EventType::SpeedFactor>(this, &StatusPresenter::newSpeedFactor);

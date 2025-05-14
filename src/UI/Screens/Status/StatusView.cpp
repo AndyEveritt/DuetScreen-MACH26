@@ -210,6 +210,26 @@ namespace UI
 		m_printInfo.updateSpeedMultiplier(multiplier);
 	}
 
+	void StatusView::updateAcceleration(uint32_t acceleration)
+	{
+		m_printInfo.updateAcceleration(acceleration);
+	}
+
+	void StatusView::updatePosition(float x, float y, float z)
+	{
+		m_printInfo.updatePosition(x, y, z);
+	}
+
+	void StatusView::updateZOffset(float offset)
+	{
+		m_printInfo.updateZOffset(offset);
+	}
+
+	void StatusView::updateLayerNumber(uint32_t layer)
+	{
+		m_printInfo.updateLayerNumber(layer);
+	}
+
 	void StatusView::updateElapsedTime(uint32_t elapsed)
 	{
 		m_printInfo.updateElapsedTime(elapsed);

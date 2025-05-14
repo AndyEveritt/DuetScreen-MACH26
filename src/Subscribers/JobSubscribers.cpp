@@ -34,6 +34,13 @@ bool JobSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const char* data,
 	return true;
 }
 
+bool JobSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
+{
+	OM::SetPrintHeight(data);
+	Model::get().post<EventType::JobHeight>();
+	return true;
+}
+
 bool JobSubscribers::duration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::SetPrintDuration(data);

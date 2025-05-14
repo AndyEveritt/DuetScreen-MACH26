@@ -26,6 +26,10 @@ namespace UI
 		void updateRemainingTime(uint32_t remaining);
 		void updateLayer(float height, float maxHeight);
 		void updateFanSpeed(uint32_t speed);
+		void updateAcceleration(uint32_t acceleration);
+		void updatePosition(float x, float y, float z);
+		void updateZOffset(float offset);
+		void updateLayerNumber(uint32_t layer);
 
 		virtual bool back() override;
 
@@ -40,8 +44,8 @@ namespace UI
 			void updateAcceleration(uint32_t acceleration);
 			void updatePosition(float x, float y, float z);
 			void updateZOffset(float offset);
-			void updateZHeight(float height);
-			void updateLayer(uint32_t layer);
+			void updatePrintHeight(float height);
+			void updateLayerNumber(uint32_t layer);
 
 		  private:
 			lv_obj_t* m_speed;
@@ -68,5 +72,7 @@ namespace UI
 		lv_obj_t* m_fanSpeed;
 
 		SpeedInfo m_speedInfo;
+
+		lv_style_t m_borderStyle;
 	};
 } // namespace UI

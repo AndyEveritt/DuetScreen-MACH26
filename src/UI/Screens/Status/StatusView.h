@@ -30,6 +30,10 @@ namespace UI
 		void updateSpeed(float topSpeed, float requestedSpeed);
 		void updateFlowMultiplier(uint32_t multiplier);
 		void updateSpeedMultiplier(uint32_t multiplier);
+		void updateAcceleration(uint32_t acceleration);
+		void updatePosition(float x, float y, float z);
+		void updateZOffset(float offset);
+		void updateLayerNumber(uint32_t layer);
 		void updateElapsedTime(uint32_t elapsed);
 		void updateRemainingTime(uint32_t remaining);
 		void updateLayer(float height, float maxHeight);

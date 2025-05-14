@@ -45,7 +45,7 @@ namespace UI
 		newCurrentMoveRequestedSpeed();
 		newCurrentMoveTopSpeed();
 		newCurrentMoveExtrusionSpeed();
-		newAxesData();
+		updateLayerInfo();
 		newExtruderData();
 		newSpeedFactor();
 		newFanData();
@@ -139,17 +139,43 @@ namespace UI
 		m_view->updateExtrusionRate(OM::Move::GetExtrusionRate(), OM::Move::GetVolumetricFlow());
 	}
 
-	void StatusPresenter::newAxesData()
+	void StatusPresenter::updateLayerInfo()
 	{
 		auto axis = OM::Move::GetAxisByLetter('Z');
 		if (axis == nullptr)
 		{
-			m_view->updateLayer(0, 0);
+			m_view->updateLayer(0, OM::GetPrintHeight());
 			return;
 		}
 
-		// TODO get max height
-		m_view->updateLayer(axis->userPosition, 0);
+		m_view->updateLayer(axis->userPosition, OM::GetPrintHeight());
+	}
+
+	void StatusPresenter::newAxesData()
+	{
+		char axisNames[] = {'X', 'Y'};
+		float positions[] = {0, 0, 0};
+		float zOffset = 0;
+
+		for (size_t i = 0; i < ARRAY_SIZE(axisNames); i++)
+		{
+			auto axis = OM::Move::GetAxisByLetter(axisNames[i]);
+			if (axis == nullptr)
+			{
+				continue;
+			}
+			positions[i] = axis->userPosition;
+		}
+
+		auto axis = OM::Move::GetAxisByLetter('Z');
+		if (axis != nullptr)
+		{
+			zOffset = axis->babystep;
+		}
+
+		m_view->updateAcceleration(OM::Move::GetPrintingAcceleration());
+		m_view->updatePosition(positions[0], positions[1], positions[2]);
+		m_view->updateZOffset(zOffset);
 	}
 
 	void StatusPresenter::newExtruderData()

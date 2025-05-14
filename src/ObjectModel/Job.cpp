@@ -19,7 +19,7 @@
   {                                                                                                                    \
 	varName = value;                                                                                                   \
   }                                                                                                                    \
-  const type Get##funcName()                                                                                           \
+  const type& Get##funcName()                                                                                          \
   {                                                                                                                    \
 	return varName;                                                                                                    \
   }
@@ -36,6 +36,7 @@ namespace OM
 	static uint32_t s_simulatedTime = 0;
 	static uint32_t s_printDuration = 0;
 	static uint32_t s_warmUpDuration = 0;
+	static float s_printHeight = 0.0f;
 	static struct
 	{
 		uint32_t filament = 0;
@@ -48,6 +49,7 @@ namespace OM
 	ATTR_SETTR_GETTR(SimulatedTime, uint32_t, s_simulatedTime)
 	ATTR_SETTR_GETTR(PrintDuration, uint32_t, s_printDuration)
 	ATTR_SETTR_GETTR(WarmUpDuration, uint32_t, s_warmUpDuration)
+	ATTR_SETTR_GETTR(PrintHeight, float, s_printHeight)
 
 	void SetPrintRemaining(RemainingTimeType type, const uint32_t printRemaining)
 	{
@@ -71,7 +73,7 @@ namespace OM
 		}
 	}
 
-	const uint32_t GetPrintRemaining(RemainingTimeType type)
+	const uint32_t& GetPrintRemaining(RemainingTimeType type)
 	{
 		switch (type)
 		{
@@ -145,7 +147,7 @@ namespace OM
 		s_currentJobObjectIndex = index;
 	}
 
-	const int8_t GetCurrentJobObjectIndex()
+	const int8_t& GetCurrentJobObjectIndex()
 	{
 		return s_currentJobObjectIndex;
 	}

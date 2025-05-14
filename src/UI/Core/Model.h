@@ -48,6 +48,7 @@ enum class EventType
 	JobDuration,
 	JobTimeLeft,
 	JobWarmupDuration,
+	JobHeight,
 	JobBuild,
 	JobCurrentObject,
 	JobObjectData,
@@ -198,6 +199,7 @@ REGISTER_EVENT_TYPE(EventType::JobPrintTime)
 REGISTER_EVENT_TYPE(EventType::JobDuration)
 REGISTER_EVENT_TYPE(EventType::JobTimeLeft)
 REGISTER_EVENT_TYPE(EventType::JobWarmupDuration)
+REGISTER_EVENT_TYPE(EventType::JobHeight)
 REGISTER_EVENT_TYPE(EventType::JobBuild)
 REGISTER_EVENT_TYPE(EventType::JobCurrentObject)
 REGISTER_EVENT_TYPE(EventType::JobObjectData)
@@ -240,6 +242,7 @@ using EventData = std::variant<EventTraits<EventType::Tick>,
 							   EventTraits<EventType::JobDuration>,
 							   EventTraits<EventType::JobTimeLeft>,
 							   EventTraits<EventType::JobWarmupDuration>,
+							   EventTraits<EventType::JobHeight>,
 							   EventTraits<EventType::JobBuild>,
 							   EventTraits<EventType::JobCurrentObject>,
 							   EventTraits<EventType::JobObjectData>,

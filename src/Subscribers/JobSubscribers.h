@@ -11,11 +11,12 @@ class JobSubscribers : public SubscriberMap
 		addSubscriber("job:lastFileName", lastFileName);
 		addSubscriber("job:file:printTime", printTime);
 		addSubscriber("job:file:simulatedTime", simulatedTime);
-		addSubscriber("job:duration", duration);
+		addSubscriber("job:file:height", height);
 		addSubscriber("job:timesLeft:filament", filamentTimeLeft);
 		addSubscriber("job:timesLeft:file", fileTimeLeft);
 		addSubscriber("job:timesLeft:slicer", slicerTimeLeft);
 		addSubscriber("job:warmUpDuration", warmUpDuration);
+		addSubscriber("job:duration", duration);
 		addSubscriber("job:build", nullBuild);
 		addSubscriber("job:build:currentObject", currentObject);
 		addSubscriber("job:build:objects^", nullObject);
@@ -32,11 +33,12 @@ class JobSubscribers : public SubscriberMap
 	static bool lastFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool printTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool simulatedTime(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
-	static bool duration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
+	static bool height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool filamentTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool fileTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool slicerTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool warmUpDuration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
+	static bool duration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool nullBuild(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool currentObject(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);
 	static bool nullObject(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);

@@ -61,6 +61,14 @@ namespace UI
 		lv_obj_add_event_cb(m_toolTemp, openExtrudeView, LV_EVENT_CLICKED, nullptr);
 		lv_obj_add_event_cb(m_speed, openSubView, LV_EVENT_CLICKED, &m_speedInfo);
 		lv_obj_add_event_cb(m_speedMultiplier, openSubView, LV_EVENT_CLICKED, &m_speedInfo);
+
+		lv_style_init(&m_borderStyle);
+		lv_style_set_border_width(&m_borderStyle, 1);
+		lv_style_set_border_color(&m_borderStyle, lv_palette_main(LV_PALETTE_GREY));
+
+		lv_obj_add_style(m_toolTemp, &m_borderStyle, 0);
+		lv_obj_add_style(m_speed, &m_borderStyle, 0);
+		lv_obj_add_style(m_speedMultiplier, &m_borderStyle, 0);
 	}
 
 	bool PrintInfo::back()
@@ -114,6 +122,7 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_label_set_text(m_speed, utils::format(_("status_speed"), topSpeed, requestedSpeed).c_str());
+		m_speedInfo.updateSpeed(topSpeed, requestedSpeed);
 	}
 
 	void PrintInfo::updateFlowMultiplier(uint32_t multiplier)
@@ -126,6 +135,7 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_label_set_text(m_speedMultiplier, utils::format(_("status_speed_multiplier"), multiplier).c_str());
+		m_speedInfo.updateSpeedMultiplier(multiplier);
 	}
 
 	void PrintInfo::updateElapsedTime(uint32_t elapsed)
@@ -152,12 +162,38 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_label_set_text(m_layer, utils::format(_("status_layer"), height, maxHeight).c_str());
+		m_speedInfo.updatePrintHeight(maxHeight);
+		m_speedInfo.updatePrintHeight(height);
 	}
 
 	void PrintInfo::updateFanSpeed(uint32_t speed)
 	{
 		UI_LOCK();
 		lv_label_set_text(m_fanSpeed, utils::format(_("status_fan_speed"), speed).c_str());
+	}
+
+	void PrintInfo::updateAcceleration(uint32_t acceleration)
+	{
+		UI_LOCK();
+		m_speedInfo.updateAcceleration(acceleration);
+	}
+
+	void PrintInfo::updatePosition(float x, float y, float z)
+	{
+		UI_LOCK();
+		m_speedInfo.updatePosition(x, y, z);
+	}
+
+	void PrintInfo::updateZOffset(float offset)
+	{
+		UI_LOCK();
+		m_speedInfo.updateZOffset(offset);
+	}
+
+	void PrintInfo::updateLayerNumber(uint32_t layer)
+	{
+		UI_LOCK();
+		m_speedInfo.updateLayerNumber(layer);
 	}
 
 	PrintInfo::SpeedInfo::SpeedInfo(lv_obj_t* parent)
@@ -181,5 +217,56 @@ namespace UI
 			lv_obj_set_width(child, LV_PCT(100));
 			lv_obj_set_height(child, LV_SIZE_CONTENT);
 		}
+
+		updateSpeed(0, 0);
+		updateSpeedMultiplier(0);
+		updateAcceleration(0);
+		updatePosition(0, 0, 0);
+		updateZOffset(0);
+		updatePrintHeight(0);
+		updateLayerNumber(0);
 	}
+
+	void PrintInfo::SpeedInfo::updateSpeed(float topSpeed, float requestedSpeed)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_speed, utils::format(_("status_speed_detailed"), topSpeed, requestedSpeed).c_str());
+	}
+
+	void PrintInfo::SpeedInfo::updateSpeedMultiplier(uint32_t multiplier)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_speedMultiplier, utils::format(_("status_speed_multiplier"), multiplier).c_str());
+	}
+
+	void PrintInfo::SpeedInfo::updateAcceleration(uint32_t acceleration)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_acceleration, utils::format(_("status_acceleration"), acceleration).c_str());
+	}
+
+	void PrintInfo::SpeedInfo::updatePosition(float x, float y, float z)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_position, utils::format(_("status_position"), x, y, z).c_str());
+	}
+
+	void PrintInfo::SpeedInfo::updateZOffset(float offset)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_z_offset, utils::format(_("status_z_offset"), offset).c_str());
+	}
+
+	void PrintInfo::SpeedInfo::updatePrintHeight(float height)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_z_height, utils::format(_("status_print_height"), height).c_str());
+	}
+
+	void PrintInfo::SpeedInfo::updateLayerNumber(uint32_t layer)
+	{
+		UI_LOCK();
+		lv_label_set_text(m_layer, utils::format(_("status_layer_number"), layer).c_str());
+	}
+
 } // namespace UI
