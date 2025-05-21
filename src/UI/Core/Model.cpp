@@ -145,10 +145,12 @@ void Model::runEventLoop()
 useconds_t Model::requestNewData()
 {
 	bool seqAvailable = Comm::sendNext();
+#if 0
 	if (seqAvailable && Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
 	{
 		return 50 * 1000; // 50ms
 	}
+#endif
 	return Comm::DUET.GetScaledPollInterval() * 1000; // Poll interval in microseconds
 }
 

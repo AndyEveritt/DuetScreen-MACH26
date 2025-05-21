@@ -15,24 +15,61 @@
 
 namespace UI::Themes
 {
+	static lv_theme_t s_theme;
+	static std::vector<Style*> s_uninitializedStyles;
+	static std::vector<Theme*> s_themes;
+
 	static Style s_baseStyle("base");
 	static Style s_containerStyle("container");
 	static Style s_buttonStyle("button");
 	static Style s_labelStyle("label");
 	static Style s_estopStyle("estop");
 
-	static std::vector<Theme*> s_themes;
+#if DEBUG_BORDERS
+	static Style s_debugBorders("debugBorders",
+								[](lv_style_t* style)
+								{
+									lv_style_set_border_color(style, lv_color_black());
+									lv_style_set_border_width(style, 2);
+									lv_style_set_border_opa(style, LV_OPA_100);
+								});
+#endif
 
 	Style::Style(const char* name)
 		: name(name)
+		, initFunc(nullptr)
 	{
 		lv_style_init(&style);
+	}
+
+	Style::Style(const char* name, std::function<void(lv_style_t*)> initFunc)
+		: Style(name)
+	{
+		if (!lv_is_initialized())
+		{
+			LOG_DBG("LVGL not initialized, deferring style initialization");
+			this->initFunc = initFunc;
+			s_uninitializedStyles.push_back(this);
+		}
+		else
+		{
+			initFunc(&style);
+		}
 	}
 
 	Style::Style(const Style& other)
 		: name(other.name)
 	{
 		lv_style_copy(&style, &other.style);
+	}
+
+	void Style::init()
+	{
+		if (initFunc)
+		{
+			initFunc(&style);
+			initFunc = nullptr;
+		}
 	}
 
 	Style& Style::operator=(const Style& other)
@@ -98,15 +135,89 @@ namespace UI::Themes
 		lv_obj_invalidate(lv_screen_active());
 	}
 
-	void initThemes()
+	/**
+	 * @brief Callback function to apply theme styles to LVGL objects
+	 *
+	 * This function applies various styles to LVGL objects based on their type:
+	 * - Applies base style to all objects
+	 * - Container style to generic objects
+	 * - Button style to button objects
+	 * - Label style to label objects
+	 * - Debug borders in debug mode if enabled
+	 *
+	 * @param th Pointer to the LVGL theme (unused)
+	 * @param obj Pointer to the LVGL object to apply styles to
+	 *
+	 * @note Function is protected by UI_LOCK()
+	 */
+	static void applyThemeCb(lv_theme_t* th, lv_obj_t* obj)
 	{
+		UI_LOCK();
+		LV_UNUSED(th);
+
+		lv_obj_add_style(obj, s_baseStyle, LV_PART_MAIN);
+
+		if (lv_obj_check_type(obj, &lv_obj_class))
+		{
+			lv_obj_add_style(obj, s_containerStyle, 0);
+		}
+
+		if (lv_obj_check_type(obj, &lv_button_class))
+		{
+			lv_obj_add_style(obj, s_buttonStyle, 0);
+		}
+
+		if (lv_obj_check_type(obj, &lv_label_class))
+		{
+			lv_obj_add_style(obj, s_labelStyle, 0);
+		}
+#if DEBUG_BORDERS
+		if (lv_obj_has_style(lv_screen_active(), s_debugBorders))
+		{
+			// Add debug borders to any newly created objects
+			lv_obj_add_style(obj, s_debugBorders, LV_PART_MAIN);
+		}
+#endif
+	}
+
+	void init(lv_display_t* display)
+	{
+		UI_LOCK();
 		LOG_INFO("Initializing themes");
+
+		// Initialize uninitialized styles
+		for (auto& style : s_uninitializedStyles)
+		{
+			style->init();
+		}
+		s_uninitializedStyles.clear();
 
 		// Initialize all themes
 		for (const auto& theme : s_themes)
 		{
 			theme->init();
 		}
+
+		lv_theme_t* baseTheme = lv_theme_default_init(
+			display, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, &lv_font_montserrat_14);
+
+		/*Initialize the new theme from the current theme*/
+		lv_theme_t* th_act = lv_display_get_theme(display);
+		s_theme = *th_act;
+
+		/*Set the parent theme and the style apply callback for the new theme*/
+		lv_theme_set_parent(&s_theme, th_act);
+		lv_theme_set_apply_cb(&s_theme, applyThemeCb);
+
+		/*Assign the new theme to the current display*/
+		lv_display_set_theme(display, &s_theme);
+
+		lv_theme_apply(lv_screen_active());
+
+#if DEBUG_BORDERS
+		bool debugBordersEnabeled = StorageHelper::getData<bool>(ID_DEBUG_BORDERS, false);
+		showDebugBorders(lv_screen_active(), debugBordersEnabeled);
+#endif
 	}
 
 	const std::vector<Theme*>& getThemes()
@@ -150,172 +261,82 @@ namespace UI::Themes
 		return names;
 	}
 
-	Styles::Styles()
-		:
 #if DEBUG_BORDERS
-		debugBorders("debugBorders")
-		, m_display(nullptr)
-		, m_theme(nullptr)
-#endif
-	{
-	}
-
-	void Styles::init(lv_display_t* display)
+	bool isdebugBorderVisible(lv_obj_t* obj)
 	{
 		UI_LOCK();
-		m_display = display;
-		lv_theme_t* baseTheme = lv_theme_default_init(m_display,
-													  lv_palette_main(LV_PALETTE_BLUE),
-													  lv_palette_main(LV_PALETTE_RED),
-													  LV_THEME_DEFAULT_DARK,
-													  &lv_font_montserrat_14);
-
-		/*Initialize the new theme from the current theme*/
-		lv_theme_t* th_act = lv_display_get_theme(display);
-		m_theme = new lv_theme_t;
-		*m_theme = *th_act;
-
-		/*Set the parent theme and the style apply callback for the new theme*/
-		lv_theme_set_parent(m_theme, th_act);
-		lv_theme_set_apply_cb(m_theme, applyThemeCb);
-
-		/*Assign the new theme to the current display*/
-		lv_display_set_theme(display, m_theme);
-
-		// m_theme->style.bg->body.main_color = lv_color_hex(0x2E3440);
-
-		/* Init styles */
-#if DEBUG_BORDERS
-		lv_style_init(debugBorders);
-#endif
-
-		/* debugBorders */
-#if DEBUG_BORDERS
-		lv_style_set_border_color(debugBorders, lv_color_black());
-		lv_style_set_border_width(debugBorders, 2);
-		lv_style_set_border_opa(debugBorders, LV_OPA_100);
-#endif
-
-		lv_theme_apply(lv_screen_active());
-
-#if DEBUG_BORDERS
-		bool debugBordersEnabeled = StorageHelper::getData<bool>(ID_DEBUG_BORDERS, false);
-		showDebugBorders(lv_screen_active(), debugBordersEnabeled);
-#endif
+		return lv_obj_has_style(obj, s_debugBorders);
 	}
 
-	void Styles::applyTheme(lv_obj_t* obj, const bool recursive)
+	static void _showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
 	{
-		UI_LOCK();
-		if (recursive)
+		if (show)
 		{
-			uint32_t childCount = lv_obj_get_child_count(obj);
-			for (uint32_t i = 0; i < childCount; ++i)
-			{
-				lv_obj_t* child = lv_obj_get_child(obj, i);
-				applyTheme(child, true);
-			}
+			lv_obj_add_style(obj, s_debugBorders, LV_PART_MAIN, recursive);
 		}
-
-		applyThemeCb(m_theme, obj);
+		else
+		{
+			lv_obj_remove_style(obj, s_debugBorders, LV_PART_MAIN, recursive);
+		}
 	}
 
-	void Styles::removeTheme(lv_obj_t* obj, const bool recursive)
-	{
-		UI_LOCK();
-		if (recursive)
-		{
-			uint32_t childCount = lv_obj_get_child_count(obj);
-			for (uint32_t i = 0; i < childCount; ++i)
-			{
-				lv_obj_t* child = lv_obj_get_child(obj, i);
-				removeTheme(child, true);
-			}
-		}
-
-#if DEBUG_BORDERS
-		lv_obj_remove_style(obj, &debugBorders.style, LV_PART_MAIN);
-#endif
-	}
-
-	void Styles::applyThemeCb(lv_theme_t* th, lv_obj_t* obj)
-	{
-		UI_LOCK();
-		LV_UNUSED(th);
-
-		lv_obj_add_style(obj, s_baseStyle, LV_PART_MAIN);
-
-		if (lv_obj_check_type(obj, &lv_obj_class))
-		{
-			lv_obj_add_style(obj, s_containerStyle, 0);
-		}
-
-		if (lv_obj_check_type(obj, &lv_button_class))
-		{
-			lv_obj_add_style(obj, s_buttonStyle, 0);
-		}
-
-		if (lv_obj_check_type(obj, &lv_label_class))
-		{
-			lv_obj_add_style(obj, s_labelStyle, 0);
-		}
-#if DEBUG_BORDERS
-		if (Styles::instance().hasStyle(lv_screen_active(), &Styles::instance().debugBorders.style))
-		{
-			lv_obj_add_style(obj, &Styles::instance().debugBorders.style, LV_PART_MAIN);
-		}
-#endif
-	}
-
-	bool Styles::hasStyle(lv_obj_t* obj, const lv_style_t* style) const
-	{
-		UI_LOCK();
-		for (size_t i = 0; i < obj->style_cnt; i++)
-		{
-			if (obj->styles[i].style == style)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-#if DEBUG_BORDERS
-	bool Styles::isdebugBorderVisible(lv_obj_t* obj) const
-	{
-		UI_LOCK();
-		return hasStyle(obj, &debugBorders.style);
-	}
-
-	void Styles::showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
+	void showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
 	{
 		UI_LOCK();
 		_showDebugBorders(obj, show, recursive);
 		lv_obj_refresh_style(obj, LV_PART_ANY, LV_STYLE_PROP_ANY);
 	}
-
-	void Styles::_showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
-	{
-		UI_LOCK();
-		if (recursive)
-		{
-			uint32_t childCount = lv_obj_get_child_count(obj);
-			for (uint32_t i = 0; i < childCount; ++i)
-			{
-				lv_obj_t* child = lv_obj_get_child(obj, i);
-				_showDebugBorders(child, show, true);
-			}
-		}
-
-		if (show)
-		{
-			lv_obj_add_style(obj, &debugBorders.style, LV_PART_MAIN);
-		}
-		else
-		{
-			lv_obj_remove_style(obj, &debugBorders.style, LV_PART_MAIN);
-		}
-	}
 #endif
 
 } // namespace UI::Themes
+
+bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style)
+{
+	UI_LOCK();
+
+	for (size_t i = 0; i < obj->style_cnt; i++)
+	{
+		if (obj->styles[i].style == style)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, const lv_style_selector_t selector, const bool recursive)
+{
+	UI_LOCK();
+	if (recursive)
+	{
+		uint32_t childCount = lv_obj_get_child_count(obj);
+		for (uint32_t i = 0; i < childCount; ++i)
+		{
+			lv_obj_t* child = lv_obj_get_child(obj, i);
+			lv_obj_add_style(child, style, selector, true);
+		}
+	}
+
+	// Raw lvgl call
+	lv_obj_add_style(obj, style, selector);
+}
+
+void lv_obj_remove_style(lv_obj_t* obj,
+						 const lv_style_t* style,
+						 const lv_style_selector_t selector,
+						 const bool recursive)
+{
+	UI_LOCK();
+	if (recursive)
+	{
+		uint32_t childCount = lv_obj_get_child_count(obj);
+		for (uint32_t i = 0; i < childCount; ++i)
+		{
+			lv_obj_t* child = lv_obj_get_child(obj, i);
+			lv_obj_remove_style(child, style, selector, true);
+		}
+	}
+
+	// Raw lvgl call
+	lv_obj_remove_style(obj, style, selector);
+}

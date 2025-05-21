@@ -622,10 +622,7 @@ namespace UI
 
 #if DEBUG_BORDERS
 		lv_checkbox_set_text(m_debugBorders, _("settings_debug_borders"));
-		lv_obj_set_state(
-			m_debugBorders,
-			LV_STATE_CHECKED,
-			Themes::Styles::instance().hasStyle(lv_screen_active(), &Themes::Styles::instance().debugBorders.style));
+		lv_obj_set_state(m_debugBorders, LV_STATE_CHECKED, Themes::isdebugBorderVisible(lv_screen_active()));
 		lv_obj_add_event_cb(m_debugBorders, onDebugBordersEvent, LV_EVENT_VALUE_CHANGED, this);
 #endif
 
@@ -657,7 +654,7 @@ namespace UI
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
 		StorageHelper::setData<bool>(ID_DEBUG_BORDERS, checked);
-		Themes::Styles::instance().showDebugBorders(lv_screen_active(), checked);
+		Themes::showDebugBorders(lv_screen_active(), checked);
 	}
 #endif
 

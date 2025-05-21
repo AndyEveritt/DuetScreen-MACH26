@@ -74,10 +74,6 @@ namespace UI
 		LOG_INFO("Creating UI");
 		addHomeScreen(this);
 
-#if DEBUG_BORDERS
-		lv_obj_add_style(getCont(), &Themes::Styles::instance().debugBorders.style, LV_PART_MAIN);
-#endif
-
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(s_layoutColDsc, s_layoutRowDsc);
 		setGridCell(m_statusBar, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);

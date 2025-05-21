@@ -8,6 +8,7 @@
 #pragma once
 
 #include "lvgl/lvgl.h"
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -16,16 +17,20 @@ namespace UI::Themes
 {
 	struct Style
 	{
-		const char* name;
-		lv_style_t style;
-
 		Style(const char* name);
+		Style(const char* name, std::function<void(lv_style_t*)> initFunc);
 		Style(const Style&);
+		void init();
 
 		Style& operator=(const Style& other);
 
 		operator lv_style_t*() { return &style; }
 		operator const lv_style_t*() const { return &style; }
+
+	  private:
+		const char* name;
+		lv_style_t style;
+		std::function<void(lv_style_t*)> initFunc;
 	};
 
 	const Style& getBaseStyle();
@@ -55,46 +60,19 @@ namespace UI::Themes
 		const std::string m_name;
 	};
 
-	void initThemes();
+	void init(lv_display_t* display);
 	const std::vector<Theme*>& getThemes();
 	const Theme& getTheme(const size_t index);
 	const Theme& getTheme(const char* name);
 	const size_t getThemeCount();
 	const std::vector<std::string> getThemeNames();
 
-	class Styles
-	{
-	  public:
-		static Styles& instance()
-		{
-			static Styles styles;
-			return styles;
-		}
-
-		void init(lv_display_t* display);
-		lv_display_t* getDisplay() { return m_display; }
-
-		void applyTheme(lv_obj_t* obj, const bool recursive = true);
-		void removeTheme(lv_obj_t* obj, const bool recursive = true);
-		bool hasStyle(lv_obj_t* obj, const lv_style_t* style) const;
-
 #if DEBUG_BORDERS
-		bool isdebugBorderVisible(lv_obj_t* obj) const;
-		void showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive = true);
+	bool isdebugBorderVisible(lv_obj_t* obj);
+	void showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive = true);
 #endif
-
-#if DEBUG_BORDERS
-		Style debugBorders;
-#endif
-
-	  private:
-		Styles();
-		static void applyThemeCb(lv_theme_t* th, lv_obj_t* obj);
-#if DEBUG_BORDERS
-		void _showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive = true);
-#endif
-
-		lv_display_t* m_display;
-		lv_theme_t* m_theme; // owned by this class
-	};
 } // namespace UI
+
+bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style);
+void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
+void lv_obj_remove_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
