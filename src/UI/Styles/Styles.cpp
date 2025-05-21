@@ -13,14 +13,147 @@
 #include <array>
 #include <map>
 
-namespace UI
+namespace UI::Themes
 {
+	static Style s_baseStyle("base");
+	static Style s_containerStyle("container");
+	static Style s_buttonStyle("button");
+	static Style s_labelStyle("label");
+	static Style s_estopStyle("estop");
+
+	static std::vector<Theme*> s_themes;
+
+	Style::Style(const char* name)
+		: name(name)
+	{
+		lv_style_init(&style);
+	}
+
+	Style::Style(const Style& other)
+		: name(other.name)
+	{
+		lv_style_copy(&style, &other.style);
+	}
+
+	Style& Style::operator=(const Style& other)
+	{
+		lv_style_copy(&style, &other.style);
+		return *this;
+	}
+
+	const Style& getBaseStyle()
+	{
+		return s_baseStyle;
+	}
+
+	const Style& getButtonStyle()
+	{
+		return s_buttonStyle;
+	}
+
+	const Style& getEStopStyle()
+	{
+		return s_estopStyle;
+	}
+
+	static bool themeExists(const char* name)
+	{
+		for (const auto& theme : s_themes)
+		{
+			if (theme->getName() == name)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	Theme::Theme(const char* name)
+		: m_name(name)
+		, m_base("base")
+		, m_container("container")
+		, m_label("label")
+		, m_button("button")
+		, m_estop("estop")
+	{
+		if (themeExists(name))
+		{
+			LOG_FATAL_THROW("Theme with name {:s} already exists", name);
+			return;
+		}
+		s_themes.push_back(this);
+		LOG_INFO("Theme {:s} created", name);
+	}
+
+	void Theme::applyTheme() const
+	{
+		LOG_INFO("Applying theme: {:s}", m_name);
+		s_baseStyle = m_base;
+		s_containerStyle = m_container;
+		s_labelStyle = m_label;
+		s_buttonStyle = m_button;
+		s_estopStyle = m_estop;
+
+		lv_obj_report_style_change(NULL);
+		lv_obj_invalidate(lv_screen_active());
+	}
+
+	void initThemes()
+	{
+		LOG_INFO("Initializing themes");
+
+		// Initialize all themes
+		for (const auto& theme : s_themes)
+		{
+			theme->init();
+		}
+	}
+
+	const std::vector<Theme*>& getThemes()
+	{
+		return s_themes;
+	}
+
+	const Theme& getTheme(const size_t index)
+	{
+		if (index >= s_themes.size())
+		{
+			LOG_FATAL_THROW("Theme with index {:d} not found", index);
+		}
+		return *s_themes[index];
+	}
+
+	const Theme& getTheme(const char* name)
+	{
+		for (const auto& theme : s_themes)
+		{
+			if (theme->getName() == name)
+			{
+				return *theme;
+			}
+		}
+		LOG_FATAL_THROW("Theme with name {:s} not found", name);
+	}
+
+	const size_t getThemeCount()
+	{
+		return s_themes.size();
+	}
+
+	const std::vector<std::string> getThemeNames()
+	{
+		std::vector<std::string> names;
+		for (const auto& theme : s_themes)
+		{
+			names.push_back(theme->getName());
+		}
+		return names;
+	}
+
 	Styles::Styles()
-		: defaultStyle("default")
-		, btn("btn")
-		, estop("estop")
+		:
 #if DEBUG_BORDERS
-		, debugBorders("debugBorders")
+		debugBorders("debugBorders")
 		, m_display(nullptr)
 		, m_theme(nullptr)
 #endif
@@ -52,18 +185,15 @@ namespace UI
 		// m_theme->style.bg->body.main_color = lv_color_hex(0x2E3440);
 
 		/* Init styles */
-		lv_style_init(&defaultStyle.style);
-		lv_style_init(&btn.style);
-		lv_style_init(&estop.style);
 #if DEBUG_BORDERS
-		lv_style_init(&debugBorders.style);
+		lv_style_init(debugBorders);
 #endif
 
 		/* debugBorders */
 #if DEBUG_BORDERS
-		lv_style_set_border_color(&debugBorders.style, lv_color_black());
-		lv_style_set_border_width(&debugBorders.style, 2);
-		lv_style_set_border_opa(&debugBorders.style, LV_OPA_100);
+		lv_style_set_border_color(debugBorders, lv_color_black());
+		lv_style_set_border_width(debugBorders, 2);
+		lv_style_set_border_opa(debugBorders, LV_OPA_100);
 #endif
 
 		lv_theme_apply(lv_screen_active());
@@ -113,6 +243,22 @@ namespace UI
 		UI_LOCK();
 		LV_UNUSED(th);
 
+		lv_obj_add_style(obj, s_baseStyle, LV_PART_MAIN);
+
+		if (lv_obj_check_type(obj, &lv_obj_class))
+		{
+			lv_obj_add_style(obj, s_containerStyle, 0);
+		}
+
+		if (lv_obj_check_type(obj, &lv_button_class))
+		{
+			lv_obj_add_style(obj, s_buttonStyle, 0);
+		}
+
+		if (lv_obj_check_type(obj, &lv_label_class))
+		{
+			lv_obj_add_style(obj, s_labelStyle, 0);
+		}
 #if DEBUG_BORDERS
 		if (Styles::instance().hasStyle(lv_screen_active(), &Styles::instance().debugBorders.style))
 		{
@@ -172,4 +318,4 @@ namespace UI
 	}
 #endif
 
-} // namespace UI
+} // namespace UI::Themes

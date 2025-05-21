@@ -10,19 +10,57 @@
 #include "lvgl/lvgl.h"
 #include <map>
 #include <string>
+#include <vector>
 
-namespace UI
+namespace UI::Themes
 {
 	struct Style
 	{
 		const char* name;
 		lv_style_t style;
 
-		Style(const char* name)
-			: name(name)
-		{
-		}
+		Style(const char* name);
+		Style(const Style&);
+
+		Style& operator=(const Style& other);
+
+		operator lv_style_t*() { return &style; }
+		operator const lv_style_t*() const { return &style; }
 	};
+
+	const Style& getBaseStyle();
+	const Style& getButtonStyle();
+	const Style& getEStopStyle();
+
+	class Theme
+	{
+	  public:
+		Theme(const char* name);
+		~Theme() = default;
+		Theme& operator=(const Theme&) = delete;
+
+		virtual void init() {}
+
+		void applyTheme() const;
+		const std::string& getName() const { return m_name; }
+
+	  protected:
+		Style m_base;
+		Style m_container;
+		Style m_label;
+		Style m_button;
+		Style m_estop;
+
+	  private:
+		const std::string m_name;
+	};
+
+	void initThemes();
+	const std::vector<Theme*>& getThemes();
+	const Theme& getTheme(const size_t index);
+	const Theme& getTheme(const char* name);
+	const size_t getThemeCount();
+	const std::vector<std::string> getThemeNames();
 
 	class Styles
 	{
@@ -45,9 +83,6 @@ namespace UI
 		void showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive = true);
 #endif
 
-		Style defaultStyle;
-		Style btn;
-		Style estop;
 #if DEBUG_BORDERS
 		Style debugBorders;
 #endif

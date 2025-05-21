@@ -305,7 +305,23 @@ namespace UI
 		m_language.setOptions(_("settings_language_en"));
 
 		m_theme.setLabel(_("settings_theme"));
-		m_theme.setOptions(_("settings_theme_light"));
+		for (auto& theme : Themes::getThemes())
+		{
+			m_theme.addOption(_(theme->getName().c_str()));
+		}
+		m_theme.addEventCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
+				DeviceSettingsView* view = (DeviceSettingsView*)lv_event_get_user_data(e);
+				int32_t selected = view->m_theme.getSelected();
+				Themes::getTheme(selected).applyTheme();
+				// view->getMainSettingsPresenter()->setTheme(selected);
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
+		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
 
 		m_usbMode.setLabel(_("settings_usb_mode"));
 		m_usbMode.setOptions(
@@ -606,9 +622,10 @@ namespace UI
 
 #if DEBUG_BORDERS
 		lv_checkbox_set_text(m_debugBorders, _("settings_debug_borders"));
-		lv_obj_set_state(m_debugBorders,
-						 LV_STATE_CHECKED,
-						 Styles::instance().hasStyle(lv_screen_active(), &Styles::instance().debugBorders.style));
+		lv_obj_set_state(
+			m_debugBorders,
+			LV_STATE_CHECKED,
+			Themes::Styles::instance().hasStyle(lv_screen_active(), &Themes::Styles::instance().debugBorders.style));
 		lv_obj_add_event_cb(m_debugBorders, onDebugBordersEvent, LV_EVENT_VALUE_CHANGED, this);
 #endif
 
@@ -640,7 +657,7 @@ namespace UI
 		lv_obj_t* cb = (lv_obj_t*)lv_event_get_target(e);
 		bool checked = lv_obj_has_state(cb, LV_STATE_CHECKED);
 		StorageHelper::setData<bool>(ID_DEBUG_BORDERS, checked);
-		Styles::instance().showDebugBorders(lv_screen_active(), checked);
+		Themes::Styles::instance().showDebugBorders(lv_screen_active(), checked);
 	}
 #endif
 

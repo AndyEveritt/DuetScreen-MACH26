@@ -25,6 +25,7 @@ namespace UI
 		// Dropdown
 		lv_obj_set_size(m_dropdown, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_set_flex_grow(m_dropdown, 1);
+		lv_dropdown_clear_options(m_dropdown);
 	}
 
 	void DropdownMenu::setLabel(const std::string& label)

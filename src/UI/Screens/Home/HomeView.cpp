@@ -75,7 +75,7 @@ namespace UI
 		addHomeScreen(this);
 
 #if DEBUG_BORDERS
-		lv_obj_add_style(getCont(), &Styles::instance().debugBorders.style, LV_PART_MAIN);
+		lv_obj_add_style(getCont(), &Themes::Styles::instance().debugBorders.style, LV_PART_MAIN);
 #endif
 
 		setLayoutStyle(LV_LAYOUT_GRID);

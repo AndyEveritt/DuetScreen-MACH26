@@ -115,7 +115,8 @@ int main(int argc, char** argv)
 	lv_display_t* display = hal_init(1024, 600);
 
 	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u));
-	UI::Styles::instance().init(display);
+	UI::Themes::Styles::instance().init(display);
+	UI::Themes::initThemes();
 
 	UI::HomeView home = UI::HomeView::instance();
 	home.show();
