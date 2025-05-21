@@ -61,6 +61,7 @@ namespace Log
 #define LOG_INFO(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::info, __VA_ARGS__)
 #define LOG_WARN(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::warn, __VA_ARGS__)
 #define LOG_ERROR(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::err, __VA_ARGS__);
-#define LOG_FATAL(...)                                                                                                 \
+#define LOG_FATAL_THROW(...)                                                                                           \
 	CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::critical, __VA_ARGS__);                     \
-	spdlog::dump_backtrace();
+	spdlog::dump_backtrace();                                                                                          \
+	throw std::runtime_error(fmt::format("Fatal error: " __VA_ARGS__));

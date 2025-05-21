@@ -55,10 +55,11 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 				}
 				ownedLocks += getLockName(lock);
 			}
-			LOG_FATAL("Thread {} is not allowed to take multiple locks, trying to take {:s} but already owns {:s}",
-					  threadId,
-					  lockName.c_str(),
-					  ownedLocks.c_str());
+			LOG_FATAL_THROW(
+				"Thread {} is not allowed to take multiple locks, trying to take {:s} but already owns {:s}",
+				threadId,
+				lockName.c_str(),
+				ownedLocks.c_str());
 			return;
 		}
 		// Check if any other thread holds the lock we want and is waiting for a lock we hold

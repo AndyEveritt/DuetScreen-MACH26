@@ -392,7 +392,7 @@ namespace UI
 		static_assert(ARRAY_SIZE(s_listGrow) == ARRAY_SIZE(headerLabels), "Invalid array size");
 		if (ARRAY_SIZE(s_listGrow) != lv_obj_get_child_cnt(m_listHeader))
 		{
-			LOG_FATAL("Invalid s_listGrow array size");
+			LOG_FATAL_THROW("Invalid s_listGrow array size");
 		}
 
 		for (size_t i = 0; i < ARRAY_SIZE(s_listGrow); i++)
