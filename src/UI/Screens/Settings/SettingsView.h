@@ -117,7 +117,7 @@ namespace UI
 
 		lv_obj_t* m_networkList;
 		lv_obj_t* m_passwordWindow;
-		lv_obj_t* m_passwordInput;
+		TextBox m_passwordInput;
 		lv_obj_t* m_passwordSsid;
 	};
 

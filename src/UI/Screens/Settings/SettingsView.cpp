@@ -415,7 +415,7 @@ namespace UI
 		, m_refresh("network_settings_refresh", m_topBar, _("refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
 		, m_networkList(lv_table_create(getCont()))
 		, m_passwordWindow(lv_msgbox_create(getCont()))
-		, m_passwordInput(lv_textarea_create(m_passwordWindow))
+		, m_passwordInput("settings_network_password_input", m_passwordWindow, layout_t(0, 0, 80, LV_SIZE_CONTENT))
 		, m_passwordSsid(nullptr)
 	{
 		UI_LOCK();
@@ -459,15 +459,14 @@ namespace UI
 		lv_obj_set_size(m_passwordWindow, LV_PCT(80), LV_SIZE_CONTENT);
 		lv_obj_set_flex_flow(m_passwordWindow, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(m_passwordWindow, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_width(m_passwordInput, LV_PCT(80));
 
 		lv_msgbox_add_title(m_passwordWindow, _("settings_network_password_title"));
 		m_passwordSsid = lv_msgbox_add_text(m_passwordWindow, "");
 		lv_obj_t* closeBtn = lv_msgbox_add_header_button(m_passwordWindow, LV_SYMBOL_CLOSE);
 		lv_obj_t* confirmBtn = lv_msgbox_add_footer_button(m_passwordWindow, LV_SYMBOL_OK);
-		lv_textarea_set_placeholder_text(m_passwordInput, _("settings_network_enter_password"));
-		lv_textarea_set_one_line(m_passwordInput, true);
-		lv_textarea_set_password_mode(m_passwordInput, true);
+		m_passwordInput.setPlaceholderText(_("settings_network_enter_password"));
+		m_passwordInput.setPasswordMode(true);
+		m_passwordInput.setOneLine(true);
 
 		// Refresh
 		m_refresh.setCallback(onRefreshEvent, LV_EVENT_CLICKED, this);
@@ -546,9 +545,11 @@ namespace UI
 		bool known = *(bool*)lv_table_get_cell_user_data(table, row, 2);
 		if (!known)
 		{
-			lv_textarea_set_text(view->m_passwordInput, "");
+			view->m_passwordInput.setText("");
+			view->m_passwordInput.showPassword(false);
 			lv_label_set_text(view->m_passwordSsid, ssid);
-			view->getMainSettingsView().showKeyboard(true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput);
+			view->getMainSettingsView().showKeyboard(
+				true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput.getTextArea());
 			lv_obj_remove_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 			return;
 		}
@@ -571,7 +572,7 @@ namespace UI
 		view->getMainSettingsView().showKeyboard(false);
 		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		view->getPresenter()->connectToNetwork(lv_label_get_text(view->m_passwordSsid),
-											   lv_textarea_get_text(view->m_passwordInput));
+											   view->m_passwordInput.getText());
 	}
 
 	void NetworkSettingsView::onRefreshEvent(lv_event_t* e)

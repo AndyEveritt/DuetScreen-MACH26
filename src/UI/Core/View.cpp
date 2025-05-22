@@ -198,6 +198,25 @@ namespace UI
 		return this;
 	}
 
+	bool BaseView::hasFlag(lv_obj_flag_t flag) const
+	{
+		UI_LOCK();
+		return lv_obj_has_flag(getCont(), flag);
+	}
+
+	BaseView* BaseView::setState(lv_state_t state, bool enable)
+	{
+		UI_LOCK();
+		lv_obj_set_state(getCont(), state, enable);
+		return this;
+	}
+
+	bool BaseView::hasState(lv_state_t state) const
+	{
+		UI_LOCK();
+		return lv_obj_has_state(getCont(), state);
+	}
+
 	BaseView* BaseView::setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y)
 	{
 		UI_LOCK();
