@@ -17,6 +17,7 @@ namespace UI::Themes
 {
 	struct Style
 	{
+		Style();
 		Style(const char* name);
 		Style(const char* name, std::function<void(lv_style_t*)> initFunc);
 		Style(const Style&);
@@ -33,8 +34,117 @@ namespace UI::Themes
 		std::function<void(lv_style_t*)> initFunc;
 	};
 
+	struct LvglStyles
+	{
+		LvglStyles();
+
+		Style screen;
+		Style scrollbar;
+		Style scrollbar_scrolled;
+		Style card;
+		Style btn;
+
+		/*Utility*/
+		Style bg_color_primary;
+		Style bg_color_primary_muted;
+		Style bg_color_secondary;
+		Style bg_color_secondary_muted;
+		Style bg_color_grey;
+		Style bg_color_white;
+		Style pressed;
+		Style disabled;
+		Style pad_zero;
+		Style pad_tiny;
+		Style pad_small;
+		Style pad_normal;
+		Style pad_gap;
+		Style line_space_large;
+		Style text_align_center;
+		Style outline_primary;
+		Style outline_secondary;
+		Style circle;
+		Style no_radius;
+		Style clip_corner;
+		Style rotary_scroll;
+#if LV_THEME_DEFAULT_GROW
+		Style grow;
+#endif
+		Style transition_delayed;
+		Style transition_normal;
+		Style anim;
+		Style anim_fast;
+
+		/*Parts*/
+		Style knob;
+
+#if LV_USE_ARC
+		Style arc_indic;
+		Style arc_indic_primary;
+#endif
+
+#if LV_USE_CHART
+		Style chart_series, chart_indic, chart_bg;
+#endif
+
+#if LV_USE_DROPDOWN
+		Style dropdown_list;
+#endif
+
+#if LV_USE_CHECKBOX
+		Style cb_marker, cb_marker_checked;
+#endif
+
+#if LV_USE_SWITCH
+		Style switch_knob;
+#endif
+
+#if LV_USE_LINE
+		Style line;
+#endif
+
+#if LV_USE_TABLE
+		Style table_cell;
+#endif
+
+#if LV_USE_TEXTAREA
+		Style ta_cursor, ta_placeholder;
+#endif
+
+#if LV_USE_CALENDAR
+		Style calendar_btnm_bg, calendar_btnm_day, calendar_header;
+#endif
+
+#if LV_USE_MENU
+		Style menu_bg, menu_cont, menu_sidebar_cont, menu_main_cont, menu_page, menu_header_cont, menu_header_btn,
+			menu_section, menu_pressed, menu_separator;
+#endif
+
+#if LV_USE_MSGBOX
+		Style msgbox_backdrop_bg;
+#endif
+
+#if LV_USE_KEYBOARD
+		Style keyboard_button_bg;
+#endif
+
+#if LV_USE_LIST
+		Style list_bg, list_btn, list_item_grow;
+#endif
+
+#if LV_USE_TABVIEW
+		Style tab_bg_focus, tab_btn;
+#endif
+#if LV_USE_LED
+		Style led;
+#endif
+
+#if LV_USE_SCALE
+		Style scale;
+#endif
+	};
+
+	const LvglStyles& getLvglStyles();
 	const Style& getBaseStyle();
-	const Style& getButtonStyle();
 	const Style& getEStopStyle();
 
 	class Theme
@@ -50,10 +160,7 @@ namespace UI::Themes
 		const std::string& getName() const { return m_name; }
 
 	  protected:
-		Style m_base;
-		Style m_container;
-		Style m_label;
-		Style m_button;
+		LvglStyles m_lvglStyles;
 		Style m_estop;
 
 	  private:
@@ -62,8 +169,9 @@ namespace UI::Themes
 
 	void init(lv_display_t* display);
 	const std::vector<Theme*>& getThemes();
-	const Theme& getTheme(const size_t index);
-	const Theme& getTheme(const char* name);
+	const Theme& getCurrentTheme();
+	const Theme* getTheme(const size_t index);
+	const Theme* getThemeByName(const char* name);
 	const size_t getThemeCount();
 	const std::vector<std::string> getThemeNames();
 

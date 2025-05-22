@@ -1,5 +1,6 @@
 #include "View.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -250,10 +251,10 @@ namespace UI
 		return this;
 	}
 
-	BaseView* BaseView::addStyle(lv_style_t* style, lv_style_selector_t selector)
+	BaseView* BaseView::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
 	{
 		UI_LOCK();
-		lv_obj_add_style(getCont(), style, selector);
+		lv_obj_add_style(getCont(), style, selector, recursive);
 		return this;
 	}
 

@@ -10,6 +10,7 @@
 #include "UI/Core/Navigation.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Home/HomeView.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -44,7 +45,8 @@ namespace UI
 		m_consoleBtn.setCallback(consoleBtnEvent, LV_EVENT_CLICKED, this);
 		m_eStopBtn.setCallback(eStopBtnEvent, LV_EVENT_CLICKED, this);
 
-		m_eStopBtn.setBgColor(lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN);
+		m_eStopBtn.addStyle(Themes::getEStopStyle(), LV_PART_MAIN, true);
+		// lv_obj_add_style(m_eStopBtn.getButton(), Themes::getEStopStyle(), LV_PART_MAIN, true);
 	}
 
 	void SideBar::backBtnEvent(lv_event_t* e)

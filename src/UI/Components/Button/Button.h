@@ -22,6 +22,10 @@ namespace UI
 		void setInvalid(bool invalid);
 		void setBgColor(lv_color_t, lv_style_selector_t selector);
 
+		lv_obj_t* getLabel() const { return m_label; }
+		lv_obj_t* getButton() const { return m_button; }
+		lv_obj_t* getIcon() const { return m_icon; }
+
 	  private:
 		void init(const std::string& text);
 

@@ -99,7 +99,9 @@ namespace UI
 		BaseView* setFlag(lv_obj_flag_t flag, bool enable);
 		BaseView* setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
 		BaseView* setPad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);
-		BaseView* addStyle(lv_style_t* style, lv_style_selector_t selector = LV_PART_MAIN);
+		BaseView* addStyle(const lv_style_t* style,
+						   const lv_style_selector_t selector = LV_PART_MAIN,
+						   bool recursive = false);
 		BaseView* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
 
 		void show(bool display) { display ? show() : hide(); }

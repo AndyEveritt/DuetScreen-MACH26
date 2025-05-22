@@ -202,6 +202,8 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"status_z_offset", "Z Offset: %.2f mm"},
     {"status_print_height", "Height: %.2f mm"},
     {"status_layer_number", "Layer: %u"},
+    {"theme_dark", "Dark"},
+    {"theme_light", "Light"},
     {NULL, NULL} // End mark
 };
 

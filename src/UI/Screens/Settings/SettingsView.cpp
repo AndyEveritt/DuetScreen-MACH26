@@ -316,7 +316,13 @@ namespace UI
 				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
 				DeviceSettingsView* view = (DeviceSettingsView*)lv_event_get_user_data(e);
 				int32_t selected = view->m_theme.getSelected();
-				Themes::getTheme(selected).applyTheme();
+				auto theme = Themes::getTheme(selected);
+				if (theme == nullptr)
+				{
+					return;
+				}
+				theme->applyTheme();
+				StorageHelper::setData(ID_THEME, selected);
 				// view->getMainSettingsPresenter()->setTheme(selected);
 			},
 			LV_EVENT_VALUE_CHANGED,

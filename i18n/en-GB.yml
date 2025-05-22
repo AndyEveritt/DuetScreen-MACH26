@@ -393,3 +393,5 @@ en-GB:
   status_z_offset: 'Z Offset: %.2f mm'
   status_print_height: 'Height: %.2f mm'
   status_layer_number: 'Layer: %u'
+  theme_dark: Dark
+  theme_light: Light

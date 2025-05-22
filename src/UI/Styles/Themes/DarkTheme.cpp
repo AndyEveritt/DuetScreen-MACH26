@@ -20,13 +20,14 @@ namespace UI::Themes
 
 		virtual void init() override
 		{
-			lv_style_set_bg_color(m_container, lv_color_hex(0x2E3440));
-			lv_style_set_bg_opa(m_container, LV_OPA_COVER);
-			lv_style_set_border_color(m_container, lv_palette_main(LV_PALETTE_TEAL));
+			// lv_style_set_bg_color(m_lvglStyles.card, lv_color_hex(0x2E3440));
+			// lv_style_set_bg_opa(m_container, LV_OPA_COVER);
+			// lv_style_set_border_color(m_container, lv_palette_main(LV_PALETTE_TEAL));
 
-			lv_style_set_border_color(m_button, lv_palette_main(LV_PALETTE_RED));
+			// lv_style_set_border_color(m_lvglStyles.btn, lv_palette_main(LV_PALETTE_ORANGE));
+			lv_style_set_bg_color(m_estop, lv_palette_main(LV_PALETTE_RED));
 		}
 	};
 
-	static DarkTheme s_darkTheme("dark");
+	static DarkTheme s_darkTheme("theme_dark");
 } // namespace UI::Themes
