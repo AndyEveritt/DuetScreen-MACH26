@@ -33,50 +33,7 @@ namespace UI
 	class BasePresenter;
 }
 
-enum class EventType
-{
-	Tick,
-	Connected,
-	Disconnected,
-	UpdateAvailable,
-	FanData,
-	FileData,
-	HeaterData,
-	JobFileName,
-	JobLastFileName,
-	JobPrintTime,
-	JobDuration,
-	JobTimeLeft,
-	JobWarmupDuration,
-	JobHeight,
-	JobBuild,
-	JobCurrentObject,
-	JobObjectData,
-	ThumbnailData,
-	AxesData,
-	ExtruderData,
-	KinematicsName,
-	SpeedFactor,
-	WorkplaceNumber,
-	PrintingAcceleration,
-	CurrentMoveRequestedSpeed,
-	CurrentMoveTopSpeed,
-	CurrentMoveExtrusionSpeed,
-	CompensationFile,
-	Response,
-	LogMessage,
-	AnalogSensorData,
-	EndstopData,
-	SpindleData,
-	NetworkName,
-	IpAddress,
-	Status,
-	CurrentTool,
-	MessageBoxData,
-	Time,
-	ToolData,
-	Directories
-};
+enum class EventType;
 
 template <EventType E, typename... Args>
 struct EventTraits
@@ -108,47 +65,71 @@ struct EventTraits
 	}
 };
 
-using EventData = std::variant<EventTraits<EventType::Tick>,
-							   EventTraits<EventType::Connected>,
-							   EventTraits<EventType::Disconnected>,
-							   EventTraits<EventType::UpdateAvailable, std::string>,
-							   EventTraits<EventType::FanData>,
-							   EventTraits<EventType::FileData>,
-							   EventTraits<EventType::HeaterData>,
-							   EventTraits<EventType::JobFileName, std::string>,
-							   EventTraits<EventType::JobLastFileName, std::string>,
-							   EventTraits<EventType::JobPrintTime>,
-							   EventTraits<EventType::JobDuration>,
-							   EventTraits<EventType::JobTimeLeft>,
-							   EventTraits<EventType::JobWarmupDuration>,
-							   EventTraits<EventType::JobHeight>,
-							   EventTraits<EventType::JobBuild>,
-							   EventTraits<EventType::JobCurrentObject>,
-							   EventTraits<EventType::JobObjectData>,
-							   EventTraits<EventType::ThumbnailData, std::string>,
-							   EventTraits<EventType::AxesData>,
-							   EventTraits<EventType::ExtruderData>,
-							   EventTraits<EventType::KinematicsName, std::string>,
-							   EventTraits<EventType::SpeedFactor>,
-							   EventTraits<EventType::WorkplaceNumber>,
-							   EventTraits<EventType::PrintingAcceleration, uint32_t>,
-							   EventTraits<EventType::CurrentMoveRequestedSpeed>,
-							   EventTraits<EventType::CurrentMoveTopSpeed>,
-							   EventTraits<EventType::CurrentMoveExtrusionSpeed>,
-							   EventTraits<EventType::CompensationFile>,
-							   EventTraits<EventType::Response, std::string>,
-							   EventTraits<EventType::LogMessage, Log::DebugLevel, Log::log_time_t, std::string>,
-							   EventTraits<EventType::AnalogSensorData>,
-							   EventTraits<EventType::EndstopData>,
-							   EventTraits<EventType::SpindleData>,
-							   EventTraits<EventType::NetworkName>,
-							   EventTraits<EventType::IpAddress>,
-							   EventTraits<EventType::Status, OM::PrinterStatus>,
-							   EventTraits<EventType::CurrentTool>,
-							   EventTraits<EventType::MessageBoxData, OM::Alert>,
-							   EventTraits<EventType::Time>,
-							   EventTraits<EventType::ToolData>,
-							   EventTraits<EventType::Directories>>;
+/*
+To add an Event, add a new line with the format `XX(EventName, EventArgs...)`
+
+An event can be triggered with `Model::get().post<EventType::EventName>(args...)`.
+The event will be passed to the listeners that have registered for the event type.
+
+Any variables that are pass to the event must be copyable.
+Events are queued and processed in the order they are received.
+
+Event listeners must be none blocking and should not take a long time to process.
+*/
+#define EVENTS(XX)                                                                                                     \
+	XX(Tick)                                                                                                           \
+	XX(Connected)                                                                                                      \
+	XX(Disconnected)                                                                                                   \
+	XX(UpdateAvailable, std::string)                                                                                   \
+	XX(FanData)                                                                                                        \
+	XX(FileData)                                                                                                       \
+	XX(HeaterData)                                                                                                     \
+	XX(JobFileName, std::string)                                                                                       \
+	XX(JobLastFileName, std::string)                                                                                   \
+	XX(JobPrintTime)                                                                                                   \
+	XX(JobDuration)                                                                                                    \
+	XX(JobTimeLeft)                                                                                                    \
+	XX(JobWarmupDuration)                                                                                              \
+	XX(JobHeight)                                                                                                      \
+	XX(JobBuild)                                                                                                       \
+	XX(JobCurrentObject)                                                                                               \
+	XX(JobObjectData)                                                                                                  \
+	XX(ThumbnailData, std::string)                                                                                     \
+	XX(AxesData)                                                                                                       \
+	XX(ExtruderData)                                                                                                   \
+	XX(KinematicsName, std::string)                                                                                    \
+	XX(SpeedFactor)                                                                                                    \
+	XX(WorkplaceNumber)                                                                                                \
+	XX(PrintingAcceleration, uint32_t)                                                                                 \
+	XX(CurrentMoveRequestedSpeed)                                                                                      \
+	XX(CurrentMoveTopSpeed)                                                                                            \
+	XX(CurrentMoveExtrusionSpeed)                                                                                      \
+	XX(CompensationFile)                                                                                               \
+	XX(Response, std::string)                                                                                          \
+	XX(LogMessage, Log::DebugLevel, Log::log_time_t, std::string)                                                      \
+	XX(AnalogSensorData)                                                                                               \
+	XX(EndstopData)                                                                                                    \
+	XX(SpindleData)                                                                                                    \
+	XX(NetworkName)                                                                                                    \
+	XX(IpAddress)                                                                                                      \
+	XX(Status, OM::PrinterStatus)                                                                                      \
+	XX(CurrentTool)                                                                                                    \
+	XX(MessageBoxData, OM::Alert)                                                                                      \
+	XX(Time)                                                                                                           \
+	XX(ToolData)                                                                                                       \
+	XX(Directories)
+
+enum class EventType
+{
+#define XX(name, ...) name,
+	EVENTS(XX)
+#undef XX
+	Null
+};
+
+#define XX(name, ...) EventTraits<EventType::name __VA_OPT__(, ) __VA_ARGS__>,
+using EventData = std::variant<EVENTS(XX) EventTraits<EventType::Null>>;
+#undef XX
 
 using EventCallback = std::function<void(const EventData&)>;
 
