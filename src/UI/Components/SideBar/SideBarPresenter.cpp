@@ -8,7 +8,10 @@
 #include "SideBarPresenter.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include <string>
 #include <thread>
+
+using namespace std::string_literals;
 
 namespace UI
 {
@@ -18,7 +21,7 @@ namespace UI
 		Comm::DUET.SendGcode("M112 M999\n");
 		LOG_WARN("Emergency Stop sent to Duet");
 		Comm::DUET.Disconnect();
-		Model::get().post<EventType::Response>("Emergency Stop, trying to reconnect...");
+		Model::get().post<EventType::Response>("Emergency Stop, trying to reconnect..."s);
 	}
 
 } // namespace UI

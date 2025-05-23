@@ -33,11 +33,7 @@ namespace UI
 		{
 			m_handlers[E] = [instance, memberFunc](const EventData& data)
 			{
-#if DEV_EVENT_TRAIT_TEMPLATE
-				auto& tup = std::get<EventTraits<E, Args...>>(data).data.tup;
-#else
-				auto& tup = std::get<EventTraits<E>>(data).data.tup;
-#endif
+				auto& tup = std::get<EventTraits<E, std::decay_t<Args>...>>(data).data.tup;
 				std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
 			};
 		}

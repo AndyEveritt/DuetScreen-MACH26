@@ -78,10 +78,6 @@ enum class EventType
 	Directories
 };
 
-// This is an attempt to use templates instead of macros but it doesn't currently work
-#define DEV_EVENT_TRAIT_TEMPLATE 0
-
-#if DEV_EVENT_TRAIT_TEMPLATE
 template <EventType E, typename... Args>
 struct EventTraits
 {
@@ -113,7 +109,8 @@ struct EventTraits
 };
 
 using EventData = std::variant<EventTraits<EventType::Tick>,
-							   EventTraits<EventType::Refresh>,
+							   EventTraits<EventType::Connected>,
+							   EventTraits<EventType::Disconnected>,
 							   EventTraits<EventType::UpdateAvailable, std::string>,
 							   EventTraits<EventType::FanData>,
 							   EventTraits<EventType::FileData>,
@@ -124,13 +121,14 @@ using EventData = std::variant<EventTraits<EventType::Tick>,
 							   EventTraits<EventType::JobDuration>,
 							   EventTraits<EventType::JobTimeLeft>,
 							   EventTraits<EventType::JobWarmupDuration>,
+							   EventTraits<EventType::JobHeight>,
 							   EventTraits<EventType::JobBuild>,
 							   EventTraits<EventType::JobCurrentObject>,
 							   EventTraits<EventType::JobObjectData>,
-							   EventTraits<EventType::ThumbnailData>,
+							   EventTraits<EventType::ThumbnailData, std::string>,
 							   EventTraits<EventType::AxesData>,
 							   EventTraits<EventType::ExtruderData>,
-							   EventTraits<EventType::KinematicsName>,
+							   EventTraits<EventType::KinematicsName, std::string>,
 							   EventTraits<EventType::SpeedFactor>,
 							   EventTraits<EventType::WorkplaceNumber>,
 							   EventTraits<EventType::PrintingAcceleration, uint32_t>,
@@ -151,126 +149,6 @@ using EventData = std::variant<EventTraits<EventType::Tick>,
 							   EventTraits<EventType::Time>,
 							   EventTraits<EventType::ToolData>,
 							   EventTraits<EventType::Directories>>;
-#else
-template <EventType E>
-struct EventTraits
-{
-};
-#  define REGISTER_EVENT_TYPE(type, args...)                                                                           \
-	  template <>                                                                                                      \
-	  struct EventTraits<type>                                                                                         \
-	  {                                                                                                                \
-		  using tuple_type = std::tuple<args>;                                                                         \
-		  struct EventData                                                                                             \
-		  {                                                                                                            \
-			  EventType eventType = type;                                                                              \
-			  tuple_type tup;                                                                                          \
-			  EventData(EventType eventType)                                                                           \
-				  : eventType(eventType)                                                                               \
-			  {                                                                                                        \
-			  }                                                                                                        \
-			  EventData(EventType eventType, tuple_type tup)                                                           \
-				  : eventType(eventType)                                                                               \
-				  , tup(std::move(tup))                                                                                \
-			  {                                                                                                        \
-			  }                                                                                                        \
-		  } data;                                                                                                      \
-		  using data_type = EventData;                                                                                 \
-		  EventTraits()                                                                                                \
-			  : data(type)                                                                                             \
-		  {                                                                                                            \
-		  }                                                                                                            \
-		  EventTraits(tuple_type tup)                                                                                  \
-			  : data(type, std::move(tup))                                                                             \
-		  {                                                                                                            \
-		  }                                                                                                            \
-	  };
-
-REGISTER_EVENT_TYPE(EventType::Tick)
-REGISTER_EVENT_TYPE(EventType::Connected)
-REGISTER_EVENT_TYPE(EventType::Disconnected)
-REGISTER_EVENT_TYPE(EventType::UpdateAvailable, std::string)
-REGISTER_EVENT_TYPE(EventType::FanData)
-REGISTER_EVENT_TYPE(EventType::FileData)
-REGISTER_EVENT_TYPE(EventType::HeaterData)
-REGISTER_EVENT_TYPE(EventType::JobFileName, std::string)
-REGISTER_EVENT_TYPE(EventType::JobLastFileName, std::string)
-REGISTER_EVENT_TYPE(EventType::JobPrintTime)
-REGISTER_EVENT_TYPE(EventType::JobDuration)
-REGISTER_EVENT_TYPE(EventType::JobTimeLeft)
-REGISTER_EVENT_TYPE(EventType::JobWarmupDuration)
-REGISTER_EVENT_TYPE(EventType::JobHeight)
-REGISTER_EVENT_TYPE(EventType::JobBuild)
-REGISTER_EVENT_TYPE(EventType::JobCurrentObject)
-REGISTER_EVENT_TYPE(EventType::JobObjectData)
-REGISTER_EVENT_TYPE(EventType::ThumbnailData, std::string)
-REGISTER_EVENT_TYPE(EventType::AxesData)
-REGISTER_EVENT_TYPE(EventType::ExtruderData)
-REGISTER_EVENT_TYPE(EventType::KinematicsName, std::string)
-REGISTER_EVENT_TYPE(EventType::SpeedFactor)
-REGISTER_EVENT_TYPE(EventType::WorkplaceNumber)
-REGISTER_EVENT_TYPE(EventType::PrintingAcceleration, uint32_t)
-REGISTER_EVENT_TYPE(EventType::CurrentMoveRequestedSpeed)
-REGISTER_EVENT_TYPE(EventType::CurrentMoveTopSpeed)
-REGISTER_EVENT_TYPE(EventType::CurrentMoveExtrusionSpeed)
-REGISTER_EVENT_TYPE(EventType::CompensationFile)
-REGISTER_EVENT_TYPE(EventType::Response, std::string)
-REGISTER_EVENT_TYPE(EventType::LogMessage, Log::DebugLevel, Log::log_time_t, std::string)
-REGISTER_EVENT_TYPE(EventType::AnalogSensorData)
-REGISTER_EVENT_TYPE(EventType::EndstopData)
-REGISTER_EVENT_TYPE(EventType::SpindleData)
-REGISTER_EVENT_TYPE(EventType::NetworkName)
-REGISTER_EVENT_TYPE(EventType::IpAddress)
-REGISTER_EVENT_TYPE(EventType::Status, OM::PrinterStatus)
-REGISTER_EVENT_TYPE(EventType::CurrentTool)
-REGISTER_EVENT_TYPE(EventType::MessageBoxData, OM::Alert)
-REGISTER_EVENT_TYPE(EventType::Time)
-REGISTER_EVENT_TYPE(EventType::ToolData)
-REGISTER_EVENT_TYPE(EventType::Directories)
-
-// Variant covering all possible event-data tuples
-using EventData = std::variant<EventTraits<EventType::Tick>,
-							   EventTraits<EventType::Connected>,
-							   EventTraits<EventType::Disconnected>,
-							   EventTraits<EventType::UpdateAvailable>,
-							   EventTraits<EventType::FanData>,
-							   EventTraits<EventType::FileData>,
-							   EventTraits<EventType::HeaterData>,
-							   EventTraits<EventType::JobFileName>,
-							   EventTraits<EventType::JobLastFileName>,
-							   EventTraits<EventType::JobPrintTime>,
-							   EventTraits<EventType::JobDuration>,
-							   EventTraits<EventType::JobTimeLeft>,
-							   EventTraits<EventType::JobWarmupDuration>,
-							   EventTraits<EventType::JobHeight>,
-							   EventTraits<EventType::JobBuild>,
-							   EventTraits<EventType::JobCurrentObject>,
-							   EventTraits<EventType::JobObjectData>,
-							   EventTraits<EventType::ThumbnailData>,
-							   EventTraits<EventType::AxesData>,
-							   EventTraits<EventType::ExtruderData>,
-							   EventTraits<EventType::KinematicsName>,
-							   EventTraits<EventType::SpeedFactor>,
-							   EventTraits<EventType::WorkplaceNumber>,
-							   EventTraits<EventType::PrintingAcceleration>,
-							   EventTraits<EventType::CurrentMoveRequestedSpeed>,
-							   EventTraits<EventType::CurrentMoveTopSpeed>,
-							   EventTraits<EventType::CurrentMoveExtrusionSpeed>,
-							   EventTraits<EventType::CompensationFile>,
-							   EventTraits<EventType::Response>,
-							   EventTraits<EventType::LogMessage>,
-							   EventTraits<EventType::AnalogSensorData>,
-							   EventTraits<EventType::EndstopData>,
-							   EventTraits<EventType::SpindleData>,
-							   EventTraits<EventType::NetworkName>,
-							   EventTraits<EventType::IpAddress>,
-							   EventTraits<EventType::Status>,
-							   EventTraits<EventType::CurrentTool>,
-							   EventTraits<EventType::MessageBoxData>,
-							   EventTraits<EventType::Time>,
-							   EventTraits<EventType::ToolData>,
-							   EventTraits<EventType::Directories>>;
-#endif
 
 using EventCallback = std::function<void(const EventData&)>;
 
@@ -318,11 +196,7 @@ class Model
 		m_handlers[E].emplace_back(
 			[instance, memberFunc](const EventData& data)
 			{
-#if DEV_EVENT_TRAIT_TEMPLATE
-				auto& tup = std::get<EventTraits<E, Args...>>(data).data.tup;
-#else
-				auto& tup = std::get<EventTraits<E>>(data).data.tup;
-#endif
+				auto& tup = std::get<EventTraits<E, std::decay_t<Args>...>>(data).data.tup;
 				std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
 			});
 	}
@@ -330,11 +204,7 @@ class Model
 	template <EventType E, typename... Args>
 	void post(Args&&... args)
 	{
-#if DEV_EVENT_TRAIT_TEMPLATE
-		using Traits = EventTraits<E, Args...>;
-#else
-		using Traits = EventTraits<E>;
-#endif
+		using Traits = EventTraits<E, std::decay_t<Args>...>;
 		using decayed_tuple = typename Traits::tuple_type;
 
 		std::lock_guard<std::mutex> lock(m_mutex);
