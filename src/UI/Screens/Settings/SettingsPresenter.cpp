@@ -4,6 +4,7 @@
 #include "utils/GpioHelper.h"
 #include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
+#include <fstream>
 
 namespace UI
 {
@@ -31,7 +32,9 @@ namespace UI
 
 	void SettingsPresenter::setUsbHost(bool host)
 	{
-		GpioHelper::setPinValue(GPIO_USB_STATE, host ? 0 : 1);
+		std::ofstream ofs(USB_OTG_ROLE_PATH);
+		ofs << (host ? "usb_host" : "usb_device");
+		ofs.close();
 	}
 
 	void SettingsPresenter::setUsbMux(bool usbc)
