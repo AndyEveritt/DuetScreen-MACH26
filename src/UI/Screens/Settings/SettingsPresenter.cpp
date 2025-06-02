@@ -16,14 +16,17 @@ namespace UI
 		case UsbMode::Host:
 			setUsbHost(true);
 			setUsbMux(true);
+			setUsbState(true);
 			break;
 		case UsbMode::Device:
 			setUsbHost(false);
 			setUsbMux(true);
+			setUsbState(false);
 			break;
 		case UsbMode::InternalWiFi:
 			setUsbHost(true);
 			setUsbMux(false);
+			setUsbState(false);
 			break;
 		}
 		LOG_INFO("USB mode set to {:d}", static_cast<int>(mode));
@@ -40,6 +43,11 @@ namespace UI
 	void SettingsPresenter::setUsbMux(bool usbc)
 	{
 		GpioHelper::setPinValue(GPIO_USB_SELECT, usbc ? 1 : 0);
+	}
+
+	void SettingsPresenter::setUsbState(bool state)
+	{
+		GpioHelper::setPinValue(GPIO_USB_STATE, state ? 1 : 0);
 	}
 
 	void SettingsPresenter::onInit()

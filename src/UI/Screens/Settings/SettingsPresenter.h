@@ -27,6 +27,7 @@ namespace UI
 
 		void setUsbHost(bool host);
 		void setUsbMux(bool usbc);
+		void setUsbState(bool state);
 	};
 
 	class NetworkSettingsPresenter : public Presenter<NetworkSettingsView>
