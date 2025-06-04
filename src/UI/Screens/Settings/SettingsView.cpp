@@ -321,7 +321,7 @@ namespace UI
 				{
 					return;
 				}
-				theme->applyTheme();
+				theme->setThemeActive();
 				StorageHelper::setData(ID_THEME, selected);
 				// view->getMainSettingsPresenter()->setTheme(selected);
 			},

@@ -6,28 +6,20 @@
  */
 
 #include "Debug.h"
+#include "DefaultTheme.h"
 #include "UI/Styles/Styles.h"
 
 namespace UI::Themes
 {
-	class DarkTheme : public Theme
-	{
-	  public:
-		DarkTheme(const char* name)
-			: Theme(name)
-		{
-		}
-
-		virtual void init() override
-		{
-			// lv_style_set_bg_color(m_lvglStyles.card, lv_color_hex(0x2E3440));
-			// lv_style_set_bg_opa(m_container, LV_OPA_COVER);
-			// lv_style_set_border_color(m_container, lv_palette_main(LV_PALETTE_TEAL));
-
-			// lv_style_set_border_color(m_lvglStyles.btn, lv_palette_main(LV_PALETTE_ORANGE));
-			lv_style_set_bg_color(m_estop, lv_palette_main(LV_PALETTE_RED));
-		}
-	};
-
-	static DarkTheme s_darkTheme("theme_dark");
+	static DefaultTheme s_darkTheme("theme_dark",
+									lv_palette_main(LV_PALETTE_BLUE),
+									lv_palette_main(LV_PALETTE_RED),
+									lv_color_hex(0x282b30),
+									lv_palette_lighten(LV_PALETTE_GREY, 5),
+									lv_color_hex(0x2f3237),
+									LV_FONT_DEFAULT,
+									true,
+									[](Theme* theme) {
+										lv_style_set_bg_color(theme->components.estop, lv_palette_main(LV_PALETTE_RED));
+									});
 } // namespace UI::Themes

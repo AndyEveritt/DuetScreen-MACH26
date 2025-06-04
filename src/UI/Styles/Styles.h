@@ -45,12 +45,14 @@ namespace UI::Themes
 		Style btn;
 
 		/*Utility*/
-		Style bg_color_primary;
+		Style bg_color_primary; // button, button matrix (checked), bar indicator, slider indicator, table part focus
+								// key, checkbox indicator, switch indicator, roller selected, dropdown list selected,
+								// textarea selected, list button focus key, spinbox cursor, msgbox buttons
 		Style bg_color_primary_muted;
 		Style bg_color_secondary;
 		Style bg_color_secondary_muted;
-		Style bg_color_grey;
-		Style bg_color_white;
+		Style bg_color_header;
+		Style bg_color_list_item;
 		Style pressed;
 		Style disabled;
 		Style pad_zero;
@@ -58,17 +60,15 @@ namespace UI::Themes
 		Style pad_small;
 		Style pad_normal;
 		Style pad_gap;
-		Style line_space_large;
-		Style text_align_center;
-		Style outline_primary;
-		Style outline_secondary;
+		Style line_space_large;	 // roller, dropdown
+		Style text_align_center; // roller
+		Style outline_primary;	 // Focused via keypad or encoder
+		Style outline_secondary; // Edited by an encoder
 		Style circle;
 		Style no_radius;
 		Style clip_corner;
 		Style rotary_scroll;
-#if LV_THEME_DEFAULT_GROW
 		Style grow;
-#endif
 		Style transition_delayed;
 		Style transition_normal;
 		Style anim;
@@ -82,8 +82,15 @@ namespace UI::Themes
 		Style arc_indic_primary;
 #endif
 
+#if LV_USE_BAR
+		Style bar;
+		Style bar_indic;
+#endif
+
 #if LV_USE_CHART
-		Style chart_series, chart_indic, chart_bg;
+		Style chart_series;
+		Style chart_indic;
+		Style chart_bg;
 #endif
 
 #if LV_USE_DROPDOWN
@@ -91,10 +98,12 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_CHECKBOX
-		Style cb_marker, cb_marker_checked;
+		Style cb_marker;
+		Style cb_marker_checked;
 #endif
 
 #if LV_USE_SWITCH
+		Style bg_switch;
 		Style switch_knob;
 #endif
 
@@ -103,20 +112,32 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_TABLE
+		Style table;
 		Style table_cell;
 #endif
 
 #if LV_USE_TEXTAREA
-		Style ta_cursor, ta_placeholder;
+		Style ta_cursor;
+		Style ta_placeholder;
 #endif
 
 #if LV_USE_CALENDAR
-		Style calendar_btnm_bg, calendar_btnm_day, calendar_header;
+		Style calendar_btnm_bg;
+		Style calendar_btnm_day;
+		Style calendar_header;
 #endif
 
 #if LV_USE_MENU
-		Style menu_bg, menu_cont, menu_sidebar_cont, menu_main_cont, menu_page, menu_header_cont, menu_header_btn,
-			menu_section, menu_pressed, menu_separator;
+		Style menu_bg;
+		Style menu_cont;
+		Style menu_sidebar_cont;
+		Style menu_main_cont;
+		Style menu_page;
+		Style menu_header_cont;
+		Style menu_header_btn;
+		Style menu_section;
+		Style menu_pressed;
+		Style menu_separator;
 #endif
 
 #if LV_USE_MSGBOX
@@ -125,14 +146,18 @@ namespace UI::Themes
 
 #if LV_USE_KEYBOARD
 		Style keyboard_button_bg;
+		Style keyboard_button_checked_bg;
 #endif
 
 #if LV_USE_LIST
-		Style list_bg, list_btn, list_item_grow;
+		Style list_bg;
+		Style list_btn;
+		Style list_item_grow;
 #endif
 
 #if LV_USE_TABVIEW
-		Style tab_bg_focus, tab_btn;
+		Style tab_bg_focus;
+		Style tab_btn;
 #endif
 #if LV_USE_LED
 		Style led;
@@ -141,30 +166,68 @@ namespace UI::Themes
 #if LV_USE_SCALE
 		Style scale;
 #endif
+
+#if LV_USE_SLIDER
+		Style slider;
+		Style slider_indic;
+		Style slider_knob;
+#endif
+	};
+
+	struct ComponentStyles
+	{
+		Style actionBtn;	 // for UI elements that perform actions on the Duet
+		Style estop;
+	};
+
+	struct PaddingStyles
+	{
+		Style zero;
+		Style tiny;
+		Style small;
+		Style normal;
+		Style gap;
 	};
 
 	const LvglStyles& getLvglStyles();
-	const Style& getBaseStyle();
-	const Style& getEStopStyle();
+	const ComponentStyles& getComponentStyles();
+	const PaddingStyles& getPaddingStyles();
 
 	class Theme
 	{
 	  public:
-		Theme(const char* name);
+		Theme(const char* name, std::function<void(Theme* theme)> initFunc = nullptr);
 		~Theme() = default;
 		Theme& operator=(const Theme&) = delete;
 
-		virtual void init() {}
+		void init();
 
-		void applyTheme() const;
+		void setThemeActive() const;
+
 		const std::string& getName() const { return m_name; }
 
-	  protected:
-		LvglStyles m_lvglStyles;
-		Style m_estop;
+		// Base LVGL styles applied to existing and newly created objects
+		LvglStyles lvgl;
+
+		// Specific component styles
+		ComponentStyles components;
+
+		// Padding styles
+		PaddingStyles padding;
 
 	  private:
+		virtual void onInit() {}
+
 		const std::string m_name;
+		std::function<void(Theme*)> m_initFunc;
+
+		enum class DisplaySize_t
+		{
+			DISP_SMALL = 3,
+			DISP_MEDIUM = 2,
+			DISP_LARGE = 1,
+		};
+		DisplaySize_t m_displaySize;
 	};
 
 	void init(lv_display_t* display);
@@ -179,7 +242,7 @@ namespace UI::Themes
 	bool isdebugBorderVisible(lv_obj_t* obj);
 	void showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive = true);
 #endif
-} // namespace UI
+} // namespace UI::Themes
 
 bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style);
 void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);

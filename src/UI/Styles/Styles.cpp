@@ -20,9 +20,8 @@ namespace UI::Themes
 	static std::vector<Theme*> s_themes;
 
 	static LvglStyles s_lvglStyles;
-
-	static Style s_baseStyle("base");
-	static Style s_estopStyle("estop");
+	static ComponentStyles s_componentStyles;
+	static PaddingStyles s_paddingStyles;
 
 	static Theme* s_currentTheme = nullptr;
 
@@ -35,6 +34,7 @@ namespace UI::Themes
 									lv_style_set_border_opa(style, LV_OPA_100);
 								});
 #endif
+
 	Style::Style()
 		: name(nullptr)
 		, initFunc(nullptr)
@@ -67,7 +67,9 @@ namespace UI::Themes
 	Style::Style(const Style& other)
 		: name(other.name)
 	{
+		UI_LOCK();
 		lv_style_copy(&style, &other.style);
+		lv_obj_report_style_change(&style);
 	}
 
 	void Style::init()
@@ -81,7 +83,9 @@ namespace UI::Themes
 
 	Style& Style::operator=(const Style& other)
 	{
+		UI_LOCK();
 		lv_style_copy(&style, &other.style);
+		lv_obj_report_style_change(&style);
 		return *this;
 	}
 
@@ -92,14 +96,14 @@ namespace UI::Themes
 		return s_lvglStyles;
 	}
 
-	const Style& getBaseStyle()
+	const ComponentStyles& getComponentStyles()
 	{
-		return s_baseStyle;
+		return s_componentStyles;
 	}
 
-	const Style& getEStopStyle()
+	const PaddingStyles& getPaddingStyles()
 	{
-		return s_estopStyle;
+		return s_paddingStyles;
 	}
 
 	static bool themeExists(const char* name)
@@ -114,10 +118,9 @@ namespace UI::Themes
 		return false;
 	}
 
-	Theme::Theme(const char* name)
+	Theme::Theme(const char* name, std::function<void(Theme* theme)> initFunc)
 		: m_name(name)
-		, m_lvglStyles()
-		, m_estop("estop")
+		, m_initFunc(initFunc)
 	{
 		if (themeExists(name))
 		{
@@ -128,11 +131,24 @@ namespace UI::Themes
 		LOG_INFO("Theme {:s} created", name);
 	}
 
-	void Theme::applyTheme() const
+	void Theme::init()
+	{
+		UI_LOCK();
+		LOG_INFO("Initializing theme: {:s}", m_name);
+
+		onInit();
+
+		if (m_initFunc)
+		{
+			m_initFunc(this);
+		}
+	}
+
+	void Theme::setThemeActive() const
 	{
 		LOG_INFO("Applying theme: {:s}", m_name);
-		s_lvglStyles = m_lvglStyles;
-		s_estopStyle = m_estop;
+		s_lvglStyles = lvgl;
+		s_componentStyles = components;
 
 		s_currentTheme = const_cast<Theme*>(this);
 
@@ -160,8 +176,6 @@ namespace UI::Themes
 		UI_LOCK();
 		LV_UNUSED(th);
 
-		lv_obj_add_style(obj, s_baseStyle, LV_PART_MAIN);
-
 		lv_obj_t* parent = lv_obj_get_parent(obj);
 
 		if (parent == NULL)
@@ -185,7 +199,7 @@ namespace UI::Themes
 			/*Tabview button container*/
 			else if (lv_obj_check_type(parent, &lv_tabview_class) && lv_obj_get_child(parent, 0) == obj)
 			{
-				lv_obj_add_style(obj, s_lvglStyles.bg_color_white, 0);
+				lv_obj_add_style(obj, s_lvglStyles.bg_color_list_item, 0);
 				lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
 				lv_obj_add_style(obj, s_lvglStyles.tab_bg_focus, LV_STATE_FOCUS_KEY);
 				return;
@@ -207,7 +221,7 @@ namespace UI::Themes
 			/*Header*/
 			if (lv_obj_check_type(parent, &lv_win_class) && lv_obj_get_child(parent, 0) == obj)
 			{
-				lv_obj_add_style(obj, s_lvglStyles.bg_color_grey, 0);
+				lv_obj_add_style(obj, s_lvglStyles.bg_color_header, 0);
 				lv_obj_add_style(obj, s_lvglStyles.pad_tiny, 0);
 				return;
 			}
@@ -259,15 +273,13 @@ namespace UI::Themes
 			}
 
 #  endif
-			lv_obj_add_style(obj, s_lvglStyles.btn, 0);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, 0);
+			lv_obj_add_style(obj, s_lvglStyles.btn, 0);
 			lv_obj_add_style(obj, s_lvglStyles.transition_delayed, 0);
 			lv_obj_add_style(obj, s_lvglStyles.pressed, LV_STATE_PRESSED);
 			lv_obj_add_style(obj, s_lvglStyles.transition_normal, LV_STATE_PRESSED);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
-#  if LV_THEME_DEFAULT_GROW
 			lv_obj_add_style(obj, s_lvglStyles.grow, LV_STATE_PRESSED);
-#  endif
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_secondary, LV_STATE_CHECKED);
 			lv_obj_add_style(obj, s_lvglStyles.disabled, LV_STATE_DISABLED);
 
@@ -337,11 +349,11 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_bar_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary_muted, 0);
-			lv_obj_add_style(obj, s_lvglStyles.circle, 0);
+			lv_obj_add_style(obj, s_lvglStyles.bar, 0);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_PART_INDICATOR);
-			lv_obj_add_style(obj, s_lvglStyles.circle, LV_PART_INDICATOR);
+			lv_obj_add_style(obj, s_lvglStyles.bar_indic, LV_PART_INDICATOR);
 		}
 #endif
 
@@ -349,16 +361,15 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_slider_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary_muted, 0);
-			lv_obj_add_style(obj, s_lvglStyles.circle, 0);
+			lv_obj_add_style(obj, s_lvglStyles.slider, 0);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_PART_INDICATOR);
-			lv_obj_add_style(obj, s_lvglStyles.circle, LV_PART_INDICATOR);
+			lv_obj_add_style(obj, s_lvglStyles.slider_indic, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, s_lvglStyles.knob, LV_PART_KNOB);
-#  if LV_THEME_DEFAULT_GROW
+			lv_obj_add_style(obj, s_lvglStyles.slider_knob, LV_PART_KNOB);
 			lv_obj_add_style(
 				obj, s_lvglStyles.grow, static_cast<int>(LV_PART_KNOB) | static_cast<int>(LV_STATE_PRESSED));
-#  endif
 			lv_obj_add_style(obj, s_lvglStyles.transition_delayed, LV_PART_KNOB);
 			lv_obj_add_style(obj,
 							 s_lvglStyles.transition_normal,
@@ -371,14 +382,13 @@ namespace UI::Themes
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
 			lv_obj_add_style(obj, s_lvglStyles.pad_zero, 0);
-			lv_obj_add_style(obj, s_lvglStyles.no_radius, 0);
+			lv_obj_add_style(obj, s_lvglStyles.table, 0);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.scrollbar, LV_PART_SCROLLBAR);
 			lv_obj_add_style(obj,
 							 s_lvglStyles.scrollbar_scrolled,
 							 static_cast<int>(LV_PART_SCROLLBAR) | static_cast<int>(LV_STATE_SCROLLED));
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_white, LV_PART_ITEMS);
 			lv_obj_add_style(obj, s_lvglStyles.table_cell, LV_PART_ITEMS);
 			lv_obj_add_style(obj, s_lvglStyles.pad_normal, LV_PART_ITEMS);
 			lv_obj_add_style(
@@ -408,10 +418,8 @@ namespace UI::Themes
 							 static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_CHECKED));
 			lv_obj_add_style(
 				obj, s_lvglStyles.pressed, static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_PRESSED));
-#  if LV_THEME_DEFAULT_GROW
 			lv_obj_add_style(
 				obj, s_lvglStyles.grow, static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_PRESSED));
-#  endif
 			lv_obj_add_style(obj,
 							 s_lvglStyles.transition_normal,
 							 static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_PRESSED));
@@ -422,17 +430,14 @@ namespace UI::Themes
 #if LV_USE_SWITCH
 		else if (lv_obj_check_type(obj, &lv_switch_class))
 		{
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_grey, 0);
-			lv_obj_add_style(obj, s_lvglStyles.circle, 0);
+			lv_obj_add_style(obj, s_lvglStyles.bg_switch, 0);
 			lv_obj_add_style(obj, s_lvglStyles.anim_fast, 0);
 			lv_obj_add_style(obj, s_lvglStyles.disabled, LV_STATE_DISABLED);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj,
 							 s_lvglStyles.bg_color_primary,
 							 static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_CHECKED));
-			lv_obj_add_style(obj, s_lvglStyles.circle, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, s_lvglStyles.knob, LV_PART_KNOB);
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_white, LV_PART_KNOB);
 			lv_obj_add_style(obj, s_lvglStyles.switch_knob, LV_PART_KNOB);
 
 			lv_obj_add_style(obj,
@@ -494,7 +499,6 @@ namespace UI::Themes
 			lv_obj_add_style(obj,
 							 s_lvglStyles.scrollbar_scrolled,
 							 static_cast<int>(LV_PART_SCROLLBAR) | static_cast<int>(LV_STATE_SCROLLED));
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_white, LV_PART_SELECTED);
 			lv_obj_add_style(obj,
 							 s_lvglStyles.bg_color_primary,
 							 static_cast<int>(LV_PART_SELECTED) | static_cast<int>(LV_STATE_CHECKED));
@@ -566,17 +570,18 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_keyboard_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.screen, 0);
+			lv_obj_add_style(obj, s_lvglStyles.card, 0);
 			lv_obj_add_style(obj, s_lvglStyles.pad_small, 0);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.btn, LV_PART_ITEMS);
 			lv_obj_add_style(obj, s_lvglStyles.disabled, static_cast<int>(LV_PART_ITEMS) | LV_STATE_DISABLED);
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_white, LV_PART_ITEMS);
 			lv_obj_add_style(obj, s_lvglStyles.keyboard_button_bg, LV_PART_ITEMS);
 			lv_obj_add_style(
 				obj, s_lvglStyles.pressed, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_PRESSED));
-			lv_obj_add_style(
-				obj, s_lvglStyles.bg_color_grey, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_CHECKED));
+			lv_obj_add_style(obj,
+							 s_lvglStyles.keyboard_button_checked_bg,
+							 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_CHECKED));
 			lv_obj_add_style(obj,
 							 s_lvglStyles.bg_color_primary_muted,
 							 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_FOCUS_KEY));
@@ -606,12 +611,12 @@ namespace UI::Themes
 		}
 		else if (lv_obj_check_type(obj, &lv_list_text_class))
 		{
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_grey, 0);
+			lv_obj_add_style(obj, s_lvglStyles.bg_color_header, 0);
 			lv_obj_add_style(obj, s_lvglStyles.list_item_grow, 0);
 		}
 		else if (lv_obj_check_type(obj, &lv_list_button_class))
 		{
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_white, 0);
+			lv_obj_add_style(obj, s_lvglStyles.bg_color_list_item, 0);
 			lv_obj_add_style(obj, s_lvglStyles.list_btn, 0);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.list_item_grow, LV_STATE_FOCUS_KEY);
@@ -689,7 +694,7 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_msgbox_header_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.pad_tiny, 0);
-			lv_obj_add_style(obj, s_lvglStyles.bg_color_grey, 0);
+			lv_obj_add_style(obj, s_lvglStyles.bg_color_header, 0);
 			return;
 		}
 		else if (lv_obj_check_type(obj, &lv_msgbox_footer_class))
@@ -795,6 +800,11 @@ namespace UI::Themes
 		UI_LOCK();
 		LOG_INFO("Initializing themes");
 
+		if (display == NULL)
+		{
+			display == lv_display_get_default();
+		}
+
 		// Initialize uninitialized styles
 		for (auto& style : s_uninitializedStyles)
 		{
@@ -836,7 +846,7 @@ namespace UI::Themes
 		}
 		if (theme != nullptr)
 		{
-			theme->applyTheme();
+			theme->setThemeActive();
 		}
 
 #if DEBUG_BORDERS

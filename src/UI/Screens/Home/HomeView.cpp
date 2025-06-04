@@ -110,21 +110,29 @@ namespace UI
 		lv_obj_set_flex_align(m_windowSelect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		// Window select buttons
-		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_moveView);
-		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_extrudeView);
-		m_fansWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_fanView);
+		m_moveWindow.setUserData(&m_moveView);
+		m_extrudeWindow.setUserData(&m_extrudeView);
+		m_statusWindow.setUserData(&m_statusView);
+		m_heightmapWindow.setUserData(&m_heightmapView);
+		m_fansWindow.setUserData(&m_fanView);
+		m_filesWindow.setUserData(&m_fileView);
+		m_settingsWindow.setUserData(&m_settingsView);
+
+		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		m_fansWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		m_filesWindow.setCallback(
 			[](lv_event_t* e)
 			{
-				FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
+				FileView* view = static_cast<FileView*>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
 				view->getPresenter()->setBaseFolder(FilePresenter::BaseFolder::GCODES);
 				openScreen(view, false);
 			},
 			LV_EVENT_CLICKED,
-			&m_fileView);
-		m_heightmapWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_heightmapView);
-		m_statusWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_statusView);
-		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, &m_settingsView);
+			this);
+		m_heightmapWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		m_statusWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
 
 		m_consoleView.hide();
 		m_moveView.hide();
@@ -158,6 +166,9 @@ namespace UI
 		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_FLOATING);
 		lv_obj_align(m_kb, LV_ALIGN_BOTTOM_MID, 0, 0);
 		lv_obj_set_size(m_kb, LV_PCT(100), LV_PCT(50));
+
+		lv_switch_create(getCont());
+		lv_bar_set_value(lv_bar_create(getCont()), 50, LV_ANIM_OFF);
 
 		// Styles::instance().removeTheme(getCont());
 		// lv_obj_remove_style(getCont(), &Styles::instance().debugBorders.style, 0);
@@ -217,10 +228,11 @@ namespace UI
 	void HomeView::onWindowSelectEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		BaseView* view = (BaseView*)lv_event_get_user_data(e);
+		HomeView* view = (HomeView*)lv_event_get_user_data(e);
+		BaseView* selectedWindow = (BaseView*)lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e));
 
 		// Don't close the home screen as it contains the side bar an the screen that is being opened
-		openScreen(view, false);
+		openScreen(selectedWindow, false);
 	}
 
 	std::shared_ptr<MessageBox> HomeView::createMessageBox()

@@ -18,6 +18,9 @@ namespace UI
 	  public:
 		SideBar(const std::string& name, lv_obj_t* parent);
 
+		void enableHomeButton(bool enable);
+		void enableBackButton(bool enable);
+
 	  private:
 		static void backBtnEvent(lv_event_t* e);
 		static void homeBtnEvent(lv_event_t* e);
