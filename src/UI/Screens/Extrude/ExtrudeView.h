@@ -51,8 +51,6 @@ namespace UI
 		  private:
 			static void onStatusEvent(lv_event_t* e);
 			static void onTemperaturesSetEvent(lv_event_t* e);
-
-			lv_style_t m_targetTempStyle;
 		};
 
 		std::shared_ptr<Heater> getHeater(const size_t index);
@@ -66,8 +64,6 @@ namespace UI
 		lv_obj_t* m_filamentControls;
 		lv_obj_t* m_filament;
 		Button m_unload;
-
-		lv_style_t m_listStyle;
 	};
 
 	class ExtrudeView : public View<ExtrudePresenter>

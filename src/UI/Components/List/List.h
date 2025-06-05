@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Core/View.h"
+#include "UI/Styles/Styles.h"
 #include <memory>
 #include <vector>
 
@@ -20,6 +21,8 @@ namespace UI
 			: BaseView(utils::format("%s_%u", name.c_str(), index), parent)
 			, m_index(index)
 		{
+			lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_list_item, 0);
+			lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 		}
 
 		const size_t getIndex() const { return m_index; }
@@ -39,6 +42,8 @@ namespace UI
 			, m_title(lv_label_create(getCont()))
 			, m_listCont(lv_obj_create(getCont()))
 		{
+			lv_obj_add_style(m_title, Themes::getLvglStyles().bg_color_header, 0);
+
 			lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
 			lv_obj_set_size(m_title, LV_PCT(100), LV_SIZE_CONTENT);
 
@@ -110,7 +115,7 @@ namespace UI
 			lv_obj_set_flex_grow(m_listCont, grow);
 		}
 
-		void addListStyle(lv_style_t* style, lv_style_selector_t selector = LV_PART_MAIN)
+		void addListStyle(const lv_style_t* style, lv_style_selector_t selector = LV_PART_MAIN)
 		{
 			UI_LOCK();
 			lv_obj_add_style(m_listCont, style, selector);

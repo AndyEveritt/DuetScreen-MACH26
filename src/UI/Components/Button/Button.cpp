@@ -1,4 +1,5 @@
 #include "Button.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -33,15 +34,15 @@ namespace UI
 		// Initialise the button obj
 		lv_obj_set_pos(m_button, 0, 0);
 		lv_obj_set_size(m_button, LV_PCT(100), LV_PCT(100));
-		lv_obj_set_style_pad_all(getCont(), 5, 0);
-		lv_obj_set_style_border_width(getCont(), 0, 0);
-		lv_obj_set_style_border_width(m_button, 0, 0);
+
+		addStyle(Themes::getLvglStyles().no_border);
 
 		// Initialise the label obj
 		lv_label_set_text(m_label, text.c_str());
 		lv_obj_set_pos(m_label, 0, 0);
 		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_set_style_align(m_label, LV_ALIGN_CENTER, 0);
+		lv_obj_update_layout(getCont());
 	}
 
 	void Button::setText(const std::string& text)
@@ -132,5 +133,11 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_obj_set_style_bg_color(m_button, color, selector);
+	}
+
+	void Button::addBtnStyle(const lv_style_t* style, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_add_style(m_button, style, selector);
 	}
 } // namespace UI

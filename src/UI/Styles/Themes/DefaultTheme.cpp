@@ -14,9 +14,9 @@ namespace UI::Themes
 #define BORDER_WIDTH LV_DPX_CALC(lv_display_get_dpi(NULL), 2)
 #define OUTLINE_WIDTH LV_DPX_CALC(lv_display_get_dpi(NULL), 3)
 
-#define RADIUS_DEFAULT LV_DPX_CALC(lv_display_get_dpi(NULL), 12)
+#define RADIUS_DEFAULT LV_DPX_CALC(lv_display_get_dpi(NULL), 8)
 
-#define PAD_DEF LV_DPX_CALC(lv_display_get_dpi(NULL), 24)
+#define PAD_DEF 5
 #define PAD_SMALL LV_DPX_CALC(lv_display_get_dpi(NULL), 14)
 #define PAD_TINY LV_DPX_CALC(lv_display_get_dpi(NULL), 8)
 
@@ -45,7 +45,7 @@ namespace UI::Themes
 		lv_style_set_radius(lvgl.card, RADIUS_DEFAULT);
 		lv_style_set_bg_opa(lvgl.card, LV_OPA_COVER);
 		lv_style_set_bg_color(lvgl.card, m_cardColor);
-		lv_style_set_border_color(lvgl.card, m_highlightColor);
+		lv_style_set_border_color(lvgl.card, m_darkMode ? DARK_GREY : LIGHT_GREY);
 		lv_style_set_border_width(lvgl.card, BORDER_WIDTH);
 		lv_style_set_border_post(lvgl.card, true);
 		lv_style_set_text_color(lvgl.card, m_textColor);
@@ -64,7 +64,7 @@ namespace UI::Themes
 		lv_style_set_outline_width(lvgl.outline_secondary, OUTLINE_WIDTH);
 		lv_style_set_outline_opa(lvgl.outline_secondary, LV_OPA_50);
 
-		lv_style_set_radius(lvgl.btn, LV_DPX_CALC(lv_display_get_dpi(NULL), 16));
+		lv_style_set_radius(lvgl.btn, RADIUS_DEFAULT);
 		if (!m_darkMode)
 		{
 			lv_style_set_shadow_color(lvgl.btn, GREY);
@@ -101,6 +101,10 @@ namespace UI::Themes
 
 		lv_style_set_text_align(lvgl.text_align_center, LV_TEXT_ALIGN_CENTER);
 
+		lv_style_set_pad_all(lvgl.pad_base, PAD_DEF);
+		lv_style_set_pad_row(lvgl.pad_base, PAD_DEF);
+		lv_style_set_pad_column(lvgl.pad_base, PAD_DEF);
+
 		lv_style_set_pad_all(lvgl.pad_zero, 0);
 		lv_style_set_pad_row(lvgl.pad_zero, 0);
 		lv_style_set_pad_column(lvgl.pad_zero, 0);
@@ -110,7 +114,6 @@ namespace UI::Themes
 		lv_style_set_pad_column(lvgl.pad_tiny, PAD_TINY);
 
 		lv_style_set_bg_color(lvgl.bg_color_primary, m_primaryColor);
-		lv_style_set_text_color(lvgl.bg_color_primary, lv_color_white());
 		lv_style_set_bg_opa(lvgl.bg_color_primary, LV_OPA_COVER);
 
 		lv_style_set_bg_color(lvgl.bg_color_primary_muted, m_primaryColor);
@@ -118,7 +121,6 @@ namespace UI::Themes
 		lv_style_set_bg_opa(lvgl.bg_color_primary_muted, LV_OPA_20);
 
 		lv_style_set_bg_color(lvgl.bg_color_secondary, m_secondaryColor);
-		lv_style_set_text_color(lvgl.bg_color_secondary, lv_color_white());
 		lv_style_set_bg_opa(lvgl.bg_color_secondary, LV_OPA_COVER);
 
 		lv_style_set_bg_color(lvgl.bg_color_secondary_muted, m_secondaryColor);
@@ -137,6 +139,8 @@ namespace UI::Themes
 
 		lv_style_set_radius(lvgl.no_radius, 0);
 
+		lv_style_set_border_width(lvgl.no_border, 0);
+
 		lv_style_set_rotary_sensitivity(lvgl.rotary_scroll, lv_display_get_dpi(NULL) / 4 * 256);
 
 		lv_style_set_transform_width(lvgl.grow, LV_DPX_CALC(lv_display_get_dpi(NULL), 3));
@@ -151,6 +155,17 @@ namespace UI::Themes
 
 		lv_style_set_anim_duration(lvgl.anim_fast, 120);
 
+		lv_style_set_border_color(lvgl.actionBtn, m_secondaryColor);
+		lv_style_set_border_width(lvgl.actionBtn, BORDER_WIDTH);
+		lv_style_set_border_opa(lvgl.actionBtn, LV_OPA_COVER);
+		lv_style_set_border_side(lvgl.actionBtn, LV_BORDER_SIDE_FULL);
+
+		lv_style_set_border_color(lvgl.input, m_darkMode ? LIGHT_GREY : DARK_GREY);
+		lv_style_set_border_width(lvgl.input, 2);
+		lv_style_set_radius(lvgl.input, RADIUS_DEFAULT);
+		lv_style_set_pad_ver(lvgl.input, 0);
+		lv_style_set_text_align(lvgl.input, LV_TEXT_ALIGN_CENTER);
+
 #if LV_USE_ARC
 		lv_style_set_arc_color(lvgl.arc_indic, m_highlightColor);
 		lv_style_set_arc_width(lvgl.arc_indic, LV_DPX_CALC(lv_display_get_dpi(NULL), 15));
@@ -162,6 +177,10 @@ namespace UI::Themes
 #if LV_USE_BAR
 		lv_style_set_radius(lvgl.bar, LV_RADIUS_CIRCLE);
 		lv_style_set_radius(lvgl.bar_indic, LV_RADIUS_CIRCLE);
+#endif
+
+#if LV_USE_BUTTONMATRIX
+		lv_style_set_bg_color(lvgl.btnm_btn, m_primaryColor);
 #endif
 
 #if LV_USE_DROPDOWN
@@ -195,6 +214,9 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_CHART
+		lv_style_set_border_width(lvgl.chart_bg, BORDER_WIDTH);
+		lv_style_set_border_color(lvgl.chart_bg, m_highlightColor);
+		lv_style_set_border_opa(lvgl.chart_bg, LV_OPA_COVER);
 		lv_style_set_border_post(lvgl.chart_bg, false);
 		lv_style_set_pad_column(lvgl.chart_bg, LV_DPX_CALC(lv_display_get_dpi(NULL), 10));
 		lv_style_set_line_color(lvgl.chart_bg, m_highlightColor);
@@ -299,6 +321,14 @@ namespace UI::Themes
 		lv_style_set_pad_gap(lvgl.calendar_header, PAD_SMALL);
 #endif
 
+#if LV_USE_CANVAS
+		lv_style_set_bg_color(lvgl.canvas, m_cardColor);
+		lv_style_set_bg_opa(lvgl.canvas, LV_OPA_COVER);
+		lv_style_set_border_width(lvgl.canvas, BORDER_WIDTH);
+		lv_style_set_border_color(lvgl.canvas, m_darkMode ? LIGHT_GREY : DARK_GREY);
+		lv_style_set_border_side(lvgl.canvas, LV_BORDER_SIDE_FULL);
+#endif
+
 #if LV_USE_MSGBOX
 		lv_style_set_bg_color(lvgl.msgbox_backdrop_bg, GREY);
 		lv_style_set_bg_opa(lvgl.msgbox_backdrop_bg, LV_OPA_50);
@@ -358,5 +388,10 @@ namespace UI::Themes
 		lv_style_set_radius(lvgl.slider, LV_RADIUS_CIRCLE);
 		lv_style_set_radius(lvgl.slider_indic, LV_RADIUS_CIRCLE);
 #endif
+
+		lv_style_set_bg_color(components.estop, lv_palette_main(LV_PALETTE_RED));
+		lv_style_set_bg_color(components.folder, m_primaryColor);
+
+		lv_style_set_bg_color(components.unhomed, lv_color_hex(0xfb9514));
 	}
 } // namespace UI::Themes

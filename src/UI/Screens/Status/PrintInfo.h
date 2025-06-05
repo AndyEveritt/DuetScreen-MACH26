@@ -72,7 +72,5 @@ namespace UI
 		lv_obj_t* m_fanSpeed;
 
 		SpeedInfo m_speedInfo;
-
-		lv_style_t m_borderStyle;
 	};
 } // namespace UI

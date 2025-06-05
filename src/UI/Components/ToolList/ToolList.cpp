@@ -8,6 +8,7 @@
 #include "ToolList.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -45,18 +46,11 @@ namespace UI
 		lv_obj_add_event_cb(m_standbyTemp, onActiveStandbyEvent, LV_EVENT_CLICKED, this);
 
 		// Styles
-		lv_obj_set_style_bg_color(
-			getCont(), lv_color_darken(lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN), 20), LV_STATE_CHECKED);
+		lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_list_item, 0);
+		lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 
-		lv_style_init(&m_targetTempStyle);
-		lv_style_set_border_color(&m_targetTempStyle, lv_color_hex(0xD3D3D3)); // Light grey color
-		lv_style_set_border_width(&m_targetTempStyle, 2);
-		lv_style_set_radius(&m_targetTempStyle, 5);
-		lv_style_set_pad_ver(&m_targetTempStyle, 0);
-		lv_style_set_min_height(&m_targetTempStyle, 30);
-		lv_style_set_text_align(&m_targetTempStyle, LV_TEXT_ALIGN_CENTER);
-		lv_obj_add_style(m_activeTemp, &m_targetTempStyle, 0);
-		lv_obj_add_style(m_standbyTemp, &m_targetTempStyle, 0);
+		lv_obj_add_style(m_activeTemp, Themes::getLvglStyles().input, 0);
+		lv_obj_add_style(m_standbyTemp, Themes::getLvglStyles().input, 0);
 
 		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_LEFT, 0);
 	}
@@ -100,12 +94,10 @@ namespace UI
 		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
 		if (selected)
 		{
-			// lv_obj_set_style_bg_color(getCont(), lv_color_darken(color, 10), LV_PART_MAIN);
 			lv_obj_add_state(getCont(), LV_STATE_CHECKED);
 		}
 		else
 		{
-			// lv_obj_set_style_bg_color(getCont(), lv_color_lighten(color, 10), LV_PART_MAIN);
 			lv_obj_remove_state(getCont(), LV_STATE_CHECKED);
 		}
 		m_selected = selected;
@@ -255,15 +247,10 @@ namespace UI
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		lv_style_init(&m_headerStyle);
-		lv_style_set_pad_all(&m_headerStyle, 0);
-		lv_style_set_text_align(&m_headerStyle, LV_TEXT_ALIGN_CENTER);
-		lv_style_set_size(&m_headerStyle, LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_add_style(m_header, Themes::getLvglStyles().bg_color_header, 0);
 
-		lv_obj_add_style(m_header, &m_headerStyle, 0);
-		lv_obj_add_style(m_list, &m_headerStyle, 0);
-
-		lv_obj_set_style_bg_color(m_header, lv_palette_lighten(LV_PALETTE_BLUE, 2), 0);
+		lv_obj_set_style_text_align(m_header, LV_TEXT_ALIGN_CENTER, 0);
+		lv_obj_set_style_text_align(m_list, LV_TEXT_ALIGN_CENTER, 0);
 
 		lv_obj_set_style_pad_row(getCont(), 0, 0);
 		// lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
@@ -272,6 +259,7 @@ namespace UI
 
 		lv_obj_set_flex_flow(m_list, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_style_pad_all(m_header, 5, 0);
+		lv_obj_set_style_pad_all(m_list, 0, 0);
 		lv_obj_set_style_pad_row(m_list, 2, LV_PART_MAIN);
 
 		lv_obj_set_size(m_header, LV_PCT(100), LV_SIZE_CONTENT);

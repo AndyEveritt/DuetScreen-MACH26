@@ -7,6 +7,7 @@
 
 #include "Canvas.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -81,11 +82,6 @@ namespace UI
 
 		// Canvas
 		lv_image_set_inner_align(m_canvas, LV_IMAGE_ALIGN_STRETCH);
-		lv_obj_set_style_border_width(m_canvas, 2, LV_PART_MAIN);
-		lv_obj_set_style_border_color(m_canvas, lv_color_hex(0x000000), LV_PART_MAIN);
-		lv_obj_set_style_border_opa(m_canvas, LV_OPA_100, LV_PART_MAIN);
-
-		// lv_obj_set_style
 	}
 
 	void Canvas::setTitle(const std::string& title)
@@ -495,6 +491,8 @@ namespace UI
 	void Canvas::clear()
 	{
 		UI_LOCK();
-		lv_canvas_fill_bg(m_canvas, lv_color_hex(0xFFFFFF), LV_OPA_COVER);
+		lv_style_value_t bg_color;
+		lv_style_get_prop(Themes::getLvglStyles().canvas, LV_STYLE_BG_COLOR, &bg_color);
+		lv_canvas_fill_bg(m_canvas, bg_color.color, LV_OPA_TRANSP);
 	}
 } // namespace UI

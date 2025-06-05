@@ -46,7 +46,6 @@ namespace UI
 		m_eStopBtn.setCallback(eStopBtnEvent, LV_EVENT_CLICKED, this);
 
 		m_eStopBtn.addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
-		// lv_obj_add_style(m_eStopBtn.getButton(), Themes::getEStopStyle(), LV_PART_MAIN, true);
 	}
 
 	void SideBar::enableHomeButton(bool enable)

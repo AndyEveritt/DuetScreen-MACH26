@@ -47,11 +47,9 @@ namespace UI
 			lv_obj_set_style_text_align(obj, i == 0 ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
 		}
 
-		lv_style_init(&m_listStyle);
-		lv_style_set_border_width(&m_listStyle, 0);
-		m_heaters.addStyle(&m_listStyle);
-		m_heaters.addListStyle(&m_listStyle);
-		lv_obj_add_style(m_filamentControls, &m_listStyle, 0);
+		m_heaters.addStyle(Themes::getLvglStyles().no_border);
+		m_heaters.addListStyle(Themes::getLvglStyles().no_border);
+		lv_obj_add_style(m_filamentControls, Themes::getLvglStyles().no_border, 0);
 
 		// Filament controls
 		lv_obj_set_flex_flow(m_filamentControls, LV_FLEX_FLOW_ROW);
@@ -75,9 +73,7 @@ namespace UI
 		lv_obj_add_event_cb(m_filament, onLoadFilamentEvent, LV_EVENT_VALUE_CHANGED, this);
 		m_unload.setCallback(onUnloadEvent, LV_EVENT_CLICKED, this);
 
-		// Styles
-		lv_obj_set_style_bg_color(
-			getCont(), lv_color_darken(lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN), 20), LV_STATE_CHECKED);
+		m_unload.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
 	}
 
 	ToolItem::~ToolItem() {}
@@ -206,12 +202,10 @@ namespace UI
 		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
 		if (selected)
 		{
-			// lv_obj_set_style_bg_color(getCont(), lv_color_darken(color, 10), LV_PART_MAIN);
 			lv_obj_add_state(getCont(), LV_STATE_CHECKED);
 		}
 		else
 		{
-			// lv_obj_set_style_bg_color(getCont(), lv_color_lighten(color, 10), LV_PART_MAIN);
 			lv_obj_remove_state(getCont(), LV_STATE_CHECKED);
 		}
 		m_selected = selected;
@@ -256,15 +250,14 @@ namespace UI
 		lv_obj_set_flex_flow(labelCont, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(labelCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		lv_obj_set_style_pad_all(labelCont, 2, 0);
-		lv_obj_set_style_border_width(labelCont, 0, 0);
 		for (size_t i = 0; i < lv_obj_get_child_count(labelCont); i++)
 		{
 			lv_obj_t* obj = lv_obj_get_child(labelCont, i);
-			lv_obj_set_width(obj, LV_SIZE_CONTENT);
-			lv_obj_set_flex_grow(obj, 1);
+			lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 			lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, 0);
-			lv_obj_set_style_pad_all(obj, 2, 0);
+			lv_obj_add_style(obj, Themes::getLvglStyles().pad_tiny, 0);
 		}
+		lv_obj_add_style(labelCont, Themes::getLvglStyles().actionBtn, 0);
 
 		// Events
 		lv_obj_add_flag(active, LV_OBJ_FLAG_CLICKABLE);
@@ -274,15 +267,17 @@ namespace UI
 		lv_obj_add_event_cb(standby, onTemperaturesSetEvent, LV_EVENT_CLICKED, this);
 
 		// Styles
-		lv_style_init(&m_targetTempStyle);
-		lv_style_set_border_color(&m_targetTempStyle, lv_color_hex(0xD3D3D3)); // Light grey color
-		lv_style_set_border_width(&m_targetTempStyle, 2);
-		lv_style_set_radius(&m_targetTempStyle, 5);
-		lv_style_set_pad_ver(&m_targetTempStyle, 0);
-		lv_style_set_min_height(&m_targetTempStyle, 30);
-		lv_style_set_height(&m_targetTempStyle, LV_PCT(100));
-		lv_obj_add_style(active, &m_targetTempStyle, 0);
-		lv_obj_add_style(standby, &m_targetTempStyle, 0);
+		lv_obj_add_style(active, Themes::getLvglStyles().input, 0);
+		lv_obj_add_style(active, Themes::getLvglStyles().pad_zero, 0);
+
+		lv_obj_add_style(standby, Themes::getLvglStyles().input, 0);
+		lv_obj_add_style(standby, Themes::getLvglStyles().pad_zero, 0);
+
+		lv_obj_set_height(active, LV_PCT(100));
+		lv_obj_set_height(standby, LV_PCT(100));
+
+		lv_obj_set_style_min_height(active, 30, 0);
+		lv_obj_set_style_min_height(standby, 30, 0);
 	}
 
 	void ToolItem::onLabelEvent(lv_event_t* e)
@@ -365,6 +360,8 @@ namespace UI
 	{
 		UI_LOCK();
 
+		lv_obj_add_style(m_listHeader, Themes::getLvglStyles().bg_color_header, 0);
+
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
@@ -412,7 +409,6 @@ namespace UI
 			}
 		}
 		lv_obj_set_height(m_headerPad, 0); // effectively hides it
-		lv_obj_set_style_bg_color(m_listHeader, lv_palette_lighten(LV_PALETTE_BLUE, 2), 0);
 
 		// List
 		lv_obj_set_style_pad_all(m_listCont, 0, 0);
@@ -485,6 +481,9 @@ namespace UI
 
 		m_retract.setCallback(onRetractEvent, LV_EVENT_CLICKED, this);
 		m_extrude.setCallback(onExtrudeEvent, LV_EVENT_CLICKED, this);
+
+		m_retract.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_extrude.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
 	}
 
 	void ExtrudeView::setToolCount(const size_t count)

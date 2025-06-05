@@ -16,15 +16,15 @@ namespace UI::Themes
 	{
 	  public:
 		DefaultTheme(const char* name,
-				  lv_color_t primaryColor,
-				  lv_color_t secondaryColor,
-				  lv_color_t cardColor,
-				  lv_color_t textColor,
-				  lv_color_t highlightColor,
-				  const lv_font_t* font,
-				  bool darkMode,
-				  std::function<void(Theme* theme)> initFunc = nullptr)
-			: Theme(name, initFunc)
+					 lv_color_t primaryColor,
+					 lv_color_t secondaryColor,
+					 lv_color_t cardColor,
+					 lv_color_t textColor,
+					 lv_color_t highlightColor,
+					 const lv_font_t* font,
+					 bool darkMode,
+					 std::function<void(Theme* theme)> styleOverrides = nullptr)
+			: Theme(name, styleOverrides)
 			, m_primaryColor(primaryColor)
 			, m_secondaryColor(secondaryColor)
 			, m_cardColor(cardColor)

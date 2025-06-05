@@ -21,6 +21,7 @@ namespace UI
 		const bool getChecked() const;
 		void setInvalid(bool invalid);
 		void setBgColor(lv_color_t, lv_style_selector_t selector);
+		void addBtnStyle(const lv_style_t* style, lv_style_selector_t selector);
 
 		lv_obj_t* getLabel() const { return m_label; }
 		lv_obj_t* getButton() const { return m_button; }

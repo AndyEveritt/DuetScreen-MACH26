@@ -82,8 +82,8 @@ namespace UI
 
 		lv_obj_set_flex_grow(m_mainWindow, 1);
 		lv_obj_set_height(m_mainWindow, LV_PCT(100));
-		lv_obj_set_style_pad_all(m_mainWindow, 0, LV_PART_MAIN);
-		lv_obj_set_style_border_width(m_mainWindow, 0, LV_PART_MAIN);
+		lv_obj_add_style(m_mainWindow, Themes::getLvglStyles().pad_zero, 0);
+		lv_obj_add_style(m_mainWindow, Themes::getLvglStyles().no_border, 0);
 
 		// Main Window Layout
 		lv_obj_set_layout(m_mainWindow, LV_LAYOUT_GRID);
@@ -166,9 +166,6 @@ namespace UI
 		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_FLOATING);
 		lv_obj_align(m_kb, LV_ALIGN_BOTTOM_MID, 0, 0);
 		lv_obj_set_size(m_kb, LV_PCT(100), LV_PCT(50));
-
-		lv_switch_create(getCont());
-		lv_bar_set_value(lv_bar_create(getCont()), 50, LV_ANIM_OFF);
 
 		// Styles::instance().removeTheme(getCont());
 		// lv_obj_remove_style(getCont(), &Styles::instance().debugBorders.style, 0);

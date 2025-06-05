@@ -7,6 +7,7 @@
 
 #include "VerticalButtonPanel.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -37,7 +38,7 @@ namespace UI
 		lv_obj_set_layout(m_valueCont, LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(m_valueCont, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(m_valueCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_style_pad_all(m_valueCont, 2, 0);
+		lv_obj_add_style(m_valueCont, Themes::getLvglStyles().pad_tiny, 0);
 
 		for (size_t i = 0; i < lv_obj_get_child_cnt(m_valueCont); i++)
 		{

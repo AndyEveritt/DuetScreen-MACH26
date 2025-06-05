@@ -27,12 +27,8 @@ namespace UI::Themes
 									 [](Theme* theme)
 									 {
 										 lv_style_set_bg_color(theme->lvgl.screen, COLOR_SCR);
-										 lv_style_set_text_color(theme->lvgl.screen, COLOR_TEXT);
-										 lv_style_set_text_color(theme->lvgl.card, COLOR_TEXT);
 										 lv_style_set_bg_color(theme->lvgl.card, COLOR_CARD);
 										 lv_style_set_border_color(theme->lvgl.card, COLOR_BORDER);
-
-										 //  lv_style_set_bg_color(theme->lvgl.btn, lv_palette_main(LV_PALETTE_CYAN));
 
 										 lv_style_set_bg_color(theme->lvgl.bg_color_list_item,
 															   lv_palette_main(LV_PALETTE_PINK));

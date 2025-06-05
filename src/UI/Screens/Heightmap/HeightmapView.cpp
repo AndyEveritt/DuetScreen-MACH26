@@ -24,7 +24,6 @@ namespace UI
 			lv_obj_set_height(m_label, LV_SIZE_CONTENT);
 			lv_obj_set_flex_grow(m_label, 1);
 
-			lv_obj_set_style_bg_color(getCont(), lv_palette_main(LV_PALETTE_LIGHT_BLUE), LV_STATE_CHECKED);
 			lv_obj_add_flag(getCont(), LV_OBJ_FLAG_CLICKABLE);
 			lv_obj_add_event_cb(
 				getCont(),
@@ -58,6 +57,10 @@ namespace UI
 				LV_EVENT_CLICKED,
 				this);
 			// m_load.setCheckable(true);
+
+			m_load.setSize(70, LV_SIZE_CONTENT);
+			addStyle(Themes::getLvglStyles().bg_color_primary, LV_STATE_CHECKED);
+			m_load.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
 		}
 
 		void setLabel(const std::string& label)

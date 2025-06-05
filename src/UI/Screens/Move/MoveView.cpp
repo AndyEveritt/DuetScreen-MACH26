@@ -44,7 +44,8 @@ namespace UI
 								   btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 								   btn->setCallback(onRelMoveEvent, LV_EVENT_CLICKED, this);
 								   btn->setFlexGrow(1);
-								   lv_obj_set_height(btn->getCont(), LV_SIZE_CONTENT);
+								   btn->setHeight(LV_SIZE_CONTENT);
+								   btn->addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
 								   return btn;
 							   });
 
@@ -57,10 +58,11 @@ namespace UI
 		lv_label_set_text(m_machinePosition, "");
 
 		m_home.setCallback(onHomeEvent, LV_EVENT_CLICKED, this);
+		m_home.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		// Styles
 		m_home.setCheckable(true);
-		lv_obj_set_style_bg_color(m_home.getChild(0), lv_color_hex(0xfb9514), LV_STATE_CHECKED);
+		m_home.addBtnStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
 	}
 
 	AxisItem::~AxisItem() {}
@@ -135,6 +137,11 @@ namespace UI
 		, m_feedRates("move_feed_rates", m_bottomBarCont)
 	{
 		UI_LOCK();
+
+		m_homeAll.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_trueBedLevel.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_meshBedLevel.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_disableMotors.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);

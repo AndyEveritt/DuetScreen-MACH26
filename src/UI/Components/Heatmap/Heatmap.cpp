@@ -7,6 +7,7 @@
 
 #include "Heatmap.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -51,7 +52,10 @@ namespace UI
 		lv_obj_set_height(m_canvas, LV_PCT(100));
 		lv_obj_set_size(m_colorBar, LV_SIZE_CONTENT, LV_PCT(100));
 
-		lv_obj_set_style_pad_all(getCont(), 5, LV_PART_MAIN);
+		addStyle(Themes::getLvglStyles().pad_zero);
+		addStyle(Themes::getLvglStyles().no_border);
+		m_canvas.addStyle(Themes::getLvglStyles().no_border);
+		m_colorBar.addStyle(Themes::getLvglStyles().no_border);
 
 		m_canvas.setTitle("");
 		m_canvas.setResolution(100, 100);

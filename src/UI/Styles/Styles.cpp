@@ -21,7 +21,6 @@ namespace UI::Themes
 
 	static LvglStyles s_lvglStyles;
 	static ComponentStyles s_componentStyles;
-	static PaddingStyles s_paddingStyles;
 
 	static Theme* s_currentTheme = nullptr;
 
@@ -101,11 +100,6 @@ namespace UI::Themes
 		return s_componentStyles;
 	}
 
-	const PaddingStyles& getPaddingStyles()
-	{
-		return s_paddingStyles;
-	}
-
 	static bool themeExists(const char* name)
 	{
 		for (const auto& theme : s_themes)
@@ -178,6 +172,8 @@ namespace UI::Themes
 
 		lv_obj_t* parent = lv_obj_get_parent(obj);
 
+		lv_obj_add_style(obj, s_lvglStyles.base, 0);
+
 		if (parent == NULL)
 		{
 			lv_obj_add_style(obj, s_lvglStyles.screen, 0);
@@ -247,6 +243,7 @@ namespace UI::Themes
 #endif
 
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
+			lv_obj_add_style(obj, s_lvglStyles.pad_base, 0);
 			lv_obj_add_style(obj, s_lvglStyles.scrollbar, LV_PART_SCROLLBAR);
 			lv_obj_add_style(obj,
 							 s_lvglStyles.scrollbar_scrolled,
@@ -326,15 +323,17 @@ namespace UI::Themes
 			}
 #  endif
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
+			lv_obj_add_style(obj, s_lvglStyles.btnm_bg, 0);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.btn, LV_PART_ITEMS);
+			lv_obj_add_style(obj, s_lvglStyles.btnm_btn, LV_PART_ITEMS);
 			lv_obj_add_style(
 				obj, s_lvglStyles.disabled, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_DISABLED));
 			lv_obj_add_style(
 				obj, s_lvglStyles.pressed, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_PRESSED));
 			lv_obj_add_style(obj,
-							 s_lvglStyles.bg_color_primary,
+							 s_lvglStyles.bg_color_secondary,
 							 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_CHECKED));
 			lv_obj_add_style(obj,
 							 s_lvglStyles.outline_primary,
@@ -342,6 +341,16 @@ namespace UI::Themes
 			lv_obj_add_style(obj,
 							 s_lvglStyles.outline_secondary,
 							 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_EDITED));
+		}
+#endif
+
+#if LV_USE_CANVAS
+		else if (lv_obj_check_type(obj, &lv_canvas_class))
+		{
+			lv_obj_add_style(obj, s_lvglStyles.card, 0);
+			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
+			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
+			lv_obj_add_style(obj, s_lvglStyles.canvas, LV_PART_MAIN);
 		}
 #endif
 

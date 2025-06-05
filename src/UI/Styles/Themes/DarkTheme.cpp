@@ -13,7 +13,7 @@ namespace UI::Themes
 {
 	static DefaultTheme s_darkTheme("theme_dark",
 									lv_palette_main(LV_PALETTE_BLUE),
-									lv_palette_main(LV_PALETTE_RED),
+									lv_palette_darken(LV_PALETTE_RED, 3),
 									lv_color_hex(0x282b30),
 									lv_palette_lighten(LV_PALETTE_GREY, 5),
 									lv_color_hex(0x2f3237),

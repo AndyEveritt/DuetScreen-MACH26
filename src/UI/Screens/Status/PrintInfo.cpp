@@ -62,13 +62,9 @@ namespace UI
 		lv_obj_add_event_cb(m_speed, openSubView, LV_EVENT_CLICKED, &m_speedInfo);
 		lv_obj_add_event_cb(m_speedMultiplier, openSubView, LV_EVENT_CLICKED, &m_speedInfo);
 
-		lv_style_init(&m_borderStyle);
-		lv_style_set_border_width(&m_borderStyle, 1);
-		lv_style_set_border_color(&m_borderStyle, lv_palette_main(LV_PALETTE_GREY));
-
-		lv_obj_add_style(m_toolTemp, &m_borderStyle, 0);
-		lv_obj_add_style(m_speed, &m_borderStyle, 0);
-		lv_obj_add_style(m_speedMultiplier, &m_borderStyle, 0);
+		lv_obj_add_style(m_toolTemp, Themes::getLvglStyles().input, 0);
+		lv_obj_add_style(m_speed, Themes::getLvglStyles().input, 0);
+		lv_obj_add_style(m_speedMultiplier, Themes::getLvglStyles().input, 0);
 	}
 
 	bool PrintInfo::back()

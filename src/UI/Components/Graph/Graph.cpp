@@ -71,9 +71,6 @@ namespace UI
 		lv_scale_set_major_tick_every(m_vScale, 4);
 
 		// Chart
-		lv_obj_set_style_border_width(m_chart, 2, LV_PART_MAIN);
-		lv_obj_set_style_border_color(m_chart, lv_color_hex(0x000000), LV_PART_MAIN);
-		lv_obj_set_style_border_opa(m_chart, LV_OPA_100, LV_PART_MAIN);
 		lv_chart_set_type(m_chart, LV_CHART_TYPE_LINE);
 		lv_chart_set_update_mode(m_chart, LV_CHART_UPDATE_MODE_SHIFT);
 
@@ -81,7 +78,6 @@ namespace UI
 		lv_obj_set_flex_flow(m_legend, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_style_pad_all(m_legend, 0, LV_PART_MAIN);
 		lv_obj_set_style_pad_row(m_legend, 0, LV_PART_MAIN);
-		// lv_obj_set_style
 
 		showLegend(true);
 	}

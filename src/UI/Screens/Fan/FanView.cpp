@@ -1,6 +1,7 @@
 #include "FanView.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -78,7 +79,7 @@ namespace UI
 		m_slider.setRange(0, 100);
 		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter->setFanSpeed(m_index, value); });
 		m_slider.setPad(5, LV_PART_MAIN, Padding::ALL);
-		lv_obj_set_style_border_width(m_slider, 0, LV_PART_MAIN);
+		m_slider.addStyle(Themes::getLvglStyles().no_border, 0);
 
 		m_off.setCallback(onFanOffClicked, LV_EVENT_CLICKED, this);
 		m_max.setCallback(onFanMaxClicked, LV_EVENT_CLICKED, this);

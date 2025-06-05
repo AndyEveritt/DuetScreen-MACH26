@@ -38,6 +38,8 @@ namespace UI::Themes
 	{
 		LvglStyles();
 
+		Style base; // Base style applied to all objects
+
 		Style screen;
 		Style scrollbar;
 		Style scrollbar_scrolled;
@@ -55,6 +57,7 @@ namespace UI::Themes
 		Style bg_color_list_item;
 		Style pressed;
 		Style disabled;
+		Style pad_base;
 		Style pad_zero;
 		Style pad_tiny;
 		Style pad_small;
@@ -66,6 +69,7 @@ namespace UI::Themes
 		Style outline_secondary; // Edited by an encoder
 		Style circle;
 		Style no_radius;
+		Style no_border;
 		Style clip_corner;
 		Style rotary_scroll;
 		Style grow;
@@ -73,6 +77,9 @@ namespace UI::Themes
 		Style transition_normal;
 		Style anim;
 		Style anim_fast;
+
+		Style actionBtn; // for UI elements that perform actions on the Duet
+		Style input;
 
 		/*Parts*/
 		Style knob;
@@ -85,6 +92,11 @@ namespace UI::Themes
 #if LV_USE_BAR
 		Style bar;
 		Style bar_indic;
+#endif
+
+#if LV_USE_BUTTONMATRIX
+		Style btnm_bg;
+		Style btnm_btn;
 #endif
 
 #if LV_USE_CHART
@@ -125,6 +137,10 @@ namespace UI::Themes
 		Style calendar_btnm_bg;
 		Style calendar_btnm_day;
 		Style calendar_header;
+#endif
+
+#if LV_USE_CANVAS
+		Style canvas;
 #endif
 
 #if LV_USE_MENU
@@ -176,22 +192,14 @@ namespace UI::Themes
 
 	struct ComponentStyles
 	{
-		Style actionBtn;	 // for UI elements that perform actions on the Duet
-		Style estop;
-	};
-
-	struct PaddingStyles
-	{
-		Style zero;
-		Style tiny;
-		Style small;
-		Style normal;
-		Style gap;
+		Style estop;   // Emergency stop button style
+		Style file;	   // File item style
+		Style folder;  // Folder item style
+		Style unhomed; // Used for the move view
 	};
 
 	const LvglStyles& getLvglStyles();
 	const ComponentStyles& getComponentStyles();
-	const PaddingStyles& getPaddingStyles();
 
 	class Theme
 	{
@@ -211,9 +219,6 @@ namespace UI::Themes
 
 		// Specific component styles
 		ComponentStyles components;
-
-		// Padding styles
-		PaddingStyles padding;
 
 	  private:
 		virtual void onInit() {}

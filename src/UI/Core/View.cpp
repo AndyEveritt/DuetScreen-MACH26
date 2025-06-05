@@ -16,7 +16,6 @@ namespace UI
 		m_cont = lv_obj_create(parent);
 
 		LOG_VERBOSE("Creating view '{:s}' ({})", getName(), static_cast<const void*>(m_cont));
-		lv_obj_set_style_pad_all(getCont(), 5, 0);
 		lv_obj_null_on_delete(&m_cont);
 	}
 

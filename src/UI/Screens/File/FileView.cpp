@@ -45,7 +45,8 @@ namespace UI
 		lv_obj_add_event_cb(getCont(), onClick, LV_EVENT_CLICKED, this);
 
 		// Styles
-		lv_obj_set_style_bg_color(getCont(), lv_color_hex(0xcb7912), LV_STATE_CHECKED);
+		addStyle(Themes::getComponentStyles().file);
+		addStyle(Themes::getComponentStyles().folder, LV_STATE_CHECKED);
 	}
 
 	void FileView::FileItem::setLabel(const char* name)
