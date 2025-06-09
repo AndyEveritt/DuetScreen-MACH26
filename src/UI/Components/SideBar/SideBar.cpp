@@ -13,6 +13,8 @@
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
+#define ESTOP_SIZE 80
+
 namespace UI
 {
 	static constexpr lv_coord_t width = 10;	  // %
@@ -20,32 +22,39 @@ namespace UI
 
 	SideBar::SideBar(const std::string& name, lv_obj_t* parent)
 		: View(name, parent, layout_t{0, 0, width, height})
-		, m_backBtn("Back", getCont(), _("back"), layout_t{0, 0, 100, 0})
 		, m_homeBtn("Home", getCont(), _("home"), layout_t{0, 20, 100, 0})
+		, m_backBtn("Back", getCont(), _("back"), layout_t{0, 0, 100, 0})
 		, m_macrosBtn("Macros", getCont(), _("macros"), layout_t{0, 40, 100, 0})
 		, m_consoleBtn("Console", getCont(), _("console"), layout_t{0, 60, 100, 0})
-		, m_eStopBtn("E-Stop", getCont(), _("estop"), layout_t{0, 80, 100, 2 * 0})
+		, m_eStopBtn("E-Stop", getCont(), _("estop"))
 	{
 		UI_LOCK();
 		LOG_VERBOSE("Creating SideBar");
 
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		setPad(0, LV_PART_MAIN, Padding::ALL);
 		setPad(0, LV_PART_MAIN, Padding::ROW);
+		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
+		lv_obj_set_overflow_visible_flag(getCont(), 400);
 
 		m_backBtn.setFlexGrow(1);
 		m_homeBtn.setFlexGrow(1);
 		m_macrosBtn.setFlexGrow(1);
 		m_consoleBtn.setFlexGrow(1);
-		m_eStopBtn.setFlexGrow(2);
+
+		m_eStopBtn.setSize(ESTOP_SIZE, ESTOP_SIZE);
 
 		m_backBtn.setCallback(backBtnEvent, LV_EVENT_CLICKED, this);
 		m_homeBtn.setCallback(homeBtnEvent, LV_EVENT_CLICKED, this);
 		m_macrosBtn.setCallback(macrosBtnEvent, LV_EVENT_CLICKED, this);
 		m_consoleBtn.setCallback(consoleBtnEvent, LV_EVENT_CLICKED, this);
-		m_eStopBtn.setCallback(eStopBtnEvent, LV_EVENT_CLICKED, this);
+		m_eStopBtn.setDragCallback(eStopDraggedEvent, this);
 
 		m_eStopBtn.addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
+		// lv_obj_t* b = lv_obj_create(getCont());
+		// lv_obj_set_width(b, LV_PCT(200));
+		// lv_obj_set_height(b, LV_PCT(50));
 	}
 
 	void SideBar::enableHomeButton(bool enable)
@@ -86,11 +95,19 @@ namespace UI
 		openScreen(&HomeView::instance().getConsoleView(), true);
 	}
 
-	void SideBar::eStopBtnEvent(lv_event_t* e)
+	void SideBar::eStopDraggedEvent(float pct, void* sidebar)
 	{
 		UI_LOCK();
-		LOG_INFO("E-Stop button pressed");
-		SideBar* sb = static_cast<SideBar*>(lv_event_get_user_data(e));
-		sb->m_presenter->eStop();
+		LOG_INFO("E-Stop button dragged");
+		SideBar* sb = static_cast<SideBar*>(sidebar);
+		if (pct < 0.5f)
+		{
+			Model::get().post<EventType::Response>(std::string(_("estop_prompt")));
+		}
+
+		if (pct == 1.0f)
+		{
+			sb->m_presenter->eStop();
+		}
 	}
 } // namespace UI

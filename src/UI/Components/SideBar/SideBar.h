@@ -9,6 +9,7 @@
 
 #include "SideBarPresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Button/DraggableButton.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -26,12 +27,12 @@ namespace UI
 		static void homeBtnEvent(lv_event_t* e);
 		static void macrosBtnEvent(lv_event_t* e);
 		static void consoleBtnEvent(lv_event_t* e);
-		static void eStopBtnEvent(lv_event_t* e);
+		static void eStopDraggedEvent(float pct, void* e);
 
-		Button m_backBtn;
 		Button m_homeBtn;
+		Button m_backBtn;
 		Button m_macrosBtn;
 		Button m_consoleBtn;
-		Button m_eStopBtn;
+		DraggableButton m_eStopBtn;
 	};
 } // namespace UI

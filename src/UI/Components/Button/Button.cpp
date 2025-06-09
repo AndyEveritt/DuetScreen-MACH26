@@ -42,6 +42,7 @@ namespace UI
 		lv_obj_set_pos(m_label, 0, 0);
 		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_set_style_align(m_label, LV_ALIGN_CENTER, 0);
+		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
 		lv_obj_update_layout(getCont());
 	}
 

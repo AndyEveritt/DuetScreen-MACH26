@@ -2,6 +2,7 @@ target_sources(
   DuetScreen
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Button/Button.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Button/DraggableButton.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Button/VerticalButtonPanel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Canvas/Canvas.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Graph/Graph.cpp

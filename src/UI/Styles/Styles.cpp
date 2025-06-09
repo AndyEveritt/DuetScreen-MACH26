@@ -995,3 +995,24 @@ void lv_obj_remove_style(lv_obj_t* obj,
 	// Raw lvgl call
 	lv_obj_remove_style(obj, style, selector);
 }
+
+static void __obj_set_ext_draw_size_cb(lv_event_t* e)
+{
+	int32_t s = (int32_t)(intptr_t)lv_event_get_user_data(e);
+	int32_t d = lv_obj_calculate_ext_draw_size(lv_event_get_target_obj(e), LV_PART_MAIN);
+	int32_t code = lv_event_get_code(e);
+	switch (code)
+	{
+	case LV_EVENT_REFR_EXT_DRAW_SIZE:
+		lv_event_set_ext_draw_size(e, s);
+		break;
+	default:
+		break;
+	}
+}
+
+void lv_obj_set_overflow_visible_flag(lv_obj_t* obj, int32_t size)
+{
+	lv_obj_add_flag(obj, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+	lv_obj_add_event_cb(obj, __obj_set_ext_draw_size_cb, LV_EVENT_REFR_EXT_DRAW_SIZE, (void*)(intptr_t)size);
+}

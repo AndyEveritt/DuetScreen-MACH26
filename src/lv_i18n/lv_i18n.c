@@ -19,12 +19,13 @@ static inline uint32_t op_t(uint32_t val) { UNUSED(val); return 0; }
 
 static lv_i18n_phrase_t en_gb_singulars[] = {
     {"heater", "Heater: %s"},
-    {"back", "Back"},
+    {"back", "\xEF\x95\x9A\nBack"},
     {"open_sub_view", "Open Sub View"},
     {"home", "Home"},
     {"macros", "Macros"},
-    {"console", "Console"},
-    {"estop", "EStop"},
+    {"console", "\xEF\x84\x9C\nConsole"},
+    {"estop", "\xEF\x81\xB1"},
+    {"estop_prompt", "Drag to E-Stop!"},
     {"toollist_tool", "Tool"},
     {"toollist_status", "Status"},
     {"toollist_current", "Current"},

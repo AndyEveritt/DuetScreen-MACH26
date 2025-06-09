@@ -48,6 +48,10 @@ namespace UI::Themes
 		const lv_font_t* m_fontLarge;
 		bool m_darkMode;
 
+		lv_style_transition_dsc_t m_draggableTransition;
+		lv_style_transition_dsc_t m_draggingTransition;
+		lv_style_transition_dsc_t m_dragCompleteTransition;
+
 	  private:
 		virtual void onInit() override;
 	};

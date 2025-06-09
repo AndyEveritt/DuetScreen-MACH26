@@ -10,7 +10,7 @@
 
 namespace UI::Themes
 {
-#define TRANSITION_TIME LV_THEME_DEFAULT_TRANSITION_TIME
+#define TRANSITION_TIME 80
 #define BORDER_WIDTH LV_DPX_CALC(lv_display_get_dpi(NULL), 2)
 #define OUTLINE_WIDTH LV_DPX_CALC(lv_display_get_dpi(NULL), 3)
 
@@ -165,6 +165,35 @@ namespace UI::Themes
 		lv_style_set_radius(lvgl.input, RADIUS_DEFAULT);
 		lv_style_set_pad_ver(lvgl.input, 0);
 		lv_style_set_text_align(lvgl.input, LV_TEXT_ALIGN_CENTER);
+
+		// lv_style_set_transform_width(lvgl.draggable, LV_DPX(4));
+		// lv_style_set_transform_height(lvgl.draggable, LV_DPX(4));
+		// lv_style_set_transform_skew_x(lvgl.draggable, 2);
+		// lv_style_set_transform_skew_y(lvgl.draggable, -2);
+
+		static const lv_style_prop_t draggable_props[] = {LV_STYLE_TRANSFORM_WIDTH, LV_STYLE_TRANSFORM_HEIGHT};
+		lv_style_transition_dsc_init(&m_draggableTransition, draggable_props, lv_anim_path_ease_in_out, 200, 100, NULL);
+		lv_style_set_transition(lvgl.draggable, &m_draggableTransition);
+
+		static const lv_style_prop_t dragging_props[] = {
+			LV_STYLE_TRANSFORM_WIDTH, LV_STYLE_TRANSFORM_HEIGHT, LV_STYLE_BORDER_WIDTH};
+		lv_style_transition_dsc_init(
+			&m_draggingTransition, dragging_props, lv_anim_path_ease_in_out, TRANSITION_TIME, 0, NULL);
+		lv_style_set_transition(lvgl.dragging, &m_draggingTransition);
+
+		lv_style_set_transform_width(lvgl.dragging, 20);
+		lv_style_set_transform_height(lvgl.dragging, 20);
+		lv_style_set_border_color(lvgl.dragging, lv_color_white());
+		lv_style_set_border_opa(lvgl.dragging, LV_OPA_30);
+		lv_style_set_border_width(lvgl.dragging, 20);
+
+		static const lv_style_prop_t drag_complete_props[] = {LV_STYLE_OUTLINE_WIDTH};
+		lv_style_transition_dsc_init(
+			&m_dragCompleteTransition, drag_complete_props, lv_anim_path_ease_in_out, TRANSITION_TIME, 0, NULL);
+		lv_style_set_transition(lvgl.dragging, &m_dragCompleteTransition);
+
+		lv_style_set_outline_color(lvgl.drag_complete, lv_color_white());
+		lv_style_set_outline_width(lvgl.drag_complete, 3);
 
 #if LV_USE_ARC
 		lv_style_set_arc_color(lvgl.arc_indic, m_highlightColor);
@@ -390,6 +419,7 @@ namespace UI::Themes
 #endif
 
 		lv_style_set_bg_color(components.estop, lv_palette_main(LV_PALETTE_RED));
+		lv_style_set_radius(components.estop, LV_RADIUS_CIRCLE);
 		lv_style_set_bg_color(components.folder, m_primaryColor);
 
 		lv_style_set_bg_color(components.unhomed, lv_color_hex(0xfb9514));

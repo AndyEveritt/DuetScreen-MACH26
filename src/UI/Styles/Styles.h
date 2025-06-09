@@ -80,6 +80,9 @@ namespace UI::Themes
 
 		Style actionBtn; // for UI elements that perform actions on the Duet
 		Style input;
+		Style draggable;
+		Style dragging;
+		Style drag_complete;
 
 		/*Parts*/
 		Style knob;
@@ -252,3 +255,4 @@ namespace UI::Themes
 bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style);
 void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
 void lv_obj_remove_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
+void lv_obj_set_overflow_visible_flag(lv_obj_t* obj, int32_t size);
