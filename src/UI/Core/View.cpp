@@ -137,7 +137,7 @@ namespace UI
 	BaseView* BaseView::setWidth(lv_coord_t width)
 	{
 		UI_LOCK();
-		lv_obj_set_width(getCont(), lv_pct(width));
+		lv_obj_set_width(getCont(), width);
 		return this;
 	}
 
