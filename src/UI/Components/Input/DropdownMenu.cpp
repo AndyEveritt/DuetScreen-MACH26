@@ -77,10 +77,10 @@ namespace UI
 		lv_dropdown_clear_options(m_dropdown);
 	}
 
-	void DropdownMenu::setSelected(uint32_t selected, lv_anim_enable_t anim_en)
+	void DropdownMenu::setSelected(uint32_t selected)
 	{
 		UI_LOCK();
-		lv_dropdown_set_selected(m_dropdown, selected, anim_en);
+		lv_dropdown_set_selected(m_dropdown, selected);
 	}
 
 	void DropdownMenu::setDir(lv_dir_t dir)

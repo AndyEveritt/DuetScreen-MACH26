@@ -184,7 +184,7 @@ namespace UI
 		}
 		lv_dropdown_set_text(m_filament, NULL);
 		lv_dropdown_set_selected_highlight(m_filament, true);
-		lv_dropdown_set_selected(m_filament, index, false);
+		lv_dropdown_set_selected(m_filament, index);
 	}
 
 	size_t ToolItem::getHeaterCount() const

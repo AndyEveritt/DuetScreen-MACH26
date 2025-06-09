@@ -25,7 +25,7 @@ namespace UI
 		void setOptions(const std::vector<std::string>& options);
 		void addOption(const std::string& option, uint32_t pos = LV_DROPDOWN_POS_LAST);
 		void clearOptions();
-		void setSelected(uint32_t selected, lv_anim_enable_t anim_en = LV_ANIM_OFF);
+		void setSelected(uint32_t selected);
 		void setDir(lv_dir_t dir);
 		void setSymbol(const void* symbol);
 		void setSelectedHighlight(bool en);

@@ -175,7 +175,7 @@ namespace UI
 		m_connectionMethod.setLabel(_("settings_duet_connection_method"));
 		m_connectionMethod.setOptions(options);
 		m_connectionMethod.addEventCallback(onConnectionMethodEvent, LV_EVENT_VALUE_CHANGED, this);
-		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType(), LV_ANIM_OFF);
+		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType());
 
 		// Poll Interval
 		m_pollInterval.setLabel(_("settings_duet_poll_interval"));
@@ -623,7 +623,7 @@ namespace UI
 			options += "\n";
 		}
 		lv_dropdown_set_options(m_debugLevel, options.c_str());
-		lv_dropdown_set_selected(m_debugLevel, static_cast<uint32_t>(Log::GetDebugLevel()), false);
+		lv_dropdown_set_selected(m_debugLevel, static_cast<uint32_t>(Log::GetDebugLevel()));
 		lv_dropdown_set_selected_highlight(m_debugLevel, true);
 		lv_obj_add_event_cb(m_debugLevel, onDebugLevelEvent, LV_EVENT_VALUE_CHANGED, NULL);
 
