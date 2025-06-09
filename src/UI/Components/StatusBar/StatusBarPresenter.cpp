@@ -22,6 +22,7 @@ namespace UI
 	void StatusBarPresenter::disconnected()
 	{
 		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("disconnected")));
+		m_view->setDuetName("");
 	}
 
 	void StatusBarPresenter::newDuetName()
