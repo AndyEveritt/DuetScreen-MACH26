@@ -10,7 +10,7 @@
 namespace UI
 {
 	ConsoleView::ConsoleView(lv_obj_t* parent)
-		: View("console_view", parent, layout_t(0, 0, 100, 100))
+		: View(lv_obj_create, "console_view", parent, layout_t(0, 0, 100, 100))
 		, m_topCont(lv_obj_create(getCont()))
 		, m_commandList(lv_table_create(m_topCont))
 		, m_output(lv_textarea_create(m_topCont))

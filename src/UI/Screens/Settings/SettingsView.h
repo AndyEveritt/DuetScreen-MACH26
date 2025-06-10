@@ -13,10 +13,13 @@ namespace UI
 {
 	class SettingsView;
 
-	class SettingsSubView : public BaseView
+	class SettingsSubView : public LvObj
 	{
 	  public:
-		SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView);
+		SettingsSubView(lv_create_t initFunc,
+						const std::string& name,
+						lv_obj_t* parent,
+						SettingsView& mainSettingsView);
 
 		SettingsView& getMainSettingsView() const { return m_mainSettingsView; }
 		std::shared_ptr<SettingsPresenter> getMainSettingsPresenter() const;
@@ -31,7 +34,7 @@ namespace UI
 	  public:
 		DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
-		class UsbSettings : public BaseView
+		class UsbSettings : public LvObj
 		{
 		  public:
 			UsbSettings(DuetSettingsView& parent);
@@ -39,7 +42,7 @@ namespace UI
 		  private:
 		};
 
-		class WifiSettings : public BaseView
+		class WifiSettings : public LvObj
 		{
 		  public:
 			WifiSettings(DuetSettingsView& parent);
@@ -49,7 +52,7 @@ namespace UI
 			TextBox m_password;
 		};
 
-		class UartSettings : public BaseView
+		class UartSettings : public LvObj
 		{
 		  public:
 			UartSettings(DuetSettingsView& parent);

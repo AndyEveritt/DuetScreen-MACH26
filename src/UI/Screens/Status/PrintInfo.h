@@ -11,7 +11,7 @@
 
 namespace UI
 {
-	class PrintInfo : public BaseView
+	class PrintInfo : public LvObj
 	{
 	  public:
 		PrintInfo(lv_obj_t* parent);
@@ -34,7 +34,7 @@ namespace UI
 		virtual bool back() override;
 
 	  private:
-		class SpeedInfo : public BaseView
+		class SpeedInfo : public LvObj
 		{
 		  public:
 			SpeedInfo(lv_obj_t* parent);

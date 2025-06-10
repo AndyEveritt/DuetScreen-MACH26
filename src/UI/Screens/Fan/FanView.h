@@ -10,7 +10,7 @@ namespace UI
 	class FanView : public View<FanPresenter>
 	{
 	  public:
-		class FanItem : BaseView
+		class FanItem : LvObj
 		{
 		  public:
 			FanItem(size_t index, FanView& view);

@@ -4,17 +4,17 @@
 
 namespace UI
 {
-	typedef BaseView* ViewListItem_t;
+	typedef LvObj* ViewListItem_t;
 	typedef std::vector<ViewListItem_t> ViewList_t;
 
 	void back();
 	void home();
 
-	void addHomeScreen(BaseView* view);
+	void addHomeScreen(LvObj* view);
 	void clearHomeScreens();
 
-	BaseView* getCurrentScreen();
-	void openScreen(BaseView* view, bool closePrevious = true);
+	LvObj* getCurrentScreen();
+	void openScreen(LvObj* view, bool closePrevious = true);
 	void closeLastScreen();
-	void closeScreen(BaseView* view, bool returnable = true);
+	void closeScreen(LvObj* view, bool returnable = true);
 } // namespace UI

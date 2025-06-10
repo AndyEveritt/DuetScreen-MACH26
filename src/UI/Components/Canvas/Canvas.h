@@ -15,7 +15,7 @@
 namespace UI
 {
 
-	class Canvas : public BaseView
+	class Canvas : public LvObj
 	{
 	  public:
 		struct range_t

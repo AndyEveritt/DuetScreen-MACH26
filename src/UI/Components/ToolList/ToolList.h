@@ -54,7 +54,7 @@ namespace UI
 		bool m_selected;
 	};
 
-	class ToolListNumPad : public BaseView
+	class ToolListNumPad : public LvObj
 	{
 	  public:
 		ToolListNumPad(const std::string& name, lv_obj_t* parent, layout_t layout);

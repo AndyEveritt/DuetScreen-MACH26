@@ -14,7 +14,7 @@
 namespace UI
 {
 	PrintInfo::PrintInfo(lv_obj_t* parent)
-		: BaseView("status_print_info", parent, layout_t(0, 0, 100, 100))
+		: LvObj(lv_obj_create, "status_print_info", parent, layout_t(0, 0, 100, 100))
 		, m_toolTemp(lv_label_create(getCont()))
 		, m_bedTemp(lv_label_create(getCont()))
 		, m_speed(lv_label_create(getCont()))
@@ -70,7 +70,7 @@ namespace UI
 	bool PrintInfo::back()
 	{
 		UI_LOCK();
-		for (BaseView* subView : {&m_speedInfo})
+		for (LvObj* subView : {&m_speedInfo})
 		{
 			if (subView->isVisible())
 			{
@@ -91,7 +91,7 @@ namespace UI
 	void PrintInfo::openSubView(lv_event_t* e)
 	{
 		UI_LOCK();
-		BaseView* view = static_cast<BaseView*>(lv_event_get_user_data(e));
+		LvObj* view = static_cast<LvObj*>(lv_event_get_user_data(e));
 		view->show();
 	}
 
@@ -193,7 +193,7 @@ namespace UI
 	}
 
 	PrintInfo::SpeedInfo::SpeedInfo(lv_obj_t* parent)
-		: BaseView("status_speed_info", parent, layout_t(0, 0, 100, 100))
+		: LvObj(lv_obj_create, "status_speed_info", parent, layout_t(0, 0, 100, 100))
 		, m_speed(lv_label_create(getCont()))
 		, m_speedMultiplier(lv_label_create(getCont()))
 		, m_acceleration(lv_label_create(getCont()))

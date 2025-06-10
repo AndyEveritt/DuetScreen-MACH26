@@ -12,7 +12,7 @@
 namespace UI
 {
 	TextBox::TextBox(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: BaseView(name, parent, layout)
+		: LvObj(lv_obj_create, name, parent, layout)
 		, m_label(lv_label_create(getCont()))
 		, m_textArea(lv_textarea_create(getCont()))
 		, m_showPassword("show_password", m_textArea, LV_SYMBOL_EYE_OPEN)

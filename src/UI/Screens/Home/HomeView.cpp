@@ -19,7 +19,7 @@ namespace UI
 	static constexpr int32_t s_mainWindowLayoutRowDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
 	HomeView::HomeView()
-		: View("HomeView", lv_screen_active(), layout_t(0, 0, 100, 100))
+		: View(lv_obj_create, "HomeView", lv_screen_active(), layout_t(0, 0, 100, 100))
 		, m_statusBar(getCont())
 		, m_sideBar("sidebar", getCont())
 		, m_mainWindow(lv_obj_create(getCont()))
@@ -226,7 +226,7 @@ namespace UI
 	{
 		UI_LOCK();
 		HomeView* view = (HomeView*)lv_event_get_user_data(e);
-		BaseView* selectedWindow = (BaseView*)lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e));
+		LvObj* selectedWindow = (LvObj*)lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e));
 
 		// Don't close the home screen as it contains the side bar an the screen that is being opened
 		openScreen(selectedWindow, false);

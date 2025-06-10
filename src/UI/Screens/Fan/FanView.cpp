@@ -7,7 +7,7 @@
 namespace UI
 {
 	FanView::FanView(lv_obj_t* parent)
-		: View("fan_view", parent, layout_t(0, 0, 100, 100))
+		: View(lv_obj_create, "fan_view", parent, layout_t(0, 0, 100, 100))
 		, m_fanHeader(lv_label_create(getCont()))
 	{
 		UI_LOCK();
@@ -62,7 +62,10 @@ namespace UI
 	}
 
 	FanView::FanItem::FanItem(size_t index, FanView& view)
-		: BaseView(utils::format("fan_item_%d", index).c_str(), view.getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		: LvObj(lv_obj_create,
+				utils::format("fan_item_%d", index).c_str(),
+				view.getCont(),
+				layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_view(view)
 		, m_index(index)
 		, m_off(utils::format("fan_off_%d", index).c_str(), getCont(), _("off"))

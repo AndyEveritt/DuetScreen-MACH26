@@ -4,7 +4,7 @@
 namespace UI
 {
 	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text)
-		: BaseView(name, parent)
+		: LvObj(lv_obj_create, name, parent)
 		, m_button(lv_button_create(getCont()))
 		, m_label(lv_label_create(m_button))
 		, m_icon(nullptr)
@@ -13,7 +13,7 @@ namespace UI
 	}
 
 	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout)
-		: BaseView(name, parent, layout)
+		: LvObj(lv_obj_create, name, parent, layout)
 		, m_button(lv_button_create(getCont()))
 		, m_label(lv_label_create(m_button))
 		, m_icon(nullptr)

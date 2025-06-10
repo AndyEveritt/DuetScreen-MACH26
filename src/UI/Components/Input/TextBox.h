@@ -12,7 +12,7 @@
 
 namespace UI
 {
-	class TextBox : public BaseView
+	class TextBox : public LvObj
 	{
 	  public:
 		TextBox(const std::string& name, lv_obj_t* parent, layout_t layout);

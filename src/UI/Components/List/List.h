@@ -14,11 +14,11 @@
 
 namespace UI
 {
-	class ListItem : public BaseView
+	class ListItem : public LvObj
 	{
 	  public:
 		ListItem(const std::string& name, size_t index, lv_obj_t* parent)
-			: BaseView(utils::format("%s_%u", name.c_str(), index), parent)
+			: LvObj(lv_obj_create, utils::format("%s_%u", name.c_str(), index), parent)
 			, m_index(index)
 		{
 			lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_list_item, 0);
@@ -32,13 +32,13 @@ namespace UI
 	};
 
 	template <typename T>
-	class List : public BaseView
+	class List : public LvObj
 	{
 	  public:
 		// static_assert(std::is_base_of<ListItem, T>::value, "T must inherit from ListItem");
 
 		List(const std::string& name, lv_obj_t* parent)
-			: BaseView(name, parent)
+			: LvObj(lv_obj_create, name, parent)
 			, m_title(lv_label_create(getCont()))
 			, m_listCont(lv_obj_create(getCont()))
 		{

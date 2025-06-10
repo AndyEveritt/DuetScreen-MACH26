@@ -18,7 +18,7 @@ namespace UI
 		int16_t maxValue;
 	};
 
-	class NumberPad : public BaseView
+	class NumberPad : public LvObj
 	{
 
 	  public:

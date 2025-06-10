@@ -12,7 +12,7 @@
 namespace UI
 {
 	SettingsView::SettingsView(lv_obj_t* parent)
-		: View("settings_view", parent, layout_t(0, 0, 100, 100))
+		: View(lv_obj_create, "settings_view", parent, layout_t(0, 0, 100, 100))
 		, m_settingsList(lv_list_create(getCont()))
 		, m_subWindow(lv_obj_create(getCont()))
 		, m_keyboard(lv_keyboard_create(getCont()))
@@ -120,8 +120,11 @@ namespace UI
 		m_currentSubView->show();
 	}
 
-	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView)
-		: BaseView(name, parent, layout_t(0, 0, 100, 100))
+	SettingsSubView::SettingsSubView(lv_create_t initFunc,
+									 const std::string& name,
+									 lv_obj_t* parent,
+									 SettingsView& mainSettingsView)
+		: LvObj(initFunc, name, parent, layout_t(0, 0, 100, 100))
 		, m_mainSettingsView(mainSettingsView)
 	{
 		UI_LOCK();
@@ -156,7 +159,7 @@ namespace UI
 	}
 
 	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: SettingsSubView("duet_settings_view", parent, mainSettingsView)
+		: SettingsSubView(lv_obj_create, "duet_settings_view", parent, mainSettingsView)
 		, m_connectionMethod("duet_settings_connection_method", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_usbSettings(*this)
 		, m_wifiSettings(*this)
@@ -202,13 +205,13 @@ namespace UI
 	}
 
 	DuetSettingsView::UsbSettings::UsbSettings(DuetSettingsView& parent)
-		: BaseView("duet_settings_usb", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		: LvObj(lv_obj_create, "duet_settings_usb", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 	}
 
 	DuetSettingsView::WifiSettings::WifiSettings(DuetSettingsView& parent)
-		: BaseView("duet_settings_wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		: LvObj(lv_obj_create, "duet_settings_wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_hostname("duet_settings_hostname", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_password("duet_settings_password", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
@@ -248,7 +251,7 @@ namespace UI
 	}
 
 	DuetSettingsView::UartSettings::UartSettings(DuetSettingsView& parent)
-		: BaseView("duet_settings_uart", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		: LvObj(lv_obj_create, "duet_settings_uart", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 	}
@@ -285,7 +288,7 @@ namespace UI
 	}
 
 	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: SettingsSubView("device_settings_view", parent, mainSettingsView)
+		: SettingsSubView(lv_obj_create, "device_settings_view", parent, mainSettingsView)
 		, m_firmwareVersion(lv_label_create(getCont()))
 		, m_buildTime(lv_label_create(getCont()))
 		, m_language("device_settings_language", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
@@ -408,7 +411,7 @@ namespace UI
 	}
 
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: View("network_settings_view", parent, mainSettingsView)
+		: View(lv_obj_create, "network_settings_view", parent, mainSettingsView)
 		, m_topBar(lv_obj_create(getCont()))
 		, m_ipAddress(lv_label_create(m_topBar))
 		, m_enable(lv_checkbox_create(m_topBar))
@@ -597,7 +600,7 @@ namespace UI
 	}
 
 	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: SettingsSubView("developer_settings_view", parent, mainSettingsView)
+		: SettingsSubView(lv_obj_create, "developer_settings_view", parent, mainSettingsView)
 		, m_debugLevelCont(lv_obj_create(getCont()))
 		, m_debugLevelLabel(lv_label_create(m_debugLevelCont))
 		, m_debugLevel(lv_dropdown_create(m_debugLevelCont))

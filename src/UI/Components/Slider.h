@@ -13,7 +13,7 @@
 
 namespace UI
 {
-	class Slider : public BaseView
+	class Slider : public LvObj
 	{
 	  public:
 		enum class SendMode
@@ -31,7 +31,7 @@ namespace UI
 		};
 
 		Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
-			: BaseView(name, parent, layout)
+			: LvObj(lv_obj_create, name, parent, layout)
 			, m_label(lv_label_create(getCont()))
 			, m_sliderCont(lv_obj_create(getCont()))
 			, m_decrement("slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)

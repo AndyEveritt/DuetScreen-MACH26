@@ -11,7 +11,7 @@
 
 namespace UI
 {
-	class DropdownMenu : public BaseView
+	class DropdownMenu : public LvObj
 	{
 	  public:
 		DropdownMenu(const std::string& name, lv_obj_t* parent, layout_t layout);

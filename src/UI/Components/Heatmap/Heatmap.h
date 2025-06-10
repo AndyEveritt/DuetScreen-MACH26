@@ -14,7 +14,7 @@
 
 namespace UI
 {
-	class Heatmap : public BaseView
+	class Heatmap : public LvObj
 	{
 	  public:
 		using range_t = Canvas::range_t;

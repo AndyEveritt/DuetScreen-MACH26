@@ -5,7 +5,7 @@
 
 namespace UI
 {
-	class Button : public BaseView
+	class Button : public LvObj
 	{
 	  public:
 		Button(const std::string& name, lv_obj_t* parent, const std::string& text);

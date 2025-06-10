@@ -11,7 +11,7 @@
 namespace UI
 {
 	FileView::FileItem::FileItem(const size_t index, FileView* view, lv_obj_t* parent, layout_t layout)
-		: BaseView(utils::format("file_item_%u", index), parent, layout)
+		: LvObj(lv_obj_create, utils::format("file_item_%u", index), parent, layout)
 		, m_index(index)
 		, m_list(view)
 		, m_layoutColDsc{LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
@@ -107,7 +107,7 @@ namespace UI
 	}
 
 	FileView::FileView(lv_obj_t* parent)
-		: View("file_view", parent, layout_t(0, 0, 100, 100))
+		: View(lv_obj_create, "file_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_listHeader(lv_label_create(getCont()))

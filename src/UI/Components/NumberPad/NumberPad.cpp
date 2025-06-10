@@ -17,7 +17,7 @@ namespace UI
 		"1", "2", "3", "\n", "4", "5", "6", "\n", "7", "8", "9", "\n", LV_SYMBOL_BACKSPACE, "0", LV_SYMBOL_OK, ""};
 
 	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: BaseView(name, parent, layout)
+		: LvObj(lv_obj_create, name, parent, layout)
 		, m_textCont(lv_obj_create(getCont()))
 		, m_textArea(lv_textarea_create(m_textCont))
 		, m_clearBtn("Clear", m_textCont, LV_SYMBOL_TRASH, layout_t{LV_PCT(75), 0, LV_PCT(20), LV_PCT(80)})

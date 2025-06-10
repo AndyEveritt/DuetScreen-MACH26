@@ -15,7 +15,7 @@ namespace UI
 	static lv_color_t s_hiddenColor = lv_color_darken(lv_color_white(), 50);
 
 	Graph::Graph(const std::string& name, lv_obj_t* parent)
-		: BaseView(name, parent)
+		: LvObj(lv_obj_create, name, parent)
 		, m_chart(lv_chart_create(getCont()))
 		, m_vScale(lv_scale_create(getCont()))
 		, m_hScale(lv_scale_create(getCont()))
@@ -25,7 +25,7 @@ namespace UI
 	}
 
 	Graph::Graph(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: BaseView(name, parent, layout)
+		: LvObj(lv_obj_create, name, parent, layout)
 		, m_chart(lv_chart_create(getCont()))
 		, m_vScale(lv_scale_create(getCont()))
 		, m_hScale(lv_scale_create(getCont()))

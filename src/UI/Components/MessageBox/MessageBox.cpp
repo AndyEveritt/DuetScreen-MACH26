@@ -16,7 +16,7 @@ namespace UI
 	static const float s_jogAmounts[6] = {-2.0f, -0.2f, -0.02f, 0.02f, 0.2f, 2.0f};
 
 	MessageBox::MessageBox(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: BaseView(name, parent, layout)
+		: LvObj(lv_obj_create, name, parent, layout)
 		, m_msgBox(lv_msgbox_create(getCont()))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
@@ -765,7 +765,7 @@ namespace UI
 	}
 
 	MessageBox::AxisJog::AxisJog(const size_t index, lv_obj_t* parent, MessageBox& msgBox)
-		: BaseView(utils::format("msgbox_axis_jog_%u", index), parent)
+		: LvObj(lv_obj_create, utils::format("msgbox_axis_jog_%u", index), parent)
 		, m_index(index)
 		, m_msgBox(msgBox)
 		, m_label(lv_label_create(getCont()))

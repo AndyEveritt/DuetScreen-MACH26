@@ -21,7 +21,7 @@ namespace UI
 	static constexpr lv_coord_t height = 100; // %
 
 	SideBar::SideBar(const std::string& name, lv_obj_t* parent)
-		: View(name, parent, layout_t{0, 0, width, height})
+		: View(lv_obj_create, name, parent, layout_t{0, 0, width, height})
 		, m_homeBtn("Home", getCont(), _("home"), layout_t{0, 20, 100, 0})
 		, m_backBtn("Back", getCont(), _("back"), layout_t{0, 0, 100, 0})
 		, m_macrosBtn("Macros", getCont(), _("macros"), layout_t{0, 40, 100, 0})

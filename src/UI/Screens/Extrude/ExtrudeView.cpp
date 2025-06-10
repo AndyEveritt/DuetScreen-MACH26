@@ -321,7 +321,7 @@ namespace UI
 	}
 
 	ExtrudeView::ExtrudeView(lv_obj_t* parent)
-		: View("move_view", parent, layout_t(0, 0, 100, 100))
+		: View(lv_obj_create, "move_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{30, LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_listHeader(lv_obj_create(getCont()))

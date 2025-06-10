@@ -19,7 +19,7 @@ namespace UI
 	static lv_color_t GetColorForPercent(double percent);
 
 	Heatmap::Heatmap(const std::string& name, lv_obj_t* parent)
-		: BaseView(name, parent)
+		: LvObj(lv_obj_create, name, parent)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
 		, m_canvas("heightmap_canvas", getCont())
@@ -29,7 +29,7 @@ namespace UI
 	}
 
 	Heatmap::Heatmap(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: BaseView(name, parent, layout)
+		: LvObj(lv_obj_create, name, parent, layout)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
 		, m_canvas("heightmap_canvas", getCont())

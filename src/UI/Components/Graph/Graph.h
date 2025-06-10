@@ -15,7 +15,7 @@
 namespace UI
 {
 
-	class Graph : public BaseView
+	class Graph : public LvObj
 	{
 	  public:
 		typedef Button legend_obj_t;

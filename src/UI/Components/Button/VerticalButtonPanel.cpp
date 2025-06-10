@@ -12,7 +12,7 @@
 namespace UI
 {
 	VerticalButtonPanel::VerticalButtonPanel(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: BaseView(name, parent, layout)
+		: LvObj(lv_obj_create, name, parent, layout)
 		, m_reset(name + "_reset", getCont(), "")
 		, m_increment(name + "_increment", getCont(), "")
 		, m_decrement(name + "_decrement", getCont(), "")

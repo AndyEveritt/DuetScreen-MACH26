@@ -11,7 +11,7 @@ namespace UI
 {
 	class HeightmapItem;
 
-	class HeightmapRenderMode : public BaseView
+	class HeightmapRenderMode : public LvObj
 	{
 	  public:
 		HeightmapRenderMode(lv_obj_t* parent, HeightmapPresenter& presenter);
@@ -27,7 +27,7 @@ namespace UI
 		Button m_auto;
 	};
 
-	class HeightmapStatistics : public BaseView
+	class HeightmapStatistics : public LvObj
 	{
 	  public:
 		HeightmapStatistics(const std::string& name, lv_obj_t* parent);

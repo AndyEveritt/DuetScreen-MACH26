@@ -85,7 +85,7 @@ namespace UI
 	};
 
 	HeightmapRenderMode::HeightmapRenderMode(lv_obj_t* parent, HeightmapPresenter& presenter)
-		: BaseView("heightmap_render_mode", parent)
+		: LvObj(lv_obj_create, "heightmap_render_mode", parent)
 		, m_presenter(presenter)
 		, m_title(lv_label_create(getCont()))
 		, m_btns(lv_obj_create(getCont()))
@@ -161,7 +161,7 @@ namespace UI
 	}
 
 	HeightmapStatistics::HeightmapStatistics(const std::string& name, lv_obj_t* parent)
-		: BaseView(name, parent)
+		: LvObj(lv_obj_create, name, parent)
 		, m_numPoints(lv_label_create(getCont()))
 		, m_area(lv_label_create(getCont()))
 		, m_minError(lv_label_create(getCont()))
@@ -192,7 +192,7 @@ namespace UI
 	}
 
 	HeightmapView::HeightmapView(lv_obj_t* parent)
-		: View("HeightmapView", parent, layout_t(0, 0, 100, 100))
+		: View(lv_obj_create, "HeightmapView", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_heightmap("heightmap", getCont(), layout_t(0, 0, 100, 100))

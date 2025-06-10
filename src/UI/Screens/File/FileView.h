@@ -10,7 +10,7 @@ namespace UI
 	class FileView : public View<FilePresenter>
 	{
 	  public:
-		class FileItem : public BaseView
+		class FileItem : public LvObj
 		{
 		  public:
 			FileItem(const size_t index, FileView* view, lv_obj_t* parent, layout_t layout);

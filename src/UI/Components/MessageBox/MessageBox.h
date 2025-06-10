@@ -18,7 +18,7 @@
 namespace UI
 {
 
-	class MessageBox : public BaseView
+	class MessageBox : public LvObj
 	{
 
 	  public:
@@ -36,7 +36,7 @@ namespace UI
 			right,
 		};
 
-		class AxisJog : public BaseView
+		class AxisJog : public LvObj
 		{
 		  public:
 			AxisJog(const size_t index, lv_obj_t* parent, MessageBox& msgBox);

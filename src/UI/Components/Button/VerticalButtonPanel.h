@@ -12,8 +12,8 @@
 
 namespace UI
 {
-    class VerticalButtonPanel : public BaseView
-    {
+	class VerticalButtonPanel : public LvObj
+	{
       public:
 		VerticalButtonPanel(const std::string& name, lv_obj_t* parent, layout_t layout);
 		void setIncrementLabel(const char* label);
