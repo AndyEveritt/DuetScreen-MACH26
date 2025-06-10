@@ -45,7 +45,7 @@ namespace UI
 								   btn->setCallback(onRelMoveEvent, LV_EVENT_CLICKED, this);
 								   btn->setFlexGrow(1);
 								   btn->setHeight(LV_SIZE_CONTENT);
-								   btn->addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+								   btn->addStyle(Themes::getLvglStyles().actionBtn, 0);
 								   return btn;
 							   });
 
@@ -58,11 +58,11 @@ namespace UI
 		lv_label_set_text(m_machinePosition, "");
 
 		m_home.setCallback(onHomeEvent, LV_EVENT_CLICKED, this);
-		m_home.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_home.addStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		// Styles
 		m_home.setCheckable(true);
-		m_home.addBtnStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
+		m_home.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
 	}
 
 	AxisItem::~AxisItem() {}
@@ -138,10 +138,10 @@ namespace UI
 	{
 		UI_LOCK();
 
-		m_homeAll.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_trueBedLevel.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_meshBedLevel.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_disableMotors.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_homeAll.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_trueBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_meshBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_disableMotors.addStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		// Layout
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);

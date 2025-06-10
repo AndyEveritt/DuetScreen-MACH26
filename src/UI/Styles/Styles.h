@@ -199,6 +199,7 @@ namespace UI::Themes
 		Style file;	   // File item style
 		Style folder;  // Folder item style
 		Style unhomed; // Used for the move view
+		Style sidebar; // Sidebar style
 	};
 
 	const LvglStyles& getLvglStyles();

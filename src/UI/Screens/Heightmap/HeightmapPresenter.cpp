@@ -147,6 +147,12 @@ namespace UI
 	void HeightmapPresenter::newAxesData()
 	{
 		LOG_DBG("New axes data");
+		if (m_heightmap == nullptr)
+		{
+			LOG_DBG("Heightmap is not set, skipping axis range update");
+			return;
+		}
+
 		auto axis0 = m_heightmap->meta.GetAxis(0);
 		auto axis1 = m_heightmap->meta.GetAxis(1);
 

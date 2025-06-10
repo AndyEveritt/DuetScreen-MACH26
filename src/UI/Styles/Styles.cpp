@@ -270,6 +270,7 @@ namespace UI::Themes
 			}
 
 #  endif
+			lv_obj_add_style(obj, s_lvglStyles.pad_base, 0);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, 0);
 			lv_obj_add_style(obj, s_lvglStyles.btn, 0);
 			lv_obj_add_style(obj, s_lvglStyles.transition_delayed, 0);

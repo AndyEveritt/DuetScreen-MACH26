@@ -33,9 +33,8 @@ namespace UI
 
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		setPad(0, LV_PART_MAIN, Padding::ALL);
-		setPad(0, LV_PART_MAIN, Padding::ROW);
-		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
+
+				lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
 		lv_obj_set_overflow_visible_flag(getCont(), 400);
 
 		m_backBtn.setFlexGrow(1);
@@ -51,10 +50,8 @@ namespace UI
 		m_consoleBtn.setCallback(consoleBtnEvent, LV_EVENT_CLICKED, this);
 		m_eStopBtn.setDragCallback(eStopDraggedEvent, this);
 
+		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);
 		m_eStopBtn.addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
-		// lv_obj_t* b = lv_obj_create(getCont());
-		// lv_obj_set_width(b, LV_PCT(200));
-		// lv_obj_set_height(b, LV_PCT(50));
 	}
 
 	void SideBar::enableHomeButton(bool enable)

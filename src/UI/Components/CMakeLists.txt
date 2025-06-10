@@ -1,6 +1,7 @@
 target_sources(
   DuetScreen
   PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/AxisControl/GenericAxisControl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Button/Button.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Button/DraggableButton.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Button/VerticalButtonPanel.cpp
@@ -10,6 +11,7 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/Input/DropdownMenu.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Input/TextBox.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LVGL/Label.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LVGL/LvObj.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/MessageBox/MessageBox.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/NumberPad/NumberPad.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBar.cpp

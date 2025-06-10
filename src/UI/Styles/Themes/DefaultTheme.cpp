@@ -74,9 +74,9 @@ namespace UI::Themes
 		}
 		lv_style_set_text_color(lvgl.btn, m_textColor);
 		lv_style_set_pad_hor(lvgl.btn, PAD_DEF);
-		lv_style_set_pad_ver(lvgl.btn, PAD_SMALL);
-		lv_style_set_pad_column(lvgl.btn, LV_DPX_CALC(lv_display_get_dpi(NULL), 5));
-		lv_style_set_pad_row(lvgl.btn, LV_DPX_CALC(lv_display_get_dpi(NULL), 5));
+		lv_style_set_pad_ver(lvgl.btn, PAD_DEF);
+		lv_style_set_pad_column(lvgl.btn, PAD_DEF);
+		lv_style_set_pad_row(lvgl.btn, PAD_DEF);
 
 		lv_style_set_recolor(lvgl.pressed, lv_color_black());
 		lv_style_set_recolor_opa(lvgl.pressed, 35);

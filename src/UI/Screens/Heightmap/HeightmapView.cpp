@@ -60,7 +60,7 @@ namespace UI
 
 			m_load.setSize(70, LV_SIZE_CONTENT);
 			addStyle(Themes::getLvglStyles().bg_color_primary, LV_STATE_CHECKED);
-			m_load.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+			m_load.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		}
 
 		void setLabel(const std::string& label)

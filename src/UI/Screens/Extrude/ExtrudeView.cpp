@@ -73,7 +73,7 @@ namespace UI
 		lv_obj_add_event_cb(m_filament, onLoadFilamentEvent, LV_EVENT_VALUE_CHANGED, this);
 		m_unload.setCallback(onUnloadEvent, LV_EVENT_CLICKED, this);
 
-		m_unload.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_unload.addStyle(Themes::getLvglStyles().actionBtn, 0);
 	}
 
 	ToolItem::~ToolItem() {}
@@ -482,8 +482,8 @@ namespace UI
 		m_retract.setCallback(onRetractEvent, LV_EVENT_CLICKED, this);
 		m_extrude.setCallback(onExtrudeEvent, LV_EVENT_CLICKED, this);
 
-		m_retract.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_extrude.addBtnStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_retract.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_extrude.addStyle(Themes::getLvglStyles().actionBtn, 0);
 	}
 
 	void ExtrudeView::setToolCount(const size_t count)
