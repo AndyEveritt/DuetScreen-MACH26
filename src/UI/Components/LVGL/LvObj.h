@@ -116,7 +116,6 @@ namespace UI
 		virtual bool back();
 
 	  protected:
-		virtual void init() {}
 		virtual void onShow() {}
 		virtual void onHide() {}
 		virtual void refresh() {}

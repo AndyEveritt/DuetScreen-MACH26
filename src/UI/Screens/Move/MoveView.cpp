@@ -22,7 +22,10 @@ namespace UI
 		, m_meshBedLevel("move_mesh_bed_level", m_topBarCont, _("mesh_bed_level"), layout_t(0, 0, 0, 100))
 		, m_heightmap("move_heightmap", m_topBarCont, _("heightmap"), layout_t(0, 0, 0, 100))
 		, m_disableMotors("move_disable_motors", m_topBarCont, _("disable_motors"), layout_t(0, 0, 0, 100))
-		, m_axisControl("move_list", getCont())
+		, m_axisControlCont("move_axis_control", getCont())
+		, m_xyControl("move_xy_control", m_axisControlCont)
+		, m_zControl("move_z_control", m_axisControlCont)
+		, m_axisList("move_axis_control_list", m_axisControlCont)
 		, m_feedRates("move_feed_rates", m_bottomBarCont)
 	{
 		UI_LOCK();
@@ -36,7 +39,7 @@ namespace UI
 		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_topBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_axisControl, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		lv_obj_set_grid_cell(m_axisControlCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
 
 		// Top Bar
@@ -51,15 +54,13 @@ namespace UI
 		lv_obj_set_flex_grow(m_heightmap.getCont(), 1);
 		lv_obj_set_flex_grow(m_disableMotors.getCont(), 1);
 
-		// List Header
-		// lv_obj_set_style_pad_ver(m_listHeader, 0, 0);
-		// lv_obj_set_style_pad_column(m_listHeader, pad, 0);
-		// lv_obj_set_height(m_toolPositionLabel, LV_PCT(100));
-		// lv_obj_set_height(m_machinePositionLabel, LV_PCT(100));
-		// lv_obj_set_style_text_align(m_toolPositionLabel, LV_TEXT_ALIGN_CENTER, 0);
-		// lv_obj_set_style_text_align(m_machinePositionLabel, LV_TEXT_ALIGN_CENTER, 0);
-		// lv_label_set_text(m_toolPositionLabel, _("move_tool_position"));
-		// lv_label_set_text(m_machinePositionLabel, _("move_machine_position"));
+		// Axis Control
+		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_xyControl.setSize(LV_PCT(20), LV_PCT(100));
+		m_zControl.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_zControl.setAxisLetter("Z");
+		m_axisList.setFlexGrow(1);
+		m_axisList.setHeight(LV_PCT(100));
 
 		m_homeAll.setCallback(onHomeAllEvent, LV_EVENT_CLICKED, this);
 		m_trueBedLevel.setCallback(onTrueBedLevelEvent, LV_EVENT_CLICKED, this);
@@ -150,7 +151,7 @@ namespace UI
 
 	void MoveView::setAxisCount(const size_t count)
 	{
-		List<AxisItem>& list = m_axisControl.getAxisItems();
+		List<AxisItem>& list = m_axisList.getAxisItems();
 		list.setItemCount(count,
 						  [this](size_t i, lv_obj_t* parent)
 						  {
@@ -171,6 +172,6 @@ namespace UI
 
 	std::shared_ptr<AxisItem> MoveView::getAxisItem(size_t index)
 	{
-		return m_axisControl.getAxisItems().getItem(index);
+		return m_axisList.getAxisItems().getItem(index);
 	}
 } // namespace UI

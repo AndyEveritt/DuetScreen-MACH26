@@ -38,5 +38,6 @@ namespace UI
 		void cutText(uint32_t pos, uint32_t len);
 
 	  private:
+		void init();
 	};
 } // namespace UI

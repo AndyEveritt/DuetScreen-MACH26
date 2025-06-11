@@ -7,12 +7,13 @@
 
 #include "GenericAxisControl.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
 
-	GenericAxisControl::GenericAxisControl(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
+	GenericAxisControl::GenericAxisControl(const std::string& name, lv_obj_t* parent)
+		: LvObj(lv_obj_create, name, parent)
 		, m_label(name + "_label", getCont())
 		, m_incrementButton(name + "_increment", getCont(), LV_SYMBOL_PLUS)
 		, m_homeButton(name + "_home", getCont(), LV_SYMBOL_HOME)
@@ -23,12 +24,25 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
-		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
+		m_incrementButton.setWidth(LV_PCT(100));
+		m_homeButton.setWidth(LV_PCT(100));
+		m_decrementButton.setWidth(LV_PCT(100));
+
+		m_incrementButton.setFlexGrow(1);
+		m_homeButton.setFlexGrow(1);
+		m_decrementButton.setFlexGrow(1);
 
 		m_incrementButton.setCallback(onIncrementBtn, LV_EVENT_CLICKED, this);
 		m_homeButton.setCallback(onHomeBtn, LV_EVENT_CLICKED, this);
 		m_decrementButton.setCallback(onDecrementBtn, LV_EVENT_CLICKED, this);
+
+		m_incrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_homeButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_decrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
+
+		updateLabel();
 	}
 
 	void GenericAxisControl::setAxisLetter(std::string_view letter)
@@ -36,6 +50,7 @@ namespace UI
 		UI_LOCK();
 		m_axisLetter = letter;
 
+		m_homeButton.setText(LV_SYMBOL_HOME " " + m_axisLetter);
 		updateLabel();
 	}
 
@@ -93,7 +108,7 @@ namespace UI
 	void GenericAxisControl::updateLabel()
 	{
 		UI_LOCK();
-		std::string labelText = m_axisLetter + ": " + std::to_string(m_axisPosition);
+		std::string labelText = fmt::format("{}: {:g}", m_axisLetter, m_axisPosition);
 		m_label.setText(labelText);
 		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
 	}

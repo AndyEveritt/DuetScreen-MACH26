@@ -18,7 +18,7 @@ namespace UI
 
 		MoveView(lv_obj_t* parent);
 
-		const size_t getAxisCount() const { return m_axisControl.getItemCount(); }
+		const size_t getAxisCount() const { return m_axisList.getItemCount(); }
 		void setAxisCount(const size_t count);
 		std::shared_ptr<AxisItem> getAxisItem(size_t index);
 
@@ -46,8 +46,11 @@ namespace UI
 		Button m_heightmap;
 		Button m_disableMotors;
 
-		// List
-		AxisJogList m_axisControl;
+		// Axis Control
+		Container m_axisControlCont;
+		XYControl m_xyControl;
+		GenericAxisControl m_zControl;
+		AxisJogList m_axisList;
 
 		// Bottom Bar
 		List<Button> m_feedRates;

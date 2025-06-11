@@ -19,7 +19,7 @@ namespace UI
 		using home_cb_t = std::function<void(void*)>;
 
 	  public:
-		XYControl(const std::string& name, lv_obj_t* parent, layout_t layout);
+		XYControl(const std::string& name, lv_obj_t* parent);
 
 		void setXPosition(float position);
 		void setYPosition(float position);
@@ -36,6 +36,10 @@ namespace UI
 		static void onHomeXBtn(lv_event_t* event);
 		static void onHomeYBtn(lv_event_t* event);
 
+		void updateXLabel();
+		void updateYLabel();
+		void updateLabel(Label& label, const std::string& axisLetter, float position);
+
 		int32_t m_colDsc[5] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
 		int32_t m_rowDsc[5] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
@@ -48,6 +52,12 @@ namespace UI
 		Button m_homeXYButton;
 		Button m_homeXButton;
 		Button m_homeYButton;
+
+		static const std::string sm_xAxisLetter;
+		static const std::string sm_yAxisLetter;
+
+		float m_xPosition = 0.0f;
+		float m_yPosition = 0.0f;
 
 		position_cb_t m_xPositionCallback;
 		position_cb_t m_yPositionCallback;

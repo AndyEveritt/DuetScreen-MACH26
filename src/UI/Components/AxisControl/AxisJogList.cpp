@@ -21,12 +21,13 @@ namespace UI
 		// Layout
 		UI_LOCK();
 		constexpr lv_coord_t pad = 2;
-		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(getCont(), pad, 0);
-		lv_obj_set_style_pad_column(getCont(), pad, 0);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_flex_grow(m_home.getCont(), 4);
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		setStylePad(pad, LV_PART_MAIN, Padding::ALL);
+		setStylePad(pad, LV_PART_MAIN, Padding::COLUMN);
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		m_home.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 
 		m_relMove.setListFlow(LV_FLEX_FLOW_ROW);
 		m_relMove.setStylePad(0);

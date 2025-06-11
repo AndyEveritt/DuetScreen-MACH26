@@ -14,15 +14,20 @@ namespace UI
 		: LvObj(lv_label_create, name, parent)
 	{
 		UI_LOCK();
-		setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		init();
 	}
 
 	Label::Label(const std::string& name, lv_obj_t* parent, const std::string& text)
 		: LvObj(lv_label_create, name, parent)
 	{
 		UI_LOCK();
-		setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		init();
 		setText(text);
+	}
+
+	void Label::init()
+	{
+		setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 	}
 
 	void Label::setText(const std::string& text)

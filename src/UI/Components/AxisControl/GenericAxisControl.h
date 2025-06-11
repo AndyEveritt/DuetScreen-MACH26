@@ -19,7 +19,7 @@ namespace UI
 		using home_cb_t = std::function<void(void*)>;
 
 	  public:
-		GenericAxisControl(const std::string& name, lv_obj_t* parent, layout_t layout);
+		GenericAxisControl(const std::string& name, lv_obj_t* parent);
 
 		void setAxisLetter(std::string_view letter);
 		void setAxisPosition(float value);
