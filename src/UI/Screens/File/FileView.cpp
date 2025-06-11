@@ -164,10 +164,10 @@ namespace UI
 		m_startPrint.setImageSize(200, 200);
 
 		// Callbacks
-		m_refresh.setCallback(onRefreshClicked, LV_EVENT_CLICKED, this);
-		m_sortName.setCallback(onSortClicked, LV_EVENT_CLICKED, this);
-		m_sortDate.setCallback(onSortClicked, LV_EVENT_CLICKED, this);
-		m_sortSize.setCallback(onSortClicked, LV_EVENT_CLICKED, this);
+		m_refresh.addClickedCallback(onRefreshClicked, this);
+		m_sortName.addClickedCallback(onSortClicked, this);
+		m_sortDate.addClickedCallback(onSortClicked, this);
+		m_sortSize.addClickedCallback(onSortClicked, this);
 	}
 
 	void FileView::setFileCount(const size_t count)

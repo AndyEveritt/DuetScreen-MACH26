@@ -41,7 +41,7 @@ namespace UI
 				LV_EVENT_CLICKED,
 				this);
 
-			m_load.setCallback(
+			m_load.addClickedCallback(
 				[](lv_event_t* event)
 				{
 					UI_LOCK();
@@ -54,7 +54,6 @@ namespace UI
 					item->m_view.getPresenter()->toggleHeightmap(item->getIndex());
 					item->m_view.getPresenter()->setActiveHeightmap(item->getIndex());
 				},
-				LV_EVENT_CLICKED,
 				this);
 			// m_load.setCheckable(true);
 
@@ -109,7 +108,7 @@ namespace UI
 
 		setRenderMode(m_presenter.getRenderMode());
 
-		m_fixed.setCallback(
+		m_fixed.addClickedCallback(
 			[](lv_event_t* event)
 			{
 				UI_LOCK();
@@ -122,10 +121,9 @@ namespace UI
 				mode->m_presenter.setRenderMode(HeightmapPresenter::HeightmapRenderMode::Fixed);
 				mode->setRenderMode(HeightmapPresenter::HeightmapRenderMode::Fixed);
 			},
-			LV_EVENT_CLICKED,
 			this);
 
-		m_auto.setCallback(
+		m_auto.addClickedCallback(
 			[](lv_event_t* event)
 			{
 				UI_LOCK();
@@ -138,7 +136,6 @@ namespace UI
 				mode->m_presenter.setRenderMode(HeightmapPresenter::HeightmapRenderMode::Auto);
 				mode->setRenderMode(HeightmapPresenter::HeightmapRenderMode::Auto);
 			},
-			LV_EVENT_CLICKED,
 			this);
 	}
 

@@ -51,10 +51,10 @@ namespace UI
 		}
 	}
 
-	void Button::setCallback(lv_event_cb_t event_cb, lv_event_code_t filter, void* user_data)
+	void Button::addClickedCallback(lv_event_cb_t event_cb, void* user_data)
 	{
 		UI_LOCK();
-		lv_obj_add_event_cb(getCont(), event_cb, filter, user_data);
+		lv_obj_add_event_cb(getCont(), event_cb, LV_EVENT_CLICKED, user_data);
 	}
 
 	void Button::setIcon(lv_img_dsc_t* icon)

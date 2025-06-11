@@ -84,8 +84,8 @@ namespace UI
 		m_slider.setStylePad(5, LV_PART_MAIN, Padding::ALL);
 		m_slider.addStyle(Themes::getLvglStyles().no_border, 0);
 
-		m_off.setCallback(onFanOffClicked, LV_EVENT_CLICKED, this);
-		m_max.setCallback(onFanMaxClicked, LV_EVENT_CLICKED, this);
+		m_off.addClickedCallback(onFanOffClicked, this);
+		m_max.addClickedCallback(onFanMaxClicked, this);
 	}
 
 	void FanView::FanItem::setLabel(const char* label)

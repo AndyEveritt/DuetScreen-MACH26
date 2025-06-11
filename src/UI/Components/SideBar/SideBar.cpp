@@ -44,10 +44,10 @@ namespace UI
 
 		m_eStopBtn.setSize(ESTOP_SIZE, ESTOP_SIZE);
 
-		m_backBtn.setCallback(backBtnEvent, LV_EVENT_CLICKED, this);
-		m_homeBtn.setCallback(homeBtnEvent, LV_EVENT_CLICKED, this);
-		m_macrosBtn.setCallback(macrosBtnEvent, LV_EVENT_CLICKED, this);
-		m_consoleBtn.setCallback(consoleBtnEvent, LV_EVENT_CLICKED, this);
+		m_backBtn.addClickedCallback(backBtnEvent, this);
+		m_homeBtn.addClickedCallback(homeBtnEvent, this);
+		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
+		m_consoleBtn.addClickedCallback(consoleBtnEvent, this);
 		m_eStopBtn.setDragCallback(eStopDraggedEvent, this);
 
 		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);

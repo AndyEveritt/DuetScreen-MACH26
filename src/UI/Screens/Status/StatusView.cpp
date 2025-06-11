@@ -93,19 +93,18 @@ namespace UI
 		lv_obj_align(m_confirmCancel.getCont(), LV_ALIGN_CENTER, 0, 0);
 
 		// Callbacks
-		m_pauseBtn.setCallback(onPauseClicked, LV_EVENT_CLICKED, this);
-		m_resumeBtn.setCallback(onResumeClicked, LV_EVENT_CLICKED, this);
-		m_printAgainBtn.setCallback(onPrintAgainClicked, LV_EVENT_CLICKED, this);
-		m_cancelBtn.setCallback(onCancelClicked, LV_EVENT_CLICKED, this);
+		m_pauseBtn.addClickedCallback(onPauseClicked, this);
+		m_resumeBtn.addClickedCallback(onResumeClicked, this);
+		m_printAgainBtn.addClickedCallback(onPrintAgainClicked, this);
+		m_cancelBtn.addClickedCallback(onCancelClicked, this);
 
-		m_fineTuneBtn.setCallback(
+		m_fineTuneBtn.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
 				StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 				view->m_fineTune.show();
 			},
-			LV_EVENT_CLICKED,
 			this);
 
 		// Fine tune

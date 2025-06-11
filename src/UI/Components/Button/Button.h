@@ -13,7 +13,7 @@ namespace UI
 		Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout);
 
 		void setText(const std::string& text);
-		void setCallback(lv_event_cb_t event_cb, lv_event_code_t filter, void* user_data);
+		void addClickedCallback(lv_event_cb_t event_cb, void* user_data);
 		void setIcon(lv_img_dsc_t* icon);
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);

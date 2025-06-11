@@ -64,7 +64,7 @@ namespace UI
 			lv_obj_set_width(m_input, 50);
 			lv_obj_set_flex_grow(m_slider, 1);
 
-			m_decrement.setCallback(
+			m_decrement.addClickedCallback(
 				[](lv_event_t* e)
 				{
 					UI_LOCK();
@@ -77,10 +77,9 @@ namespace UI
 						slider->setValue(slider->getValue() - slider->m_incrementValue);
 					}
 				},
-				LV_EVENT_ALL,
 				this);
 
-			m_increment.setCallback(
+			m_increment.addClickedCallback(
 				[](lv_event_t* e)
 				{
 					UI_LOCK();
@@ -93,7 +92,6 @@ namespace UI
 						slider->setValue(slider->getValue() + slider->m_incrementValue);
 					}
 				},
-				LV_EVENT_ALL,
 				this);
 
 			lv_textarea_set_one_line(m_input, true);

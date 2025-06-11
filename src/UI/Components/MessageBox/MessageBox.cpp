@@ -141,8 +141,8 @@ namespace UI
 
 		// Callbacks
 		lv_obj_add_event_cb(m_input, onInputEvent, LV_EVENT_ALL, this);
-		m_okBtn.setCallback(onOkEvent, LV_EVENT_CLICKED, this);
-		m_cancelBtn.setCallback(onCancelEvent, LV_EVENT_CLICKED, this);
+		m_okBtn.addClickedCallback(onOkEvent, this);
+		m_cancelBtn.addClickedCallback(onCancelEvent, this);
 
 		m_timers.progress = lv_timer_create(onProgressTimer, 100, this);
 
@@ -582,7 +582,7 @@ namespace UI
 			m_choices.emplace_back(std::make_shared<Button>(
 				utils::format("msgbox_choice_%u", i), m_choicesList, "", layout_t(0, 0, 20, 100)));
 			m_choices[i]->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
-			m_choices[i]->setCallback(onChoiceEvent, LV_EVENT_CLICKED, this);
+			m_choices[i]->addClickedCallback(onChoiceEvent, this);
 		}
 	}
 
@@ -793,7 +793,7 @@ namespace UI
 			lv_obj_set_height(btn.getCont(), LV_SIZE_CONTENT);
 			lv_obj_set_user_data(btn.getCont(), this);
 			btn.setUserData(reinterpret_cast<void*>(const_cast<float*>(&s_jogAmounts[i])));
-			btn.setCallback(onRelMoveEvent, LV_EVENT_CLICKED, &btn);
+			btn.addClickedCallback(onRelMoveEvent, &btn);
 		}
 
 		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);

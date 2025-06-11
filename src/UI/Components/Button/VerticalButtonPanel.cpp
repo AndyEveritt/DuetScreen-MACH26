@@ -52,7 +52,7 @@ namespace UI
 			v.setCheckable(true);
 			v.setChecked(false);
 			v.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&v - m_values)));
-			v.setCallback(
+			v.addClickedCallback(
 				[](lv_event_t* e)
 				{
 					UI_LOCK();
@@ -61,12 +61,11 @@ namespace UI
 					panel->setSelectedValueIndex(
 						static_cast<uint8_t>(reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn))));
 				},
-				LV_EVENT_CLICKED,
 				this);
 		}
 		m_values[m_selectedValueIndex].setChecked(true);
 
-		m_decrement.setCallback(
+		m_decrement.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
@@ -76,10 +75,9 @@ namespace UI
 					panel->m_valueChangeCallback(-panel->getSelectedValue());
 				}
 			},
-			LV_EVENT_CLICKED,
 			this);
 
-		m_increment.setCallback(
+		m_increment.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
@@ -89,10 +87,9 @@ namespace UI
 					panel->m_valueChangeCallback(panel->getSelectedValue());
 				}
 			},
-			LV_EVENT_CLICKED,
 			this);
 
-		m_reset.setCallback(
+		m_reset.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
@@ -102,7 +99,6 @@ namespace UI
 					panel->m_resetCallback();
 				}
 			},
-			LV_EVENT_CLICKED,
 			this);
 	}
 

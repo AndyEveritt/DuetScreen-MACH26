@@ -70,8 +70,8 @@ namespace UI
 		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
 
 		// Callbacks
-		m_clear.setCallback(onClearEvent, LV_EVENT_CLICKED, this);
-		m_enter.setCallback(onSendEvent, LV_EVENT_CLICKED, this);
+		m_clear.addClickedCallback(onClearEvent, this);
+		m_enter.addClickedCallback(onSendEvent, this);
 		lv_obj_add_event_cb(m_commandList, onCommandListEvent, LV_EVENT_ALL, this);
 		lv_obj_add_event_cb(m_input, onKeyboardEvent, LV_EVENT_ALL, this);
 	}

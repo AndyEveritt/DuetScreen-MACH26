@@ -43,7 +43,7 @@ namespace UI
 		lv_label_set_text(m_toolPosition, "");
 		lv_label_set_text(m_machinePosition, "");
 
-		m_home.setCallback(onHomeEvent, LV_EVENT_CLICKED, this);
+		m_home.addClickedCallback(onHomeEvent, this);
 		m_home.addStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		// Styles
@@ -84,7 +84,7 @@ namespace UI
 									   parent,
 									   utils::format("%.1f", distances[i]).c_str());
 								   btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
-								   btn->setCallback(onRelMoveEvent, LV_EVENT_CLICKED, this);
+								   btn->addClickedCallback(onRelMoveEvent, this);
 								   btn->setFlexGrow(1);
 								   btn->setHeight(LV_SIZE_CONTENT);
 								   btn->addStyle(Themes::getLvglStyles().actionBtn, 0);

@@ -182,7 +182,7 @@ namespace UI
 		legendObj->setStyleBgColor(s_hiddenColor, LV_STATE_DEFAULT);
 		legendObj->setCheckable(true);
 		legendObj->setChecked(true);
-		legendObj->setCallback(legendEvent, LV_EVENT_CLICKED, this);
+		legendObj->addClickedCallback(legendEvent, this);
 		legendObj->setUserData(new size_t(index));
 		m_series.push_back(series_t(series, color, legendObj));
 		return true;

@@ -472,7 +472,7 @@ namespace UI
 		m_passwordInput.setOneLine(true);
 
 		// Refresh
-		m_refresh.setCallback(onRefreshEvent, LV_EVENT_CLICKED, this);
+		m_refresh.addClickedCallback(onRefreshEvent, this);
 
 		// Callbacks
 		lv_obj_add_event_cb(m_enable, onEnableEvent, LV_EVENT_VALUE_CHANGED, this);
@@ -644,9 +644,9 @@ namespace UI
 		lv_obj_set_height(m_restart.getCont(), LV_SIZE_CONTENT);
 		lv_obj_set_height(m_eraseAndRestart.getCont(), LV_SIZE_CONTENT);
 		lv_obj_set_height(m_reboot.getCont(), LV_SIZE_CONTENT);
-		m_restart.setCallback(onRestartEvent, LV_EVENT_CLICKED, this);
-		m_eraseAndRestart.setCallback(onEraseAndRestartEvent, LV_EVENT_CLICKED, this);
-		m_reboot.setCallback(onRebootEvent, LV_EVENT_CLICKED, this);
+		m_restart.addClickedCallback(onRestartEvent, this);
+		m_eraseAndRestart.addClickedCallback(onEraseAndRestartEvent, this);
+		m_reboot.addClickedCallback(onRebootEvent, this);
 	}
 
 	void DeveloperSettingsView::onDebugLevelEvent(lv_event_t* e)

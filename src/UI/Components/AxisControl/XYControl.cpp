@@ -44,13 +44,13 @@ namespace UI
 		m_xLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_yLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
-		m_xIncrementButton.setCallback(onIncrementBtn, LV_EVENT_CLICKED, this);
-		m_xDecrementButton.setCallback(onDecrementBtn, LV_EVENT_CLICKED, this);
-		m_yIncrementButton.setCallback(onIncrementBtn, LV_EVENT_CLICKED, this);
-		m_yDecrementButton.setCallback(onDecrementBtn, LV_EVENT_CLICKED, this);
-		m_homeXYButton.setCallback(onHomeXYBtn, LV_EVENT_CLICKED, this);
-		m_homeXButton.setCallback(onHomeXBtn, LV_EVENT_CLICKED, this);
-		m_homeYButton.setCallback(onHomeYBtn, LV_EVENT_CLICKED, this);
+		m_xIncrementButton.addClickedCallback(onIncrementBtn, this);
+		m_xDecrementButton.addClickedCallback(onDecrementBtn, this);
+		m_yIncrementButton.addClickedCallback(onIncrementBtn, this);
+		m_yDecrementButton.addClickedCallback(onDecrementBtn, this);
+		m_homeXYButton.addClickedCallback(onHomeXYBtn, this);
+		m_homeXButton.addClickedCallback(onHomeXBtn, this);
+		m_homeYButton.addClickedCallback(onHomeYBtn, this);
 
 		m_xIncrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_xDecrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);

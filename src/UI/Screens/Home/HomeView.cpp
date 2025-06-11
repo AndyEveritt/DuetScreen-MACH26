@@ -118,21 +118,20 @@ namespace UI
 		m_filesWindow.setUserData(&m_fileView);
 		m_settingsWindow.setUserData(&m_settingsView);
 
-		m_moveWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
-		m_extrudeWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
-		m_fansWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
-		m_filesWindow.setCallback(
+		m_moveWindow.addClickedCallback(onWindowSelectEvent, this);
+		m_extrudeWindow.addClickedCallback(onWindowSelectEvent, this);
+		m_fansWindow.addClickedCallback(onWindowSelectEvent, this);
+		m_filesWindow.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				FileView* view = static_cast<FileView*>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
 				view->getPresenter()->setBaseFolder(FilePresenter::BaseFolder::GCODES);
 				openScreen(view, false);
 			},
-			LV_EVENT_CLICKED,
 			this);
-		m_heightmapWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
-		m_statusWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
-		m_settingsWindow.setCallback(onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		m_heightmapWindow.addClickedCallback(onWindowSelectEvent, this);
+		m_statusWindow.addClickedCallback(onWindowSelectEvent, this);
+		m_settingsWindow.addClickedCallback(onWindowSelectEvent, this);
 
 		m_consoleView.hide();
 		m_moveView.hide();

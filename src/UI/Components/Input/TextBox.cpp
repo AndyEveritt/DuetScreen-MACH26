@@ -36,7 +36,7 @@ namespace UI
 		m_showPassword.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_showPassword.hide();
 		m_showPassword.setCheckable(true);
-		m_showPassword.setCallback(
+		m_showPassword.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
@@ -46,7 +46,6 @@ namespace UI
 				tb->showPassword(passwordMode);
 				// lv_group_focus_obj(tb->m_textArea);
 			},
-			LV_EVENT_CLICKED,
 			this);
 	}
 

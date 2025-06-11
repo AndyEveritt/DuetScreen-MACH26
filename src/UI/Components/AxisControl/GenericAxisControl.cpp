@@ -34,9 +34,9 @@ namespace UI
 		m_homeButton.setFlexGrow(1);
 		m_decrementButton.setFlexGrow(1);
 
-		m_incrementButton.setCallback(onIncrementBtn, LV_EVENT_CLICKED, this);
-		m_homeButton.setCallback(onHomeBtn, LV_EVENT_CLICKED, this);
-		m_decrementButton.setCallback(onDecrementBtn, LV_EVENT_CLICKED, this);
+		m_incrementButton.addClickedCallback(onIncrementBtn, this);
+		m_homeButton.addClickedCallback(onHomeBtn, this);
+		m_decrementButton.addClickedCallback(onDecrementBtn, this);
 
 		m_incrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_homeButton.addStyle(Themes::getLvglStyles().actionBtn, 0);

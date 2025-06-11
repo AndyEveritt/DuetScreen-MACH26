@@ -71,7 +71,7 @@ namespace UI
 		lv_obj_add_flag(m_label, LV_OBJ_FLAG_CLICKABLE);
 		lv_obj_add_event_cb(m_label, onLabelEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_filament, onLoadFilamentEvent, LV_EVENT_VALUE_CHANGED, this);
-		m_unload.setCallback(onUnloadEvent, LV_EVENT_CLICKED, this);
+		m_unload.addClickedCallback(onUnloadEvent, this);
 
 		m_unload.addStyle(Themes::getLvglStyles().actionBtn, 0);
 	}
@@ -444,7 +444,7 @@ namespace UI
 			feedDist.setText(utils::format("%u", s_extrusionFeedDistances[&feedDist - m_feedDists]).c_str());
 			feedDist.setCheckable(true);
 			feedDist.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&feedDist - m_feedDists)));
-			feedDist.setCallback(onFeedDistEvent, LV_EVENT_CLICKED, this);
+			feedDist.addClickedCallback(onFeedDistEvent, this);
 			lv_obj_set_flex_grow(feedDist.getCont(), 1);
 		}
 		s_selectedExtrusionFeedDistanceIndex =
@@ -465,7 +465,7 @@ namespace UI
 			feedRate.setText(utils::format("%u", s_extrusionFeedRates[&feedRate - m_feedRates]).c_str());
 			feedRate.setCheckable(true);
 			feedRate.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&feedRate - m_feedRates)));
-			feedRate.setCallback(onFeedRateEvent, LV_EVENT_CLICKED, this);
+			feedRate.addClickedCallback(onFeedRateEvent, this);
 			lv_obj_set_flex_grow(feedRate.getCont(), 1);
 		}
 		s_selectedExtrusionFeedRateIndex =
@@ -479,8 +479,8 @@ namespace UI
 		lv_obj_set_style_pad_all(m_extrudeControlCont, 2, 0);
 		lv_obj_set_style_pad_row(m_extrudeControlCont, 2, 0);
 
-		m_retract.setCallback(onRetractEvent, LV_EVENT_CLICKED, this);
-		m_extrude.setCallback(onExtrudeEvent, LV_EVENT_CLICKED, this);
+		m_retract.addClickedCallback(onRetractEvent, this);
+		m_extrude.addClickedCallback(onExtrudeEvent, this);
 
 		m_retract.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_extrude.addStyle(Themes::getLvglStyles().actionBtn, 0);

@@ -54,7 +54,7 @@ namespace UI
 		lv_obj_set_user_data(m_textArea, this);
 		lv_textarea_set_text(m_textArea, "");
 
-		m_clearBtn.setCallback(clearBtnEventHandler, LV_EVENT_CLICKED, this);
+		m_clearBtn.addClickedCallback(clearBtnEventHandler, this);
 
 		validateInput();
 	}

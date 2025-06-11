@@ -62,11 +62,11 @@ namespace UI
 		m_axisList.setFlexGrow(1);
 		m_axisList.setHeight(LV_PCT(100));
 
-		m_homeAll.setCallback(onHomeAllEvent, LV_EVENT_CLICKED, this);
-		m_trueBedLevel.setCallback(onTrueBedLevelEvent, LV_EVENT_CLICKED, this);
-		m_meshBedLevel.setCallback(onMeshBedLevelEvent, LV_EVENT_CLICKED, this);
-		m_heightmap.setCallback(onHeightmapEvent, LV_EVENT_CLICKED, this);
-		m_disableMotors.setCallback(onDisableMotorsEvent, LV_EVENT_CLICKED, this);
+		m_homeAll.addClickedCallback(onHomeAllEvent, this);
+		m_trueBedLevel.addClickedCallback(onTrueBedLevelEvent, this);
+		m_meshBedLevel.addClickedCallback(onMeshBedLevelEvent, this);
+		m_heightmap.addClickedCallback(onHeightmapEvent, this);
+		m_disableMotors.addClickedCallback(onDisableMotorsEvent, this);
 
 		// List
 		// m_axisItems.setStylePad(0);
@@ -92,7 +92,7 @@ namespace UI
 																		 parent,
 																		 utils::format("%u", s_feedRates[i]).c_str());
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
-									 btn->setCallback(onFeedRateEvent, LV_EVENT_CLICKED, this);
+									 btn->addClickedCallback(onFeedRateEvent, this);
 									 btn->setCheckable(true);
 									 btn->setFlexGrow(1);
 									 lv_obj_set_height(btn->getCont(), LV_SIZE_CONTENT);
