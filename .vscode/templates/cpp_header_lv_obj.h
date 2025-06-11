@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "UI/Core/View.h"
+#include "UI/Components/LVGL/LvObj.h"
 
 namespace UI
 {

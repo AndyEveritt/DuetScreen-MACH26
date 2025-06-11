@@ -34,7 +34,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-				lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
+		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
 		lv_obj_set_overflow_visible_flag(getCont(), 400);
 
 		m_backBtn.setFlexGrow(1);

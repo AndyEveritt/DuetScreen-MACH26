@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include "UI/Core/View.h"
+#include "UI/Components/LVGL/Container.h"
+#include "UI/Components/LVGL/LvObj.h"
 #include "UI/Styles/Styles.h"
 #include <memory>
 #include <vector>
@@ -39,30 +40,57 @@ namespace UI
 
 		List(const std::string& name, lv_obj_t* parent)
 			: LvObj(lv_obj_create, name, parent)
-			, m_title(lv_label_create(getCont()))
-			, m_listCont(lv_obj_create(getCont()))
+			, m_header(name + "_header", getCont())
+			, m_title(name + "_title", m_header.getCont())
+			, m_listCont(name + "_list", getCont())
 		{
-			lv_obj_add_style(m_title, Themes::getLvglStyles().bg_color_header, 0);
+			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-			lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
-			lv_obj_set_size(m_title, LV_PCT(100), LV_SIZE_CONTENT);
+			m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+			m_header.setFlexFlow(LV_FLEX_FLOW_ROW);
+			m_header.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+			m_header.addStyle(Themes::getLvglStyles().bg_color_header, LV_PART_MAIN);
+
+			m_listCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+			m_listCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+			m_listCont.setSize(LV_PCT(100), LV_PCT(100));
+			m_listCont.addStyle(Themes::getLvglStyles().no_border, LV_PART_MAIN);
+			lv_obj_set_style_pad_all(m_listCont, 0, LV_PART_MAIN);
+
+			m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 			showTitle(false);
-			setListFlow(LV_FLEX_FLOW_COLUMN);
-			setListSize(LV_PCT(100), LV_PCT(100));
 		}
+
+		Container& getHeader() { return m_header; }
+		Label& getTitle() { return m_title; }
+		Container& getListContainer() { return m_listCont; }
 
 		void setTitle(const std::string& title)
 		{
 			UI_LOCK();
-			lv_label_set_text(m_title, title.c_str());
+			m_title.setText(title);
 			showTitle(!title.empty());
+		}
+
+		void showHeader(bool show)
+		{
+			UI_LOCK();
+			m_header.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 		}
 
 		void showTitle(bool show)
 		{
 			UI_LOCK();
-			lv_obj_set_flag(m_title, LV_OBJ_FLAG_HIDDEN, !show);
+			m_title.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
+			if (show)
+			{
+				showHeader(true);
+			}
+			else if (m_header.getChildCnt() <= 1) // Only the title is present
+			{
+				showHeader(false);
+			}
 		}
 
 		void setListPad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL)
@@ -106,25 +134,31 @@ namespace UI
 		void setListFlow(lv_flex_flow_t flow)
 		{
 			UI_LOCK();
-			lv_obj_set_flex_flow(m_listCont, flow);
+			m_listCont.setFlexFlow(flow);
 		}
 
 		void setListGrow(const uint8_t grow)
 		{
 			UI_LOCK();
-			lv_obj_set_flex_grow(m_listCont, grow);
+			m_listCont.setFlexGrow(grow);
 		}
 
 		void addListStyle(const lv_style_t* style, lv_style_selector_t selector = LV_PART_MAIN)
 		{
 			UI_LOCK();
-			lv_obj_add_style(m_listCont, style, selector);
+			m_listCont.addStyle(style, selector);
 		}
 
 		void setListSize(const lv_coord_t w, const lv_coord_t h)
 		{
 			UI_LOCK();
-			lv_obj_set_size(m_listCont, w, h);
+			m_listCont.setSize(w, h);
+		}
+
+		void clear()
+		{
+			UI_LOCK();
+			m_list.clear();
 		}
 
 		void setItemCount(const size_t count, std::function<std::shared_ptr<T>(size_t, lv_obj_t*)> constructor)
@@ -198,8 +232,9 @@ namespace UI
 		auto end() const { return m_list.end(); }
 
 	  private:
-		lv_obj_t* m_title;
-		lv_obj_t* m_listCont;
+		Container m_header;
+		Label m_title;
+		Container m_listCont;
 
 		std::vector<std::shared_ptr<T>> m_list;
 	};

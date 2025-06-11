@@ -81,7 +81,7 @@ namespace UI
 		m_slider.setLabel(_("fan"));
 		m_slider.setRange(0, 100);
 		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter->setFanSpeed(m_index, value); });
-		m_slider.setPad(5, LV_PART_MAIN, Padding::ALL);
+		m_slider.setStylePad(5, LV_PART_MAIN, Padding::ALL);
 		m_slider.addStyle(Themes::getLvglStyles().no_border, 0);
 
 		m_off.setCallback(onFanOffClicked, LV_EVENT_CLICKED, this);

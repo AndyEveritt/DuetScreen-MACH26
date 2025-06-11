@@ -1,6 +1,9 @@
 #pragma once
 
 #include "MovePresenter.h"
+#include "UI/Components/AxisControl/AxisJogList.h"
+#include "UI/Components/AxisControl/GenericAxisControl.h"
+#include "UI/Components/AxisControl/XYControl.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
 #include "UI/Components/NumberPad/NumberPad.h"
@@ -8,35 +11,6 @@
 
 namespace UI
 {
-	class MoveView;
-
-	class AxisItem : public ListItem
-	{
-	  public:
-		AxisItem(const size_t index, lv_obj_t* parent, MoveView& list);
-		virtual ~AxisItem();
-
-		MoveView& getList() const { return m_list; }
-		void setAxisLetter(const char* letter);
-		void setHomed(const bool homed);
-		void setToolPosition(const float& position);
-		void setMachinePosition(const float& position);
-		void disableHome(const bool show);
-
-	  private:
-		static void onHomeEvent(lv_event_t* e);
-		static void onRelMoveEvent(lv_event_t* e);
-
-		MoveView& m_list;
-
-		Button m_home;
-		List<Button> m_relMove;
-		lv_obj_t* m_toolPosition;
-		lv_obj_t* m_machinePosition;
-
-		std::string m_axisLetter;
-	};
-
 	class MoveView : public View<MovePresenter>
 	{
 	  public:
@@ -44,9 +18,9 @@ namespace UI
 
 		MoveView(lv_obj_t* parent);
 
-		const size_t getAxisCount() const { return m_axisItems.getItemCount(); }
+		const size_t getAxisCount() const { return m_axisControl.getItemCount(); }
 		void setAxisCount(const size_t count);
-		std::shared_ptr<AxisItem> getAxisItem(size_t index) const;
+		std::shared_ptr<AxisItem> getAxisItem(size_t index);
 
 	  private:
 		static void onHomeAllEvent(lv_event_t* e);
@@ -60,11 +34,9 @@ namespace UI
 		virtual void onHide() override;
 
 		int32_t m_layoutColDsc[2];
-		int32_t m_layoutRowDsc[5];
+		int32_t m_layoutRowDsc[4];
 
 		lv_obj_t* m_topBarCont;
-		lv_obj_t* m_listHeader;
-		lv_obj_t* m_listCont;
 		lv_obj_t* m_bottomBarCont;
 
 		// Top Bar
@@ -75,10 +47,7 @@ namespace UI
 		Button m_disableMotors;
 
 		// List
-		lv_obj_t* m_listHeaderPadding;
-		lv_obj_t* m_toolPositionLabel;
-		lv_obj_t* m_machinePositionLabel;
-		List<AxisItem> m_axisItems;
+		AxisJogList m_axisControl;
 
 		// Bottom Bar
 		List<Button> m_feedRates;

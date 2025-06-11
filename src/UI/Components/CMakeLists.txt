@@ -1,23 +1,12 @@
-target_sources(
-  DuetScreen
-  PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/AxisControl/GenericAxisControl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Button/Button.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Button/DraggableButton.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Button/VerticalButtonPanel.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Canvas/Canvas.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Graph/Graph.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Heatmap/Heatmap.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Input/DropdownMenu.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Input/TextBox.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LVGL/Label.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LVGL/LvObj.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/MessageBox/MessageBox.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/NumberPad/NumberPad.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBar.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/SideBar/SideBarPresenter.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/StatusBar/StatusBar.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/StatusBar/StatusBarPresenter.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolList.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/ToolList/ToolListPresenter.cpp
-)
+add_subdirectory(AxisControl)
+add_subdirectory(Button)
+add_subdirectory(Canvas)
+add_subdirectory(Graph)
+add_subdirectory(Heatmap)
+add_subdirectory(Input)
+add_subdirectory(LVGL)
+add_subdirectory(MessageBox)
+add_subdirectory(NumberPad)
+add_subdirectory(SideBar)
+add_subdirectory(StatusBar)
+add_subdirectory(ToolList)

@@ -5,8 +5,8 @@
  *      Author: {{author}}
  */
 
-#include "Debug.h"
 #include "{{file_name}}.h"
+#include "Debug.h"
 
 namespace UI
 {

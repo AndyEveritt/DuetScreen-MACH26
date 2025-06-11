@@ -48,6 +48,10 @@ namespace UI
 		{
 		}
 
+		// Delete copy constructor and assignment operator
+		LvObj(const LvObj&) = delete;
+		LvObj& operator=(const LvObj&) = delete;
+
 		virtual ~LvObj();
 
 		inline const std::string& getName() const { return m_name; }
@@ -93,14 +97,19 @@ namespace UI
 		void setFlag(lv_obj_flag_t flag, bool enable);
 		void setState(lv_state_t state, bool enable);
 		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
-		void setPad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);
-        void setBgColor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
+
+		/* Styling */
+
 		void addStyle(const lv_style_t* style,
 					  const lv_style_selector_t selector = LV_PART_MAIN,
 					  bool recursive = false);
+		void setStylePad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);
+		void setStyleBgColor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
+		void setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector = LV_PART_MAIN);
+
 		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
 
-		void show(bool display) { display ? show() : hide(); }
+		void setVisibility(bool display) { display ? show() : hide(); }
 		virtual void show();
 		virtual void hide();
 		bool isVisible();

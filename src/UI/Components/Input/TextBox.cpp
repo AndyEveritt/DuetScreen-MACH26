@@ -116,7 +116,7 @@ namespace UI
 		UI_LOCK();
 		m_passwordMode = passwordMode;
 		m_showPassword.setChecked(false);
-		m_showPassword.show(passwordMode);
+		m_showPassword.setVisibility(passwordMode);
 		lv_textarea_set_password_mode(m_textArea, passwordMode);
 	}
 

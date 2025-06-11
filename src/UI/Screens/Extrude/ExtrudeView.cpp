@@ -233,7 +233,7 @@ namespace UI
 		, standby(lv_label_create(getCont()))
 	{
 		UI_LOCK();
-		setPad(2, LV_PART_MAIN, Padding::ALL);
+		setStylePad(2, LV_PART_MAIN, Padding::ALL);
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);

@@ -224,7 +224,13 @@ namespace UI
 		lv_obj_align(getCont(), align, x, y);
 	}
 
-	void LvObj::setPad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
+	void LvObj::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
+	{
+		UI_LOCK();
+		lv_obj_add_style(getCont(), style, selector, recursive);
+	}
+
+	void LvObj::setStylePad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
 	{
 		UI_LOCK();
 		switch (type)
@@ -262,22 +268,22 @@ namespace UI
 		}
 	}
 
-	void LvObj::setBgColor(lv_color_t color, lv_style_selector_t selector)
+	void LvObj::setStyleBgColor(lv_color_t color, lv_style_selector_t selector)
 	{
 		UI_LOCK();
 		lv_obj_set_style_bg_color(getCont(), color, selector);
+	}
+
+	void LvObj::setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_text_align(getCont(), align, selector);
 	}
 
 	void LvObj::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
 	{
 		UI_LOCK();
 		lv_obj_add_event_cb(getCont(), cb, code, userData);
-	}
-
-	void LvObj::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
-	{
-		UI_LOCK();
-		lv_obj_add_style(getCont(), style, selector, recursive);
 	}
 
 	/**

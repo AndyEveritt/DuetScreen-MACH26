@@ -26,7 +26,7 @@ namespace UI
 		activate();
 
 		UI_LOCK();
-		setPad(5, LV_PART_MAIN, Padding::ALL);
+		setStylePad(5, LV_PART_MAIN, Padding::ALL);
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 

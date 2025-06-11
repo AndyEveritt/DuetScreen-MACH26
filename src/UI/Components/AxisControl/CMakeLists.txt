@@ -1,0 +1,5 @@
+target_sources(
+  DuetScreen
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/AxisJogList.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/GenericAxisControl.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/XYControl.cpp)

@@ -178,8 +178,8 @@ namespace UI
 										   m_legend,
 										   displayName.c_str(),
 										   layout_t(0, 0, 100, 20));
-		legendObj->setBgColor(color, LV_STATE_CHECKED);
-		legendObj->setBgColor(s_hiddenColor, LV_STATE_DEFAULT);
+		legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
+		legendObj->setStyleBgColor(s_hiddenColor, LV_STATE_DEFAULT);
 		legendObj->setCheckable(true);
 		legendObj->setChecked(true);
 		legendObj->setCallback(legendEvent, LV_EVENT_CLICKED, this);
