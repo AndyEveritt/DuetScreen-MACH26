@@ -18,7 +18,7 @@ namespace UI
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);
 		const bool getChecked() const;
-		void setInvalid(bool invalid);
+		void setDisabled(bool disabled);
 
 		Label& getLabel() { return m_label; }
 		lv_obj_t* getButton() const { return getCont(); }

@@ -260,7 +260,7 @@ namespace UI
 	{
 		UI_LOCK();
 
-		m_pauseBtn.setInvalid(visibility != ENABLED);
+		m_pauseBtn.setDisabled(visibility != ENABLED);
 		if (visibility == HIDDEN)
 		{
 			m_pauseBtn.hide();
@@ -275,7 +275,7 @@ namespace UI
 	{
 		UI_LOCK();
 
-		m_resumeBtn.setInvalid(visibility != ENABLED);
+		m_resumeBtn.setDisabled(visibility != ENABLED);
 		if (visibility == HIDDEN)
 		{
 			m_resumeBtn.hide();
@@ -290,7 +290,7 @@ namespace UI
 	{
 		UI_LOCK();
 
-		m_printAgainBtn.setInvalid(visibility != ENABLED);
+		m_printAgainBtn.setDisabled(visibility != ENABLED);
 		if (visibility == HIDDEN)
 		{
 			m_printAgainBtn.hide();
@@ -305,7 +305,7 @@ namespace UI
 	{
 		UI_LOCK();
 
-		m_cancelBtn.setInvalid(visibility != ENABLED);
+		m_cancelBtn.setDisabled(visibility != ENABLED);
 		if (visibility == HIDDEN)
 		{
 			m_cancelBtn.hide();

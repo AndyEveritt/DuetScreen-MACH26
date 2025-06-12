@@ -57,13 +57,13 @@ namespace UI
 	void SideBar::enableHomeButton(bool enable)
 	{
 		UI_LOCK();
-		m_homeBtn.setInvalid(!enable);
+		m_homeBtn.setDisabled(!enable);
 	}
 
 	void SideBar::enableBackButton(bool enable)
 	{
 		UI_LOCK();
-		m_backBtn.setInvalid(!enable);
+		m_backBtn.setDisabled(!enable);
 	}
 
 	void SideBar::backBtnEvent(lv_event_t* e)

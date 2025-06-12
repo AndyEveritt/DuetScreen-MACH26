@@ -263,24 +263,24 @@ namespace UI
 			case OutOfRange::NONE:
 				outOfRange = value < getMin() || value > getMax();
 				value = std::clamp(value, getMin(), getMax());
-				m_decrement.setInvalid(value == getMin());
-				m_increment.setInvalid(value == getMax());
+				m_decrement.setDisabled(value == getMin());
+				m_increment.setDisabled(value == getMax());
 				break;
 			case OutOfRange::BOTH:
-				m_decrement.setInvalid(false);
-				m_increment.setInvalid(false);
+				m_decrement.setDisabled(false);
+				m_increment.setDisabled(false);
 				break;
 			case OutOfRange::UPPER:
 				outOfRange = value < getMin();
 				value = std::max(value, getMin());
-				m_decrement.setInvalid(value == getMin());
-				m_increment.setInvalid(false);
+				m_decrement.setDisabled(value == getMin());
+				m_increment.setDisabled(false);
 				break;
 			case OutOfRange::LOWER:
 				outOfRange = value > getMax();
 				value = std::min(value, getMax());
-				m_decrement.setInvalid(false);
-				m_increment.setInvalid(value == getMax());
+				m_decrement.setDisabled(false);
+				m_increment.setDisabled(value == getMax());
 				break;
 			}
 			return outOfRange;

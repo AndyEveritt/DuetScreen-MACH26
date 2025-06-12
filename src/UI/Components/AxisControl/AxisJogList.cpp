@@ -119,7 +119,7 @@ namespace UI
 	void AxisItem::disableHome(const bool disabled)
 	{
 		UI_LOCK();
-		m_home.setInvalid(disabled);
+		m_home.setDisabled(disabled);
 		m_home.setText(disabled ? m_axisLetter.c_str()
 								: utils::format(_("move_axis_home"), m_axisLetter.c_str()).c_str());
 	}

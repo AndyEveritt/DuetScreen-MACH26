@@ -61,7 +61,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"disable_motors", "Disable Motors"},
     {"move_tool_position", "Tool Pos (mm)"},
     {"move_machine_position", "Machine Pos (mm)"},
-    {"move_feedrate", "Feedrate (mm/s)"},
+    {"move_distance", "Move Distance (mm)"},
     {"settings_duet", "Duet"},
     {"save", "Save"},
     {"settings_duet_hostname", "IP Address: "},

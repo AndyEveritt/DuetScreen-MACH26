@@ -6,6 +6,14 @@
 
 namespace UI
 {
+	void MovePresenter::onInit()
+	{
+		MODEL_LOCK();
+
+		registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
+		registerEventListener<EventType::Disconnected>(this, &MovePresenter::disconnected);
+	}
+
 	void MovePresenter::homeAll()
 	{
 		Comm::DUET.SendGcode("G28\n");
@@ -31,6 +39,18 @@ namespace UI
 		Comm::DUET.SendGcode("M18\n");
 	}
 
+	void MovePresenter::homeAxis(char axis_letter)
+	{
+		MODEL_LOCK();
+		auto axis = OM::Move::GetAxisByLetter(axis_letter);
+		if (axis == nullptr)
+		{
+			LOG_WARN("Axis '{}' not found", axis_letter);
+			return;
+		}
+		axis->Home();
+	}
+
 	void MovePresenter::homeAxis(size_t axisSlot)
 	{
 		MODEL_LOCK();
@@ -41,6 +61,18 @@ namespace UI
 			return;
 		}
 		axis->Home();
+	}
+
+	void MovePresenter::moveAxisRelative(char axis_letter, float distance, uint32_t feedrate)
+	{
+		MODEL_LOCK();
+		auto axis = OM::Move::GetAxisByLetter(axis_letter);
+		if (axis == nullptr)
+		{
+			LOG_WARN("Axis '{}' not found", axis_letter);
+			return;
+		}
+		axis->MoveRelative(distance, feedrate);
 	}
 
 	void MovePresenter::moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate)
@@ -58,6 +90,40 @@ namespace UI
 	void MovePresenter::newAxesData()
 	{
 		size_t axisCount = OM::Move::GetAxisCount(false);
+		auto x = OM::Move::GetAxisByLetter('X');
+		auto y = OM::Move::GetAxisByLetter('Y');
+		auto z = OM::Move::GetAxisByLetter('Z');
+
+		std::vector<OM::Move::AxisPtr> axes = OM::Move::GetAxes(false);
+		std::vector<char> axisLetters(axes.size());
+		for (auto axis : axes)
+		{
+			axisLetters.push_back(axis->letter[0]);
+		}
+
+		m_view->setAxisLetters(axisLetters);
+
+		for (auto axis : axes)
+		{
+			m_view->setAxisPosition(axis->letter[0], axis->userPosition);
+			m_view->setAxisHomed(axis->letter[0], axis->homed);
+		}
+
+#if 0
+		for (auto& axis : {x, y, z})
+		{
+			if (axis != nullptr && axis->visible)
+			{
+				axisCount--;
+			}
+		}
+#endif
+
+		if (x == nullptr || !x->visible)
+		{
+		}
+
+#if 0
 		m_view->setAxisCount(axisCount);
 		for (size_t i = 0; i < axisCount; i++)
 		{
@@ -79,10 +145,11 @@ namespace UI
 			item->setMachinePosition(axis->machinePosition);
 			item->disableHome(OM::Move::GetKinematics().IsDelta());
 		}
+#endif
 	}
 
 	void MovePresenter::disconnected()
 	{
-		m_view->setAxisCount(0);
+		m_view->clear();
 	}
 } // namespace UI

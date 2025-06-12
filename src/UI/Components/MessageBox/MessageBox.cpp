@@ -234,7 +234,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_inputValidationCb = cb;
-		m_okBtn.setInvalid(!validate());
+		m_okBtn.setDisabled(!validate());
 	}
 
 	bool MessageBox::validate()
@@ -747,7 +747,7 @@ namespace UI
 			break;
 		case LV_EVENT_VALUE_CHANGED:
 		{
-			msgBox->m_okBtn.setInvalid(!msgBox->validate());
+			msgBox->m_okBtn.setDisabled(!msgBox->validate());
 			break;
 		}
 		}
@@ -821,7 +821,7 @@ namespace UI
 		UI_LOCK();
 		for (size_t i = 0; i < ARRAY_SIZE(m_relMove); i++)
 		{
-			m_relMove[i].setInvalid(!enabled);
+			m_relMove[i].setDisabled(!enabled);
 		}
 	}
 

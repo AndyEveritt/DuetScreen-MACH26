@@ -109,7 +109,7 @@ namespace UI
 
 		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
 
-		void setVisibility(bool display) { display ? show() : hide(); }
+		void setVisibile(bool display) { display ? show() : hide(); }
 		virtual void show();
 		virtual void hide();
 		bool isVisible();

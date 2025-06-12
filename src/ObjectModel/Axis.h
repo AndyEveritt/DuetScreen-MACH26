@@ -14,6 +14,7 @@
 #include <Duet3D/General/function_ref.h>
 #include <memory>
 #include <sys/types.h>
+#include <vector>
 
 namespace OM::Move
 {
@@ -52,6 +53,8 @@ namespace OM::Move
 		void MoveRelative(float distance, uint32_t feedrate);
 	};
 
+	using AxisPtr = std::shared_ptr<Axis>;
+
 	struct ExtruderAxis
 	{
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<ExtruderAxis>(); }
@@ -68,6 +71,8 @@ namespace OM::Move
 		void Reset();
 	};
 
+	using ExtruderAxisPtr = std::shared_ptr<ExtruderAxis>;
+
 	struct Kinematics
 	{
 		std::string name;
@@ -78,12 +83,13 @@ namespace OM::Move
 
 	void Reset();
 
-	std::shared_ptr<Axis> GetAxis(const size_t index);
-	std::shared_ptr<Axis> GetAxisBySlot(const size_t slot, const bool includeHidden = false);
-	std::shared_ptr<Axis> GetAxisByLetter(const char letter);
-	std::shared_ptr<Axis> GetOrCreateAxis(const size_t index);
+	std::vector<AxisPtr> GetAxes(const bool includeHidden = false);
+	AxisPtr GetAxis(const size_t index);
+	AxisPtr GetAxisBySlot(const size_t slot, const bool includeHidden = false);
+	AxisPtr GetAxisByLetter(const char letter);
+	AxisPtr GetOrCreateAxis(const size_t index);
 	size_t GetAxisCount(const bool includeHidden = false);
-	bool IterateAxesWhile(function_ref<bool(std::shared_ptr<Axis>, size_t)> func, const size_t startAt = 0);
+	bool IterateAxesWhile(function_ref<bool(AxisPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveAxis(const size_t index, const bool allFollowing);
 
 	bool SetAcceleration(size_t index, uint32_t acceleration);
@@ -101,12 +107,11 @@ namespace OM::Move
 	void SetPrintingAcceleration(uint32_t printingAcceleration);
 	const uint32_t& GetPrintingAcceleration();
 
-	std::shared_ptr<ExtruderAxis> GetExtruderAxis(const size_t index);
-	std::shared_ptr<ExtruderAxis> GetExtruderAxisBySlot(const size_t slot);
-	std::shared_ptr<ExtruderAxis> GetOrCreateExtruderAxis(const size_t index);
+	ExtruderAxisPtr GetExtruderAxis(const size_t index);
+	ExtruderAxisPtr GetExtruderAxisBySlot(const size_t slot);
+	ExtruderAxisPtr GetOrCreateExtruderAxis(const size_t index);
 	size_t GetExtruderAxisCount();
-	bool IterateExtruderAxesWhile(function_ref<bool(std::shared_ptr<ExtruderAxis>, size_t)> func,
-								  const size_t startAt = 0);
+	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxisPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveExtruderAxis(const size_t index, const bool allFollowing);
 
 	bool SetExtruderPosition(size_t index, float f);

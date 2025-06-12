@@ -14,13 +14,13 @@ namespace UI
 	class MoveView : public View<MovePresenter>
 	{
 	  public:
-		friend class AxisItem;
-
 		MoveView(lv_obj_t* parent);
 
-		const size_t getAxisCount() const { return m_axisList.getItemCount(); }
-		void setAxisCount(const size_t count);
-		std::shared_ptr<AxisItem> getAxisItem(size_t index);
+		void setAxisLetters(const std::vector<char>& axis_letters);
+		void setAxisPosition(char axis_letter, float position);
+		void setAxisHomed(char axis_letter, bool homed);
+
+		void clear();
 
 	  private:
 		static void onHomeAllEvent(lv_event_t* e);
@@ -28,16 +28,20 @@ namespace UI
 		static void onMeshBedLevelEvent(lv_event_t* e);
 		static void onHeightmapEvent(lv_event_t* e);
 		static void onDisableMotorsEvent(lv_event_t* e);
-		static void onFeedRateEvent(lv_event_t* e);
+		static void onDistanceEvent(lv_event_t* e);
 
 		virtual void onShow() override;
 		virtual void onHide() override;
 
+		const size_t getAxisCount() const { return m_axisList.getItemCount(); }
+		void setAxisCount(const size_t count);
+		std::shared_ptr<AxisItem> getAxisItem(size_t index);
+
 		int32_t m_layoutColDsc[2];
 		int32_t m_layoutRowDsc[4];
 
-		lv_obj_t* m_topBarCont;
-		lv_obj_t* m_bottomBarCont;
+		Container m_topBarCont;
+		Container m_bottomBarCont;
 
 		// Top Bar
 		Button m_homeAll;
@@ -53,6 +57,6 @@ namespace UI
 		AxisJogList m_axisList;
 
 		// Bottom Bar
-		List<Button> m_feedRates;
+		List<Button> m_distances;
 	};
 } // namespace UI

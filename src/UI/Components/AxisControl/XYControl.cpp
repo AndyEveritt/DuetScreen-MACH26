@@ -11,8 +11,8 @@
 
 namespace UI
 {
-	const std::string XYControl::sm_xAxisLetter = "X";
-	const std::string XYControl::sm_yAxisLetter = "Y";
+	const char XYControl::sm_xAxisLetter = 'X';
+	const char XYControl::sm_yAxisLetter = 'Y';
 
 	XYControl::XYControl(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
@@ -22,9 +22,10 @@ namespace UI
 		, m_xDecrementButton(name + "_x_decrement", getCont(), LV_SYMBOL_LEFT)
 		, m_yIncrementButton(name + "_y_increment", getCont(), LV_SYMBOL_UP)
 		, m_yDecrementButton(name + "_y_decrement", getCont(), LV_SYMBOL_DOWN)
-		, m_homeXYButton(name + "_home_xy", getCont(), LV_SYMBOL_HOME " " + sm_xAxisLetter + sm_yAxisLetter)
-		, m_homeXButton(name + "_home_x", getCont(), LV_SYMBOL_HOME " " + sm_xAxisLetter)
-		, m_homeYButton(name + "_home_y", getCont(), LV_SYMBOL_HOME " " + sm_yAxisLetter)
+		, m_homeXYButton(
+			  name + "_home_xy", getCont(), fmt::format(LV_SYMBOL_HOME " {}{}", sm_xAxisLetter, sm_yAxisLetter))
+		, m_homeXButton(name + "_home_x", getCont(), fmt::format(LV_SYMBOL_HOME " {}", sm_xAxisLetter))
+		, m_homeYButton(name + "_home_y", getCont(), fmt::format(LV_SYMBOL_HOME " {}", sm_yAxisLetter))
 	{
 		UI_LOCK();
 		setGridDsc(m_colDsc, m_rowDsc);
@@ -44,21 +45,26 @@ namespace UI
 		m_xLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_yLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
-		m_xIncrementButton.addClickedCallback(onIncrementBtn, this);
-		m_xDecrementButton.addClickedCallback(onDecrementBtn, this);
-		m_yIncrementButton.addClickedCallback(onIncrementBtn, this);
-		m_yDecrementButton.addClickedCallback(onDecrementBtn, this);
-		m_homeXYButton.addClickedCallback(onHomeXYBtn, this);
-		m_homeXButton.addClickedCallback(onHomeXBtn, this);
-		m_homeYButton.addClickedCallback(onHomeYBtn, this);
+		m_xIncrementButton.addClickedCallback(onJogBtn, this);
+		m_xDecrementButton.addClickedCallback(onJogBtn, this);
+		m_yIncrementButton.addClickedCallback(onJogBtn, this);
+		m_yDecrementButton.addClickedCallback(onJogBtn, this);
+		m_homeXYButton.addClickedCallback(onHomeBtn, this);
+		m_homeXButton.addClickedCallback(onHomeBtn, this);
+		m_homeYButton.addClickedCallback(onHomeBtn, this);
 
 		m_xIncrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_xDecrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_yIncrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_yDecrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
+
 		m_homeXYButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_homeXButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_homeYButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
+
+		m_homeXYButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
+		m_homeXButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
+		m_homeYButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
 
 		updateXLabel();
 		updateYLabel();
@@ -78,18 +84,67 @@ namespace UI
 		updateYLabel();
 	}
 
-	void XYControl::setXPositionCallback(position_cb_t cb, void* user_data)
+	void XYControl::setXHomed(bool homed)
 	{
 		UI_LOCK();
-		m_xPositionCallback = std::move(cb);
-		m_xPositionUserData = user_data;
+		m_homeXButton.setChecked(!homed);
+		m_homeXYButton.setChecked(!homed || m_homeYButton.hasState(LV_STATE_CHECKED));
 	}
 
-	void XYControl::setYPositionCallback(position_cb_t cb, void* user_data)
+	void XYControl::setYHomed(bool homed)
 	{
 		UI_LOCK();
-		m_yPositionCallback = std::move(cb);
-		m_yPositionUserData = user_data;
+		m_homeYButton.setChecked(!homed);
+		m_homeXYButton.setChecked(!homed || m_homeXButton.hasState(LV_STATE_CHECKED));
+	}
+
+	void XYControl::setXDisabled(bool disabled)
+	{
+		UI_LOCK();
+		setXJogDisabled(disabled);
+		setXHomeDisabled(disabled);
+	}
+
+	void XYControl::setYDisabled(bool disabled)
+	{
+		UI_LOCK();
+		setYJogDisabled(disabled);
+		setYHomeDisabled(disabled);
+	}
+
+	void XYControl::setXJogDisabled(bool disabled)
+	{
+		UI_LOCK();
+		m_xIncrementButton.setDisabled(disabled);
+		m_xDecrementButton.setDisabled(disabled);
+	}
+
+	void XYControl::setYJogDisabled(bool disabled)
+	{
+		UI_LOCK();
+		m_yIncrementButton.setDisabled(disabled);
+		m_yDecrementButton.setDisabled(disabled);
+	}
+
+	void XYControl::setXHomeDisabled(bool disabled)
+	{
+		UI_LOCK();
+		m_homeXButton.setDisabled(disabled);
+		m_homeXYButton.setDisabled(disabled || m_homeYButton.hasState(LV_STATE_DISABLED));
+	}
+
+	void XYControl::setYHomeDisabled(bool disabled)
+	{
+		UI_LOCK();
+		m_homeYButton.setDisabled(disabled);
+		m_homeXYButton.setDisabled(disabled || m_homeXButton.hasState(LV_STATE_DISABLED));
+	}
+
+	void XYControl::setJogCallback(jog_cb_t cb, void* user_data)
+	{
+		UI_LOCK();
+		m_jogCallback = std::move(cb);
+		m_jogUserData = user_data;
 	}
 
 	void XYControl::setHomeXYCallback(home_cb_t cb, void* user_data)
@@ -113,15 +168,75 @@ namespace UI
 		m_homeYUserData = user_data;
 	}
 
-	void XYControl::onIncrementBtn(lv_event_t* event) {}
+	void XYControl::onJogBtn(lv_event_t* event)
+	{
+		UI_LOCK();
+		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
 
-	void XYControl::onDecrementBtn(lv_event_t* event) {}
+		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
 
-	void XYControl::onHomeXYBtn(lv_event_t* event) {}
+		char axisLetter = '\0';
+		bool forward = true;
 
-	void XYControl::onHomeXBtn(lv_event_t* event) {}
+		if (target == control->m_xDecrementButton.getButton() || target == control->m_yDecrementButton.getButton())
+		{
+			forward = false;
+		}
 
-	void XYControl::onHomeYBtn(lv_event_t* event) {}
+		if (target == control->m_xIncrementButton.getButton() || target == control->m_xDecrementButton.getButton())
+		{
+			axisLetter = control->sm_xAxisLetter;
+		}
+		else if (target == control->m_yIncrementButton.getButton() || target == control->m_yDecrementButton.getButton())
+		{
+			axisLetter = control->sm_yAxisLetter;
+		}
+		else
+		{
+			LOG_ERROR("Unknown increment button pressed");
+			return;
+		}
+
+		if (control->m_jogCallback)
+		{
+			control->m_jogCallback(axisLetter, forward, control->m_jogUserData);
+		}
+	}
+
+	void XYControl::onHomeBtn(lv_event_t* event)
+	{
+		UI_LOCK();
+		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
+
+		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+
+		if (target == control->m_homeXButton.getButton())
+		{
+			if (control->m_homeXCallback)
+			{
+				control->m_homeXCallback(control->m_homeXUserData);
+			}
+		}
+		else if (target == control->m_homeYButton.getButton())
+		{
+			if (control->m_homeYCallback)
+			{
+				control->m_homeYCallback(control->m_homeYUserData);
+			}
+		}
+		else if (target == control->m_homeXYButton.getButton())
+		{
+			if (control->m_homeXYCallback)
+			{
+				control->m_homeXYCallback(control->m_homeXYUserData);
+			}
+		}
+		else
+		{
+			LOG_ERROR("Unknown home button pressed");
+			return;
+		}
+	}
 
 	void XYControl::updateXLabel()
 	{
@@ -135,7 +250,7 @@ namespace UI
 		updateLabel(m_yLabel, sm_yAxisLetter, m_yPosition);
 	}
 
-	void XYControl::updateLabel(Label& label, const std::string& axisLetter, float position)
+	void XYControl::updateLabel(Label& label, const char axisLetter, const float position)
 	{
 		UI_LOCK();
 		std::string labelText = fmt::format("{}: {:g}", axisLetter, position);

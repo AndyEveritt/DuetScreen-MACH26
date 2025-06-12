@@ -104,9 +104,9 @@ namespace UI
 		return false;
 	}
 
-	void Button::setInvalid(bool invalid)
+	void Button::setDisabled(bool disabled)
 	{
 		UI_LOCK();
-		setState(LV_STATE_DISABLED, invalid);
+		setState(LV_STATE_DISABLED, disabled);
 	}
 } // namespace UI

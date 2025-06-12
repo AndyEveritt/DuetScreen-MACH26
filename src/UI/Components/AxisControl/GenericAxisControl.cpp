@@ -34,23 +34,25 @@ namespace UI
 		m_homeButton.setFlexGrow(1);
 		m_decrementButton.setFlexGrow(1);
 
-		m_incrementButton.addClickedCallback(onIncrementBtn, this);
+		m_incrementButton.addClickedCallback(onJogBtn, this);
 		m_homeButton.addClickedCallback(onHomeBtn, this);
-		m_decrementButton.addClickedCallback(onDecrementBtn, this);
+		m_decrementButton.addClickedCallback(onJogBtn, this);
 
 		m_incrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_homeButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_decrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 
+		m_homeButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
+
 		updateLabel();
 	}
 
-	void GenericAxisControl::setAxisLetter(std::string_view letter)
+	void GenericAxisControl::setAxisLetter(const char letter)
 	{
 		UI_LOCK();
 		m_axisLetter = letter;
 
-		m_homeButton.setText(LV_SYMBOL_HOME " " + m_axisLetter);
+		m_homeButton.setText(LV_SYMBOL_HOME " " + std::string(1, m_axisLetter));
 		updateLabel();
 	}
 
@@ -61,7 +63,27 @@ namespace UI
 		updateLabel();
 	}
 
-	void GenericAxisControl::setPositionCallback(position_cb_t cb, void* user_data)
+	void GenericAxisControl::setDisabled(bool disabled)
+	{
+		UI_LOCK();
+		setJogDisabled(disabled);
+		setHomeDisabled(disabled);
+	}
+
+	void GenericAxisControl::setJogDisabled(bool disabled)
+	{
+		UI_LOCK();
+		m_incrementButton.setDisabled(disabled);
+		m_decrementButton.setDisabled(disabled);
+	}
+
+	void GenericAxisControl::setHomeDisabled(bool disabled)
+	{
+		UI_LOCK();
+		m_homeButton.setDisabled(disabled);
+	}
+
+	void GenericAxisControl::setJogCallback(jog_cb_t cb, void* user_data)
 	{
 		UI_LOCK();
 		m_positionCallback = std::move(cb);
@@ -75,23 +97,16 @@ namespace UI
 		m_homeUserData = user_data;
 	}
 
-	void GenericAxisControl::onIncrementBtn(lv_event_t* event)
+	void GenericAxisControl::onJogBtn(lv_event_t* event)
 	{
 		UI_LOCK();
 		auto* control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
-		if (control && control->m_positionCallback)
-		{
-			control->m_positionCallback(true, control->m_positionUserData);
-		}
-	}
 
-	void GenericAxisControl::onDecrementBtn(lv_event_t* event)
-	{
-		UI_LOCK();
-		auto* control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
+		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+		bool forward = target == control->m_decrementButton.getButton() ? false : true;
 		if (control && control->m_positionCallback)
 		{
-			control->m_positionCallback(false, control->m_positionUserData);
+			control->m_positionCallback(control->m_axisLetter, forward, control->m_positionUserData);
 		}
 	}
 

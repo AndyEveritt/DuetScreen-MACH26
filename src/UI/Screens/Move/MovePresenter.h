@@ -19,7 +19,9 @@ namespace UI
 		void disableMotors();
 
 		// AxisItem actions
+		void homeAxis(char axis_letter);
 		void homeAxis(size_t axisSlot);
+		void moveAxisRelative(char axis_letter, float distance, uint32_t feedrate);
 		void moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate);
 
 		// Observers
@@ -29,11 +31,7 @@ namespace UI
 	  protected:
 		void onActivate() override { newAxesData(); }
 
-		virtual void onInit() override
-		{
-			registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
-			registerEventListener<EventType::Disconnected>(this, &MovePresenter::disconnected);
-		}
+		virtual void onInit() override;
 
 	  private:
 	};

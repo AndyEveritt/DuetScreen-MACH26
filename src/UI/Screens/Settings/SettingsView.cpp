@@ -268,9 +268,9 @@ namespace UI
 	{
 		UI_LOCK();
 
-		m_usbSettings.setVisibility(method == Comm::CommunicationType::usb);
-		m_wifiSettings.setVisibility(method == Comm::CommunicationType::network);
-		m_uartSettings.setVisibility(method == Comm::CommunicationType::uart);
+		m_usbSettings.setVisibile(method == Comm::CommunicationType::usb);
+		m_wifiSettings.setVisibile(method == Comm::CommunicationType::network);
+		m_uartSettings.setVisibile(method == Comm::CommunicationType::uart);
 		lv_obj_move_foreground(m_usbSettings);
 		lv_obj_move_foreground(m_wifiSettings);
 		lv_obj_move_foreground(m_uartSettings);
