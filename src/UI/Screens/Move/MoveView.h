@@ -43,8 +43,8 @@ namespace UI
 		int32_t m_layoutColDsc[2];
 		int32_t m_layoutRowDsc[4];
 
-		Container m_topBarCont;
-		Container m_bottomBarCont;
+		LvContainer m_topBarCont;
+		LvContainer m_bottomBarCont;
 
 		// Top Bar
 		Button m_homeAll;
@@ -54,7 +54,7 @@ namespace UI
 		Button m_disableMotors;
 
 		// Axis Control
-		Container m_axisControlCont;
+		LvContainer m_axisControlCont;
 		XYControl m_xyControl;
 		GenericAxisControl m_zControl;
 		List<GenericAxisControl> m_genericAxisControls;

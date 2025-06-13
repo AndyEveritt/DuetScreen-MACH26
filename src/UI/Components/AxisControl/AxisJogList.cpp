@@ -183,7 +183,7 @@ namespace UI
 		m_axisItems.setSize(LV_PCT(100), LV_PCT(100));
 		m_axisItems.showHeader(true);
 
-		Container& header = m_axisItems.getHeader();
+		LvContainer& header = m_axisItems.getHeader();
 		m_listHeaderPadding.setHeight(0);
 		m_listHeaderPadding.addStyle(Themes::getLvglStyles().no_border, 0);
 

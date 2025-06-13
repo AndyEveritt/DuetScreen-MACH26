@@ -1,28 +1,26 @@
 /*
- * TextBox.h
+ * LvDropdown.h
  *
- *  Created on: 2025-05-08
+ *  Created on: 2025-06-13
  *      Author: Andy Everitt
  */
 
 #pragma once
 
-#include "UI/Components/LVGL/LvDropdown.h"
-#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvObj.h"
+#include <vector>
+#include <string>
 
 namespace UI
 {
-	class DropdownMenu : public LvObj
+	class LvDropdown : public LvObj
 	{
 	  public:
-		DropdownMenu(const std::string& name, lv_obj_t* parent);
-		DropdownMenu(const std::string& name, lv_obj_t* parent, layout_t layout);
+		LvDropdown(const std::string& name, lv_obj_t* parent);
 
-		void setLabel(const std::string& label);
 		void setText(const std::string& text);
 		const char* getText() const;
-		lv_obj_t* getDropdownMenu() const { return m_dropdown; }
+		lv_obj_t* getDropdownMenu() const { return getCont(); }
 
 		void setOptions(const std::string& options);
 		void setOptions(const std::vector<std::string>& options);
@@ -46,12 +44,6 @@ namespace UI
 		void close();
 		bool isOpen() const;
 
-		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
-
 	  private:
-		void init();
-
-		LvLabel m_label;
-		LvDropdown m_dropdown;
 	};
 } // namespace UI

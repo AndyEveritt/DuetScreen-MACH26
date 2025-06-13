@@ -8,7 +8,7 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/LVGL/Label.h"
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -44,13 +44,13 @@ namespace UI
 
 		void updateXLabel();
 		void updateYLabel();
-		void updateLabel(Label& label, const char axisLetter, const float position);
+		void updateLabel(LvLabel& label, const char axisLetter, const float position);
 
 		int32_t m_colDsc[5] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
 		int32_t m_rowDsc[5] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
-		Label m_xLabel;
-		Label m_yLabel;
+		LvLabel m_xLabel;
+		LvLabel m_yLabel;
 		Button m_xIncrementButton;
 		Button m_xDecrementButton;
 		Button m_yIncrementButton;

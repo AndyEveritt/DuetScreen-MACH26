@@ -10,167 +10,146 @@
 
 namespace UI
 {
+	DropdownMenu::DropdownMenu(const std::string& name, lv_obj_t* parent)
+		: LvObj(lv_obj_create, name, parent)
+		, m_label(name + "_label", getCont())
+		, m_dropdown(name + "_dropdown", getCont())
+	{
+		init();
+	}
+
 	DropdownMenu::DropdownMenu(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(lv_label_create(getCont()))
-		, m_dropdown(lv_dropdown_create(getCont()))
+		, m_label(name + "_label", getCont())
+		, m_dropdown(name + "_dropdown", getCont())
+	{
+		init();
+	}
+
+	void DropdownMenu::init()
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		// Label
-		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 		// Dropdown
-		lv_obj_set_size(m_dropdown, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_flex_grow(m_dropdown, 1);
-		lv_dropdown_clear_options(m_dropdown);
+		m_dropdown.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_dropdown.setFlexGrow(1);
+		m_dropdown.clearOptions();
 	}
 
 	void DropdownMenu::setLabel(const std::string& label)
 	{
-		UI_LOCK();
-		lv_label_set_text(m_label, label.c_str());
+		m_label.setText(label);
 	}
 	void DropdownMenu::setText(const std::string& text)
 	{
-		UI_LOCK();
-		lv_dropdown_set_text(m_dropdown, text.c_str());
+		m_dropdown.setText(text);
 	}
 	const char* DropdownMenu::getText() const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_text(m_dropdown);
+		return m_dropdown.getText();
 	}
 
 	void DropdownMenu::setOptions(const std::string& options)
 	{
-		UI_LOCK();
-		lv_dropdown_set_options(m_dropdown, options.c_str());
+		m_dropdown.setOptions(options);
 	}
 
 	void DropdownMenu::setOptions(const std::vector<std::string>& options)
 	{
-		UI_LOCK();
-		std::string opt;
-		for (size_t i = 0; i < options.size(); ++i)
-		{
-			opt += options[i];
-			if (i < options.size() - 1)
-			{
-				opt += "\n";
-			}
-		}
-		lv_dropdown_set_options(m_dropdown, opt.c_str());
+		m_dropdown.setOptions(options);
 	}
 
 	void DropdownMenu::addOption(const std::string& option, uint32_t pos)
 	{
-		UI_LOCK();
-		lv_dropdown_add_option(m_dropdown, option.c_str(), pos);
+		m_dropdown.addOption(option, pos);
 	}
 
 	void DropdownMenu::clearOptions()
 	{
-		UI_LOCK();
-		lv_dropdown_clear_options(m_dropdown);
+		m_dropdown.clearOptions();
 	}
 
 	void DropdownMenu::setSelected(uint32_t selected)
 	{
-		UI_LOCK();
-		lv_dropdown_set_selected(m_dropdown, selected);
+		m_dropdown.setSelected(selected);
 	}
 
 	void DropdownMenu::setDir(lv_dir_t dir)
 	{
-		UI_LOCK();
-		lv_dropdown_set_dir(m_dropdown, dir);
+		m_dropdown.setDir(dir);
 	}
 
 	void DropdownMenu::setSymbol(const void* symbol)
 	{
-		UI_LOCK();
-		lv_dropdown_set_symbol(m_dropdown, symbol);
+		m_dropdown.setSymbol(symbol);
 	}
 
 	void DropdownMenu::setSelectedHighlight(bool en)
 	{
-		UI_LOCK();
-		lv_dropdown_set_selected_highlight(m_dropdown, en);
+		m_dropdown.setSelectedHighlight(en);
 	}
 
 	const char* DropdownMenu::getOptions() const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_options(m_dropdown);
+		return m_dropdown.getOptions();
 	}
 	uint32_t DropdownMenu::getSelected() const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_selected(m_dropdown);
+		return m_dropdown.getSelected();
 	}
 
 	uint32_t DropdownMenu::getOptionCount() const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_option_count(m_dropdown);
+		return m_dropdown.getOptionCount();
 	}
 
 	std::string DropdownMenu::getSelectedString() const
 	{
-		UI_LOCK();
-		char buf[64];
-		lv_dropdown_get_selected_str(m_dropdown, buf, sizeof(buf));
-		return std::string(buf);
+		return m_dropdown.getSelectedString();
 	}
 
 	int32_t DropdownMenu::getOptionIndex(const std::string& option) const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_option_index(m_dropdown, option.c_str());
+		return m_dropdown.getOptionIndex(option);
 	}
 
 	const char* DropdownMenu::getSymbol() const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_symbol(m_dropdown);
+		return m_dropdown.getSymbol();
 	}
 
 	bool DropdownMenu::getSelectedHighlight() const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_selected_highlight(m_dropdown);
+		return m_dropdown.getSelectedHighlight();
 	}
 
 	lv_dir_t DropdownMenu::getDir() const
 	{
-		UI_LOCK();
-		return lv_dropdown_get_dir(m_dropdown);
+		return m_dropdown.getDir();
 	}
 
 	void DropdownMenu::open()
 	{
-		UI_LOCK();
-		lv_dropdown_open(m_dropdown);
+		m_dropdown.open();
 	}
 
 	void DropdownMenu::close()
 	{
-		UI_LOCK();
-		lv_dropdown_close(m_dropdown);
+		m_dropdown.close();
 	}
 
 	bool DropdownMenu::isOpen() const
 	{
-		UI_LOCK();
-		return lv_dropdown_is_open(m_dropdown);
+		m_dropdown.isOpen();
 	}
 
 	void DropdownMenu::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
 	{
-		UI_LOCK();
-		lv_obj_add_event_cb(m_dropdown, cb, code, userData);
+		m_dropdown.addEventCallback(cb, code, userData);
 	}
 } // namespace UI

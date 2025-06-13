@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UI/Components/LVGL/Label.h"
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
 #include "lvgl/lvgl.h"
 
@@ -20,14 +20,14 @@ namespace UI
 		const bool getChecked() const;
 		void setDisabled(bool disabled);
 
-		Label& getLabel() { return m_label; }
+		LvLabel& getLabel() { return m_label; }
 		lv_obj_t* getButton() const { return getCont(); }
 		lv_obj_t* getIcon() const { return m_icon; }
 
 	  private:
 		void init(const std::string& text);
 
-		Label m_label;
+		LvLabel m_label;
 		lv_obj_t* m_icon;
 	};
 } // namespace UI

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "UI/Components/LVGL/Container.h"
+#include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvObj.h"
 #include "UI/Styles/Styles.h"
 #include <memory>
@@ -64,9 +64,9 @@ namespace UI
 			showTitle(false);
 		}
 
-		Container& getHeader() { return m_header; }
-		Label& getTitle() { return m_title; }
-		Container& getListContainer() { return m_listCont; }
+		LvContainer& getHeader() { return m_header; }
+		LvLabel& getTitle() { return m_title; }
+		LvContainer& getListContainer() { return m_listCont; }
 
 		void setTitle(const std::string& title)
 		{
@@ -234,9 +234,9 @@ namespace UI
 		auto end() const { return m_list.end(); }
 
 	  private:
-		Container m_header;
-		Label m_title;
-		Container m_listCont;
+		LvContainer m_header;
+		LvLabel m_title;
+		LvContainer m_listCont;
 
 		std::vector<TPtr> m_list;
 	};

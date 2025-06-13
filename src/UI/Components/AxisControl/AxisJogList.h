@@ -8,8 +8,8 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/LVGL/Container.h"
-#include "UI/Components/LVGL/Label.h"
+#include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 
@@ -41,8 +41,8 @@ namespace UI
 
 		Button m_home;
 		List<Button> m_relMove;
-		Label m_toolPosition;
-		Label m_machinePosition;
+		LvLabel m_toolPosition;
+		LvLabel m_machinePosition;
 
 		std::string m_axisLetter;
 		jog_cb_t m_jogCallback;
@@ -62,8 +62,8 @@ namespace UI
 
 	  private:
 		List<AxisItem> m_axisItems;
-		Container m_listHeaderPadding;
-		Label m_toolPositionLabel;
-		Label m_machinePositionLabel;
+		LvContainer m_listHeaderPadding;
+		LvLabel m_toolPositionLabel;
+		LvLabel m_machinePositionLabel;
 	};
 } // namespace UI

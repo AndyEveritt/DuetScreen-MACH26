@@ -1,5 +1,5 @@
 /*
- * Container.h
+ * LvContainer.h
  *
  *  Created on: 2025-06-11
  *      Author: Andy Everitt
@@ -11,10 +11,10 @@
 
 namespace UI
 {
-    class Container : public LvObj
+    class LvContainer : public LvObj
     {
       public:
-        Container(const std::string& name, lv_obj_t* parent);
+        LvContainer(const std::string& name, lv_obj_t* parent);
 
 	  private:
     };

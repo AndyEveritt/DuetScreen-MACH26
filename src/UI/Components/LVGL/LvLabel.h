@@ -1,5 +1,5 @@
 /*
- * Label.h
+ * LvLabel.h
  *
  *  Created on: 2025-06-10
  *      Author: Andy Everitt
@@ -11,11 +11,11 @@
 
 namespace UI
 {
-	class Label : public LvObj
+	class LvLabel : public LvObj
 	{
 	  public:
-		Label(const std::string& name, lv_obj_t* parent);
-		Label(const std::string& name, lv_obj_t* parent, const std::string& text);
+		LvLabel(const std::string& name, lv_obj_t* parent);
+		LvLabel(const std::string& name, lv_obj_t* parent, const std::string& text);
 
 		void setText(const std::string& text);
 		void setTextF(const char* fmt, ...);

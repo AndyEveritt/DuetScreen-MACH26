@@ -250,7 +250,7 @@ namespace UI
 		updateLabel(m_yLabel, sm_yAxisLetter, m_yPosition);
 	}
 
-	void XYControl::updateLabel(Label& label, const char axisLetter, const float position)
+	void XYControl::updateLabel(LvLabel& label, const char axisLetter, const float position)
 	{
 		UI_LOCK();
 		std::string labelText = fmt::format("{}: {:g}", axisLetter, position);

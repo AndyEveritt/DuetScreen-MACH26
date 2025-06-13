@@ -8,7 +8,7 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/LVGL/Label.h"
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -39,7 +39,7 @@ namespace UI
 
 		void updateLabel();
 
-		Label m_label;
+		LvLabel m_label;
 		Button m_incrementButton;
 		Button m_homeButton;
 		Button m_decrementButton;
