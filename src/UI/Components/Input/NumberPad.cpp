@@ -8,6 +8,7 @@
 #include "NumberPad.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include <string>
 
@@ -21,34 +22,37 @@ namespace UI
 		, m_textCont(name + "_textcont", getCont())
 		, m_textBox(name + "_textarea", m_textCont)
 		, m_clearBtn("Clear", m_textCont, LV_SYMBOL_TRASH, layout_t{LV_PCT(75), 0, LV_PCT(20), LV_PCT(80)})
-		, m_btnMatrix(lv_buttonmatrix_create(getCont()))
+		, m_btnMatrix(name + "_btnmatrix", getCont())
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		// Overall layout
-		m_textCont.setFlexGrow(0); // Don't grow the text container
-		m_textCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_flex_grow(m_btnMatrix, 1);		// Fill the remaining space with the button matrix
-		lv_obj_set_width(m_btnMatrix, LV_PCT(100)); // Use 100% width
+		m_textCont.setFlexGrow(0);			 // Don't grow the text container
+		m_textCont.setSize(LV_PCT(100), 50); // LV_SIZE_CONTENT is bugged
+		m_btnMatrix.setFlexGrow(1);
+		m_btnMatrix.setWidth(LV_PCT(100));
 
 		// Text Entry Layout
-		m_textCont.setStylePad(2, LV_PART_MAIN, Padding::ALL);
+		m_textCont.addStyle(Themes::getLvglStyles().no_border);
+		m_textBox.addStyle(Themes::getLvglStyles().no_border);
+		m_textCont.addStyle(Themes::getLvglStyles().pad_tiny);
 		m_textCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 		m_textBox.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 		m_textCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_textCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 		m_textBox.setFlexGrow(1);
-		m_textBox.setHeight(LV_PCT(100));
+		m_textBox.setHeight(LV_SIZE_CONTENT);
 		m_clearBtn.setSize(LV_PCT(20), LV_PCT(100));
 		m_clearBtn.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_textBox.setOneLine(true);
 		m_textBox.setAcceptedChars("0123456789");
 
 		// Button Matrix Layout
-		lv_obj_set_align(m_btnMatrix, LV_ALIGN_CENTER);
-		lv_obj_remove_flag(m_btnMatrix, LV_OBJ_FLAG_CLICK_FOCUSABLE); // to keep the text area focused on button clicks
-		lv_obj_add_event_cb(m_btnMatrix, btnmEventHandler, LV_EVENT_VALUE_CHANGED, &m_textBox);
-		lv_buttonmatrix_set_map(m_btnMatrix, btnm_map);
+		m_btnMatrix.setAlign(LV_ALIGN_CENTER, 0, 0);
+		m_btnMatrix.setFlag(LV_OBJ_FLAG_CLICK_FOCUSABLE, false); // to keep the text area focused on button clicks
+		m_btnMatrix.addEventCallback(btnmEventHandler, LV_EVENT_VALUE_CHANGED, &m_textBox);
+		m_btnMatrix.setMap(btnm_map);
 
 		m_textBox.setUserData(this);
 		m_textBox.setText("");
@@ -89,7 +93,7 @@ namespace UI
 		if (validateInput())
 		{
 			// Call the confirm callback
-			m_textBox.sendEvent(LV_EVENT_READY, this);
+			m_textBox.getTextArea().sendEvent(LV_EVENT_READY, this);
 			if (m_closeOnConfirm)
 			{
 				close();
@@ -121,25 +125,25 @@ namespace UI
 		return atoi(m_textBox.getText().c_str());
 	}
 
-	bool NumberPad::validateInput() const
+	bool NumberPad::validateInput()
 	{
 		UI_LOCK();
 		int16_t value = getValue();
 		if (value < m_minValue || value > m_maxValue)
 		{
-			lv_buttonmatrix_set_button_ctrl(m_btnMatrix, 11, LV_BTNMATRIX_CTRL_DISABLED);
+			m_btnMatrix.setButtonCtrl(11, LV_BTNMATRIX_CTRL_DISABLED);
 			return false;
 		}
 		else
 		{
-			lv_buttonmatrix_clear_button_ctrl(m_btnMatrix, 11, LV_BTNMATRIX_CTRL_DISABLED);
+			m_btnMatrix.clearButtonCtrl(11, LV_BTNMATRIX_CTRL_DISABLED);
 			return true;
 		}
 	}
 
 	void NumberPad::setValueChangedCallback(lv_event_cb_t eventCb, void* userData)
 	{
-		m_textBox.addEventCallback(eventCb, LV_EVENT_VALUE_CHANGED, userData);
+		m_textBox.getTextArea().addEventCallback(eventCb, LV_EVENT_VALUE_CHANGED, userData);
 	}
 
 	void NumberPad::setConfirmCallback(lv_event_cb_t eventCb, void* userData)
@@ -148,11 +152,11 @@ namespace UI
 		if (m_confirmCb != nullptr)
 		{
 			LOG_DBG("Removing previous confirm callback");
-			m_textBox.removeEventCallback(m_confirmCb);
+			m_textBox.getTextArea().removeEventCallback(m_confirmCb);
 		}
 		LOG_DBG("Setting new confirm callback");
 		m_confirmCb = eventCb;
-		lv_obj_add_event_cb(m_textBox, eventCb, LV_EVENT_READY, userData);
+		m_textBox.getTextArea().addEventCallback(eventCb, LV_EVENT_READY, userData);
 	}
 
 	void NumberPad::clearBtnEventHandler(lv_event_t* e)

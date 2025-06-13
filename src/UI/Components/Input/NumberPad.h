@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include "UI/Components/LVGL/LvContainer.h"
-#include "UI/Components/Input/TextBox.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Input/TextBox.h"
+#include "UI/Components/LVGL/LvButtonMatrix.h"
+#include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -35,7 +36,7 @@ namespace UI
 		void setMaxValue(int16_t value);
 		void setValue(int16_t value);
 		int16_t getValue() const;
-		bool validateInput() const;
+		bool validateInput();
 
 		void setCloseOnConfirm(bool closeOnConfirm) { m_closeOnConfirm = closeOnConfirm; }
 		bool getCloseOnConfirm() const { return m_closeOnConfirm; }
@@ -50,7 +51,7 @@ namespace UI
 		LvContainer m_textCont;
 		TextBox m_textBox;
 		Button m_clearBtn;
-		lv_obj_t* m_btnMatrix;
+		LvButtonMatrix m_btnMatrix;
 
 		lv_event_cb_t m_confirmCb = nullptr;
 

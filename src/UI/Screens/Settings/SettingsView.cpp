@@ -224,7 +224,7 @@ namespace UI
 		m_hostname.setPlaceholderText(_("settings_duet_hostname_prompt"));
 		m_hostname.setAcceptedChars("0123456789.");
 		m_hostname.setText(Comm::DUET.GetHostname());
-		m_hostname.addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
+		m_hostname.getTextArea().addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
 		m_hostname.addConfirmEventCallback(
 			[](lv_event_t* e)
 			{
@@ -239,7 +239,7 @@ namespace UI
 		m_password.setPlaceholderText(_("settings_duet_password_prompt"));
 		m_password.setPasswordMode(true);
 		m_password.setText(Comm::DUET.GetPassword());
-		m_password.addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
+		m_password.getTextArea().addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
 		m_password.addConfirmEventCallback(
 			[](lv_event_t* e)
 			{

@@ -45,8 +45,7 @@ namespace UI
 		void cursorLeft();
 		void cursorUp();
 		void cursorDown();
-		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
-        void addConfirmEventCallback(lv_event_cb_t cb, void* userData);
+		void addConfirmEventCallback(lv_event_cb_t cb, void* userData);
 
 		void showPassword(bool show);
 

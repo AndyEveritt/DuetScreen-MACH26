@@ -189,17 +189,11 @@ namespace UI
 		m_textArea.cursorDown();
 	}
 
-	void TextBox::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
-	{
-		UI_LOCK();
-		lv_obj_add_event_cb(m_textArea, cb, code, userData);
-	}
-
 	void TextBox::addConfirmEventCallback(lv_event_cb_t cb, void* userData)
 	{
 		UI_LOCK();
 		lv_obj_set_user_data(m_textArea, reinterpret_cast<void*>(cb));
-		addEventCallback(
+		m_textArea.addEventCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
