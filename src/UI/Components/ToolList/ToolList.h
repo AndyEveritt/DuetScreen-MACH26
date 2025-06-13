@@ -8,7 +8,7 @@
 #pragma once
 
 #include "ToolListPresenter.h"
-#include "UI/Components/NumberPad/NumberPad.h"
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Core/View.h"
 #include <memory>
 #include <vector>

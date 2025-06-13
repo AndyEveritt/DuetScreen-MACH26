@@ -100,6 +100,9 @@ namespace UI
 		void setState(lv_state_t state, bool enable);
 		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
 
+		void scrollToX(lv_coord_t x, lv_anim_enable_t anim = LV_ANIM_OFF);
+		void scrollToY(lv_coord_t y, lv_anim_enable_t anim = LV_ANIM_OFF);
+
 		/* Styling */
 
 		void addStyle(const lv_style_t* style,
@@ -109,7 +112,12 @@ namespace UI
 		void setStyleBgColor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector = LV_PART_MAIN);
 
-		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
+		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
+		bool removeEvent(size_t index);
+		uint32_t removeEventCallback(lv_event_cb_t cb);
+		uint32_t removeEventCallbackWithUserData(lv_event_cb_t cb, void* userData);
+		uint32_t getEventCount();
+		lv_result_t sendEvent(lv_event_code_t code, void* param = nullptr);
 
 		void setVisibile(bool display) { display ? show() : hide(); }
 		virtual void show();

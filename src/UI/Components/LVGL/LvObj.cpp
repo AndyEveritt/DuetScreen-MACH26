@@ -236,6 +236,18 @@ namespace UI
 		lv_obj_align(getCont(), align, x, y);
 	}
 
+	void LvObj::scrollToX(lv_coord_t x, lv_anim_enable_t anim)
+	{
+		UI_LOCK();
+		lv_obj_scroll_to_x(getCont(), x, anim);
+	}
+
+	void LvObj::scrollToY(lv_coord_t y, lv_anim_enable_t anim)
+	{
+		UI_LOCK();
+		lv_obj_scroll_to_y(getCont(), y, anim);
+	}
+
 	void LvObj::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
 	{
 		UI_LOCK();
@@ -292,10 +304,40 @@ namespace UI
 		lv_obj_set_style_text_align(getCont(), align, selector);
 	}
 
-	void LvObj::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
+	lv_event_dsc_t* LvObj::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
 	{
 		UI_LOCK();
-		lv_obj_add_event_cb(getCont(), cb, code, userData);
+		return lv_obj_add_event_cb(getCont(), cb, code, userData);
+	}
+
+	bool LvObj::removeEvent(size_t index)
+	{
+		UI_LOCK();
+		return lv_obj_remove_event(getCont(), index);
+	}
+
+	uint32_t LvObj::removeEventCallback(lv_event_cb_t cb)
+	{
+		UI_LOCK();
+		return lv_obj_remove_event_cb(getCont(), cb);
+	}
+
+	uint32_t LvObj::removeEventCallbackWithUserData(lv_event_cb_t cb, void* userData)
+	{
+		UI_LOCK();
+		return lv_obj_remove_event_cb_with_user_data(getCont(), cb, userData);
+	}
+
+	uint32_t LvObj::getEventCount()
+	{
+		UI_LOCK();
+		return lv_obj_get_event_count(getCont());
+	}
+
+	lv_result_t LvObj::sendEvent(lv_event_code_t code, void* param)
+	{
+		UI_LOCK();
+		return lv_obj_send_event(getCont(), code, param);
 	}
 
 	/**

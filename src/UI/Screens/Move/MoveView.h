@@ -5,8 +5,8 @@
 #include "UI/Components/AxisControl/GenericAxisControl.h"
 #include "UI/Components/AxisControl/XYControl.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/List/List.h"
-#include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Core/View.h"
 
 namespace UI

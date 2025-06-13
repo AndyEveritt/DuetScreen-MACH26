@@ -1,29 +1,24 @@
 /*
- * TextBox.h
+ * LvTextArea.h
  *
- *  Created on: 2025-05-08
+ *  Created on: 2025-06-13
  *      Author: Andy Everitt
  */
 
 #pragma once
 
-#include "UI/Components/Button/Button.h"
-#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvObj.h"
-#include "UI/Components/LVGL/LvTextArea.h"
 
 namespace UI
 {
-	class TextBox : public LvObj
-	{
-	  public:
-		TextBox(const std::string& name, lv_obj_t* parent);
-		TextBox(const std::string& name, lv_obj_t* parent, layout_t layout);
+    class LvTextArea : public LvObj
+    {
+      public:
+        LvTextArea(const std::string& name, lv_obj_t* parent);
 
-        void setLabel(const std::string& label);
 		void setText(const std::string& text);
 		std::string getText() const;
-		LvTextArea& getTextArea() { return m_textArea; }
+        lv_obj_t* getTextArea() const { return getCont(); }
 
 		void addChar(uint32_t c);
 		void addText(const std::string& text);
@@ -45,18 +40,7 @@ namespace UI
 		void cursorLeft();
 		void cursorUp();
 		void cursorDown();
-		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
-        void addConfirmEventCallback(lv_event_cb_t cb, void* userData);
-
-		void showPassword(bool show);
 
 	  private:
-		void init();
-
-		LvLabel m_label;
-		LvTextArea m_textArea;
-		Button m_showPassword;
-
-		bool m_passwordMode = false;
-	};
+    };
 } // namespace UI

@@ -11,25 +11,39 @@
 
 namespace UI
 {
+	TextBox::TextBox(const std::string& name, lv_obj_t* parent)
+		: LvObj(lv_obj_create, name, parent)
+		, m_label(name + "_label", getCont())
+		, m_textArea(name + "_textarea", getCont())
+		, m_showPassword(name + "_show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
+	{
+		init();
+	}
+
 	TextBox::TextBox(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(lv_label_create(getCont()))
-		, m_textArea(lv_textarea_create(getCont()))
-		, m_showPassword("show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
+		, m_label(name + "_label", getCont())
+		, m_textArea(name + "_textarea", getCont())
+		, m_showPassword(name + "_show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
+	{
+		init();
+	}
+
+	void TextBox::init()
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		// Label
-		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_label.setMaxWidth(LV_PCT(50));
 		setLabel("");
-		lv_obj_set_style_max_width(m_label, LV_PCT(50), 0);
 
 		// TextArea
-		lv_obj_set_size(m_textArea, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_flex_grow(m_textArea, 1);
-		lv_textarea_set_cursor_click_pos(m_textArea, true);
+		m_textArea.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_textArea.setFlexGrow(1);
+		m_textArea.setCursorClickPos(true);
 
 		// Show Password Button
 		m_showPassword.setSize(LV_SIZE_CONTENT, LV_PCT(100));
@@ -51,84 +65,71 @@ namespace UI
 
 	void TextBox::setLabel(const std::string& label)
 	{
-		UI_LOCK();
-		lv_obj_set_flag(m_label, LV_OBJ_FLAG_HIDDEN, label.empty());
-		lv_label_set_text(m_label, label.c_str());
+		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, label.empty());
+		m_label.setText(label);
 	}
 	void TextBox::setText(const std::string& text)
 	{
-		UI_LOCK();
-		lv_textarea_set_text(m_textArea, text.c_str());
-		lv_textarea_set_cursor_pos(m_textArea, 0);
-		lv_obj_scroll_to_x(m_textArea, 0, LV_ANIM_OFF);
+		m_textArea.setText(text);
+		m_textArea.setCursorPos(0);
+		m_textArea.scrollToX(0, LV_ANIM_OFF);
 	}
 	std::string TextBox::getText() const
 	{
-		UI_LOCK();
-		return lv_textarea_get_text(m_textArea);
+		return m_textArea.getText();
 	}
 
 	void TextBox::addChar(uint32_t c)
 	{
-		UI_LOCK();
-		lv_textarea_add_char(m_textArea, c);
+		m_textArea.addChar(c);
 	}
 
 	void TextBox::addText(const std::string& text)
 	{
-		UI_LOCK();
-		lv_textarea_add_text(m_textArea, text.c_str());
+		m_textArea.addText(text);
 	}
 
 	void TextBox::deleteChar()
 	{
-		UI_LOCK();
-		lv_textarea_delete_char(m_textArea);
+		m_textArea.deleteChar();
 	}
 
 	void TextBox::deleteCharForward()
 	{
-		UI_LOCK();
-		lv_textarea_delete_char_forward(m_textArea);
+		m_textArea.deleteCharForward();
 	}
 
 	void TextBox::setPlaceholderText(const std::string& text)
 	{
-		UI_LOCK();
-		lv_textarea_set_placeholder_text(m_textArea, text.c_str());
+		m_textArea.setPlaceholderText(text);
 	}
 
 	void TextBox::setCursorPos(uint32_t pos)
 	{
-		UI_LOCK();
-		lv_textarea_set_cursor_pos(m_textArea, pos);
+		m_textArea.setCursorPos(pos);
 	}
 
 	void TextBox::setCursorClickPos(bool clickPos)
 	{
-		UI_LOCK();
-		lv_textarea_set_cursor_click_pos(m_textArea, clickPos);
+		m_textArea.setCursorClickPos(clickPos);
 	}
 
 	void TextBox::setPasswordMode(bool passwordMode)
 	{
-		UI_LOCK();
 		m_passwordMode = passwordMode;
 		m_showPassword.setChecked(false);
 		m_showPassword.setVisibile(passwordMode);
-		lv_textarea_set_password_mode(m_textArea, passwordMode);
+		m_textArea.setPasswordMode(passwordMode);
 	}
 
 	void TextBox::setPasswordBullet(const char* bullet)
 	{
-		UI_LOCK();
-		lv_textarea_set_password_bullet(m_textArea, bullet);
+		m_textArea.setPasswordBullet(bullet);
 	}
 
 	void TextBox::setPasswordShowTime(uint32_t time)
 	{
-		UI_LOCK();
-		lv_textarea_set_password_show_time(m_textArea, time);
+		m_textArea.setPasswordShowTime(time);
 	}
 
 	void TextBox::showPassword(bool show)
@@ -136,67 +137,56 @@ namespace UI
 		UI_LOCK();
 		if (!m_passwordMode)
 			return;
-
-		lv_textarea_set_password_mode(m_textArea, !show);
+		m_textArea.setPasswordMode(!show);
 		m_showPassword.setChecked(show);
 	}
 
 	void TextBox::setOneLine(bool oneLine)
 	{
-		UI_LOCK();
-		lv_textarea_set_one_line(m_textArea, oneLine);
+		m_textArea.setOneLine(oneLine);
 	}
 	void TextBox::setAcceptedChars(const char* chars)
 	{
-		UI_LOCK();
-		lv_textarea_set_accepted_chars(m_textArea, chars);
+		m_textArea.setAcceptedChars(chars);
 	}
 	void TextBox::setMaxLength(uint32_t length)
 	{
-		UI_LOCK();
-		lv_textarea_set_max_length(m_textArea, length);
+		m_textArea.setMaxLength(length);
 	}
 
 	void TextBox::setTextSelection(bool enable)
 	{
-		UI_LOCK();
-		lv_textarea_set_text_selection(m_textArea, enable);
+		m_textArea.setTextSelection(enable);
 	}
 
 	bool TextBox::isTextSelected() const
 	{
-		UI_LOCK();
-		return lv_textarea_text_is_selected(m_textArea);
+		return m_textArea.isTextSelected();
 	}
 
 	void TextBox::clearSelection()
 	{
-		UI_LOCK();
-		lv_textarea_clear_selection(m_textArea);
+		m_textArea.clearSelection();
 	}
 
 	void TextBox::cursorRight()
 	{
-		UI_LOCK();
-		lv_textarea_cursor_right(m_textArea);
+		m_textArea.cursorRight();
 	}
 
 	void TextBox::cursorLeft()
 	{
-		UI_LOCK();
-		lv_textarea_cursor_left(m_textArea);
+		m_textArea.cursorLeft();
 	}
 
 	void TextBox::cursorUp()
 	{
-		UI_LOCK();
-		lv_textarea_cursor_up(m_textArea);
+		m_textArea.cursorUp();
 	}
 
 	void TextBox::cursorDown()
 	{
-		UI_LOCK();
-		lv_textarea_cursor_down(m_textArea);
+		m_textArea.cursorDown();
 	}
 
 	void TextBox::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)

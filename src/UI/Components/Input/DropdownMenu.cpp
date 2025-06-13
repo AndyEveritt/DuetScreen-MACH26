@@ -145,7 +145,7 @@ namespace UI
 
 	bool DropdownMenu::isOpen() const
 	{
-		m_dropdown.isOpen();
+		return m_dropdown.isOpen();
 	}
 
 	void DropdownMenu::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)

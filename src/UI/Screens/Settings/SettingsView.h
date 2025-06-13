@@ -4,8 +4,8 @@
 #include "SettingsPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/DropdownMenu.h"
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/TextBox.h"
-#include "UI/Components/NumberPad/NumberPad.h"
 #include "UI/Components/Slider.h"
 #include "UI/Core/View.h"
 

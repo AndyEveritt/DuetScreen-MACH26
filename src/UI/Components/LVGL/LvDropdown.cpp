@@ -15,25 +15,25 @@ namespace UI
 	{
 	}
 
-	void DropdownMenu::setText(const std::string& text)
+	void LvDropdown::setText(const std::string& text)
 	{
 		UI_LOCK();
 		lv_dropdown_set_text(getCont(), text.c_str());
 	}
 
-	const char* DropdownMenu::getText() const
+	const char* LvDropdown::getText() const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_text(getCont());
 	}
 
-	void DropdownMenu::setOptions(const std::string& options)
+	void LvDropdown::setOptions(const std::string& options)
 	{
 		UI_LOCK();
 		lv_dropdown_set_options(getCont(), options.c_str());
 	}
 
-	void DropdownMenu::setOptions(const std::vector<std::string>& options)
+	void LvDropdown::setOptions(const std::vector<std::string>& options)
 	{
 		UI_LOCK();
 		std::string opt;
@@ -48,60 +48,60 @@ namespace UI
 		lv_dropdown_set_options(getCont(), opt.c_str());
 	}
 
-	void DropdownMenu::addOption(const std::string& option, uint32_t pos)
+	void LvDropdown::addOption(const std::string& option, uint32_t pos)
 	{
 		UI_LOCK();
 		lv_dropdown_add_option(getCont(), option.c_str(), pos);
 	}
 
-	void DropdownMenu::clearOptions()
+	void LvDropdown::clearOptions()
 	{
 		UI_LOCK();
 		lv_dropdown_clear_options(getCont());
 	}
 
-	void DropdownMenu::setSelected(uint32_t selected)
+	void LvDropdown::setSelected(uint32_t selected)
 	{
 		UI_LOCK();
 		lv_dropdown_set_selected(getCont(), selected);
 	}
 
-	void DropdownMenu::setDir(lv_dir_t dir)
+	void LvDropdown::setDir(lv_dir_t dir)
 	{
 		UI_LOCK();
 		lv_dropdown_set_dir(getCont(), dir);
 	}
 
-	void DropdownMenu::setSymbol(const void* symbol)
+	void LvDropdown::setSymbol(const void* symbol)
 	{
 		UI_LOCK();
 		lv_dropdown_set_symbol(getCont(), symbol);
 	}
 
-	void DropdownMenu::setSelectedHighlight(bool en)
+	void LvDropdown::setSelectedHighlight(bool en)
 	{
 		UI_LOCK();
 		lv_dropdown_set_selected_highlight(getCont(), en);
 	}
 
-	const char* DropdownMenu::getOptions() const
+	const char* LvDropdown::getOptions() const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_options(getCont());
 	}
-	uint32_t DropdownMenu::getSelected() const
+	uint32_t LvDropdown::getSelected() const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_selected(getCont());
 	}
 
-	uint32_t DropdownMenu::getOptionCount() const
+	uint32_t LvDropdown::getOptionCount() const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_option_count(getCont());
 	}
 
-	std::string DropdownMenu::getSelectedString() const
+	std::string LvDropdown::getSelectedString() const
 	{
 		UI_LOCK();
 		char buf[64];
@@ -109,43 +109,43 @@ namespace UI
 		return std::string(buf);
 	}
 
-	int32_t DropdownMenu::getOptionIndex(const std::string& option) const
+	int32_t LvDropdown::getOptionIndex(const std::string& option) const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_option_index(getCont(), option.c_str());
 	}
 
-	const char* DropdownMenu::getSymbol() const
+	const char* LvDropdown::getSymbol() const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_symbol(getCont());
 	}
 
-	bool DropdownMenu::getSelectedHighlight() const
+	bool LvDropdown::getSelectedHighlight() const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_selected_highlight(getCont());
 	}
 
-	lv_dir_t DropdownMenu::getDir() const
+	lv_dir_t LvDropdown::getDir() const
 	{
 		UI_LOCK();
 		return lv_dropdown_get_dir(getCont());
 	}
 
-	void DropdownMenu::open()
+	void LvDropdown::open()
 	{
 		UI_LOCK();
 		lv_dropdown_open(getCont());
 	}
 
-	void DropdownMenu::close()
+	void LvDropdown::close()
 	{
 		UI_LOCK();
 		lv_dropdown_close(getCont());
 	}
 
-	bool DropdownMenu::isOpen() const
+	bool LvDropdown::isOpen() const
 	{
 		UI_LOCK();
 		return lv_dropdown_is_open(getCont());

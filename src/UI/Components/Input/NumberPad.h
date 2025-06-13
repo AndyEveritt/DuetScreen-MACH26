@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/Input/TextBox.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Core/View.h"
 
@@ -45,10 +47,12 @@ namespace UI
 		static void clearBtnEventHandler(lv_event_t* e);
 		static void btnmEventHandler(lv_event_t* e);
 
-		lv_obj_t* m_textCont;
-		lv_obj_t* m_textArea;
+		LvContainer m_textCont;
+		TextBox m_textBox;
 		Button m_clearBtn;
 		lv_obj_t* m_btnMatrix;
+
+		lv_event_cb_t m_confirmCb = nullptr;
 
 		int16_t m_minValue = INT16_MIN;
 		int16_t m_maxValue = INT16_MAX;

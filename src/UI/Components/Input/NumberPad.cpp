@@ -18,8 +18,8 @@ namespace UI
 
 	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_textCont(lv_obj_create(getCont()))
-		, m_textArea(lv_textarea_create(m_textCont))
+		, m_textCont(name + "_textcont", getCont())
+		, m_textBox(name + "_textarea", m_textCont)
 		, m_clearBtn("Clear", m_textCont, LV_SYMBOL_TRASH, layout_t{LV_PCT(75), 0, LV_PCT(20), LV_PCT(80)})
 		, m_btnMatrix(lv_buttonmatrix_create(getCont()))
 	{
@@ -27,32 +27,31 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		// Overall layout
-		lv_obj_set_flex_grow(m_textCont, 0);		  // Don't grow the text area
-		lv_obj_set_flex_grow(m_btnMatrix, 1);		  // Fill the remaining space with the button matrix
-		lv_obj_set_size(m_textCont, LV_PCT(100), 50); // Use 100% width and fix height to 50px
-		lv_obj_set_width(m_btnMatrix, LV_PCT(100));	  // Use 100% width
+		m_textCont.setFlexGrow(0); // Don't grow the text container
+		m_textCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_flex_grow(m_btnMatrix, 1);		// Fill the remaining space with the button matrix
+		lv_obj_set_width(m_btnMatrix, LV_PCT(100)); // Use 100% width
 
 		// Text Entry Layout
-		lv_obj_set_style_pad_all(m_textCont, 2, 0);
-		lv_obj_remove_flag(m_textCont, LV_OBJ_FLAG_SCROLLABLE);
-		lv_obj_remove_flag(m_textArea, LV_OBJ_FLAG_SCROLLABLE);
-		lv_obj_set_flex_flow(m_textCont, LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_grow(m_textArea, 1);
-		lv_obj_set_flex_grow(m_clearBtn.getCont(), 0);
-		lv_obj_set_height(m_textArea, LV_PCT(100));
-		lv_obj_set_size(m_clearBtn.getCont(), LV_PCT(20), LV_PCT(100));
-		lv_obj_set_style_pad_all(m_clearBtn.getCont(), 0, 0);
-		lv_obj_set_align(m_clearBtn.getCont(), LV_ALIGN_RIGHT_MID);
-		lv_textarea_set_one_line(m_textArea, true);
-		lv_textarea_set_accepted_chars(m_textArea, "0123456789");
+		m_textCont.setStylePad(2, LV_PART_MAIN, Padding::ALL);
+		m_textCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
+		m_textBox.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
+		m_textCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_textBox.setFlexGrow(1);
+		m_textBox.setHeight(LV_PCT(100));
+		m_clearBtn.setSize(LV_PCT(20), LV_PCT(100));
+		m_clearBtn.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
+		m_textBox.setOneLine(true);
+		m_textBox.setAcceptedChars("0123456789");
 
+		// Button Matrix Layout
 		lv_obj_set_align(m_btnMatrix, LV_ALIGN_CENTER);
 		lv_obj_remove_flag(m_btnMatrix, LV_OBJ_FLAG_CLICK_FOCUSABLE); // to keep the text area focused on button clicks
-		lv_obj_add_event_cb(m_btnMatrix, btnmEventHandler, LV_EVENT_VALUE_CHANGED, m_textArea);
+		lv_obj_add_event_cb(m_btnMatrix, btnmEventHandler, LV_EVENT_VALUE_CHANGED, &m_textBox);
 		lv_buttonmatrix_set_map(m_btnMatrix, btnm_map);
 
-		lv_obj_set_user_data(m_textArea, this);
-		lv_textarea_set_text(m_textArea, "");
+		m_textBox.setUserData(this);
+		m_textBox.setText("");
 
 		m_clearBtn.addClickedCallback(clearBtnEventHandler, this);
 
@@ -76,8 +75,7 @@ namespace UI
 
 	void NumberPad::clear()
 	{
-		UI_LOCK();
-		lv_textarea_set_text(m_textArea, "");
+		m_textBox.setText("");
 		validateInput();
 	}
 
@@ -90,9 +88,8 @@ namespace UI
 	{
 		if (validateInput())
 		{
-			UI_LOCK();
 			// Call the confirm callback
-			lv_obj_send_event(m_textArea, LV_EVENT_READY, this);
+			m_textBox.sendEvent(LV_EVENT_READY, this);
 			if (m_closeOnConfirm)
 			{
 				close();
@@ -115,14 +112,13 @@ namespace UI
 	void NumberPad::setValue(int16_t value)
 	{
 		UI_LOCK();
-		lv_textarea_set_text(m_textArea, std::to_string(value).c_str());
+		m_textBox.setText(std::to_string(value));
 		validateInput();
 	}
 
 	int16_t NumberPad::getValue() const
 	{
-		UI_LOCK();
-		return atoi(lv_textarea_get_text(m_textArea));
+		return atoi(m_textBox.getText().c_str());
 	}
 
 	bool NumberPad::validateInput() const
@@ -143,19 +139,20 @@ namespace UI
 
 	void NumberPad::setValueChangedCallback(lv_event_cb_t eventCb, void* userData)
 	{
-		UI_LOCK();
-		lv_obj_add_event_cb(m_textArea, eventCb, LV_EVENT_VALUE_CHANGED, userData);
+		m_textBox.addEventCallback(eventCb, LV_EVENT_VALUE_CHANGED, userData);
 	}
 
 	void NumberPad::setConfirmCallback(lv_event_cb_t eventCb, void* userData)
 	{
 		UI_LOCK();
-		uint32_t event_cnt = lv_obj_get_event_count(m_textArea);
-		for (uint32_t i = 0; i < event_cnt; i++)
+		if (m_confirmCb != nullptr)
 		{
-			lv_obj_remove_event(m_textArea, i);
+			LOG_DBG("Removing previous confirm callback");
+			m_textBox.removeEventCallback(m_confirmCb);
 		}
-		lv_obj_add_event_cb(m_textArea, eventCb, LV_EVENT_READY, userData);
+		LOG_DBG("Setting new confirm callback");
+		m_confirmCb = eventCb;
+		lv_obj_add_event_cb(m_textBox, eventCb, LV_EVENT_READY, userData);
 	}
 
 	void NumberPad::clearBtnEventHandler(lv_event_t* e)
@@ -169,13 +166,13 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
-		lv_obj_t* ta = (lv_obj_t*)lv_event_get_user_data(e);
+		TextBox& ta = *(TextBox*)lv_event_get_user_data(e);
 		NumberPad* np = (NumberPad*)lv_obj_get_user_data(ta);
 		const char* txt = lv_buttonmatrix_get_button_text(obj, lv_buttonmatrix_get_selected_button(obj));
 
 		if (lv_strcmp(txt, LV_SYMBOL_BACKSPACE) == 0)
 		{
-			lv_textarea_delete_char(ta);
+			ta.deleteChar();
 			np->validateInput();
 		}
 		else if (lv_strcmp(txt, LV_SYMBOL_OK) == 0)
@@ -184,7 +181,7 @@ namespace UI
 		}
 		else
 		{
-			lv_textarea_add_text(ta, txt);
+			ta.addText(txt);
 			np->validateInput();
 		}
 	}
