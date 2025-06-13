@@ -27,6 +27,7 @@ namespace UI
 		, m_axisControlCont("move_axis_control", getCont())
 		, m_xyControl("move_xy_control", m_axisControlCont)
 		, m_zControl("move_z_control", m_axisControlCont)
+		, m_genericAxisControls("move_generic_axis_controls", m_axisControlCont)
 		, m_axisList("move_axis_control_list", m_axisControlCont)
 		, m_distances("move_feed_rates", m_bottomBarCont)
 	{
@@ -63,7 +64,7 @@ namespace UI
 
 		// Axis Control
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_xyControl.setSize(LV_PCT(20), LV_PCT(100));
+		m_xyControl.setSize(LV_PCT(30), LV_PCT(100));
 		m_xyControl.setJogCallback(
 			[this](char axis_letter, bool forward, void* user_data)
 			{
@@ -90,7 +91,15 @@ namespace UI
 					axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
 			},
 			nullptr);
-		m_zControl.setHomeCallback([this](void* user_data) { m_presenter->homeAxis('Z'); }, nullptr);
+		m_zControl.setHomeCallback([this](char axis_letter, void* user_data) { m_presenter->homeAxis(axis_letter); },
+								   nullptr);
+
+		m_genericAxisControls.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_genericAxisControls.setListSize(LV_SIZE_CONTENT, LV_PCT(100));
+		// m_genericAxisControls.setFlexGrow(1);
+		m_genericAxisControls.setMaxWidth(LV_PCT(20));
+		m_genericAxisControls.setListFlow(LV_FLEX_FLOW_ROW);
+
 		m_axisList.setFlexGrow(1);
 		m_axisList.setHeight(LV_PCT(100));
 		m_axisList.setVisibile(false);
@@ -197,6 +206,8 @@ namespace UI
 		bool has_x = false;
 		bool has_y = false;
 		bool has_z = false;
+		std::vector<char> axis_letters_excluding_xyz;
+		axis_letters_excluding_xyz.reserve(axis_letters.size());
 		for (const auto& letter : axis_letters)
 		{
 			if (letter == 'X')
@@ -205,14 +216,50 @@ namespace UI
 				has_y = true;
 			else if (letter == 'Z')
 				has_z = true;
+			else
+				axis_letters_excluding_xyz.push_back(letter);
 		}
 
-		m_xyControl.setXDisabled(!has_x);
-		m_xyControl.setYDisabled(!has_y);
-		m_zControl.setDisabled(!has_z);
+		setAxisDisabled('X', !has_x);
+		setAxisDisabled('Y', !has_y);
+		setAxisDisabled('Z', !has_z);
 
 		size_t remaining_axis_count = axis_letters.size() - (has_x ? 1 : 0) - (has_y ? 1 : 0) - (has_z ? 1 : 0);
-		LOG_INFO("Remaining axis count: {}", remaining_axis_count);
+		if (remaining_axis_count != axis_letters_excluding_xyz.size())
+		{
+			LOG_ERROR("Remaining axis count does not match the number of provided axis letters. "
+					  "Expected: {}, Actual: {}",
+					  remaining_axis_count,
+					  axis_letters_excluding_xyz.size());
+			return;
+		}
+
+		LOG_DBG("Remaining axis count: {}", remaining_axis_count);
+		m_genericAxisControls.setVisibile(!axis_letters_excluding_xyz.empty());
+
+		m_genericAxisControls.setItemCount(
+			axis_letters_excluding_xyz.size(),
+			[this](size_t i, lv_obj_t* parent)
+			{
+				auto control = std::make_shared<GenericAxisControl>(fmt::format("generic_axis_control_{}", i), parent);
+				control->setSize(LV_SIZE_CONTENT, LV_PCT(100));
+				control->setJogCallback(
+					[this](char axis_letter, bool forward, void* user_data)
+					{
+						m_presenter->moveAxisRelative(
+							axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
+					},
+					nullptr);
+				control->setHomeCallback(
+					[this](char axis_letter, void* user_data) { m_presenter->homeAxis(axis_letter); }, nullptr);
+				return control;
+			});
+
+		for (size_t i = 0; i < axis_letters_excluding_xyz.size(); ++i)
+		{
+			auto control = m_genericAxisControls.getItem(i);
+			control->setAxisLetter(axis_letters_excluding_xyz[i]);
+		}
 	}
 
 	void MoveView::setAxisPosition(char axis_letter, float position)
@@ -230,6 +277,18 @@ namespace UI
 		{
 			m_zControl.setAxisPosition(position);
 		}
+		else
+		{
+			for (auto& control : m_genericAxisControls.getItems())
+			{
+				if (control->getAxisLetter() == axis_letter)
+				{
+					control->setAxisPosition(position);
+					return;
+				}
+			}
+			LOG_WARN("No control found for axis letter: {}", axis_letter);
+		}
 	}
 
 	void MoveView::setAxisHomed(char axis_letter, bool homed)
@@ -246,6 +305,81 @@ namespace UI
 		else if (axis_letter == 'Z')
 		{
 			m_zControl.setAxisHomed(homed);
+		}
+		else
+		{
+			for (auto& control : m_genericAxisControls.getItems())
+			{
+				if (control->getAxisLetter() == axis_letter)
+				{
+					control->setAxisHomed(homed);
+					return;
+				}
+			}
+			LOG_WARN("No control found for axis letter: {}", axis_letter);
+		}
+	}
+
+	void MoveView::setAxisDisabled(char axis_letter, bool disabled)
+	{
+		UI_LOCK();
+		setAxisJogDisabled(axis_letter, disabled);
+		setAxisHomeDisabled(axis_letter, disabled);
+	}
+
+	void MoveView::setAxisJogDisabled(char axis_letter, bool disabled)
+	{
+		UI_LOCK();
+		if (axis_letter == 'X')
+		{
+			m_xyControl.setXJogDisabled(disabled);
+		}
+		else if (axis_letter == 'Y')
+		{
+			m_xyControl.setYJogDisabled(disabled);
+		}
+		else if (axis_letter == 'Z')
+		{
+			m_zControl.setJogDisabled(disabled);
+		}
+		else
+		{
+			for (auto& control : m_genericAxisControls.getItems())
+			{
+				if (control->getAxisLetter() == axis_letter)
+				{
+					control->setJogDisabled(disabled);
+					return;
+				}
+			}
+		}
+	}
+
+	void MoveView::setAxisHomeDisabled(char axis_letter, bool disabled)
+	{
+		UI_LOCK();
+		if (axis_letter == 'X')
+		{
+			m_xyControl.setXHomeDisabled(disabled);
+		}
+		else if (axis_letter == 'Y')
+		{
+			m_xyControl.setYHomeDisabled(disabled);
+		}
+		else if (axis_letter == 'Z')
+		{
+			m_zControl.setHomeDisabled(disabled);
+		}
+		else
+		{
+			for (auto& control : m_genericAxisControls.getItems())
+			{
+				if (control->getAxisLetter() == axis_letter)
+				{
+					control->setHomeDisabled(disabled);
+					return;
+				}
+			}
 		}
 	}
 

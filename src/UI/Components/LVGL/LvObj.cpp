@@ -176,6 +176,18 @@ namespace UI
 		lv_obj_set_style_min_height(getCont(), height, selector);
 	}
 
+	void LvObj::setMaxWidth(lv_coord_t width, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_max_width(getCont(), width, selector);
+	}
+
+	void LvObj::setMaxHeight(lv_coord_t height, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_max_height(getCont(), height, selector);
+	}
+
 	void LvObj::setX(lv_coord_t x)
 	{
 		UI_LOCK();

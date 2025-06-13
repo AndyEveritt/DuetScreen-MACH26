@@ -16,11 +16,12 @@ namespace UI
 	class GenericAxisControl : public LvObj
 	{
 		using jog_cb_t = std::function<void(char axis_letter, bool forward, void* user_data)>;
-		using home_cb_t = std::function<void(void* user_data)>;
+		using home_cb_t = std::function<void(char axis_letter, void* user_data)>;
 
 	  public:
 		GenericAxisControl(const std::string& name, lv_obj_t* parent);
 
+		char getAxisLetter() const { return m_axisLetter; }
 		void setAxisLetter(const char letter);
 		void setAxisPosition(float value);
 		void setAxisHomed(bool homed) { m_homeButton.setChecked(!homed); }
@@ -43,7 +44,7 @@ namespace UI
 		Button m_homeButton;
 		Button m_decrementButton;
 
-		char m_axisLetter;
+		char m_axisLetter = '\0';
 		float m_axisPosition = 0.0f;
 
 		jog_cb_t m_positionCallback;

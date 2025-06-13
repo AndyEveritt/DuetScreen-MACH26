@@ -34,5 +34,6 @@ namespace UI
 		virtual void onInit() override;
 
 	  private:
+		std::vector<char> m_axisLetters;
 	};
 } // namespace UI

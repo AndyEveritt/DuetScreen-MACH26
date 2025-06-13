@@ -35,6 +35,8 @@ namespace UI
 	template <typename T>
 	class List : public LvObj
 	{
+		using TPtr = std::shared_ptr<T>;
+
 	  public:
 		// static_assert(std::is_base_of<ListItem, T>::value, "T must inherit from ListItem");
 
@@ -161,7 +163,7 @@ namespace UI
 			m_list.clear();
 		}
 
-		void setItemCount(const size_t count, std::function<std::shared_ptr<T>(size_t, lv_obj_t*)> constructor)
+		void setItemCount(const size_t count, std::function<TPtr(size_t, lv_obj_t*)> constructor)
 		{
 			UI_LOCK();
 			const size_t currentCount = getItemCount();
@@ -182,17 +184,15 @@ namespace UI
 			}
 		}
 
-		template <typename F,
-				  typename = std::enable_if_t<std::is_invocable_r_v<std::shared_ptr<T>, F, size_t, lv_obj_t*>>>
+		template <typename F, typename = std::enable_if_t<std::is_invocable_r_v<TPtr, F, size_t, lv_obj_t*>>>
 		void setItemCount(const size_t count, F&& constructor)
 		{
-			setItemCount(count, std::function<std::shared_ptr<T>(size_t, lv_obj_t*)>(std::forward<F>(constructor)));
+			setItemCount(count, std::function<TPtr(size_t, lv_obj_t*)>(std::forward<F>(constructor)));
 		}
 
 		template <typename... Args,
-				  typename = std::enable_if_t<
-					  sizeof...(Args) != 1 ||
-					  !std::is_invocable_r_v<std::shared_ptr<T>, std::decay_t<Args>..., size_t, lv_obj_t*>>>
+				  typename = std::enable_if_t<sizeof...(Args) != 1 ||
+											  !std::is_invocable_r_v<TPtr, std::decay_t<Args>..., size_t, lv_obj_t*>>>
 		void setItemCount(const size_t count, Args&&... args)
 		{
 			UI_LOCK();
@@ -216,7 +216,7 @@ namespace UI
 
 		const size_t getItemCount() const { return m_list.size(); }
 
-		std::shared_ptr<T> getItem(const size_t index) const
+		TPtr getItem(const size_t index) const
 		{
 			UI_LOCK();
 			if (index >= m_list.size())
@@ -225,6 +225,8 @@ namespace UI
 			}
 			return m_list.at(index);
 		}
+
+		const std::vector<TPtr>& getItems() const { return m_list; }
 
 		auto begin() { return m_list.begin(); }
 		auto end() { return m_list.end(); }
@@ -236,6 +238,6 @@ namespace UI
 		Label m_title;
 		Container m_listCont;
 
-		std::vector<std::shared_ptr<T>> m_list;
+		std::vector<TPtr> m_list;
 	};
 } // namespace UI

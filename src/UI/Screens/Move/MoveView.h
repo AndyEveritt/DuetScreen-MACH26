@@ -19,6 +19,9 @@ namespace UI
 		void setAxisLetters(const std::vector<char>& axis_letters);
 		void setAxisPosition(char axis_letter, float position);
 		void setAxisHomed(char axis_letter, bool homed);
+		void setAxisDisabled(char axis_letter, bool disabled);
+		void setAxisJogDisabled(char axis_letter, bool disabled);
+		void setAxisHomeDisabled(char axis_letter, bool disabled);
 
 		void clear();
 
@@ -54,6 +57,7 @@ namespace UI
 		Container m_axisControlCont;
 		XYControl m_xyControl;
 		GenericAxisControl m_zControl;
+		List<GenericAxisControl> m_genericAxisControls;
 		AxisJogList m_axisList;
 
 		// Bottom Bar

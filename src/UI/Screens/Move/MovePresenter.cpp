@@ -95,15 +95,15 @@ namespace UI
 		auto z = OM::Move::GetAxisByLetter('Z');
 
 		std::vector<OM::Move::AxisPtr> axes = OM::Move::GetAxes(false);
-		std::vector<char> axisLetters(axes.size());
-		for (auto axis : axes)
+		m_axisLetters.resize(axes.size());
+		for (size_t i = 0; i < axes.size(); i++)
 		{
-			axisLetters.push_back(axis->letter[0]);
+			m_axisLetters[i] = axes[i]->letter[0];
 		}
 
-		m_view->setAxisLetters(axisLetters);
+		m_view->setAxisLetters(m_axisLetters);
 
-		for (auto axis : axes)
+		for (auto& axis : axes)
 		{
 			m_view->setAxisPosition(axis->letter[0], axis->userPosition);
 			m_view->setAxisHomed(axis->letter[0], axis->homed);
