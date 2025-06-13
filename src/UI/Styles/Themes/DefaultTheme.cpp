@@ -17,8 +17,8 @@ namespace UI::Themes
 #define RADIUS_DEFAULT LV_DPX_CALC(lv_display_get_dpi(NULL), 8)
 
 #define PAD_DEF 5
-#define PAD_SMALL LV_DPX_CALC(lv_display_get_dpi(NULL), 14)
-#define PAD_TINY LV_DPX_CALC(lv_display_get_dpi(NULL), 8)
+#define PAD_SMALL 2
+#define PAD_TINY 1
 
 #define GREY lv_palette_main(LV_PALETTE_GREY)
 #define LIGHT_GREY lv_palette_lighten(LV_PALETTE_GREY, 2)
