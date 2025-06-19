@@ -52,25 +52,25 @@ namespace OM
 	const std::string& GetLastJobName();
 
 	void SetPrintTime(const uint32_t printTime);
-	const uint32_t& GetPrintTime();
+	uint32_t GetPrintTime();
 
 	void SetSimulatedTime(const uint32_t simulatedTime);
-	const uint32_t& GetSimulatedTime();
+	uint32_t GetSimulatedTime();
 
 	void SetPrintDuration(const uint32_t printDuration);
-	const uint32_t& GetPrintDuration();
+	uint32_t GetPrintDuration();
 
 	void SetWarmUpDuration(const uint32_t warmUpDuration);
-	const uint32_t& GetWarmUpDuration();
+	uint32_t GetWarmUpDuration();
 
 	void SetPrintHeight(const float height);
-	const float& GetPrintHeight();
+	float GetPrintHeight();
 
 	void SetPrintRemaining(RemainingTimeType type, const uint32_t printRemaining);
-	const uint32_t& GetPrintRemaining(RemainingTimeType type);
+	uint32_t GetPrintRemaining(RemainingTimeType type);
 
 	void SetCurrentJobObject(int8_t index);
-	const int8_t& GetCurrentJobObjectIndex();
+	int8_t GetCurrentJobObjectIndex();
 
 	std::shared_ptr<JobObject> GetJobObject(const int8_t index);
 	std::shared_ptr<JobObject> GetOrCreateJobObject(const int8_t index);

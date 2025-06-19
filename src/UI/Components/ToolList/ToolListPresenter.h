@@ -40,7 +40,7 @@ namespace UI
 			registerEventListener<EventType::ToolData>(this, &ToolListItemPresenter::update);
 			registerEventListener<EventType::HeaterData>(this, &ToolListItemPresenter::update);
 		}
-		static void numberPadConfirmCallback(lv_event_t* e);
+		void numberPadConfirmCallback(float value);
 
 		bool updateView(const std::shared_ptr<OM::Tool> tool,
 						const std::shared_ptr<OM::ToolHeater> tHeater,

@@ -154,7 +154,7 @@ target_link_libraries(
   DuetScreen
   PRIVATE lvgl
           # lvgl::examples lvgl::demos
-          lvgl::thorvg
+          # lvgl::thorvg
           ${SDL2_LIBRARIES}
           ${LIBUSB_LIBRARIES} # Link libusb library
           m

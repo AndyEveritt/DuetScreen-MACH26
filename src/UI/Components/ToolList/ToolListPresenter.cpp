@@ -325,14 +325,14 @@ namespace UI
 			m_setActiveTemp = active;
 			np.setMinValue(heater->min);
 			np.setMaxValue(heater->max);
-			np.setConfirmCallback(numberPadConfirmCallback, this);
+			np.setConfirmCallback([this](float value) { numberPadConfirmCallback(value); });
 			return true;
 		}
 		if (m_spindle != nullptr)
 		{
 			np.setMinValue(m_spindle->min);
 			np.setMaxValue(m_spindle->max);
-			np.setConfirmCallback(numberPadConfirmCallback, this);
+			np.setConfirmCallback([this](float value) { numberPadConfirmCallback(value); });
 			return true;
 		}
 
@@ -424,16 +424,9 @@ namespace UI
 		}
 	}
 
-	void ToolListItemPresenter::numberPadConfirmCallback(lv_event_t* e)
+	void ToolListItemPresenter::numberPadConfirmCallback(float value)
 	{
-		ToolListItemPresenter* presenter = (ToolListItemPresenter*)lv_event_get_user_data(e);
-		NumberPad* np = (NumberPad*)lv_event_get_param(e);
-		if (presenter == nullptr)
-		{
-			LOG_ERROR("Presenter is null");
-			return;
-		}
-		presenter->setTemp(np->getValue());
+		setTemp(value);
 	}
 
 	void ToolListPresenter::update()

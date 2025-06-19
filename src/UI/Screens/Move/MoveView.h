@@ -5,7 +5,8 @@
 #include "UI/Components/AxisControl/GenericAxisControl.h"
 #include "UI/Components/AxisControl/XYControl.h"
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/ExtruderControl/ExtruderControl.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 
@@ -16,7 +17,9 @@ namespace UI
 	  public:
 		MoveView(lv_obj_t* parent);
 
-		void setAxisLetters(const std::vector<char>& axis_letters);
+		void setAxisData(const std::vector<MovePresenter::AxisData>& axis_data);
+		void setPositionType(const MovePresenter::PositionType type);
+		void setCanJogUnhomed(bool enable);
 		void setAxisPosition(char axis_letter, float position);
 		void setAxisHomed(char axis_letter, bool homed);
 		void setAxisDisabled(char axis_letter, bool disabled);
@@ -40,6 +43,8 @@ namespace UI
 		void setAxisCount(const size_t count);
 		std::shared_ptr<AxisItem> getAxisItem(size_t index);
 
+		void configureNumberpad(char axis_letter, float position);
+
 		int32_t m_layoutColDsc[2];
 		int32_t m_layoutRowDsc[4];
 
@@ -60,7 +65,14 @@ namespace UI
 		List<GenericAxisControl> m_genericAxisControls;
 		AxisJogList m_axisList;
 
+		// Extruder Control
+		ExtruderControl m_extruderControl;
+
 		// Bottom Bar
 		List<Button> m_distances;
+
+		ModalNumberPad m_numberpad;
+
+		const MovePresenter::AxisDataList* m_axisDataListPtr = nullptr;
 	};
 } // namespace UI

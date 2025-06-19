@@ -15,8 +15,9 @@ namespace UI
 {
 	class GenericAxisControl : public LvObj
 	{
-		using jog_cb_t = std::function<void(char axis_letter, bool forward, void* user_data)>;
-		using home_cb_t = std::function<void(char axis_letter, void* user_data)>;
+		using jog_cb_t = std::function<void(char axis_letter, bool forward)>;
+		using home_cb_t = std::function<void(char axis_letter)>;
+		using label_cb_t = std::function<void(char axis_letter, float position)>;
 
 	  public:
 		GenericAxisControl(const std::string& name, lv_obj_t* parent);
@@ -30,12 +31,14 @@ namespace UI
 		void setJogDisabled(bool disabled);
 		void setHomeDisabled(bool disabled);
 
-		void setJogCallback(jog_cb_t cb, void* user_data);
-		void setHomeCallback(home_cb_t cb, void* user_data);
+		void setJogCallback(jog_cb_t cb);
+		void setHomeCallback(home_cb_t cb);
+		void setLabelCallback(label_cb_t cb);
 
 	  private:
 		static void onJogBtn(lv_event_t* event);
 		static void onHomeBtn(lv_event_t* event);
+		static void onLabelClick(lv_event_t* event);
 
 		void updateLabel();
 
@@ -48,9 +51,7 @@ namespace UI
 		float m_axisPosition = 0.0f;
 
 		jog_cb_t m_positionCallback;
-		void* m_positionUserData = nullptr;
-
 		home_cb_t m_homeCallback;
-		void* m_homeUserData = nullptr;
+		label_cb_t m_labelCallback;
 	};
 } // namespace UI

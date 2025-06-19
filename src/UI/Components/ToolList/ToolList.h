@@ -57,6 +57,8 @@ namespace UI
 	class ToolListNumPad : public LvObj
 	{
 	  public:
+		using confirm_cb_t = NumberPad::confirm_cb_t;
+
 		ToolListNumPad(const std::string& name, lv_obj_t* parent, layout_t layout);
 
 		void clear() { m_numberPad.clear(); }
@@ -67,10 +69,7 @@ namespace UI
 		void setHeader(const char* text) { lv_label_set_text(m_header, text); }
 		const char* getHeader() const { return lv_label_get_text(m_header); }
 
-		void setConfirmCallback(lv_event_cb_t eventCb, void* userData)
-		{
-			m_numberPad.setConfirmCallback(eventCb, userData);
-		}
+		void setConfirmCallback(confirm_cb_t eventCb) { m_numberPad.setConfirmCallback(eventCb); }
 		virtual bool back() override;
 
 	  private:

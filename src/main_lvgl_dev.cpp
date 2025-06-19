@@ -45,7 +45,6 @@
 /*********************
  *      DEFINES
  *********************/
-#define SET_THREAD_PRIORITY 0
 
 /**********************
  *      TYPEDEFS
@@ -56,16 +55,10 @@
  **********************/
 void lvgl_log_cb(lv_log_level_t level, const char* buf);
 static lv_display_t* hal_init(int32_t w, int32_t h);
-static void http_test();
-static int usb_test();
-static int set_thread_priority(pthread_t thread_id, int policy, int priority);
 
 /**********************
  *  STATIC VARIABLES
  **********************/
-static std::thread s_responseThread;
-static std::thread s_requestThread;
-static std::thread s_thumbnailThread;
 
 /**********************
  *      MACROS
@@ -74,6 +67,37 @@ static std::thread s_thumbnailThread;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+
+static void lvgl_testing()
+{
+	lv_obj_set_flex_flow(lv_screen_active(), LV_FLEX_FLOW_ROW);
+
+	lv_obj_t* cont = lv_obj_create(lv_screen_active());
+	lv_obj_t* btn = lv_button_create(cont);
+	lv_label_create(btn);
+
+#if 0
+	lv_obj_t* btn2 = lv_button_create(cont);
+	lv_label_create(btn2);
+#endif
+
+	lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
+	lv_obj_set_size(cont, 100, LV_PCT(100));
+	lv_obj_set_size(btn, 1, LV_SIZE_CONTENT);
+	lv_obj_set_style_min_width(btn, LV_PCT(50), LV_PART_MAIN);
+
+	lv_obj_t* cont2 = lv_obj_create(lv_screen_active());
+	lv_obj_t* btn2 = lv_button_create(cont2);
+	lv_label_create(btn2);
+
+	lv_obj_set_flex_flow(cont2, LV_FLEX_FLOW_COLUMN);
+	lv_obj_set_size(cont2, LV_SIZE_CONTENT, LV_PCT(100));
+	lv_obj_set_size(btn2, LV_PCT(100), LV_SIZE_CONTENT);
+	lv_obj_set_style_min_width(btn2, LV_SIZE_CONTENT, LV_PART_MAIN);
+
+	lv_obj_t* bm = lv_buttonmatrix_create(lv_screen_active());
+	lv_obj_set_size(bm, 100, LV_PCT(100));
+}
 
 /**********************
  *      VARIABLES
@@ -84,157 +108,27 @@ int main(int argc, char** argv)
 	(void)argc; /*Unused*/
 	(void)argv; /*Unused*/
 
-#if SET_THREAD_PRIORITY
-	set_thread_priority(pthread_self(), SCHED_OTHER, 100);
-#endif
-
 	lv_init();
 
-	// Initialise
 	StorageHelper::load();
 	Log::Init();
-
-	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
-	// deadlocks can occur
-	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	/*Initialize LVGL*/
 	lv_log_register_print_cb(lvgl_log_cb);
 	lv_i18n_init(lv_i18n_language_pack);
 	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());
 
-	Model::get(); // Initialize the model instance, this creates the subscribers
-
-	Comm::init();
-	Comm::DUET.Init();
-
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
 	lv_display_t* display = hal_init(1024, 600);
 
-	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u));
 	UI::Themes::init(display);
 
-	UI::HomeView& home = UI::HomeView::instance();
-	home.show();
-
-	Model::get().startEventLoop();
-
-	USB::UsbMonitor::getInstance().registerCallback(
-		[](const std::string& path, bool mounted)
-		{
-			if (mounted)
-			{
-				LOG_INFO("USB drive mounted: {:s}", path.c_str());
-				std::string upgradeFilePath = path + "/DuetScreen.tar.gz";
-				if (!std::filesystem::exists(upgradeFilePath))
-				{
-					return;
-				}
-
-				struct stat file_stat;
-				if (stat(upgradeFilePath.c_str(), &file_stat) != 0)
-				{
-					LOG_ERROR("Error getting file stats for {:s}", upgradeFilePath.c_str());
-					return;
-				}
-
-				time_t lastModified = file_stat.st_mtime;
-				time_t savedModified = StorageHelper::getData(ID_UPGRADE_FILE_LAST_MODIFIED, 0);
-
-				if (lastModified == savedModified)
-				{
-					return;
-				}
-
-				Model::get().post<EventType::UpdateAvailable>(upgradeFilePath);
-			}
-		});
-	USB::UsbMonitor::getInstance().startMonitoring();
-
-	// Create a thread to handle requesting data from Duet
-#if MULTITHREADED
-	s_requestThread = std::thread(
-		[]()
-		{
-#  if SET_THREAD_PRIORITY
-			// Set high priority for request thread
-			set_thread_priority(pthread_self(), SCHED_RR, 90);
-#  endif
-
-			while (1)
-			{
-				// Request next section of the OM
-				useconds_t delay = Model::get().requestNewData();
-				usleep(delay);
-			}
-		});
-
-	// Create a thread to handle USB responses from Duet
-	s_responseThread = std::thread(
-		[]()
-		{
-#  if SET_THREAD_PRIORITY
-			// Set medium priority for response thread
-			set_thread_priority(pthread_self(), SCHED_RR, 80);
-#  endif
-
-			while (1)
-			{
-				useconds_t delay = Model::get().receiveNewUsbData();
-				usleep(delay);
-			}
-		});
-
-	s_thumbnailThread = std::thread(
-		[]()
-		{
-#  if SET_THREAD_PRIORITY
-			// Set low priority for thumbnail thread
-			set_thread_priority(pthread_self(), SCHED_RR, 70);
-#  endif
-
-			while (1)
-			{
-				FILEINFO_CACHE->Spin();
-				usleep(50 * 1000);
-			}
-		});
-#endif
-
-	// Screensaver task
-	DisplayHelper::setScreenSaverBrightness(0);
-	lv_timer_t* screensaverTimer = lv_timer_create(
-		[](lv_timer_t* timer)
-		{
-			static bool screensaverEnabled = false;
-			uint32_t inactiveTime = lv_display_get_inactive_time(NULL);
-			uint32_t timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT);
-			if (timeout > 0 && inactiveTime > timeout)
-			{
-				if (!screensaverEnabled)
-				{
-					LOG_INFO("Screensaver timeout reached");
-					DisplayHelper::enableScreenSaver(true);
-					screensaverEnabled = true;
-				}
-			}
-			else
-			{
-				if (screensaverEnabled)
-				{
-					LOG_INFO("Screensaver timeout cancelled");
-					DisplayHelper::enableScreenSaver(false);
-					screensaverEnabled = false;
-				}
-			}
-		},
-		100, // Timer period in milliseconds
-		NULL);
+	lvgl_testing();
 
 	while (1)
 	{
 		{
-			UI_LOCK();
+			// UI_LOCK();
 			// LOG_DBG("Updating UI");
 			lv_timer_handler();
 		}
@@ -323,18 +217,4 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 #  error Unsupported configuration
 #endif
 	return disp;
-}
-
-int set_thread_priority(pthread_t thread_id, int policy, int priority)
-{
-	sched_param sch;
-	int current_policy;
-	pthread_getschedparam(thread_id, &current_policy, &sch);
-	sch.sched_priority = priority;
-	if (pthread_setschedparam(thread_id, policy, &sch) != 0)
-	{
-		LOG_WARN("Failed to set thread priority for thread {}", thread_id);
-		return -1;
-	}
-	return 0;
 }

@@ -5,9 +5,13 @@
 
 namespace UI
 {
+	using ViewListItem_t = LvObj*;
+	using ViewList_t = std::vector<ViewListItem_t>;
+
 	static ViewList_t s_homeScreens;
 	static ViewList_t s_openScreens;
 	static ViewList_t s_returnableScreens;
+	static ViewList_t s_openModals;
 
 	static bool inVector(ViewList_t& vec, ViewListItem_t item)
 	{
@@ -58,6 +62,12 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_INFO("Back button pressed");
+
+		if (closeLastModal())
+		{
+			return;
+		}
+
 		ViewListItem_t currentScreen = getCurrentScreen();
 		if (currentScreen == nullptr)
 		{
@@ -87,6 +97,7 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_INFO("Home button pressed");
+		closeAllModals();
 		for (auto screen : s_openScreens)
 		{
 			if (!screen->isVisible())
@@ -167,18 +178,20 @@ namespace UI
 			return;
 		}
 
+		closeAllModals();
+
 		if (closePrevious)
 		{
 			closeLastScreen();
 		}
 
 		LOG_INFO("Opening screen '{:s}'", view->getName());
-		view->show();
 		removeFromVector(s_returnableScreens, view);
 		if (!inVector(s_homeScreens, view))
 		{
 			addToVector(s_openScreens, view);
 		}
+		view->show();
 	}
 
 	/**
@@ -188,7 +201,7 @@ namespace UI
 	 * If there are no visible home screens, it closes the last screen in the list of open screens.
 	 * If the list of open screens is empty, the function returns without performing any action.
 	 */
-	void closeLastScreen()
+	bool closeLastScreen()
 	{
 		UI_LOCK();
 		LOG_INFO("Closing last screen");
@@ -204,9 +217,10 @@ namespace UI
 #endif
 		if (s_openScreens.empty())
 		{
-			return;
+			return false;
 		}
 		closeScreen(s_openScreens.back());
+		return true;
 	}
 
 	/**
@@ -231,6 +245,76 @@ namespace UI
 		{
 			addToVector(s_returnableScreens, view);
 		}
+	}
+
+	void openModal(LvObj* view)
+	{
+		UI_LOCK();
+		if (view == nullptr)
+		{
+			LOG_WARN("Trying to open a nullptr modal screen");
+			return;
+		}
+
+		LOG_INFO("Opening modal '{:s}'", view->getName());
+
+		addToVector(s_openModals, view);
+		view->show();
+	}
+
+	void closeAllModals()
+	{
+		UI_LOCK();
+		LOG_INFO("Closing all modals");
+		for (auto modal : s_openModals)
+		{
+			LOG_INFO("Closing modal '{:s}'", modal->getName());
+			modal->hide();
+		}
+		s_openModals.clear();
+	}
+
+	bool closeModal(LvObj* view)
+	{
+		UI_LOCK();
+		if (view == nullptr)
+		{
+			LOG_WARN("Trying to close a nullptr modal");
+			return false;
+		}
+
+		if (s_openModals.empty())
+		{
+			LOG_WARN("No open modals");
+			return false;
+		}
+
+		if (!removeFromVector(s_openModals, view))
+		{
+			LOG_WARN("Modal '{:s}' not found in open modals", view->getName());
+			return false;
+		}
+
+		LOG_INFO("Closing modal '{:s}'", view->getName());
+		view->hide();
+		return true;
+	}
+
+	bool closeLastModal()
+	{
+		UI_LOCK();
+		if (s_openModals.empty())
+		{
+			LOG_DBG("No open modals to close");
+			return false;
+		}
+
+		LOG_DBG("Closing last modal");
+		LvObj* lastModal = s_openModals.back();
+		LOG_INFO("Closing modal '{:s}'", lastModal->getName());
+		lastModal->hide();
+		s_openModals.pop_back();
+		return true;
 	}
 
 } // namespace UI

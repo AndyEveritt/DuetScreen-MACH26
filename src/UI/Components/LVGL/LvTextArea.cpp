@@ -112,10 +112,82 @@ namespace UI
 		lv_textarea_set_text_selection(getTextArea(), enable);
 	}
 
+	const char* LvTextArea::getPlaceholderText() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_placeholder_text(getTextArea());
+	}
+
+	lv_obj_t* LvTextArea::getLabel() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_label(getTextArea());
+	}
+
+	uint32_t LvTextArea::getCursorPos() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_cursor_pos(getTextArea());
+	}
+
+	bool LvTextArea::getCursorClickPosEnabled() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_cursor_click_pos(getTextArea());
+	}
+
+	bool LvTextArea::getPasswordModeEnabled() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_password_mode(getTextArea());
+	}
+
+	const char* LvTextArea::getPasswordBullet() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_password_bullet(getTextArea());
+	}
+
+	bool LvTextArea::getOneLineEnabled() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_one_line(getTextArea());
+	}
+
+	const char* LvTextArea::getAcceptedChars() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_accepted_chars(getTextArea());
+	}
+
+	uint32_t LvTextArea::getMaxLength() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_max_length(getTextArea());
+	}
+
 	bool LvTextArea::isTextSelected() const
 	{
 		UI_LOCK();
 		return lv_textarea_text_is_selected(getTextArea());
+	}
+
+	bool LvTextArea::getTextSelectionEnabled() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_text_selection(getTextArea());
+	}
+
+	uint32_t LvTextArea::getPasswordShowTime() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_password_show_time(getTextArea());
+	}
+
+	uint32_t LvTextArea::getCurrentChar() const
+	{
+		UI_LOCK();
+		return lv_textarea_get_current_char(getTextArea());
 	}
 
 	void LvTextArea::clearSelection()

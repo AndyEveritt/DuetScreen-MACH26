@@ -432,3 +432,4 @@ config.json
 !.vscode/templates/
 !.vscode/c_cpp_properties.json
 !.vscode/file_templates.json
+!.vscode/gdb.conf

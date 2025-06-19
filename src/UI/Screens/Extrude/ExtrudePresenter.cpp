@@ -153,22 +153,20 @@ namespace UI
 		np.setMinValue(heater->min);
 		np.setMaxValue(heater->max);
 		m_numberPadData = {toolIndex, heaterIndex, active};
-		np.setConfirmCallback(numberPadConfirmCallback, this);
+		np.setConfirmCallback([this](float value) { numberPadConfirmCallback(value); });
 		return true;
 	}
 
-	void ExtrudePresenter::numberPadConfirmCallback(lv_event_t* e)
+	void ExtrudePresenter::numberPadConfirmCallback(float value)
 	{
-		auto presenter = (ExtrudePresenter*)lv_event_get_user_data(e);
-		NumberPad* np = (NumberPad*)lv_event_get_param(e);
-		auto tool = OM::GetToolBySlot(presenter->m_numberPadData.toolIndex);
+		auto tool = OM::GetToolBySlot(m_numberPadData.toolIndex);
 
 		if (tool == nullptr)
 		{
 			LOG_ERROR("Tool is null");
 			return;
 		}
-		tool->SetHeaterTemps(presenter->m_numberPadData.heaterIndex, np->getValue(), presenter->m_numberPadData.active);
+		tool->SetHeaterTemps(m_numberPadData.heaterIndex, value, m_numberPadData.active);
 	}
 
 	void ExtrudePresenter::onActivate()

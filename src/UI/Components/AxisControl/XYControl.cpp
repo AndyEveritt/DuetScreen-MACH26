@@ -45,6 +45,11 @@ namespace UI
 		m_xLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_yLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
+		m_xLabel.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
+		m_yLabel.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
+
+		m_xLabel.addEventCallback(onLabelEvent, LV_EVENT_CLICKED, this);
+		m_yLabel.addEventCallback(onLabelEvent, LV_EVENT_CLICKED, this);
 		m_xIncrementButton.addClickedCallback(onJogBtn, this);
 		m_xDecrementButton.addClickedCallback(onJogBtn, this);
 		m_yIncrementButton.addClickedCallback(onJogBtn, this);
@@ -53,14 +58,19 @@ namespace UI
 		m_homeXButton.addClickedCallback(onHomeBtn, this);
 		m_homeYButton.addClickedCallback(onHomeBtn, this);
 
-		m_xIncrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_xDecrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_yIncrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_yDecrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_xLabel.addStyle(Themes::getLvglStyles().input);
+		m_yLabel.addStyle(Themes::getLvglStyles().input);
+		m_xLabel.addStyle(Themes::getLvglStyles().pad_base);
+		m_yLabel.addStyle(Themes::getLvglStyles().pad_base);
 
-		m_homeXYButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_homeXButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_homeYButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_xIncrementButton.addStyle(Themes::getLvglStyles().actionBtn);
+		m_xDecrementButton.addStyle(Themes::getLvglStyles().actionBtn);
+		m_yIncrementButton.addStyle(Themes::getLvglStyles().actionBtn);
+		m_yDecrementButton.addStyle(Themes::getLvglStyles().actionBtn);
+
+		m_homeXYButton.addStyle(Themes::getLvglStyles().actionBtn);
+		m_homeXButton.addStyle(Themes::getLvglStyles().actionBtn);
+		m_homeYButton.addStyle(Themes::getLvglStyles().actionBtn);
 
 		m_homeXYButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
 		m_homeXButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
@@ -140,32 +150,40 @@ namespace UI
 		m_homeXYButton.setDisabled(disabled || m_homeXButton.hasState(LV_STATE_DISABLED));
 	}
 
-	void XYControl::setJogCallback(jog_cb_t cb, void* user_data)
+	void XYControl::setJogCallback(jog_cb_t cb)
 	{
 		UI_LOCK();
 		m_jogCallback = std::move(cb);
-		m_jogUserData = user_data;
 	}
 
-	void XYControl::setHomeXYCallback(home_cb_t cb, void* user_data)
+	void XYControl::setHomeXYCallback(home_cb_t cb)
 	{
 		UI_LOCK();
 		m_homeXYCallback = std::move(cb);
-		m_homeXYUserData = user_data;
 	}
 
-	void XYControl::setHomeXCallback(home_cb_t cb, void* user_data)
+	void XYControl::setHomeXCallback(home_cb_t cb)
 	{
 		UI_LOCK();
 		m_homeXCallback = std::move(cb);
-		m_homeXUserData = user_data;
 	}
 
-	void XYControl::setHomeYCallback(home_cb_t cb, void* user_data)
+	void XYControl::setHomeYCallback(home_cb_t cb)
 	{
 		UI_LOCK();
 		m_homeYCallback = std::move(cb);
-		m_homeYUserData = user_data;
+	}
+
+	void XYControl::setXLabelCallback(label_cb_t cb)
+	{
+		UI_LOCK();
+		m_xLabelCallback = std::move(cb);
+	}
+
+	void XYControl::setYLabelCallback(label_cb_t cb)
+	{
+		UI_LOCK();
+		m_yLabelCallback = std::move(cb);
 	}
 
 	void XYControl::onJogBtn(lv_event_t* event)
@@ -199,7 +217,7 @@ namespace UI
 
 		if (control->m_jogCallback)
 		{
-			control->m_jogCallback(axisLetter, forward, control->m_jogUserData);
+			control->m_jogCallback(axisLetter, forward);
 		}
 	}
 
@@ -214,26 +232,54 @@ namespace UI
 		{
 			if (control->m_homeXCallback)
 			{
-				control->m_homeXCallback(control->m_homeXUserData);
+				control->m_homeXCallback();
 			}
 		}
 		else if (target == control->m_homeYButton.getButton())
 		{
 			if (control->m_homeYCallback)
 			{
-				control->m_homeYCallback(control->m_homeYUserData);
+				control->m_homeYCallback();
 			}
 		}
 		else if (target == control->m_homeXYButton.getButton())
 		{
 			if (control->m_homeXYCallback)
 			{
-				control->m_homeXYCallback(control->m_homeXYUserData);
+				control->m_homeXYCallback();
 			}
 		}
 		else
 		{
 			LOG_ERROR("Unknown home button pressed");
+			return;
+		}
+	}
+
+	void XYControl::onLabelEvent(lv_event_t* event)
+	{
+		UI_LOCK();
+		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
+
+		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+
+		if (target == control->m_xLabel)
+		{
+			if (control->m_xLabelCallback)
+			{
+				control->m_xLabelCallback(control->m_xPosition);
+			}
+		}
+		else if (target == control->m_yLabel)
+		{
+			if (control->m_yLabelCallback)
+			{
+				control->m_yLabelCallback(control->m_yPosition);
+			}
+		}
+		else
+		{
+			LOG_ERROR("Unknown label event");
 			return;
 		}
 	}

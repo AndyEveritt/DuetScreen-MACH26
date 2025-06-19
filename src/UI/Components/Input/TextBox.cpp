@@ -41,7 +41,8 @@ namespace UI
 		setLabel("");
 
 		// TextArea
-		m_textArea.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_textArea.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		// m_textArea.setMinHeight(20);
 		m_textArea.setFlexGrow(1);
 		m_textArea.setCursorClickPos(true);
 
@@ -118,7 +119,7 @@ namespace UI
 	{
 		m_passwordMode = passwordMode;
 		m_showPassword.setChecked(false);
-		m_showPassword.setVisibile(passwordMode);
+		m_showPassword.setVisible(passwordMode);
 		m_textArea.setPasswordMode(passwordMode);
 	}
 
@@ -159,9 +160,64 @@ namespace UI
 		m_textArea.setTextSelection(enable);
 	}
 
+	const char* TextBox::getPlaceholderText() const
+	{
+		return m_textArea.getPlaceholderText();
+	}
+
+	uint32_t TextBox::getCursorPos() const
+	{
+		return m_textArea.getCursorPos();
+	}
+
+	bool TextBox::getCursorClickPosEnabled() const
+	{
+		return m_textArea.getCursorClickPosEnabled();
+	}
+
+	bool TextBox::getPasswordModeEnabled() const
+	{
+		return m_textArea.getPasswordModeEnabled();
+	}
+
+	const char* TextBox::getPasswordBullet() const
+	{
+		return m_textArea.getPasswordBullet();
+	}
+
+	bool TextBox::getOneLineEnabled() const
+	{
+		return m_textArea.getOneLineEnabled();
+	}
+
+	const char* TextBox::getAcceptedChars() const
+	{
+		return m_textArea.getAcceptedChars();
+	}
+
+	uint32_t TextBox::getMaxLength() const
+	{
+		return m_textArea.getMaxLength();
+	}
+
 	bool TextBox::isTextSelected() const
 	{
 		return m_textArea.isTextSelected();
+	}
+
+	bool TextBox::getTextSelectionEnabled() const
+	{
+		return m_textArea.getTextSelectionEnabled();
+	}
+
+	uint32_t TextBox::getPasswordShowTime() const
+	{
+		return m_textArea.getPasswordShowTime();
+	}
+
+	uint32_t TextBox::getCurrentChar() const
+	{
+		return m_textArea.getCurrentChar();
 	}
 
 	void TextBox::clearSelection()

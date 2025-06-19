@@ -68,7 +68,8 @@ namespace UI
 		, m_statusView(m_mainWindow)
 		, m_alert("home_alert", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_updatePrompt("update_prompt", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
-		, m_kb(lv_keyboard_create(m_mainWindow))
+		, m_numberpad("home_numberpad", m_mainWindow, layout_t(0, 0, LV_SIZE_CONTENT, 100))
+		, m_kb("home_keyboard", m_mainWindow)
 	{
 		UI_LOCK();
 		LOG_INFO("Creating UI");
@@ -162,9 +163,11 @@ namespace UI
 
 		// Keyboard
 		showKeyboard(false);
-		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(m_kb, LV_ALIGN_BOTTOM_MID, 0, 0);
-		lv_obj_set_size(m_kb, LV_PCT(100), LV_PCT(50));
+		m_kb.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_kb.setAlign(LV_ALIGN_BOTTOM_MID, 0, 0);
+		m_kb.setSize(LV_PCT(100), LV_PCT(50));
+
+		m_numberpad.hide();
 
 		// Styles::instance().removeTheme(getCont());
 		// lv_obj_remove_style(getCont(), &Styles::instance().debugBorders.style, 0);
@@ -268,30 +271,14 @@ namespace UI
 	void HomeView::showKeyboard(bool show)
 	{
 		UI_LOCK();
-		if (show)
-		{
-			lv_obj_align(m_alert.getCont(), LV_ALIGN_TOP_MID, 0, 5);
-			lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(45), LV_PART_MAIN);
-		}
-		else
-		{
-			lv_keyboard_set_textarea(m_kb, nullptr);
-			lv_obj_align(m_alert.getCont(), LV_ALIGN_CENTER, 0, 0);
-			lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(70), LV_PART_MAIN);
-		}
-		lv_obj_set_flag(m_kb, LV_OBJ_FLAG_HIDDEN, !show);
+		m_alert.setAlign(LV_ALIGN_TOP_MID, 0, show ? 5 : 0);
+		m_alert.setMaxHeight(show ? LV_PCT(45) : LV_PCT(70));
+		m_kb.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 	}
 
 	void HomeView::showUpdatePrompt(bool show)
 	{
 		UI_LOCK();
-		if (show)
-		{
-			m_updatePrompt.show();
-		}
-		else
-		{
-			m_updatePrompt.hide();
-		}
+		m_updatePrompt.setVisible(show);
 	}
 } // namespace UI

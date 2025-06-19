@@ -50,6 +50,7 @@ namespace OM::Move
 
 		void Reset();
 		void Home();
+		void MoveAbsolute(float position, uint32_t feedrate);
 		void MoveRelative(float distance, uint32_t feedrate);
 	};
 

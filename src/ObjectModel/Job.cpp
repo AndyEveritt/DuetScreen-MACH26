@@ -19,7 +19,7 @@
   {                                                                                                                    \
 	varName = value;                                                                                                   \
   }                                                                                                                    \
-  const type& Get##funcName()                                                                                          \
+  type Get##funcName()                                                                                                 \
   {                                                                                                                    \
 	return varName;                                                                                                    \
   }
@@ -73,7 +73,7 @@ namespace OM
 		}
 	}
 
-	const uint32_t& GetPrintRemaining(RemainingTimeType type)
+	uint32_t GetPrintRemaining(RemainingTimeType type)
 	{
 		switch (type)
 		{
@@ -147,7 +147,7 @@ namespace OM
 		s_currentJobObjectIndex = index;
 	}
 
-	const int8_t& GetCurrentJobObjectIndex()
+	int8_t GetCurrentJobObjectIndex()
 	{
 		return s_currentJobObjectIndex;
 	}

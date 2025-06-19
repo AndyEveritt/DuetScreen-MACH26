@@ -24,7 +24,10 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_label.setMinWidth(LV_SIZE_CONTENT);
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_label.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
+		m_label.addEventCallback(onLabelClick, LV_EVENT_CLICKED, this);
 
 		m_incrementButton.setWidth(LV_PCT(100));
 		m_homeButton.setWidth(LV_PCT(100));
@@ -37,6 +40,9 @@ namespace UI
 		m_incrementButton.addClickedCallback(onJogBtn, this);
 		m_homeButton.addClickedCallback(onHomeBtn, this);
 		m_decrementButton.addClickedCallback(onJogBtn, this);
+
+		m_label.addStyle(Themes::getLvglStyles().input);
+		m_label.addStyle(Themes::getLvglStyles().pad_base);
 
 		m_incrementButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_homeButton.addStyle(Themes::getLvglStyles().actionBtn, 0);
@@ -83,18 +89,22 @@ namespace UI
 		m_homeButton.setDisabled(disabled);
 	}
 
-	void GenericAxisControl::setJogCallback(jog_cb_t cb, void* user_data)
+	void GenericAxisControl::setJogCallback(jog_cb_t cb)
 	{
 		UI_LOCK();
 		m_positionCallback = std::move(cb);
-		m_positionUserData = user_data;
 	}
 
-	void GenericAxisControl::setHomeCallback(home_cb_t cb, void* user_data)
+	void GenericAxisControl::setHomeCallback(home_cb_t cb)
 	{
 		UI_LOCK();
 		m_homeCallback = std::move(cb);
-		m_homeUserData = user_data;
+	}
+
+	void GenericAxisControl::setLabelCallback(label_cb_t cb)
+	{
+		UI_LOCK();
+		m_labelCallback = std::move(cb);
 	}
 
 	void GenericAxisControl::onJogBtn(lv_event_t* event)
@@ -106,7 +116,7 @@ namespace UI
 		bool forward = target == control->m_decrementButton.getButton() ? false : true;
 		if (control && control->m_positionCallback && control->m_axisLetter != '\0')
 		{
-			control->m_positionCallback(control->m_axisLetter, forward, control->m_positionUserData);
+			control->m_positionCallback(control->m_axisLetter, forward);
 		}
 	}
 
@@ -116,7 +126,17 @@ namespace UI
 		auto* control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
 		if (control && control->m_homeCallback && control->m_axisLetter != '\0')
 		{
-			control->m_homeCallback(control->m_axisLetter, control->m_homeUserData);
+			control->m_homeCallback(control->m_axisLetter);
+		}
+	}
+
+	void GenericAxisControl::onLabelClick(lv_event_t* event)
+	{
+		UI_LOCK();
+		auto control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
+		if (control && control->m_labelCallback && control->m_axisLetter != '\0')
+		{
+			control->m_labelCallback(control->m_axisLetter, control->m_axisPosition);
 		}
 	}
 

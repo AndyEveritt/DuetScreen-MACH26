@@ -25,6 +25,8 @@ namespace UI
 	{
 
 	  public:
+		using confirm_cb_t = std::function<void(float value)>;
+
 		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout);
 		NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config);
 
@@ -32,31 +34,34 @@ namespace UI
 		void clear();
 		void close();
 		void confirm();
-		void setMinValue(int16_t value);
-		void setMaxValue(int16_t value);
-		void setValue(int16_t value);
-		int16_t getValue() const;
+		void setHeader(const std::string& text);
+		void setMinValue(float value);
+		void setMaxValue(float value);
+		void setRange(float minValue, float maxValue);
+		void setValue(float value);
+		float getValue() const;
 		bool validateInput();
 
 		void setCloseOnConfirm(bool closeOnConfirm) { m_closeOnConfirm = closeOnConfirm; }
 		bool getCloseOnConfirm() const { return m_closeOnConfirm; }
 
-		void setValueChangedCallback(lv_event_cb_t eventCb, void* userData);
-		void setConfirmCallback(lv_event_cb_t eventCb, void* userData);
+		void setConfirmCallback(confirm_cb_t eventCb);
 
 	  private:
 		static void clearBtnEventHandler(lv_event_t* e);
+		static void onReadyEventHandler(lv_event_t* e);
 		static void btnmEventHandler(lv_event_t* e);
 
+		LvLabel m_header;
 		LvContainer m_textCont;
 		TextBox m_textBox;
 		Button m_clearBtn;
 		LvButtonMatrix m_btnMatrix;
 
-		lv_event_cb_t m_confirmCb = nullptr;
+		confirm_cb_t m_confirmCb = nullptr;
 
-		int16_t m_minValue = INT16_MIN;
-		int16_t m_maxValue = INT16_MAX;
+		float m_minValue = INT16_MIN;
+		float m_maxValue = INT16_MAX;
 		bool m_closeOnConfirm = true;
 	};
 } // namespace UI

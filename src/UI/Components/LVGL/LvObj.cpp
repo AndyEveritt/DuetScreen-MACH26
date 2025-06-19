@@ -352,6 +352,13 @@ namespace UI
 		{
 			return;
 		}
+		if (!lv_obj_has_flag(getCont(), LV_OBJ_FLAG_HIDDEN))
+		{
+			LOG_VERBOSE("'{:s}' is already visible", getName());
+			return;
+		}
+
+		LOG_DBG("Showing '{:s}'", getName());
 		lv_obj_move_foreground(getCont());
 		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
 		onShow();
@@ -369,6 +376,13 @@ namespace UI
 		{
 			return;
 		}
+		if (lv_obj_has_flag(getCont(), LV_OBJ_FLAG_HIDDEN))
+		{
+			LOG_VERBOSE("'{:s}' is already hidden", getName());
+			return;
+		}
+
+		LOG_DBG("Hiding '{:s}'", getName());
 		lv_obj_move_background(getCont());
 		lv_obj_add_flag(getCont(), LV_OBJ_FLAG_HIDDEN);
 		onHide();

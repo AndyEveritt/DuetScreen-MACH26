@@ -38,7 +38,7 @@ namespace UI
 		}
 
 	  private:
-		static void numberPadConfirmCallback(lv_event_t* e);
+		void numberPadConfirmCallback(float value);
 
 		std::vector<std::string> m_filamentOptions;
 		struct NumberPadData

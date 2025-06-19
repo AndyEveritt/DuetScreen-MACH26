@@ -63,6 +63,18 @@ namespace UI
 		axis->Home();
 	}
 
+	void MovePresenter::moveAxisAbsolute(char axis_letter, float position, uint32_t feedrate)
+	{
+		MODEL_LOCK();
+		auto axis = OM::Move::GetAxisByLetter(axis_letter);
+		if (axis == nullptr)
+		{
+			LOG_WARN("Axis '{}' not found", axis_letter);
+			return;
+		}
+		axis->MoveAbsolute(position, feedrate);
+	}
+
 	void MovePresenter::moveAxisRelative(char axis_letter, float distance, uint32_t feedrate)
 	{
 		MODEL_LOCK();
@@ -95,18 +107,22 @@ namespace UI
 		auto z = OM::Move::GetAxisByLetter('Z');
 
 		std::vector<OM::Move::AxisPtr> axes = OM::Move::GetAxes(false);
-		m_axisLetters.resize(axes.size());
-		for (size_t i = 0; i < axes.size(); i++)
 		{
-			m_axisLetters[i] = axes[i]->letter[0];
-		}
+			/*
+			The view keeps a pointer to the m_axisData so we need to lock to prevent the view using half complete data
+			*/
+			UI_LOCK();
+			m_axisData.resize(axes.size());
+			for (size_t i = 0; i < axes.size(); i++)
+			{
+				m_axisData[i] = {.letter = axes[i]->letter[0],
+								 .homed = axes[i]->homed != 0,
+								 .position = axes[i]->userPosition,
+								 .min = axes[i]->minPosition,
+								 .max = axes[i]->maxPosition};
+			}
 
-		m_view->setAxisLetters(m_axisLetters);
-
-		for (auto& axis : axes)
-		{
-			m_view->setAxisPosition(axis->letter[0], axis->userPosition);
-			m_view->setAxisHomed(axis->letter[0], axis->homed);
+			m_view->setAxisData(m_axisData);
 		}
 
 #if 0

@@ -9,6 +9,7 @@
 
 #include "LockWrapper.h"
 #include "lvgl/lvgl.h"
+#include <functional>
 
 namespace UI
 {
@@ -41,6 +42,40 @@ namespace UI
 	class LvObj
 	{
 	  public:
+		template <typename F>
+		struct callback_t;
+
+		template <typename Ret, typename... Args>
+		struct callback_t<Ret(Args...)>
+		{
+			std::function<Ret(Args..., void* user_data)> func;
+			void* user_data = nullptr;
+
+			callback_t() = default;
+
+			/**
+			 * @brief Construct a callback with a function and optional user data
+			 * @param f Function to call when the callback is executed
+			 * @param data Optional user data to pass to the function
+			 */
+			callback_t(std::function<Ret(Args..., void* user_data)> f, void* data)
+				: func(std::move(f))
+				, user_data(data)
+			{
+			}
+
+			explicit operator bool() const { return static_cast<bool>(func); }
+			Ret run(Args... args) const
+			{
+				if (func)
+				{
+					return func(args..., user_data);
+				}
+
+				return Ret();
+			}
+		};
+
 		LvObj(lv_create_t initFunc, const std::string& name, lv_obj_t* parent);
 		LvObj(lv_create_t initFunc, const std::string& name, lv_obj_t* parent, layout_t layout);
 		LvObj(lv_create_t initFunc, const std::string& name, layout_t layout)
@@ -119,7 +154,7 @@ namespace UI
 		uint32_t getEventCount();
 		lv_result_t sendEvent(lv_event_code_t code, void* param = nullptr);
 
-		void setVisibile(bool display) { display ? show() : hide(); }
+		void setVisible(bool display) { display ? show() : hide(); }
 		virtual void show();
 		virtual void hide();
 		bool isVisible();

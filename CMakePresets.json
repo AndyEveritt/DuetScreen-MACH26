@@ -65,6 +65,16 @@
                 "PROCESSOR": "T113",
                 "LOG_TIMESTAMPS": "ON"
             }
+        },
+        {
+            "name": "LVGL-Dev",
+            "displayName": "LVGL Development",
+            "description": "Development config for developing the LVGL library",
+            "inherits": "Base",
+            "cacheVariables": {
+                "PROCESSOR": "Simulation",
+                "LVGL_DEV": "ON"
+            }
         }
     ],
     "buildPresets": [
@@ -91,6 +101,12 @@
             "description": "",
             "displayName": "",
             "configurePreset": "Simulation-Release"
+        },
+        {
+            "name": "LVGL-Dev",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "LVGL-Dev"
         }
     ]
 }

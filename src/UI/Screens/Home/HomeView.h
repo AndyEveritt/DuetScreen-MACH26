@@ -3,7 +3,9 @@
 #include "HomePresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Graph/Graph.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/SideBar/SideBar.h"
 #include "UI/Components/StatusBar/StatusBar.h"
@@ -44,7 +46,7 @@ namespace UI
 
 		// Keyboard
 		void showKeyboard(bool show);
-		lv_obj_t* getKeyboard() const { return m_kb; }
+		LvKeyboard& getKeyboard() { return m_kb; }
 
 		// Sub-views
 		ConsoleView& getConsoleView() { return m_consoleView; }
@@ -97,6 +99,8 @@ namespace UI
 		// Update prompt
 		MessageBox m_updatePrompt;
 
-		lv_obj_t* m_kb;
+		ModalNumberPad m_numberpad;
+
+		LvKeyboard m_kb;
 	};
 } // namespace UI

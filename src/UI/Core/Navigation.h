@@ -4,9 +4,6 @@
 
 namespace UI
 {
-	typedef LvObj* ViewListItem_t;
-	typedef std::vector<ViewListItem_t> ViewList_t;
-
 	void back();
 	void home();
 
@@ -15,6 +12,11 @@ namespace UI
 
 	LvObj* getCurrentScreen();
 	void openScreen(LvObj* view, bool closePrevious = true);
-	void closeLastScreen();
+	bool closeLastScreen();
 	void closeScreen(LvObj* view, bool returnable = true);
+
+	void openModal(LvObj* view);
+	void closeAllModals();
+	bool closeModal(LvObj* view);
+	bool closeLastModal();
 } // namespace UI

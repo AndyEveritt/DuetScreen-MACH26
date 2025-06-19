@@ -15,8 +15,9 @@ namespace UI
 {
 	class XYControl : public LvObj
 	{
-		using jog_cb_t = std::function<void(char axis_letter, bool forward, void* user_data)>;
-		using home_cb_t = std::function<void(void* user_data)>;
+		using jog_cb_t = std::function<void(char axis_letter, bool forward)>;
+		using home_cb_t = std::function<void()>;
+		using label_cb_t = std::function<void(float position)>;
 
 	  public:
 		XYControl(const std::string& name, lv_obj_t* parent);
@@ -33,14 +34,18 @@ namespace UI
 		void setXHomeDisabled(bool disabled);
 		void setYHomeDisabled(bool disabled);
 
-		void setJogCallback(jog_cb_t cb, void* user_data);
-		void setHomeXYCallback(home_cb_t cb, void* user_data);
-		void setHomeXCallback(home_cb_t cb, void* user_data);
-		void setHomeYCallback(home_cb_t cb, void* user_data);
+		void setJogCallback(jog_cb_t cb);
+		void setHomeXYCallback(home_cb_t cb);
+		void setHomeXCallback(home_cb_t cb);
+		void setHomeYCallback(home_cb_t cb);
+
+		void setXLabelCallback(label_cb_t cb);
+		void setYLabelCallback(label_cb_t cb);
 
 	  private:
 		static void onJogBtn(lv_event_t* event);
 		static void onHomeBtn(lv_event_t* event);
+		static void onLabelEvent(lv_event_t* event);
 
 		void updateXLabel();
 		void updateYLabel();
@@ -66,13 +71,12 @@ namespace UI
 		float m_yPosition = 0.0f;
 
 		jog_cb_t m_jogCallback;
-		void* m_jogUserData = nullptr;
 
 		home_cb_t m_homeXYCallback;
 		home_cb_t m_homeXCallback;
 		home_cb_t m_homeYCallback;
-		void* m_homeXYUserData = nullptr;
-		void* m_homeXUserData = nullptr;
-		void* m_homeYUserData = nullptr;
+
+		label_cb_t m_xLabelCallback;
+		label_cb_t m_yLabelCallback;
 	};
 } // namespace UI

@@ -15,6 +15,7 @@ namespace UI
     {
       public:
         LvContainer(const std::string& name, lv_obj_t* parent);
+		LvContainer(const std::string& name, lv_obj_t* parent, layout_t layout);
 
 	  private:
     };

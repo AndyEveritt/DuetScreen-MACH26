@@ -34,7 +34,21 @@ namespace UI
 		void setAcceptedChars(const char* chars);
 		void setMaxLength(uint32_t length);
 		void setTextSelection(bool enable);
+
+		const char* getPlaceholderText() const;
+		lv_obj_t* getLabel() const;
+		uint32_t getCursorPos() const;
+		bool getCursorClickPosEnabled() const;
+		bool getPasswordModeEnabled() const;
+		const char* getPasswordBullet() const;
+		bool getOneLineEnabled() const;
+		const char* getAcceptedChars() const;
+		uint32_t getMaxLength() const;
 		bool isTextSelected() const;
+		bool getTextSelectionEnabled() const;
+		uint32_t getPasswordShowTime() const;
+		uint32_t getCurrentChar() const;
+
 		void clearSelection();
 		void cursorRight();
 		void cursorLeft();

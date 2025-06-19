@@ -49,10 +49,16 @@ namespace OM::Move
 		Comm::DUET.SendGcodef("G28 %s\n", letter);
 	}
 
+	void Axis::MoveAbsolute(float position, uint32_t feedrate)
+	{
+		feedrate = feedrate * 60;
+		Comm::DUET.SendGcodef("M120\nG90\nG1 %s%.2f F%u\nM121\n", letter, position, feedrate);
+	}
+
 	void Axis::MoveRelative(float distance, uint32_t feedrate)
 	{
 		feedrate = feedrate * 60;
-		Comm::DUET.SendGcodef("G91\nG1 %s%.2f F%u\nG90\n", letter, distance, feedrate);
+		Comm::DUET.SendGcodef("M120\nG91\nG1 %s%.2f F%u\nM121\n", letter, distance, feedrate);
 	}
 
 	std::vector<AxisPtr> GetAxes(const bool includeHidden)

@@ -1,6 +1,7 @@
 #include "MoveView.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
@@ -29,7 +30,9 @@ namespace UI
 		, m_zControl("move_z_control", m_axisControlCont)
 		, m_genericAxisControls("move_generic_axis_controls", m_axisControlCont)
 		, m_axisList("move_axis_control_list", m_axisControlCont)
+		, m_extruderControl("move_extruder_control", m_axisControlCont)
 		, m_distances("move_feed_rates", m_bottomBarCont)
+		, m_numberpad("move_numberpad", getCont(), layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();
 
@@ -66,33 +69,34 @@ namespace UI
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_xyControl.setSize(LV_PCT(30), LV_PCT(100));
 		m_xyControl.setJogCallback(
-			[this](char axis_letter, bool forward, void* user_data)
+			[this](char axis_letter, bool forward)
 			{
 				m_presenter->moveAxisRelative(
 					axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
-			},
-			nullptr);
+			});
 		m_xyControl.setHomeXYCallback(
-			[this](void* user_data)
+			[this]()
 			{
 				m_presenter->homeAxis('X');
 				m_presenter->homeAxis('Y');
-			},
-			nullptr);
-		m_xyControl.setHomeXCallback([this](void* user_data) { m_presenter->homeAxis('X'); }, nullptr);
-		m_xyControl.setHomeYCallback([this](void* user_data) { m_presenter->homeAxis('Y'); }, nullptr);
+			});
+		m_xyControl.setHomeXCallback([this]() { m_presenter->homeAxis('X'); });
+		m_xyControl.setHomeYCallback([this]() { m_presenter->homeAxis('Y'); });
+
+		m_xyControl.setXLabelCallback([this](float position) { configureNumberpad('X', position); });
+		m_xyControl.setYLabelCallback([this](float position) { configureNumberpad('Y', position); });
 
 		m_zControl.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_zControl.setAxisLetter('Z');
 		m_zControl.setJogCallback(
-			[this](char axis_letter, bool forward, void* user_data)
+			[this](char axis_letter, bool forward)
 			{
 				m_presenter->moveAxisRelative(
 					axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
-			},
-			nullptr);
-		m_zControl.setHomeCallback([this](char axis_letter, void* user_data) { m_presenter->homeAxis(axis_letter); },
-								   nullptr);
+			});
+		m_zControl.setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
+		m_zControl.setLabelCallback([this](char axis_letter, float position)
+									{ configureNumberpad(axis_letter, position); });
 
 		m_genericAxisControls.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_genericAxisControls.setListSize(LV_SIZE_CONTENT, LV_PCT(100));
@@ -102,7 +106,10 @@ namespace UI
 
 		m_axisList.setFlexGrow(1);
 		m_axisList.setHeight(LV_PCT(100));
-		m_axisList.setVisibile(false);
+		m_axisList.setVisible(false);
+
+		m_extruderControl.setHeight(LV_PCT(100));
+		m_extruderControl.setFlexGrow(1);
 
 		m_homeAll.addClickedCallback(onHomeAllEvent, this);
 		m_trueBedLevel.addClickedCallback(onTrueBedLevelEvent, this);
@@ -140,6 +147,9 @@ namespace UI
 									 return btn;
 								 });
 		m_distances.getItem(s_currentDistanceIndex)->setChecked(true);
+
+		m_numberpad.setHeader("Numberpad Header");
+		m_numberpad.hide();
 	}
 
 	void MoveView::onHomeAllEvent(lv_event_t* e)
@@ -188,6 +198,7 @@ namespace UI
 	}
 
 	void MoveView::onShow() {}
+
 	void MoveView::onHide() {}
 
 	void MoveView::clear()
@@ -200,67 +211,90 @@ namespace UI
 		m_zControl.setAxisHomed(false);
 	}
 
-	void MoveView::setAxisLetters(const std::vector<char>& axis_letters)
+	void MoveView::setAxisData(const std::vector<MovePresenter::AxisData>& axis_data)
 	{
 		UI_LOCK();
 		bool has_x = false;
 		bool has_y = false;
 		bool has_z = false;
-		std::vector<char> axis_letters_excluding_xyz;
-		axis_letters_excluding_xyz.reserve(axis_letters.size());
-		for (const auto& letter : axis_letters)
+		std::vector<MovePresenter::AxisData> axis_data_excluding_xyz;
+		axis_data_excluding_xyz.reserve(axis_data.size());
+		for (const auto& axis : axis_data)
 		{
-			if (letter == 'X')
+			if (axis.letter == 'X')
+			{
 				has_x = true;
-			else if (letter == 'Y')
+				m_xyControl.setXPosition(axis.position);
+				m_xyControl.setXHomed(axis.homed);
+			}
+			else if (axis.letter == 'Y')
+			{
 				has_y = true;
-			else if (letter == 'Z')
+				m_xyControl.setYPosition(axis.position);
+				m_xyControl.setYHomed(axis.homed);
+			}
+			else if (axis.letter == 'Z')
+			{
 				has_z = true;
+				m_zControl.setAxisPosition(axis.position);
+				m_zControl.setAxisHomed(axis.homed);
+			}
 			else
-				axis_letters_excluding_xyz.push_back(letter);
+			{
+				axis_data_excluding_xyz.push_back(axis);
+			}
 		}
 
 		setAxisDisabled('X', !has_x);
 		setAxisDisabled('Y', !has_y);
 		setAxisDisabled('Z', !has_z);
 
-		size_t remaining_axis_count = axis_letters.size() - (has_x ? 1 : 0) - (has_y ? 1 : 0) - (has_z ? 1 : 0);
-		if (remaining_axis_count != axis_letters_excluding_xyz.size())
+#if DEBUG
+		size_t remaining_axis_count = axis_data.size() - (has_x ? 1 : 0) - (has_y ? 1 : 0) - (has_z ? 1 : 0);
+		if (remaining_axis_count != axis_data_excluding_xyz.size())
 		{
 			LOG_ERROR("Remaining axis count does not match the number of provided axis letters. "
 					  "Expected: {}, Actual: {}",
 					  remaining_axis_count,
-					  axis_letters_excluding_xyz.size());
+					  axis_data_excluding_xyz.size());
 			return;
 		}
+#endif
 
-		LOG_DBG("Remaining axis count: {}", remaining_axis_count);
-		m_genericAxisControls.setVisibile(!axis_letters_excluding_xyz.empty());
+		LOG_DBG("Remaining axis count: {}", axis_data_excluding_xyz.size());
+		m_genericAxisControls.setVisible(!axis_data_excluding_xyz.empty());
 
 		m_genericAxisControls.setItemCount(
-			axis_letters_excluding_xyz.size(),
+			axis_data_excluding_xyz.size(),
 			[this](size_t i, lv_obj_t* parent)
 			{
 				auto control = std::make_shared<GenericAxisControl>(fmt::format("generic_axis_control_{}", i), parent);
 				control->setSize(LV_SIZE_CONTENT, LV_PCT(100));
 				control->setJogCallback(
-					[this](char axis_letter, bool forward, void* user_data)
+					[this](char axis_letter, bool forward)
 					{
 						m_presenter->moveAxisRelative(
 							axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
-					},
-					nullptr);
-				control->setHomeCallback(
-					[this](char axis_letter, void* user_data) { m_presenter->homeAxis(axis_letter); }, nullptr);
+					});
+				control->setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
+				control->setLabelCallback([this](char axis_letter, float position)
+										  { configureNumberpad(axis_letter, position); });
 				return control;
 			});
 
-		for (size_t i = 0; i < axis_letters_excluding_xyz.size(); ++i)
+		for (size_t i = 0; i < axis_data_excluding_xyz.size(); ++i)
 		{
+			const MovePresenter::AxisData& data = axis_data_excluding_xyz[i];
 			auto control = m_genericAxisControls.getItem(i);
-			control->setAxisLetter(axis_letters_excluding_xyz[i]);
+			control->setAxisLetter(data.letter);
+			control->setAxisPosition(data.position);
+			control->setAxisHomed(data.homed);
 		}
+
+		m_axisDataListPtr = &axis_data;
 	}
+
+	void MoveView::setPositionType(const MovePresenter::PositionType type) {}
 
 	void MoveView::setAxisPosition(char axis_letter, float position)
 	{
@@ -405,5 +439,26 @@ namespace UI
 	std::shared_ptr<AxisItem> MoveView::getAxisItem(size_t index)
 	{
 		return m_axisList.getAxisItems().getItem(index);
+	}
+
+	void MoveView::configureNumberpad(char axis_letter, float position)
+	{
+		openModal(&m_numberpad);
+		m_numberpad.setHeader(utils::format(_("move_set_position"), axis_letter));
+		m_numberpad.setValue(position);
+		if (m_axisDataListPtr)
+		{
+			for (auto& axis : *m_axisDataListPtr)
+			{
+				if (axis.letter == axis_letter)
+				{
+					m_numberpad.setMinValue(axis.min);
+					m_numberpad.setMaxValue(axis.max);
+					break;
+				}
+			}
+		}
+		m_numberpad.setConfirmCallback([this, axis_letter](float value)
+									   { m_presenter->moveAxisAbsolute(axis_letter, value, s_currentFeedRate); });
 	}
 } // namespace UI
