@@ -31,6 +31,14 @@
                 "MIMode": "gdb",
                 "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
             },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+            ],
+            "miDebuggerArgs": "-x '${workspaceFolder}/.vscode/gdb.conf'"
         },
         {
             "type": "lldb",
@@ -87,6 +95,11 @@
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
+                },
+                {
+                    "description": "Set scheduler-locking",
+                    "text": "set scheduler-locking on",
+                    "ignoreFailures": false
                 }
             ],
             "externalConsole": false,
@@ -113,6 +126,11 @@
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
+                },
+                {
+                    "description": "Set scheduler-locking",
+                    "text": "set scheduler-locking on",
+                    "ignoreFailures": false
                 }
             ],
             "externalConsole": false,
