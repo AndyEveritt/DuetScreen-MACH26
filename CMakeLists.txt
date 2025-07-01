@@ -31,6 +31,10 @@ endif()
 
 set(MAIN_SOURCES "")
 
+if (NOT DEFINED PROCESSOR)
+  message(FATAL_ERROR "PROCESSOR variable is not defined. Please set it to 'T113' or 'Simulation'.")
+endif()
+
 # ----------------------------------------------------------------------------
 # Libraries
 # ----------------------------------------------------------------------------

@@ -22,9 +22,15 @@ namespace UI
 
 	  private:
 		DropdownMenu m_toolSelect;
+
+		LvContainer m_controlsContainer;
 		Button m_retractBtn;
 		Button m_extrudeBtn;
 		TextBox m_distanceInput;
 		TextBox m_feedrateInput;
+
+		LvContainer m_filamentContainer;
+		LvLabel m_filamentLabel;
+		Button m_filamentLoadUnloadBtn;
 	};
 } // namespace UI
