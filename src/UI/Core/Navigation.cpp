@@ -311,6 +311,17 @@ namespace UI
 
 		LOG_DBG("Closing last modal");
 		LvObj* lastModal = s_openModals.back();
+		while (!lastModal->isVisible())
+		{
+			LOG_DBG("Last modal '{:s}' is not visible, removing from list", lastModal->getName());
+			s_openModals.pop_back();
+			if (s_openModals.empty())
+			{
+				LOG_DBG("No more modals to close");
+				return false;
+			}
+			lastModal = s_openModals.back();
+		}
 		LOG_INFO("Closing modal '{:s}'", lastModal->getName());
 		lastModal->hide();
 		s_openModals.pop_back();
