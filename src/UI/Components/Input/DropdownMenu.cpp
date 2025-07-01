@@ -39,10 +39,13 @@ namespace UI
 		m_dropdown.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_dropdown.setFlexGrow(1);
 		m_dropdown.clearOptions();
+
+		setLabel("");
 	}
 
 	void DropdownMenu::setLabel(const std::string& label)
 	{
+		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, label.empty());
 		m_label.setText(label);
 	}
 	void DropdownMenu::setText(const std::string& text)

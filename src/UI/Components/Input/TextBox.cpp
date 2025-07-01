@@ -7,6 +7,7 @@
 
 #include "TextBox.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -62,6 +63,8 @@ namespace UI
 				// lv_group_focus_obj(tb->m_textArea);
 			},
 			this);
+
+		m_textArea.addStyle(Themes::getLvglStyles().input);
 	}
 
 	void TextBox::setLabel(const std::string& label)
