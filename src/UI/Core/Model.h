@@ -111,7 +111,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(EndstopData)                                                                                                    \
 	XX(SpindleData)                                                                                                    \
 	XX(NetworkName)                                                                                                    \
-	XX(IpAddress)                                                                                                      \
+	XX(IpAddress, std::string)                                                                                         \
 	XX(Status, OM::PrinterStatus)                                                                                      \
 	XX(CurrentTool)                                                                                                    \
 	XX(MessageBoxData, OM::Alert)                                                                                      \

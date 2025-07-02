@@ -18,8 +18,7 @@ bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data,
 
 bool StateSubscribers::networkActualIP(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	Comm::DUET.SetIPAddress(data);
-	Model::get().post<EventType::IpAddress>();
+	Model::get().post<EventType::IpAddress>(std::string(data));
 	return true;
 }
 
