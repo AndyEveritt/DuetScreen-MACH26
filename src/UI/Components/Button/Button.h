@@ -9,6 +9,7 @@ namespace UI
 	class Button : public LvObj
 	{
 	  public:
+		Button(const std::string& name, lv_obj_t* parent);
 		Button(const std::string& name, lv_obj_t* parent, const std::string& text);
 		Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout);
 

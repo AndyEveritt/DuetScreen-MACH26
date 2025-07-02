@@ -190,6 +190,31 @@ namespace UI
 			setItemCount(count, std::function<TPtr(size_t, lv_obj_t*)>(std::forward<F>(constructor)));
 		}
 
+		template <typename Class, typename... Args>
+		void setItemCount(size_t count,
+						  Class* instance,
+						  TPtr (Class::*constructor)(const size_t index, lv_obj_t* parent, Args...),
+						  Args&&... args)
+		{
+			UI_LOCK();
+			const size_t currentCount = getItemCount();
+			if (count == currentCount)
+			{
+				return;
+			}
+
+			if (count < currentCount)
+			{
+				m_list.resize(count);
+			}
+
+			m_list.reserve(count);
+			for (size_t i = currentCount; i < count; i++)
+			{
+				m_list.emplace_back((instance->*constructor)(i, m_listCont, std::forward<Args>(args)...));
+			}
+		}
+
 		template <typename... Args,
 				  typename = std::enable_if_t<sizeof...(Args) != 1 ||
 											  !std::is_invocable_r_v<TPtr, std::decay_t<Args>..., size_t, lv_obj_t*>>>

@@ -33,7 +33,7 @@ namespace UI
 		m_controlsContainer.setWidth(LV_PCT(100));
 		m_controlsContainer.setFlexGrow(1);
 
-		m_toolSelect.setLabel(_("tool_select"));
+		m_toolSelect.setTitle(_("current_tool"));
 
 		m_filamentContainer.setFlexFlow(LV_FLEX_FLOW_ROW);
 
@@ -53,6 +53,10 @@ namespace UI
 		m_distanceInput.setLabel(_("distance_input"));
 		m_feedrateInput.setLabel(_("feedrate_input"));
 
+		m_toolSelect.setItemCount(1, this, &ExtruderControl::createToolButton);
+		m_toolSelect.setListFlow(LV_FLEX_FLOW_ROW);
+		m_toolSelect.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
+
 		m_toolSelect.addStyle(Themes::getLvglStyles().no_border);
 		m_filamentContainer.addStyle(Themes::getLvglStyles().no_border);
 		m_filamentContainer.addStyle(Themes::getLvglStyles().pad_zero);
@@ -60,5 +64,16 @@ namespace UI
 		m_controlsContainer.addStyle(Themes::getLvglStyles().no_border);
 		m_retractBtn.addStyle(Themes::getLvglStyles().actionBtn);
 		m_extrudeBtn.addStyle(Themes::getLvglStyles().actionBtn);
+		m_filamentLoadUnloadBtn.addStyle(Themes::getLvglStyles().actionBtn);
+		m_filamentSelect.getDropdownMenu().addStyle(Themes::getLvglStyles().actionBtn);
+	}
+
+	std::shared_ptr<Button> ExtruderControl::createToolButton(size_t index, lv_obj_t* parent)
+	{
+		auto btn = std::make_shared<Button>(fmt::format("{}_tool{}", getName(), index), parent);
+		btn->setFlexGrow(1);
+		btn->setText(fmt::format("tool {}", index));
+		btn->setHeight(LV_SIZE_CONTENT);
+		return btn;
 	}
 } // namespace UI

@@ -12,6 +12,7 @@
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
+#include "UI/Components/List/List.h"
 
 namespace UI
 {
@@ -21,7 +22,9 @@ namespace UI
 		ExtruderControl(const std::string& name, lv_obj_t* parent);
 
 	  private:
-		DropdownMenu m_toolSelect;
+		std::shared_ptr<Button> createToolButton(size_t index, lv_obj_t* parent);
+
+		List<Button> m_toolSelect;
 
 		LvContainer m_filamentContainer;
 		DropdownMenu m_filamentSelect;

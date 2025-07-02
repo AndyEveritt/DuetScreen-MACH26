@@ -7,6 +7,7 @@
 
 #include "DropdownMenu.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -39,6 +40,8 @@ namespace UI
 		m_dropdown.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_dropdown.setFlexGrow(1);
 		m_dropdown.clearOptions();
+
+		m_dropdown.addStyle(Themes::getLvglStyles().input);
 
 		setLabel("");
 	}

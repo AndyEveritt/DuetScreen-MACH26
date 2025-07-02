@@ -3,6 +3,14 @@
 
 namespace UI
 {
+	Button::Button(const std::string& name, lv_obj_t* parent)
+		: LvObj(lv_button_create, name, parent)
+		, m_label(name + "_label", getCont())
+		, m_icon(nullptr)
+	{
+		init("");
+	}
+
 	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text)
 		: LvObj(lv_button_create, name, parent)
 		, m_label(name + "_label", getCont())
