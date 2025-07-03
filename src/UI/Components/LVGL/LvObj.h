@@ -131,8 +131,8 @@ namespace UI
 		void setX(lv_coord_t x);
 		void setY(lv_coord_t y);
 		void setPos(lv_coord_t x, lv_coord_t y);
-		void setFlag(lv_obj_flag_t flag, bool enable);
-		void setState(lv_state_t state, bool enable);
+		void setFlag(lv_obj_flag_t flag, bool enable, bool recursive = false);
+		void setState(lv_state_t state, bool enable, bool recursive = false);
 		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
 
 		void scrollToX(lv_coord_t x, lv_anim_enable_t anim = LV_ANIM_OFF);

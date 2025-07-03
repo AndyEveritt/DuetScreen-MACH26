@@ -206,10 +206,27 @@ namespace UI
 		lv_obj_set_pos(getRoot(), x, y);
 	}
 
-	void LvObj::setFlag(lv_obj_flag_t flag, bool enable)
+	static void lv_obj_set_flag(lv_obj_t* obj, lv_obj_flag_t flag, bool enable, bool recursive)
+	{
+		lv_obj_set_flag(obj, flag, enable);
+		if (recursive)
+		{
+			for (size_t i = 0; i < lv_obj_get_child_count(obj); i++)
+			{
+				lv_obj_t* child = lv_obj_get_child(obj, i);
+				if (child == nullptr)
+				{
+					continue;
+				}
+				lv_obj_set_flag(child, flag, enable, true);
+			}
+		}
+	}
+
+	void LvObj::setFlag(lv_obj_flag_t flag, bool enable, bool recursive)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(getRoot(), flag, enable);
+		lv_obj_set_flag(getRoot(), flag, enable, recursive);
 	}
 
 	bool LvObj::hasFlag(lv_obj_flag_t flag) const
@@ -218,10 +235,27 @@ namespace UI
 		return lv_obj_has_flag(getRoot(), flag);
 	}
 
-	void LvObj::setState(lv_state_t state, bool enable)
+	static void lv_obj_set_state(lv_obj_t* obj, lv_state_t state, bool enable, bool recursive)
+	{
+		lv_obj_set_state(obj, state, enable);
+		if (recursive)
+		{
+			for (size_t i = 0; i < lv_obj_get_child_count(obj); i++)
+			{
+				lv_obj_t* child = lv_obj_get_child(obj, i);
+				if (child == nullptr)
+				{
+					continue;
+				}
+				lv_obj_set_state(child, state, enable, true);
+			}
+		}
+	}
+
+	void LvObj::setState(lv_state_t state, bool enable, bool recursive)
 	{
 		UI_LOCK();
-		lv_obj_set_state(getRoot(), state, enable);
+		lv_obj_set_state(getRoot(), state, enable, recursive);
 	}
 
 	bool LvObj::hasState(lv_state_t state) const

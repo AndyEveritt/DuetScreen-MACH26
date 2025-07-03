@@ -439,6 +439,21 @@ namespace UI
 		}
 	}
 
+	void MoveView::setToolCount(const size_t count)
+	{
+		m_extruderControl.setToolCount(count);
+	}
+
+	void MoveView::setToolName(const size_t index, const std::string& name)
+	{
+		m_extruderControl.setToolName(index, name);
+	}
+
+	void MoveView::setCurrentTool(const int32_t index)
+	{
+		m_extruderControl.setCurrentTool(index);
+	}
+
 	void MoveView::setAxisCount(const size_t count)
 	{
 		List<AxisItem>& list = m_axisList.getAxisItems();

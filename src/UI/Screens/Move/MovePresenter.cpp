@@ -3,6 +3,8 @@
 #include "Hardware/Duet.h"
 #include "MoveView.h"
 #include "ObjectModel/Axis.h"
+#include "ObjectModel/Tool.h"
+#include "lv_i18n/lv_i18n.h"
 
 namespace UI
 {
@@ -11,7 +13,14 @@ namespace UI
 		MODEL_LOCK();
 
 		registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
+		registerEventListener<EventType::ToolData>(this, &MovePresenter::newToolData);
 		registerEventListener<EventType::Disconnected>(this, &MovePresenter::disconnected);
+	}
+
+	void MovePresenter::onActivate()
+	{
+		newAxesData();
+		newToolData();
 	}
 
 	void MovePresenter::homeAll()
@@ -162,6 +171,31 @@ namespace UI
 			item->disableHome(OM::Move::GetKinematics().IsDelta());
 		}
 #endif
+	}
+
+	void MovePresenter::newToolData()
+	{
+		m_view->setToolCount(OM::GetToolCount());
+		auto currentTool = OM::GetCurrentTool();
+		if (!currentTool)
+		{
+			m_view->setCurrentTool(-1);
+		}
+		for (size_t i = 0; i < OM::GetToolCount(); i++)
+		{
+			auto tool = OM::GetToolBySlot(i);
+			if (!tool)
+			{
+				LOG_WARN("Tool {:d} not found", i);
+				continue;
+			}
+			m_view->setToolName(
+				i, tool->name.IsEmpty() ? fmt::format("{} {}", _("default_tool_name"), i) : tool->name.c_str());
+			if (currentTool && currentTool == tool)
+			{
+				m_view->setCurrentTool(i);
+			}
+		}
 	}
 
 	void MovePresenter::disconnected()

@@ -83,7 +83,6 @@ namespace UI
 
 		m_toolSelect.addStyle(Themes::getLvglStyles().no_border);
 		m_filamentContainer.addStyle(Themes::getLvglStyles().no_border);
-		m_filamentContainer.addStyle(Themes::getLvglStyles().pad_zero);
 		m_filamentSelect.addStyle(Themes::getLvglStyles().no_border);
 		m_controlsContainer.addStyle(Themes::getLvglStyles().no_border);
 		m_retractBtn.addStyle(Themes::getLvglStyles().actionBtn);
@@ -92,8 +91,6 @@ namespace UI
 		m_filamentSelect.getDropdownMenu().addStyle(Themes::getLvglStyles().actionBtn);
 		m_distanceInput.addStyle(Themes::getLvglStyles().no_border);
 		m_feedrateInput.addStyle(Themes::getLvglStyles().no_border);
-
-		setToolCount(3);
 	}
 
 	void ExtruderControl::setToolCallback(tool_select_cb_t cb)
@@ -115,7 +112,26 @@ namespace UI
 		m_toolSelect.setItemCount(count, this, &ExtruderControl::createToolButton);
 	}
 
-	void ExtruderControl::setCurrentTool(const size_t index)
+	void ExtruderControl::setToolName(const size_t index, const std::string& name)
+	{
+		UI_LOCK();
+		if (index >= m_toolSelect.getItemCount())
+		{
+			LOG_WARN("Index {} out of bounds for tool names in {}", index, getName());
+			return;
+		}
+
+		LOG_DBG("Setting tool name at index {} to '{}' for {}", index, name, getName());
+		auto btn = m_toolSelect.getItem(index);
+		if (!btn)
+		{
+			LOG_ERROR("Failed to get tool button at index {} in {}", index, getName());
+			return;
+		}
+		btn->setText(name);
+	}
+
+	void ExtruderControl::setCurrentTool(const int32_t index)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting current tool to {} for {}", index, getName());
@@ -127,8 +143,11 @@ namespace UI
 				continue;
 			}
 
-			btn->setChecked(index == i);
+			btn->setChecked(static_cast<int32_t>(index) == i);
 		}
+		m_filamentContainer.setState(LV_STATE_DISABLED, index < 0, true);
+		m_retractBtn.setState(LV_STATE_DISABLED, index < 0, true);
+		m_extrudeBtn.setState(LV_STATE_DISABLED, index < 0, true);
 	}
 
 	void ExtruderControl::setFilamentOptions(const std::vector<std::string>& options)
@@ -402,7 +421,6 @@ namespace UI
 	{
 		LOG_DBG("Creating tool button {} for {}", index, getName());
 		auto btn = createBaseListButton("tool", index, parent);
-		btn->setText(fmt::format("tool {}", index));
 		btn->addClickedCallback(onToolSelectEvent, this);
 		return btn;
 	}

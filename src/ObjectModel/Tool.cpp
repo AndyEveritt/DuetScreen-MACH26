@@ -21,7 +21,7 @@ static ToolList s_tools;
 
 namespace OM
 {
-	static int32_t s_currentTool = 0;
+	static int32_t s_currentTool = -1;
 
 	void ToolHeater::Reset()
 	{

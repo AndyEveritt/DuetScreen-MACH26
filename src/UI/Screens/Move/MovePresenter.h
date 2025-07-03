@@ -44,11 +44,11 @@ namespace UI
 
 		// Observers
 		void newAxesData();
+		void newToolData();
 		void disconnected();
 
 	  protected:
-		void onActivate() override { newAxesData(); }
-
+		virtual void onActivate() override;
 		virtual void onInit() override;
 
 	  private:

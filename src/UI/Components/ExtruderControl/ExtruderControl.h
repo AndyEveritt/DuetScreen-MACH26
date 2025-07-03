@@ -29,7 +29,8 @@ namespace UI
 
 		void setToolCallback(tool_select_cb_t cb);
 		void setToolCount(size_t count);
-		void setCurrentTool(size_t index);
+		void setToolName(size_t index, const std::string& name);
+		void setCurrentTool(int32_t index);
 
 		void setFilamentOptions(const std::vector<std::string>& options);
 		void setFilamentSelected(const std::string& filament);

@@ -26,6 +26,10 @@ namespace UI
 		void setAxisJogDisabled(char axis_letter, bool disabled);
 		void setAxisHomeDisabled(char axis_letter, bool disabled);
 
+		void setToolCount(const size_t count);
+		void setToolName(const size_t index, const std::string& name);
+		void setCurrentTool(const int32_t index);
+
 		void clear();
 
 	  private:
