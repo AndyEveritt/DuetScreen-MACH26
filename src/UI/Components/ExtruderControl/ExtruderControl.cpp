@@ -9,9 +9,14 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
+#include "utils/StorageHelper.h"
+#include <algorithm>
 
 namespace UI
 {
+	static const std::vector<float> s_defaultDistanceValues = {1.0f, 5.0f, 10.0f};
+	static const std::vector<float> s_defaultFeedrateValues = {1.0f, 5.0f, 20.0f};
+
 	ExtruderControl::ExtruderControl(const std::string& name, lv_obj_t* parent)
 		: LvContainer(name, parent)
 		, m_toolSelect(name + "_tool_select", getRoot())
@@ -50,8 +55,23 @@ namespace UI
 		m_controlsContainer.setGridCell(m_retractBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		m_controlsContainer.setGridCell(m_extrudeBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		m_distanceInput.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
-		m_feedrateInput.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
+		m_distanceInput.setTitle(_("extrude_feed_dist"));
+		m_feedrateInput.setTitle(_("extrude_feed_rate"));
+
+		m_distanceInput.setListFlow(LV_FLEX_FLOW_ROW);
+		m_distanceInput.setListGrow(1);
+
+		m_feedrateInput.setListFlow(LV_FLEX_FLOW_ROW);
+		m_feedrateInput.setListGrow(1);
+
+		m_distanceValues = StorageHelper::getData<std::vector<float>>(ID_EXTRUSION_DISTANCES, s_defaultDistanceValues);
+		m_feedrateValues = StorageHelper::getData<std::vector<float>>(ID_EXTRUSION_FEEDRATES, s_defaultFeedrateValues);
+		m_selectedDistanceIndex =
+			std::min(StorageHelper::getData<size_t>(ID_EXTRUSION_SELECTED_DISTANCE, 0), m_distanceValues.size() - 1);
+		m_selectedFeedrateIndex =
+			std::min(StorageHelper::getData<size_t>(ID_EXTRUSION_SELECTED_FEEDRATE, 0), m_feedrateValues.size() - 1);
+		m_distanceInput.setItemCount(m_distanceValues.size(), this, &ExtruderControl::createDistanceButton);
+		m_feedrateInput.setItemCount(m_feedrateValues.size(), this, &ExtruderControl::createFeedrateButton);
 
 		m_toolSelect.setListFlow(LV_FLEX_FLOW_ROW);
 		m_toolSelect.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -60,8 +80,6 @@ namespace UI
 		m_filamentUnloadBtn.addClickedCallback(onFilamentUnloadEvent, this);
 		m_retractBtn.addClickedCallback(onRetractEvent, this);
 		m_extrudeBtn.addClickedCallback(onExtrudeEvent, this);
-		m_distanceInput.addEventCallback(onDistanceEvent, LV_EVENT_CLICKED, this);
-		m_feedrateInput.addEventCallback(onFeedrateEvent, LV_EVENT_CLICKED, this);
 
 		m_toolSelect.addStyle(Themes::getLvglStyles().no_border);
 		m_filamentContainer.addStyle(Themes::getLvglStyles().no_border);
@@ -72,12 +90,10 @@ namespace UI
 		m_extrudeBtn.addStyle(Themes::getLvglStyles().actionBtn);
 		m_filamentUnloadBtn.addStyle(Themes::getLvglStyles().actionBtn);
 		m_filamentSelect.getDropdownMenu().addStyle(Themes::getLvglStyles().actionBtn);
-		m_distanceInput.addStyle(Themes::getLvglStyles().input);
-		m_feedrateInput.addStyle(Themes::getLvglStyles().input);
+		m_distanceInput.addStyle(Themes::getLvglStyles().no_border);
+		m_feedrateInput.addStyle(Themes::getLvglStyles().no_border);
 
 		setToolCount(3);
-		setDistanceValue(10.0f);
-		setFeedrateValue(5.0f);
 	}
 
 	void ExtruderControl::setToolCallback(tool_select_cb_t cb)
@@ -157,20 +173,74 @@ namespace UI
 		m_feedrateCb = std::move(cb);
 	}
 
-	void ExtruderControl::setDistanceValue(float value)
+	void ExtruderControl::setDistanceValue(size_t index, float value)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting distance value to {} for {}", value, getName());
-		m_distanceValue = value;
-		m_distanceInput.setText(fmt::format(fmt::runtime(_("extrude_distance_input")), value));
+		if (index < m_distanceValues.size())
+		{
+			m_distanceValues[index] = value;
+			StorageHelper::setData(ID_EXTRUSION_DISTANCES, m_distanceValues);
+			auto btn = m_distanceInput.getItem(index);
+			if (!btn)
+			{
+				LOG_ERROR("Failed to get distance button at index {} in {}", index, getName());
+				return;
+			}
+			btn->setText(fmt::format("{:g}", value));
+		}
+		else
+		{
+			LOG_WARN("Index {} out of bounds for distance values in {}", index, getName());
+			return;
+		}
 	}
 
-	void ExtruderControl::setFeedrateValue(float value)
+	void ExtruderControl::setFeedrateValue(size_t index, float value)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting feedrate value to {} for {}", value, getName());
-		m_feedrateValue = value;
-		m_feedrateInput.setText(fmt::format(fmt::runtime(_("extrude_feedrate_input")), value));
+		if (index < m_feedrateValues.size())
+		{
+			m_feedrateValues[index] = value;
+			StorageHelper::setData(ID_EXTRUSION_FEEDRATES, m_feedrateValues);
+			auto btn = m_feedrateInput.getItem(index);
+			if (!btn)
+			{
+				LOG_ERROR("Failed to get feedrate button at index {} in {}", index, getName());
+				return;
+			}
+			btn->setText(fmt::format("{:g}", value));
+		}
+		else
+		{
+			LOG_WARN("Index {} out of bounds for feedrate values in {}", index, getName());
+			return;
+		}
+	}
+
+	float ExtruderControl::getDistanceValue(size_t index) const
+	{
+		UI_LOCK();
+		if (index < m_distanceValues.size())
+		{
+			LOG_DBG("Getting distance value at index {}: {} for {}", index, m_distanceValues[index], getName());
+			return m_distanceValues[index];
+		}
+		LOG_WARN("Index {} out of bounds for distance values in {}", index, getName());
+		return 0.0f;
+	}
+
+	float ExtruderControl::getFeedrateValue(size_t index) const
+	{
+		UI_LOCK();
+		if (index < m_feedrateValues.size())
+		{
+			LOG_DBG("Getting feedrate value at index {}: {} for {}", index, m_feedrateValues[index], getName());
+			return m_feedrateValues[index];
+		}
+		LOG_WARN("Index {} out of bounds for feedrate values in {}", index, getName());
+		return 0.0f;
 	}
 
 	void ExtruderControl::onToolSelectEvent(lv_event_t* event)
@@ -224,10 +294,33 @@ namespace UI
 	{
 		UI_LOCK();
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-		if (control && control->m_distanceCb)
+
+		size_t index = static_cast<size_t>(
+			reinterpret_cast<uintptr_t>(lv_obj_get_user_data(static_cast<lv_obj_t*>(lv_event_get_target(event)))));
+
+		lv_event_code_t code = lv_event_get_code(event);
+
+		switch (code)
 		{
-			LOG_DBG("Calling distance callback with value {} in {}", control->getDistanceValue(), control->getName());
-			control->m_distanceCb(control->getDistanceValue());
+		case LV_EVENT_CLICKED:
+		{
+			control->m_distanceInput.getItem(control->m_selectedDistanceIndex)->setChecked(false);
+			control->m_selectedDistanceIndex = index;
+			control->m_distanceInput.getItem(index)->setChecked(true);
+			StorageHelper::setData(ID_EXTRUSION_SELECTED_DISTANCE, index);
+			break;
+		}
+		case LV_EVENT_LONG_PRESSED:
+		{
+			if (control && control->m_distanceCb)
+			{
+				LOG_DBG("Calling distance callback with value {} in {}",
+						control->getDistanceValue(index),
+						control->getName());
+				control->m_distanceCb(index, control->getDistanceValue(index));
+			}
+			break;
+		}
 		}
 	}
 
@@ -235,10 +328,33 @@ namespace UI
 	{
 		UI_LOCK();
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-		if (control && control->m_feedrateCb)
+
+		size_t index = static_cast<size_t>(
+			reinterpret_cast<uintptr_t>(lv_obj_get_user_data(static_cast<lv_obj_t*>(lv_event_get_target(event)))));
+
+		lv_event_code_t code = lv_event_get_code(event);
+
+		switch (code)
 		{
-			LOG_DBG("Calling feedrate callback with value {} in {}", control->getFeedrateValue(), control->getName());
-			control->m_feedrateCb(control->getFeedrateValue());
+		case LV_EVENT_CLICKED:
+		{
+			control->m_feedrateInput.getItem(control->m_selectedFeedrateIndex)->setChecked(false);
+			control->m_selectedFeedrateIndex = index;
+			control->m_feedrateInput.getItem(index)->setChecked(true);
+			StorageHelper::setData(ID_EXTRUSION_SELECTED_FEEDRATE, index);
+			break;
+		}
+		case LV_EVENT_LONG_PRESSED:
+		{
+			if (control && control->m_feedrateCb)
+			{
+				LOG_DBG("Calling feedrate callback with value {} in {}",
+						control->getFeedrateValue(index),
+						control->getName());
+				control->m_feedrateCb(index, control->getFeedrateValue(index));
+			}
+			break;
+		}
 		}
 	}
 
@@ -246,8 +362,8 @@ namespace UI
 	{
 		UI_LOCK();
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-		float dist = -control->getDistanceValue();
-		float rate = control->getFeedrateValue();
+		float dist = -control->getDistanceValue(control->m_selectedDistanceIndex);
+		float rate = control->getFeedrateValue(control->m_selectedFeedrateIndex);
 
 		LOG_DBG("Retracting {} at {} in {}", dist, rate, control->getName());
 		if (control && control->m_extrudeCb)
@@ -260,8 +376,8 @@ namespace UI
 	{
 		UI_LOCK();
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-		float dist = control->getDistanceValue();
-		float rate = control->getFeedrateValue();
+		float dist = control->getDistanceValue(control->m_selectedDistanceIndex);
+		float rate = control->getFeedrateValue(control->m_selectedFeedrateIndex);
 
 		LOG_DBG("Extruding {} at {} in {}", dist, rate, control->getName());
 		if (control && control->m_extrudeCb)
@@ -270,15 +386,62 @@ namespace UI
 		}
 	}
 
+	std::shared_ptr<Button> ExtruderControl::createBaseListButton(const std::string& name,
+																  size_t index,
+																  lv_obj_t* parent)
+	{
+		LOG_DBG("Creating base list button {} for {} {}", index, getName(), name);
+		auto btn = std::make_shared<Button>(fmt::format("{}_{}{}", getName(), name, index), parent);
+		btn->setFlexGrow(1);
+		btn->setHeight(LV_SIZE_CONTENT);
+		btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
+		return btn;
+	}
+
 	std::shared_ptr<Button> ExtruderControl::createToolButton(size_t index, lv_obj_t* parent)
 	{
 		LOG_DBG("Creating tool button {} for {}", index, getName());
-		auto btn = std::make_shared<Button>(fmt::format("{}_tool{}", getName(), index), parent);
-		btn->setFlexGrow(1);
+		auto btn = createBaseListButton("tool", index, parent);
 		btn->setText(fmt::format("tool {}", index));
-		btn->setHeight(LV_SIZE_CONTENT);
 		btn->addClickedCallback(onToolSelectEvent, this);
-		btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
+		return btn;
+	}
+
+	std::shared_ptr<Button> ExtruderControl::createDistanceButton(size_t index, lv_obj_t* parent)
+	{
+		LOG_DBG("Creating distance button {} for {}", index, getName());
+		auto btn = createBaseListButton("distance", index, parent);
+		btn->addEventCallback(onDistanceEvent, LV_EVENT_ALL, this);
+		btn->setHeight(LV_PCT(100));
+		btn->setChecked(index == m_selectedDistanceIndex);
+		if (index < m_distanceValues.size())
+		{
+			btn->setText(fmt::format("{:g}", m_distanceValues[index]));
+		}
+		else
+		{
+			LOG_WARN("Index {} out of bounds for distance values in {}", index, getName());
+			btn->setText(_("unknown"));
+		}
+		return btn;
+	}
+
+	std::shared_ptr<Button> ExtruderControl::createFeedrateButton(size_t index, lv_obj_t* parent)
+	{
+		LOG_DBG("Creating feedrate button {} for {}", index, getName());
+		auto btn = createBaseListButton("feedrate", index, parent);
+		btn->addEventCallback(onFeedrateEvent, LV_EVENT_ALL, this);
+		btn->setHeight(LV_PCT(100));
+		btn->setChecked(index == m_selectedFeedrateIndex);
+		if (index < m_feedrateValues.size())
+		{
+			btn->setText(fmt::format("{:g}", m_feedrateValues[index]));
+		}
+		else
+		{
+			LOG_WARN("Index {} out of bounds for feedrate values in {}", index, getName());
+			btn->setText(_("unknown"));
+		}
 		return btn;
 	}
 } // namespace UI

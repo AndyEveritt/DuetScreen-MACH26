@@ -111,26 +111,26 @@ namespace UI
 		m_extruderControl.setHeight(LV_PCT(100));
 		m_extruderControl.setFlexGrow(1);
 		m_extruderControl.setDistanceCallback(
-			[this](float distance)
+			[this](size_t index, float distance)
 			{
 				openModal(&m_numberpad);
 				m_numberpad.setHeader(_("extrude_distance_header"));
 				m_numberpad.setValue(distance);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(1000);
-				m_numberpad.setConfirmCallback([this](float distance)
-											   { m_extruderControl.setDistanceValue(distance); });
+				m_numberpad.setConfirmCallback([this, index](float distance)
+											   { m_extruderControl.setDistanceValue(index, distance); });
 			});
 		m_extruderControl.setFeedrateCallback(
-			[this](float feedrate)
+			[this](size_t index, float feedrate)
 			{
 				openModal(&m_numberpad);
 				m_numberpad.setHeader(_("extrude_feedrate_header"));
 				m_numberpad.setValue(feedrate);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(100); // mm/s
-				m_numberpad.setConfirmCallback([this](float feedrate)
-											   { m_extruderControl.setFeedrateValue(feedrate); });
+				m_numberpad.setConfirmCallback([this, index](float feedrate)
+											   { m_extruderControl.setFeedrateValue(index, feedrate); });
 			});
 
 		m_homeAll.addClickedCallback(onHomeAllEvent, this);

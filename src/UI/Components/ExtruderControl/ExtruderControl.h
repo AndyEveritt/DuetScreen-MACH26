@@ -21,8 +21,8 @@ namespace UI
 		using tool_select_cb_t = std::function<void(size_t index)>;
 		using filament_cb_t = std::function<void(const std::string& filament)>;
 		using extrude_cb_t = std::function<void(int32_t distance, uint32_t feedrate)>;
-		using distance_cb_t = std::function<void(float distance)>;
-		using feedrate_cb_t = std::function<void(float feedrate)>;
+		using distance_cb_t = std::function<void(size_t index, float distance)>;
+		using feedrate_cb_t = std::function<void(size_t index, float feedrate)>;
 
 	  public:
 		ExtruderControl(const std::string& name, lv_obj_t* parent);
@@ -39,11 +39,11 @@ namespace UI
 		void setDistanceCallback(distance_cb_t cb);
 		void setFeedrateCallback(feedrate_cb_t cb);
 
-		void setDistanceValue(float value);
-		void setFeedrateValue(float value);
+		void setDistanceValue(size_t index, float value);
+		void setFeedrateValue(size_t index, float value);
 
-		float getDistanceValue() const { return m_distanceValue; }
-		float getFeedrateValue() const { return m_feedrateValue; }
+		float getDistanceValue(size_t index) const;
+		float getFeedrateValue(size_t index) const;
 
 	  private:
 		static void onToolSelectEvent(lv_event_t* event);
@@ -54,7 +54,10 @@ namespace UI
 		static void onRetractEvent(lv_event_t* event);
 		static void onExtrudeEvent(lv_event_t* event);
 
+		std::shared_ptr<Button> createBaseListButton(const std::string& name, size_t index, lv_obj_t* parent);
 		std::shared_ptr<Button> createToolButton(size_t index, lv_obj_t* parent);
+		std::shared_ptr<Button> createDistanceButton(size_t index, lv_obj_t* parent);
+		std::shared_ptr<Button> createFeedrateButton(size_t index, lv_obj_t* parent);
 
 		List<Button> m_toolSelect;
 
@@ -65,11 +68,13 @@ namespace UI
 		LvContainer m_controlsContainer;
 		Button m_retractBtn;
 		Button m_extrudeBtn;
-		LvLabel m_distanceInput;
-		LvLabel m_feedrateInput;
+		List<Button> m_distanceInput;
+		List<Button> m_feedrateInput;
 
-		float m_distanceValue = 0.0f;
-		float m_feedrateValue = 0.0f;
+		std::vector<float> m_distanceValues;
+		std::vector<float> m_feedrateValues;
+		size_t m_selectedDistanceIndex;
+		size_t m_selectedFeedrateIndex;
 
 		tool_select_cb_t m_toolSelectCb; // Callback for when a tool is selected
 		filament_cb_t m_filamentCb;		 // Callback for when a filament selection changes

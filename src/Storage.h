@@ -43,11 +43,11 @@ constexpr const char* ID_LOG_FILE = "debug:file";
 constexpr const char* ID_ENABLE_UI_LOGGING = "debug:ui_logging";
 
 constexpr const char* ID_BABYSTEP_AMOUNT = "baby_step_amount";
-constexpr const char* ID_MOVE_FEEDRATE = "move:feedrate_%d";
+constexpr const char* ID_MOVE_FEEDRATES = "move:feedrates";
 constexpr const char* ID_MOVE_SELECTED_FEEDRATE = "move:selected_feedrate";
-constexpr const char* ID_EXTRUSION_DISTANCE = "extrusion:distance_%d";
+constexpr const char* ID_EXTRUSION_DISTANCES = "extrusion:distances";
 constexpr const char* ID_EXTRUSION_SELECTED_DISTANCE = "extrusion:selected_distance";
-constexpr const char* ID_EXTRUSION_FEEDRATE = "extrusion:feedrate_%d";
+constexpr const char* ID_EXTRUSION_FEEDRATES = "extrusion:feedrates";
 constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "extrusion:selected_feedrate";
 
 constexpr const char* ID_FILE_SORT_BY = "file:sort_by";
