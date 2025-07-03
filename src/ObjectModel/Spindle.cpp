@@ -56,22 +56,22 @@ namespace OM
 	}
 
 #define SPINDLE_SETTER(funcName, valType, varName)                                                                     \
-  bool funcName(size_t index, valType val)                                                                             \
-  {                                                                                                                    \
-	if (index >= MAX_SLOTS)                                                                                            \
+	bool funcName(size_t index, valType val)                                                                           \
 	{                                                                                                                  \
-	  LOG_ERROR("spindle[{:d}] greater than MAX_SLOTS", index);                                                        \
-	  return false;                                                                                                    \
-	}                                                                                                                  \
-	std::shared_ptr<Spindle> spindle = GetOrCreateSpindle(index);                                                      \
-	if (spindle == nullptr)                                                                                            \
-	{                                                                                                                  \
-	  LOG_ERROR("Could not get or create spindle {:d}", index);                                                        \
-	  return false;                                                                                                    \
-	}                                                                                                                  \
-	spindle->varName = val;                                                                                            \
-	return true;                                                                                                       \
-  }
+		if (index >= MAX_SLOTS)                                                                                        \
+		{                                                                                                              \
+			LOG_ERROR("spindle[{:d}] greater than MAX_SLOTS", index);                                                  \
+			return false;                                                                                              \
+		}                                                                                                              \
+		std::shared_ptr<Spindle> spindle = GetOrCreateSpindle(index);                                                  \
+		if (spindle == nullptr)                                                                                        \
+		{                                                                                                              \
+			LOG_ERROR("Could not get or create spindle {:d}", index);                                                  \
+			return false;                                                                                              \
+		}                                                                                                              \
+		spindle->varName = val;                                                                                        \
+		return true;                                                                                                   \
+	}
 
 	bool SetSpindleState(size_t index, const char* statusStr)
 	{

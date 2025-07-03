@@ -167,22 +167,22 @@ namespace OM::Move
 	}
 
 #define AXIS_SETTER(funcName, valType, varName)                                                                        \
-  bool funcName(size_t index, valType val)                                                                             \
-  {                                                                                                                    \
-	if (index >= MAX_TOTAL_AXES)                                                                                       \
+	bool funcName(size_t index, valType val)                                                                           \
 	{                                                                                                                  \
-	  LOG_ERROR("axis[{:d}] greater than MAX_TOTAL_AXES", index);                                                      \
-	  return false;                                                                                                    \
-	}                                                                                                                  \
-	AxisPtr axis = GetOrCreateAxis(index);                                                                             \
-	if (axis == nullptr)                                                                                               \
-	{                                                                                                                  \
-	  LOG_ERROR("Could not get or create axis {:d}", index);                                                           \
-	  return false;                                                                                                    \
-	}                                                                                                                  \
-	axis->varName = val;                                                                                               \
-	return true;                                                                                                       \
-  }
+		if (index >= MAX_TOTAL_AXES)                                                                                   \
+		{                                                                                                              \
+			LOG_ERROR("axis[{:d}] greater than MAX_TOTAL_AXES", index);                                                \
+			return false;                                                                                              \
+		}                                                                                                              \
+		AxisPtr axis = GetOrCreateAxis(index);                                                                         \
+		if (axis == nullptr)                                                                                           \
+		{                                                                                                              \
+			LOG_ERROR("Could not get or create axis {:d}", index);                                                     \
+			return false;                                                                                              \
+		}                                                                                                              \
+		axis->varName = val;                                                                                           \
+		return true;                                                                                                   \
+	}
 
 	AXIS_SETTER(SetAcceleration, uint32_t, acceleration);
 	AXIS_SETTER(SetBabystepOffset, float, babystep);
@@ -299,17 +299,17 @@ namespace OM::Move
 	}
 
 #define EXTRUDER_AXIS_SETTER(funcName, valType, varName)                                                               \
-  bool funcName(size_t index, valType val)                                                                             \
-  {                                                                                                                    \
-	ExtruderAxisPtr extruder = GetOrCreateExtruderAxis(index);                                                         \
-	if (extruder == nullptr)                                                                                           \
+	bool funcName(size_t index, valType val)                                                                           \
 	{                                                                                                                  \
-	  LOG_ERROR("Could not get or create extruderAxis {:d}", index);                                                   \
-	  return false;                                                                                                    \
-	}                                                                                                                  \
-	extruder->varName = val;                                                                                           \
-	return true;                                                                                                       \
-  }
+		ExtruderAxisPtr extruder = GetOrCreateExtruderAxis(index);                                                     \
+		if (extruder == nullptr)                                                                                       \
+		{                                                                                                              \
+			LOG_ERROR("Could not get or create extruderAxis {:d}", index);                                             \
+			return false;                                                                                              \
+		}                                                                                                              \
+		extruder->varName = val;                                                                                       \
+		return true;                                                                                                   \
+	}
 
 	EXTRUDER_AXIS_SETTER(SetExtruderPosition, float, position);
 	EXTRUDER_AXIS_SETTER(SetExtruderFactor, float, factor);

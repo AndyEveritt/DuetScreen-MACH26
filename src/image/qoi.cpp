@@ -6,15 +6,15 @@
 #define QOI_DEBUG 0
 #if QOI_DEBUG
 #  define qoi_dbg(fmt, args...)                                                                                        \
-	do                                                                                                                 \
-	{                                                                                                                  \
-	  printf("%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                                          \
-	} while (0)
+	  do                                                                                                               \
+	  {                                                                                                                \
+		  printf("%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                                      \
+	  } while (0)
 #else
 #  define qoi_dbg(fmt, args...)                                                                                        \
-	do                                                                                                                 \
-	{                                                                                                                  \
-	} while (0)
+	  do                                                                                                               \
+	  {                                                                                                                \
+	  } while (0)
 #endif
 
 #ifndef QOI_MALLOC
@@ -36,7 +36,7 @@
 
 #define QOI_COLOR_HASH(C) (C.rgba.r * 3 + C.rgba.g * 5 + C.rgba.b * 7 + C.rgba.a * 11)
 #define QOI_MAGIC                                                                                                      \
-  (((unsigned int)'q') << 24 | ((unsigned int)'o') << 16 | ((unsigned int)'i') << 8 | ((unsigned int)'f'))
+	(((unsigned int)'q') << 24 | ((unsigned int)'o') << 16 | ((unsigned int)'i') << 8 | ((unsigned int)'f'))
 #define QOI_HEADER_SIZE 14
 
 /* 2GB is the max file size that this implementation can safely handle. We guard

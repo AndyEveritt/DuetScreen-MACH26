@@ -43,8 +43,8 @@ using std::vector;
 #endif
 
 #define LOG_CONSOLE_PATTERN                                                                                            \
-  "%^" LOG_TIMESTAMP_FMT "[%l] [%t] " LOG_FORMAT_UNDERLINE_START LOG_FORMAT_ITALIC_START "%@" LOG_FORMAT_UNDERLINE_END \
-  " %!()" LOG_FORMAT_ITALIC_END " %v%$"
+	"%^" LOG_TIMESTAMP_FMT "[%l] [%t] " LOG_FORMAT_UNDERLINE_START LOG_FORMAT_ITALIC_START                             \
+	"%@" LOG_FORMAT_UNDERLINE_END " %!()" LOG_FORMAT_ITALIC_END " %v%$"
 
 #define LOG_FILE_PATTERN LOG_TIMESTAMP_FMT "[%l] [%t] %@ %!() %v"
 

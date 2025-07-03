@@ -15,7 +15,7 @@
 namespace UI
 {
 #define LV_KEYBOARD_CTRL_BUTTON_FLAGS                                                                                  \
-  (LV_BUTTONMATRIX_CTRL_NO_REPEAT | LV_BUTTONMATRIX_CTRL_CLICK_TRIG | LV_BUTTONMATRIX_CTRL_CHECKED)
+	(LV_BUTTONMATRIX_CTRL_NO_REPEAT | LV_BUTTONMATRIX_CTRL_CLICK_TRIG | LV_BUTTONMATRIX_CTRL_CHECKED)
 
 	// clang-format off
 	static const char* btnm_map[] = {
