@@ -33,7 +33,7 @@ namespace UI
 	void LvLabel::setText(const std::string& text)
 	{
 		UI_LOCK();
-		lv_label_set_text(getCont(), text.c_str());
+		lv_label_set_text(getRoot(), text.c_str());
 	}
 
 	void LvLabel::setTextF(const char* fmt, ...)
@@ -41,99 +41,99 @@ namespace UI
 		UI_LOCK();
 		va_list args;
 		va_start(args, fmt);
-		lv_label_set_text_fmt(getCont(), fmt, args);
+		lv_label_set_text_fmt(getRoot(), fmt, args);
 		va_end(args);
 	}
 
 	void LvLabel::setTextStatic(const char* text)
 	{
 		UI_LOCK();
-		lv_label_set_text_static(getCont(), text);
+		lv_label_set_text_static(getRoot(), text);
 	}
 
 	void LvLabel::setLongMode(lv_label_long_mode_t mode)
 	{
 		UI_LOCK();
-		lv_label_set_long_mode(getCont(), mode);
+		lv_label_set_long_mode(getRoot(), mode);
 	}
 
 	void LvLabel::setTextSelectionStart(uint32_t index)
 	{
 		UI_LOCK();
-		lv_label_set_text_selection_start(getCont(), index);
+		lv_label_set_text_selection_start(getRoot(), index);
 	}
 
 	void LvLabel::setTextSelectionEnd(uint32_t index)
 	{
 		UI_LOCK();
-		lv_label_set_text_selection_end(getCont(), index);
+		lv_label_set_text_selection_end(getRoot(), index);
 	}
 
 	void LvLabel::setRecolor(bool enable)
 	{
 		UI_LOCK();
-		lv_label_set_recolor(getCont(), enable);
+		lv_label_set_recolor(getRoot(), enable);
 	}
 
 	std::string LvLabel::getText() const
 	{
 		UI_LOCK();
-		return lv_label_get_text(getCont());
+		return lv_label_get_text(getRoot());
 	}
 
 	lv_label_long_mode_t LvLabel::getLongMode() const
 	{
 		UI_LOCK();
-		return lv_label_get_long_mode(getCont());
+		return lv_label_get_long_mode(getRoot());
 	}
 
 	void LvLabel::getLetterPos(uint32_t char_id, lv_point_t* pos) const
 	{
 		UI_LOCK();
-		lv_label_get_letter_pos(getCont(), char_id, pos);
+		lv_label_get_letter_pos(getRoot(), char_id, pos);
 	}
 
 	uint32_t LvLabel::getLetterOn(lv_point_t* pos_in, bool bidi) const
 	{
 		UI_LOCK();
-		return lv_label_get_letter_on(getCont(), pos_in, bidi);
+		return lv_label_get_letter_on(getRoot(), pos_in, bidi);
 	}
 
 	bool LvLabel::isCharUnderPos(lv_point_t* pos) const
 	{
 		UI_LOCK();
-		return lv_label_is_char_under_pos(getCont(), pos);
+		return lv_label_is_char_under_pos(getRoot(), pos);
 	}
 
 	uint32_t LvLabel::getTextSelectionStart() const
 	{
 		UI_LOCK();
 
-		return lv_label_get_text_selection_start(getCont());
+		return lv_label_get_text_selection_start(getRoot());
 	}
 
 	uint32_t LvLabel::getTextSelectionEnd() const
 	{
 		UI_LOCK();
-		return lv_label_get_text_selection_end(getCont());
+		return lv_label_get_text_selection_end(getRoot());
 	}
 
 	bool LvLabel::isRecolorEnabled() const
 	{
 		UI_LOCK();
-		return lv_label_get_recolor(getCont());
+		return lv_label_get_recolor(getRoot());
 	}
 
 	void LvLabel::insertText(uint32_t pos, const std::string& text)
 	{
 		UI_LOCK();
-		lv_label_ins_text(getCont(), pos, text.c_str());
+		lv_label_ins_text(getRoot(), pos, text.c_str());
 	}
 
 	void LvLabel::cutText(uint32_t pos, uint32_t len)
 	{
 		UI_LOCK();
-		lv_label_cut_text(getCont(), pos, len);
+		lv_label_cut_text(getRoot(), pos, len);
 	}
 
 } // namespace UI

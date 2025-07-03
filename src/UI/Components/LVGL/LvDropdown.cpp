@@ -18,19 +18,19 @@ namespace UI
 	void LvDropdown::setText(const std::string& text)
 	{
 		UI_LOCK();
-		lv_dropdown_set_text(getCont(), text.c_str());
+		lv_dropdown_set_text(getRoot(), text.c_str());
 	}
 
 	const char* LvDropdown::getText() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_text(getCont());
+		return lv_dropdown_get_text(getRoot());
 	}
 
 	void LvDropdown::setOptions(const std::string& options)
 	{
 		UI_LOCK();
-		lv_dropdown_set_options(getCont(), options.c_str());
+		lv_dropdown_set_options(getRoot(), options.c_str());
 	}
 
 	void LvDropdown::setOptions(const std::vector<std::string>& options)
@@ -45,109 +45,124 @@ namespace UI
 				opt += "\n";
 			}
 		}
-		lv_dropdown_set_options(getCont(), opt.c_str());
+		lv_dropdown_set_options(getRoot(), opt.c_str());
 	}
 
 	void LvDropdown::addOption(const std::string& option, uint32_t pos)
 	{
 		UI_LOCK();
-		lv_dropdown_add_option(getCont(), option.c_str(), pos);
+		lv_dropdown_add_option(getRoot(), option.c_str(), pos);
 	}
 
 	void LvDropdown::clearOptions()
 	{
 		UI_LOCK();
-		lv_dropdown_clear_options(getCont());
+		lv_dropdown_clear_options(getRoot());
 	}
 
 	void LvDropdown::setSelected(uint32_t selected)
 	{
 		UI_LOCK();
-		lv_dropdown_set_selected(getCont(), selected);
+		lv_dropdown_set_selected(getRoot(), selected);
+	}
+
+	bool LvDropdown::setSelected(const std::string& option)
+	{
+		UI_LOCK();
+		int32_t index = getOptionIndex(option);
+		if (index < 0)
+		{
+			LOG_WARN("Failed to find option '{}' in dropdown", option);
+			setSelectedHighlight(false);
+			return false;
+		}
+		setSelected(index);
+		setSelectedHighlight(true);
+		return true;
 	}
 
 	void LvDropdown::setDir(lv_dir_t dir)
 	{
 		UI_LOCK();
-		lv_dropdown_set_dir(getCont(), dir);
+		lv_dropdown_set_dir(getRoot(), dir);
 	}
 
 	void LvDropdown::setSymbol(const void* symbol)
 	{
 		UI_LOCK();
-		lv_dropdown_set_symbol(getCont(), symbol);
+		lv_dropdown_set_symbol(getRoot(), symbol);
 	}
 
 	void LvDropdown::setSelectedHighlight(bool en)
 	{
 		UI_LOCK();
-		lv_dropdown_set_selected_highlight(getCont(), en);
+		lv_dropdown_set_selected_highlight(getRoot(), en);
 	}
 
 	const char* LvDropdown::getOptions() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_options(getCont());
+		return lv_dropdown_get_options(getRoot());
 	}
 	uint32_t LvDropdown::getSelected() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_selected(getCont());
+		return lv_dropdown_get_selected(getRoot());
 	}
 
 	uint32_t LvDropdown::getOptionCount() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_option_count(getCont());
+		return lv_dropdown_get_option_count(getRoot());
 	}
 
 	std::string LvDropdown::getSelectedString() const
 	{
 		UI_LOCK();
 		char buf[64];
-		lv_dropdown_get_selected_str(getCont(), buf, sizeof(buf));
+		lv_dropdown_get_selected_str(getRoot(), buf, sizeof(buf));
 		return std::string(buf);
 	}
 
 	int32_t LvDropdown::getOptionIndex(const std::string& option) const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_option_index(getCont(), option.c_str());
+		return lv_dropdown_get_option_index(getRoot(), option.c_str());
 	}
 
 	const char* LvDropdown::getSymbol() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_symbol(getCont());
+		return lv_dropdown_get_symbol(getRoot());
 	}
 
 	bool LvDropdown::getSelectedHighlight() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_selected_highlight(getCont());
+		return lv_dropdown_get_selected_highlight(getRoot());
 	}
 
 	lv_dir_t LvDropdown::getDir() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_dir(getCont());
+		return lv_dropdown_get_dir(getRoot());
 	}
 
 	void LvDropdown::open()
 	{
 		UI_LOCK();
-		lv_dropdown_open(getCont());
+		lv_dropdown_open(getRoot());
 	}
 
 	void LvDropdown::close()
 	{
 		UI_LOCK();
-		lv_dropdown_close(getCont());
+		lv_dropdown_close(getRoot());
 	}
 
 	bool LvDropdown::isOpen() const
 	{
 		UI_LOCK();
-		return lv_dropdown_is_open(getCont());
+		return lv_dropdown_is_open(getRoot());
 	}
 } // namespace UI

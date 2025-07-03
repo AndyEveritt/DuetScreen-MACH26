@@ -20,10 +20,10 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_title(lv_label_create(getCont()))
-		, m_canvas(lv_canvas_create(getCont()))
-		, m_vScale(lv_scale_create(getCont()))
-		, m_hScale(lv_scale_create(getCont()))
+		, m_title(lv_label_create(getRoot()))
+		, m_canvas(lv_canvas_create(getRoot()))
+		, m_vScale(lv_scale_create(getRoot()))
+		, m_hScale(lv_scale_create(getRoot()))
 	{
 		init();
 	}
@@ -32,10 +32,10 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent, layout)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_title(lv_label_create(getCont()))
-		, m_canvas(lv_canvas_create(getCont()))
-		, m_vScale(lv_scale_create(getCont()))
-		, m_hScale(lv_scale_create(getCont()))
+		, m_title(lv_label_create(getRoot()))
+		, m_canvas(lv_canvas_create(getRoot()))
+		, m_vScale(lv_scale_create(getRoot()))
+		, m_hScale(lv_scale_create(getRoot()))
 	{
 		init();
 	}
@@ -51,17 +51,17 @@ namespace UI
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getCont(), m_columnDsc, m_rowDsc);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
+		lv_obj_set_grid_dsc_array(getRoot(), m_columnDsc, m_rowDsc);
 		lv_obj_set_grid_cell(m_title, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
 		lv_obj_set_grid_cell(m_canvas, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		lv_obj_set_style_pad_top(getCont(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_right(getCont(), 20, LV_PART_MAIN);
-		lv_obj_set_style_pad_left(getCont(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_bottom(getCont(), 5, LV_PART_MAIN);
+		lv_obj_set_style_pad_top(getRoot(), 10, LV_PART_MAIN);
+		lv_obj_set_style_pad_right(getRoot(), 20, LV_PART_MAIN);
+		lv_obj_set_style_pad_left(getRoot(), 10, LV_PART_MAIN);
+		lv_obj_set_style_pad_bottom(getRoot(), 5, LV_PART_MAIN);
 
 		// Title
 		lv_obj_set_size(m_title, LV_SIZE_CONTENT, LV_SIZE_CONTENT);

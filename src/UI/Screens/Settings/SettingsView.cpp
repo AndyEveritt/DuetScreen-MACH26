@@ -13,9 +13,9 @@ namespace UI
 {
 	SettingsView::SettingsView(lv_obj_t* parent)
 		: View(lv_obj_create, "settings_view", parent, layout_t(0, 0, 100, 100))
-		, m_settingsList(lv_list_create(getCont()))
-		, m_subWindow(lv_obj_create(getCont()))
-		, m_keyboard(lv_keyboard_create(getCont()))
+		, m_settingsList(lv_list_create(getRoot()))
+		, m_subWindow(lv_obj_create(getRoot()))
+		, m_keyboard(lv_keyboard_create(getRoot()))
 		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header")))
 		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet")))
 		, m_deviceSettings(lv_list_add_button(m_settingsList, NULL, _("settings_device")))
@@ -30,8 +30,8 @@ namespace UI
 	{
 		UI_LOCK();
 		// Layout
-		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
+		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_settingsList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_subWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
@@ -160,12 +160,12 @@ namespace UI
 
 	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView(lv_obj_create, "duet_settings_view", parent, mainSettingsView)
-		, m_connectionMethod("duet_settings_connection_method", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_connectionMethod("duet_settings_connection_method", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_usbSettings(*this)
 		, m_wifiSettings(*this)
 		, m_uartSettings(*this)
-		, m_pollInterval("duet_settings_poll_interval", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_infoTimeout("duet_settings_info_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_pollInterval("duet_settings_poll_interval", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_infoTimeout("duet_settings_info_timeout", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
@@ -212,8 +212,8 @@ namespace UI
 
 	DuetSettingsView::WifiSettings::WifiSettings(DuetSettingsView& parent)
 		: LvObj(lv_obj_create, "duet_settings_wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_hostname("duet_settings_hostname", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_password("duet_settings_password", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_hostname("duet_settings_hostname", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_password("duet_settings_password", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -289,15 +289,15 @@ namespace UI
 
 	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView(lv_obj_create, "device_settings_view", parent, mainSettingsView)
-		, m_firmwareVersion(lv_label_create(getCont()))
-		, m_buildTime(lv_label_create(getCont()))
-		, m_language("device_settings_language", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_theme("device_settings_theme", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_usbMode("device_settings_usb_mode", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_brightness("settings_brightness", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_screensaverTimeout("settings_screensaver_timeout", getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_systemLogging(lv_checkbox_create(getCont()))
-		, m_displayConnectedMessage(lv_checkbox_create(getCont()))
+		, m_firmwareVersion(lv_label_create(getRoot()))
+		, m_buildTime(lv_label_create(getRoot()))
+		, m_language("device_settings_language", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_theme("device_settings_theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_usbMode("device_settings_usb_mode", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_brightness("settings_brightness", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_screensaverTimeout("settings_screensaver_timeout", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_systemLogging(lv_checkbox_create(getRoot()))
+		, m_displayConnectedMessage(lv_checkbox_create(getRoot()))
 	{
 		UI_LOCK();
 
@@ -412,26 +412,26 @@ namespace UI
 
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: View(lv_obj_create, "network_settings_view", parent, mainSettingsView)
-		, m_topBar(lv_obj_create(getCont()))
+		, m_topBar(lv_obj_create(getRoot()))
 		, m_ipAddress(lv_label_create(m_topBar))
 		, m_enable(lv_checkbox_create(m_topBar))
 		, m_refresh("network_settings_refresh", m_topBar, _("refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
-		, m_networkList(lv_table_create(getCont()))
-		, m_passwordWindow(lv_msgbox_create(getCont()))
+		, m_networkList(lv_table_create(getRoot()))
+		, m_passwordWindow(lv_msgbox_create(getRoot()))
 		, m_passwordInput("settings_network_password_input", m_passwordWindow, layout_t(0, 0, 80, LV_SIZE_CONTENT))
 		, m_passwordSsid(nullptr)
 	{
 		UI_LOCK();
 
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
 		lv_obj_set_style_pad_all(m_topBar, 2, 0);
 		lv_obj_set_flex_flow(m_topBar, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(m_topBar, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 		lv_obj_set_size(m_topBar, LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_flex_grow(m_ipAddress, 3);
-		lv_obj_set_flex_grow(m_refresh.getCont(), 1);
+		lv_obj_set_flex_grow(m_refresh.getRoot(), 1);
 		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
 		lv_obj_set_size(m_enable, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), "").c_str());
@@ -601,16 +601,16 @@ namespace UI
 
 	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
 		: SettingsSubView(lv_obj_create, "developer_settings_view", parent, mainSettingsView)
-		, m_debugLevelCont(lv_obj_create(getCont()))
+		, m_debugLevelCont(lv_obj_create(getRoot()))
 		, m_debugLevelLabel(lv_label_create(m_debugLevelCont))
 		, m_debugLevel(lv_dropdown_create(m_debugLevelCont))
 #if DEBUG_BORDERS
-		, m_debugBorders(lv_checkbox_create(getCont()))
+		, m_debugBorders(lv_checkbox_create(getRoot()))
 #endif
-		, m_enableSSH(lv_checkbox_create(getCont()))
-		, m_restart("developer_settings_restart", getCont(), _("settings_restart"))
-		, m_eraseAndRestart("developer_settings_erase_and_restart", getCont(), _("settings_erase_and_restart"))
-		, m_reboot("developer_settings_reboot", getCont(), _("settings_reboot"))
+		, m_enableSSH(lv_checkbox_create(getRoot()))
+		, m_restart("developer_settings_restart", getRoot(), _("settings_restart"))
+		, m_eraseAndRestart("developer_settings_erase_and_restart", getRoot(), _("settings_erase_and_restart"))
+		, m_reboot("developer_settings_reboot", getRoot(), _("settings_reboot"))
 	{
 		UI_LOCK();
 
@@ -641,9 +641,9 @@ namespace UI
 		lv_obj_add_event_cb(m_enableSSH, onEnableSSHEvent, LV_EVENT_VALUE_CHANGED, this);
 
 		// Power
-		lv_obj_set_height(m_restart.getCont(), LV_SIZE_CONTENT);
-		lv_obj_set_height(m_eraseAndRestart.getCont(), LV_SIZE_CONTENT);
-		lv_obj_set_height(m_reboot.getCont(), LV_SIZE_CONTENT);
+		lv_obj_set_height(m_restart.getRoot(), LV_SIZE_CONTENT);
+		lv_obj_set_height(m_eraseAndRestart.getRoot(), LV_SIZE_CONTENT);
+		lv_obj_set_height(m_reboot.getRoot(), LV_SIZE_CONTENT);
 		m_restart.addClickedCallback(onRestartEvent, this);
 		m_eraseAndRestart.addClickedCallback(onEraseAndRestartEvent, this);
 		m_reboot.addClickedCallback(onRebootEvent, this);

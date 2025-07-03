@@ -32,8 +32,8 @@ namespace UI
 
 		Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: LvObj(lv_obj_create, name, parent, layout)
-			, m_label(lv_label_create(getCont()))
-			, m_sliderCont(lv_obj_create(getCont()))
+			, m_label(lv_label_create(getRoot()))
+			, m_sliderCont(lv_obj_create(getRoot()))
 			, m_decrement("slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)
 			, m_slider(lv_slider_create(m_sliderCont))
 			, m_increment("slider_increment", m_sliderCont, LV_SYMBOL_PLUS)
@@ -42,9 +42,9 @@ namespace UI
 			, m_keyboard(nullptr)
 		{
 			UI_LOCK();
-			lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
-			lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
-			lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+			lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
+			lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
+			lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
 			lv_obj_set_size(m_label, LV_PCT(100), LV_SIZE_CONTENT);
 			lv_obj_set_size(m_sliderCont, LV_PCT(100), LV_SIZE_CONTENT);
@@ -59,8 +59,8 @@ namespace UI
 				lv_obj_set_height(child, LV_SIZE_CONTENT);
 				lv_obj_set_style_pad_all(child, 2, 0);
 			}
-			lv_obj_set_width(m_decrement.getCont(), LV_SIZE_CONTENT);
-			lv_obj_set_width(m_increment.getCont(), LV_SIZE_CONTENT);
+			lv_obj_set_width(m_decrement.getRoot(), LV_SIZE_CONTENT);
+			lv_obj_set_width(m_increment.getRoot(), LV_SIZE_CONTENT);
 			lv_obj_set_width(m_input, 50);
 			lv_obj_set_flex_grow(m_slider, 1);
 

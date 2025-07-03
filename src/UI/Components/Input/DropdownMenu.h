@@ -29,6 +29,7 @@ namespace UI
 		void addOption(const std::string& option, uint32_t pos = LV_DROPDOWN_POS_LAST);
 		void clearOptions();
 		void setSelected(uint32_t selected);
+		bool setSelected(const std::string& option);
 		void setDir(lv_dir_t dir);
 		void setSymbol(const void* symbol);
 		void setSelectedHighlight(bool en);

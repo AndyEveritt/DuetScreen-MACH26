@@ -20,13 +20,14 @@ namespace UI
 
 		void setText(const std::string& text);
 		const char* getText() const;
-		lv_obj_t* getDropdownMenu() const { return getCont(); }
+		lv_obj_t* getDropdownMenu() const { return getRoot(); }
 
 		void setOptions(const std::string& options);
 		void setOptions(const std::vector<std::string>& options);
 		void addOption(const std::string& option, uint32_t pos = LV_DROPDOWN_POS_LAST);
 		void clearOptions();
 		void setSelected(uint32_t selected);
+		bool setSelected(const std::string& option);
 		void setDir(lv_dir_t dir);
 		void setSymbol(const void* symbol);
 		void setSelectedHighlight(bool en);

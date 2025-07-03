@@ -205,6 +205,12 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"status_layer_number", "Layer: %u"},
     {"theme_dark", "Dark"},
     {"theme_light", "Light"},
+    {"tool_select", "Select Tool"},
+    {"filament_select", "Select Filament"},
+    {"extrude_distance_input", "Extrude Distance: {:.2g} mm"},
+    {"extrude_feedrate_input", "Extrude Feedrate: {:.2g} mm/s"},
+    {"extrude_distance_header", "Set Extrusion Distance (mm)"},
+    {"move_set_position", "Set absolute position for axis {}"},
     {NULL, NULL} // End mark
 };
 

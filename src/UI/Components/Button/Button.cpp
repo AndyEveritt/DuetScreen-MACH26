@@ -5,7 +5,7 @@ namespace UI
 {
 	Button::Button(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_button_create, name, parent)
-		, m_label(name + "_label", getCont())
+		, m_label(name + "_label", getRoot())
 		, m_icon(nullptr)
 	{
 		init("");
@@ -13,7 +13,7 @@ namespace UI
 
 	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text)
 		: LvObj(lv_button_create, name, parent)
-		, m_label(name + "_label", getCont())
+		, m_label(name + "_label", getRoot())
 		, m_icon(nullptr)
 	{
 		init(text);
@@ -21,7 +21,7 @@ namespace UI
 
 	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout)
 		: LvObj(lv_button_create, name, parent, layout)
-		, m_label(name + "_label", getCont())
+		, m_label(name + "_label", getRoot())
 		, m_icon(nullptr)
 	{
 		init(text);
@@ -31,7 +31,7 @@ namespace UI
 	{
 		UI_LOCK();
 		setUserData(this);
-		lv_obj_set_user_data(getCont(), this);
+		lv_obj_set_user_data(getRoot(), this);
 		lv_obj_set_user_data(m_label, this);
 
 		setMinHeight(30);
@@ -62,7 +62,7 @@ namespace UI
 	void Button::addClickedCallback(lv_event_cb_t event_cb, void* user_data)
 	{
 		UI_LOCK();
-		lv_obj_add_event_cb(getCont(), event_cb, LV_EVENT_CLICKED, user_data);
+		lv_obj_add_event_cb(getRoot(), event_cb, LV_EVENT_CLICKED, user_data);
 	}
 
 	void Button::setIcon(lv_img_dsc_t* icon)
@@ -80,7 +80,7 @@ namespace UI
 		// If the icon is not null, create the icon and set the icon
 		if (m_icon == nullptr)
 		{
-			m_icon = lv_image_create(getCont());
+			m_icon = lv_image_create(getRoot());
 			lv_obj_set_user_data(m_icon, this);
 		}
 

@@ -14,8 +14,8 @@ namespace UI
 {
 	TextBox::TextBox(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_label(name + "_label", getCont())
-		, m_textArea(name + "_textarea", getCont())
+		, m_label(name + "_label", getRoot())
+		, m_textArea(name + "_textarea", getRoot())
 		, m_showPassword(name + "_show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
 	{
 		init();
@@ -23,8 +23,8 @@ namespace UI
 
 	TextBox::TextBox(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(name + "_label", getCont())
-		, m_textArea(name + "_textarea", getCont())
+		, m_label(name + "_label", getRoot())
+		, m_textArea(name + "_textarea", getRoot())
 		, m_showPassword(name + "_show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
 	{
 		init();
@@ -34,7 +34,7 @@ namespace UI
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		// Label
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);

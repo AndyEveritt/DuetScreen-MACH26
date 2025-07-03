@@ -22,8 +22,8 @@ namespace UI
 			: LvObj(lv_obj_create, utils::format("%s_%u", name.c_str(), index), parent)
 			, m_index(index)
 		{
-			lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_list_item, 0);
-			lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
+			lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_list_item, 0);
+			lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 		}
 
 		const size_t getIndex() const { return m_index; }
@@ -42,9 +42,9 @@ namespace UI
 
 		List(const std::string& name, lv_obj_t* parent)
 			: LvObj(lv_obj_create, name, parent)
-			, m_header(name + "_header", getCont())
-			, m_title(name + "_title", m_header.getCont())
-			, m_listCont(name + "_list", getCont())
+			, m_header(name + "_header", getRoot())
+			, m_title(name + "_title", m_header.getRoot())
+			, m_listCont(name + "_list", getRoot())
 		{
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 

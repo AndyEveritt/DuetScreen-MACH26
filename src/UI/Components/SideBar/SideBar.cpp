@@ -22,11 +22,11 @@ namespace UI
 
 	SideBar::SideBar(const std::string& name, lv_obj_t* parent)
 		: View(lv_obj_create, name, parent, layout_t{0, 0, width, height})
-		, m_homeBtn("Home", getCont(), _("home"), layout_t{0, 20, 100, 0})
-		, m_backBtn("Back", getCont(), _("back"), layout_t{0, 0, 100, 0})
-		, m_macrosBtn("Macros", getCont(), _("macros"), layout_t{0, 40, 100, 0})
-		, m_consoleBtn("Console", getCont(), _("console"), layout_t{0, 60, 100, 0})
-		, m_eStopBtn("E-Stop", getCont(), _("estop"))
+		, m_homeBtn("Home", getRoot(), _("home"), layout_t{0, 20, 100, 0})
+		, m_backBtn("Back", getRoot(), _("back"), layout_t{0, 0, 100, 0})
+		, m_macrosBtn("Macros", getRoot(), _("macros"), layout_t{0, 40, 100, 0})
+		, m_consoleBtn("Console", getRoot(), _("console"), layout_t{0, 60, 100, 0})
+		, m_eStopBtn("E-Stop", getRoot(), _("estop"))
 	{
 		UI_LOCK();
 		LOG_VERBOSE("Creating SideBar");
@@ -34,8 +34,8 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
-		lv_obj_set_overflow_visible_flag(getCont(), 400);
+		lv_obj_remove_flag(getRoot(), LV_OBJ_FLAG_SCROLLABLE);
+		lv_obj_set_overflow_visible_flag(getRoot(), 400);
 
 		m_backBtn.setFlexGrow(1);
 		m_homeBtn.setFlexGrow(1);

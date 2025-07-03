@@ -93,8 +93,8 @@ namespace UI
 		/**
 		 * @return Get the base container for the view
 		 */
-		inline lv_obj_t* getCont() const { return m_cont; }
-		operator lv_obj_t*() const { return getCont(); }
+		inline lv_obj_t* getRoot() const { return m_root; }
+		operator lv_obj_t*() const { return getRoot(); }
 
 		lv_obj_t* getScreen() const;
 		lv_obj_t* getParent() const;
@@ -166,7 +166,7 @@ namespace UI
 		virtual void refresh() {}
 
 	  private:
-		lv_obj_t* m_cont;
+		lv_obj_t* m_root;
 		std::string m_name;
 	};
 } // namespace UI

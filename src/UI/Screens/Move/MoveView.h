@@ -43,7 +43,8 @@ namespace UI
 		void setAxisCount(const size_t count);
 		std::shared_ptr<AxisItem> getAxisItem(size_t index);
 
-		void configureNumberpad(char axis_letter, float position);
+		void configureNumberpadForAxis(char axis_letter, float position);
+		void configureNumberpadForExtruder(const std::string& header, float value);
 
 		int32_t m_layoutColDsc[2];
 		int32_t m_layoutRowDsc[4];

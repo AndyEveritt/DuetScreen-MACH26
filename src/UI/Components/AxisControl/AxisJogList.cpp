@@ -13,10 +13,10 @@ namespace UI
 {
 	AxisItem::AxisItem(const size_t index, lv_obj_t* parent)
 		: ListItem("move_axis_item", index, parent)
-		, m_home(utils::format("move_axis_%u_home", index), getCont(), "", layout_t(0, 0, 0, 100))
-		, m_relMove(utils::format("move_axis_%u_rel_move", index), getCont())
-		, m_toolPosition("tool_position", getCont())
-		, m_machinePosition("machine_position", getCont())
+		, m_home(utils::format("move_axis_%u_home", index), getRoot(), "", layout_t(0, 0, 0, 100))
+		, m_relMove(utils::format("move_axis_%u_rel_move", index), getRoot())
+		, m_toolPosition("tool_position", getRoot())
+		, m_machinePosition("machine_position", getRoot())
 	{
 		// Layout
 		UI_LOCK();
@@ -168,7 +168,7 @@ namespace UI
 
 	AxisJogList::AxisJogList(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_axisItems("axis_jog_list_item", getCont())
+		, m_axisItems("axis_jog_list_item", getRoot())
 		, m_listHeaderPadding("axis_jog_list_header_padding", m_axisItems.getHeader())
 		, m_toolPositionLabel("tool_position_label", m_axisItems.getHeader())
 		, m_machinePositionLabel("machine_position_label", m_axisItems.getHeader())

@@ -8,13 +8,13 @@ namespace UI
 {
 	FanView::FanView(lv_obj_t* parent)
 		: View(lv_obj_create, "fan_view", parent, layout_t(0, 0, 100, 100))
-		, m_fanHeader(lv_label_create(getCont()))
+		, m_fanHeader(lv_label_create(getRoot()))
 	{
 		UI_LOCK();
 
-		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
 		lv_label_set_text(m_fanHeader, _("fan_header"));
 	}
@@ -64,19 +64,19 @@ namespace UI
 	FanView::FanItem::FanItem(size_t index, FanView& view)
 		: LvObj(lv_obj_create,
 				utils::format("fan_item_%d", index).c_str(),
-				view.getCont(),
+				view.getRoot(),
 				layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_view(view)
 		, m_index(index)
-		, m_off(utils::format("fan_off_%d", index).c_str(), getCont(), _("off"))
-		, m_slider(utils::format("fan_slider_%d", index).c_str(), getCont(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_max(utils::format("fan_max_%d", index).c_str(), getCont(), _("max"))
+		, m_off(utils::format("fan_off_%d", index).c_str(), getRoot(), _("off"))
+		, m_slider(utils::format("fan_slider_%d", index).c_str(), getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_max(utils::format("fan_max_%d", index).c_str(), getRoot(), _("max"))
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_flex_grow(m_slider.getCont(), 1);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_flex_grow(m_slider.getRoot(), 1);
 
 		m_slider.setLabel(_("fan"));
 		m_slider.setRange(0, 100);

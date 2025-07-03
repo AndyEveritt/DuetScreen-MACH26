@@ -16,21 +16,21 @@ namespace UI
 		, m_list(view)
 		, m_layoutColDsc{LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_label(lv_label_create(getCont()))
-		, m_date(lv_label_create(getCont()))
-		, m_size(lv_label_create(getCont()))
-		, m_thumbnail(lv_image_create(getCont()))
-		, m_type(lv_label_create(getCont()))
+		, m_label(lv_label_create(getRoot()))
+		, m_date(lv_label_create(getRoot()))
+		, m_size(lv_label_create(getRoot()))
+		, m_thumbnail(lv_image_create(getRoot()))
+		, m_type(lv_label_create(getRoot()))
 	{
 		UI_LOCK();
 		// Layout
 		constexpr lv_coord_t pad = 2;
-		lv_obj_set_height(getCont(), LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(getCont(), pad, 0);
-		lv_obj_set_style_pad_column(getCont(), pad, 0);
+		lv_obj_set_height(getRoot(), LV_SIZE_CONTENT);
+		lv_obj_set_style_pad_all(getRoot(), pad, 0);
+		lv_obj_set_style_pad_column(getRoot(), pad, 0);
 
-		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
+		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_label, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
 		lv_obj_set_grid_cell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 1, 1);
 		lv_obj_set_grid_cell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
@@ -42,7 +42,7 @@ namespace UI
 		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_CONTAIN);
 
 		// Callbacks
-		lv_obj_add_event_cb(getCont(), onClick, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(getRoot(), onClick, LV_EVENT_CLICKED, this);
 
 		// Styles
 		addStyle(Themes::getComponentStyles().file);
@@ -78,7 +78,7 @@ namespace UI
 		UI_LOCK();
 		m_isFolder = isFolder;
 		lv_label_set_text(m_type, isFolder ? _("folder") : _("file"));
-		lv_obj_set_state(getCont(), LV_STATE_CHECKED, isFolder);
+		lv_obj_set_state(getRoot(), LV_STATE_CHECKED, isFolder);
 	}
 
 	const char* FileView::FileItem::getLabel() const
@@ -110,21 +110,21 @@ namespace UI
 		: View(lv_obj_create, "file_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_listHeader(lv_label_create(getCont()))
-		, m_listCont(lv_obj_create(getCont()))
-		, m_sideBar(lv_obj_create(getCont()))
+		, m_listHeader(lv_label_create(getRoot()))
+		, m_listCont(lv_obj_create(getRoot()))
+		, m_sideBar(lv_obj_create(getRoot()))
 		, m_refresh("file_refresh", m_sideBar, _("refresh"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_sortName("file_sort_name", m_sideBar, _("sort_by_name"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_sortDate("file_sort_date", m_sideBar, _("sort_by_date"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_sortSize("file_sort_size", m_sideBar, _("sort_by_size"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_footer(lv_label_create(getCont()))
-		, m_startPrint("file_messageBox", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_footer(lv_label_create(getRoot()))
+		, m_startPrint("file_messageBox", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
+		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(
 			m_listHeader, LV_GRID_ALIGN_STRETCH, 0, ARRAY_SIZE(m_layoutColDsc) - 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_listCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
@@ -157,9 +157,9 @@ namespace UI
 		lv_obj_set_style_pad_all(m_footer, footerPad, 0);
 
 		// Start Print
-		lv_obj_add_flag(m_startPrint.getCont(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_set_align(m_startPrint.getCont(), LV_ALIGN_CENTER);
-		lv_obj_set_style_max_height(m_startPrint.getCont(), LV_PCT(70), 0);
+		lv_obj_add_flag(m_startPrint.getRoot(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_set_align(m_startPrint.getRoot(), LV_ALIGN_CENTER);
+		lv_obj_set_style_max_height(m_startPrint.getRoot(), LV_PCT(70), 0);
 		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
 		m_startPrint.setImageSize(200, 200);
 

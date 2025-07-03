@@ -11,20 +11,20 @@ namespace UI
 {
 	ConsoleView::ConsoleView(lv_obj_t* parent)
 		: View(lv_obj_create, "console_view", parent, layout_t(0, 0, 100, 100))
-		, m_topCont(lv_obj_create(getCont()))
+		, m_topCont(lv_obj_create(getRoot()))
 		, m_commandList(lv_table_create(m_topCont))
 		, m_output(lv_textarea_create(m_topCont))
-		, m_inputCont(lv_obj_create(getCont()))
+		, m_inputCont(lv_obj_create(getRoot()))
 		, m_input(lv_textarea_create(m_inputCont))
 		, m_clear("console_clear", m_input, LV_SYMBOL_CLOSE)
 		, m_enter("console_enter", m_inputCont, LV_SYMBOL_NEW_LINE)
-		, m_kb(lv_keyboard_create(getCont()))
+		, m_kb(lv_keyboard_create(getRoot()))
 	{
 		UI_LOCK();
 
 		// Layout
-		lv_obj_align(getCont(), LV_ALIGN_CENTER, 0, 0);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_align(getRoot(), LV_ALIGN_CENTER, 0, 0);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_width(m_topCont, LV_PCT(100));
 		lv_obj_set_flex_grow(m_topCont, 1);
 		lv_obj_set_size(m_inputCont, LV_PCT(100), LV_SIZE_CONTENT);
@@ -57,13 +57,13 @@ namespace UI
 		lv_textarea_set_one_line(m_input, true);
 		lv_textarea_set_placeholder_text(m_input, _("console_input_placeholder"));
 		lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_LEFT, 0);
-		lv_obj_align(m_clear.getCont(), LV_ALIGN_RIGHT_MID, 0, 0);
+		lv_obj_align(m_clear.getRoot(), LV_ALIGN_RIGHT_MID, 0, 0);
 		lv_obj_set_height(m_input, LV_SIZE_CONTENT);
-		lv_obj_set_size(m_clear.getCont(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_size(m_enter.getCont(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		lv_obj_set_size(m_clear.getRoot(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		lv_obj_set_size(m_enter.getRoot(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_all(m_input, 0, 0);
-		lv_obj_set_style_pad_all(m_clear.getCont(), 0, 0);
-		lv_obj_set_style_pad_all(m_enter.getCont(), 0, 0);
+		lv_obj_set_style_pad_all(m_clear.getRoot(), 0, 0);
+		lv_obj_set_style_pad_all(m_enter.getRoot(), 0, 0);
 
 		// Hide keyboard initially
 		lv_keyboard_set_mode(m_kb, LV_KEYBOARD_MODE_TEXT_UPPER);

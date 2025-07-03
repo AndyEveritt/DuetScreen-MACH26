@@ -22,8 +22,8 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_canvas("heightmap_canvas", getCont())
-		, m_colorBar("heightmap_color_bar", getCont())
+		, m_canvas("heightmap_canvas", getRoot())
+		, m_colorBar("heightmap_color_bar", getRoot())
 	{
 		init();
 	}
@@ -32,8 +32,8 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent, layout)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_canvas("heightmap_canvas", getCont())
-		, m_colorBar("heightmap_color_bar", getCont())
+		, m_canvas("heightmap_canvas", getRoot())
+		, m_colorBar("heightmap_color_bar", getRoot())
 	{
 		init();
 	}
@@ -45,8 +45,8 @@ namespace UI
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
 
 		lv_obj_set_flex_grow(m_canvas, 1);
 		lv_obj_set_height(m_canvas, LV_PCT(100));

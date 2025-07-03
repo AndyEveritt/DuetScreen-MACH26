@@ -16,12 +16,12 @@ namespace UI
 	ToolListItem::ToolListItem(ToolList& toolList, const std::string& name, lv_obj_t* parent, layout_t layout)
 		: View<ToolListItemPresenter>(lv_obj_create, name, parent, layout)
 		, m_toolList(toolList)
-		, m_label(lv_label_create(getCont()))
+		, m_label(lv_label_create(getRoot()))
 		, m_icon(nullptr)
-		, m_status(lv_label_create(getCont()))
-		, m_currentTemp(lv_label_create(getCont()))
-		, m_activeTemp(lv_label_create(getCont()))
-		, m_standbyTemp(lv_label_create(getCont()))
+		, m_status(lv_label_create(getRoot()))
+		, m_currentTemp(lv_label_create(getRoot()))
+		, m_activeTemp(lv_label_create(getRoot()))
+		, m_standbyTemp(lv_label_create(getRoot()))
 	{
 		activate();
 
@@ -46,8 +46,8 @@ namespace UI
 		lv_obj_add_event_cb(m_standbyTemp, onActiveStandbyEvent, LV_EVENT_CLICKED, this);
 
 		// Styles
-		lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_list_item, 0);
-		lv_obj_add_style(getCont(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
+		lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_list_item, 0);
+		lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 
 		lv_obj_add_style(m_activeTemp, Themes::getLvglStyles().input, 0);
 		lv_obj_add_style(m_standbyTemp, Themes::getLvglStyles().input, 0);
@@ -78,7 +78,7 @@ namespace UI
 		UI_LOCK();
 		if (m_icon == nullptr)
 		{
-			m_icon = lv_image_create(getCont());
+			m_icon = lv_image_create(getRoot());
 			lv_obj_set_flex_grow(m_icon, 1);
 		}
 		lv_image_set_src(m_icon, icon);
@@ -91,14 +91,14 @@ namespace UI
 			return;
 		}
 		UI_LOCK();
-		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
+		lv_color_t color = lv_obj_get_style_bg_color(getRoot(), LV_PART_MAIN);
 		if (selected)
 		{
-			lv_obj_add_state(getCont(), LV_STATE_CHECKED);
+			lv_obj_add_state(getRoot(), LV_STATE_CHECKED);
 		}
 		else
 		{
-			lv_obj_remove_state(getCont(), LV_STATE_CHECKED);
+			lv_obj_remove_state(getRoot(), LV_STATE_CHECKED);
 		}
 		m_selected = selected;
 	}
@@ -189,15 +189,15 @@ namespace UI
 
 	ToolListNumPad::ToolListNumPad(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_header(lv_label_create(getCont()))
-		, m_numberPad("tool_list_number_pad", getCont(), layout_t(0, 0, 100, 100))
+		, m_header(lv_label_create(getRoot()))
+		, m_numberPad("tool_list_number_pad", getRoot(), layout_t(0, 0, 100, 100))
 	{
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_grow(m_header, 0);
-		lv_obj_set_flex_grow(m_numberPad.getCont(), 1);
+		lv_obj_set_flex_grow(m_numberPad.getRoot(), 1);
 		lv_obj_set_width(m_header, LV_PCT(100));
 
 		// Header
@@ -216,13 +216,13 @@ namespace UI
 
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent)
 		: View<ToolListPresenter>(lv_obj_create, name, parent)
-		, m_header(lv_obj_create(getCont()))
+		, m_header(lv_obj_create(getRoot()))
 		, m_headerTool(lv_label_create(m_header))
 		, m_headerStatus(lv_label_create(m_header))
 		, m_headerCurrent(lv_label_create(m_header))
 		, m_headerActive(lv_label_create(m_header))
 		, m_headerStandby(lv_label_create(m_header))
-		, m_list(lv_obj_create(getCont()))
+		, m_list(lv_obj_create(getRoot()))
 		, m_numberPad("tool_list_number_pad", lv_screen_active(), layout_t(65, 0, 35, 100))
 	{
 		init();
@@ -230,13 +230,13 @@ namespace UI
 
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: View<ToolListPresenter>(lv_obj_create, name, parent, layout)
-		, m_header(lv_obj_create(getCont()))
+		, m_header(lv_obj_create(getRoot()))
 		, m_headerTool(lv_label_create(m_header))
 		, m_headerStatus(lv_label_create(m_header))
 		, m_headerCurrent(lv_label_create(m_header))
 		, m_headerActive(lv_label_create(m_header))
 		, m_headerStandby(lv_label_create(m_header))
-		, m_list(lv_obj_create(getCont()))
+		, m_list(lv_obj_create(getRoot()))
 		, m_numberPad("tool_list_number_pad", lv_screen_active(), layout_t(65, 0, 35, 100))
 	{
 		init();
@@ -252,7 +252,7 @@ namespace UI
 		lv_obj_set_style_text_align(m_header, LV_TEXT_ALIGN_CENTER, 0);
 		lv_obj_set_style_text_align(m_list, LV_TEXT_ALIGN_CENTER, 0);
 
-		lv_obj_set_style_pad_row(getCont(), 0, 0);
+		lv_obj_set_style_pad_row(getRoot(), 0, 0);
 		// lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
 		lv_obj_remove_flag(m_header, LV_OBJ_FLAG_SCROLLABLE);
 		lv_obj_add_flag(m_list, LV_OBJ_FLAG_SCROLLABLE);

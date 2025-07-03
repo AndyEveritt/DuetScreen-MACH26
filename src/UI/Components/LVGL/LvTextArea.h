@@ -18,7 +18,7 @@ namespace UI
 
 		void setText(const std::string& text);
 		std::string getText() const;
-        lv_obj_t* getTextArea() const { return getCont(); }
+		lv_obj_t* getTextArea() const { return getRoot(); }
 
 		void addChar(uint32_t c);
 		void addText(const std::string& text);

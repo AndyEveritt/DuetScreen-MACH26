@@ -15,9 +15,9 @@ namespace UI
 	StatusView::StatusView(lv_obj_t* parent)
 		: View(lv_obj_create, "print_view", parent, layout_t(0, 0, 100, 100))
 		// Create all panels first
-		, m_header(lv_obj_create(getCont()))
-		, m_centerCont(lv_obj_create(getCont()))
-		, m_footer(lv_obj_create(getCont()))
+		, m_header(lv_obj_create(getRoot()))
+		, m_centerCont(lv_obj_create(getRoot()))
+		, m_footer(lv_obj_create(getRoot()))
 		// Create header widgets
 		, m_progress(lv_arc_create(m_header))
 		, m_progressPercent(lv_label_create(m_progress))
@@ -31,14 +31,14 @@ namespace UI
 		, m_printAgainBtn("print_again", m_footer, _("print_again"))
 		, m_cancelBtn("print_cancel", m_footer, _("cancel"))
 		, m_fineTuneBtn("fine_tune", m_footer, _("fine_tune"))
-		, m_confirmCancel("print_confirm_cancel", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
-		, m_fineTune(getCont())
+		, m_confirmCancel("print_confirm_cancel", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_fineTune(getRoot())
 	{
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
 
 		lv_obj_set_size(m_header, LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_width(m_centerCont, LV_PCT(100));
@@ -89,8 +89,8 @@ namespace UI
 		m_confirmCancel.setTitle(_("print_cancel_title"));
 		m_confirmCancel.setText(_("print_cancel_message"));
 		m_confirmCancel.hide();
-		lv_obj_add_flag(m_confirmCancel.getCont(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(m_confirmCancel.getCont(), LV_ALIGN_CENTER, 0, 0);
+		lv_obj_add_flag(m_confirmCancel.getRoot(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_align(m_confirmCancel.getRoot(), LV_ALIGN_CENTER, 0, 0);
 
 		// Callbacks
 		m_pauseBtn.addClickedCallback(onPauseClicked, this);
@@ -109,9 +109,9 @@ namespace UI
 
 		// Fine tune
 		// Make the fine tune view floating and fullscreen
-		lv_obj_add_flag(m_fineTune.getCont(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_set_size(m_fineTune.getCont(), LV_PCT(100), LV_PCT(100));
-		lv_obj_align(m_fineTune.getCont(), LV_ALIGN_CENTER, 0, 0);
+		lv_obj_add_flag(m_fineTune.getRoot(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_set_size(m_fineTune.getRoot(), LV_PCT(100), LV_PCT(100));
+		lv_obj_align(m_fineTune.getRoot(), LV_ALIGN_CENTER, 0, 0);
 		m_fineTune.hide(); // Hide initially, will be shown when needed
 	}
 

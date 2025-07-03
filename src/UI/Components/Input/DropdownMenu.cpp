@@ -13,16 +13,16 @@ namespace UI
 {
 	DropdownMenu::DropdownMenu(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_label(name + "_label", getCont())
-		, m_dropdown(name + "_dropdown", getCont())
+		, m_label(name + "_label", getRoot())
+		, m_dropdown(name + "_dropdown", getRoot())
 	{
 		init();
 	}
 
 	DropdownMenu::DropdownMenu(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(name + "_label", getCont())
-		, m_dropdown(name + "_dropdown", getCont())
+		, m_label(name + "_label", getRoot())
+		, m_dropdown(name + "_dropdown", getRoot())
 	{
 		init();
 	}
@@ -85,6 +85,11 @@ namespace UI
 		m_dropdown.setSelected(selected);
 	}
 
+	bool DropdownMenu::setSelected(const std::string& option)
+	{
+		return m_dropdown.setSelected(option);
+	}
+
 	void DropdownMenu::setDir(lv_dir_t dir)
 	{
 		m_dropdown.setDir(dir);
@@ -104,6 +109,7 @@ namespace UI
 	{
 		return m_dropdown.getOptions();
 	}
+
 	uint32_t DropdownMenu::getSelected() const
 	{
 		return m_dropdown.getSelected();

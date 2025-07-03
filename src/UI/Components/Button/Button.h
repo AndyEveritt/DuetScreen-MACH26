@@ -22,7 +22,7 @@ namespace UI
 		void setDisabled(bool disabled);
 
 		LvLabel& getLabel() { return m_label; }
-		lv_obj_t* getButton() const { return getCont(); }
+		lv_obj_t* getButton() const { return getRoot(); }
 		lv_obj_t* getIcon() const { return m_icon; }
 
 	  private:

@@ -7,9 +7,9 @@ namespace UI
 {
 	StatusBar::StatusBar(lv_obj_t* parent)
 		: View(lv_obj_create, "status_bar", parent)
-		, m_duetStatus(lv_label_create(getCont()))
-		, m_duetName(lv_label_create(getCont()))
-		, m_time(lv_label_create(getCont()))
+		, m_duetStatus(lv_label_create(getRoot()))
+		, m_duetName(lv_label_create(getRoot()))
+		, m_time(lv_label_create(getRoot()))
 	{
 		activate();
 

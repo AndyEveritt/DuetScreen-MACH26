@@ -16,16 +16,16 @@ namespace UI
 
 	XYControl::XYControl(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_xLabel(name + "_x_label", getCont())
-		, m_yLabel(name + "_y_label", getCont())
-		, m_xIncrementButton(name + "_x_increment", getCont(), LV_SYMBOL_RIGHT)
-		, m_xDecrementButton(name + "_x_decrement", getCont(), LV_SYMBOL_LEFT)
-		, m_yIncrementButton(name + "_y_increment", getCont(), LV_SYMBOL_UP)
-		, m_yDecrementButton(name + "_y_decrement", getCont(), LV_SYMBOL_DOWN)
+		, m_xLabel(name + "_x_label", getRoot())
+		, m_yLabel(name + "_y_label", getRoot())
+		, m_xIncrementButton(name + "_x_increment", getRoot(), LV_SYMBOL_RIGHT)
+		, m_xDecrementButton(name + "_x_decrement", getRoot(), LV_SYMBOL_LEFT)
+		, m_yIncrementButton(name + "_y_increment", getRoot(), LV_SYMBOL_UP)
+		, m_yDecrementButton(name + "_y_decrement", getRoot(), LV_SYMBOL_DOWN)
 		, m_homeXYButton(
-			  name + "_home_xy", getCont(), fmt::format(LV_SYMBOL_HOME " {}{}", sm_xAxisLetter, sm_yAxisLetter))
-		, m_homeXButton(name + "_home_x", getCont(), fmt::format(LV_SYMBOL_HOME " {}", sm_xAxisLetter))
-		, m_homeYButton(name + "_home_y", getCont(), fmt::format(LV_SYMBOL_HOME " {}", sm_yAxisLetter))
+			  name + "_home_xy", getRoot(), fmt::format(LV_SYMBOL_HOME " {}{}", sm_xAxisLetter, sm_yAxisLetter))
+		, m_homeXButton(name + "_home_x", getRoot(), fmt::format(LV_SYMBOL_HOME " {}", sm_xAxisLetter))
+		, m_homeYButton(name + "_home_y", getRoot(), fmt::format(LV_SYMBOL_HOME " {}", sm_yAxisLetter))
 	{
 		UI_LOCK();
 		setGridDsc(m_colDsc, m_rowDsc);

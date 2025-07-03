@@ -13,26 +13,26 @@ namespace UI
 {
 	VerticalButtonPanel::VerticalButtonPanel(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_reset(name + "_reset", getCont(), "")
-		, m_increment(name + "_increment", getCont(), "")
-		, m_decrement(name + "_decrement", getCont(), "")
-		, m_valueCont(lv_obj_create(getCont()))
+		, m_reset(name + "_reset", getRoot(), "")
+		, m_increment(name + "_increment", getRoot(), "")
+		, m_decrement(name + "_decrement", getRoot(), "")
+		, m_valueCont(lv_obj_create(getRoot()))
 		, m_values{Button(name + "_value1", m_valueCont, ""), Button(name + "_value2", m_valueCont, "")}
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < lv_obj_get_child_cnt(getCont()); i++)
+		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
 		{
-			lv_obj_t* child = lv_obj_get_child(getCont(), i);
+			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
 			lv_obj_set_width(child, LV_PCT(100));
 		}
 
-		lv_obj_set_flex_grow(m_reset.getCont(), 1);
-		lv_obj_set_flex_grow(m_increment.getCont(), 3);
-		lv_obj_set_flex_grow(m_decrement.getCont(), 3);
+		lv_obj_set_flex_grow(m_reset.getRoot(), 1);
+		lv_obj_set_flex_grow(m_increment.getRoot(), 3);
+		lv_obj_set_flex_grow(m_decrement.getRoot(), 3);
 		lv_obj_set_flex_grow(m_valueCont, 2);
 
 		lv_obj_set_layout(m_valueCont, LV_LAYOUT_FLEX);

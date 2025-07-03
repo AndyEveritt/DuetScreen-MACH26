@@ -18,21 +18,21 @@ namespace UI
 		: View(lv_obj_create, "move_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_topBarCont("move_topbar", getCont())
-		, m_bottomBarCont("move_bottombar", getCont())
+		, m_topBarCont("move_topbar", getRoot())
+		, m_bottomBarCont("move_bottombar", getRoot())
 		, m_homeAll("move_home_all", m_topBarCont, _("home_all"))
 		, m_trueBedLevel("move_true_bed_level", m_topBarCont, _("true_bed_level"))
 		, m_meshBedLevel("move_mesh_bed_level", m_topBarCont, _("mesh_bed_level"))
 		, m_heightmap("move_heightmap", m_topBarCont, _("heightmap"))
 		, m_disableMotors("move_disable_motors", m_topBarCont, _("disable_motors"))
-		, m_axisControlCont("move_axis_control", getCont())
+		, m_axisControlCont("move_axis_control", getRoot())
 		, m_xyControl("move_xy_control", m_axisControlCont)
 		, m_zControl("move_z_control", m_axisControlCont)
 		, m_genericAxisControls("move_generic_axis_controls", m_axisControlCont)
 		, m_axisList("move_axis_control_list", m_axisControlCont)
 		, m_extruderControl("move_extruder_control", m_axisControlCont)
 		, m_distances("move_feed_rates", m_bottomBarCont)
-		, m_numberpad("move_numberpad", getCont(), layout_t(0, 0, 50, 70))
+		, m_numberpad("move_numberpad", getRoot(), layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();
 
@@ -83,8 +83,8 @@ namespace UI
 		m_xyControl.setHomeXCallback([this]() { m_presenter->homeAxis('X'); });
 		m_xyControl.setHomeYCallback([this]() { m_presenter->homeAxis('Y'); });
 
-		m_xyControl.setXLabelCallback([this](float position) { configureNumberpad('X', position); });
-		m_xyControl.setYLabelCallback([this](float position) { configureNumberpad('Y', position); });
+		m_xyControl.setXLabelCallback([this](float position) { configureNumberpadForAxis('X', position); });
+		m_xyControl.setYLabelCallback([this](float position) { configureNumberpadForAxis('Y', position); });
 
 		m_zControl.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_zControl.setAxisLetter('Z');
@@ -96,7 +96,7 @@ namespace UI
 			});
 		m_zControl.setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
 		m_zControl.setLabelCallback([this](char axis_letter, float position)
-									{ configureNumberpad(axis_letter, position); });
+									{ configureNumberpadForAxis(axis_letter, position); });
 
 		m_genericAxisControls.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_genericAxisControls.setListSize(LV_SIZE_CONTENT, LV_PCT(100));
@@ -110,6 +110,28 @@ namespace UI
 
 		m_extruderControl.setHeight(LV_PCT(100));
 		m_extruderControl.setFlexGrow(1);
+		m_extruderControl.setDistanceCallback(
+			[this](float distance)
+			{
+				openModal(&m_numberpad);
+				m_numberpad.setHeader(_("extrude_distance_header"));
+				m_numberpad.setValue(distance);
+				m_numberpad.setMinValue(0);
+				m_numberpad.setMaxValue(1000);
+				m_numberpad.setConfirmCallback([this](float distance)
+											   { m_extruderControl.setDistanceValue(distance); });
+			});
+		m_extruderControl.setFeedrateCallback(
+			[this](float feedrate)
+			{
+				openModal(&m_numberpad);
+				m_numberpad.setHeader(_("extrude_feedrate_header"));
+				m_numberpad.setValue(feedrate);
+				m_numberpad.setMinValue(0);
+				m_numberpad.setMaxValue(100); // mm/s
+				m_numberpad.setConfirmCallback([this](float feedrate)
+											   { m_extruderControl.setFeedrateValue(feedrate); });
+			});
 
 		m_homeAll.addClickedCallback(onHomeAllEvent, this);
 		m_trueBedLevel.addClickedCallback(onTrueBedLevelEvent, this);
@@ -278,7 +300,7 @@ namespace UI
 					});
 				control->setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
 				control->setLabelCallback([this](char axis_letter, float position)
-										  { configureNumberpad(axis_letter, position); });
+										  { configureNumberpadForAxis(axis_letter, position); });
 				return control;
 			});
 
@@ -441,7 +463,7 @@ namespace UI
 		return m_axisList.getAxisItems().getItem(index);
 	}
 
-	void MoveView::configureNumberpad(char axis_letter, float position)
+	void MoveView::configureNumberpadForAxis(char axis_letter, float position)
 	{
 		openModal(&m_numberpad);
 		m_numberpad.setHeader(utils::format(_("move_set_position"), axis_letter));

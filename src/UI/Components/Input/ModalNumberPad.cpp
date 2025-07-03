@@ -16,7 +16,7 @@ namespace UI
 		, m_modalBg(name + "_modal_bg", parent, layout_t(0, 0, 100, 100))
 	{
 		setAlign(LV_ALIGN_CENTER, 0, 0);
-		lv_obj_set_parent(getCont(), m_modalBg);
+		lv_obj_set_parent(getRoot(), m_modalBg);
 		lv_obj_set_style_bg_opa(m_modalBg, LV_OPA_70, LV_PART_MAIN);
 		// setFlag(LV_OBJ_FLAG_FLOATING, true);
 

@@ -17,7 +17,7 @@ namespace UI
 
 	MessageBox::MessageBox(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_msgBox(lv_msgbox_create(getCont()))
+		, m_msgBox(lv_msgbox_create(getRoot()))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_title(lv_msgbox_add_title(m_msgBox, "title"))
@@ -175,7 +175,7 @@ namespace UI
 	void MessageBox::close()
 	{
 		UI_LOCK();
-		if (getCont()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
+		if (getRoot()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
 		{
 			hide();
 		}
@@ -380,14 +380,14 @@ namespace UI
 	void MessageBox::okVisible(bool visible)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(m_okBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
+		lv_obj_set_flag(m_okBtn.getRoot(), LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
 	void MessageBox::cancelVisible(bool visible)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(m_cancelBtn.getCont(), LV_OBJ_FLAG_HIDDEN, !visible);
+		lv_obj_set_flag(m_cancelBtn.getRoot(), LV_OBJ_FLAG_HIDDEN, !visible);
 		updateVisibility();
 	}
 
@@ -649,7 +649,7 @@ namespace UI
 			{
 				UI_LOCK();
 				MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
-				if (msgBox->getCont())
+				if (msgBox->getRoot())
 				{
 					msgBox->cancel();
 				}
@@ -768,30 +768,30 @@ namespace UI
 		: LvObj(lv_obj_create, utils::format("msgbox_axis_jog_%u", index), parent)
 		, m_index(index)
 		, m_msgBox(msgBox)
-		, m_label(lv_label_create(getCont()))
-		, m_relMove{Button(utils::format("msgbox_axis_%u_rel_move_1", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_2", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_3", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_4", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_5", index), getCont(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_6", index), getCont(), "", layout_t(0, 0, 0, 100))}
+		, m_label(lv_label_create(getRoot()))
+		, m_relMove{Button(utils::format("msgbox_axis_%u_rel_move_1", index), getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("msgbox_axis_%u_rel_move_2", index), getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("msgbox_axis_%u_rel_move_3", index), getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("msgbox_axis_%u_rel_move_4", index), getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("msgbox_axis_%u_rel_move_5", index), getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button(utils::format("msgbox_axis_%u_rel_move_6", index), getRoot(), "", layout_t(0, 0, 0, 100))}
 
 	{
 		UI_LOCK();
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(getCont(), 2, 0);
-		lv_obj_set_style_pad_column(getCont(), 2, 0);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_style_pad_all(getRoot(), 2, 0);
+		lv_obj_set_style_pad_column(getRoot(), 2, 0);
 
 		for (size_t i = 0; i < ARRAY_SIZE(m_relMove); i++)
 		{
 			Button& btn = m_relMove[i];
 			btn.setText(utils::format("%.2f", s_jogAmounts[i]).c_str());
-			lv_obj_set_style_text_align(btn.getCont(), LV_TEXT_ALIGN_CENTER, 0);
-			lv_obj_set_flex_grow(btn.getCont(), 1);
-			lv_obj_set_height(btn.getCont(), LV_SIZE_CONTENT);
-			lv_obj_set_user_data(btn.getCont(), this);
+			lv_obj_set_style_text_align(btn.getRoot(), LV_TEXT_ALIGN_CENTER, 0);
+			lv_obj_set_flex_grow(btn.getRoot(), 1);
+			lv_obj_set_height(btn.getRoot(), LV_SIZE_CONTENT);
+			lv_obj_set_user_data(btn.getRoot(), this);
 			btn.setUserData(reinterpret_cast<void*>(const_cast<float*>(&s_jogAmounts[i])));
 			btn.addClickedCallback(onRelMoveEvent, &btn);
 		}
@@ -829,7 +829,7 @@ namespace UI
 	{
 		UI_LOCK();
 		Button* btn = static_cast<Button*>(lv_event_get_user_data(e));
-		MessageBox::AxisJog* axisJog = static_cast<MessageBox::AxisJog*>(lv_obj_get_user_data(btn->getCont()));
+		MessageBox::AxisJog* axisJog = static_cast<MessageBox::AxisJog*>(lv_obj_get_user_data(btn->getRoot()));
 		float amount = *reinterpret_cast<float*>(btn->getUserData());
 
 		// TODO: I am breaking the rule of no logic in the view but I'm being lazy. I should create a presenter for the

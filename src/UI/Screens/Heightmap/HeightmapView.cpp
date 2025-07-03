@@ -14,19 +14,19 @@ namespace UI
 		HeightmapItem(size_t index, lv_obj_t* parent, HeightmapView& view)
 			: ListItem("heightmap_item", index, parent)
 			, m_view(view)
-			, m_label(lv_label_create(getCont()))
-			, m_load("heightmap_load", getCont(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+			, m_label(lv_label_create(getRoot()))
+			, m_load("heightmap_load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		{
 			UI_LOCK();
 			setFlexFlow(LV_FLEX_FLOW_ROW);
-			lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-			lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
+			lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+			lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
 			lv_obj_set_height(m_label, LV_SIZE_CONTENT);
 			lv_obj_set_flex_grow(m_label, 1);
 
-			lv_obj_add_flag(getCont(), LV_OBJ_FLAG_CLICKABLE);
+			lv_obj_add_flag(getRoot(), LV_OBJ_FLAG_CLICKABLE);
 			lv_obj_add_event_cb(
-				getCont(),
+				getRoot(),
 				[](lv_event_t* event)
 				{
 					UI_LOCK();
@@ -71,7 +71,7 @@ namespace UI
 		void setSelected(bool selected)
 		{
 			UI_LOCK();
-			lv_obj_set_state(getCont(), LV_STATE_CHECKED, selected);
+			lv_obj_set_state(getRoot(), LV_STATE_CHECKED, selected);
 			m_load.setText(selected ? _("heightmap_unload") : _("heightmap_load"));
 			m_load.setChecked(selected);
 		}
@@ -86,8 +86,8 @@ namespace UI
 	HeightmapRenderMode::HeightmapRenderMode(lv_obj_t* parent, HeightmapPresenter& presenter)
 		: LvObj(lv_obj_create, "heightmap_render_mode", parent)
 		, m_presenter(presenter)
-		, m_title(lv_label_create(getCont()))
-		, m_btns(lv_obj_create(getCont()))
+		, m_title(lv_label_create(getRoot()))
+		, m_btns(lv_obj_create(getRoot()))
 		, m_fixed("heightmap_fixed", m_btns, _("heightmap_fixed"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		, m_auto("heightmap_auto", m_btns, _("heightmap_auto"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
@@ -98,7 +98,7 @@ namespace UI
 		lv_obj_set_flex_flow(m_btns, LV_FLEX_FLOW_ROW);
 		lv_obj_set_flex_align(m_btns, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
-		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_size(m_btns, LV_PCT(100), LV_SIZE_CONTENT);
 		m_fixed.setHeight(LV_SIZE_CONTENT);
 		m_auto.setHeight(LV_SIZE_CONTENT);
@@ -159,19 +159,19 @@ namespace UI
 
 	HeightmapStatistics::HeightmapStatistics(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_numPoints(lv_label_create(getCont()))
-		, m_area(lv_label_create(getCont()))
-		, m_minError(lv_label_create(getCont()))
-		, m_maxError(lv_label_create(getCont()))
-		, m_meanError(lv_label_create(getCont()))
-		, m_stdDev(lv_label_create(getCont()))
+		, m_numPoints(lv_label_create(getRoot()))
+		, m_area(lv_label_create(getRoot()))
+		, m_minError(lv_label_create(getRoot()))
+		, m_maxError(lv_label_create(getRoot()))
+		, m_meanError(lv_label_create(getRoot()))
+		, m_stdDev(lv_label_create(getRoot()))
 	{
-		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW_WRAP);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-		for (size_t i = 0; i < lv_obj_get_child_cnt(getCont()); i++)
+		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW_WRAP);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
 		{
-			lv_obj_t* child = lv_obj_get_child(getCont(), i);
+			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
 			lv_obj_set_size(child, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		}
 	}
@@ -192,15 +192,15 @@ namespace UI
 		: View(lv_obj_create, "HeightmapView", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_heightmap("heightmap", getCont(), layout_t(0, 0, 100, 100))
-		, m_heightmapList("heightmap_list", getCont())
-		, m_statistics("heightmap_statistics", getCont())
-		, m_renderMode(getCont(), *getPresenter().get())
+		, m_heightmap("heightmap", getRoot(), layout_t(0, 0, 100, 100))
+		, m_heightmapList("heightmap_list", getRoot())
+		, m_statistics("heightmap_statistics", getRoot())
+		, m_renderMode(getRoot(), *getPresenter().get())
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 
-		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
+		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_heightmap, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		lv_obj_set_grid_cell(m_heightmapList, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_renderMode, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);

@@ -20,9 +20,9 @@ namespace UI
 
 	HomeView::HomeView()
 		: View(lv_obj_create, "HomeView", lv_screen_active(), layout_t(0, 0, 100, 100))
-		, m_statusBar(getCont())
-		, m_sideBar("sidebar", getCont())
-		, m_mainWindow(lv_obj_create(getCont()))
+		, m_statusBar(getRoot())
+		, m_sideBar("sidebar", getRoot())
+		, m_mainWindow(lv_obj_create(getRoot()))
 		, m_toolList("home_tool_list", m_mainWindow)
 		, m_graph("home_graph", m_mainWindow)
 		, m_windowSelect(lv_obj_create(m_mainWindow))
@@ -66,8 +66,8 @@ namespace UI
 		, m_heightmapView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 		, m_statusView(m_mainWindow)
-		, m_alert("home_alert", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
-		, m_updatePrompt("update_prompt", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_alert("home_alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_updatePrompt("update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_numberpad("home_numberpad", m_mainWindow, layout_t(0, 0, LV_SIZE_CONTENT, 100))
 		, m_kb("home_keyboard", m_mainWindow)
 	{
@@ -89,8 +89,8 @@ namespace UI
 		// Main Window Layout
 		lv_obj_set_layout(m_mainWindow, LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(m_mainWindow, s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
-		lv_obj_set_grid_cell(m_toolList.getCont(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_graph.getCont(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		lv_obj_set_grid_cell(m_toolList.getRoot(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		lv_obj_set_grid_cell(m_graph.getRoot(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_windowSelect, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 
 		// Tool List
@@ -147,7 +147,7 @@ namespace UI
 		m_alert.hide();
 		m_alert.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_alert.setAlign(LV_ALIGN_CENTER, 0, 0);
-		lv_obj_set_style_max_height(m_alert.getCont(), LV_PCT(70), LV_PART_MAIN);
+		lv_obj_set_style_max_height(m_alert.getRoot(), LV_PCT(70), LV_PART_MAIN);
 
 		// Update Prompt
 		m_updatePrompt.hide();
@@ -159,7 +159,7 @@ namespace UI
 		m_updatePrompt.okVisible(true);
 		m_updatePrompt.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_updatePrompt.setAlign(LV_ALIGN_CENTER, 0, 0);
-		lv_obj_set_style_max_height(m_updatePrompt.getCont(), LV_PCT(70), LV_PART_MAIN);
+		lv_obj_set_style_max_height(m_updatePrompt.getRoot(), LV_PCT(70), LV_PART_MAIN);
 
 		// Keyboard
 		showKeyboard(false);
@@ -238,11 +238,11 @@ namespace UI
 	{
 		UI_LOCK();
 		m_messageBoxList.emplace_back(
-			std::make_shared<MessageBox>("home_message_box", getCont(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
+			std::make_shared<MessageBox>("home_message_box", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
 		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.back();
-		lv_obj_add_flag(msgBox->getCont(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(msgBox->getCont(), LV_ALIGN_TOP_MID, 0, 2);
-		lv_obj_set_style_max_height(msgBox->getCont(), LV_PCT(70), LV_PART_MAIN);
+		lv_obj_add_flag(msgBox->getRoot(), LV_OBJ_FLAG_FLOATING);
+		lv_obj_align(msgBox->getRoot(), LV_ALIGN_TOP_MID, 0, 2);
+		lv_obj_set_style_max_height(msgBox->getRoot(), LV_PCT(70), LV_PART_MAIN);
 		msgBox->hide();
 		return msgBox;
 	}

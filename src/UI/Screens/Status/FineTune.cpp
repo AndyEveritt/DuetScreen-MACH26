@@ -14,30 +14,30 @@ namespace UI
 {
 	FineTune::FineTune(lv_obj_t* parent)
 		: View(lv_obj_create, "fine_tune", parent, layout_t(0, 0, 100, 100))
-		, m_babystep("fine_tune_babystep", getCont(), layout_t(0, 0, 100, 100))
-		, m_sliderCont(lv_obj_create(getCont()))
+		, m_babystep("fine_tune_babystep", getRoot(), layout_t(0, 0, 100, 100))
+		, m_sliderCont(lv_obj_create(getRoot()))
 		, m_speed("fine_tune_speed", m_sliderCont, layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_extruderLabel(lv_label_create(m_sliderCont))
 		, m_extruderCont(lv_obj_create(m_sliderCont))
 		, m_fanLabel(lv_label_create(m_sliderCont))
 		, m_fanCont(lv_obj_create(m_sliderCont))
-		, m_keyboard(lv_keyboard_create(getCont()))
+		, m_keyboard(lv_keyboard_create(getRoot()))
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getCont(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < lv_obj_get_child_cnt(getCont()); i++)
+		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
 		{
-			lv_obj_t* child = lv_obj_get_child(getCont(), i);
+			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
 			lv_obj_set_height(child, LV_PCT(100));
 		}
-		lv_obj_set_flex_grow(m_babystep.getCont(), 2);
+		lv_obj_set_flex_grow(m_babystep.getRoot(), 2);
 		lv_obj_set_flex_grow(m_sliderCont, 5);
 		lv_obj_set_flex_grow(m_keyboard, 6);
 
-		lv_obj_set_style_max_width(m_babystep.getCont(), 200, 0);
+		lv_obj_set_style_max_width(m_babystep.getRoot(), 200, 0);
 
 		lv_obj_set_layout(m_sliderCont, LV_LAYOUT_FLEX);
 		lv_obj_set_flex_flow(m_sliderCont, LV_FLEX_FLOW_COLUMN);

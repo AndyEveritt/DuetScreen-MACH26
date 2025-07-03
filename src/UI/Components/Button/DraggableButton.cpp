@@ -15,8 +15,8 @@ namespace UI
 		: Button(name, parent, text)
 	{
 		// lv_obj_add_flag(getCont(), LV_OBJ_FLAG_OVERFLOW_VISIBLE);
-		lv_obj_set_overflow_visible_flag(getCont(), 200);
-		lv_obj_remove_flag(getCont(), LV_OBJ_FLAG_SCROLLABLE);
+		lv_obj_set_overflow_visible_flag(getRoot(), 200);
+		lv_obj_remove_flag(getRoot(), LV_OBJ_FLAG_SCROLLABLE);
 
 		// Add styles
 		lv_obj_add_style(getButton(), Themes::getLvglStyles().draggable, 0);
@@ -80,8 +80,8 @@ namespace UI
 		{
 			// lv_obj_add_flag(button->getButton(), LV_OBJ_FLAG_OVERFLOW_VISIBLE);
 			// lv_obj_refresh_ext_draw_size(button->getButton());
-			lv_obj_refresh_ext_draw_size(button->getCont());
-			lv_obj_invalidate(button->getCont());
+			lv_obj_refresh_ext_draw_size(button->getRoot());
+			lv_obj_invalidate(button->getRoot());
 			lv_indev_get_point(lv_indev_get_act(), &start_pos);
 		}
 		else if (code == LV_EVENT_PRESSING)

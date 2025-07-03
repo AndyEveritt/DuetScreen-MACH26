@@ -17,9 +17,9 @@ namespace UI
 		: ListItem("move_axis_item", index, parent)
 		, m_selected(false)
 		, m_list(view)
-		, m_label(lv_label_create(getCont()))
-		, m_heaters(utils::format("tool_%u_heaters", index), getCont())
-		, m_filamentControls(lv_obj_create(getCont()))
+		, m_label(lv_label_create(getRoot()))
+		, m_heaters(utils::format("tool_%u_heaters", index), getRoot())
+		, m_filamentControls(lv_obj_create(getRoot()))
 		, m_filament(lv_dropdown_create(m_filamentControls))
 		, m_unload(utils::format("extrude_unload_%u", index), m_filamentControls, _("unload"), layout_t(0, 0, 0, 100))
 	{
@@ -27,17 +27,17 @@ namespace UI
 
 		// Layout
 		constexpr lv_coord_t pad = 2;
-		lv_obj_set_size(getCont(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(getCont(), pad, 0);
-		lv_obj_set_style_pad_column(getCont(), pad, 0);
-		lv_obj_set_flex_flow(getCont(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getCont(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
+		lv_obj_set_style_pad_all(getRoot(), pad, 0);
+		lv_obj_set_style_pad_column(getRoot(), pad, 0);
+		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
+		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		uint8_t grow[] = {2, 5, 3}; // {label, heaters, filament controls}
 
-		for (size_t i = 0; i < lv_obj_get_child_count(getCont()); i++)
+		for (size_t i = 0; i < lv_obj_get_child_count(getRoot()); i++)
 		{
-			lv_obj_t* obj = lv_obj_get_child(getCont(), i);
+			lv_obj_t* obj = lv_obj_get_child(getRoot(), i);
 			if (obj == nullptr)
 			{
 				continue;
@@ -57,9 +57,9 @@ namespace UI
 		lv_obj_set_style_pad_all(m_filamentControls, pad, 0);
 		lv_obj_set_style_pad_column(m_filamentControls, pad, 0);
 		lv_obj_set_flex_grow(m_filament, 2);
-		lv_obj_set_flex_grow(m_unload.getCont(), 1);
+		lv_obj_set_flex_grow(m_unload.getRoot(), 1);
 		lv_obj_set_height(m_filament, LV_SIZE_CONTENT);
-		lv_obj_set_height(m_unload.getCont(), LV_SIZE_CONTENT);
+		lv_obj_set_height(m_unload.getRoot(), LV_SIZE_CONTENT);
 
 		lv_obj_set_height(m_heaters, LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_all(m_heaters, pad, 0);
@@ -199,14 +199,14 @@ namespace UI
 			return;
 		}
 		UI_LOCK();
-		lv_color_t color = lv_obj_get_style_bg_color(getCont(), LV_PART_MAIN);
+		lv_color_t color = lv_obj_get_style_bg_color(getRoot(), LV_PART_MAIN);
 		if (selected)
 		{
-			lv_obj_add_state(getCont(), LV_STATE_CHECKED);
+			lv_obj_add_state(getRoot(), LV_STATE_CHECKED);
 		}
 		else
 		{
-			lv_obj_remove_state(getCont(), LV_STATE_CHECKED);
+			lv_obj_remove_state(getRoot(), LV_STATE_CHECKED);
 		}
 		m_selected = selected;
 	}
@@ -225,12 +225,12 @@ namespace UI
 	ToolItem::Heater::Heater(const size_t index, lv_obj_t* parent, ToolItem& toolItem)
 		: ListItem("extrude_heater", index, parent)
 		, tool(toolItem)
-		, labelCont(lv_obj_create(getCont()))
+		, labelCont(lv_obj_create(getRoot()))
 		, label(lv_label_create(labelCont))
 		, status(lv_label_create(labelCont))
-		, current(lv_label_create(getCont()))
-		, active(lv_label_create(getCont()))
-		, standby(lv_label_create(getCont()))
+		, current(lv_label_create(getRoot()))
+		, active(lv_label_create(getRoot()))
+		, standby(lv_label_create(getRoot()))
 	{
 		UI_LOCK();
 		setStylePad(2, LV_PART_MAIN, Padding::ALL);
@@ -238,9 +238,9 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < lv_obj_get_child_count(getCont()); i++)
+		for (size_t i = 0; i < lv_obj_get_child_count(getRoot()); i++)
 		{
-			lv_obj_t* obj = lv_obj_get_child(getCont(), i);
+			lv_obj_t* obj = lv_obj_get_child(getRoot(), i);
 			lv_obj_set_height(obj, LV_SIZE_CONTENT);
 			lv_obj_set_flex_grow(obj, 1);
 			lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, 0);
@@ -324,9 +324,9 @@ namespace UI
 		: View(lv_obj_create, "move_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{30, LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_listHeader(lv_obj_create(getCont()))
-		, m_listCont(lv_obj_create(getCont()))
-		, m_bottomBarCont(lv_obj_create(getCont()))
+		, m_listHeader(lv_obj_create(getRoot()))
+		, m_listCont(lv_obj_create(getRoot()))
+		, m_bottomBarCont(lv_obj_create(getRoot()))
 		, m_headerTool(lv_label_create(m_listHeader))
 		, m_headerStatus(lv_label_create(m_listHeader))
 		, m_headerCurrent(lv_label_create(m_listHeader))
@@ -356,19 +356,19 @@ namespace UI
 					  Button("extrude_feed_rate_5", m_feedRateListCont, "", layout_t(0, 0, 0, 100))}
 		, m_retract("extrude_retract", m_extrudeControlCont, _("retract"), layout_t(0, 0, 100, 0))
 		, m_extrude("extrude_extrude", m_extrudeControlCont, _("extrude"), layout_t(0, 0, 100, 0))
-		, m_numberPad("extrude_number_pad", getCont(), layout_t(65, 0, 35, 100))
+		, m_numberPad("extrude_number_pad", getRoot(), layout_t(65, 0, 35, 100))
 	{
 		UI_LOCK();
 
 		lv_obj_add_style(m_listHeader, Themes::getLvglStyles().bg_color_header, 0);
 
 		// Layout
-		lv_obj_set_layout(getCont(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getCont(), m_layoutColDsc, m_layoutRowDsc);
+		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
+		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_listHeader, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_listCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
-		lv_obj_set_grid_cell(m_numberPad.getCont(), LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 3);
+		lv_obj_set_grid_cell(m_numberPad.getRoot(), LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 3);
 
 		// List Header
 		lv_obj_set_flex_flow(m_listHeader, LV_FLEX_FLOW_ROW);
@@ -445,7 +445,7 @@ namespace UI
 			feedDist.setCheckable(true);
 			feedDist.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&feedDist - m_feedDists)));
 			feedDist.addClickedCallback(onFeedDistEvent, this);
-			lv_obj_set_flex_grow(feedDist.getCont(), 1);
+			lv_obj_set_flex_grow(feedDist.getRoot(), 1);
 		}
 		s_selectedExtrusionFeedDistanceIndex =
 			StorageHelper::getData(ID_EXTRUSION_SELECTED_DISTANCE, s_selectedExtrusionFeedDistanceIndex);
@@ -466,7 +466,7 @@ namespace UI
 			feedRate.setCheckable(true);
 			feedRate.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&feedRate - m_feedRates)));
 			feedRate.addClickedCallback(onFeedRateEvent, this);
-			lv_obj_set_flex_grow(feedRate.getCont(), 1);
+			lv_obj_set_flex_grow(feedRate.getRoot(), 1);
 		}
 		s_selectedExtrusionFeedRateIndex =
 			StorageHelper::getData(ID_EXTRUSION_SELECTED_FEEDRATE, s_selectedExtrusionFeedRateIndex);
@@ -474,8 +474,8 @@ namespace UI
 
 		// Extrusion Control
 		lv_obj_set_flex_flow(m_extrudeControlCont, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_grow(m_retract.getCont(), 1);
-		lv_obj_set_flex_grow(m_extrude.getCont(), 1);
+		lv_obj_set_flex_grow(m_retract.getRoot(), 1);
+		lv_obj_set_flex_grow(m_extrude.getRoot(), 1);
 		lv_obj_set_style_pad_all(m_extrudeControlCont, 2, 0);
 		lv_obj_set_style_pad_row(m_extrudeControlCont, 2, 0);
 
