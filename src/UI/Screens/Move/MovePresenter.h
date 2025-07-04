@@ -43,6 +43,7 @@ namespace UI
 		void moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate);
 
 		// Extruder actions
+		void extrude(float distance, float feedrate);
 		void toggleToolState(size_t index);
 		void updateFilamentList();
 		void loadFilament(const std::string& filament);

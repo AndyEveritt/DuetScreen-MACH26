@@ -130,6 +130,11 @@ namespace UI
 		axis->MoveRelative(distance, feedrate);
 	}
 
+	void MovePresenter::extrude(float distance, float feedrate)
+	{
+		Comm::DUET.SendGcode(fmt::format("G1 E{} F{}\n", distance, feedrate * 60));
+	}
+
 	void MovePresenter::toggleToolState(size_t index)
 	{
 		MODEL_LOCK();

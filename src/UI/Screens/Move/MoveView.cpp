@@ -145,6 +145,8 @@ namespace UI
 				m_numberpad.setConfirmCallback([this, index](float feedrate)
 											   { m_extruderControl.setFeedrateValue(index, feedrate); });
 			});
+		m_extruderControl.setExtrudeCallback([this](float distance, float feedrate)
+											 { m_presenter->extrude(distance, feedrate); });
 
 		m_homeAll.addClickedCallback(onHomeAllEvent, this);
 		m_trueBedLevel.addClickedCallback(onTrueBedLevelEvent, this);

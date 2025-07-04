@@ -20,7 +20,7 @@ namespace UI
 	{
 		using tool_select_cb_t = std::function<void(size_t index)>;
 		using filament_cb_t = std::function<void(const std::string& filament)>;
-		using extrude_cb_t = std::function<void(int32_t distance, uint32_t feedrate)>;
+		using extrude_cb_t = std::function<void(float distance, float feedrate)>;
 		using distance_cb_t = std::function<void(size_t index, float distance)>;
 		using feedrate_cb_t = std::function<void(size_t index, float feedrate)>;
 
