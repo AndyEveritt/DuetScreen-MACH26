@@ -431,6 +431,7 @@ namespace UI
 		btn->addEventCallback(onDistanceEvent, LV_EVENT_ALL, this);
 		btn->setHeight(LV_PCT(100));
 		btn->setChecked(index == m_selectedDistanceIndex);
+		btn->addStyle(Themes::getLvglStyles().long_press, 0);
 		if (index < m_distanceValues.size())
 		{
 			btn->setText(fmt::format("{:g}", m_distanceValues[index]));
@@ -450,6 +451,7 @@ namespace UI
 		btn->addEventCallback(onFeedrateEvent, LV_EVENT_ALL, this);
 		btn->setHeight(LV_PCT(100));
 		btn->setChecked(index == m_selectedFeedrateIndex);
+		btn->addStyle(Themes::getLvglStyles().long_press, 0);
 		if (index < m_feedrateValues.size())
 		{
 			btn->setText(fmt::format("{:g}", m_feedrateValues[index]));

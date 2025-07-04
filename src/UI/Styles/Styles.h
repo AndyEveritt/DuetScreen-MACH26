@@ -80,6 +80,7 @@ namespace UI::Themes
 
 		Style actionBtn; // for UI elements that perform actions on the Duet
 		Style input;
+		Style long_press;
 		Style draggable;
 		Style dragging;
 		Style drag_complete;
