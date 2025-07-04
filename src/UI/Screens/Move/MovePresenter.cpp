@@ -108,6 +108,18 @@ namespace UI
 		axis->MoveRelative(distance, feedrate);
 	}
 
+	void MovePresenter::toggleToolState(size_t index)
+	{
+		MODEL_LOCK();
+		auto tool = OM::GetToolBySlot(index);
+		if (tool == nullptr)
+		{
+			LOG_WARN("Tool {:d} not found", index);
+			return;
+		}
+		tool->ToggleState();
+	}
+
 	void MovePresenter::newAxesData()
 	{
 		size_t axisCount = OM::Move::GetAxisCount(false);

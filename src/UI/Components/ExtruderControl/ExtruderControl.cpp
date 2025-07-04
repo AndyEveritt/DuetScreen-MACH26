@@ -281,7 +281,6 @@ namespace UI
 			LOG_DBG("Calling tool select callback for index {} in {}", index, control->getName());
 			control->m_toolSelectCb(index);
 		}
-		control->setCurrentTool(index);
 	}
 
 	void ExtruderControl::onFilamentSelectEvent(lv_event_t* event)

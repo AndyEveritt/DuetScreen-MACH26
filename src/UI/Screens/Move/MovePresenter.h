@@ -42,6 +42,9 @@ namespace UI
 		void moveAxisRelative(char axis_letter, float distance, uint32_t feedrate);
 		void moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate);
 
+		// Extruder actions
+		void toggleToolState(size_t index);
+
 		// Observers
 		void newAxesData();
 		void newToolData();

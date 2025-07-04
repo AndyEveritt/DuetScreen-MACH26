@@ -110,6 +110,7 @@ namespace UI
 
 		m_extruderControl.setHeight(LV_PCT(100));
 		m_extruderControl.setFlexGrow(1);
+		m_extruderControl.setToolCallback([this](size_t index) { m_presenter->toggleToolState(index); });
 		m_extruderControl.setDistanceCallback(
 			[this](size_t index, float distance)
 			{
