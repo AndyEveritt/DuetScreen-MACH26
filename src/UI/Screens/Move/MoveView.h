@@ -29,6 +29,12 @@ namespace UI
 		void setToolCount(const size_t count);
 		void setToolName(const size_t index, const std::string& name);
 		void setCurrentTool(const int32_t index);
+		void setFilamentDisabled(bool disabled) { m_extruderControl.setFilamentDisabled(disabled); }
+		void setFilamentOptions(const std::vector<std::string>& options)
+		{
+			m_extruderControl.setFilamentOptions(options);
+		}
+		void setLoadedFilament(const std::string& filament) { m_extruderControl.setFilamentSelected(filament); }
 
 		void clear();
 

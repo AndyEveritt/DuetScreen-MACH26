@@ -10,6 +10,7 @@
 #include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "ListHelpers.h"
+#include "ObjectModel/Files.h"
 #include "ObjectModel/Utils.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.h>

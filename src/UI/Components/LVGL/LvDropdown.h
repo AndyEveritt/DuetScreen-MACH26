@@ -19,7 +19,7 @@ namespace UI
 		LvDropdown(const std::string& name, lv_obj_t* parent);
 
 		void setText(const std::string& text);
-		const char* getText() const;
+		const std::string& getText() const;
 		lv_obj_t* getDropdownMenu() const { return getRoot(); }
 
 		void setOptions(const std::string& options);
@@ -46,5 +46,6 @@ namespace UI
 		bool isOpen() const;
 
 	  private:
+		std::string m_text;
 	};
 } // namespace UI

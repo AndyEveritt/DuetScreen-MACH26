@@ -18,13 +18,14 @@ namespace UI
 	void LvDropdown::setText(const std::string& text)
 	{
 		UI_LOCK();
-		lv_dropdown_set_text(getRoot(), text.c_str());
+		m_text = text;
+		lv_dropdown_set_text(getRoot(), m_text.c_str());
 	}
 
-	const char* LvDropdown::getText() const
+	const std::string& LvDropdown::getText() const
 	{
 		UI_LOCK();
-		return lv_dropdown_get_text(getRoot());
+		return m_text;
 	}
 
 	void LvDropdown::setOptions(const std::string& options)

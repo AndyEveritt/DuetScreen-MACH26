@@ -145,22 +145,33 @@ namespace UI
 
 			btn->setChecked(static_cast<int32_t>(index) == i);
 		}
-		m_filamentContainer.setState(LV_STATE_DISABLED, index < 0, true);
+		setFilamentDisabled(index < 0);
 		m_retractBtn.setState(LV_STATE_DISABLED, index < 0, true);
 		m_extrudeBtn.setState(LV_STATE_DISABLED, index < 0, true);
+	}
+
+	void ExtruderControl::setFilamentDisabled(bool disabled)
+	{
+		m_filamentContainer.setState(LV_STATE_DISABLED, disabled, true);
+		m_filamentSelect.setOptions(disabled ? std::vector<std::string>() : m_filamentOptions);
 	}
 
 	void ExtruderControl::setFilamentOptions(const std::vector<std::string>& options)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
-		m_filamentSelect.setOptions(options);
+		m_filamentOptions = options;
+		if (!m_filamentSelect.hasState(LV_STATE_DISABLED))
+		{
+			m_filamentSelect.setOptions(options);
+		}
 	}
 
 	void ExtruderControl::setFilamentSelected(const std::string& filament)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting selected filament to '{}' for {}", filament, getName());
+		m_filamentSelect.setText(filament);
 		m_filamentSelect.setSelected(filament);
 	}
 
@@ -421,6 +432,7 @@ namespace UI
 		LOG_DBG("Creating tool button {} for {}", index, getName());
 		auto btn = createBaseListButton("tool", index, parent);
 		btn->addClickedCallback(onToolSelectEvent, this);
+		btn->addStyle(Themes::getLvglStyles().actionBtn);
 		return btn;
 	}
 

@@ -44,6 +44,9 @@ namespace UI
 
 		// Extruder actions
 		void toggleToolState(size_t index);
+		void updateFilamentList();
+		void loadFilament(const std::string& filament);
+		void unloadFilament();
 
 		// Observers
 		void newAxesData();
@@ -56,5 +59,6 @@ namespace UI
 
 	  private:
 		AxisDataList m_axisData;
+		std::vector<std::string> m_filamentOptions;
 	};
 } // namespace UI

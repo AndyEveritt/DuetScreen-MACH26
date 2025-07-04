@@ -32,6 +32,7 @@ namespace UI
 		void setToolName(size_t index, const std::string& name);
 		void setCurrentTool(int32_t index);
 
+		void setFilamentDisabled(bool disabled);
 		void setFilamentOptions(const std::vector<std::string>& options);
 		void setFilamentSelected(const std::string& filament);
 		void setFilamentCallback(filament_cb_t cb);
@@ -82,5 +83,7 @@ namespace UI
 		extrude_cb_t m_extrudeCb;		 // Callback for when extrude/retract is clicked
 		distance_cb_t m_distanceCb;		 // Callback for when distance input is clicked
 		feedrate_cb_t m_feedrateCb;		 // Callback for when feedrate input is clicked
+
+		std::vector<std::string> m_filamentOptions;
 	};
 } // namespace UI

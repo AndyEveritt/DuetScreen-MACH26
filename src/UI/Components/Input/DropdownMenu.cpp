@@ -55,7 +55,7 @@ namespace UI
 	{
 		m_dropdown.setText(text);
 	}
-	const char* DropdownMenu::getText() const
+	const std::string& DropdownMenu::getText() const
 	{
 		return m_dropdown.getText();
 	}

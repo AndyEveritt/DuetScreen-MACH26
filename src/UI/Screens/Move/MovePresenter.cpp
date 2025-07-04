@@ -3,6 +3,7 @@
 #include "Hardware/Duet.h"
 #include "MoveView.h"
 #include "ObjectModel/Axis.h"
+#include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "lv_i18n/lv_i18n.h"
 
@@ -21,6 +22,27 @@ namespace UI
 	{
 		newAxesData();
 		newToolData();
+
+		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
+									 "",
+									 [this]()
+									 {
+										 {
+											 MODEL_LOCK();
+											 this->m_filamentOptions.clear();
+											 for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
+											 {
+												 std::shared_ptr<OM::FileSystem::FileSystemItem> item =
+													 OM::FileSystem::GetItem(i);
+												 if (item == nullptr)
+												 {
+													 continue;
+												 }
+												 this->m_filamentOptions.push_back(item->GetName());
+											 }
+										 }
+										 this->updateFilamentList();
+									 });
 	}
 
 	void MovePresenter::homeAll()
@@ -120,6 +142,33 @@ namespace UI
 		tool->ToggleState();
 	}
 
+	void MovePresenter::updateFilamentList()
+	{
+		m_view->setFilamentOptions(m_filamentOptions);
+	}
+
+	void MovePresenter::loadFilament(const std::string& filament)
+	{
+		MODEL_LOCK();
+		auto tool = OM::GetCurrentTool();
+		if (tool == nullptr)
+		{
+			return;
+		}
+		tool->ChangeFilament(filament.c_str());
+	}
+
+	void MovePresenter::unloadFilament()
+	{
+		MODEL_LOCK();
+		auto tool = OM::GetCurrentTool();
+		if (tool == nullptr)
+		{
+			return;
+		}
+		tool->UnloadFilament();
+	}
+
 	void MovePresenter::newAxesData()
 	{
 		size_t axisCount = OM::Move::GetAxisCount(false);
@@ -205,7 +254,10 @@ namespace UI
 				i, tool->name.IsEmpty() ? fmt::format("{} {}", _("default_tool_name"), i) : tool->name.c_str());
 			if (currentTool && currentTool == tool)
 			{
+				UI_LOCK();
 				m_view->setCurrentTool(i);
+				m_view->setFilamentDisabled(tool->filamentExtruder < 0);
+				m_view->setLoadedFilament(tool->GetFilament().c_str());
 			}
 		}
 	}
