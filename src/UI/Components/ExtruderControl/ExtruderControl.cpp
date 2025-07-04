@@ -154,6 +154,10 @@ namespace UI
 	{
 		m_filamentContainer.setState(LV_STATE_DISABLED, disabled, true);
 		m_filamentSelect.setOptions(disabled ? std::vector<std::string>() : m_filamentOptions);
+		if (disabled)
+		{
+			setFilamentSelected("");
+		}
 	}
 
 	void ExtruderControl::setFilamentOptions(const std::vector<std::string>& options)
@@ -161,10 +165,6 @@ namespace UI
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
 		m_filamentOptions = options;
-		if (!m_filamentSelect.hasState(LV_STATE_DISABLED))
-		{
-			m_filamentSelect.setOptions(options);
-		}
 	}
 
 	void ExtruderControl::setFilamentSelected(const std::string& filament)
