@@ -1,4 +1,4 @@
-#include "ExtrudeView.h"
+#include "TemperatureView.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "UI/Core/Navigation.h"
@@ -13,7 +13,7 @@ namespace UI
 	static uint32_t s_selectedExtrusionFeedRateIndex = 2;
 	static uint32_t s_selectedExtrusionFeedDistanceIndex = 2;
 
-	ToolItem::ToolItem(const size_t index, lv_obj_t* parent, ExtrudeView& view)
+	ToolItem::ToolItem(const size_t index, lv_obj_t* parent, TemperatureView& view)
 		: ListItem("move_axis_item", index, parent)
 		, m_selected(false)
 		, m_list(view)
@@ -320,7 +320,7 @@ namespace UI
 		item->getList().unloadFilament(item->getIndex());
 	}
 
-	ExtrudeView::ExtrudeView(lv_obj_t* parent)
+	TemperatureView::TemperatureView(lv_obj_t* parent)
 		: View(lv_obj_create, "move_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{30, LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
@@ -486,39 +486,39 @@ namespace UI
 		m_extrude.addStyle(Themes::getLvglStyles().actionBtn, 0);
 	}
 
-	void ExtrudeView::setToolCount(const size_t count)
+	void TemperatureView::setToolCount(const size_t count)
 	{
 		UI_LOCK();
 		m_toolItems.setItemCount(count, *this);
 	}
 
-	std::shared_ptr<ToolItem> ExtrudeView::getExtruderItem(const size_t index) const
+	std::shared_ptr<ToolItem> TemperatureView::getExtruderItem(const size_t index) const
 	{
 		UI_LOCK();
 		return m_toolItems.getItem(index);
 	}
 
-	void ExtrudeView::toggleToolState(size_t index)
+	void TemperatureView::toggleToolState(size_t index)
 	{
 		m_presenter->toggleToolState(index);
 	}
 
-	void ExtrudeView::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
+	void TemperatureView::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
 	{
 		m_presenter->toggleHeaterState(toolIndex, heaterIndex);
 	}
 
-	void ExtrudeView::loadFilament(size_t index, const char* filament)
+	void TemperatureView::loadFilament(size_t index, const char* filament)
 	{
 		m_presenter->loadFilament(index, filament);
 	}
 
-	void ExtrudeView::unloadFilament(size_t index)
+	void TemperatureView::unloadFilament(size_t index)
 	{
 		m_presenter->unloadFilament(index);
 	}
 
-	void ExtrudeView::showNumberPad(bool show)
+	void TemperatureView::showNumberPad(bool show)
 	{
 		if (show)
 		{
@@ -532,28 +532,28 @@ namespace UI
 		}
 	}
 
-	void ExtrudeView::onRetractEvent(lv_event_t* e)
+	void TemperatureView::onRetractEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
+		TemperatureView* view = static_cast<TemperatureView*>(lv_event_get_user_data(e));
 		auto dist = s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex];
 		auto rate = s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex];
 		view->m_presenter->retract(dist, rate);
 	}
 
-	void ExtrudeView::onExtrudeEvent(lv_event_t* e)
+	void TemperatureView::onExtrudeEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
+		TemperatureView* view = static_cast<TemperatureView*>(lv_event_get_user_data(e));
 		auto dist = s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex];
 		auto rate = s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex];
 		view->m_presenter->extrude(dist, rate);
 	}
 
-	void ExtrudeView::onFeedDistEvent(lv_event_t* e)
+	void TemperatureView::onFeedDistEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
+		TemperatureView* view = static_cast<TemperatureView*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
 		view->m_feedDists[s_selectedExtrusionFeedDistanceIndex].setChecked(false);
 		s_selectedExtrusionFeedDistanceIndex = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
@@ -561,10 +561,10 @@ namespace UI
 		StorageHelper::setData(ID_EXTRUSION_SELECTED_DISTANCE, s_selectedExtrusionFeedDistanceIndex);
 	}
 
-	void ExtrudeView::onFeedRateEvent(lv_event_t* e)
+	void TemperatureView::onFeedRateEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		ExtrudeView* view = static_cast<ExtrudeView*>(lv_event_get_user_data(e));
+		TemperatureView* view = static_cast<TemperatureView*>(lv_event_get_user_data(e));
 		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
 		view->m_feedRates[s_selectedExtrusionFeedRateIndex].setChecked(false);
 		s_selectedExtrusionFeedRateIndex = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
@@ -572,9 +572,9 @@ namespace UI
 		StorageHelper::setData(ID_EXTRUSION_SELECTED_FEEDRATE, s_selectedExtrusionFeedRateIndex);
 	}
 
-	void ExtrudeView::onShow()
+	void TemperatureView::onShow()
 	{
 		m_numberPad.hide();
 	}
-	void ExtrudeView::onHide() {}
+	void TemperatureView::onHide() {}
 } // namespace UI

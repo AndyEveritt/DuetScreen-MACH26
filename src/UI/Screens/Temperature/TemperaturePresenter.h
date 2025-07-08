@@ -4,12 +4,12 @@
 
 namespace UI
 {
-	class ExtrudeView;
+	class TemperatureView;
 
-	class ExtrudePresenter : public Presenter<ExtrudeView>
+	class TemperaturePresenter : public Presenter<TemperatureView>
 	{
 	  public:
-		PRESENTER_CONSTRUCTOR(ExtrudePresenter, ExtrudeView)
+		PRESENTER_CONSTRUCTOR(TemperaturePresenter, TemperatureView)
 
 		// Actions
 		void retract(uint32_t distance, uint32_t feedrate);
@@ -33,8 +33,8 @@ namespace UI
 
 		virtual void onInit() override
 		{
-			registerEventListener<EventType::ToolData>(this, &ExtrudePresenter::newToolData);
-			registerEventListener<EventType::Disconnected>(this, &ExtrudePresenter::disconnected);
+			registerEventListener<EventType::ToolData>(this, &TemperaturePresenter::newToolData);
+			registerEventListener<EventType::Disconnected>(this, &TemperaturePresenter::disconnected);
 		}
 
 	  private:

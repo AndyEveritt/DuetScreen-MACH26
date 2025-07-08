@@ -1,24 +1,24 @@
-#include "ExtrudePresenter.h"
+#include "TemperaturePresenter.h"
 #include "Debug.h"
-#include "ExtrudeView.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "TemperatureView.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
 {
-	void ExtrudePresenter::retract(uint32_t distance, uint32_t feedrate)
+	void TemperaturePresenter::retract(uint32_t distance, uint32_t feedrate)
 	{
 		Comm::DUET.SendGcodef("G1 E-%u F%u\n", distance, feedrate * 60);
 	}
 
-	void ExtrudePresenter::extrude(uint32_t distance, uint32_t feedrate)
+	void TemperaturePresenter::extrude(uint32_t distance, uint32_t feedrate)
 	{
 		Comm::DUET.SendGcodef("G1 E%u F%u\n", distance, feedrate * 60);
 	}
 
-	void ExtrudePresenter::newToolData()
+	void TemperaturePresenter::newToolData()
 	{
 		m_view->setToolCount(OM::GetToolCount());
 		for (size_t i = 0; i < m_view->getToolCount(); i++)
@@ -61,12 +61,12 @@ namespace UI
 		}
 	}
 
-	void ExtrudePresenter::disconnected()
+	void TemperaturePresenter::disconnected()
 	{
 		m_view->setToolCount(0);
 	}
 
-	void ExtrudePresenter::updateFilamentList()
+	void TemperaturePresenter::updateFilamentList()
 	{
 		for (size_t i = 0; i < m_view->getToolCount(); i++)
 		{
@@ -79,7 +79,7 @@ namespace UI
 		}
 	}
 
-	void ExtrudePresenter::toggleToolState(size_t index)
+	void TemperaturePresenter::toggleToolState(size_t index)
 	{
 		MODEL_LOCK();
 		auto tool = OM::GetToolBySlot(index);
@@ -90,7 +90,7 @@ namespace UI
 		tool->ToggleState();
 	}
 
-	void ExtrudePresenter::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
+	void TemperaturePresenter::toggleHeaterState(size_t toolIndex, size_t heaterIndex)
 	{
 		MODEL_LOCK();
 		auto tool = OM::GetToolBySlot(toolIndex);
@@ -101,7 +101,7 @@ namespace UI
 		tool->ToggleHeaterState(heaterIndex);
 	}
 
-	void ExtrudePresenter::loadFilament(size_t index, const char* filament)
+	void TemperaturePresenter::loadFilament(size_t index, const char* filament)
 	{
 		MODEL_LOCK();
 		auto tool = OM::GetToolBySlot(index);
@@ -112,7 +112,7 @@ namespace UI
 		tool->ChangeFilament(filament);
 	}
 
-	void ExtrudePresenter::unloadFilament(size_t index)
+	void TemperaturePresenter::unloadFilament(size_t index)
 	{
 		MODEL_LOCK();
 		auto tool = OM::GetToolBySlot(index);
@@ -123,7 +123,7 @@ namespace UI
 		tool->UnloadFilament();
 	}
 
-	bool ExtrudePresenter::configureNumberPad(const size_t toolIndex, const size_t heaterIndex, const bool active)
+	bool TemperaturePresenter::configureNumberPad(const size_t toolIndex, const size_t heaterIndex, const bool active)
 	{
 		MODEL_LOCK();
 		auto tool = OM::GetToolBySlot(toolIndex);
@@ -157,7 +157,7 @@ namespace UI
 		return true;
 	}
 
-	void ExtrudePresenter::numberPadConfirmCallback(float value)
+	void TemperaturePresenter::numberPadConfirmCallback(float value)
 	{
 		auto tool = OM::GetToolBySlot(m_numberPadData.toolIndex);
 
@@ -169,7 +169,7 @@ namespace UI
 		tool->SetHeaterTemps(m_numberPadData.heaterIndex, value, m_numberPadData.active);
 	}
 
-	void ExtrudePresenter::onActivate()
+	void TemperaturePresenter::onActivate()
 	{
 		MODEL_LOCK();
 		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,

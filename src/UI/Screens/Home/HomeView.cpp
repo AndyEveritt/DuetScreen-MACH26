@@ -30,10 +30,10 @@ namespace UI
 					   m_windowSelect,
 					   _("move"),
 					   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_extrudeWindow("extrude_window_select",
-						  m_windowSelect,
-						  _("extrude"),
-						  layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
+		, m_temperatureWindow("temperature_window_select",
+							  m_windowSelect,
+							  _("temperature"),
+							  layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
 		, m_statusWindow("status_window_select",
 						 m_windowSelect,
 						 _("status"),
@@ -60,7 +60,7 @@ namespace UI
 						   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
 		, m_consoleView(m_mainWindow)
 		, m_moveView(m_mainWindow)
-		, m_extrudeView(m_mainWindow)
+		, m_temperatureView(m_mainWindow)
 		, m_fanView(m_mainWindow)
 		, m_fileView(m_mainWindow)
 		, m_heightmapView(m_mainWindow)
@@ -112,7 +112,7 @@ namespace UI
 
 		// Window select buttons
 		m_moveWindow.setUserData(&m_moveView);
-		m_extrudeWindow.setUserData(&m_extrudeView);
+		m_temperatureWindow.setUserData(&m_temperatureView);
 		m_statusWindow.setUserData(&m_statusView);
 		m_heightmapWindow.setUserData(&m_heightmapView);
 		m_fansWindow.setUserData(&m_fanView);
@@ -120,7 +120,7 @@ namespace UI
 		m_settingsWindow.setUserData(&m_settingsView);
 
 		m_moveWindow.addClickedCallback(onWindowSelectEvent, this);
-		m_extrudeWindow.addClickedCallback(onWindowSelectEvent, this);
+		m_temperatureWindow.addClickedCallback(onWindowSelectEvent, this);
 		m_fansWindow.addClickedCallback(onWindowSelectEvent, this);
 		m_filesWindow.addClickedCallback(
 			[](lv_event_t* e)
@@ -136,7 +136,7 @@ namespace UI
 
 		m_consoleView.hide();
 		m_moveView.hide();
-		m_extrudeView.hide();
+		m_temperatureView.hide();
 		m_fanView.hide();
 		m_fileView.hide();
 		m_heightmapView.hide();

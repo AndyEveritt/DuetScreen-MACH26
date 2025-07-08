@@ -45,6 +45,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"tool_list_numpad_header_bed_chamber", "%s %d %s"},
     {"move", "Move"},
     {"extrude", "Extrude"},
+    {"temperature", "Temperature"},
     {"status", "Status"},
     {"fans", "Fans"},
     {"files", "Files"},

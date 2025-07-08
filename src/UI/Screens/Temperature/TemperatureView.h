@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ExtrudePresenter.h"
+#include "TemperaturePresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
 #include "UI/Components/ToolList/ToolList.h"
@@ -8,15 +8,15 @@
 
 namespace UI
 {
-	class ExtrudeView;
+	class TemperatureView;
 
 	class ToolItem : public ListItem
 	{
 	  public:
-		ToolItem(const size_t index, lv_obj_t* parent, ExtrudeView& view);
+		ToolItem(const size_t index, lv_obj_t* parent, TemperatureView& view);
 		virtual ~ToolItem();
 
-		ExtrudeView& getList() const { return m_list; }
+		TemperatureView& getList() const { return m_list; }
 		void setLabel(const char* name);
 		void setSelected(const bool selected);
 		void setHeaterCount(const size_t count);
@@ -57,7 +57,7 @@ namespace UI
 
 		bool m_selected;
 
-		ExtrudeView& m_list;
+		TemperatureView& m_list;
 
 		lv_obj_t* m_label;
 		List<Heater> m_heaters;
@@ -66,13 +66,13 @@ namespace UI
 		Button m_unload;
 	};
 
-	class ExtrudeView : public View<ExtrudePresenter>
+	class TemperatureView : public View<TemperaturePresenter>
 	{
 	  public:
 		friend class ToolItem;
-		friend class ExtrudePresenter;
+		friend class TemperaturePresenter;
 
-		ExtrudeView(lv_obj_t* parent);
+		TemperatureView(lv_obj_t* parent);
 
 		const size_t getToolCount() const { return m_toolItems.getItemCount(); }
 		void setToolCount(const size_t count);

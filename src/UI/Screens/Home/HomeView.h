@@ -12,13 +12,13 @@
 #include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"
-#include "UI/Screens/Extrude/ExtrudeView.h"
 #include "UI/Screens/Fan/FanView.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Heightmap/HeightmapView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Screens/Status/StatusView.h"
+#include "UI/Screens/Temperature/TemperatureView.h"
 #include "lvgl/lvgl.h"
 #include <list>
 #include <memory>
@@ -51,7 +51,7 @@ namespace UI
 		// Sub-views
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		MoveView& getMoveView() { return m_moveView; }
-		ExtrudeView& getExtrudeView() { return m_extrudeView; }
+		TemperatureView& getExtrudeView() { return m_temperatureView; }
 		FileView& getFileView() { return m_fileView; }
 		SettingsView& getSettingsView() { return m_settingsView; }
 		StatusView& getStatusView() { return m_statusView; }
@@ -74,7 +74,7 @@ namespace UI
 		// Window selector
 		lv_obj_t* m_windowSelect;
 		Button m_moveWindow;
-		Button m_extrudeWindow;
+		Button m_temperatureWindow;
 		Button m_statusWindow;
 		Button m_heightmapWindow;
 		Button m_fansWindow;
@@ -85,7 +85,7 @@ namespace UI
 		// Windows
 		ConsoleView m_consoleView;
 		MoveView m_moveView;
-		ExtrudeView m_extrudeView;
+		TemperatureView m_temperatureView;
 		FanView m_fanView;
 		FileView m_fileView;
 		HeightmapView m_heightmapView;
