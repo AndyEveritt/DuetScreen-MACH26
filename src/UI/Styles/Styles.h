@@ -196,11 +196,12 @@ namespace UI::Themes
 
 	struct ComponentStyles
 	{
-		Style estop;   // Emergency stop button style
-		Style file;	   // File item style
-		Style folder;  // Folder item style
-		Style unhomed; // Used for the move view
-		Style sidebar; // Sidebar style
+		Style estop;		   // Emergency stop button style
+		Style file;			   // File item style
+		Style folder;		   // Folder item style
+		Style unhomed;		   // Used for the move view
+		Style sidebar;		   // Sidebar style
+		Style temperature_bar; // Temperature bar style
 	};
 
 	const LvglStyles& getLvglStyles();

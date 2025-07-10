@@ -487,7 +487,7 @@ namespace UI
 		m_extrude.addStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		m_heaterSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_heaterSlider.getPresenter()->setHeaterIndex(2);
+		m_heaterSlider.getPresenter()->setHeaterIndex(1);
 	}
 
 	void TemperatureView::setToolCount(const size_t count)

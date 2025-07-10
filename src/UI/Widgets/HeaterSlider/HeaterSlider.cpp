@@ -52,6 +52,8 @@ namespace UI
 		m_standbyTemperature.addStyle(Themes::getLvglStyles().pad_normal);
 		m_activeTemperature.addStyle(Themes::getLvglStyles().input);
 		m_standbyTemperature.addStyle(Themes::getLvglStyles().input);
+
+		m_currentTemperature.addStyle(Themes::getComponentStyles().temperature_bar, LV_PART_INDICATOR);
 	}
 
 	void HeaterSlider::setHeaterName(const std::string& name)
