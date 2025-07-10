@@ -73,7 +73,10 @@ namespace UI
 		int32_t index = getOptionIndex(option);
 		if (index < 0)
 		{
-			LOG_WARN("Failed to find option '{}' in dropdown", option);
+			if (!option.empty())
+			{
+				LOG_WARN("Failed to find option '{}' in dropdown", option);
+			}
 			setSelectedHighlight(false);
 			return false;
 		}

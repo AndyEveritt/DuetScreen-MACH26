@@ -82,7 +82,7 @@ namespace OM::Move
 
 	AxisPtr GetAxis(const size_t index)
 	{
-		LOG_DBG("Axis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
+		LOG_VERBOSE("Axis index {:d} / max {:d}", index, MAX_TOTAL_AXES);
 		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
