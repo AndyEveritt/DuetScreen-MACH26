@@ -89,7 +89,7 @@
             "stopAtEntry": false,
             "MIMode": "gdb",
             "miDebuggerServerAddress": "${config:duetscreen_ip}:3000",
-            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-buildroot-linux-gnueabihf-gdb",
+            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-none-linux-gnueabihf-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -120,7 +120,7 @@
             "stopAtEntry": false,
             "MIMode": "gdb",
             "miDebuggerServerAddress": "${config:duetscreen_ip}:3000",
-            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-buildroot-linux-gnueabihf-gdb",
+            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-none-linux-gnueabihf-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
