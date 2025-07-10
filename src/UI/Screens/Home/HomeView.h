@@ -7,9 +7,6 @@
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/MessageBox/MessageBox.h"
-#include "UI/Components/SideBar/SideBar.h"
-#include "UI/Components/StatusBar/StatusBar.h"
-#include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"
 #include "UI/Screens/Fan/FanView.h"
@@ -19,6 +16,9 @@
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Screens/Status/StatusView.h"
 #include "UI/Screens/Temperature/TemperatureView.h"
+#include "UI/Widgets/SideBar/SideBar.h"
+#include "UI/Widgets/StatusBar/StatusBar.h"
+#include "UI/Widgets/ToolList/ToolList.h"
 #include "lvgl/lvgl.h"
 #include <list>
 #include <memory>

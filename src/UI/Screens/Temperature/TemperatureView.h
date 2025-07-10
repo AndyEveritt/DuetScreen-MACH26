@@ -3,8 +3,8 @@
 #include "TemperaturePresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
-#include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/ToolList/ToolList.h"
 
 namespace UI
 {
