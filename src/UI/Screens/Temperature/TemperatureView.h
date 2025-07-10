@@ -4,6 +4,7 @@
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/HeaterSlider/HeaterSlider.h"
 #include "UI/Widgets/ToolList/ToolList.h"
 
 namespace UI
@@ -132,5 +133,7 @@ namespace UI
 
 		// Number Pad
 		ToolListNumPad m_numberPad;
+
+		HeaterSlider m_heaterSlider;
 	};
 } // namespace UI

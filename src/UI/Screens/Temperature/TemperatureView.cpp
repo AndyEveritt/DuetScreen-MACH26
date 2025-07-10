@@ -357,6 +357,7 @@ namespace UI
 		, m_retract("extrude_retract", m_extrudeControlCont, _("retract"), layout_t(0, 0, 100, 0))
 		, m_extrude("extrude_extrude", m_extrudeControlCont, _("extrude"), layout_t(0, 0, 100, 0))
 		, m_numberPad("extrude_number_pad", getRoot(), layout_t(65, 0, 35, 100))
+		, m_heaterSlider("heater_slider", getRoot())
 	{
 		UI_LOCK();
 
@@ -484,6 +485,9 @@ namespace UI
 
 		m_retract.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_extrude.addStyle(Themes::getLvglStyles().actionBtn, 0);
+
+		m_heaterSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_heaterSlider.getPresenter()->setHeaterIndex(2);
 	}
 
 	void TemperatureView::setToolCount(const size_t count)
@@ -575,6 +579,7 @@ namespace UI
 	void TemperatureView::onShow()
 	{
 		m_numberPad.hide();
+		m_heaterSlider.activate();
 	}
 	void TemperatureView::onHide() {}
 } // namespace UI
