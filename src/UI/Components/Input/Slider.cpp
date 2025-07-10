@@ -7,42 +7,42 @@
 
 #include "Slider.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
 	Slider::Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(lv_label_create(getRoot()))
-		, m_sliderCont(lv_obj_create(getRoot()))
-		, m_decrement("slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)
-		, m_slider(lv_slider_create(m_sliderCont))
-		, m_increment("slider_increment", m_sliderCont, LV_SYMBOL_PLUS)
-		, m_input(lv_textarea_create(m_sliderCont))
+		, m_label(name + "_label", getRoot())
+		, m_sliderCont(name + "_slider_cont", getRoot())
+		, m_decrement(name + "_slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)
+		, m_slider(name + "_slider", m_sliderCont)
+		, m_increment(name + "_slider_increment", m_sliderCont, LV_SYMBOL_PLUS)
+		, m_input(name + "_slider_input", m_sliderCont)
 		, m_incrementValue(1)
 		, m_keyboard(nullptr)
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
-		lv_obj_set_size(m_label, LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_size(m_sliderCont, LV_PCT(100), LV_SIZE_CONTENT);
+		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_sliderCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		lv_obj_set_layout(m_sliderCont, LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(m_sliderCont, LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(m_sliderCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < lv_obj_get_child_cnt(m_sliderCont); i++)
+		for (size_t i = 0; i < m_sliderCont.getChildCnt(); i++)
 		{
-			lv_obj_t* child = lv_obj_get_child(m_sliderCont, i);
+			lv_obj_t* child = m_sliderCont.getChild(i);
 			lv_obj_set_height(child, LV_SIZE_CONTENT);
 			lv_obj_set_style_pad_all(child, 2, 0);
 		}
-		lv_obj_set_width(m_decrement.getRoot(), LV_SIZE_CONTENT);
-		lv_obj_set_width(m_increment.getRoot(), LV_SIZE_CONTENT);
-		lv_obj_set_width(m_input, 50);
-		lv_obj_set_flex_grow(m_slider, 1);
+
+		m_decrement.setWidth(LV_SIZE_CONTENT);
+		m_increment.setWidth(LV_SIZE_CONTENT);
+		m_input.setWidth(50);
+		m_slider.setFlexGrow(1);
 
 		m_decrement.addEventCallback(
 			[](lv_event_t* e)
@@ -74,25 +74,17 @@ namespace UI
 			LV_EVENT_ALL,
 			this);
 
-		lv_textarea_set_one_line(m_input, true);
-		lv_textarea_set_accepted_chars(m_input, "0123456789");
-		lv_textarea_set_max_length(m_input, 4);
-		lv_textarea_set_cursor_click_pos(m_input, false);
-		lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_CENTER, 0);
+		m_input.setOneLine(true);
+		m_input.setAcceptedChars("0123456789");
+		m_input.setMaxLength(4);
+		m_input.setCursorClickPos(false);
+		m_input.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		updateText();
-		lv_obj_add_event_cb(m_slider, onValueChanged, LV_EVENT_ALL, this);
-		lv_obj_add_event_cb(m_input, onInputEvent, LV_EVENT_ALL, this);
-	}
 
-	int32_t Slider::getMin() const
-	{
-		UI_LOCK();
-		return lv_slider_get_min_value(m_slider);
-	}
-	int32_t Slider::getMax() const
-	{
-		UI_LOCK();
-		return lv_slider_get_max_value(m_slider);
+		m_slider.addEventCallback(onValueChanged, LV_EVENT_ALL, this);
+		m_input.addEventCallback(onInputEvent, LV_EVENT_ALL, this);
+
+		m_input.addStyle(Themes::getLvglStyles().input);
 	}
 
 	void Slider::setOutOfRangeMode(OutOfRange mode)
@@ -102,32 +94,21 @@ namespace UI
 		{
 		case OutOfRange::NONE:
 		case OutOfRange::UPPER:
-			lv_textarea_set_accepted_chars(m_input, getMin() < 0 ? "-0123456789" : "0123456789");
+			m_input.setAcceptedChars(getMin() < 0 ? "-0123456789" : "0123456789");
 			break;
 		case OutOfRange::LOWER:
 		case OutOfRange::BOTH:
-			lv_textarea_set_accepted_chars(m_input, "-0123456789");
+			m_input.setAcceptedChars("-0123456789");
 			break;
 		}
 		m_outOfRangeMode = mode;
 	}
 
-	void Slider::setLabel(const char* text)
+	void Slider::setLabel(const std::string& text)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(m_label, LV_OBJ_FLAG_HIDDEN, text == nullptr);
-		lv_label_set_text(m_label, text);
-	}
-
-	void Slider::setIncrementValue(int32_t value)
-	{
-		m_incrementValue = value;
-	}
-
-	void Slider::setRange(int32_t min, int32_t max)
-	{
-		UI_LOCK();
-		lv_slider_set_range(m_slider, min, max);
+		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, text.empty());
+		m_label.setText(text);
 	}
 
 	void Slider::setValue(int32_t value)
@@ -135,9 +116,9 @@ namespace UI
 		UI_LOCK();
 		boundValue(value);
 		m_value = value;
-		lv_slider_set_value(m_slider, value, LV_ANIM_ON);
+		m_slider.setValue(value);
 
-		if (!lv_obj_has_state(m_input, LV_STATE_FOCUSED))
+		if (!m_input.hasState(LV_STATE_FOCUSED))
 		{
 			updateText();
 		}
@@ -160,7 +141,7 @@ namespace UI
 			slider->m_focused = true;
 			break;
 		case LV_EVENT_VALUE_CHANGED:
-			slider->m_value = lv_slider_get_value(slider->m_slider);
+			slider->m_value = slider->m_slider.getValue();
 			if (slider->boundValue(slider->m_value))
 			{
 				slider->setValue(slider->m_value);
@@ -169,7 +150,7 @@ namespace UI
 			{
 				slider->m_valueChangedCallback(slider->getValue());
 			}
-			if (!lv_obj_has_state(slider->m_input, LV_STATE_FOCUSED))
+			if (!slider->m_input.hasState(LV_STATE_FOCUSED))
 			{
 				slider->updateText();
 			}
@@ -223,7 +204,7 @@ namespace UI
 		}
 		case LV_EVENT_READY:
 		{
-			int32_t value = atoi(lv_textarea_get_text(slider->m_input));
+			int32_t value = atoi(slider->m_input.getText().c_str());
 			slider->setValue(value);
 			break;
 		}
@@ -265,6 +246,6 @@ namespace UI
 	void Slider::updateText()
 	{
 		UI_LOCK();
-		lv_textarea_set_text(m_input, std::to_string(getValue()).c_str());
+		m_input.setText(std::to_string(getValue()).c_str());
 	}
 } // namespace UI

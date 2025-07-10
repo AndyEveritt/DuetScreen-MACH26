@@ -8,6 +8,10 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvLabel.h"
+#include "UI/Components/LVGL/LvSlider.h"
+#include "UI/Components/LVGL/LvTextArea.h"
 #include "UI/Core/View.h"
 #include <functional>
 
@@ -33,16 +37,16 @@ namespace UI
 		Slider(const std::string& name, lv_obj_t* parent, layout_t layout);
 
 		int32_t getValue() const { return m_value; }
-		int32_t getMin() const;
-		int32_t getMax() const;
+		int32_t getMin() const { return m_slider.getMinValue(); }
+		int32_t getMax() const { return m_slider.getMaxValue(); }
 		lv_obj_t* getInput() const { return m_input; }
 
 		bool isFocused() const { return m_focused; }
 
 		void setOutOfRangeMode(OutOfRange mode);
-		void setLabel(const char* text);
-		void setIncrementValue(int32_t value);
-		void setRange(int32_t min, int32_t max);
+		void setLabel(const std::string& text);
+		void setIncrementValue(int32_t value) { m_incrementValue = value; }
+		void setRange(int32_t min, int32_t max) { m_slider.setRange(min, max); }
 		void setValue(int32_t value);
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
@@ -57,13 +61,13 @@ namespace UI
 		bool boundValue(int32_t& value);
 		void updateText();
 
-		lv_obj_t* m_label;
-		lv_obj_t* m_sliderCont;
+		LvLabel m_label;
+		LvContainer m_sliderCont;
 
 		Button m_decrement;
-		lv_obj_t* m_slider;
+		LvSlider m_slider;
 		Button m_increment;
-		lv_obj_t* m_input;
+		LvTextArea m_input;
 
 		int32_t m_incrementValue;
 		lv_obj_t* m_keyboard;
