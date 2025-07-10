@@ -91,7 +91,6 @@ namespace UI
 
 	void HeaterSlider::setActiveTemperature(float temperature)
 	{
-		UI_LOCK();
 		m_activeTempValue = temperature;
 		m_activeTemperature.setText(fmt::format("{:g} °C", temperature));
 		updateLabelPositions();
@@ -99,7 +98,6 @@ namespace UI
 
 	void HeaterSlider::setStandbyTemperature(float temperature)
 	{
-		UI_LOCK();
 		m_standbyTempValue = temperature;
 		m_standbyTemperature.setText(fmt::format("{:g} °C", temperature));
 		updateLabelPositions();
@@ -158,10 +156,16 @@ namespace UI
 
 	void HeaterSlider::updateLabelPosition(LvLabel& label, float value)
 	{
-		UI_LOCK();
 		// Calculate the position based on the current temperature value
 		lv_coord_t percentage =
 			100 * std::clamp((value - m_minTempValue) / (m_maxTempValue - m_minTempValue), 0.0f, 1.0f);
-		label.setX(LV_PCT(percentage));
+
+		label.updateLayout();
+		lv_coord_t label_width = label.getWidth();
+		lv_coord_t bar_width = m_currentTemperature.getWidth();
+
+		lv_coord_t label_offset_pct = percentage * label_width / bar_width;
+
+		label.setX(LV_PCT(percentage - label_offset_pct));
 	}
 } // namespace UI

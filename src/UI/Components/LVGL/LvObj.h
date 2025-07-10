@@ -100,7 +100,18 @@ namespace UI
 		lv_obj_t* getParent() const;
 		lv_obj_t* getChild(int32_t id) const;
 		uint32_t getChildCnt() const;
-		layout_t getLayout();
+		layout_t getLayout() const;
+		layout_t getLayoutPct() const;
+		lv_coord_t getX() const;
+		lv_coord_t getX2() const;
+		lv_coord_t getY() const;
+		lv_coord_t getY2() const;
+		lv_coord_t getWidth() const;
+		lv_coord_t getHeight() const;
+		lv_coord_t getContentWidth() const;
+		lv_coord_t getContentHeight() const;
+		lv_coord_t getSelfWidth() const;
+		lv_coord_t getSelfHeight() const;
 
 		void setUserData(void* user_data);
 		void* getUserData() const;
@@ -134,6 +145,13 @@ namespace UI
 		void setFlag(lv_obj_flag_t flag, bool enable, bool recursive = false);
 		void setState(lv_state_t state, bool enable, bool recursive = false);
 		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
+
+		void updateLayout();
+		bool refreshSelfSize();
+		void invalidate();
+
+		void setExtClickArea(int32_t size);
+		void getClickArea(lv_area_t* area) const;
 
 		void scrollToX(lv_coord_t x, lv_anim_enable_t anim = LV_ANIM_OFF);
 		void scrollToY(lv_coord_t y, lv_anim_enable_t anim = LV_ANIM_OFF);

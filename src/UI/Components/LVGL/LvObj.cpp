@@ -66,23 +66,91 @@ namespace UI
 		return lv_obj_get_child_count(getRoot());
 	}
 
-	layout_t LvObj::getLayout()
+	layout_t LvObj::getLayout() const
 	{
 		UI_LOCK();
 		layout_t layout;
-		lv_coord_t x = lv_obj_get_x(getRoot());
-		lv_coord_t y = lv_obj_get_y(getRoot());
-		lv_coord_t w = lv_obj_get_width(getRoot());
-		lv_coord_t h = lv_obj_get_height(getRoot());
-		lv_coord_t wParent = lv_obj_get_width(lv_obj_get_parent(getRoot()));
-		lv_coord_t hParent = lv_obj_get_height(lv_obj_get_parent(getRoot()));
-
-		layout.x = getPct(x, wParent);
-		layout.y = getPct(y, hParent);
-		layout.w = getPct(w, wParent);
-		layout.h = getPct(h, hParent);
+		layout.x = lv_obj_get_x(getRoot());
+		layout.y = lv_obj_get_y(getRoot());
+		layout.w = lv_obj_get_width(getRoot());
+		layout.h = lv_obj_get_height(getRoot());
 
 		return layout;
+	}
+
+	layout_t LvObj::getLayoutPct() const
+	{
+		UI_LOCK();
+		layout_t layout = getLayout();
+		lv_coord_t wParent = lv_obj_get_width(getParent());
+		lv_coord_t hParent = lv_obj_get_height(getParent());
+
+		layout.x = getPct(layout.x, wParent);
+		layout.y = getPct(layout.y, hParent);
+		layout.w = getPct(layout.w, wParent);
+		layout.h = getPct(layout.h, hParent);
+
+		return layout;
+	}
+
+	lv_coord_t LvObj::getX() const
+	{
+		UI_LOCK();
+		return lv_obj_get_x(getRoot());
+	}
+
+	lv_coord_t LvObj::getY() const
+	{
+		UI_LOCK();
+		return lv_obj_get_y(getRoot());
+	}
+
+	lv_coord_t LvObj::getX2() const
+	{
+		UI_LOCK();
+		return lv_obj_get_x2(getRoot());
+	}
+
+	lv_coord_t LvObj::getY2() const
+	{
+		UI_LOCK();
+		return lv_obj_get_y2(getRoot());
+	}
+
+	lv_coord_t LvObj::getWidth() const
+	{
+		UI_LOCK();
+		return lv_obj_get_width(getRoot());
+	}
+
+	lv_coord_t LvObj::getHeight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_height(getRoot());
+	}
+
+	lv_coord_t LvObj::getContentWidth() const
+	{
+		UI_LOCK();
+		return lv_obj_get_content_width(getRoot());
+	}
+
+	lv_coord_t LvObj::getContentHeight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_content_height(getRoot());
+	}
+
+	lv_coord_t LvObj::getSelfWidth() const
+	{
+		UI_LOCK();
+		return lv_obj_get_self_width(getRoot());
+	}
+
+	lv_coord_t LvObj::getSelfHeight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_self_height(getRoot());
 	}
 
 	void LvObj::setUserData(void* user_data)
@@ -268,6 +336,36 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_obj_align(getRoot(), align, x, y);
+	}
+
+	void LvObj::updateLayout()
+	{
+		UI_LOCK();
+		lv_obj_update_layout(getRoot());
+	}
+
+	bool LvObj::refreshSelfSize()
+	{
+		UI_LOCK();
+		return lv_obj_refresh_self_size(getRoot());
+	}
+
+	void LvObj::invalidate()
+	{
+		UI_LOCK();
+		lv_obj_invalidate(getRoot());
+	}
+
+	void LvObj::setExtClickArea(int32_t size)
+	{
+		UI_LOCK();
+		lv_obj_set_ext_click_area(getRoot(), size);
+	}
+
+	void LvObj::getClickArea(lv_area_t* area) const
+	{
+		UI_LOCK();
+		lv_obj_get_click_area(getRoot(), area);
 	}
 
 	void LvObj::scrollToX(lv_coord_t x, lv_anim_enable_t anim)
