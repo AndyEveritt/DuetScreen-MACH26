@@ -19,15 +19,15 @@ namespace UI
 		void setHeaterMinTemperature(float temperature);
 		void setHeaterMaxTemperature(float temperature);
 		void setCurrentTemperature(float temperature);
-		void setActiveTemperature(float temperature, bool dragging = false);
-		void setStandbyTemperature(float temperature, bool dragging = false);
+		void setActiveTemperature(int32_t temperature, bool dragging = false);
+		void setStandbyTemperature(int32_t temperature, bool dragging = false);
 
 	  private:
 		static void onTemperatureLabelEvent(lv_event_t* e);
 		static void drawCurrentTemperatureEvent(lv_event_t* e);
 
 		void updateLabelPositions();
-		void updateLabelPosition(LvLabel& label, float value);
+		void updateLabelPosition(LvLabel& label, int32_t value);
 
 		LvContainer m_heaterInfoCont;
 		Button m_heaterName;
@@ -40,8 +40,8 @@ namespace UI
 		lv_point_t m_pressedPoint;
 
 		float m_currentTempValue = 0.0f;
-		float m_activeTempValue = 0.0f;
-		float m_standbyTempValue = 0.0f;
+		int32_t m_activeTempValue = 0;
+		int32_t m_standbyTempValue = 0;
 		float m_minTempValue = 0.0f;
 		float m_maxTempValue = 300.0f;
 	};

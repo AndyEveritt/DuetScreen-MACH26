@@ -113,7 +113,7 @@ namespace UI
 		m_currentTemperature.setValue(temperature);
 	}
 
-	void HeaterSlider::setActiveTemperature(float temperature, bool dragging)
+	void HeaterSlider::setActiveTemperature(int32_t temperature, bool dragging)
 	{
 		if (temperature == m_activeTempValue)
 			return;
@@ -121,13 +121,13 @@ namespace UI
 		if (m_activeTemperature.hasState(LV_STATE_PRESSED) && !dragging)
 			return;
 
-		LOG_DBG("Setting active temperature to {:g} °C", temperature);
+		LOG_DBG("Setting active temperature to {:d} °C", temperature);
 		m_activeTempValue = temperature;
-		m_activeTemperature.setText(fmt::format("{:.1f} °C", temperature));
+		m_activeTemperature.setText(fmt::format("{:d} °C", temperature));
 		updateLabelPosition(m_activeTemperature, m_activeTempValue);
 	}
 
-	void HeaterSlider::setStandbyTemperature(float temperature, bool dragging)
+	void HeaterSlider::setStandbyTemperature(int32_t temperature, bool dragging)
 	{
 		if (temperature == m_standbyTempValue)
 			return;
@@ -135,9 +135,9 @@ namespace UI
 		if (m_standbyTemperature.hasState(LV_STATE_PRESSED) && !dragging)
 			return;
 
-		LOG_DBG("Setting standby temperature to {:g} °C", temperature);
+		LOG_DBG("Setting standby temperature to {:d} °C", temperature);
 		m_standbyTempValue = temperature;
-		m_standbyTemperature.setText(fmt::format("{:.1f} °C", temperature));
+		m_standbyTemperature.setText(fmt::format("{:d} °C", temperature));
 		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
@@ -336,12 +336,17 @@ namespace UI
 		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
-	void HeaterSlider::updateLabelPosition(LvLabel& label, float value)
+	void HeaterSlider::updateLabelPosition(LvLabel& label, int32_t value)
 	{
-		LOG_DBG("Updating label '{}' position for value: {:g}", label.getName(), value);
+		LOG_DBG("Updating label '{}' position for value: {:d}", label.getName(), value);
 		// Calculate the position based on the current temperature value
-		lv_coord_t percentage =
-			100 * std::clamp((value - m_minTempValue) / (m_maxTempValue - m_minTempValue), 0.0f, 1.0f);
+		const int32_t range = m_maxTempValue - m_minTempValue;
+		if (range <= 0)
+		{
+			LOG_ERROR("Invalid temperature range: min = {:g}, max = {:g}", m_minTempValue, m_maxTempValue);
+			return;
+		}
+		lv_coord_t percentage = std::clamp(100 * (value - (int32_t)m_minTempValue) / range, 0, 100);
 
 		label.updateLayout();
 		lv_coord_t label_width = label.getWidth();
