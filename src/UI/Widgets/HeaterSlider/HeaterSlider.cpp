@@ -43,6 +43,10 @@ namespace UI
 		// m_activeTemperature.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		// m_standbyTemperature.setFlag(LV_OBJ_FLAG_FLOATING, true);
 
+		m_activeTemperature.setUserData(this);
+		m_standbyTemperature.setUserData(this);
+		m_activeTemperature.addEventCallback(onActiveTemperatureEvent, LV_EVENT_ALL, &m_activeTemperature);
+		m_standbyTemperature.addEventCallback(onActiveTemperatureEvent, LV_EVENT_ALL, &m_standbyTemperature);
 		m_currentTemperature.addEventCallback(drawCurrentTemperatureEvent, LV_EVENT_DRAW_MAIN_END, this);
 
 		// Add styles
@@ -105,14 +109,14 @@ namespace UI
 
 	void HeaterSlider::drawCurrentTemperatureEvent(lv_event_t* e)
 	{
-		HeaterSlider* slider = (HeaterSlider*)lv_event_get_user_data(e);
+		HeaterSlider& slider = *(HeaterSlider*)lv_event_get_user_data(e);
 
 		lv_draw_label_dsc_t label_dsc;
 		lv_draw_label_dsc_init(&label_dsc);
 		label_dsc.font = LV_FONT_DEFAULT;
 
 		char buf[8];
-		snprintf(buf, sizeof(buf), "%.1f", slider->m_currentTempValue);
+		snprintf(buf, sizeof(buf), "%.1f", slider.m_currentTempValue);
 
 		lv_point_t txt_size;
 		lv_text_get_size(
@@ -125,10 +129,10 @@ namespace UI
 		txt_area.y2 = txt_size.y - 1;
 
 		lv_area_t indic_area;
-		lv_obj_get_coords(slider->m_currentTemperature, &indic_area);
+		lv_obj_get_coords(slider.m_currentTemperature, &indic_area);
 		lv_area_set_width(&indic_area,
-						  lv_area_get_width(&indic_area) * slider->m_currentTempValue /
-							  (slider->m_maxTempValue - slider->m_minTempValue));
+						  lv_area_get_width(&indic_area) * slider.m_currentTempValue /
+							  (slider.m_maxTempValue - slider.m_minTempValue));
 
 		/*If the indicator is long enough put the text inside on the right*/
 		if (lv_area_get_width(&indic_area) > txt_size.x + 20)
@@ -146,6 +150,91 @@ namespace UI
 		label_dsc.text_local = true;
 		lv_layer_t* layer = lv_event_get_layer(e);
 		lv_draw_label(layer, &label_dsc, &txt_area);
+	}
+
+	void HeaterSlider::onActiveTemperatureEvent(lv_event_t* e)
+	{
+		LvLabel& label = *(LvLabel*)lv_event_get_user_data(e);
+		HeaterSlider& control = *(HeaterSlider*)label.getUserData();
+		lv_event_code_t code = lv_event_get_code(e);
+
+		bool activeTemperature;
+		if (label == control.m_activeTemperature)
+		{
+			activeTemperature = true;
+		}
+		else if (label == control.m_standbyTemperature)
+		{
+			activeTemperature = false;
+		}
+		else
+		{
+			LOG_ERROR("Unexpected label in HeaterSlider event handler");
+			return; // Not a temperature label
+		}
+		float temperature = activeTemperature ? control.m_activeTempValue : control.m_standbyTempValue;
+
+		switch (code)
+		{
+		case LV_EVENT_CLICKED:
+		{
+			// Open numberpad
+			break;
+		}
+		case LV_EVENT_PRESSING:
+		{
+			// Update the target temperature based on the slider position
+			break;
+		}
+		case LV_EVENT_RELEASED:
+		case LV_EVENT_PRESS_LOST:
+		{
+			// Set new target temperature
+			break;
+		}
+		case LV_EVENT_REFR_EXT_DRAW_SIZE:
+		{
+			int32_t* size = static_cast<int32_t*>(lv_event_get_param(e));
+			*size = std::max(*size, 1000); // Ensure enough space for the label
+			break;
+		}
+		case LV_EVENT_DRAW_MAIN:
+		{
+			lv_layer_t* layer = lv_event_get_layer(e);
+			lv_area_t marker_area;
+			static int32_t marker_width = 5;
+
+			lv_draw_rect_dsc_t marker_dsc;
+			lv_draw_rect_dsc_init(&marker_dsc);
+			marker_dsc.base.layer = layer;
+			lv_obj_init_draw_rect_dsc(control, LV_PART_INDICATOR, &marker_dsc);
+			marker_dsc.bg_color = lv_palette_main(LV_PALETTE_RED);
+			marker_dsc.bg_opa = LV_OPA_COVER;
+
+			lv_area_t label_area = label.getCoords();
+			lv_coord_t label_width = label.getWidth();
+
+			float pct = std::clamp(
+				(temperature - control.m_minTempValue) / (control.m_maxTempValue - control.m_minTempValue), 0.0f, 1.0f);
+
+			marker_area.x1 = label_area.x1 + label_width * pct - marker_width / 2;
+			marker_area.x2 = marker_area.x1 + marker_width - 1;
+
+			if (label == control.m_activeTemperature)
+			{
+				marker_area.y1 = label_area.y2 + 1;
+				marker_area.y2 = control.m_currentTemperature.getCoords().y1;
+			}
+			else if (label == control.m_standbyTemperature)
+			{
+				marker_area.y1 = control.m_currentTemperature.getCoords().y2 + 1;
+				marker_area.y2 = label_area.y1 - 1;
+			}
+
+			lv_draw_rect(layer, &marker_dsc, &marker_area);
+			break;
+		}
+		}
 	}
 
 	void HeaterSlider::updateLabelPositions()

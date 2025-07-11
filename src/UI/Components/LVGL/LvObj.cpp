@@ -93,6 +93,14 @@ namespace UI
 		return layout;
 	}
 
+	lv_area_t LvObj::getCoords() const
+	{
+		UI_LOCK();
+		lv_area_t area;
+		lv_obj_get_coords(getRoot(), &area);
+		return area;
+	}
+
 	lv_coord_t LvObj::getX() const
 	{
 		UI_LOCK();

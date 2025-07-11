@@ -102,6 +102,7 @@ namespace UI
 		uint32_t getChildCnt() const;
 		layout_t getLayout() const;
 		layout_t getLayoutPct() const;
+		lv_area_t getCoords() const;
 		lv_coord_t getX() const;
 		lv_coord_t getX2() const;
 		lv_coord_t getY() const;
