@@ -46,6 +46,8 @@ namespace UI
 		m_standbyTemperature.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
 		m_activeTemperature.setExtClickArea(20);
 		m_standbyTemperature.setExtClickArea(20);
+		lv_obj_move_foreground(m_activeTemperature);
+		lv_obj_move_foreground(m_standbyTemperature);
 
 		m_activeTemperature.setUserData(this);
 		m_standbyTemperature.setUserData(this);
@@ -62,6 +64,8 @@ namespace UI
 		m_standbyTemperature.addStyle(Themes::getLvglStyles().input);
 
 		m_currentTemperature.addStyle(Themes::getComponentStyles().temperature_bar, LV_PART_INDICATOR);
+		m_activeTemperature.addStyle(Themes::getComponentStyles().temperature_bar_indic, LV_PART_INDICATOR);
+		m_standbyTemperature.addStyle(Themes::getComponentStyles().temperature_bar_indic, LV_PART_INDICATOR);
 	}
 
 	void HeaterSlider::setHeaterName(const std::string& name)
@@ -252,8 +256,10 @@ namespace UI
 		}
 		case LV_EVENT_REFR_EXT_DRAW_SIZE:
 		{
-			int32_t size = activeTemperature ? control.m_activeMarkerArea.y2 - control.m_activeMarkerArea.y1
-											 : control.m_standbyMarkerArea.y2 - control.m_standbyMarkerArea.y1;
+			int32_t size =
+				activeTemperature
+					? control.m_currentTemperature.getCoords().y1 - control.m_activeTemperature.getCoords().y2
+					: control.m_standbyTemperature.getCoords().y1 - control.m_currentTemperature.getCoords().y2;
 			lv_event_set_ext_draw_size(e, size);
 			break;
 		}
@@ -262,14 +268,13 @@ namespace UI
 #if 1
 			lv_layer_t* layer = lv_event_get_layer(e);
 			lv_area_t marker_area;
-			static int32_t marker_width = 5;
+			static int32_t marker_width = 21;
 
-			lv_draw_rect_dsc_t marker_dsc;
-			lv_draw_rect_dsc_init(&marker_dsc);
+			lv_draw_triangle_dsc_t marker_dsc;
+			lv_draw_triangle_dsc_init(&marker_dsc);
 			marker_dsc.base.layer = layer;
-			lv_obj_init_draw_rect_dsc(control, LV_PART_INDICATOR, &marker_dsc);
-			marker_dsc.bg_color = lv_palette_main(LV_PALETTE_RED);
-			marker_dsc.bg_opa = LV_OPA_COVER;
+			marker_dsc.color = lv_obj_get_style_bg_color(label, LV_PART_INDICATOR);
+			marker_dsc.opa = lv_obj_get_style_bg_opa(label, LV_PART_INDICATOR);
 
 			lv_area_t label_area = label.getCoords();
 			lv_coord_t label_width = label.getWidth();
@@ -281,21 +286,27 @@ namespace UI
 
 			marker_area.x1 = label_area.x1 + label_width * pct / 100 - marker_width / 2;
 			marker_area.x2 = marker_area.x1 + marker_width - 1;
+			const lv_coord_t marker_pos_x = label_area.x1 + label_width * pct / 100;
+			const lv_area_t bar_area = control.m_currentTemperature.getCoords();
 
 			if (label == control.m_activeTemperature)
 			{
-				marker_area.y1 = label_area.y2 + 1;
-				marker_area.y2 = control.m_currentTemperature.getCoords().y1;
-				lv_area_copy(&control.m_activeMarkerArea, &marker_area);
+				const lv_coord_t marker_y1 = bar_area.y1;
+				const lv_coord_t marker_y2 = label_area.y2;
+				marker_dsc.p[0] = {marker_pos_x, marker_y1};
+				marker_dsc.p[1] = {std::min(marker_pos_x + marker_width / 2, label_area.x2), marker_y2};
+				marker_dsc.p[2] = {std::max(marker_pos_x - marker_width / 2, label_area.x1), marker_y2};
 			}
 			else if (label == control.m_standbyTemperature)
 			{
-				marker_area.y1 = control.m_currentTemperature.getCoords().y2 + 1;
-				marker_area.y2 = label_area.y1 - 1;
-				lv_area_copy(&control.m_standbyMarkerArea, &marker_area);
+				const lv_coord_t marker_y1 = bar_area.y2;
+				const lv_coord_t marker_y2 = label_area.y1;
+				marker_dsc.p[0] = {marker_pos_x, marker_y1};
+				marker_dsc.p[1] = {std::min(marker_pos_x + marker_width / 2, label_area.x2), marker_y2};
+				marker_dsc.p[2] = {std::max(marker_pos_x - marker_width / 2, label_area.x1), marker_y2};
 			}
 
-			lv_draw_rect(layer, &marker_dsc, &marker_area);
+			lv_draw_triangle(layer, &marker_dsc);
 #endif
 			break;
 		}

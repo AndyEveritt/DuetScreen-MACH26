@@ -37,8 +37,6 @@ namespace UI
 		LvLabel m_activeTemperature;
 		LvLabel m_standbyTemperature;
 
-		lv_area_t m_activeMarkerArea;
-		lv_area_t m_standbyMarkerArea;
 		lv_point_t m_pressedPoint;
 
 		float m_currentTempValue = 0.0f;

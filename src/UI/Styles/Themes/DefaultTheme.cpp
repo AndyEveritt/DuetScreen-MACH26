@@ -423,9 +423,13 @@ namespace UI::Themes
 		lv_style_set_bg_color(components.folder, m_primaryColor);
 
 		lv_style_set_bg_color(components.unhomed, lv_color_hex(0xfb9514));
+
 		lv_style_set_bg_opa(components.temperature_bar, LV_OPA_COVER);
 		lv_style_set_bg_color(components.temperature_bar, lv_palette_main(LV_PALETTE_BLUE));
 		lv_style_set_bg_grad_color(components.temperature_bar, lv_palette_main(LV_PALETTE_RED));
 		lv_style_set_bg_grad_dir(components.temperature_bar, LV_GRAD_DIR_HOR);
+
+		lv_style_set_bg_color(components.temperature_bar_indic, lv_color_white());
+		lv_style_set_bg_opa(components.temperature_bar_indic, LV_OPA_COVER);
 	}
 } // namespace UI::Themes
