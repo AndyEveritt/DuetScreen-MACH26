@@ -19,12 +19,11 @@ namespace UI
 		void setHeaterMinTemperature(float temperature);
 		void setHeaterMaxTemperature(float temperature);
 		void setCurrentTemperature(float temperature);
-		void setActiveTemperature(float temperature);
-		void setStandbyTemperature(float temperature);
+		void setActiveTemperature(float temperature, bool dragging = false);
+		void setStandbyTemperature(float temperature, bool dragging = false);
 
 	  private:
-		static void onActiveTemperatureEvent(lv_event_t* e);
-		static void onStandbyTemperatureEvent(lv_event_t* e);
+		static void onTemperatureLabelEvent(lv_event_t* e);
 		static void drawCurrentTemperatureEvent(lv_event_t* e);
 
 		void updateLabelPositions();
@@ -37,6 +36,10 @@ namespace UI
 		LvBar m_currentTemperature;
 		LvLabel m_activeTemperature;
 		LvLabel m_standbyTemperature;
+
+		lv_area_t m_activeMarkerArea;
+		lv_area_t m_standbyMarkerArea;
+		lv_point_t m_pressedPoint;
 
 		float m_currentTempValue = 0.0f;
 		float m_activeTempValue = 0.0f;

@@ -151,6 +151,7 @@ namespace UI
 		bool refreshSelfSize();
 		void invalidate();
 
+		void setExtDrawSize(int32_t size);
 		void setExtClickArea(int32_t size);
 		void getClickArea(lv_area_t* area) const;
 

@@ -34,19 +34,23 @@ namespace UI
 		m_temperatureCont.setHeight(LV_PCT(100));
 		m_temperatureCont.setMinHeight(100);
 		m_temperatureCont.setFlexGrow(1);
+		m_temperatureCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
 		m_currentTemperature.setSize(LV_PCT(100), 15);
 		// lv_coord_t
 		m_currentTemperature.setAlign(LV_ALIGN_CENTER, 0, 0);
-		m_activeTemperature.setAlign(LV_ALIGN_LEFT_MID, 0, -25);
-		m_standbyTemperature.setAlign(LV_ALIGN_LEFT_MID, 0, 25);
-		// m_activeTemperature.setFlag(LV_OBJ_FLAG_FLOATING, true);
-		// m_standbyTemperature.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_activeTemperature.setAlign(LV_ALIGN_LEFT_MID, 0, -30);
+		m_standbyTemperature.setAlign(LV_ALIGN_LEFT_MID, 0, 31);
+
+		m_activeTemperature.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
+		m_standbyTemperature.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
+		m_activeTemperature.setExtClickArea(20);
+		m_standbyTemperature.setExtClickArea(20);
 
 		m_activeTemperature.setUserData(this);
 		m_standbyTemperature.setUserData(this);
-		m_activeTemperature.addEventCallback(onActiveTemperatureEvent, LV_EVENT_ALL, &m_activeTemperature);
-		m_standbyTemperature.addEventCallback(onActiveTemperatureEvent, LV_EVENT_ALL, &m_standbyTemperature);
+		m_activeTemperature.addEventCallback(onTemperatureLabelEvent, LV_EVENT_ALL, &m_activeTemperature);
+		m_standbyTemperature.addEventCallback(onTemperatureLabelEvent, LV_EVENT_ALL, &m_standbyTemperature);
 		m_currentTemperature.addEventCallback(drawCurrentTemperatureEvent, LV_EVENT_DRAW_MAIN_END, this);
 
 		// Add styles
@@ -73,7 +77,11 @@ namespace UI
 	void HeaterSlider::setHeaterMinTemperature(float temperature)
 	{
 		UI_LOCK();
-		m_minTempValue = std::max(0.0f, temperature);
+		temperature = std::max(0.0f, temperature);
+		if (temperature == m_minTempValue)
+			return;
+
+		LOG_DBG("Setting min temperature to {:g} °C", temperature);
 		m_currentTemperature.setMinValue(m_minTempValue);
 		updateLabelPositions();
 	}
@@ -81,6 +89,10 @@ namespace UI
 	void HeaterSlider::setHeaterMaxTemperature(float temperature)
 	{
 		UI_LOCK();
+		if (temperature == m_maxTempValue)
+			return;
+
+		LOG_DBG("Setting max temperature to {:g} °C", temperature);
 		m_maxTempValue = temperature;
 		m_currentTemperature.setMaxValue(temperature);
 		updateLabelPositions();
@@ -89,22 +101,40 @@ namespace UI
 	void HeaterSlider::setCurrentTemperature(float temperature)
 	{
 		UI_LOCK();
+		if (temperature == m_currentTempValue)
+			return;
+
+		LOG_DBG("Setting current temperature to {:g} °C", temperature);
 		m_currentTempValue = temperature;
 		m_currentTemperature.setValue(temperature);
 	}
 
-	void HeaterSlider::setActiveTemperature(float temperature)
+	void HeaterSlider::setActiveTemperature(float temperature, bool dragging)
 	{
+		if (temperature == m_activeTempValue)
+			return;
+
+		if (m_activeTemperature.hasState(LV_STATE_PRESSED) && !dragging)
+			return;
+
+		LOG_DBG("Setting active temperature to {:g} °C", temperature);
 		m_activeTempValue = temperature;
-		m_activeTemperature.setText(fmt::format("{:g} °C", temperature));
-		updateLabelPositions();
+		m_activeTemperature.setText(fmt::format("{:.1f} °C", temperature));
+		updateLabelPosition(m_activeTemperature, m_activeTempValue);
 	}
 
-	void HeaterSlider::setStandbyTemperature(float temperature)
+	void HeaterSlider::setStandbyTemperature(float temperature, bool dragging)
 	{
+		if (temperature == m_standbyTempValue)
+			return;
+
+		if (m_standbyTemperature.hasState(LV_STATE_PRESSED) && !dragging)
+			return;
+
+		LOG_DBG("Setting standby temperature to {:g} °C", temperature);
 		m_standbyTempValue = temperature;
-		m_standbyTemperature.setText(fmt::format("{:g} °C", temperature));
-		updateLabelPositions();
+		m_standbyTemperature.setText(fmt::format("{:.1f} °C", temperature));
+		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
 	void HeaterSlider::drawCurrentTemperatureEvent(lv_event_t* e)
@@ -152,7 +182,7 @@ namespace UI
 		lv_draw_label(layer, &label_dsc, &txt_area);
 	}
 
-	void HeaterSlider::onActiveTemperatureEvent(lv_event_t* e)
+	void HeaterSlider::onTemperatureLabelEvent(lv_event_t* e)
 	{
 		LvLabel& label = *(LvLabel*)lv_event_get_user_data(e);
 		HeaterSlider& control = *(HeaterSlider*)label.getUserData();
@@ -176,30 +206,60 @@ namespace UI
 
 		switch (code)
 		{
-		case LV_EVENT_CLICKED:
+		case LV_EVENT_SHORT_CLICKED:
 		{
 			// Open numberpad
+			LOG_DBG("Label '{}' clicked", label.getName());
+			break;
+		}
+		case LV_EVENT_PRESSED:
+		{
+			lv_indev_get_point(lv_indev_active(), &control.m_pressedPoint);
+			lv_obj_transform_point(label, &control.m_pressedPoint, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
 			break;
 		}
 		case LV_EVENT_PRESSING:
 		{
 			// Update the target temperature based on the slider position
+			lv_indev_t* indev = lv_indev_active();
+			if (lv_indev_get_type(indev) != LV_INDEV_TYPE_POINTER)
+				return;
+			if (lv_indev_get_scroll_obj(indev) != NULL)
+				return;
+
+			lv_point_t p;
+			lv_indev_get_point(indev, &p);
+			lv_obj_transform_point(label, &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
+
+			const int32_t range = control.m_maxTempValue - control.m_minTempValue;
+			const int32_t w = control.m_currentTemperature.getWidth();
+			const int32_t rel_position = p.x - (control.m_currentTemperature.getCoords().x1);
+			int32_t new_temperature = std::clamp(
+				(range * rel_position / w) + control.m_minTempValue, control.m_minTempValue, control.m_maxTempValue);
+
+			if (activeTemperature)
+				control.setActiveTemperature(new_temperature, true);
+			else
+				control.setStandbyTemperature(new_temperature, true);
 			break;
 		}
 		case LV_EVENT_RELEASED:
 		case LV_EVENT_PRESS_LOST:
 		{
+			LOG_DBG("Label '{}' released", label.getName());
 			// Set new target temperature
 			break;
 		}
 		case LV_EVENT_REFR_EXT_DRAW_SIZE:
 		{
-			int32_t* size = static_cast<int32_t*>(lv_event_get_param(e));
-			*size = std::max(*size, 1000); // Ensure enough space for the label
+			int32_t size = activeTemperature ? control.m_activeMarkerArea.y2 - control.m_activeMarkerArea.y1
+											 : control.m_standbyMarkerArea.y2 - control.m_standbyMarkerArea.y1;
+			lv_event_set_ext_draw_size(e, size);
 			break;
 		}
 		case LV_EVENT_DRAW_MAIN:
 		{
+#if 1
 			lv_layer_t* layer = lv_event_get_layer(e);
 			lv_area_t marker_area;
 			static int32_t marker_width = 5;
@@ -213,25 +273,30 @@ namespace UI
 
 			lv_area_t label_area = label.getCoords();
 			lv_coord_t label_width = label.getWidth();
+			const int32_t range = control.m_maxTempValue - control.m_minTempValue;
 
-			float pct = std::clamp(
-				(temperature - control.m_minTempValue) / (control.m_maxTempValue - control.m_minTempValue), 0.0f, 1.0f);
+			int32_t pct =
+				range > 0 ? std::clamp(100 * static_cast<int32_t>(temperature - control.m_minTempValue) / range, 0, 100)
+						  : 0;
 
-			marker_area.x1 = label_area.x1 + label_width * pct - marker_width / 2;
+			marker_area.x1 = label_area.x1 + label_width * pct / 100 - marker_width / 2;
 			marker_area.x2 = marker_area.x1 + marker_width - 1;
 
 			if (label == control.m_activeTemperature)
 			{
 				marker_area.y1 = label_area.y2 + 1;
 				marker_area.y2 = control.m_currentTemperature.getCoords().y1;
+				lv_area_copy(&control.m_activeMarkerArea, &marker_area);
 			}
 			else if (label == control.m_standbyTemperature)
 			{
 				marker_area.y1 = control.m_currentTemperature.getCoords().y2 + 1;
 				marker_area.y2 = label_area.y1 - 1;
+				lv_area_copy(&control.m_standbyMarkerArea, &marker_area);
 			}
 
 			lv_draw_rect(layer, &marker_dsc, &marker_area);
+#endif
 			break;
 		}
 		}
@@ -245,6 +310,7 @@ namespace UI
 
 	void HeaterSlider::updateLabelPosition(LvLabel& label, float value)
 	{
+		LOG_DBG("Updating label '{}' position for value: {:g}", label.getName(), value);
 		// Calculate the position based on the current temperature value
 		lv_coord_t percentage =
 			100 * std::clamp((value - m_minTempValue) / (m_maxTempValue - m_minTempValue), 0.0f, 1.0f);

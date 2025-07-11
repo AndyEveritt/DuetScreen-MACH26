@@ -21,7 +21,6 @@ namespace UI
 			m_heater = OM::Heat::GetHeater(m_heaterIndex);
 			if (m_heater == nullptr)
 			{
-
 				LOG_WARN("No heater set for presenter '{}'", getName());
 				return;
 			}

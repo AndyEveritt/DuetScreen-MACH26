@@ -364,6 +364,29 @@ namespace UI
 		lv_obj_invalidate(getRoot());
 	}
 
+	static void __obj_set_ext_draw_size_cb(lv_event_t* e)
+	{
+		UI_LOCK();
+		int32_t s = (int32_t)(intptr_t)lv_event_get_user_data(e);
+		lv_event_code_t code = lv_event_get_code(e);
+		if (code == LV_EVENT_REFR_EXT_DRAW_SIZE)
+		{
+			lv_event_set_ext_draw_size(e, s);
+		}
+		else
+		{
+			LOG_FATAL_THROW("Unexpected event code: {}", (int32_t)code);
+		}
+	}
+
+	void LvObj::setExtDrawSize(int32_t size)
+	{
+		UI_LOCK();
+		setFlag(LV_OBJ_FLAG_OVERFLOW_VISIBLE, true);
+		removeEventCallback(__obj_set_ext_draw_size_cb);
+		addEventCallback(__obj_set_ext_draw_size_cb, LV_EVENT_REFR_EXT_DRAW_SIZE, (void*)(intptr_t)size);
+	}
+
 	void LvObj::setExtClickArea(int32_t size)
 	{
 		UI_LOCK();
