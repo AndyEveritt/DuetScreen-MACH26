@@ -288,23 +288,40 @@ namespace UI
 			marker_area.x2 = marker_area.x1 + marker_width - 1;
 			const lv_coord_t marker_pos_x = label_area.x1 + label_width * pct / 100;
 			const lv_area_t bar_area = control.m_currentTemperature.getCoords();
+			const int32_t label_radius = lv_obj_get_style_radius(label, LV_PART_MAIN);
 
+			marker_dsc.p[0].x = marker_pos_x;
+			marker_dsc.p[1].x = marker_pos_x + marker_width / 2;
+			marker_dsc.p[2].x = marker_pos_x - marker_width / 2;
+
+			if (marker_dsc.p[1].x > label_area.x2 - label_radius)
+			{
+				const int32_t diff = marker_dsc.p[1].x - (label_area.x2 - label_radius);
+				marker_dsc.p[1].x -= diff;
+				marker_dsc.p[2].x -= diff;
+			}
+			if (marker_dsc.p[2].x < label_area.x1 + label_radius)
+			{
+				const int32_t diff = label_area.x1 + label_radius - marker_dsc.p[2].x;
+				marker_dsc.p[1].x += diff;
+				marker_dsc.p[2].x += diff;
+			}
+
+			lv_coord_t marker_y1 = 0;
+			lv_coord_t marker_y2 = 0;
 			if (label == control.m_activeTemperature)
 			{
-				const lv_coord_t marker_y1 = bar_area.y1;
-				const lv_coord_t marker_y2 = label_area.y2;
-				marker_dsc.p[0] = {marker_pos_x, marker_y1};
-				marker_dsc.p[1] = {std::min(marker_pos_x + marker_width / 2, label_area.x2), marker_y2};
-				marker_dsc.p[2] = {std::max(marker_pos_x - marker_width / 2, label_area.x1), marker_y2};
+				marker_y1 = bar_area.y1;
+				marker_y2 = label_area.y2;
 			}
 			else if (label == control.m_standbyTemperature)
 			{
-				const lv_coord_t marker_y1 = bar_area.y2;
-				const lv_coord_t marker_y2 = label_area.y1;
-				marker_dsc.p[0] = {marker_pos_x, marker_y1};
-				marker_dsc.p[1] = {std::min(marker_pos_x + marker_width / 2, label_area.x2), marker_y2};
-				marker_dsc.p[2] = {std::max(marker_pos_x - marker_width / 2, label_area.x1), marker_y2};
+				marker_y1 = bar_area.y2;
+				marker_y2 = label_area.y1;
 			}
+			marker_dsc.p[0].y = marker_y1;
+			marker_dsc.p[1].y = marker_y2;
+			marker_dsc.p[2].y = marker_y2;
 
 			lv_draw_triangle(layer, &marker_dsc);
 #endif
