@@ -1,7 +1,9 @@
 #pragma once
 
-#include "UI/Core/Presenter.h"
+#include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Heat.h"
+#include "ObjectModel/Tool.h"
+#include "UI/Core/Presenter.h"
 
 namespace UI
 {
@@ -11,22 +13,44 @@ namespace UI
 	{
 	  public:
 		PRESENTER_CONSTRUCTOR(HeaterSliderPresenter, HeaterSlider)
+		enum class SlotType
+		{
+			Tool,
+			Bed,
+			Chamber,
+			Unknown
+		};
+
+		using heater_state_t = OM::Heat::HeaterStatus;
+
+		// Setters
+		void reset();
+		void setToolHeaterIndex(size_t toolIndex, uint8_t toolHeaterIndex);
+		void setBedIndex(size_t index);
+		void setChamberIndex(size_t index);
+
+		// Getters
+		SlotType getSlotType() const { return m_slotType; }
 
 		// Actions
-		void setHeaterIndex(size_t index);
+		void cycleHeaterState();
+		void sendTemperature(float value, bool active);
 
 		// Observers
 		void newHeaterData();
 
 	  protected:
-		virtual void onInit() override {
+		virtual void onInit() override
+		{
 			registerEventListener<EventType::HeaterData>(this, &HeaterSliderPresenter::newHeaterData);
 		}
-		virtual void onActivate() override {}
+		virtual void onActivate() override;
 		virtual void onDeactivate() override {}
 
 	  private:
-		size_t m_heaterIndex = 0;
-		std::shared_ptr<OM::Heat::Heater> m_heater;
+		SlotType m_slotType = SlotType::Unknown;
+		OM::ToolPtr m_tool;
+		OM::ToolHeaterPtr m_tHeater;
+		OM::BedOrChamberPtr m_bedOrChamber;
 	};
 } // namespace UI

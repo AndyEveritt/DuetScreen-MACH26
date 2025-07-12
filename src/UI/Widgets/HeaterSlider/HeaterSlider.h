@@ -14,8 +14,8 @@ namespace UI
 	  public:
 		HeaterSlider(const std::string& name, lv_obj_t* parent);
 
-		void setHeaterName(const std::string& name);
-		void setHeaterState(const std::string& state);
+		void setHeaterName(const std::string_view name);
+		void setHeaterState(HeaterSliderPresenter::heater_state_t state, const std::string_view str);
 		void setHeaterMinTemperature(float temperature);
 		void setHeaterMaxTemperature(float temperature);
 		void setCurrentTemperature(float temperature);
@@ -23,8 +23,9 @@ namespace UI
 		void setStandbyTemperature(int32_t temperature, bool dragging = false);
 
 	  private:
-		static void onTemperatureLabelEvent(lv_event_t* e);
 		static void drawCurrentTemperatureEvent(lv_event_t* e);
+		static void onTemperatureLabelEvent(lv_event_t* e);
+		static void onToggleStateEvent(lv_event_t* e);
 
 		void updateLabelPositions();
 		void updateLabelPosition(LvLabel& label, int32_t value);

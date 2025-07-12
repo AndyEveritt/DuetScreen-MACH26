@@ -17,7 +17,7 @@
 
 #include "Debug.h"
 
-typedef Vector<std::shared_ptr<OM::Tool>, MAX_SLOTS> ToolList;
+typedef Vector<OM::ToolPtr, MAX_SLOTS> ToolList;
 static ToolList s_tools;
 
 namespace OM
@@ -37,7 +37,7 @@ namespace OM
 		FreelistManager::Release<Tool>(p);
 	}
 
-	std::shared_ptr<ToolHeater> Tool::GetHeater(const uint8_t toolHeaterIndex)
+	ToolHeaterPtr Tool::GetHeater(const uint8_t toolHeaterIndex)
 	{
 		if (toolHeaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
@@ -46,7 +46,7 @@ namespace OM
 		return heaters[toolHeaterIndex];
 	}
 
-	std::shared_ptr<ToolHeater> Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
+	ToolHeaterPtr Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
 	{
 		auto th = GetHeater(toolHeaterIndex);
 		if (th != nullptr && th->heater->index == heaterIndex)
@@ -66,7 +66,7 @@ namespace OM
 		return th;
 	}
 
-	std::shared_ptr<Move::ExtruderAxis> Tool::GetExtruder(const uint8_t toolExtruderIndex) const
+	Move::ExtruderAxisPtr Tool::GetExtruder(const uint8_t toolExtruderIndex) const
 	{
 		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL || toolExtruderIndex < 0)
 		{
@@ -75,8 +75,7 @@ namespace OM
 		return extruders[toolExtruderIndex];
 	}
 
-	std::shared_ptr<Move::ExtruderAxis> Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex,
-																  const uint8_t extruderIndex)
+	Move::ExtruderAxisPtr Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex)
 	{
 		auto extruder = GetExtruder(toolExtruderIndex);
 		if (extruder != nullptr && extruder->index == extruderIndex)
@@ -89,7 +88,7 @@ namespace OM
 		return extruder;
 	}
 
-	std::shared_ptr<Fan> Tool::GetFan(const uint8_t toolFanIndex)
+	FanPtr Tool::GetFan(const uint8_t toolFanIndex)
 	{
 		if (toolFanIndex >= MAX_FANS)
 		{
@@ -98,7 +97,7 @@ namespace OM
 		return fans[toolFanIndex];
 	}
 
-	std::shared_ptr<Fan> Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
+	FanPtr Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
 	{
 		auto fan = GetFan(toolFanIndex);
 		if (fan != nullptr && fan->index == fanIndex)
@@ -192,7 +191,7 @@ namespace OM
 		return -1;
 	}
 
-	void Tool::IterateHeaters(function_ref<void(std::shared_ptr<ToolHeater>, size_t)> func, const size_t startAt)
+	void Tool::IterateHeaters(function_ref<void(ToolHeaterPtr, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
@@ -200,8 +199,7 @@ namespace OM
 		}
 	}
 
-	void Tool::IterateExtruders(function_ref<void(std::shared_ptr<Move::ExtruderAxis>, size_t)> func,
-								const size_t startAt)
+	void Tool::IterateExtruders(function_ref<void(Move::ExtruderAxisPtr, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_EXTRUDERS_PER_TOOL && extruders[i] != nullptr; ++i)
 		{
@@ -209,7 +207,7 @@ namespace OM
 		}
 	}
 
-	void Tool::IterateFans(function_ref<void(std::shared_ptr<Fan>, size_t)> func, const size_t startAt)
+	void Tool::IterateFans(function_ref<void(FanPtr, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_FANS && fans[i] != nullptr; ++i)
 		{
@@ -453,18 +451,18 @@ namespace OM
 		status = ToolStatus::off;
 	}
 
-	std::shared_ptr<Tool> GetTool(const size_t index)
+	ToolPtr GetTool(const size_t index)
 	{
 		return GetOrCreate<ToolList, Tool>(s_tools, index, false);
 	}
 
-	std::shared_ptr<Tool> GetOrCreateTool(const size_t index)
+	ToolPtr GetOrCreateTool(const size_t index)
 	{
 		LOG_DBG("{:d}", index);
 		return GetOrCreate<ToolList, Tool>(s_tools, index, true);
 	}
 
-	std::shared_ptr<Tool> GetToolBySlot(const size_t slot)
+	ToolPtr GetToolBySlot(const size_t slot)
 	{
 		if (slot >= s_tools.Size())
 		{
@@ -478,7 +476,7 @@ namespace OM
 		return s_tools.Size();
 	}
 
-	bool IterateToolsWhile(function_ref<bool(std::shared_ptr<Tool>, size_t)> func, const size_t startAt)
+	bool IterateToolsWhile(function_ref<bool(ToolPtr, size_t)> func, const size_t startAt)
 	{
 		return s_tools.IterateWhile(func, startAt);
 	}
@@ -686,7 +684,7 @@ namespace OM
 		s_currentTool = toolIndex;
 	}
 
-	std::shared_ptr<Tool> GetCurrentTool()
+	ToolPtr GetCurrentTool()
 	{
 		if (s_currentTool < 0)
 		{

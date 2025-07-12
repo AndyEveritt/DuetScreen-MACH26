@@ -49,6 +49,8 @@ namespace UI
 		lv_obj_move_foreground(m_activeTemperature);
 		lv_obj_move_foreground(m_standbyTemperature);
 
+		m_heaterName.addClickedCallback(onToggleStateEvent, this);
+
 		m_activeTemperature.setUserData(this);
 		m_standbyTemperature.setUserData(this);
 		m_activeTemperature.addEventCallback(onTemperatureLabelEvent, LV_EVENT_ALL, &m_activeTemperature);
@@ -68,14 +70,16 @@ namespace UI
 		m_standbyTemperature.addStyle(Themes::getComponentStyles().temperature_bar_indic, LV_PART_INDICATOR);
 	}
 
-	void HeaterSlider::setHeaterName(const std::string& name)
+	void HeaterSlider::setHeaterName(const std::string_view name)
 	{
 		m_heaterName.setText(name);
 	}
 
-	void HeaterSlider::setHeaterState(const std::string& state)
+	void HeaterSlider::setHeaterState(HeaterSliderPresenter::heater_state_t state, const std::string_view str)
 	{
-		m_heaterState.setText(state);
+		m_heaterState.setText(str);
+		m_activeTemperature.setState(LV_STATE_CHECKED, state == HeaterSliderPresenter::heater_state_t::active);
+		m_standbyTemperature.setState(LV_STATE_CHECKED, state == HeaterSliderPresenter::heater_state_t::standby);
 	}
 
 	void HeaterSlider::setHeaterMinTemperature(float temperature)
@@ -252,6 +256,7 @@ namespace UI
 		{
 			LOG_DBG("Label '{}' released", label.getName());
 			// Set new target temperature
+			control.getPresenter()->sendTemperature(temperature, activeTemperature);
 			break;
 		}
 		case LV_EVENT_REFR_EXT_DRAW_SIZE:
@@ -328,6 +333,12 @@ namespace UI
 			break;
 		}
 		}
+	}
+
+	void HeaterSlider::onToggleStateEvent(lv_event_t* e)
+	{
+		HeaterSlider& control = *(HeaterSlider*)lv_event_get_user_data(e);
+		control.getPresenter()->cycleHeaterState();
 	}
 
 	void HeaterSlider::updateLabelPositions()

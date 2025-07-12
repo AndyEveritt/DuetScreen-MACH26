@@ -46,10 +46,10 @@ namespace UI
 		// lv_obj_update_layout(getCont());
 	}
 
-	void Button::setText(const std::string& text)
+	void Button::setText(const std::string_view text)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_label, text.c_str());
+		lv_label_set_text(m_label, text.data());
 		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_center(m_label);
 		if (m_icon != nullptr)

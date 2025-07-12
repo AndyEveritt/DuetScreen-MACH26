@@ -17,7 +17,7 @@ namespace UI
 		LvLabel(const std::string& name, lv_obj_t* parent);
 		LvLabel(const std::string& name, lv_obj_t* parent, const std::string& text);
 
-		void setText(const std::string& text);
+		void setText(const std::string_view text);
 		void setTextF(const char* fmt, ...);
 		void setTextStatic(const char* text);
 		void setLongMode(lv_label_long_mode_t mode);

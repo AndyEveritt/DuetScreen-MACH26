@@ -418,7 +418,7 @@ namespace UI
 				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
-			m_bedOrChamber->ToggleBedState();
+			m_bedOrChamber->ToggleChamberState();
 			break;
 		}
 		}
