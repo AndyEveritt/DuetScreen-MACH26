@@ -19,7 +19,7 @@ namespace UI
 	static constexpr int32_t s_mainWindowLayoutRowDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
 	HomeView::HomeView()
-		: View(lv_obj_create, "HomeView", lv_screen_active(), layout_t(0, 0, 100, 100))
+		: View("HomeView", lv_screen_active(), layout_t(0, 0, 100, 100))
 		, m_statusBar(getRoot())
 		, m_sideBar("sidebar", getRoot())
 		, m_mainWindow(lv_obj_create(getRoot()))

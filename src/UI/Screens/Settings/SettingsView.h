@@ -9,17 +9,14 @@
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Core/View.h"
 
-namespace UI
+	namespace UI
 {
 	class SettingsView;
 
-	class SettingsSubView : public LvObj
+	class SettingsSubView : public LvContainer
 	{
 	  public:
-		SettingsSubView(lv_create_t initFunc,
-						const std::string& name,
-						lv_obj_t* parent,
-						SettingsView& mainSettingsView);
+		SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView);
 
 		SettingsView& getMainSettingsView() const { return m_mainSettingsView; }
 		std::shared_ptr<SettingsPresenter> getMainSettingsPresenter() const;
@@ -34,7 +31,7 @@ namespace UI
 	  public:
 		DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
-		class UsbSettings : public LvObj
+		class UsbSettings : public LvContainer
 		{
 		  public:
 			UsbSettings(DuetSettingsView& parent);
@@ -42,7 +39,7 @@ namespace UI
 		  private:
 		};
 
-		class WifiSettings : public LvObj
+		class WifiSettings : public LvContainer
 		{
 		  public:
 			WifiSettings(DuetSettingsView& parent);
@@ -52,7 +49,7 @@ namespace UI
 			TextBox m_password;
 		};
 
-		class UartSettings : public LvObj
+		class UartSettings : public LvContainer
 		{
 		  public:
 			UartSettings(DuetSettingsView& parent);

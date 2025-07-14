@@ -107,7 +107,7 @@ namespace UI
 	}
 
 	FileView::FileView(lv_obj_t* parent)
-		: View(lv_obj_create, "file_view", parent, layout_t(0, 0, 100, 100))
+		: View("file_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_listHeader(lv_label_create(getRoot()))

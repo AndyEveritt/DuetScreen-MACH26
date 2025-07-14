@@ -14,7 +14,7 @@
 namespace UI
 {
 	ToolListItem::ToolListItem(ToolList& toolList, const std::string& name, lv_obj_t* parent, layout_t layout)
-		: View<ToolListItemPresenter>(lv_obj_create, name, parent, layout)
+		: View(name, parent, layout)
 		, m_toolList(toolList)
 		, m_label(lv_label_create(getRoot()))
 		, m_icon(nullptr)
@@ -215,7 +215,7 @@ namespace UI
 	}
 
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent)
-		: View<ToolListPresenter>(lv_obj_create, name, parent)
+		: View(name, parent)
 		, m_header(lv_obj_create(getRoot()))
 		, m_headerTool(lv_label_create(m_header))
 		, m_headerStatus(lv_label_create(m_header))
@@ -229,7 +229,7 @@ namespace UI
 	}
 
 	ToolList::ToolList(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: View<ToolListPresenter>(lv_obj_create, name, parent, layout)
+		: View(name, parent, layout)
 		, m_header(lv_obj_create(getRoot()))
 		, m_headerTool(lv_label_create(m_header))
 		, m_headerStatus(lv_label_create(m_header))

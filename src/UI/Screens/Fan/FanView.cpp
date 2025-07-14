@@ -7,7 +7,7 @@
 namespace UI
 {
 	FanView::FanView(lv_obj_t* parent)
-		: View(lv_obj_create, "fan_view", parent, layout_t(0, 0, 100, 100))
+		: View("fan_view", parent, layout_t(0, 0, 100, 100))
 		, m_fanHeader(lv_label_create(getRoot()))
 	{
 		UI_LOCK();

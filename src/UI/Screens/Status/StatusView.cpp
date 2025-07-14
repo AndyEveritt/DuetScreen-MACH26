@@ -13,7 +13,7 @@ namespace UI
 	 * @param parent
 	 */
 	StatusView::StatusView(lv_obj_t* parent)
-		: View(lv_obj_create, "print_view", parent, layout_t(0, 0, 100, 100))
+		: View("print_view", parent, layout_t(0, 0, 100, 100))
 		// Create all panels first
 		, m_header(lv_obj_create(getRoot()))
 		, m_centerCont(lv_obj_create(getRoot()))

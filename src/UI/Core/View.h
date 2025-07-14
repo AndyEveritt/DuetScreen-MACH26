@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Model.h"
-#include "UI/Components/LVGL/LvObj.h"
+#include "UI/Components/LVGL/LvContainer.h"
 #include "lvgl/src/osal/lv_os.h"
 #include <fmt/ostream.h>
 #include <memory>
@@ -26,7 +26,7 @@ namespace UI
 	 *
 	 * @note All views in the application must be a subclass of this type.
 	 */
-	template <class T, class BaseViewType = LvObj>
+	template <class T, class BaseViewType = LvContainer>
 	class View : public BaseViewType
 	{
 		static_assert(std::is_base_of<LvObj, BaseViewType>::value, "BaseViewType must derive from BaseView");
@@ -34,8 +34,8 @@ namespace UI
 
 	  public:
 		template <typename... Args>
-		View(lv_create_t initFunc, const std::string& name, lv_obj_t* parent, Args&&... args)
-			: BaseViewType(initFunc, name, parent, std::forward<Args>(args)...)
+		View(const std::string& name, lv_obj_t* parent, Args&&... args)
+			: BaseViewType(name, parent, std::forward<Args>(args)...)
 			, m_presenter(std::make_shared<T>(this))
 		{
 		}

@@ -189,7 +189,7 @@ namespace UI
 	}
 
 	HeightmapView::HeightmapView(lv_obj_t* parent)
-		: View(lv_obj_create, "HeightmapView", parent, layout_t(0, 0, 100, 100))
+		: View("HeightmapView", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_heightmap("heightmap", getRoot(), layout_t(0, 0, 100, 100))

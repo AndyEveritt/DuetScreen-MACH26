@@ -13,7 +13,7 @@
 namespace UI
 {
 	FineTune::FineTune(lv_obj_t* parent)
-		: View(lv_obj_create, "fine_tune", parent, layout_t(0, 0, 100, 100))
+		: View("fine_tune", parent, layout_t(0, 0, 100, 100))
 		, m_babystep("fine_tune_babystep", getRoot(), layout_t(0, 0, 100, 100))
 		, m_sliderCont(lv_obj_create(getRoot()))
 		, m_speed("fine_tune_speed", m_sliderCont, layout_t(0, 0, 100, LV_SIZE_CONTENT))
