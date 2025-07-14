@@ -4,7 +4,7 @@
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
-#include "UI/Widgets/HeaterSlider/HeaterSlider.h"
+#include "UI/Widgets/Temperature/HeaterSlider.h"
 #include "UI/Widgets/ToolList/ToolList.h"
 
 namespace UI
