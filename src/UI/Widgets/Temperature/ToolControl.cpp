@@ -31,6 +31,14 @@ namespace UI
 		m_heaters.setListFlow(LV_FLEX_FLOW_COLUMN);
 		m_heaters.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
 
+		m_name.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto& control = *(ToolControl*)lv_event_get_user_data(e);
+				control.m_presenter->toggleToolState();
+			},
+			this);
+
 		m_toolInfoCont.addStyle(Themes::getLvglStyles().no_border);
 	}
 

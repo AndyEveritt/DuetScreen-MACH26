@@ -654,10 +654,10 @@ namespace OM
 			return false;
 		}
 
-		const ToolStatusMapEntry key = {statusStr, ToolStatus::off};
+		const ToolStatusMapEntry key = {statusStr, ToolStatus::unknown};
 		const ToolStatusMapEntry* statusFromMap = (ToolStatusMapEntry*)bsearch(
 			&key, toolStatusMap, ARRAY_SIZE(toolStatusMap), sizeof(ToolStatusMapEntry), compareKey<ToolStatusMapEntry>);
-		ToolStatus status = (statusFromMap != nullptr) ? statusFromMap->val : ToolStatus::off;
+		ToolStatus status = (statusFromMap != nullptr) ? statusFromMap->val : ToolStatus::unknown;
 		tool->status = status;
 		return true;
 	}

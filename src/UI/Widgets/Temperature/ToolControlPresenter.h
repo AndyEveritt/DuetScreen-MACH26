@@ -28,6 +28,7 @@ namespace UI
 		// Getters
 
 		// Actions
+		void toggleToolState();
 
 		// Observers
         void newToolData();

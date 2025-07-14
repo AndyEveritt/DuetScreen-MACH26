@@ -22,12 +22,12 @@
 
 namespace OM
 {
-	// Status that a tool may report to us.
+	// Status that a tool may report to us. Must be in alphabetical order.
 	enum class ToolStatus
 	{
-		off = 0,
-		active = 1,
-		standby = 2,
+		active = 0,
+		off,
+		standby,
 		unknown,
 	};
 
@@ -42,7 +42,7 @@ namespace OM
 		{"active", ToolStatus::active},
 		{"off", ToolStatus::off},
 		{"standby", ToolStatus::standby},
-		{"unknown", ToolStatus::off}, // This is a fallback
+		{"unknown", ToolStatus::unknown},
 	};
 
 	struct ToolHeater

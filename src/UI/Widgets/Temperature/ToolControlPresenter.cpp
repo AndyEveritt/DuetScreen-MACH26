@@ -52,6 +52,17 @@ namespace UI
 		LOG_DBG("Set tool index to {} for presenter '{}'", toolIndex, getName());
 	}
 
+	void ToolControlPresenter::toggleToolState()
+	{
+		if (m_tool == nullptr)
+		{
+			LOG_ERROR("Tool is null for presenter '{}'", getName());
+			return;
+		}
+
+		m_tool->ToggleState();
+	}
+
 	void ToolControlPresenter::newToolData()
 	{
 		if (m_tool == nullptr)
