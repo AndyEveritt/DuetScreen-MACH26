@@ -8,7 +8,7 @@
 namespace UI
 {
 	HeaterSlider::HeaterSlider(const std::string& name, lv_obj_t* parent)
-		: View(lv_obj_create, name, parent)
+		: View(name, parent)
 		, m_heaterInfoCont(name + "_heater_info_cont", getRoot())
 		, m_heaterName(name + "_heater_name", m_heaterInfoCont)
 		, m_heaterState(name + "_heater_state", m_heaterInfoCont)
@@ -22,8 +22,8 @@ namespace UI
 		// Set up the heater slider view
 		m_heaterName.setText("Heater");
 		m_heaterState.setText("State");
-		m_activeTemperature.setText("Active Temp");
-		m_standbyTemperature.setText("Standby Temp");
+		setActiveTemperature(-2000);
+		setStandbyTemperature(-2000);
 
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -58,6 +58,7 @@ namespace UI
 		m_currentTemperature.addEventCallback(drawCurrentTemperatureEvent, LV_EVENT_DRAW_MAIN_END, this);
 
 		// Add styles
+		addStyle(Themes::getLvglStyles().no_border);
 		m_heaterInfoCont.addStyle(Themes::getLvglStyles().no_border);
 		m_temperatureCont.addStyle(Themes::getLvglStyles().no_border);
 		m_activeTemperature.addStyle(Themes::getLvglStyles().pad_normal);
@@ -194,9 +195,12 @@ namespace UI
 
 	void HeaterSlider::onTemperatureLabelEvent(lv_event_t* e)
 	{
+		lv_event_code_t code = lv_event_get_code(e);
+		if (code == LV_EVENT_DELETE)
+			return; // Ignore delete events
+
 		LvLabel& label = *(LvLabel*)lv_event_get_user_data(e);
 		HeaterSlider& control = *(HeaterSlider*)label.getUserData();
-		lv_event_code_t code = lv_event_get_code(e);
 
 		bool activeTemperature;
 		if (label == control.m_activeTemperature)
@@ -341,6 +345,11 @@ namespace UI
 	{
 		HeaterSlider& control = *(HeaterSlider*)lv_event_get_user_data(e);
 		control.getPresenter()->cycleHeaterState();
+	}
+
+	void HeaterSlider::onShow()
+	{
+		updateLabelPositions();
 	}
 
 	void HeaterSlider::updateLabelPositions()

@@ -46,6 +46,7 @@ namespace UI
 		}
 		virtual void onActivate() override;
 		virtual void onDeactivate() override {}
+		virtual void onDisconnect() { reset(); }
 
 	  private:
 		SlotType m_slotType = SlotType::Unknown;

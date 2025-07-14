@@ -518,7 +518,7 @@ namespace UI
 		if (!lv_obj_has_flag(getRoot(), LV_OBJ_FLAG_HIDDEN))
 		{
 			LOG_VERBOSE("'{:s}' is already visible", getName());
-			return;
+			// return;
 		}
 
 		LOG_DBG("Showing '{:s}'", getName());

@@ -56,16 +56,8 @@ namespace UI
 
 		std::shared_ptr<T> getPresenter() { return m_presenter; }
 
-		void activate()
-		{
-			Model::get().bind(m_presenter);
-			m_presenter->activate();
-		}
-		void deactivate()
-		{
-			Model::get().unbind(m_presenter);
-			m_presenter->deactivate();
-		}
+		void activate() { m_presenter->activate(); }
+		void deactivate() { m_presenter->deactivate(); }
 
 		/**
 		 * @brief Shows the view by activating its presenter and then showing the view itself.

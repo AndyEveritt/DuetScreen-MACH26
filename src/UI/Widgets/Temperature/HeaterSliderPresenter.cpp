@@ -7,8 +7,7 @@ namespace UI
 {
 	void HeaterSliderPresenter::onActivate()
 	{
-		setToolHeaterIndex(0, 0);
-		// setBedIndex(0);
+		newHeaterData();
 	}
 
 	void HeaterSliderPresenter::setToolHeaterIndex(size_t toolIndex, uint8_t toolHeaterIndex)
@@ -33,7 +32,7 @@ namespace UI
 			return;
 		}
 
-		LOG_DBG("Set heater index to {} for presenter '{}'", toolHeaterIndex, getName());
+		LOG_DBG("Set tool heater index to {} for presenter '{}'", toolHeaterIndex, getName());
 		m_slotType = SlotType::Tool;
 	}
 

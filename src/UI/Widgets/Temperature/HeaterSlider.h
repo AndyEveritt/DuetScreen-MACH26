@@ -27,6 +27,8 @@ namespace UI
 		static void onTemperatureLabelEvent(lv_event_t* e);
 		static void onToggleStateEvent(lv_event_t* e);
 
+		virtual void onShow() override;
+
 		void updateLabelPositions();
 		void updateLabelPosition(LvLabel& label, int32_t value);
 

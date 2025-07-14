@@ -21,30 +21,21 @@ namespace UI
 	class BasePresenter : public ModelListener
 	{
 	  public:
-		void init() { onInit(); }
-		void activate()
-		{
-			onActivate();
-			m_active = true;
-		}
-		void deactivate()
-		{
-			onDeactivate();
-			m_active = false;
-		}
+		void init();
+		virtual void activate();
+		virtual void deactivate();
 
-		virtual const std::string& getName() const
-		{
-			static std::string name = "BasePresenter";
-			return name;
-		}
+		virtual const std::string& getName() const;
 
 		bool isActive() const { return m_active; }
+
+		void disconnected();
 
 	  protected:
 		virtual void onInit() {}
 		virtual void onActivate() {}
 		virtual void onDeactivate() {}
+		virtual void onDisconnect() {}
 
 		volatile bool m_active = false;
 	};
@@ -56,6 +47,24 @@ namespace UI
 		Presenter(LvContainer* view)
 			: m_view(static_cast<V*>(view))
 		{
+		}
+
+		virtual void activate() final
+		{
+			BasePresenter::activate();
+			if (m_view != nullptr)
+			{
+				Model::get().bind(m_view->getPresenter());
+			}
+		}
+
+		virtual void deactivate() final
+		{
+			BasePresenter::deactivate();
+			if (m_view != nullptr)
+			{
+				Model::get().unbind(m_view->getPresenter());
+			}
 		}
 
 		const std::string& getName() const final

@@ -277,6 +277,18 @@ namespace OM
 		}
 	}
 
+	const char* Tool::GetStatusStr() const
+	{
+		const ToolStatusMapEntry key = {"unknown", status};
+		const ToolStatusMapEntry* statusFromMap = (ToolStatusMapEntry*)bsearch(&key,
+																			   toolStatusMap,
+																			   ARRAY_SIZE(toolStatusMap),
+																			   sizeof(ToolStatusMapEntry),
+																			   compareValue<ToolStatusMapEntry>);
+
+		return (statusFromMap != nullptr) ? statusFromMap->key : "unknown";
+	}
+
 	void Tool::ToggleState()
 	{
 		switch (status)

@@ -28,6 +28,7 @@ namespace OM
 		off = 0,
 		active = 1,
 		standby = 2,
+		unknown,
 	};
 
 	struct ToolStatusMapEntry
@@ -41,6 +42,7 @@ namespace OM
 		{"active", ToolStatus::active},
 		{"off", ToolStatus::off},
 		{"standby", ToolStatus::standby},
+		{"unknown", ToolStatus::off}, // This is a fallback
 	};
 
 	struct ToolHeater
@@ -99,6 +101,7 @@ namespace OM
 		size_t RemoveExtrudersFrom(const uint8_t toolExtruderIndex);
 		size_t RemoveFansFrom(const uint8_t toolFanIndex);
 		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
+		const char* GetStatusStr() const;
 		void ToggleState();
 		void ToggleHeaterState(const uint8_t toolHeaterIndex);
 		void ToggleSpindleState();
