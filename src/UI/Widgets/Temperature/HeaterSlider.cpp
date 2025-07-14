@@ -19,6 +19,8 @@ namespace UI
 	{
 		UI_LOCK();
 
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+
 		// Set up the heater slider view
 		m_heaterName.setText("Heater");
 		m_heaterState.setText("State");

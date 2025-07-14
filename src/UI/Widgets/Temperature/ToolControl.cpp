@@ -18,7 +18,7 @@ namespace UI
 		, m_heaters(name + "_heaters", getRoot())
 	{
 		UI_LOCK();
-		setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		m_toolInfoCont.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
@@ -39,6 +39,7 @@ namespace UI
 			},
 			this);
 
+		addStyle(Themes::getLvglStyles().no_border);
 		m_toolInfoCont.addStyle(Themes::getLvglStyles().no_border);
 	}
 

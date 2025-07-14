@@ -2,6 +2,7 @@
 
 #include "TemperaturePresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 #include "UI/Widgets/Temperature/ToolControl.h"
@@ -9,64 +10,6 @@
 
 namespace UI
 {
-	class TemperatureView;
-
-	class ToolItem : public ListItem
-	{
-	  public:
-		ToolItem(const size_t index, lv_obj_t* parent, TemperatureView& view);
-		virtual ~ToolItem();
-
-		TemperatureView& getList() const { return m_list; }
-		void setLabel(const char* name);
-		void setSelected(const bool selected);
-		void setHeaterCount(const size_t count);
-		size_t getHeaterCount() const;
-		void setHeaterName(size_t index, const char* name);
-		void setStatus(size_t index, const char* status);
-		void setCurrentTemperature(size_t index, const float temperature);
-		void setActiveTemperature(size_t index, const int32_t temperature);
-		void setStandbyTemperature(size_t index, const int32_t temperature);
-		void showFilamentControls(bool show);
-		void setLoadedFilament(const char* filament);
-		void setFilamentOptions(const std::vector<std::string>& options);
-
-	  private:
-		static void onLabelEvent(lv_event_t* e);
-		static void onLoadFilamentEvent(lv_event_t* e);
-		static void onUnloadEvent(lv_event_t* e);
-
-		class Heater : public ListItem
-		{
-		  public:
-			Heater(const size_t index, lv_obj_t* parent, ToolItem& toolItem);
-
-			ToolItem& tool;
-			lv_obj_t* labelCont;
-			lv_obj_t* label;
-			lv_obj_t* status;
-			lv_obj_t* current;
-			lv_obj_t* active;
-			lv_obj_t* standby;
-
-		  private:
-			static void onStatusEvent(lv_event_t* e);
-			static void onTemperaturesSetEvent(lv_event_t* e);
-		};
-
-		std::shared_ptr<Heater> getHeater(const size_t index);
-
-		bool m_selected;
-
-		TemperatureView& m_list;
-
-		lv_obj_t* m_label;
-		List<Heater> m_heaters;
-		lv_obj_t* m_filamentControls;
-		lv_obj_t* m_filament;
-		Button m_unload;
-	};
-
 	class TemperatureView : public View<TemperaturePresenter>
 	{
 	  public:
@@ -75,65 +18,18 @@ namespace UI
 
 		TemperatureView(lv_obj_t* parent);
 
-		const size_t getToolCount() const { return m_toolItems.getItemCount(); }
-		void setToolCount(const size_t count);
-		std::shared_ptr<ToolItem> getExtruderItem(const size_t index) const;
-
-		void toggleToolState(size_t toolIndex);
-		void toggleHeaterState(size_t toolIndex, size_t heaterIndex);
-		void loadFilament(size_t toolIndex, const char* filament);
-		void unloadFilament(size_t toolIndex);
+		auto& getTools() { return m_tools; }
+		auto& getBeds() { return m_beds; }
+		auto& getChambers() { return m_chambers; }
 
 	  private:
-		void showNumberPad(bool show);
-
-		static void onFeedDistEvent(lv_event_t* e);
-		static void onFeedRateEvent(lv_event_t* e);
-		static void onExtrudeEvent(lv_event_t* e);
-		static void onRetractEvent(lv_event_t* e);
-
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		int32_t m_layoutColDsc[2];
-		int32_t m_layoutRowDsc[4];
+		List<ToolControl> m_tools;
+		List<HeaterSlider> m_beds;
+		List<HeaterSlider> m_chambers;
 
-		lv_obj_t* m_listHeader;
-		lv_obj_t* m_listCont;
-		lv_obj_t* m_bottomBarCont;
-
-		// List
-		lv_obj_t* m_headerTool;
-		lv_obj_t* m_headerStatus;
-		lv_obj_t* m_headerCurrent;
-		lv_obj_t* m_headerActive;
-		lv_obj_t* m_headerStandby;
-		lv_obj_t* m_headerFilament;
-		lv_obj_t* m_headerPad;
-		List<ToolItem> m_toolItems;
-
-		// Bottom Container
-		lv_obj_t* m_feedDistCont;
-		lv_obj_t* m_feedRateCont;
-		lv_obj_t* m_extrudeControlCont;
-
-		// Feed Dists
-		lv_obj_t* m_feedDistLabel;
-		lv_obj_t* m_feedDistListCont;
-		Button m_feedDists[7];
-
-		// Feed Rates
-		lv_obj_t* m_feedRateLabel;
-		lv_obj_t* m_feedRateListCont;
-		Button m_feedRates[5];
-
-		// Extrusion Control
-		Button m_retract;
-		Button m_extrude;
-
-		// Number Pad
-		ToolListNumPad m_numberPad;
-
-		ToolControl m_toolControl;
+		ModalNumberPad m_numberPad;
 	};
 } // namespace UI

@@ -30,6 +30,7 @@ namespace UI
 
 	  protected:
 		void onActivate() override;
+		void onDeactivate() override;
 
 		virtual void onInit() override
 		{

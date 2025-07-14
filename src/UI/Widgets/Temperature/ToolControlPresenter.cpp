@@ -14,7 +14,6 @@ namespace UI
 {
 	void ToolControlPresenter::onActivate()
 	{
-		setToolIndex(2);
 		newToolData();
 
 		for (auto& heater : m_view->getHeaters())
@@ -43,7 +42,7 @@ namespace UI
 	{
 		UI_LOCK();
 		reset();
-		m_tool = OM::GetTool(toolIndex);
+		m_tool = OM::GetToolBySlot(toolIndex);
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("Tool with index {:d} not found", toolIndex);
@@ -72,7 +71,8 @@ namespace UI
 		}
 
 		LOG_VERBOSE("Updating tool control for tool index {:d}", m_tool->index);
-		m_view->setToolName(m_tool->name.c_str());
+		m_view->setToolName(m_tool->name.IsEmpty() ? fmt::format("{:s} {:d}", _("default_tool_name"), m_tool->index)
+												   : m_tool->name.c_str());
 		m_view->setToolState(m_tool->status, _(m_tool->GetStatusStr()));
 
 		auto& heaters = m_view->getHeaters();
@@ -85,7 +85,6 @@ namespace UI
 								 auto presenter = control->getPresenter();
 								 presenter->setToolHeaterIndex(m_tool->index, index);
 								 presenter->activate();
-								 control->setSize(LV_PCT(100), LV_SIZE_CONTENT);
 								 return control;
 							 });
 	}

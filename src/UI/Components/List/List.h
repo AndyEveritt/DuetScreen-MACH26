@@ -55,7 +55,7 @@ namespace UI
 
 			m_listCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 			m_listCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-			m_listCont.setSize(LV_PCT(100), LV_PCT(100));
+			m_listCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 			m_listCont.addStyle(Themes::getLvglStyles().no_border, LV_PART_MAIN);
 			lv_obj_set_style_pad_all(m_listCont, 0, LV_PART_MAIN);
 

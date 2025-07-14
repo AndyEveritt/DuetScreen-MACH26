@@ -12,6 +12,9 @@ en-GB:
   toollist_current: Current
   toollist_active: Active
   toollist_standby: Standby
+  tools: Tools
+  beds: Beds
+  chambers: Chambers
   default_tool_name: Tool
   bed: Bed
   chamber: Chamber
