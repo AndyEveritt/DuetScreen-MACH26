@@ -38,6 +38,7 @@ namespace UI
 			: BaseViewType(name, parent, std::forward<Args>(args)...)
 			, m_presenter(std::make_shared<T>(this))
 		{
+			m_presenter->init();
 		}
 
 		virtual ~View()

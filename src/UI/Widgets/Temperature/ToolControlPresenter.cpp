@@ -24,6 +24,7 @@ namespace UI
 
 	void ToolControlPresenter::onDeactivate()
 	{
+		UI_LOCK();
 		for (auto& heater : m_view->getHeaters())
 		{
 			auto presenter = heater->getPresenter();
@@ -81,7 +82,7 @@ namespace UI
 							 [this](size_t index, lv_obj_t* parent)
 							 {
 								 auto control = std::make_shared<HeaterSlider>(
-									 fmt::format("tool_{}_heater_{}", m_tool->index, index), parent);
+									 fmt::format("{}_heater_{}", getName(), m_tool->index, index), parent);
 								 auto presenter = control->getPresenter();
 								 presenter->setToolHeaterIndex(m_tool->index, index);
 								 presenter->activate();

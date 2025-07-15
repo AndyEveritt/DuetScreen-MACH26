@@ -46,6 +46,6 @@ namespace UI
 		int32_t m_activeTempValue = 0;
 		int32_t m_standbyTempValue = 0;
 		float m_minTempValue = 0.0f;
-		float m_maxTempValue = 300.0f;
+		float m_maxTempValue = 0.0f;
 	};
 } // namespace UI

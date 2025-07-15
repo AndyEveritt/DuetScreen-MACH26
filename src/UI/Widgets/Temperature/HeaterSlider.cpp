@@ -26,6 +26,7 @@ namespace UI
 		m_heaterState.setText("State");
 		setActiveTemperature(-2000);
 		setStandbyTemperature(-2000);
+		m_currentTemperature.setRange(m_minTempValue, m_maxTempValue);
 
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -91,8 +92,8 @@ namespace UI
 	{
 		UI_LOCK();
 		temperature = std::max(0.0f, temperature);
-		if (temperature == m_minTempValue)
-			return;
+		// if (temperature == m_minTempValue)
+		// 	return;
 
 		LOG_DBG("Setting min temperature to {:g} °C", temperature);
 		m_currentTemperature.setMinValue(m_minTempValue);

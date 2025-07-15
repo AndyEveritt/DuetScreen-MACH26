@@ -38,7 +38,7 @@ namespace UI
 	LvObj::~LvObj()
 	{
 		UI_LOCK();
-		LOG_VERBOSE("Deleting view '{:s}' ({})", getName(), static_cast<const void*>(m_root));
+		LOG_VERBOSE("Deleting obj '{:s}' ({})", getName(), static_cast<const void*>(m_root));
 		lv_obj_delete(getRoot());
 	}
 

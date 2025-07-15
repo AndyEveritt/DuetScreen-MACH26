@@ -32,18 +32,20 @@ Model::Model()
 	addEventListener<EventType::Disconnected>(this, &Model::disconnected);
 }
 
-void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
+void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
 	unbind(presenter);
 	m_presenters.push_back(presenter);
 }
 
-void Model::unbind(std::shared_ptr<UI::BasePresenter> presenter)
+void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
-	LOG_DBG("Unbinding presenter {:s}", presenter->getName());
-	m_presenters.remove(presenter);
+	std::shared_ptr<UI::BasePresenter> sharedPresenter = presenter.lock();
+	LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter ? sharedPresenter->getName() : "expired");
+	m_presenters.remove_if([presenter](const std::weak_ptr<UI::BasePresenter>& p)
+						   { return p.lock() == presenter.lock() || p.expired(); });
 }
 
 void Model::startEventLoop()
@@ -115,10 +117,10 @@ void Model::runEventLoop()
 			std::shared_ptr<UI::BasePresenter> presenter;
 			while (it != m_presenters.end())
 			{
-				presenter = *it;
-				if (!presenter->isActive())
+				presenter = (*it).lock();
+				if (!presenter)
 				{
-					++it;
+					it = m_presenters.erase(it);
 					continue;
 				}
 				auto handler = presenter->getEventHandler(event.first);

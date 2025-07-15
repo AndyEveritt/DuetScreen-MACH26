@@ -26,16 +26,17 @@ namespace UI
 
 		// Observers
 		void newToolData();
-		void disconnected();
+		void newBedHeaterData();
+		void newChamberHeaterData();
 
 	  protected:
 		void onActivate() override;
 		void onDeactivate() override;
+		void onDisconnect() override;
 
 		virtual void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &TemperaturePresenter::newToolData);
-			registerEventListener<EventType::Disconnected>(this, &TemperaturePresenter::disconnected);
 		}
 
 	  private:

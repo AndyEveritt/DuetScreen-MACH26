@@ -20,6 +20,7 @@ namespace UI
 
 	void TemperaturePresenter::newToolData()
 	{
+		MODEL_LOCK();
 		auto& tools = m_view->getTools();
 		tools.setItemCount(OM::GetToolCount(),
 						   [this](size_t index, lv_obj_t* parent) -> std::shared_ptr<ToolControl>
@@ -32,7 +33,37 @@ namespace UI
 						   });
 	}
 
-	void TemperaturePresenter::disconnected()
+	void TemperaturePresenter::newBedHeaterData()
+	{
+		auto& beds = m_view->getBeds();
+		beds.clear();
+		beds.setItemCount(OM::GetBedCount(),
+						  [this](size_t index, lv_obj_t* parent) -> std::shared_ptr<HeaterSlider>
+						  {
+							  auto control = std::make_shared<HeaterSlider>(
+								  fmt::format("{}_bed_{}", m_view->getName(), index), parent);
+							  control->getPresenter()->setBedIndex(index);
+							  control->activate();
+							  return control;
+						  });
+	}
+
+	void TemperaturePresenter::newChamberHeaterData()
+	{
+		auto& chambers = m_view->getChambers();
+		chambers.clear();
+		chambers.setItemCount(OM::GetChamberCount(),
+							  [this](size_t index, lv_obj_t* parent) -> std::shared_ptr<HeaterSlider>
+							  {
+								  auto control = std::make_shared<HeaterSlider>(
+									  fmt::format("{}_chamber_{}", m_view->getName(), index), parent);
+								  control->getPresenter()->setChamberIndex(index);
+								  control->activate();
+								  return control;
+							  });
+	}
+
+	void TemperaturePresenter::onDisconnect()
 	{
 		m_view->getTools().clear();
 		m_view->getBeds().clear();
@@ -44,6 +75,8 @@ namespace UI
 		MODEL_LOCK();
 
 		newToolData();
+		newBedHeaterData();
+		newChamberHeaterData();
 
 		for (auto& tool : m_view->getTools())
 		{

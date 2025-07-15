@@ -20,15 +20,21 @@ namespace UI
 	void BasePresenter::activate()
 	{
 		LOG_DBG("Activating presenter '{}'", getName());
-		onActivate();
-		m_active = true;
+		if (!m_active)
+		{
+			onActivate();
+			m_active = true;
+		}
 	}
 
 	void BasePresenter::deactivate()
 	{
 		LOG_DBG("Deactivating presenter '{}'", getName());
-		onDeactivate();
-		m_active = false;
+		if (m_active)
+		{
+			onDeactivate();
+			m_active = false;
+		}
 	}
 
 	const std::string& BasePresenter::getName() const

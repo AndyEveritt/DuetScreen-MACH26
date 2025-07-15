@@ -83,6 +83,8 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(UpdateAvailable, std::string)                                                                                   \
 	XX(FanData)                                                                                                        \
 	XX(FileData)                                                                                                       \
+	XX(BedHeaterData)                                                                                                  \
+	XX(ChamberHeaterData)                                                                                              \
 	XX(HeaterData)                                                                                                     \
 	XX(JobFileName, std::string)                                                                                       \
 	XX(JobLastFileName, std::string)                                                                                   \
@@ -149,13 +151,13 @@ class Model
 	 * @brief Add a `Presenter` to listen to events
 	 * @param presenter
 	 */
-	void bind(std::shared_ptr<UI::BasePresenter> presenter);
+	void bind(std::weak_ptr<UI::BasePresenter> presenter);
 
 	/**
 	 * @brief Remove a `Presenter`
 	 * @param presenter
 	 */
-	void unbind(std::shared_ptr<UI::BasePresenter> presenter);
+	void unbind(std::weak_ptr<UI::BasePresenter> presenter);
 
 	void startEventLoop();
 	void stopEventLoop();
@@ -234,7 +236,7 @@ class Model
 	StateSubscribers m_stateSubscribers;
 	ThumbnailSubscribers m_thumbnailSubscribers;
 	ToolSubscribers m_toolSubscribers;
-	std::list<std::shared_ptr<UI::BasePresenter>> m_presenters;
+	std::list<std::weak_ptr<UI::BasePresenter>> m_presenters;
 
 	std::queue<std::pair<EventType, EventData>> m_eventQueue;
 	std::map<EventType, std::vector<EventCallback>> m_handlers;

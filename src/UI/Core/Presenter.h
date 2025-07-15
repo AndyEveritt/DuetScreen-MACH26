@@ -10,10 +10,9 @@
 namespace UI
 {
 #define PRESENTER_CONSTRUCTOR(PresenterType, ViewType)                                                                 \
-	PresenterType(LvContainer* view)                                                                                         \
+	PresenterType(LvContainer* view)                                                                                   \
 		: Presenter<ViewType>(view)                                                                                    \
 	{                                                                                                                  \
-		init();                                                                                                        \
 	}
 
 	class LvContainer;
@@ -48,6 +47,8 @@ namespace UI
 			: m_view(static_cast<V*>(view))
 		{
 		}
+
+		void init() { BasePresenter::init(); }
 
 		virtual void activate() final
 		{
