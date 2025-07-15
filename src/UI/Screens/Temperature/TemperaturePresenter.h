@@ -37,6 +37,8 @@ namespace UI
 		virtual void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &TemperaturePresenter::newToolData);
+			registerEventListener<EventType::BedHeaterData>(this, &TemperaturePresenter::newBedHeaterData);
+			registerEventListener<EventType::ChamberHeaterData>(this, &TemperaturePresenter::newChamberHeaterData);
 		}
 
 	  private:
