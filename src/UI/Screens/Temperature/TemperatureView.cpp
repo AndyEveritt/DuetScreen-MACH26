@@ -10,14 +10,23 @@ namespace UI
 {
 	TemperatureView::TemperatureView(lv_obj_t* parent)
 		: View("temperature_view", parent, layout_t(0, 0, 100, 100))
-		, m_tools(getName() + "_tools", getRoot())
-		, m_beds(getName() + "_beds", getRoot())
-		, m_chambers(getName() + "_chambers", getRoot())
+		, m_temperatureCont(getName() + "_temperature_cont", getRoot())
+		, m_tools(getName() + "_tools", m_temperatureCont)
+		, m_beds(getName() + "_beds", m_temperatureCont)
+		, m_chambers(getName() + "_chambers", m_temperatureCont)
+		, m_filamentSelect(getName() + "_filament_select", getRoot())
 		, m_numberPad(getName() + "_number_pad", getRoot(), layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();
 
-		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+
+		m_temperatureCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_temperatureCont.setHeight(LV_PCT(100));
+		m_temperatureCont.setFlexGrow(2);
+
+		m_filamentSelect.setHeight(LV_PCT(100));
+		m_filamentSelect.setFlexGrow(1);
 
 		m_tools.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_beds.setSize(LV_PCT(100), LV_SIZE_CONTENT);

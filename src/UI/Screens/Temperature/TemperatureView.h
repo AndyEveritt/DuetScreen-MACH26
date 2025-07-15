@@ -5,6 +5,7 @@
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/Filament/FilamentSelect.h"
 #include "UI/Widgets/Temperature/ToolControl.h"
 #include "UI/Widgets/ToolList/ToolList.h"
 
@@ -27,9 +28,12 @@ namespace UI
 		virtual void onShow() override;
 		virtual void onHide() override;
 
+		LvContainer m_temperatureCont;
 		List<ToolControl> m_tools;
 		List<HeaterSlider> m_beds;
 		List<HeaterSlider> m_chambers;
+
+		FilamentSelect m_filamentSelect;
 
 		ModalNumberPad m_numberPad;
 	};
