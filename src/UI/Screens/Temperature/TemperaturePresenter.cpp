@@ -22,12 +22,24 @@ namespace UI
 	{
 		MODEL_LOCK();
 		auto& tools = m_view->getTools();
-		tools.setItemCount(OM::GetToolCount(),
-						   [this](size_t index, lv_obj_t* parent) -> std::shared_ptr<ToolControl>
+		std::vector<size_t> toolIndices;
+		toolIndices.reserve(OM::GetToolCount());
+		OM::IterateToolsWhile(
+			[&toolIndices](OM::ToolPtr tool, size_t index)
+			{
+				if (tool->GetHeaterCount() > 0)
+				{
+					toolIndices.push_back(index);
+				}
+				return true;
+			});
+
+		tools.setItemCount(toolIndices.size(),
+						   [this, &toolIndices](size_t index, lv_obj_t* parent) -> std::shared_ptr<ToolControl>
 						   {
 							   auto control = std::make_shared<ToolControl>(
 								   fmt::format("{}_tool_{}", m_view->getName(), index), parent);
-							   control->getPresenter()->setToolIndex(index);
+							   control->getPresenter()->setToolIndex(toolIndices[index]);
 							   control->setNumberPad(&m_view->getNumberPad());
 							   control->activate();
 							   return control;
