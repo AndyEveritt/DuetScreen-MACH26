@@ -21,6 +21,7 @@ namespace UI
 		auto& getTools() { return m_tools; }
 		auto& getBeds() { return m_beds; }
 		auto& getChambers() { return m_chambers; }
+		auto& getNumberPad() { return m_numberPad; }
 
 	  private:
 		virtual void onShow() override;

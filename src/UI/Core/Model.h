@@ -119,6 +119,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(MessageBoxData, OM::Alert)                                                                                      \
 	XX(Time)                                                                                                           \
 	XX(ToolData)                                                                                                       \
+	XX(ToolHeaterData, size_t)                                                                                         \
 	XX(Directories)
 
 enum class EventType

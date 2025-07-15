@@ -151,6 +151,12 @@ namespace UI
 		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
+	void HeaterSlider::setNumberPad(NumberPad* numberPad)
+	{
+		UI_LOCK();
+		m_numberPad = numberPad;
+	}
+
 	void HeaterSlider::drawCurrentTemperatureEvent(lv_event_t* e)
 	{
 		HeaterSlider& slider = *(HeaterSlider*)lv_event_get_user_data(e);
@@ -219,7 +225,7 @@ namespace UI
 			LOG_ERROR("Unexpected label in HeaterSlider event handler");
 			return; // Not a temperature label
 		}
-		float temperature = activeTemperature ? control.m_activeTempValue : control.m_standbyTempValue;
+		int32_t temperature = activeTemperature ? control.m_activeTempValue : control.m_standbyTempValue;
 
 		switch (code)
 		{
@@ -233,6 +239,10 @@ namespace UI
 		{
 			lv_indev_get_point(lv_indev_active(), &control.m_pressedPoint);
 			lv_obj_transform_point(label, &control.m_pressedPoint, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
+			float pct =
+				(float)(temperature - control.m_minTempValue) / (control.m_maxTempValue - control.m_minTempValue);
+
+			control.m_pressedPointOffset.x = control.m_pressedPoint.x - label.getCoords().x1 - label.getWidth() * pct;
 			break;
 		}
 		case LV_EVENT_PRESSING:
@@ -240,9 +250,9 @@ namespace UI
 			// Update the target temperature based on the slider position
 			lv_indev_t* indev = lv_indev_active();
 			if (lv_indev_get_type(indev) != LV_INDEV_TYPE_POINTER)
-				return;
+				break;
 			if (lv_indev_get_scroll_obj(indev) != NULL)
-				return;
+				break;
 
 			lv_point_t p;
 			lv_indev_get_point(indev, &p);
@@ -250,9 +260,12 @@ namespace UI
 
 			const int32_t range = control.m_maxTempValue - control.m_minTempValue;
 			const int32_t w = control.m_currentTemperature.getWidth();
-			const int32_t rel_position = p.x - (control.m_currentTemperature.getCoords().x1);
-			int32_t new_temperature = std::clamp(
-				(range * rel_position / w) + control.m_minTempValue, control.m_minTempValue, control.m_maxTempValue);
+			const int32_t rel_position =
+				p.x - control.m_currentTemperature.getCoords().x1 - control.m_pressedPointOffset.x;
+			int32_t new_temperature =
+				std::clamp((int32_t)(((range * rel_position + w / 2) / w)) + control.m_minTempValue,
+						   control.m_minTempValue,
+						   control.m_maxTempValue);
 
 			if (activeTemperature)
 				control.setActiveTemperature(new_temperature, true);
@@ -265,7 +278,35 @@ namespace UI
 		{
 			LOG_DBG("Label '{}' released", label.getName());
 			// Set new target temperature
-			control.getPresenter()->sendTemperature(temperature, activeTemperature);
+			lv_point_t p;
+			lv_indev_get_point(lv_indev_active(), &p);
+			lv_obj_transform_point(label, &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
+
+			if (abs(p.x - control.m_pressedPoint.x) < 2)
+			{
+				if (control.m_numberPad == nullptr)
+				{
+					LOG_ERROR("NumberPad is not set for {}", control.getName());
+					break;
+				}
+				control.m_numberPad->setValue(temperature);
+				control.m_numberPad->setMinValue(control.m_minTempValue);
+				control.m_numberPad->setMaxValue(control.m_maxTempValue);
+				control.m_numberPad->setHeader(fmt::format(fmt::runtime(_("set_temperature_numpad_header")),
+														   activeTemperature ? _("active") : _("standby"),
+														   control.m_heaterName.getLabel().getText()));
+				control.m_numberPad->setConfirmCallback(
+					[&control, activeTemperature](float value)
+					{ control.getPresenter()->sendTemperature(value, activeTemperature); }
+
+				);
+
+				openModal(control.m_numberPad);
+			}
+			else
+			{
+				control.getPresenter()->sendTemperature(temperature, activeTemperature);
+			}
 			break;
 		}
 		case LV_EVENT_REFR_EXT_DRAW_SIZE:

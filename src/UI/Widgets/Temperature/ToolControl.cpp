@@ -53,4 +53,14 @@ namespace UI
 		m_name.setChecked(state == ToolControlPresenter::tool_state_t::active);
 		m_state.setText(str);
 	}
+
+	void ToolControl::setNumberPad(NumberPad* numberPad)
+	{
+		UI_LOCK();
+		m_numberPad = numberPad;
+		for (auto heater : m_heaters)
+		{
+			heater->setNumberPad(numberPad);
+		}
+	}
 } // namespace UI

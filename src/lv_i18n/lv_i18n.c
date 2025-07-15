@@ -215,6 +215,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"extrude_feedrate_input", "Extrude Feedrate: {:.2g} mm/s"},
     {"extrude_distance_header", "Set Extrusion Distance (mm)"},
     {"move_set_position", "Set absolute position for axis {}"},
+    {"set_temperature_numpad_header", "Set {} Temperature for {}"},
     {NULL, NULL} // End mark
 };
 

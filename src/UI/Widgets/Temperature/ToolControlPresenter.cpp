@@ -85,8 +85,27 @@ namespace UI
 									 fmt::format("{}_heater_{}", getName(), m_tool->index, index), parent);
 								 auto presenter = control->getPresenter();
 								 presenter->setToolHeaterIndex(m_tool->index, index);
-								 presenter->activate();
+								 control->setNumberPad(m_view->getNumberPad());
+								 control->activate();
 								 return control;
 							 });
+	}
+
+	void ToolControlPresenter::newToolHeaterData(size_t toolIndex)
+	{
+		if (m_tool == nullptr)
+		{
+			LOG_ERROR("Tool is null for presenter '{}'", getName());
+			return;
+		}
+		if (m_tool->index != toolIndex)
+		{
+			LOG_VERBOSE("Tool index mismatch: expected {:d}, got {:d}", m_tool->index, toolIndex);
+			return;
+		}
+
+		LOG_VERBOSE("Updating tool heaters for tool index {:d}", m_tool->index);
+		m_view->getHeaters().clear();
+		newToolData();
 	}
 } // namespace UI

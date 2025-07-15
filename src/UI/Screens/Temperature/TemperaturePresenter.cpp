@@ -28,6 +28,7 @@ namespace UI
 							   auto control = std::make_shared<ToolControl>(
 								   fmt::format("{}_tool_{}", m_view->getName(), index), parent);
 							   control->getPresenter()->setToolIndex(index);
+							   control->setNumberPad(&m_view->getNumberPad());
 							   control->activate();
 							   return control;
 						   });
@@ -43,6 +44,7 @@ namespace UI
 							  auto control = std::make_shared<HeaterSlider>(
 								  fmt::format("{}_bed_{}", m_view->getName(), index), parent);
 							  control->getPresenter()->setBedIndex(index);
+							  control->setNumberPad(&m_view->getNumberPad());
 							  control->activate();
 							  return control;
 						  });
@@ -58,6 +60,7 @@ namespace UI
 								  auto control = std::make_shared<HeaterSlider>(
 									  fmt::format("{}_chamber_{}", m_view->getName(), index), parent);
 								  control->getPresenter()->setChamberIndex(index);
+								  control->setNumberPad(&m_view->getNumberPad());
 								  control->activate();
 								  return control;
 							  });

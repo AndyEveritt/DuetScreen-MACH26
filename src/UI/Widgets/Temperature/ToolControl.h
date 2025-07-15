@@ -26,10 +26,15 @@ namespace UI
         void setToolState(ToolControlPresenter::tool_state_t state, std::string_view str);
 		List<HeaterSlider>& getHeaters() { return m_heaters; }
 
+		void setNumberPad(NumberPad* numberPad);
+		auto getNumberPad() { return m_numberPad; }
+
 	  private:
 		LvContainer m_toolInfoCont;
 		Button m_name;
 		LvLabel m_state;
 		List<HeaterSlider> m_heaters;
+
+		NumberPad* m_numberPad = nullptr;
 	};
 } // namespace UI

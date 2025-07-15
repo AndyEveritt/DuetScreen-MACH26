@@ -32,11 +32,13 @@ namespace UI
 
 		// Observers
         void newToolData();
+		void newToolHeaterData(size_t toolIndex);
 
 	  protected:
 		virtual void onInit() override {
             registerEventListener<EventType::ToolData>(this, &ToolControlPresenter::newToolData);
-        }
+			registerEventListener<EventType::ToolHeaterData>(this, &ToolControlPresenter::newToolHeaterData);
+		}
 		virtual void onActivate() override;
 		virtual void onDeactivate() override;
 		virtual void onDisconnect() { reset(); }

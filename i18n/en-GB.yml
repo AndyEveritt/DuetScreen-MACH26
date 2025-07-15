@@ -408,3 +408,4 @@ en-GB:
   move_set_position: 'Set absolute position for axis {}'
   unknown: ~
   extrude_feedrate_header: ~
+  set_temperature_numpad_header: 'Set {} Temperature for {}'

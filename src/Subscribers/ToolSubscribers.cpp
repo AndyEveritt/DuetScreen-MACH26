@@ -135,6 +135,7 @@ bool ToolSubscribers::toolHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_
 	if (OM::RemoveToolHeaters(indices[0], indices[1]))
 	{
 	}
+	Model::get().post<EventType::ToolHeaterData>(indices[0]);
 	return true;
 }
 
