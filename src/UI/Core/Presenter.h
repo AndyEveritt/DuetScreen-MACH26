@@ -52,18 +52,18 @@ namespace UI
 
 		virtual void activate() final
 		{
-			BasePresenter::activate();
 			if (m_view != nullptr)
 			{
+				BasePresenter::activate();
 				Model::get().bind(m_view->getPresenter());
 			}
 		}
 
 		virtual void deactivate() final
 		{
-			BasePresenter::deactivate();
 			if (m_view != nullptr)
 			{
+				BasePresenter::deactivate();
 				Model::get().unbind(m_view->getPresenter());
 			}
 		}
