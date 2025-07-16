@@ -12,4 +12,5 @@ sudo apt-get install -y \
     libswscale-dev \
     libavutil-dev \
     libpng-dev \
-    libspdlog-dev
+    libspdlog-dev \
+    gdb-multiarch \
