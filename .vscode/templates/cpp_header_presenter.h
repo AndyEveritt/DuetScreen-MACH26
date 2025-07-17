@@ -30,6 +30,8 @@ namespace UI
 		virtual void onInit() override {}
 		virtual void onActivate() override {}
 		virtual void onDeactivate() override {}
+
+		virtual void onConnect() {}
 		virtual void onDisconnect() {}
 	};
 } // namespace UI

@@ -35,17 +35,41 @@ Model::Model()
 void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
+	if (presenter.expired())
+	{
+		LOG_WARN("Attempted to bind an expired presenter");
+		return;
+	}
 	unbind(presenter);
+	LOG_DBG("Binding presenter '{:s}'", presenter.lock()->getName());
 	m_presenters.push_back(presenter);
 }
 
 void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
+	if (presenter.expired())
+	{
+		LOG_WARN("Attempted to unbind an expired presenter");
+		return;
+	}
 	std::shared_ptr<UI::BasePresenter> sharedPresenter = presenter.lock();
-	LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter ? sharedPresenter->getName() : "expired");
-	m_presenters.remove_if([presenter](const std::weak_ptr<UI::BasePresenter>& p)
-						   { return p.lock() == presenter.lock() || p.expired(); });
+	m_presenters.remove_if(
+		[&sharedPresenter](const std::weak_ptr<UI::BasePresenter>& p)
+		{
+			bool remove = false;
+			if (p.expired())
+			{
+				LOG_DBG("Unbinding expired presenter");
+				remove = true;
+			}
+			else if (p.lock() == sharedPresenter)
+			{
+				LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter->getName());
+				remove = true;
+			}
+			return remove;
+		});
 }
 
 void Model::startEventLoop()

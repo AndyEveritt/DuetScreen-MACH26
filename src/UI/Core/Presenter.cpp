@@ -7,6 +7,7 @@
 
 #include "Presenter.h"
 #include "Debug.h"
+#include "UI/Components/LVGL/LvObj.h"
 
 namespace UI
 {
@@ -14,11 +15,13 @@ namespace UI
 	{
 		LOG_DBG("Initializing presenter '{}'", getName());
 		onInit();
+		registerEventListener<EventType::Connected>(this, &BasePresenter::connected);
 		registerEventListener<EventType::Disconnected>(this, &BasePresenter::disconnected);
 	}
 
 	void BasePresenter::activate()
 	{
+		UI_LOCK();
 		LOG_DBG("Activating presenter '{}'", getName());
 		if (!m_active)
 		{
@@ -29,6 +32,7 @@ namespace UI
 
 	void BasePresenter::deactivate()
 	{
+		UI_LOCK();
 		LOG_DBG("Deactivating presenter '{}'", getName());
 		if (m_active)
 		{
@@ -41,6 +45,13 @@ namespace UI
 	{
 		static std::string name = "BasePresenter";
 		return name;
+	}
+
+	void BasePresenter::connected()
+	{
+		LOG_DBG("{} connected", getName());
+		onConnect();
+		onActivate();
 	}
 
 	void BasePresenter::disconnected()

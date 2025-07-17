@@ -28,12 +28,15 @@ namespace UI
 
 		bool isActive() const { return m_active; }
 
+		void connected();
 		void disconnected();
 
 	  protected:
 		virtual void onInit() {}
 		virtual void onActivate() {}
 		virtual void onDeactivate() {}
+
+		virtual void onConnect() {}
 		virtual void onDisconnect() {}
 
 		volatile bool m_active = false;

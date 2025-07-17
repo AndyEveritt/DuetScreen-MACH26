@@ -78,6 +78,21 @@
 			}
 		},
 		{
+			"label": "Clean DuetScreen for Remote",
+			"type": "shell",
+			"command": "rm -rf output/build/duetscreen-HEAD; rm -rf dl/duetscreen",
+			"args": [],
+			"options": {
+				"cwd": "${config:buildroot_path}",
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"detail": "Cleans the DuetScreen build directory for remote debugging"
+		},
+		{
 			"label": "Build DuetScreen for Remote",
 			"type": "shell",
 			"command": "make duetscreen-rebuild",

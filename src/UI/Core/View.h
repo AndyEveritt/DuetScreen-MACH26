@@ -43,7 +43,10 @@ namespace UI
 
 		virtual ~View()
 		{
-			deactivate();
+			// Can't call deactivate here because any inherited classes will have been destroyed and if the presenter
+			// uses `m_view` or `getView()` it will cause a crash since the memory for `m_view` will only contain data
+			// from this base class. The compiler does not catch this.
+			Model::get().unbind(m_presenter);
 			if (m_presenter)
 			{
 				m_presenter->setView(nullptr);
