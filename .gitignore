@@ -1,6 +1,6 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,cmake,c++,c,python
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,node,cmake,c++,c,python
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,node,cmake,c++,c,valgrind
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,python,node,cmake,c++,c,valgrind
 
 ### C ###
 # Prerequisites
@@ -402,8 +402,28 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+### Valgrind ###
+# Callgrind output files
+callgrind.out
+callgrind.out.*
+
+# Cachegrind output files
+cachegrind.out
+cachegrind.out.*
+
+# Massif output files
+massif.out
+massif.out.*
+
+# BBV output files
+bb.out
+bb.out.*
+
+
+
 ### VisualStudioCode ###
 .vscode/*
+!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -420,7 +440,7 @@ pyrightconfig.json
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,cmake,c++,c,python
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,node,cmake,c++,c,valgrind
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
@@ -429,6 +449,7 @@ out/
 body
 libhv*.log
 config.json
+.vscode/settings.json
 !.vscode/templates/
 !.vscode/c_cpp_properties.json
 !.vscode/file_templates.json

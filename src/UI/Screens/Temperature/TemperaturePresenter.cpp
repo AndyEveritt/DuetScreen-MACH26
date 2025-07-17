@@ -93,56 +93,39 @@ namespace UI
 		newBedHeaterData();
 		newChamberHeaterData();
 
-		for (auto& tool : m_view->getTools())
+		for (auto& tool : getView()->getTools())
 		{
 			tool->activate();
 		}
-		for (auto& bed : m_view->getBeds())
+		for (auto& bed : getView()->getBeds())
 		{
 			bed->activate();
 		}
-		for (auto& chamber : m_view->getChambers())
+		for (auto& chamber : getView()->getChambers())
 		{
 			chamber->activate();
 		}
 
-		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
-									 "",
-									 [this]()
-									 {
-										 {
-											 MODEL_LOCK();
-											 this->m_filamentOptions.clear();
-											 for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
-											 {
-												 std::shared_ptr<OM::FileSystem::FileSystemItem> item =
-													 OM::FileSystem::GetItem(i);
-												 if (item == nullptr)
-												 {
-													 continue;
-												 }
-												 this->m_filamentOptions.push_back(item->GetName());
-											 }
-										 }
-										 //  this->updateFilamentList();
-									 });
+		getView()->m_filamentSelect.activate();
 	}
 
 	void TemperaturePresenter::onDeactivate()
 	{
 		MODEL_LOCK();
 
-		for (auto& tool : m_view->getTools())
+		for (auto& tool : getView()->getTools())
 		{
 			tool->deactivate();
 		}
-		for (auto& bed : m_view->getBeds())
+		for (auto& bed : getView()->getBeds())
 		{
 			bed->deactivate();
 		}
-		for (auto& chamber : m_view->getChambers())
+		for (auto& chamber : getView()->getChambers())
 		{
 			chamber->deactivate();
 		}
+
+		getView()->m_filamentSelect.deactivate();
 	}
 } // namespace UI

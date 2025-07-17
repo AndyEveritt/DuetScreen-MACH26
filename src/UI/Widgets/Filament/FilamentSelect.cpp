@@ -75,4 +75,46 @@ namespace UI
 		m_toolList.addStyle(Themes::getLvglStyles().no_border);
 		m_filamentOptions.addStyle(Themes::getLvglStyles().no_border);
 	}
+
+	void FilamentSelect::setToolCount(size_t count)
+	{
+		UI_LOCK();
+		m_toolList.setItemCount(count,
+								[this](size_t index, lv_obj_t* parent) -> std::shared_ptr<ToolItem>
+								{ return std::make_shared<ToolItem>(index, parent); });
+	}
+
+	void FilamentSelect::setToolData(size_t index, std::string_view toolName, std::string_view filamentName)
+	{
+		UI_LOCK();
+		if (index >= m_toolList.getItemCount())
+		{
+			LOG_WARN("Index {} out of bounds for tool data in {}", index, getName());
+			return;
+		}
+
+		auto item = m_toolList.getItem(index);
+		if (!item)
+		{
+			LOG_ERROR("Failed to get tool item at index {} in {}", index, getName());
+			return;
+		}
+		item->setToolName(toolName);
+		item->setFilamentName(filamentName);
+	}
+
+	void FilamentSelect::setFilamentOptions(const std::vector<std::string>& options)
+	{
+		UI_LOCK();
+		LOG_DBG("Setting filament options for {}", getName());
+		m_filamentOptions.setItemCount(options.size(),
+									   [this, &options](size_t index, lv_obj_t* parent) -> std::shared_ptr<Button>
+									   {
+										   auto btn = std::make_shared<Button>(
+											   fmt::format("{}_filament_option_{}", getName(), index), parent);
+										   btn->setText(options[index]);
+										   btn->setFlexGrow(1);
+										   return btn;
+									   });
+	}
 } // namespace UI

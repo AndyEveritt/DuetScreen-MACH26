@@ -21,6 +21,10 @@ namespace UI
 
 		FilamentSelect(const std::string& name, lv_obj_t* parent);
 
+		void setToolCount(size_t count);
+		void setToolData(size_t index, std::string_view toolName, std::string_view filamentName);
+		void setFilamentOptions(const std::vector<std::string>& options);
+
 	  private:
         LvLabel m_header;
 		List<ToolItem> m_toolList;
