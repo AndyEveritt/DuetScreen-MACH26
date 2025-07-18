@@ -41,7 +41,7 @@ namespace UI
 		}
 #endif
 
-		LOG_VERBOSE("Creating view '{:s}' ({})", getName(), static_cast<const void*>(m_root));
+		LOG_VERBOSE("Creating view '{}' ({})", getName(), static_cast<const void*>(m_root));
 		lv_obj_null_on_delete(&m_root);
 	}
 
@@ -57,11 +57,11 @@ namespace UI
 	LvObj::~LvObj()
 	{
 		UI_LOCK();
-		LOG_VERBOSE("Deleting obj '{:s}' ({})", getName(), static_cast<const void*>(m_root));
+		LOG_VERBOSE("Deleting obj '{}' ({})", getName(), static_cast<const void*>(m_root));
 		lv_obj_delete(getRoot());
 	}
 
-	const std::string& LvObj::getName() const
+	std::string_view LvObj::getName() const
 	{
 		return m_name;
 	}

@@ -173,11 +173,8 @@ namespace UI
 
 		size_t index = getSeriesCount();
 
-		std::shared_ptr<legend_obj_t> legendObj =
-			std::make_shared<legend_obj_t>(utils::format("%s_%u_legend_obj", getName(), index),
-										   m_legend,
-										   displayName.c_str(),
-										   layout_t(0, 0, 100, 20));
+		std::shared_ptr<legend_obj_t> legendObj = std::make_shared<legend_obj_t>(
+			fmt::format("legend_obj_{}", index), m_legend, displayName.c_str(), layout_t(0, 0, 100, 20));
 		legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
 		legendObj->setStyleBgColor(s_hiddenColor, LV_STATE_DEFAULT);
 		legendObj->setCheckable(true);

@@ -28,6 +28,8 @@ namespace UI
 			m_toolName.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 			m_filament.setHeight(LV_SIZE_CONTENT);
 			m_filament.setFlexGrow(1);
+			m_filament.setUserData(&m_filament);
+			m_filament.addClickedCallback(onToolSelectEvent, this);
 
 			m_filament.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		}
@@ -44,9 +46,10 @@ namespace UI
 		static void onToolSelectEvent(lv_event_t* e)
 		{
 			auto& control = *static_cast<ToolItem*>(lv_event_get_user_data(e));
-			auto& btn = *static_cast<Button*>(lv_event_get_target(e));
+			auto& btn = *static_cast<Button*>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
 
 			auto presenter = control.m_widget.getPresenter();
+			presenter->setSelectedToolBySlot(control.getIndex());
 		}
 
 		LvLabel m_toolName;
@@ -158,7 +161,14 @@ namespace UI
 		std::string_view selectedFilament = btn.getText();
 		if (!control.m_confirmation)
 		{
-			// presenter->setSelectedFilament()
+			presenter->setFilament(selectedFilament);
+		}
+		else
+		{
+			control.m_confirmation->setText(fmt::format(fmt::runtime(_("confirm_filament_change")), selectedFilament));
+			control.m_confirmation->setOkCallback([presenter, selectedFilament]()
+												  { presenter->setFilament(selectedFilament); });
+			control.m_confirmation->show();
 		}
 	}
 } // namespace UI

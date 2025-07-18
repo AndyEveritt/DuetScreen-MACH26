@@ -2,7 +2,6 @@
     "recommendations": [
         "trevornesbitt.smart-file-templates",
         "ms-vscode.cpptools",
-        "twxs.cmake",
         "ms-vscode.cmake-tools",
         "vadimcn.vscode-lldb"
     ]

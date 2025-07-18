@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "ObjectModel/Tool.h"
 #include "UI/Core/Presenter.h"
 
 namespace UI
@@ -18,17 +19,13 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR(FilamentSelectPresenter, FilamentSelect);
 
-		struct ToolData
-		{
-			std::string toolName;
-			std::string filamentName;
-		};
-
 		// Setters
+		void setSelectedToolBySlot(size_t slot);
 
 		// Getters
 
 		// Actions
+		void setFilament(std::string_view filamentName);
 
 		// Observers
 		void clear();
@@ -46,8 +43,8 @@ namespace UI
 		virtual void onConnect() override {}
 		virtual void onDisconnect() { clear(); }
 
-		std::vector<ToolData> m_toolData;
+		std::vector<OM::ToolPtr> m_tools;
 		std::vector<std::string> m_filamentOptions;
-		int8_t m_selectedTool = -1;
+		OM::ToolPtr m_selectedTool;
 	};
 } // namespace UI
