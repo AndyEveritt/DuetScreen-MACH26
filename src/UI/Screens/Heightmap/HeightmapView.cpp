@@ -12,10 +12,10 @@ namespace UI
 	{
 	  public:
 		HeightmapItem(size_t index, lv_obj_t* parent, HeightmapView& view)
-			: ListItem("heightmap_item", index, parent)
+			: ListItem(index, parent)
 			, m_view(view)
 			, m_label(lv_label_create(getRoot()))
-			, m_load("heightmap_load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+			, m_load("load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		{
 			UI_LOCK();
 			setFlexFlow(LV_FLEX_FLOW_ROW);

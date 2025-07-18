@@ -23,8 +23,8 @@ namespace UI
 		, m_statusBar(getRoot())
 		, m_sideBar("sidebar", getRoot())
 		, m_mainWindow(lv_obj_create(getRoot()))
-		, m_toolList("home_tool_list", m_mainWindow)
-		, m_graph("home_graph", m_mainWindow)
+		, m_toolList("tool_list", m_mainWindow)
+		, m_graph("graph", m_mainWindow)
 		, m_windowSelect(lv_obj_create(m_mainWindow))
 		, m_moveWindow("move_window_select",
 					   m_windowSelect,
@@ -66,10 +66,10 @@ namespace UI
 		, m_heightmapView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 		, m_statusView(m_mainWindow)
-		, m_alert("home_alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_alert("alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_updatePrompt("update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
-		, m_numberpad("home_numberpad", m_mainWindow, layout_t(0, 0, LV_SIZE_CONTENT, 100))
-		, m_kb("home_keyboard", m_mainWindow)
+		, m_numberpad("numberpad", m_mainWindow, layout_t(0, 0, LV_SIZE_CONTENT, 100))
+		, m_kb("keyboard", m_mainWindow)
 	{
 		UI_LOCK();
 		LOG_INFO("Creating UI");

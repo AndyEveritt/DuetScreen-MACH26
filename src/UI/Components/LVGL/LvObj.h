@@ -89,7 +89,7 @@ namespace UI
 
 		virtual ~LvObj();
 
-		inline const std::string& getName() const { return m_name; }
+		const std::string& getName() const;
 		/**
 		 * @return Get the base container for the view
 		 */

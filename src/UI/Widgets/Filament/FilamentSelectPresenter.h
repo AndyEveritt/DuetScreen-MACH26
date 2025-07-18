@@ -18,6 +18,12 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR(FilamentSelectPresenter, FilamentSelect);
 
+		struct ToolData
+		{
+			std::string toolName;
+			std::string filamentName;
+		};
+
 		// Setters
 
 		// Getters
@@ -40,6 +46,8 @@ namespace UI
 		virtual void onConnect() override {}
 		virtual void onDisconnect() { clear(); }
 
+		std::vector<ToolData> m_toolData;
 		std::vector<std::string> m_filamentOptions;
+		int8_t m_selectedTool = -1;
 	};
 } // namespace UI

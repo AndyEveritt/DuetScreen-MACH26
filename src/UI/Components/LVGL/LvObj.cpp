@@ -17,10 +17,29 @@ namespace UI
 	}
 
 	LvObj::LvObj(lv_create_t initFunc, const std::string& name, lv_obj_t* parent)
-		: m_name(name)
 	{
 		UI_LOCK();
 		m_root = initFunc(parent);
+
+		lv_obj_set_name(m_root, name.c_str());
+#if DEBUG
+		std::string fullName = name;
+		while (parent != nullptr)
+		{
+			const char* parentName = lv_obj_get_name(parent);
+			parent = lv_obj_get_parent(parent);
+			if (parentName == nullptr || parentName[0] == '\0')
+			{
+				continue;
+			}
+			fullName = std::string(parentName) + "." + fullName;
+		}
+		m_name = std::move(fullName);
+#else
+		{
+			m_name = name;
+		}
+#endif
 
 		LOG_VERBOSE("Creating view '{:s}' ({})", getName(), static_cast<const void*>(m_root));
 		lv_obj_null_on_delete(&m_root);
@@ -40,6 +59,11 @@ namespace UI
 		UI_LOCK();
 		LOG_VERBOSE("Deleting obj '{:s}' ({})", getName(), static_cast<const void*>(m_root));
 		lv_obj_delete(getRoot());
+	}
+
+	const std::string& LvObj::getName() const
+	{
+		return m_name;
 	}
 
 	lv_obj_t* LvObj::getScreen() const

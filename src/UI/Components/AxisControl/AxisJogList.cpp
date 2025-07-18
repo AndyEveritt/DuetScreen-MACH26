@@ -12,9 +12,9 @@
 namespace UI
 {
 	AxisItem::AxisItem(const size_t index, lv_obj_t* parent)
-		: ListItem("move_axis_item", index, parent)
-		, m_home(utils::format("move_axis_%u_home", index), getRoot(), "", layout_t(0, 0, 0, 100))
-		, m_relMove(utils::format("move_axis_%u_rel_move", index), getRoot())
+		: ListItem(index, parent)
+		, m_home("home", getRoot(), "", layout_t(0, 0, 0, 100))
+		, m_relMove("rel_move", getRoot())
 		, m_toolPosition("tool_position", getRoot())
 		, m_machinePosition("machine_position", getRoot())
 	{
@@ -80,9 +80,7 @@ namespace UI
 							   [&distances, this](size_t i, lv_obj_t* parent)
 							   {
 								   auto btn = std::make_shared<Button>(
-									   utils::format("axis_%u_move_rel_button_%u", getIndex(), i),
-									   parent,
-									   utils::format("%.1f", distances[i]).c_str());
+									   fmt::format("{}", i), parent, fmt::format("{:.1f}", distances[i]));
 								   btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 								   btn->addClickedCallback(onRelMoveEvent, this);
 								   btn->setFlexGrow(1);

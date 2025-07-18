@@ -13,12 +13,12 @@ namespace UI
 {
 	Slider::Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(name + "_label", getRoot())
-		, m_sliderCont(name + "_slider_cont", getRoot())
-		, m_decrement(name + "_slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)
-		, m_slider(name + "_slider", m_sliderCont)
-		, m_increment(name + "_slider_increment", m_sliderCont, LV_SYMBOL_PLUS)
-		, m_input(name + "_slider_input", m_sliderCont)
+		, m_label("label", getRoot())
+		, m_sliderCont("slider_cont", getRoot())
+		, m_decrement("slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)
+		, m_slider("slider", m_sliderCont)
+		, m_increment("slider_increment", m_sliderCont, LV_SYMBOL_PLUS)
+		, m_input("slider_input", m_sliderCont)
 		, m_incrementValue(1)
 		, m_keyboard(nullptr)
 	{

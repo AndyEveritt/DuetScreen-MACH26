@@ -9,13 +9,13 @@ namespace UI
 {
 	HeaterSlider::HeaterSlider(const std::string& name, lv_obj_t* parent)
 		: View(name, parent)
-		, m_heaterInfoCont(name + "_heater_info_cont", getRoot())
-		, m_heaterName(name + "_heater_name", m_heaterInfoCont)
-		, m_heaterState(name + "_heater_state", m_heaterInfoCont)
-		, m_temperatureCont(name + "_temperature_cont", getRoot())
-		, m_currentTemperature(name + "_current_temperature", m_temperatureCont)
-		, m_activeTemperature(name + "_active_temperature", m_temperatureCont)
-		, m_standbyTemperature(name + "_standby_temperature", m_temperatureCont)
+		, m_heaterInfoCont("heater_info_cont", getRoot())
+		, m_heaterName("heater_name", m_heaterInfoCont)
+		, m_heaterState("heater_state", m_heaterInfoCont)
+		, m_temperatureCont("temperature_cont", getRoot())
+		, m_currentTemperature("current_temperature", m_temperatureCont)
+		, m_activeTemperature("active_temperature", m_temperatureCont)
+		, m_standbyTemperature("standby_temperature", m_temperatureCont)
 	{
 		UI_LOCK();
 

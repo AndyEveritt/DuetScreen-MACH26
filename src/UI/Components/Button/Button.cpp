@@ -5,7 +5,7 @@ namespace UI
 {
 	Button::Button(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_button_create, name, parent)
-		, m_label(name + "_label", getRoot())
+		, m_label("label", getRoot())
 		, m_icon(nullptr)
 	{
 		init("");
@@ -13,7 +13,7 @@ namespace UI
 
 	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text)
 		: LvObj(lv_button_create, name, parent)
-		, m_label(name + "_label", getRoot())
+		, m_label("label", getRoot())
 		, m_icon(nullptr)
 	{
 		init(text);
@@ -21,7 +21,7 @@ namespace UI
 
 	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout)
 		: LvObj(lv_button_create, name, parent, layout)
-		, m_label(name + "_label", getRoot())
+		, m_label("label", getRoot())
 		, m_icon(nullptr)
 	{
 		init(text);
@@ -50,7 +50,6 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_label_set_text(m_label, text.data());
-		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_center(m_label);
 		if (m_icon != nullptr)
 		{

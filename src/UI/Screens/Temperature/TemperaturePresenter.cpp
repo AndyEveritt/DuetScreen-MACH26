@@ -37,8 +37,7 @@ namespace UI
 		tools.setItemCount(toolIndices.size(),
 						   [this, &toolIndices](size_t index, lv_obj_t* parent) -> std::shared_ptr<ToolControl>
 						   {
-							   auto control = std::make_shared<ToolControl>(
-								   fmt::format("{}_tool_{}", m_view->getName(), index), parent);
+							   auto control = std::make_shared<ToolControl>(fmt::format("{}", index), parent);
 							   control->getPresenter()->setToolIndex(toolIndices[index]);
 							   control->setNumberPad(&m_view->getNumberPad());
 							   control->activate();
@@ -53,8 +52,7 @@ namespace UI
 		beds.setItemCount(OM::GetBedCount(),
 						  [this](size_t index, lv_obj_t* parent) -> std::shared_ptr<HeaterSlider>
 						  {
-							  auto control = std::make_shared<HeaterSlider>(
-								  fmt::format("{}_bed_{}", m_view->getName(), index), parent);
+							  auto control = std::make_shared<HeaterSlider>(fmt::format("{}", index), parent);
 							  control->getPresenter()->setBedIndex(index);
 							  control->setNumberPad(&m_view->getNumberPad());
 							  control->activate();
@@ -69,8 +67,7 @@ namespace UI
 		chambers.setItemCount(OM::GetChamberCount(),
 							  [this](size_t index, lv_obj_t* parent) -> std::shared_ptr<HeaterSlider>
 							  {
-								  auto control = std::make_shared<HeaterSlider>(
-									  fmt::format("{}_chamber_{}", m_view->getName(), index), parent);
+								  auto control = std::make_shared<HeaterSlider>(fmt::format("{}", index), parent);
 								  control->getPresenter()->setChamberIndex(index);
 								  control->setNumberPad(&m_view->getNumberPad());
 								  control->activate();

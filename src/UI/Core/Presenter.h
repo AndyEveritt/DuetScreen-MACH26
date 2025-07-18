@@ -24,7 +24,7 @@ namespace UI
 		virtual void activate();
 		virtual void deactivate();
 
-		virtual const std::string& getName() const;
+		virtual std::string_view getName() const;
 
 		bool isActive() const { return m_active; }
 
@@ -71,7 +71,7 @@ namespace UI
 			}
 		}
 
-		const std::string& getName() const final
+		std::string_view getName() const final
 		{
 			if (m_view == nullptr)
 			{

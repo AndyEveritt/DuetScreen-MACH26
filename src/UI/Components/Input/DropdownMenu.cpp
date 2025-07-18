@@ -13,16 +13,16 @@ namespace UI
 {
 	DropdownMenu::DropdownMenu(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_label(name + "_label", getRoot())
-		, m_dropdown(name + "_dropdown", getRoot())
+		, m_label("label", getRoot())
+		, m_dropdown("dropdown", getRoot())
 	{
 		init();
 	}
 
 	DropdownMenu::DropdownMenu(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(name + "_label", getRoot())
-		, m_dropdown(name + "_dropdown", getRoot())
+		, m_label("label", getRoot())
+		, m_dropdown("dropdown", getRoot())
 	{
 		init();
 	}

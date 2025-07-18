@@ -13,11 +13,11 @@ namespace UI
 {
 	VerticalButtonPanel::VerticalButtonPanel(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_reset(name + "_reset", getRoot(), "")
-		, m_increment(name + "_increment", getRoot(), "")
-		, m_decrement(name + "_decrement", getRoot(), "")
+		, m_reset("reset", getRoot(), "")
+		, m_increment("increment", getRoot(), "")
+		, m_decrement("decrement", getRoot(), "")
 		, m_valueCont(lv_obj_create(getRoot()))
-		, m_values{Button(name + "_value1", m_valueCont, ""), Button(name + "_value2", m_valueCont, "")}
+		, m_values{Button("value1", m_valueCont, ""), Button("value2", m_valueCont, "")}
 	{
 		UI_LOCK();
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);

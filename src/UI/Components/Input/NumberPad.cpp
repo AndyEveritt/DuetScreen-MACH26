@@ -36,11 +36,11 @@ namespace UI
 
 	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_header(name + "_header", getRoot())
-		, m_textCont(name + "_textcont", getRoot())
-		, m_textBox(name + "_textarea", m_textCont)
+		, m_header("header", getRoot())
+		, m_textCont("textcont", getRoot())
+		, m_textBox("textarea", m_textCont)
 		, m_clearBtn("Clear", m_textCont, LV_SYMBOL_TRASH, layout_t{LV_PCT(75), 0, LV_PCT(20), LV_PCT(80)})
-		, m_btnMatrix(name + "_btnmatrix", getRoot())
+		, m_btnMatrix("btnmatrix", getRoot())
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);

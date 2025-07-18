@@ -41,9 +41,9 @@ namespace UI
 		}
 	}
 
-	const std::string& BasePresenter::getName() const
+	std::string_view BasePresenter::getName() const
 	{
-		static std::string name = "BasePresenter";
+		static std::string_view name = "BasePresenter";
 		return name;
 	}
 

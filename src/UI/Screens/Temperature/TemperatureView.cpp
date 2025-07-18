@@ -10,12 +10,12 @@ namespace UI
 {
 	TemperatureView::TemperatureView(lv_obj_t* parent)
 		: View("temperature_view", parent, layout_t(0, 0, 100, 100))
-		, m_temperatureCont(getName() + "_temperature_cont", getRoot())
-		, m_tools(getName() + "_tools", m_temperatureCont)
-		, m_beds(getName() + "_beds", m_temperatureCont)
-		, m_chambers(getName() + "_chambers", m_temperatureCont)
-		, m_filamentSelect(getName() + "_filament_select", getRoot())
-		, m_numberPad(getName() + "_number_pad", getRoot(), layout_t(0, 0, 50, 70))
+		, m_temperatureCont("temperature_cont", getRoot())
+		, m_tools("tools", m_temperatureCont)
+		, m_beds("beds", m_temperatureCont)
+		, m_chambers("chambers", m_temperatureCont)
+		, m_filamentSelect("filament_select", getRoot())
+		, m_numberPad("number_pad", getRoot(), layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();
 

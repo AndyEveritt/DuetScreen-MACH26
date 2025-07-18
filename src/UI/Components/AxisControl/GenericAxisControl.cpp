@@ -14,10 +14,10 @@ namespace UI
 
 	GenericAxisControl::GenericAxisControl(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_label(name + "_label", getRoot())
-		, m_incrementButton(name + "_increment", getRoot(), LV_SYMBOL_PLUS)
-		, m_homeButton(name + "_home", getRoot(), LV_SYMBOL_HOME)
-		, m_decrementButton(name + "_decrement", getRoot(), LV_SYMBOL_MINUS)
+		, m_label("label", getRoot())
+		, m_incrementButton("increment", getRoot(), LV_SYMBOL_PLUS)
+		, m_homeButton("home", getRoot(), LV_SYMBOL_HOME)
+		, m_decrementButton("decrement", getRoot(), LV_SYMBOL_MINUS)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);

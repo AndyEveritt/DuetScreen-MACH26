@@ -14,10 +14,11 @@ namespace UI
 	class FilamentSelect::ToolItem : public ListItem
 	{
 	  public:
-		ToolItem(const size_t index, lv_obj_t* parent)
-			: ListItem("filament_tool_item", index, parent)
-			, m_toolName(getName() + "_tool", getRoot())
-			, m_filament(getName() + "filament", getRoot())
+		ToolItem(const size_t index, lv_obj_t* parent, FilamentSelect& widget)
+			: ListItem(index, parent)
+			, m_toolName("tool", getRoot())
+			, m_filament("filament", getRoot())
+			, m_widget(widget)
 		{
 			UI_LOCK();
 			setFlexFlow(LV_FLEX_FLOW_ROW);
@@ -40,23 +41,32 @@ namespace UI
 		}
 
 	  private:
+		static void onToolSelectEvent(lv_event_t* e)
+		{
+			auto& control = *static_cast<ToolItem*>(lv_event_get_user_data(e));
+			auto& btn = *static_cast<Button*>(lv_event_get_target(e));
+
+			auto presenter = control.m_widget.getPresenter();
+		}
+
 		LvLabel m_toolName;
 		Button m_filament;
+		FilamentSelect& m_widget;
 	};
 
 	FilamentSelect::FilamentSelect(const std::string& name, lv_obj_t* parent)
 		: View(name, parent)
-		, m_header(name + "_header", getRoot())
-		, m_toolList(name + "_tool_list", getRoot())
-		, m_filamentOptions(name + "_filament_options", getRoot())
+		, m_header("header", getRoot())
+		, m_toolList("tool_list", getRoot())
+		, m_filamentOptions("filament_options", getRoot())
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_toolList.setWidth(LV_PCT(100));
+		m_toolList.setSize(LV_PCT(100), 0);
 		m_toolList.setFlexGrow(1);
-		m_filamentOptions.setWidth(LV_PCT(100));
+		m_filamentOptions.setSize(LV_PCT(100), 0);
 		m_filamentOptions.setFlexGrow(1);
 
 		m_toolList.setListFlow(LV_FLEX_FLOW_COLUMN);
@@ -79,9 +89,7 @@ namespace UI
 	void FilamentSelect::setToolCount(size_t count)
 	{
 		UI_LOCK();
-		m_toolList.setItemCount(count,
-								[this](size_t index, lv_obj_t* parent) -> std::shared_ptr<ToolItem>
-								{ return std::make_shared<ToolItem>(index, parent); });
+		m_toolList.setItemCount(count, *this);
 	}
 
 	void FilamentSelect::setToolData(size_t index, std::string_view toolName, std::string_view filamentName)
@@ -107,14 +115,50 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
+		m_filamentOptions.clear();
 		m_filamentOptions.setItemCount(options.size(),
 									   [this, &options](size_t index, lv_obj_t* parent) -> std::shared_ptr<Button>
 									   {
-										   auto btn = std::make_shared<Button>(
-											   fmt::format("{}_filament_option_{}", getName(), index), parent);
+										   auto btn = std::make_shared<Button>(fmt::format("{}", index), parent);
 										   btn->setText(options[index]);
 										   btn->setFlexGrow(1);
+										   btn->setUserData(btn.get());
+										   btn->addClickedCallback(onFilamentOptionClicked, this);
 										   return btn;
 									   });
+	}
+
+	void FilamentSelect::showToolSelect(bool show)
+	{
+		m_toolList.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
+	}
+
+	void FilamentSelect::setSelectedFilament(std::string_view filamentName)
+	{
+		LOG_DBG("Setting selected filament to {}", filamentName);
+		for (size_t i = 0; i < m_filamentOptions.getItemCount(); i++)
+		{
+			auto item = m_filamentOptions.getItem(i);
+			if (!item)
+			{
+				LOG_ERROR("Failed to get filament option item at index {} in {}", i, getName());
+				continue;
+			}
+			item->setChecked(item->getLabel().getText() == filamentName);
+		}
+	}
+
+	void FilamentSelect::onFilamentOptionClicked(lv_event_t* e)
+	{
+		auto& control = *static_cast<FilamentSelect*>(lv_event_get_user_data(e));
+		auto& btn = *static_cast<Button*>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
+
+		auto presenter = control.getPresenter();
+
+		std::string_view selectedFilament = btn.getText();
+		if (!control.m_confirmation)
+		{
+			// presenter->setSelectedFilament()
+		}
 	}
 } // namespace UI

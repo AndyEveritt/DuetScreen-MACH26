@@ -75,7 +75,7 @@ namespace UI
 		lv_label_set_recolor(getRoot(), enable);
 	}
 
-	std::string LvLabel::getText() const
+	std::string_view LvLabel::getText() const
 	{
 		UI_LOCK();
 		return lv_label_get_text(getRoot());

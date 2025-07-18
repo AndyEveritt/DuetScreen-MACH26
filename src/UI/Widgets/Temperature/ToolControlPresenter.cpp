@@ -81,8 +81,7 @@ namespace UI
 		heaters.setItemCount(m_tool->GetHeaterCount(),
 							 [this](size_t index, lv_obj_t* parent)
 							 {
-								 auto control = std::make_shared<HeaterSlider>(
-									 fmt::format("{}_heater_{}", getName(), m_tool->index, index), parent);
+								 auto control = std::make_shared<HeaterSlider>(fmt::format("{}", index), parent);
 								 auto presenter = control->getPresenter();
 								 presenter->setToolHeaterIndex(m_tool->index, index);
 								 control->setNumberPad(m_view->getNumberPad());

@@ -18,8 +18,8 @@ namespace UI
 	class ListItem : public LvObj
 	{
 	  public:
-		ListItem(const std::string& name, size_t index, lv_obj_t* parent)
-			: LvObj(lv_obj_create, utils::format("%s_%u", name.c_str(), index), parent)
+		ListItem(size_t index, lv_obj_t* parent)
+			: LvObj(lv_obj_create, fmt::format("{}", index), parent)
 			, m_index(index)
 		{
 			lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_list_item, 0);
@@ -42,9 +42,9 @@ namespace UI
 
 		List(const std::string& name, lv_obj_t* parent)
 			: LvObj(lv_obj_create, name, parent)
-			, m_header(name + "_header", getRoot())
-			, m_title(name + "_title", m_header.getRoot())
-			, m_listCont(name + "_list", getRoot())
+			, m_header("header", getRoot())
+			, m_title("title", m_header.getRoot())
+			, m_listCont("list", getRoot())
 		{
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 

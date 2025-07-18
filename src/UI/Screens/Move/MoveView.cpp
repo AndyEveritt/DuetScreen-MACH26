@@ -18,21 +18,21 @@ namespace UI
 		: View("move_view", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_topBarCont("move_topbar", getRoot())
-		, m_bottomBarCont("move_bottombar", getRoot())
-		, m_homeAll("move_home_all", m_topBarCont, _("home_all"))
-		, m_trueBedLevel("move_true_bed_level", m_topBarCont, _("true_bed_level"))
-		, m_meshBedLevel("move_mesh_bed_level", m_topBarCont, _("mesh_bed_level"))
-		, m_heightmap("move_heightmap", m_topBarCont, _("heightmap"))
-		, m_disableMotors("move_disable_motors", m_topBarCont, _("disable_motors"))
-		, m_axisControlCont("move_axis_control", getRoot())
-		, m_xyControl("move_xy_control", m_axisControlCont)
-		, m_zControl("move_z_control", m_axisControlCont)
-		, m_genericAxisControls("move_generic_axis_controls", m_axisControlCont)
-		, m_axisList("move_axis_control_list", m_axisControlCont)
-		, m_extruderControl("move_extruder_control", m_axisControlCont)
-		, m_distances("move_feed_rates", m_bottomBarCont)
-		, m_numberpad("move_numberpad", getRoot(), layout_t(0, 0, 50, 70))
+		, m_topBarCont("topbar", getRoot())
+		, m_bottomBarCont("bottombar", getRoot())
+		, m_homeAll("home_all", m_topBarCont, _("home_all"))
+		, m_trueBedLevel("true_bed_level", m_topBarCont, _("true_bed_level"))
+		, m_meshBedLevel("mesh_bed_level", m_topBarCont, _("mesh_bed_level"))
+		, m_heightmap("heightmap", m_topBarCont, _("heightmap"))
+		, m_disableMotors("disable_motors", m_topBarCont, _("disable_motors"))
+		, m_axisControlCont("axis_control", getRoot())
+		, m_xyControl("xy_control", m_axisControlCont)
+		, m_zControl("z_control", m_axisControlCont)
+		, m_genericAxisControls("generic_axis_controls", m_axisControlCont)
+		, m_axisList("axis_control_list", m_axisControlCont)
+		, m_extruderControl("extruder_control", m_axisControlCont)
+		, m_distances("feed_rates", m_bottomBarCont)
+		, m_numberpad("numberpad", getRoot(), layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();
 
@@ -173,9 +173,8 @@ namespace UI
 		m_distances.setItemCount(ARRAY_SIZE(s_distances),
 								 [this](size_t i, lv_obj_t* parent)
 								 {
-									 auto btn = std::make_shared<Button>(utils::format("move_distance_%u", i),
-																		 parent,
-																		 fmt::format("{}", s_distances[i]));
+									 auto btn = std::make_shared<Button>(
+										 fmt::format("{}", i), parent, fmt::format("{}", s_distances[i]));
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 									 btn->addClickedCallback(onDistanceEvent, this);
 									 btn->setCheckable(true);
@@ -305,7 +304,7 @@ namespace UI
 			axis_data_excluding_xyz.size(),
 			[this](size_t i, lv_obj_t* parent)
 			{
-				auto control = std::make_shared<GenericAxisControl>(fmt::format("generic_axis_control_{}", i), parent);
+				auto control = std::make_shared<GenericAxisControl>(fmt::format("{}", i), parent);
 				control->setSize(LV_SIZE_CONTENT, LV_PCT(100));
 				control->setJogCallback(
 					[this](char axis_letter, bool forward)

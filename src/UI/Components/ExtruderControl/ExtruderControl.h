@@ -56,7 +56,7 @@ namespace UI
 		static void onRetractEvent(lv_event_t* event);
 		static void onExtrudeEvent(lv_event_t* event);
 
-		std::shared_ptr<Button> createBaseListButton(const std::string& name, size_t index, lv_obj_t* parent);
+		std::shared_ptr<Button> createBaseListButton(size_t index, lv_obj_t* parent);
 		std::shared_ptr<Button> createToolButton(size_t index, lv_obj_t* parent);
 		std::shared_ptr<Button> createDistanceButton(size_t index, lv_obj_t* parent);
 		std::shared_ptr<Button> createFeedrateButton(size_t index, lv_obj_t* parent);

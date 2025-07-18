@@ -304,7 +304,7 @@ namespace UI
 		for (size_t i = currentCnt; i < cnt; i++)
 		{
 			m_items.emplace_back(std::make_shared<ToolListItem>(
-				*this, utils::format("%s_%u", getName(), i).c_str(), m_list, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+				*this, fmt::format("{}", i), m_list, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
 		}
 	}
 

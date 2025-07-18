@@ -13,7 +13,7 @@ namespace UI
 {
 	ModalNumberPad::ModalNumberPad(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: NumberPad(name, parent, layout)
-		, m_modalBg(name + "_modal_bg", parent, layout_t(0, 0, 100, 100))
+		, m_modalBg("modal_bg", parent, layout_t(0, 0, 100, 100))
 	{
 		setAlign(LV_ALIGN_CENTER, 0, 0);
 		lv_obj_set_parent(getRoot(), m_modalBg);

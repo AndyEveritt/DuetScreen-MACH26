@@ -12,10 +12,10 @@ namespace UI
 {
 	ToolControl::ToolControl(const std::string& name, lv_obj_t* parent)
 		: View(name, parent)
-		, m_toolInfoCont(name + "_tool_info", getRoot())
-		, m_name(name + "_tool_name", m_toolInfoCont)
-		, m_state(name + "_tool_state", m_toolInfoCont)
-		, m_heaters(name + "_heaters", getRoot())
+		, m_toolInfoCont("tool_info", getRoot())
+		, m_name("tool_name", m_toolInfoCont)
+		, m_state("tool_state", m_toolInfoCont)
+		, m_heaters("heaters", getRoot())
 	{
 		UI_LOCK();
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
