@@ -77,8 +77,8 @@ jobs:
       #     git push origin refs/tags/${{ github.ref_name }}
 
       - name: Build DuetScreen
+        working-directory: buildroot-duetscreen
         run: |
-          cd buildroot-duetscreen
           make clean
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make duetscreen-rebuild
@@ -98,6 +98,7 @@ jobs:
           path: artifacts/*
 
       - name: Check Branch
+        working-directory: DuetScreen
         id: check_branch
         run: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)

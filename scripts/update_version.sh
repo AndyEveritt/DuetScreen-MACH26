@@ -11,7 +11,15 @@ VERSION=$1
 VERSION_FILE="./version.h"
 
 # Update the version in version.h
-sed -i "s/\".*\"/\"$VERSION\"/" $VERSION_FILE
+if [ ! -f $VERSION_FILE ]; then
+    echo "#pragma once" > $VERSION_FILE
+    echo "// This file is auto-generated. Do not edit manually." >> $VERSION_FILE
+    echo "" >> $VERSION_FILE
+    echo "#define VERSION \"$VERSION\"" >> $VERSION_FILE
+else
+    sed -i "s/\".*\"/\"$VERSION\"/" $VERSION_FILE
+fi
+
 
 if [ $? -eq 0 ]; then
     echo "Successfully updated version to $VERSION"
