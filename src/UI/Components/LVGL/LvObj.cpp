@@ -532,7 +532,7 @@ namespace UI
 	 *
 	 * @note This function calls the `onShow()` virtual method before showing the view.
 	 */
-	void LvObj::show()
+	void LvObj::show(bool move_to_front)
 	{
 		UI_LOCK();
 		if (getRoot() == nullptr)
@@ -546,7 +546,10 @@ namespace UI
 		}
 
 		LOG_DBG("Showing '{:s}'", getName());
-		lv_obj_move_foreground(getRoot());
+		if (move_to_front)
+		{
+			lv_obj_move_foreground(getRoot());
+		}
 		lv_obj_remove_flag(getRoot(), LV_OBJ_FLAG_HIDDEN);
 		onShow();
 	}
@@ -556,7 +559,7 @@ namespace UI
 	 *
 	 * @note This function calls the `onHide()` virtual method before hiding the view.
 	 */
-	void LvObj::hide()
+	void LvObj::hide(bool move_to_back)
 	{
 		UI_LOCK();
 		if (getRoot() == nullptr)
@@ -570,7 +573,10 @@ namespace UI
 		}
 
 		LOG_DBG("Hiding '{:s}'", getName());
-		lv_obj_move_background(getRoot());
+		if (move_to_back)
+		{
+			lv_obj_move_background(getRoot());
+		}
 		lv_obj_add_flag(getRoot(), LV_OBJ_FLAG_HIDDEN);
 		onHide();
 	}

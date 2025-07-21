@@ -176,11 +176,6 @@ namespace UI
 
 	void MovePresenter::newAxesData()
 	{
-		size_t axisCount = OM::Move::GetAxisCount(false);
-		auto x = OM::Move::GetAxisByLetter('X');
-		auto y = OM::Move::GetAxisByLetter('Y');
-		auto z = OM::Move::GetAxisByLetter('Z');
-
 		std::vector<OM::Move::AxisPtr> axes = OM::Move::GetAxes(false);
 		{
 			/*
@@ -199,44 +194,6 @@ namespace UI
 
 			m_view->setAxisData(m_axisData);
 		}
-
-#if 0
-		for (auto& axis : {x, y, z})
-		{
-			if (axis != nullptr && axis->visible)
-			{
-				axisCount--;
-			}
-		}
-#endif
-
-		if (x == nullptr || !x->visible)
-		{
-		}
-
-#if 0
-		m_view->setAxisCount(axisCount);
-		for (size_t i = 0; i < axisCount; i++)
-		{
-			auto axis = OM::Move::GetAxis(i);
-			if (axis == nullptr)
-			{
-				LOG_WARN("Axis {:d} not found", i);
-				continue;
-			}
-			std::shared_ptr<AxisItem> item = m_view->getAxisItem(i);
-			if (item == nullptr)
-			{
-				LOG_WARN("AxisItem {:d} not found", i);
-				continue;
-			}
-			item->setAxisLetter(axis->letter);
-			item->setHomed(axis->homed);
-			item->setToolPosition(axis->userPosition);
-			item->setMachinePosition(axis->machinePosition);
-			item->disableHome(OM::Move::GetKinematics().IsDelta());
-		}
-#endif
 	}
 
 	void MovePresenter::newToolData()

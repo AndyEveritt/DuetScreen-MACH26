@@ -174,9 +174,12 @@ namespace UI
 		uint32_t getEventCount();
 		lv_result_t sendEvent(lv_event_code_t code, void* param = nullptr);
 
-		void setVisible(bool display) { display ? show() : hide(); }
-		virtual void show();
-		virtual void hide();
+		void setVisible(bool display, bool move_to_front = true)
+		{
+			display ? show(move_to_front) : hide(move_to_front);
+		}
+		virtual void show(bool move_to_front = true);
+		virtual void hide(bool move_to_back = true);
 		bool isVisible();
 		virtual bool back();
 
