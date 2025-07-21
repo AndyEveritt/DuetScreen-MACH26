@@ -154,7 +154,7 @@ namespace UI
 	{
 		if (index >= m_series.size())
 		{
-			LOG_WARN("Series index out of range");
+			LOG_DBG("Series index out of range");
 			return nullptr;
 		}
 		return &m_series[index];

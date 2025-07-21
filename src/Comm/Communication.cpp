@@ -288,7 +288,7 @@ namespace Comm
 
 	void Reconnect()
 	{
-		LOG_WARN("Reconnecting");
+		LOG_DBG("Reconnecting");
 		KickWatchdog();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
@@ -362,5 +362,7 @@ namespace Comm
 		system("mkdir /tmp/heightmaps");
 		SortFieldTable();
 		usbInit();
+		ResetSeqs();
+		KickWatchdog();
 	}
 } // namespace Comm

@@ -814,7 +814,7 @@ namespace Comm
 
 		if (reply.body.empty())
 		{
-			LOG_WARN("Empty reply received");
+			LOG_DBG("Empty reply received");
 			return;
 		}
 
@@ -962,7 +962,6 @@ namespace Comm
 			return true;
 		}
 		LOG_INFO("Disconnecting from Duet");
-		m_connected = false;
 		SetStatus(OM::PrinterStatus::connecting);
 
 		bool ret = false;
@@ -1000,6 +999,7 @@ namespace Comm
 		}
 
 		Reset();
+		m_connected = false;
 		Model::get().post<EventType::Disconnected>();
 		return ret;
 	}
