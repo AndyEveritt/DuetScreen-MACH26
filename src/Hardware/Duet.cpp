@@ -866,6 +866,8 @@ namespace Comm
 		Reset();
 		bool ret = false;
 
+		LOG_DBG("Connecting to Duet, communication type: {:d}", (int)m_config.communicationType);
+
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
@@ -930,9 +932,12 @@ namespace Comm
 		}
 		case CommunicationType::usb:
 		{
+			LOG_DBG("Attempting to connect to Duet via USB");
 			ret = connectUsbDevice();
+			LOG_DBG(ret ? "Connected to USB device" : "Failed to connect to USB device");
 			if (ret)
 			{
+				m_connected = ret; // set connected state so SendGcode actually works
 				SendGcode("M575 P0 S0\n");
 			}
 			break;
