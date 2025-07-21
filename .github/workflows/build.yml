@@ -7,74 +7,76 @@ on:
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    name: Build DuetScreen
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout DuetScreen
+        uses: actions/checkout@v4
         with:
+          path: DuetScreen
           submodules: recursive
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Checkout Buildroot
+        uses: actions/checkout@v4
+        with:
+          repository: Duet3D/buildroot-duetscreen
+          path: buildroot-duetscreen
+          submodules: recursive
+          token: ${{ secrets.PAT }}
+
       - name: Generate Changelog
-        if: matrix.os == 'ubuntu-latest'
         id: changelog
+        working-directory: DuetScreen
         run: |   
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
           ./scripts/release_notes.sh >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Install Linux Dependencies
-        if: matrix.os == 'ubuntu-latest'
         run: |
-          ./scripts/install_prerequisites.sh
+          ./DuetScreen/scripts/install_prerequisites.sh
+          ./buildroot-duetscreen/scripts/install_prerequisites.sh
 
-      - name: Install Windows Dependencies
-        if: matrix.os == 'windows-latest'
+      - name: Update Version
+        working-directory: DuetScreen
         run: |
-          vcpkg install sdl2:x64-windows
-          vcpkg install sdl2-image:x64-windows
-          vcpkg install libusb:x64-windows
-          vcpkg install ffmpeg:x64-windows
-          vcpkg install freetype:x64-windows
-          vcpkg install spdlog:x64-windows
-          vcpkg integrate install
-
-      - name: Configure CMake (Linux)
-        if: matrix.os == 'ubuntu-latest'
+          ./scripts/update_version.sh "${{ github.ref_name }}"
+          echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+      
+      - name: Push Version Update
+        working-directory: DuetScreen
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -G Ninja --preset Simulation-Release
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update version to ${{ github.ref_name }}"
+          git push origin HEAD:${{ github.ref_name }}
 
-      - name: Configure CMake (Windows)
-        if: matrix.os == 'windows-latest'
+      - name: Build DuetScreen
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" --preset Simulation-Release
-
-      - name: Build
-        run: cmake --build build
+          cd buildroot-duetscreen
+          make clean
+          make duet3d_duetscreen_sd_defconfig
+          DUETSCREEN_SRC="../DuetScreen" make duetscreen-rebuild
 
       - name: Prepare artifacts
         shell: bash
         run: |
           mkdir artifacts
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            cp build/DuetScreen.exe artifacts/
-          else
-            cp build/DuetScreen artifacts/
-          fi
+          cd DuetScreen
+          ./scripts/create_upgrade.sh
+          cp ./out/DuetScreen.tar.gz ../artifacts/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: DuetScreen-${{ matrix.os }}
+          name: DuetScreen
           path: artifacts/*
 
       - name: Check Branch
-        if: matrix.os == 'ubuntu-latest'
         id: check_branch
         run: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
@@ -82,7 +84,7 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: artifacts/*
           body: ${{ env.CHANGELOG }}
