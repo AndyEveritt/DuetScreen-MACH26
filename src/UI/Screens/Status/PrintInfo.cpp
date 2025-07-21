@@ -92,7 +92,7 @@ namespace UI
 	{
 		UI_LOCK();
 		LvObj* view = static_cast<LvObj*>(lv_event_get_user_data(e));
-		view->show();
+		view->show(true);
 	}
 
 	void PrintInfo::updateToolTemp(float temp, int32_t target)

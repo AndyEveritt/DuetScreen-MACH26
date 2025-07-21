@@ -191,7 +191,7 @@ namespace UI
 		{
 			addToVector(s_openScreens, view);
 		}
-		view->show();
+		view->show(true);
 	}
 
 	/**
@@ -259,7 +259,7 @@ namespace UI
 		LOG_INFO("Opening modal '{:s}'", view->getName());
 
 		addToVector(s_openModals, view);
-		view->show();
+		view->show(true);
 	}
 
 	void closeAllModals()

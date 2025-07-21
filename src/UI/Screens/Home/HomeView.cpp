@@ -94,7 +94,7 @@ namespace UI
 		lv_obj_set_grid_cell(m_windowSelect, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 
 		// Tool List
-		m_toolList.show();
+		m_toolList.activate();
 
 		// Graph
 		m_graph.setXRange({.min = -60, .max = 0});
@@ -279,6 +279,6 @@ namespace UI
 	void HomeView::showUpdatePrompt(bool show)
 	{
 		UI_LOCK();
-		m_updatePrompt.setVisible(show);
+		m_updatePrompt.setVisible(show, true);
 	}
 } // namespace UI

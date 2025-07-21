@@ -298,7 +298,7 @@ namespace UI
 #endif
 
 		LOG_DBG("Remaining axis count: {}", axis_data_excluding_xyz.size());
-		m_genericAxisControls.setVisible(!axis_data_excluding_xyz.empty(), false);
+		m_genericAxisControls.setVisible(!axis_data_excluding_xyz.empty());
 
 		m_genericAxisControls.setItemCount(
 			axis_data_excluding_xyz.size(),

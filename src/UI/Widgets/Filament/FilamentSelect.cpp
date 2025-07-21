@@ -133,7 +133,7 @@ namespace UI
 
 	void FilamentSelect::showToolSelect(bool show)
 	{
-		m_toolList.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
+		m_toolList.setVisible(show);
 	}
 
 	void FilamentSelect::setSelectedFilament(std::string_view filamentName)
@@ -168,7 +168,7 @@ namespace UI
 			control.m_confirmation->setText(fmt::format(fmt::runtime(_("confirm_filament_change")), selectedFilament));
 			control.m_confirmation->setOkCallback([presenter, selectedFilament]()
 												  { presenter->setFilament(selectedFilament); });
-			control.m_confirmation->show();
+			control.m_confirmation->show(true);
 		}
 	}
 } // namespace UI

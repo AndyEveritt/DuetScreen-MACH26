@@ -241,7 +241,7 @@ namespace UI
 				openScreen(&HomeView::instance().getStatusView());
 			});
 		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail : nullptr);
-		m_startPrint.show();
+		m_startPrint.show(true);
 	}
 
 	void FileView::confirmRunMacro(const char* filename)
@@ -250,7 +250,7 @@ namespace UI
 		m_startPrint.setTitle(_("file_run_macro_title"));
 		m_startPrint.setText(utils::format(_("file_run_macro_message"), filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });
-		m_startPrint.show();
+		m_startPrint.show(true);
 	}
 
 	void FileView::showSort(FilePresenter::SortBy by, bool descending)

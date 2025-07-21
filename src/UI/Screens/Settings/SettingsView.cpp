@@ -69,7 +69,7 @@ namespace UI
 		}
 
 		view->showKeyboard(false);
-		subView->show();
+		subView->show(true);
 		view->m_currentSubView = subView;
 	}
 
@@ -117,7 +117,7 @@ namespace UI
 	void SettingsView::onShow()
 	{
 		showKeyboard(false);
-		m_currentSubView->show();
+		m_currentSubView->show(true);
 	}
 
 	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView)
@@ -268,12 +268,6 @@ namespace UI
 		m_usbSettings.setVisible(method == Comm::CommunicationType::usb);
 		m_wifiSettings.setVisible(method == Comm::CommunicationType::network);
 		m_uartSettings.setVisible(method == Comm::CommunicationType::uart);
-		lv_obj_move_foreground(m_usbSettings);
-		lv_obj_move_foreground(m_wifiSettings);
-		lv_obj_move_foreground(m_uartSettings);
-		lv_obj_move_to_index(m_usbSettings, 1);
-		lv_obj_move_to_index(m_wifiSettings, 1);
-		lv_obj_move_to_index(m_uartSettings, 1);
 	}
 
 	void DuetSettingsView::onShow()
