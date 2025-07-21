@@ -52,10 +52,17 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Get the current branch name that the tag points to
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           git add .
           git commit -m "Update version to ${{ github.ref_name }}"
-          git push origin --delete ${{ github.ref_name }}
-          git push origin HEAD:${{ github.ref_name }}
+          # Delete the tag locally and remotely
+          git tag -d ${{ github.ref_name }} || true
+          git push origin --delete ${{ github.ref_name }} || true
+          # Push changes to the branch and recreate the tag
+          git push origin HEAD:${BRANCH_NAME}
+          git tag ${{ github.ref_name }}
+          git push origin ${{ github.ref_name }}
 
       - name: Build DuetScreen
         run: |
