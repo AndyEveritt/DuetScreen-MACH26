@@ -6,11 +6,15 @@
 
 bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	LOG_INFO("resp length={:d}", strlen(data));
+	size_t len = strlen(data);
+	LOG_INFO("resp length={:d}", len);
 	LOG_DBG("resp: {:s}", data);
+	if (data == nullptr || (len == 1 && (data[0] == '\n')))
+	{
+		return false;
+	}
 
 	Model::get().post<EventType::Response>(std::string(data));
-
 	return true;
 }
 
