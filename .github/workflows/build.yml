@@ -47,22 +47,32 @@ jobs:
           ./scripts/update_version.sh "${{ github.ref_name }}"
           echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
       
+      - name: Get Source Branch
+        id: branch
+        run: |
+          TAG_SHA=$(git rev-parse ${{ github.ref }})
+          BRANCH=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ github.ref_name }}" \
+            | jq -r '.object.sha' \
+            | xargs -I {} curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/commits/{}/branches-where-head" \
+            | jq -r '.[0].name')
+          echo "SOURCE_BRANCH=${BRANCH}" >> $GITHUB_ENV
+
       - name: Push Version Update
         working-directory: DuetScreen
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Get the current branch name that the tag points to
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           git add .
           git commit -m "Update version to ${{ github.ref_name }}"
           # Delete the tag locally and remotely
           git tag -d ${{ github.ref_name }} || true
-          git push origin --delete ${{ github.ref_name }} || true
+          git push origin --delete refs/tags/${{ github.ref_name }} || true
           # Push changes to the branch and recreate the tag
-          git push origin HEAD:${BRANCH_NAME}
+          git push origin HEAD:refs/heads/${{ env.SOURCE_BRANCH }}
           git tag ${{ github.ref_name }}
-          git push origin ${{ github.ref_name }}
+          git push origin refs/tags/${{ github.ref_name }}
 
       - name: Build DuetScreen
         run: |
