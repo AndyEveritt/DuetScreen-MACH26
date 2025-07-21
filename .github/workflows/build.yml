@@ -49,6 +49,7 @@ jobs:
       
       - name: Get Source Branch
         id: branch
+        working-directory: DuetScreen
         run: |
           TAG_SHA=$(git rev-parse ${{ github.ref }})
           BRANCH=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
