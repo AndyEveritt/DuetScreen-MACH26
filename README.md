@@ -76,9 +76,9 @@ Multiple methods are available to connect the Duet3D screen to a mainboard. The 
 > This method is for legacy support only to provide an easy upgrade path for PanelDue users. It is not recommended for new installations.
 
 1. Connect the Duet3D screen to the mainboard using a UART cable.
-    - Use connector `U5` on the screen.
+    - Use connector `UART Duet` on the screen.
 2. In the GUI, select the UART connection method.
-3. Set the baud rate on the mainboard to `115200`.
+3. Set the baud rate on the mainboard to `115200`. use `M575 P1 S1 B115200` in config.g, this is similar to connecting a PanelDue, other than the default baud rate is 115200
 
 
 ## Updating the Duet3D screen
