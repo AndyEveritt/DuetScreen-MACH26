@@ -15,7 +15,7 @@ if [ ! -f $VERSION_FILE ]; then
     echo "#pragma once" > $VERSION_FILE
     echo "// This file is auto-generated. Do not edit manually." >> $VERSION_FILE
     echo "" >> $VERSION_FILE
-    echo "#define VERSION \"$VERSION\"" >> $VERSION_FILE
+    echo "#define FIRMWARE_VERSION \"$VERSION\"" >> $VERSION_FILE
 else
     sed -i "s/\".*\"/\"$VERSION\"/" $VERSION_FILE
 fi
