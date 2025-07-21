@@ -180,7 +180,7 @@ namespace UI
 		legendObj->setCheckable(true);
 		legendObj->setChecked(true);
 		legendObj->addClickedCallback(legendEvent, this);
-		legendObj->setUserData(new size_t(index));
+		legendObj->setUserData((void*)(uintptr_t)index);
 		m_series.push_back(series_t(series, color, legendObj));
 		return true;
 	}
@@ -230,8 +230,8 @@ namespace UI
 		for (auto& series : m_series)
 		{
 			lv_chart_remove_series(m_chart, series.series);
-			delete (size_t*)series.legendObj->getUserData();
 		}
+		lv_chart_refresh(m_chart);
 		m_series.clear();
 	}
 
@@ -245,7 +245,7 @@ namespace UI
 			return;
 		}
 		lv_chart_remove_series(m_chart, series->series);
-		delete (std::string*)series->legendObj->getUserData();
+		lv_chart_refresh(m_chart);
 		m_series.erase(m_series.begin() + index);
 	}
 
@@ -266,7 +266,7 @@ namespace UI
 		UI_LOCK();
 		Graph* g = (Graph*)lv_event_get_user_data(e);
 		lv_obj_t* btn = lv_event_get_target_obj(e);
-		size_t index = *(size_t*)lv_obj_get_user_data(btn);
+		size_t index = (uintptr_t)lv_obj_get_user_data(btn);
 
 		// checked is inverted since this callback runs before the state is updated
 		g->showSeries(index, lv_obj_has_state(btn, LV_STATE_CHECKED));

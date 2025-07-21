@@ -16,7 +16,6 @@ namespace UI
 	void HomePresenter::onInit()
 	{
 		registerEventListener<EventType::Tick>(this, &HomePresenter::tick);
-		registerEventListener<EventType::Disconnected>(this, &HomePresenter::disconnected);
 		registerEventListener<EventType::UpdateAvailable>(this, &HomePresenter::newUpdateAvailable);
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
@@ -57,7 +56,7 @@ namespace UI
 		}
 	}
 
-	void HomePresenter::disconnected()
+	void HomePresenter::clear()
 	{
 		UI_LOCK();
 		m_view->clear();

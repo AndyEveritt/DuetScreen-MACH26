@@ -15,7 +15,7 @@ namespace UI
 		PRESENTER_CONSTRUCTOR(HomePresenter, HomeView)
 
 		void tick();
-		void disconnected();
+		void clear();
 
 		void update();
 
@@ -28,6 +28,7 @@ namespace UI
 		virtual void onInit() override;
 		virtual void onActivate() override {}
 		virtual void onDeactivate() override {}
+		virtual void onDisconnect() override { clear(); }
 
 		std::vector<char> m_alertAxes;
 		std::string m_updateFile;
