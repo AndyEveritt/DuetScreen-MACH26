@@ -250,6 +250,7 @@ namespace UI
 		m_startPrint.setTitle(_("file_run_macro_title"));
 		m_startPrint.setText(utils::format(_("file_run_macro_message"), filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });
+		m_startPrint.setImage(nullptr);
 		m_startPrint.show(true);
 	}
 

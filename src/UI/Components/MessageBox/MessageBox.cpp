@@ -299,6 +299,7 @@ namespace UI
 		setWarningTextf("");
 		setOkBtnText(_("msgbox_ok"));
 		setCancelBtnText(_("msgbox_cancel"));
+		setImage(nullptr);
 		warningTextVisible(false);
 		minTextVisible(false);
 		maxTextVisible(false);
