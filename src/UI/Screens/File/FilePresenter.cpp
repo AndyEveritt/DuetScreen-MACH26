@@ -220,17 +220,6 @@ namespace UI
 		return false;
 	}
 
-	void FilePresenter::connected()
-	{
-		requestFiles();
-	}
-
-	void FilePresenter::disconnected()
-	{
-		m_items.clear();
-		m_view->setFileCount(0);
-	}
-
 	void FilePresenter::newThumbnailData(const std::string& filename)
 	{
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
@@ -262,5 +251,16 @@ namespace UI
 		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
 				StorageHelper::getData(ID_FILE_SORT_DESCENDING, true));
 		setFolder("");
+	}
+
+	void FilePresenter::onConnect()
+	{
+		requestFiles();
+	}
+
+	void FilePresenter::onDisconnect()
+	{
+		m_items.clear();
+		m_view->setFileCount(0);
 	}
 } // namespace UI

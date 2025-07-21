@@ -27,6 +27,8 @@ namespace UI
 	  public:
 		ExtruderControl(const std::string& name, lv_obj_t* parent);
 
+		void clear();
+
 		void setToolCallback(tool_select_cb_t cb);
 		void setToolCount(size_t count);
 		void setToolName(size_t index, const std::string& name);

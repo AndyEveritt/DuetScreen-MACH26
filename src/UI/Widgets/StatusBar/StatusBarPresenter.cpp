@@ -14,12 +14,12 @@ namespace UI
 		newTime();
 	}
 
-	void StatusBarPresenter::connected()
+	void StatusBarPresenter::onConnect()
 	{
 		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("connected")));
 	}
 
-	void StatusBarPresenter::disconnected()
+	void StatusBarPresenter::onDisconnect()
 	{
 		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("disconnected")));
 		m_view->setDuetName("");

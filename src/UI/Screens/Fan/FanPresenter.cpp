@@ -31,7 +31,7 @@ namespace UI
 			});
 	}
 
-	void FanPresenter::disconnected()
+	void FanPresenter::onDisconnect()
 	{
 		m_view->setFanCount(0);
 	}

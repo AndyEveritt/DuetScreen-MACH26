@@ -34,19 +34,16 @@ namespace UI
 		bool back();
 
 		// Observers
-		void connected();
-		void disconnected();
 		void newThumbnailData(const std::string& filename);
 
 	  private:
 		void onActivate() override;
-
-		virtual void onInit() override
+		void onInit() override
 		{
-			registerEventListener<EventType::Connected>(this, &FilePresenter::connected);
-			registerEventListener<EventType::Disconnected>(this, &FilePresenter::disconnected);
 			registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
 		}
+		void onConnect() override;
+		void onDisconnect() override;
 
 		void displayFiles();
 		void sortFiles();

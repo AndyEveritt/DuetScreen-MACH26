@@ -38,20 +38,17 @@ namespace UI
 		void newCompensationFile();
 		void newDirectories();
 		void newAxesData();
-		void disconnected();
-		void connected();
-
-	  private:
-		virtual void onActivate() override;
-
-		virtual void onInit() override
+		
+		private:
+		void onActivate() override;
+		void onInit() override
 		{
 			registerEventListener<EventType::CompensationFile>(this, &HeightmapPresenter::newCompensationFile);
 			registerEventListener<EventType::Directories>(this, &HeightmapPresenter::newDirectories);
 			registerEventListener<EventType::AxesData>(this, &HeightmapPresenter::newAxesData);
-			registerEventListener<EventType::Disconnected>(this, &HeightmapPresenter::disconnected);
-			registerEventListener<EventType::Connected>(this, &HeightmapPresenter::connected);
 		}
+		void onConnect() override;
+		void onDisconnect() override;
 
 		void updateHeightmapList();
 		bool checkMode();

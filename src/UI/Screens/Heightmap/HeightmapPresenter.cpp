@@ -175,23 +175,6 @@ namespace UI
 		}
 	}
 
-	void HeightmapPresenter::disconnected()
-	{
-		LOG_DBG("Disconnect");
-		if (m_heightmap != nullptr)
-		{
-			m_heightmap = nullptr;
-			m_view->clear();
-			m_view->setHeightmapCount(0);
-		}
-	}
-
-	void HeightmapPresenter::connected()
-	{
-		LOG_DBG("Connected");
-		checkMode();
-	}
-
 	void HeightmapPresenter::updateHeightmapList()
 	{
 		// UI_LOCK();
@@ -242,5 +225,22 @@ namespace UI
 		map->LoadFromDuet();
 		setHeightmap(map);
 		render();
+	}
+
+	void HeightmapPresenter::onConnect()
+	{
+		LOG_DBG("Connected");
+		checkMode();
+	}
+
+	void HeightmapPresenter::onDisconnect()
+	{
+		LOG_DBG("Disconnect");
+		if (m_heightmap != nullptr)
+		{
+			m_heightmap = nullptr;
+			m_view->clear();
+			m_view->setHeightmapCount(0);
+		}
 	}
 } // namespace UI

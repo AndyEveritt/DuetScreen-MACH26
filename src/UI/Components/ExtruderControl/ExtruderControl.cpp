@@ -93,6 +93,14 @@ namespace UI
 		m_feedrateInput.addStyle(Themes::getLvglStyles().no_border);
 	}
 
+	void ExtruderControl::clear()
+	{
+		m_toolSelect.clear();
+		setFilamentDisabled(true);
+		m_retractBtn.setState(LV_STATE_DISABLED, true);
+		m_extrudeBtn.setState(LV_STATE_DISABLED, true);
+	}
+
 	void ExtruderControl::setToolCallback(tool_select_cb_t cb)
 	{
 		UI_LOCK();

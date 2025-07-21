@@ -245,6 +245,7 @@ namespace UI
 		m_xyControl.setYHomed(false);
 		m_zControl.setDisabled(true);
 		m_zControl.setAxisHomed(false);
+		m_extruderControl.clear();
 	}
 
 	void MoveView::setAxisData(const std::vector<MovePresenter::AxisData>& axis_data)

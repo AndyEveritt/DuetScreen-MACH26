@@ -15,7 +15,6 @@ namespace UI
 
 		registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
 		registerEventListener<EventType::ToolData>(this, &MovePresenter::newToolData);
-		registerEventListener<EventType::Disconnected>(this, &MovePresenter::disconnected);
 	}
 
 	void MovePresenter::onActivate()
@@ -224,7 +223,7 @@ namespace UI
 		}
 	}
 
-	void MovePresenter::disconnected()
+	void MovePresenter::onDisconnect()
 	{
 		m_view->clear();
 	}
