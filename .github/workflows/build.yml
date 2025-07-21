@@ -53,10 +53,10 @@ jobs:
         run: |
           TAG_SHA=$(git rev-parse ${{ github.ref }})
           echo "Tag SHA: $TAG_SHA"
-          BRANCHES=$(git branch --contains $TAG_SHA)
+          BRANCHES=$(git branch -r --contains $TAG_SHA)
           echo "Git branches containing tag:"
           echo "$BRANCHES"
-          BRANCH=$($BRANCHES | grep -v "HEAD detached" | tr -d '* ' | xargs)
+          BRANCH=$($BRANCHES | grep -v "HEAD detached" | head -n1 | tr -d '* ' | xargs)
           echo "SOURCE_BRANCH=${BRANCH}" >> $GITHUB_ENV
 
       - name: Push Version Update
