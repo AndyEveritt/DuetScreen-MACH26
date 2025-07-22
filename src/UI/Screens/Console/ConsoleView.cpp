@@ -11,31 +11,31 @@ namespace UI
 {
 	ConsoleView::ConsoleView(lv_obj_t* parent)
 		: View("console_view", parent, layout_t(0, 0, 100, 100))
-		, m_topCont(lv_obj_create(getRoot()))
-		, m_commandList(lv_table_create(m_topCont))
-		, m_output(lv_textarea_create(m_topCont))
-		, m_inputCont(lv_obj_create(getRoot()))
-		, m_input(lv_textarea_create(m_inputCont))
-		, m_clear("console_clear", m_input, LV_SYMBOL_CLOSE)
-		, m_enter("console_enter", m_inputCont, LV_SYMBOL_NEW_LINE)
-		, m_kb(lv_keyboard_create(getRoot()))
+		, m_topCont("top_cont", getRoot())
+		, m_commandList(lv_table_create, "command_list", m_topCont)
+		, m_output("output", m_topCont)
+		, m_inputCont("input_cont", getRoot())
+		, m_input("input", m_inputCont)
+		, m_clear("clear", m_input, LV_SYMBOL_CLOSE)
+		, m_enter("enter", m_inputCont, LV_SYMBOL_NEW_LINE)
+		, m_kb("keyboard", getRoot())
 	{
 		UI_LOCK();
 
 		// Layout
-		lv_obj_align(getRoot(), LV_ALIGN_CENTER, 0, 0);
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_width(m_topCont, LV_PCT(100));
-		lv_obj_set_flex_grow(m_topCont, 1);
-		lv_obj_set_size(m_inputCont, LV_PCT(100), LV_SIZE_CONTENT);
+		setAlign(LV_ALIGN_CENTER, 0, 0);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_topCont.setWidth(LV_PCT(100));
+		m_topCont.setFlexGrow(1);
+		m_inputCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		// Top Container
-		lv_obj_set_flex_flow(m_topCont, LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_grow(m_commandList, 2);
-		lv_obj_set_flex_grow(m_output, 3);
-		lv_obj_set_height(m_commandList, LV_PCT(100));
-		lv_obj_set_height(m_output, LV_PCT(100));
-		lv_textarea_set_cursor_click_pos(m_output, false);
+		m_topCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_commandList.setFlexGrow(2);
+		m_output.setFlexGrow(3);
+		m_commandList.setHeight(LV_PCT(100));
+		m_output.setHeight(LV_PCT(100));
+		m_output.setCursorClickPos(false);
 
 		// Command List
 		lv_table_set_column_count(m_commandList, 2);
@@ -50,30 +50,33 @@ namespace UI
 		}
 
 		// Input Area
-		lv_obj_set_flex_align(m_inputCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_flex_flow(m_inputCont, LV_FLEX_FLOW_ROW);
-		lv_obj_set_style_pad_all(m_inputCont, 0, 0);
-		lv_obj_set_flex_grow(m_input, 1);
-		lv_textarea_set_one_line(m_input, true);
-		lv_textarea_set_placeholder_text(m_input, _("console_input_placeholder"));
-		lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_LEFT, 0);
-		lv_obj_align(m_clear.getRoot(), LV_ALIGN_RIGHT_MID, 0, 0);
-		lv_obj_set_height(m_input, LV_SIZE_CONTENT);
-		lv_obj_set_size(m_clear.getRoot(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_size(m_enter.getRoot(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(m_input, 0, 0);
-		lv_obj_set_style_pad_all(m_clear.getRoot(), 0, 0);
-		lv_obj_set_style_pad_all(m_enter.getRoot(), 0, 0);
+		m_inputCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_inputCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_inputCont.addStyle(Themes::getLvglStyles().pad_zero);
+
+		m_input.setFlexGrow(1);
+		m_input.setOneLine(true);
+		m_input.setPlaceholderText(_("console_input_placeholder"));
+		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT, 0);
+		m_clear.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
+		m_input.setHeight(LV_SIZE_CONTENT);
+		m_clear.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_enter.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_input.addStyle(Themes::getLvglStyles().pad_zero);
+		m_clear.addStyle(Themes::getLvglStyles().pad_zero);
+		m_enter.addStyle(Themes::getLvglStyles().pad_zero);
 
 		// Hide keyboard initially
-		lv_keyboard_set_mode(m_kb, LV_KEYBOARD_MODE_TEXT_UPPER);
-		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
+		m_kb.setSize(LV_PCT(100), LV_PCT(40));
+		m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
+		m_kb.hide();
 
 		// Callbacks
 		m_clear.addClickedCallback(onClearEvent, this);
 		m_enter.addClickedCallback(onSendEvent, this);
-		lv_obj_add_event_cb(m_commandList, onCommandListEvent, LV_EVENT_ALL, this);
-		lv_obj_add_event_cb(m_input, onKeyboardEvent, LV_EVENT_ALL, this);
+		m_commandList.addEventCallback(onCommandListEvent, LV_EVENT_ALL, this);
+		m_input.addEventCallback(onKeyboardEvent, LV_EVENT_ALL, this);
 	}
 
 	void ConsoleView::clear()
@@ -154,15 +157,15 @@ namespace UI
 		{
 		case LV_EVENT_FOCUSED:
 		{
-			lv_keyboard_set_textarea(view->m_kb, view->m_input);
-			lv_keyboard_set_mode(view->m_kb, LV_KEYBOARD_MODE_TEXT_UPPER);
-			lv_obj_remove_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+			view->m_kb.setTextArea(&view->m_input);
+			view->m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
+			view->m_kb.show(true);
 			break;
 		}
 		case LV_EVENT_DEFOCUSED:
 		{
-			lv_keyboard_set_textarea(view->m_kb, NULL);
-			lv_obj_add_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+			view->m_kb.setTextArea(nullptr);
+			view->m_kb.hide();
 			break;
 		}
 		case LV_EVENT_VALUE_CHANGED:

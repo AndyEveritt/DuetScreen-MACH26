@@ -12,22 +12,23 @@
 
 namespace UI
 {
-    class LvKeyboard : public LvObj
-    {
-      public:
-        LvKeyboard(const std::string& name, lv_obj_t* parent);
 
-        void setTextArea(LvTextArea* textArea);
-        void setMode(lv_keyboard_mode_t mode);
-        void setPopovers(bool enable);
-        void setMap(lv_keyboard_mode_t mode, const char* map[], const lv_buttonmatrix_ctrl_t ctrl_map[]);
-        lv_obj_t* getTextArea() const;
-        lv_keyboard_mode_t getMode() const;
-        bool getPopovers() const;
-        const char* const* getMapArray() const;
-        uint32_t getSelectedButton() const;
-        const char* getButtonText(uint32_t index) const;
+	class LvKeyboard : public LvObj
+	{
+	  public:
+		LvKeyboard(const std::string& name, lv_obj_t* parent);
 
-      private:
-    };
+		void setTextArea(LvTextArea* textArea);
+		void setMode(lv_keyboard_mode_t mode);
+		void setPopovers(bool enable);
+		void setMap(lv_keyboard_mode_t mode, const char* map[], const lv_buttonmatrix_ctrl_t ctrl_map[]);
+		lv_obj_t* getTextArea() const;
+		lv_keyboard_mode_t getMode() const;
+		bool getPopovers() const;
+		const char* const* getMapArray() const;
+		uint32_t getSelectedButton() const;
+		const char* getButtonText(uint32_t index) const;
+
+	  private:
+	};
 } // namespace UI
