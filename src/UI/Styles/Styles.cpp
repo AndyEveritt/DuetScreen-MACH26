@@ -612,6 +612,7 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_list_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
+			lv_obj_add_style(obj, s_lvglStyles.pad_normal, 0);
 			lv_obj_add_style(obj, s_lvglStyles.list_bg, 0);
 			lv_obj_add_style(obj, s_lvglStyles.scrollbar, LV_PART_SCROLLBAR);
 			lv_obj_add_style(obj,
@@ -623,11 +624,13 @@ namespace UI::Themes
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_header, 0);
 			lv_obj_add_style(obj, s_lvglStyles.list_item_grow, 0);
+			lv_obj_add_style(obj, s_lvglStyles.pad_small, 0);
 		}
 		else if (lv_obj_check_type(obj, &lv_list_button_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_list_item, 0);
 			lv_obj_add_style(obj, s_lvglStyles.list_btn, 0);
+			lv_obj_add_style(obj, s_lvglStyles.pad_normal, 0);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.list_item_grow, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, s_lvglStyles.list_item_grow, LV_STATE_PRESSED);
