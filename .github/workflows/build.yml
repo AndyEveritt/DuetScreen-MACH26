@@ -83,10 +83,17 @@ jobs:
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make duetscreen-rebuild
 
+      - name: Build sdcard.img
+        working-directory: buildroot-duetscreen
+        run: |
+          make duet3d_duetscreen_sd_defconfig
+          DUETSCREEN_SRC="../DuetScreen" make
+
       - name: Prepare artifacts
         shell: bash
         run: |
           mkdir artifacts
+          cp ./buildroot-duetscreen/output/images/sdcard.img ./artifacts/
           cd DuetScreen
           ./scripts/create_upgrade.sh
           cp ./out/DuetScreen.tar.gz ../artifacts/
