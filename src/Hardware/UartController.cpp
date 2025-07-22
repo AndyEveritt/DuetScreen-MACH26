@@ -191,20 +191,26 @@ void UartController::setBufferSize(size_t size)
 	m_bufferSize = size;
 }
 
-bool UartController::send(const uint8_t* data, size_t length)
+ssize_t UartController::send(std::string_view data)
+{
+	LOG_VERBOSE("Sending data: {}", data);
+	return _send((const uint8_t*)data.data(), data.length());
+}
+
+ssize_t UartController::_send(const uint8_t* data, size_t length)
 {
 #if SIMULATION
 	LOG_INFO("Simulated UART send: {:.{}s}", reinterpret_cast<const char*>(data), (int)length);
-	return true;
+	return length;
 #else
 	if (!isOpen())
 	{
-		return false;
+		return 0;
 	}
 
 	std::lock_guard<std::mutex> lock(m_writeMutex);
-	size_t written = 0;
-	while (written < length)
+	ssize_t written = 0;
+	while (written < (ssize_t)length)
 	{
 		ssize_t ret = write(m_fd, data + written, length - written);
 		if (ret < 0)
@@ -213,13 +219,13 @@ bool UartController::send(const uint8_t* data, size_t length)
 			{
 				continue;
 			}
-			LOG_ERROR("UART write error: {:s}", strerror(errno));
-			return false;
+			LOG_ERROR("UART write error: {:s}, written {}/{}", strerror(errno), written, length);
+			return written;
 		}
 		written += ret;
 	}
 
-	return true;
+	return written;
 #endif
 }
 

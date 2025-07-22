@@ -103,7 +103,7 @@ namespace OM
 			return false;
 
 		String<MAX_COMMAND_LENGTH> command;
-		command.catf("M140 P%d %s%d", index, active ? "S" : "R", temp);
+		command.catf("M140 P%d %s%d\n", index, active ? "S" : "R", temp);
 
 		Comm::DUET.SendGcode(command.c_str());
 		return true;
@@ -116,7 +116,7 @@ namespace OM
 			return false;
 
 		String<MAX_COMMAND_LENGTH> command;
-		command.catf("M141 P%d %s%d", index, active ? "S" : "R", temp);
+		command.catf("M141 P%d %s%d\n", index, active ? "S" : "R", temp);
 
 		Comm::DUET.SendGcode(command.c_str());
 		return true;
@@ -131,16 +131,16 @@ namespace OM
 		switch (pheater->status)
 		{
 		case Heat::HeaterStatus::active:
-			Comm::DUET.SendGcodef("M144 P%d", index);
+			Comm::DUET.SendGcodef("M144 P%d\n", index);
 			break;
 		case Heat::HeaterStatus::standby:
-			Comm::DUET.SendGcodef("M140 P%d S-273.15", index);
+			Comm::DUET.SendGcodef("M140 P%d S-273.15\n", index);
 			break;
 		case Heat::HeaterStatus::off:
-			Comm::DUET.SendGcodef("M140 P%d S%d", index, pheater->activeTemp);
+			Comm::DUET.SendGcodef("M140 P%d S%d\n", index, pheater->activeTemp);
 			break;
 		case Heat::HeaterStatus::fault:
-			Comm::DUET.SendGcodef("M562 P%d", pheater->index);
+			Comm::DUET.SendGcodef("M562 P%d\n", pheater->index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
@@ -159,13 +159,13 @@ namespace OM
 		{
 		case Heat::HeaterStatus::active:
 		case Heat::HeaterStatus::standby:
-			Comm::DUET.SendGcodef("M141 P%d S-273.15", index);
+			Comm::DUET.SendGcodef("M141 P%d S-273.15\n", index);
 			break;
 		case Heat::HeaterStatus::off:
-			Comm::DUET.SendGcodef("M141 P%d S%d", index, pheater->activeTemp);
+			Comm::DUET.SendGcodef("M141 P%d S%d\n", index, pheater->activeTemp);
 			break;
 		case Heat::HeaterStatus::fault:
-			Comm::DUET.SendGcodef("M562 P%d", pheater->index);
+			Comm::DUET.SendGcodef("M562 P%d\n", pheater->index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:

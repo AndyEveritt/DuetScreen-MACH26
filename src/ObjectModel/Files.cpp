@@ -373,7 +373,7 @@ namespace OM::FileSystem
 
 	void PrintAgain()
 	{
-		Comm::DUET.SendGcodef("M23 \"%s\"\nM24", OM::GetLastJobName().c_str());
+		Comm::DUET.SendGcodef("M23 \"%s\"\nM24\n", OM::GetLastJobName().c_str());
 	}
 
 	void ClearFileSystem()

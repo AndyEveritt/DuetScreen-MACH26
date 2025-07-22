@@ -460,14 +460,14 @@ namespace OM
 	void LoadHeightmap(const char* filename)
 	{
 		LOG_INFO("Loading heightmap {:s}", filename);
-		Comm::DUET.SendGcodef("G29 S1 P\"%s\"", filename);
+		Comm::DUET.SendGcodef("G29 S1 P\"%s\"\n", filename);
 	}
 
 	/* Sends command to Duet to unload the heightmap */
 	void UnloadHeightmap()
 	{
 		LOG_INFO("Unloading heightmap");
-		Comm::DUET.SendGcode("G29 S2");
+		Comm::DUET.SendGcode("G29 S2\n");
 	}
 
 	void ToggleHeightmap(const char* filename)

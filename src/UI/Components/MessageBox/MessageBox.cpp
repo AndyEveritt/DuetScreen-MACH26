@@ -835,7 +835,7 @@ namespace UI
 
 		// TODO: I am breaking the rule of no logic in the view but I'm being lazy. I should create a presenter for the
 		// MessageBox for this.
-		Comm::DUET.SendGcodef("M120\nG91\nG1 %s%.3f F%d\nM121", axisJog->m_axisLetter, amount, 300);
+		Comm::DUET.SendGcodef("M120\nG91\nG1 %s%.3f F%d\nM121\n", axisJog->m_axisLetter, amount, 300);
 	}
 
 } // namespace UI
