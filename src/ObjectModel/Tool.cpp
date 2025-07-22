@@ -165,7 +165,7 @@ namespace OM
 		if (command.IsEmpty())
 			return false;
 
-		Comm::DUET.SendGcodef("M568 P%d %s%s", index, active ? "S" : "R", command.c_str());
+		Comm::DUET.SendGcodef("M568 P%d %s%s\n", index, active ? "S" : "R", command.c_str());
 
 		return true;
 	}
@@ -294,11 +294,11 @@ namespace OM
 		switch (status)
 		{
 		case ToolStatus::active:
-			Comm::DUET.SendGcode("T-1");
+			Comm::DUET.SendGcode("T-1\n");
 			break;
 		case ToolStatus::standby:
 		case ToolStatus::off:
-			Comm::DUET.SendGcodef("T%d", index);
+			Comm::DUET.SendGcodef("T%d\n", index);
 			break;
 		}
 	}
@@ -313,16 +313,16 @@ namespace OM
 		switch (toolHeater->heater->status)
 		{
 		case Heat::HeaterStatus::active:
-			Comm::DUET.SendGcodef("M568 P%d A1", index);
+			Comm::DUET.SendGcodef("M568 P%d A1\n", index);
 			break;
 		case Heat::HeaterStatus::fault:
-			Comm::DUET.SendGcodef("M562 P%d", toolHeater->heater->index);
+			Comm::DUET.SendGcodef("M562 P%d\n", toolHeater->heater->index);
 			break;
 		case Heat::HeaterStatus::off:
-			Comm::DUET.SendGcodef("M568 P%d A2", index);
+			Comm::DUET.SendGcodef("M568 P%d A2\n", index);
 			break;
 		case Heat::HeaterStatus::standby:
-			Comm::DUET.SendGcodef("M568 P%d A0", index);
+			Comm::DUET.SendGcodef("M568 P%d A0\n", index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
@@ -340,10 +340,10 @@ namespace OM
 		{
 		case SpindleState::forward:
 		case SpindleState::reverse:
-			Comm::DUET.SendGcodef("M5");
+			Comm::DUET.SendGcodef("M5\n");
 			break;
 		case SpindleState::stopped:
-			Comm::DUET.SendGcodef("M3");
+			Comm::DUET.SendGcodef("M3\n");
 			break;
 		}
 	}
@@ -354,7 +354,7 @@ namespace OM
 		{
 			return;
 		}
-		Comm::DUET.SendGcodef("M568 P%d F%d", index, rpm);
+		Comm::DUET.SendGcodef("M568 P%d F%d\n", index, rpm);
 	}
 
 	void Tool::ChangeFilament(const char* filament)

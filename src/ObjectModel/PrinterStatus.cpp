@@ -77,7 +77,7 @@ namespace OM
 			s_status = newStatus;
 			if (s_status == OM::PrinterStatus::halted)
 			{
-				Comm::DUET.SendGcode("M999");
+				Comm::DUET.SendGcode("M999\n");
 			}
 		}
 	}

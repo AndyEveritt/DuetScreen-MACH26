@@ -13,6 +13,7 @@
 
 #include "Duet.h"
 
+#include "Duet3D/General/CRC16.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
@@ -76,6 +77,7 @@ namespace Comm
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
 		m_pollIntervalScale = 1.0f;
+		m_nextLineNumber = 0;
 		ClearIPAddress();
 
 		OM::RemoveAll();
@@ -320,19 +322,59 @@ namespace Comm
 		return true;
 	}
 
-	void Duet::SendGcode(const std::string& gcode)
+	void Duet::SendGcode(std::string_view gcode)
 	{
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot send gcode: {:s}", gcode);
 			return;
 		}
-		LOG_DBG("Sending gcode: {:s}", gcode.c_str());
+		LOG_DBG("Sending gcode: {:s}", gcode);
+
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
-			SerialIo::Send(gcode);
+		case CommunicationType::usb:
+		{
+			std::lock_guard<std::mutex> lock(m_sendLock);
+			CRC16 crc;
+			size_t len = 0;
+			std::string_view line;
+			auto send_cb = m_config.communicationType == CommunicationType::uart ? SerialIo::Send : sendUsbData;
+
+			for (size_t i = 0; i < gcode.length(); i++)
+			{
+				char c = gcode[i];
+				if (c == '\n')
+				{
+					line = gcode.substr(i - len, len);
+					send_cb(line);
+					send_cb(fmt::format("*{:05d}\n", crc.Get()));
+					len = 0;
+					crc.Reset(0);
+					continue;
+				}
+				if (len == 0)
+				{
+					uint32_t lineNumber = GetNextLineNumber();
+					std::string lineNumberStr = fmt::format("N{:d} ", lineNumber);
+					for (char c : lineNumberStr)
+					{
+						crc.Update(c);
+					}
+					send_cb(lineNumberStr);
+				}
+				len++;
+				crc.Update(c);
+			}
+			if (len > 0)
+			{
+				line = gcode.substr(gcode.length() - len, len);
+				send_cb(line);
+				send_cb(fmt::format("*{:05d}\n", crc.Get()));
+			}
 			break;
+		}
 		case CommunicationType::network:
 		{
 			HttpResponse r;
@@ -345,23 +387,12 @@ namespace Comm
 				{
 					if (r->status_code != HTTP_STATUS_OK)
 					{
-						LOG_ERROR("HTTP error {:d}: Failed to send gcode: {:s}", (int)r->status_code, gcode.c_str());
+						LOG_ERROR("HTTP error {:d}: Failed to send gcode: {:s}", (int)r->status_code, gcode);
 						return false;
 					}
 					return true;
 				},
 				true);
-			break;
-		}
-		case CommunicationType::usb:
-		{
-			UsbDevice& usb = getCurrentUsbDevice();
-			if (!usb.isConnected())
-			{
-				LOG_WARN("USB device not connected");
-				return;
-			}
-			usb.send(gcode.c_str());
 			break;
 		}
 		default:
@@ -391,9 +422,10 @@ namespace Comm
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
+		case CommunicationType::usb:
 		{
 			/* UART is too slow to support uploading files */
-			if (contents.size() > MAX_UART_UPLOAD_SIZE)
+			if (m_config.communicationType == CommunicationType::uart && contents.size() > MAX_UART_UPLOAD_SIZE)
 			{
 				LOG_WARN(
 					"File too large ({:d}) to upload via UART, limit is {:d}", contents.size(), MAX_UART_UPLOAD_SIZE);
@@ -411,7 +443,7 @@ namespace Comm
 				position = contents.find("\n", position + 1); // Find the next occurrence, if any
 				SendGcode(line.c_str());
 			}
-			SendGcode("M29");
+			SendGcode("M29\n");
 			break;
 		}
 		case CommunicationType::network:
@@ -938,7 +970,7 @@ namespace Comm
 			if (ret)
 			{
 				m_connected = ret; // set connected state so SendGcode actually works
-				SendGcode("M575 P0 S0\n");
+				SendGcode("M575 P0 S4\n");
 			}
 			break;
 		}

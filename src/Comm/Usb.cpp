@@ -123,7 +123,7 @@ namespace Comm
 		return true;
 	}
 
-	int UsbDevice::send(const char* data)
+	ssize_t UsbDevice::send(std::string_view data)
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
@@ -131,22 +131,25 @@ namespace Comm
 			LOG_WARN("No USB device handle");
 			return -1;
 		}
-		int full_length = 0;
+		ssize_t full_length = 0;
 		int actual_length = 0;
-		size_t len = strlen(data);
+		size_t len = data.length();
+		const char* ptr = data.data();
+
+		LOG_VERBOSE("Sending data: {}, length: {:d}", data, len);
 
 		while (len > 0)
 		{
 			int lenToSend = len > m_packetSize ? m_packetSize : len;
-			int r = libusb_bulk_transfer(m_handle, m_outEndpoint, (unsigned char*)data, len, &actual_length, 0);
+			int r = libusb_bulk_transfer(m_handle, m_outEndpoint, (unsigned char*)ptr, lenToSend, &actual_length, 0);
 			if (r != 0)
 			{
-				LOG_ERROR("Error sending data: {:s}", libusb_error_name(r));
+				LOG_ERROR("Error sending data: {:s}, sent {}/{}", libusb_error_name(r), full_length, len);
 				reset();
 				return -1;
 			}
 			len -= actual_length;
-			data += actual_length;
+			ptr += actual_length;
 			full_length += actual_length;
 		}
 		return full_length;
@@ -336,4 +339,14 @@ namespace Comm
 		return true;
 	}
 
+	ssize_t sendUsbData(std::string_view data)
+	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		if (!s_currentUsbDevice.isConnected())
+		{
+			LOG_WARN("USB device not connected");
+			return -1;
+		}
+		return s_currentUsbDevice.send(data);
+	}
 } // namespace Comm

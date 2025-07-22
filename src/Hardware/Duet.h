@@ -82,8 +82,9 @@ namespace Comm
 		void ScalePollIntervalScale(float scale);
 		const uint32_t GetPollInterval() const;
 		const uint32_t GetScaledPollInterval() const;
+		const uint32_t GetNextLineNumber() { return m_nextLineNumber++; }
 
-		void SendGcode(const std::string& gcode);
+		void SendGcode(std::string_view gcode);
 		void SendGcodef(const char* fmt, ...);
 		void RequestReply(HttpResponse& r);
 		void ProcessReply(HttpResponse& r);
@@ -144,6 +145,8 @@ namespace Comm
 		DuetConfig m_config;
 		long long m_lastRequestTime;
 		float m_pollIntervalScale;
+		uint32_t m_nextLineNumber = 0;
+		std::mutex m_sendLock;
 
 		// USB
 

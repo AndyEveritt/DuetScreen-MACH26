@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libusb-1.0/libusb.h"
+#include <string>
 
 namespace Comm
 {
@@ -20,7 +21,7 @@ namespace Comm
 		bool init(const char* name, libusb_device* device);
 		bool connect();
 		void reset();
-		int send(const char* data);
+		ssize_t send(std::string_view data);
 		int receive(unsigned char* data, size_t len);
 		bool isConnected() const { return m_handle != nullptr; }
 
@@ -39,5 +40,5 @@ namespace Comm
 	int usbInit();
 	bool connectUsbDevice();
 	UsbDevice& getCurrentUsbDevice();
-
+	ssize_t sendUsbData(std::string_view data);
 } // namespace Comm
