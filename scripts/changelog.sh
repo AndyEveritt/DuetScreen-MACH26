@@ -17,6 +17,7 @@ declare -a FIXES=()
 declare -a FEATURES=()
 declare -a CHORES=()
 declare -a REFACTORS=()
+declare -a DOCS=()
 declare -a OTHERS=()
 
 # Function to process a commit part
@@ -37,6 +38,9 @@ process_commit_part() {
     elif [[ "$part" == *"refactor("* ]]; then
         REFACTORS+=("${part#*refactor(}")
         return 0
+    elif [[ "$part" == *"docs("* ]]; then
+        DOCS+=("${part#*docs(}")
+        return 0
     fi
     return 1
 }
@@ -56,7 +60,7 @@ while IFS= read -r line; do
     fi
     
     # Split the commit message into parts based on conventional commit keywords
-    parts=$(echo "$line" | sed -E 's/(fix\(|feat\(|chore\(|refactor\()/\n\1/g')
+    parts=$(echo "$line" | sed -E 's/(fix\(|feat\(|chore\(|refactor\(|docs\()/\n\1/g')
     
     while IFS= read -r part; do
         # Trim leading and trailing whitespace without xargs
@@ -80,7 +84,7 @@ if [ ${#MERGES[@]} -gt 0 ]; then
 fi
 
 if [ ${#FIXES[@]} -gt 0 ]; then
-    echo -e "\n### � Fixes"
+    echo -e "\n### 🛠️  Fixes"
     printf "* %s\n" "${FIXES[@]}"
 fi
 
@@ -90,13 +94,18 @@ if [ ${#FEATURES[@]} -gt 0 ]; then
 fi
 
 if [ ${#CHORES[@]} -gt 0 ]; then
-    echo -e "\n### 🔧 Chores"
+    echo -e "\n### 🧹 Chores"
     printf "* %s\n" "${CHORES[@]}"
 fi
 
 if [ ${#REFACTORS[@]} -gt 0 ]; then
     echo -e "\n### ♻️ Refactoring"
     printf "* %s\n" "${REFACTORS[@]}"
+fi
+
+if [ ${#DOCS[@]} -gt 0 ]; then
+    echo -e "\n### 📄 Documentation"
+    printf "* %s\n" "${DOCS[@]}"
 fi
 
 if [ ${#OTHERS[@]} -gt 0 ]; then
