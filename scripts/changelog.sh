@@ -27,19 +27,30 @@ process_commit_part() {
         MERGES+=("$part")
         return 0
     elif [[ "$part" == *"fix("* ]]; then
-        FIXES+=("${part#*fix(}")
+        # Extract scope and message separately
+        local scope=$(echo "$part" | sed -n 's/fix(\([^)]*\)).*/\1/p')
+        local message=$(echo "$part" | sed 's/fix([^)]*)//')
+        FIXES+=("**${scope}**${message}")
         return 0
     elif [[ "$part" == *"feat("* ]]; then
-        FEATURES+=("${part#*feat(}")
+        local scope=$(echo "$part" | sed -n 's/feat(\([^)]*\)).*/\1/p')
+        local message=$(echo "$part" | sed 's/feat([^)]*)//')
+        FEATURES+=("**${scope}**${message}")
         return 0
     elif [[ "$part" == *"chore("* ]]; then
-        CHORES+=("${part#*chore(}")
+        local scope=$(echo "$part" | sed -n 's/chore(\([^)]*\)).*/\1/p')
+        local message=$(echo "$part" | sed 's/chore([^)]*)//')
+        CHORES+=("**${scope}**${message}")
         return 0
     elif [[ "$part" == *"refactor("* ]]; then
-        REFACTORS+=("${part#*refactor(}")
+        local scope=$(echo "$part" | sed -n 's/refactor(\([^)]*\)).*/\1/p')
+        local message=$(echo "$part" | sed 's/refactor([^)]*)//')
+        REFACTORS+=("**${scope}**${message}")
         return 0
     elif [[ "$part" == *"docs("* ]]; then
-        DOCS+=("${part#*docs(}")
+        local scope=$(echo "$part" | sed -n 's/docs(\([^)]*\)).*/\1/p')
+        local message=$(echo "$part" | sed 's/docs([^)]*)//')
+        DOCS+=("**${scope}**${message}")
         return 0
     fi
     return 1
