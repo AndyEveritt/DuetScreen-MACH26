@@ -52,7 +52,9 @@ namespace UI
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		MoveView& getMoveView() { return m_moveView; }
 		TemperatureView& getExtrudeView() { return m_temperatureView; }
+		FanView& getFanView() { return m_fanView; }
 		FileView& getFileView() { return m_fileView; }
+		HeightmapView& getHeightmapView() { return m_heightmapView; }
 		SettingsView& getSettingsView() { return m_settingsView; }
 		StatusView& getStatusView() { return m_statusView; }
 

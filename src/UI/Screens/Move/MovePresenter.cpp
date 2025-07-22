@@ -5,6 +5,8 @@
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "UI/Core/Navigation.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -61,7 +63,7 @@ namespace UI
 
 	void MovePresenter::heightmap()
 	{
-		// TODO Open HeightmapView
+		openScreen(&HomeView::instance().getHeightmapView());
 	}
 
 	void MovePresenter::disableMotors()
