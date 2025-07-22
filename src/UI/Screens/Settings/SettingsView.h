@@ -71,10 +71,10 @@
 		Slider m_infoTimeout;
 	};
 
-	class DeviceSettingsView : public SettingsSubView
+	class ScreenSettingsView : public SettingsSubView
 	{
 	  public:
-		DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+		ScreenSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
 	  private:
 		void onShow() override;
@@ -169,7 +169,7 @@
 	{
 		friend class SettingsSubView;
 		friend class DuetSettingsView;
-		friend class DeviceSettingsView;
+		friend class ScreenSettingsView;
 
 	  public:
 		SettingsView(lv_obj_t* parent);
@@ -200,15 +200,16 @@
 		lv_obj_t* m_subWindow;
 		lv_obj_t* m_keyboard;
 
+		lv_obj_t* m_screenHeader;
+		lv_obj_t* m_screenSettings;
 		lv_obj_t* m_connectivityHeader;
 		lv_obj_t* m_duetSettings;
-		lv_obj_t* m_deviceSettings;
 		lv_obj_t* m_networkSettings;
 		lv_obj_t* m_devHeader;
 		lv_obj_t* m_developerSettings;
 
 		DuetSettingsView m_duetSettingsView;
-		DeviceSettingsView m_deviceSettingsView;
+		ScreenSettingsView m_deviceSettingsView;
 		NetworkSettingsView m_networkSettingsView;
 		DeveloperSettingsView m_developerSettingsView;
 

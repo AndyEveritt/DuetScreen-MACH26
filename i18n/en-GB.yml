@@ -337,7 +337,8 @@ en-GB:
   sort_by_name: Name
   sort_by_date: Date
   sort_by_size: Size
-  settings_device: Device
+  settings_screen_header: Screen Settings
+  settings_screen: Screen
   settings_brightness: Brightness
   settings_screensaver_timeout: Screensaver Timeout
   update_available: Update Available
@@ -409,3 +410,7 @@ en-GB:
   unknown: ~
   extrude_feedrate_header: ~
   set_temperature_numpad_header: 'Set {} Temperature for {}'
+  filament_management_header: ~
+  select_tool: ~
+  select_filament: ~
+  confirm_filament_change: ~
