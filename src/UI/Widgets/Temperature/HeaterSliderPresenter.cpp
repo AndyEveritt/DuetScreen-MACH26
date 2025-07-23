@@ -7,6 +7,29 @@ namespace UI
 {
 	void HeaterSliderPresenter::onActivate()
 	{
+		switch (m_slotType)
+		{
+		case SlotType::Tool:
+		{
+			// Do nothing the ToolControlPresenter will handle this
+			break;
+		}
+		case SlotType::Bed:
+		case SlotType::Chamber:
+		{
+			if (m_bedOrChamber == nullptr)
+			{
+				LOG_ERROR("BedOrChamber is null for presenter '{}'", getName());
+				reset();
+				break;
+			}
+			auto setter = (m_slotType == SlotType::Bed) ? &HeaterSliderPresenter::setBedIndex
+														: &HeaterSliderPresenter::setChamberIndex;
+			(this->*setter)(m_slot);
+			break;
+		}
+		}
+
 		newHeaterData();
 	}
 
@@ -48,6 +71,7 @@ namespace UI
 			reset();
 			return;
 		}
+		m_slot = index;
 		m_slotType = SlotType::Bed;
 	}
 
@@ -63,6 +87,7 @@ namespace UI
 			reset();
 			return;
 		}
+		m_slot = index;
 		m_slotType = SlotType::Chamber;
 	}
 
@@ -71,6 +96,7 @@ namespace UI
 		UI_LOCK();
 
 		m_slotType = SlotType::Unknown;
+		m_slot = 0;
 		m_tool.reset();
 		m_tHeater.reset();
 		m_bedOrChamber.reset();

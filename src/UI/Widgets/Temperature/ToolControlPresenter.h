@@ -43,6 +43,7 @@ namespace UI
 		virtual void onDeactivate() override;
 		virtual void onDisconnect() { reset(); }
 
+		ssize_t m_toolSlot;
 		OM::ToolPtr m_tool;
 	};
 } // namespace UI

@@ -14,11 +14,15 @@ namespace UI
 {
 	void ToolControlPresenter::onActivate()
 	{
+		if (m_tool != nullptr)
+		{
+			setToolIndex(m_toolSlot);
+		}
 		newToolData();
 
 		for (auto& heater : m_view->getHeaters())
 		{
-			heater->show();
+			heater->activate();
 		}
 	}
 
@@ -37,6 +41,7 @@ namespace UI
 		UI_LOCK();
 		m_tool = nullptr;
 		m_view->getHeaters().clear();
+		m_toolSlot = -1;
 	}
 
 	void ToolControlPresenter::setToolIndex(size_t toolIndex)
@@ -50,6 +55,7 @@ namespace UI
 			return;
 		}
 		LOG_DBG("Set tool index to {} for presenter '{}'", toolIndex, getName());
+		m_toolSlot = (ssize_t)toolIndex;
 	}
 
 	void ToolControlPresenter::toggleToolState()

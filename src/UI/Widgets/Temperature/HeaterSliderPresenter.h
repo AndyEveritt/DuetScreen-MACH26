@@ -50,6 +50,7 @@ namespace UI
 
 	  private:
 		SlotType m_slotType = SlotType::Unknown;
+		size_t m_slot = 0;
 		OM::ToolPtr m_tool;
 		OM::ToolHeaterPtr m_tHeater;
 		OM::BedOrChamberPtr m_bedOrChamber;
