@@ -47,6 +47,7 @@ namespace UI
 	void TemperatureView::onShow()
 	{
 		m_numberPad.hide();
+		m_filamentSelect.show();
 	}
 
 	void TemperatureView::onHide() {}

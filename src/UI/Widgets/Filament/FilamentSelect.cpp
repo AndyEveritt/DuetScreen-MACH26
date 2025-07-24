@@ -50,6 +50,20 @@ namespace UI
 
 			auto presenter = control.m_widget.getPresenter();
 			presenter->setSelectedToolBySlot(control.getIndex());
+
+			lv_anim_t anim;
+			lv_anim_init(&anim);
+			lv_anim_set_duration(&anim, 300);
+			lv_anim_set_var(&anim, &control.m_widget);
+			lv_anim_set_values(&anim, control.m_widget.m_cont.getHeight(), 0);
+			lv_anim_set_exec_cb(&anim,
+								[](void* var, int32_t value)
+								{
+									auto& widget = *static_cast<FilamentSelect*>(var);
+									widget.m_filamentOptions.setY(value);
+								});
+
+			lv_anim_start(&anim);
 		}
 
 		LvLabel m_toolName;
@@ -60,17 +74,21 @@ namespace UI
 	FilamentSelect::FilamentSelect(const std::string& name, lv_obj_t* parent)
 		: View(name, parent)
 		, m_header("header", getRoot())
-		, m_toolList("tool_list", getRoot())
-		, m_filamentOptions("filament_options", getRoot())
+		, m_cont("cont", getRoot())
+		, m_toolList("tool_list", m_cont)
+		, m_filamentOptions("filament_options", m_cont)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_toolList.setSize(LV_PCT(100), 0);
-		m_toolList.setFlexGrow(1);
-		m_filamentOptions.setSize(LV_PCT(100), 0);
-		m_filamentOptions.setFlexGrow(1);
+		m_cont.setWidth(LV_PCT(100));
+		m_cont.setFlexGrow(1);
+		m_cont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
+		m_toolList.setSize(LV_PCT(100), LV_PCT(100));
+		m_filamentOptions.setSize(LV_PCT(100), LV_PCT(100));
+		m_filamentOptions.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
+		// m_filamentOptions.setAlign(LV_ALIGN_OUT_BOTTOM_MID, 0, 0); // Position outside the visible area initially
 
 		m_toolList.setListFlow(LV_FLEX_FLOW_COLUMN);
 		m_toolList.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -170,5 +188,10 @@ namespace UI
 												  { presenter->setFilament(selectedFilament); });
 			control.m_confirmation->show(true);
 		}
+	}
+
+	void FilamentSelect::onShow()
+	{
+		m_filamentOptions.setY(m_cont.getHeight());
 	}
 } // namespace UI

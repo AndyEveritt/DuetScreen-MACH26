@@ -35,7 +35,10 @@ namespace UI
 	  private:
 		static void onFilamentOptionClicked(lv_event_t* e);
 
+		void onShow() override;
+
 		LvLabel m_header;
+		LvContainer m_cont;
 		List<ToolItem> m_toolList;
 		List<Button> m_filamentOptions;
 
