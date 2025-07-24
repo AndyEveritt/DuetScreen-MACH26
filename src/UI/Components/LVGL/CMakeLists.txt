@@ -1,6 +1,7 @@
 target_sources(
   DuetScreen
   PRIVATE 
+  ${CMAKE_CURRENT_SOURCE_DIR}/LvAnim.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvBar.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvContainer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvButtonMatrix.cpp

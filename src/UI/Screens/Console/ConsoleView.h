@@ -29,11 +29,14 @@ namespace UI
 		static void onCommandListEvent(lv_event_t* e);
 		static void onKeyboardEvent(lv_event_t* e);
 
+		void updateBtnPos();
+		
 		virtual void onShow() override;
 		virtual void onHide() override;
 
 		LvContainer m_topCont;
 		LvObj m_commandList;
+		Button m_commandVisibility;
 		LvTextArea m_output;
 		LvContainer m_inputCont;
 		LvTextArea m_input;

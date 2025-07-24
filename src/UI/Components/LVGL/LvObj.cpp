@@ -435,6 +435,12 @@ namespace UI
 		lv_obj_scroll_to_y(getRoot(), y, anim);
 	}
 
+	void LvObj::setScrollDir(lv_dir_t dir)
+	{
+		UI_LOCK();
+		lv_obj_set_scroll_dir(getRoot(), dir);
+	}
+
 	void LvObj::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
 	{
 		UI_LOCK();

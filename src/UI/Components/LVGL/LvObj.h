@@ -157,6 +157,7 @@ namespace UI
 
 		void scrollToX(lv_coord_t x, lv_anim_enable_t anim = LV_ANIM_OFF);
 		void scrollToY(lv_coord_t y, lv_anim_enable_t anim = LV_ANIM_OFF);
+		void setScrollDir(lv_dir_t dir);
 
 		/* Styling */
 

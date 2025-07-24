@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Gcodes.h"
 #include "Hardware/Duet.h"
+#include "UI/Components/LVGL/LvAnim.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
@@ -9,10 +10,14 @@
 
 namespace UI
 {
+#define TABLE_GCODE_WIDTH 100
+#define TABLE_DESCRIPTION_WIDTH 500
+
 	ConsoleView::ConsoleView(lv_obj_t* parent)
 		: View("console_view", parent, layout_t(0, 0, 100, 100))
 		, m_topCont("top_cont", getRoot())
 		, m_commandList(lv_table_create, "command_list", m_topCont)
+		, m_commandVisibility("command_visibility", m_topCont, LV_SYMBOL_LIST)
 		, m_output("output", m_topCont)
 		, m_inputCont("input_cont", getRoot())
 		, m_input("input", m_inputCont)
@@ -31,16 +36,21 @@ namespace UI
 
 		// Top Container
 		m_topCont.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_commandList.setFlexGrow(2);
-		m_output.setFlexGrow(3);
+		m_commandVisibility.setCheckable(true);
+		m_commandVisibility.setChecked(true);
+		m_commandVisibility.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
+		m_commandVisibility.updateLayout();
+		m_commandList.setFlexGrow(20);
+		m_commandList.setMinWidth(TABLE_GCODE_WIDTH);
+		m_output.setFlexGrow(30);
 		m_commandList.setHeight(LV_PCT(100));
 		m_output.setHeight(LV_PCT(100));
 		m_output.setCursorClickPos(false);
 
 		// Command List
 		lv_table_set_column_count(m_commandList, 2);
-		lv_table_set_column_width(m_commandList, 0, 100);
-		lv_table_set_column_width(m_commandList, 1, 500);
+		lv_table_set_column_width(m_commandList, 0, TABLE_GCODE_WIDTH);
+		lv_table_set_column_width(m_commandList, 1, TABLE_DESCRIPTION_WIDTH);
 		lv_table_set_row_count(m_commandList, Gcodes::getGcodeCount());
 		for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
 		{
@@ -63,6 +73,8 @@ namespace UI
 		m_clear.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_enter.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
+		m_topCont.addStyle(Themes::getLvglStyles().no_border);
+		m_inputCont.addStyle(Themes::getLvglStyles().no_border);
 		m_input.addStyle(Themes::getLvglStyles().pad_zero);
 		m_clear.addStyle(Themes::getLvglStyles().pad_zero);
 		m_enter.addStyle(Themes::getLvglStyles().pad_zero);
@@ -77,6 +89,34 @@ namespace UI
 		m_enter.addClickedCallback(onSendEvent, this);
 		m_commandList.addEventCallback(onCommandListEvent, LV_EVENT_ALL, this);
 		m_input.addEventCallback(onKeyboardEvent, LV_EVENT_ALL, this);
+		m_commandVisibility.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				ConsoleView& view = *static_cast<ConsoleView*>(lv_event_get_user_data(e));
+				LvAnim anim;
+				anim.setDuration(300);
+				anim.setVar(&view);
+				bool isVisible = !view.m_commandVisibility.hasState(LV_STATE_CHECKED);
+				anim.setValues(isVisible ? 20 : 1, isVisible ? 1 : 20);
+				anim.setExecCb(
+					[](void* var, int32_t value)
+					{
+						ConsoleView& view = *static_cast<ConsoleView*>(var);
+						view.m_commandList.setFlexGrow(value);
+						view.updateBtnPos();
+					});
+				anim.setDeletedCb(
+					[](lv_anim_t* anim)
+					{
+						ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
+						view.m_commandList.setScrollDir(
+							view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL : LV_DIR_VER);
+					}
+
+				);
+				anim.start();
+			},
+			this);
 	}
 
 	void ConsoleView::clear()
@@ -224,11 +264,18 @@ namespace UI
 		return false;
 	}
 
+	void ConsoleView::updateBtnPos()
+	{
+		m_commandList.updateLayout();
+		m_commandVisibility.setPos(m_commandList.getX2() - m_commandVisibility.getWidth() - 5,
+								   m_commandList.getY() + 5);
+	}
+
 	void ConsoleView::onShow()
 	{
-		UI_LOCK();
-		lv_obj_scroll_to_x(m_commandList, 0, LV_ANIM_OFF);
-		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
+		m_commandList.scrollToX(0, LV_ANIM_OFF);
+		m_kb.hide();
+		updateBtnPos();
 	}
 
 	void ConsoleView::onHide()
