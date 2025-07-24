@@ -24,7 +24,7 @@ namespace UI
 		UI_LOCK();
 		lv_textarea_set_text(getTextArea(), text.c_str());
 	}
-	std::string LvTextArea::getText() const
+	std::string_view LvTextArea::getText() const
 	{
 		UI_LOCK();
 		return lv_textarea_get_text(getTextArea());

@@ -69,7 +69,7 @@ namespace UI
 		scanWifi();
 	}
 
-	void NetworkSettingsPresenter::connectToNetwork(const std::string& ssid, const std::string& password)
+	void NetworkSettingsPresenter::connectToNetwork(const std::string& ssid, std::string_view password)
 	{
 		NetworkHelper::connect(ssid, password);
 		scanWifi();

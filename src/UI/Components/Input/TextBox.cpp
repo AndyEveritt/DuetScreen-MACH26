@@ -78,7 +78,7 @@ namespace UI
 		m_textArea.setCursorPos(0);
 		m_textArea.scrollToX(0, LV_ANIM_OFF);
 	}
-	std::string TextBox::getText() const
+	std::string_view TextBox::getText() const
 	{
 		return m_textArea.getText();
 	}

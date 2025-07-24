@@ -111,6 +111,8 @@ namespace UI
 						ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
 						view.m_commandList.setScrollDir(
 							view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL : LV_DIR_VER);
+						view.m_output.updateLayout();
+						view.m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
 					}
 
 				);
@@ -132,12 +134,10 @@ namespace UI
 
 	void ConsoleView::addResponse(const char* resp)
 	{
-		UI_LOCK();
+		m_output.addText(resp);
+		m_output.addChar('\n');
 
-		lv_textarea_add_text(m_output, resp);
-		lv_textarea_add_char(m_output, '\n');
-
-		std::string currentText = lv_textarea_get_text(m_output);
+		std::string_view currentText = m_output.getText();
 
 		int newLineCount = std::count(currentText.begin(), currentText.end(), '\n');
 
@@ -149,7 +149,7 @@ namespace UI
 				pos = currentText.find('\n', pos) + 1;
 			}
 			currentText = currentText.substr(pos);
-			lv_textarea_set_text(m_output, currentText.c_str());
+			m_output.setText(currentText.data());
 		}
 	}
 

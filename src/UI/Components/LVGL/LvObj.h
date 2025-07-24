@@ -155,9 +155,14 @@ namespace UI
 		void setExtClickArea(int32_t size);
 		void getClickArea(lv_area_t* area) const;
 
+		void scrollBy(int32_t dx, int32_t dy, lv_anim_enable_t anim = LV_ANIM_OFF);
 		void scrollToX(lv_coord_t x, lv_anim_enable_t anim = LV_ANIM_OFF);
 		void scrollToY(lv_coord_t y, lv_anim_enable_t anim = LV_ANIM_OFF);
 		void setScrollDir(lv_dir_t dir);
+		lv_coord_t getScrollLeft() const;
+		lv_coord_t getScrollRight() const;
+		lv_coord_t getScrollTop() const;
+		lv_coord_t getScrollBottom() const;
 
 		/* Styling */
 

@@ -22,7 +22,7 @@ namespace UI
 
         void setLabel(const std::string& label);
 		void setText(const std::string& text);
-		std::string getText() const;
+		std::string_view getText() const;
 		LvTextArea& getTextArea() { return m_textArea; }
 
 		void addChar(uint32_t c);

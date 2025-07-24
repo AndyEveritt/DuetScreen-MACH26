@@ -160,7 +160,7 @@ namespace UI
 
 	float NumberPad::getValue() const
 	{
-		return atof(m_textBox.getText().c_str());
+		return atof(m_textBox.getText().data());
 	}
 
 	bool NumberPad::validateInput()
@@ -238,18 +238,18 @@ namespace UI
 		else if (lv_strcmp(txt, "+/-") == 0)
 		{
 			uint32_t cur = ta.getCursorPos();
-			const char* ta_txt = ta.getText().c_str();
-			if (ta_txt[0] == '-')
-			{
-				ta.setCursorPos(1);
-				ta.deleteChar();
-				ta.setCursorPos(cur > 0 ? cur - 1 : 0);
-			}
-			else
+			std::string_view ta_txt = ta.getText();
+			if (ta_txt.empty() || ta_txt[0] != '-')
 			{
 				ta.setCursorPos(0);
 				ta.addChar('-');
 				ta.setCursorPos(cur + 1);
+			}
+			else
+			{
+				ta.setCursorPos(1);
+				ta.deleteChar();
+				ta.setCursorPos(cur > 0 ? cur - 1 : 0);
 			}
 			np.validateInput();
 		}

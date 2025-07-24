@@ -423,6 +423,12 @@ namespace UI
 		lv_obj_get_click_area(getRoot(), area);
 	}
 
+	void LvObj::scrollBy(int32_t dx, int32_t dy, lv_anim_enable_t anim)
+	{
+		UI_LOCK();
+		lv_obj_scroll_by(getRoot(), dx, dy, anim);
+	}
+
 	void LvObj::scrollToX(lv_coord_t x, lv_anim_enable_t anim)
 	{
 		UI_LOCK();
@@ -439,6 +445,30 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_obj_set_scroll_dir(getRoot(), dir);
+	}
+
+	lv_coord_t LvObj::getScrollLeft() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_left(getRoot());
+	}
+
+	lv_coord_t LvObj::getScrollRight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_right(getRoot());
+	}
+
+	lv_coord_t LvObj::getScrollTop() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_top(getRoot());
+	}
+
+	lv_coord_t LvObj::getScrollBottom() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_bottom(getRoot());
 	}
 
 	void LvObj::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)

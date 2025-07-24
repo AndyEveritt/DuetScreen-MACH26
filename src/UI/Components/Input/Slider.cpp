@@ -204,7 +204,7 @@ namespace UI
 		}
 		case LV_EVENT_READY:
 		{
-			int32_t value = atoi(slider->m_input.getText().c_str());
+			int32_t value = atoi(slider->m_input.getText().data());
 			slider->setValue(value);
 			break;
 		}

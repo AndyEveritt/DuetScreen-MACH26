@@ -36,7 +36,7 @@ namespace NetworkHelper
 	std::vector<WiFiNetwork> getKnownWiFiNetworks();
 	std::vector<WiFiNetwork> scanWiFiNetworks();
 	void connect(const std::string& ssid);
-	void connect(const std::string& ssid, const std::string& password);
+	void connect(const std::string& ssid, std::string_view password);
 	bool isNetworkKnown(const std::string& ssid);
 	void disconnect();
 	void reconnect();
