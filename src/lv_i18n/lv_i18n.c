@@ -55,7 +55,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"file_run_macro_title", "Run Macro"},
     {"file_start_print_message", "File: %s\nDate: %s\nSize: %s"},
     {"file_start_print_title", "Start Print"},
-    {"files", "Files"},
+    {"files", "Jobs"},
     {"fine_tune", "Fine Tune"},
     {"fine_tune_babystep_decrement", "-"},
     {"fine_tune_babystep_increment", "+"},
