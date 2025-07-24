@@ -132,7 +132,9 @@ namespace UI
 				continue;
 			}
 			item->setLabel(file->GetName().c_str());
-			item->setDate(file->GetDate().c_str());
+			std::string date = file->GetDate();
+			std::replace(date.begin(), date.end(), 'T', ' ');
+			item->setDate(date.c_str());
 			item->setSize(file->GetReadableSize().c_str());
 			item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
 
