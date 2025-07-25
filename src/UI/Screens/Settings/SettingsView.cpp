@@ -1,4 +1,5 @@
 #include "SettingsView.h"
+#include "BuildDate.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
@@ -308,7 +309,7 @@ namespace UI
 		UI_LOCK();
 
 		lv_label_set_text(m_firmwareVersion, utils::format(_("settings_firmware_version"), FIRMWARE_VERSION).c_str());
-		lv_label_set_text(m_buildTime, utils::format(_("settings_build_time"), __DATE__, __TIME__).c_str());
+		lv_label_set_text(m_buildTime, utils::format(_("settings_build_time"), BuildDateText, BuildTimeSuffix).c_str());
 
 		m_language.setLabel(_("settings_language"));
 		m_language.setOptions(_("settings_language_en"));

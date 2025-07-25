@@ -31,8 +31,11 @@ endif()
 
 set(MAIN_SOURCES "")
 
-if (NOT DEFINED PROCESSOR)
-  message(FATAL_ERROR "PROCESSOR variable is not defined. Please set it to 'T113' or 'Simulation'.")
+if(NOT DEFINED PROCESSOR)
+  message(
+    FATAL_ERROR
+      "PROCESSOR variable is not defined. Please set it to 'T113' or 'Simulation'."
+  )
 endif()
 
 # ----------------------------------------------------------------------------
@@ -80,6 +83,13 @@ add_custom_target(
           -print | xargs clang-format -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Running clang-format")
+
+# Touch BuildDate.cpp to ensure it is always compiled
+add_custom_command(
+  TARGET DuetScreen
+  PRE_BUILD
+  COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
+  COMMENT "Touching BuildDate.cpp to force recompilation")
 add_dependencies(DuetScreen clang-format)
 
 target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
@@ -157,8 +167,7 @@ target_compile_definitions(DuetScreen PRIVATE LV_CONF_INCLUDE_SIMPLE)
 target_link_libraries(
   DuetScreen
   PRIVATE lvgl
-          # lvgl::examples lvgl::demos
-          # lvgl::thorvg
+          # lvgl::examples lvgl::demos lvgl::thorvg
           ${SDL2_LIBRARIES}
           ${LIBUSB_LIBRARIES} # Link libusb library
           m
