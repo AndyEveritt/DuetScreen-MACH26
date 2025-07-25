@@ -6,8 +6,6 @@ static std::string filename_ = "/etc/duetscreen.json";
 static std::string filename_ = "config.json";
 #endif
 
-nlohmann::json StorageHelper::data_ = {};
-
 bool StorageHelper::save()
 {
 	std::ofstream file(filename_);

@@ -815,7 +815,7 @@ namespace UI::Themes
 
 		if (display == NULL)
 		{
-			display == lv_display_get_default();
+			display = lv_display_get_default();
 		}
 
 		// Initialize uninitialized styles

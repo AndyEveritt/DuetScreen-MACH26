@@ -105,6 +105,9 @@ target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})
 # ----------------------------------------------------------------------------
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(DuetScreen PRIVATE DEBUG)
+else()
+  set_target_properties(DuetScreen PROPERTIES CMAKE_INTERPROCEDURAL_OPTIMIZATION
+                                              TRUE)
 endif()
 target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
 
@@ -167,7 +170,6 @@ target_compile_definitions(DuetScreen PRIVATE LV_CONF_INCLUDE_SIMPLE)
 target_link_libraries(
   DuetScreen
   PRIVATE lvgl
-          # lvgl::examples lvgl::demos lvgl::thorvg
           ${SDL2_LIBRARIES}
           ${LIBUSB_LIBRARIES} # Link libusb library
           m

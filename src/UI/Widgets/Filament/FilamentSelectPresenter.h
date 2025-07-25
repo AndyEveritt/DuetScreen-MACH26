@@ -41,7 +41,7 @@ namespace UI
 		virtual void onDeactivate() override {}
 
 		virtual void onConnect() override {}
-		virtual void onDisconnect() { clear(); }
+		virtual void onDisconnect() override { clear(); }
 
 		std::vector<OM::ToolPtr> m_tools;
 		std::vector<std::string> m_filamentOptions;

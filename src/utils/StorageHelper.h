@@ -51,5 +51,5 @@ class StorageHelper
 	}
 
   private:
-	static nlohmann::json data_;
+	inline static nlohmann::json data_;
 };

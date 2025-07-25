@@ -19,7 +19,8 @@ namespace UI::Themes
 									lv_color_hex(0x2f3237),
 									LV_FONT_DEFAULT,
 									true,
-									[](Theme* theme) {
+									[](Theme* theme)
+									{
 										lv_style_set_bg_color(theme->components.estop, lv_palette_main(LV_PALETTE_RED));
 									});
 } // namespace UI::Themes
