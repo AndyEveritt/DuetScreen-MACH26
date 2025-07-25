@@ -229,29 +229,32 @@ namespace UI
 		return false;
 	}
 
-	void FileView::confirmStartPrint(const char* filename, const char* date, const char* size, const char* thumbnail)
+	void FileView::confirmStartPrint(std::string_view filename,
+									 std::string_view date,
+									 std::string_view size,
+									 std::string_view thumbnail)
 	{
 		UI_LOCK();
 		m_startPrint.setTitle(_("file_start_print_title"));
-		m_startPrint.setText(utils::format(_("file_start_print_message"), filename, date, size));
+		m_startPrint.setText(fmt::format(fmt::runtime(_("file_start_print_message")), filename, date, size));
 		m_startPrint.setOkCallback(
 			[this]()
 			{
 				m_presenter->startPrint();
 				openScreen(&HomeView::instance().getStatusView());
 			});
-		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail : nullptr);
-		m_startPrint.show(true);
+		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail.data() : nullptr);
+		openModal(&m_startPrint);
 	}
 
-	void FileView::confirmRunMacro(const char* filename)
+	void FileView::confirmRunMacro(std::string_view filename)
 	{
 		UI_LOCK();
 		m_startPrint.setTitle(_("file_run_macro_title"));
-		m_startPrint.setText(utils::format(_("file_run_macro_message"), filename));
+		m_startPrint.setText(fmt::format(fmt::runtime(_("file_run_macro_message")), filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });
 		m_startPrint.setImage(nullptr);
-		m_startPrint.show(true);
+		openModal(&m_startPrint);
 	}
 
 	void FileView::showSort(FilePresenter::SortBy by, bool descending)

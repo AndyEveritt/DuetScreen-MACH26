@@ -42,7 +42,7 @@ namespace UI
 
 	void FilePresenter::setFolder(const std::string& folder)
 	{
-		if (folder.starts_with(getBaseFolderPath()))
+		if (!folder.empty() && folder.starts_with(getBaseFolderPath()))
 		{
 			m_currentFolder = folder.substr(getBaseFolderPath().length() + 1);
 		}
@@ -94,10 +94,10 @@ namespace UI
 
 		Comm::FileInfoPtr fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
 		FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
-		m_view->confirmStartPrint(item->GetName().c_str(),
-								  item->GetDate().c_str(),
-								  item->GetReadableSize().c_str(),
-								  GetThumbnailPath(item->GetPath().c_str()).c_str());
+		std::string date = item->GetDate();
+		std::replace(date.begin(), date.end(), 'T', ' ');
+		m_view->confirmStartPrint(
+			item->GetName(), date, item->GetReadableSize(), GetThumbnailPath(item->GetPath().c_str()));
 	}
 
 	void FilePresenter::startPrint()

@@ -3,6 +3,7 @@
 #include "FilePresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/MessageBox/MessageBox.h"
+#include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -52,8 +53,11 @@ namespace UI
 
 		void setFolder(const std::string& path);
 		bool cancelStartPrint();
-		void confirmStartPrint(const char* filename, const char* date, const char* size, const char* thumbnail);
-		void confirmRunMacro(const char* filename);
+		void confirmStartPrint(std::string_view filename,
+							   std::string_view date,
+							   std::string_view size,
+							   std::string_view thumbnail);
+		void confirmRunMacro(std::string_view filename);
 
 		void showSort(FilePresenter::SortBy by, bool descending);
 
@@ -81,6 +85,6 @@ namespace UI
 		Button m_sortSize;
 		lv_obj_t* m_footer;
 
-		MessageBox m_startPrint;
+		Modal<MessageBox> m_startPrint;
 	};
 } // namespace UI

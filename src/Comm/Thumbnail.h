@@ -36,7 +36,7 @@ namespace Comm
 		uint32_t offset;
 		uint32_t size;
 
-		bool SetImageFormat(const char* format);
+		bool SetImageFormat(std::string_view format);
 	};
 
 	struct ThumbnailContext
@@ -70,7 +70,7 @@ namespace Comm
 		BMP bmp;
 		std::string imageFilename;
 
-		bool New(ThumbnailMeta& meta, const char* filename);
+		bool New(ThumbnailMeta& meta, std::string_view filename);
 		bool IsOpen() const;
 		bool Close();
 	};
@@ -110,11 +110,11 @@ bool ThumbnailDataIsValid(Comm::ThumbnailBuf& data);
 int ThumbnailInit(Comm::Thumbnail& thumbnail);
 int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data);
 
-std::string GetThumbnailPath(const char* filepath);
-bool IsThumbnailCached(const char* filepath, bool includeBlank = false);
-void SetThumbnail(lv_obj_t* base, const char* filepath);
+std::string GetThumbnailPath(std::string_view filepath);
+bool IsThumbnailCached(std::string_view filepath, bool includeBlank = false);
+void SetThumbnail(lv_obj_t* base, std::string_view filepath);
 bool ClearAllCachedThumbnails();
-bool DeleteCachedThumbnail(const char* filepath);
-bool CreateBlankThumbnailCache(const char* filepath);
+bool DeleteCachedThumbnail(std::string_view filepath);
+bool CreateBlankThumbnailCache(std::string_view filepath);
 
 #endif /* ifndef THUMBNAIL_HPP */

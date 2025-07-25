@@ -8,22 +8,9 @@
 #pragma once
 
 #include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/Modal/Modal.h"
 
 namespace UI
 {
-	class ModalNumberPad : public NumberPad
-	{
-	  public:
-		ModalNumberPad(const std::string& name, lv_obj_t* parent, layout_t layout);
-
-		void close();
-
-	  private:
-		static void modalBgEventHandler(lv_event_t* e);
-
-		virtual void onShow() override;
-		virtual void onHide() override;
-
-		LvContainer m_modalBg;
-	};
+	using ModalNumberPad = Modal<NumberPad>;
 } // namespace UI
