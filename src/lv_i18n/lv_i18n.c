@@ -359,7 +359,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"heightmap_num_points", "Number of points: %u"},
     {"heightmap_render_mode", "Render Mode:"},
     {"heightmap_std_dev", "RMS error: %.2f mm"},
-    {"heightmap_title", "Heightmap: %s"},
+    {"heightmap_title", "Heightmap: {:s}"},
     {"heightmap_unload", "Unload"},
     {"home", "Home"},
     {"home_all", "Home All"},

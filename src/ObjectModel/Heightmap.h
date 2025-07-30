@@ -57,7 +57,7 @@ namespace OM
 	class Heightmap
 	{
 	  public:
-		Heightmap(const std::string& filename);
+		Heightmap(std::string_view filename);
 
 		struct Point
 		{
@@ -72,7 +72,7 @@ namespace OM
 		bool LoadFromDuet();
 		bool IsValid() const { return meta.IsValid(); }
 
-		const std::string& GetFileName() const { return m_fileName; }
+		std::string_view GetFileName() const { return m_fileName; }
 		size_t GetHeight() const { return meta.GetSamples(1); }
 		size_t GetWidth() const { return meta.GetSamples(0); }
 		const std::vector<Point>& GetPoints() const { return m_heightmap; }
@@ -107,16 +107,16 @@ namespace OM
 		std::vector<Point> m_heightmap;
 	};
 
-	const std::string& GetHeightmapNameAt(int index);
-	void SetCurrentHeightmap(const std::string& filename);
+	std::string_view GetHeightmapNameAt(int index);
+	void SetCurrentHeightmap(std::string_view filename);
 	void ClearCurrentHeightmap();
-	const std::string& GetCurrentHeightmap();
+	std::string_view GetCurrentHeightmap();
 
-	void LoadHeightmap(const char* filename);
+	void LoadHeightmap(std::string_view filename);
 	void UnloadHeightmap();
-	void ToggleHeightmap(const char* filename);
+	void ToggleHeightmap(std::string_view filename);
 
-	std::shared_ptr<Heightmap> GetHeightmapData(const std::string& filename);
+	std::shared_ptr<Heightmap> GetHeightmapData(std::string_view filename);
 	size_t ClearHeightmapCache();
 
 	void RequestHeightmapFiles(std::function<void()> callback = nullptr);

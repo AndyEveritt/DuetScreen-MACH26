@@ -260,6 +260,8 @@ namespace OM::FileSystem
 				while (temp != first)
 				{
 					auto prev = std::prev(temp);
+					if (*prev == nullptr)
+						return;
 					if (sortFunc(*temp, *prev))
 					{
 						std::iter_swap(temp, prev);

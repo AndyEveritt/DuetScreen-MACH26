@@ -86,7 +86,7 @@ namespace UI
 		return m_canvas.getYRange();
 	}
 
-	void Heatmap::setTitle(const std::string& title)
+	void Heatmap::setTitle(std::string_view title)
 	{
 		m_canvas.setTitle(title);
 	}

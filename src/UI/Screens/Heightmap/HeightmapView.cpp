@@ -255,10 +255,10 @@ namespace UI
 		}
 	}
 
-	void HeightmapView::setShownHeightmapName(const std::string& name)
+	void HeightmapView::setShownHeightmapName(std::string_view name)
 	{
 		UI_LOCK();
-		m_heightmap.setTitle(utils::format(_("heightmap_title"), name.c_str()));
+		m_heightmap.setTitle(fmt::format(fmt::runtime(_("heightmap_title")), name));
 	}
 
 	void HeightmapView::addMeasurementPoint(float x, float y)

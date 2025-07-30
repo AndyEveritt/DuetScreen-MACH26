@@ -46,7 +46,7 @@ namespace UI
 		bool posToPx(float x, float y, int32_t& px, int32_t& py) const;
 		bool posToPx(float x, float y, lv_point_t& p) const;
 
-		void setTitle(const std::string& title);
+		void setTitle(std::string_view title);
 
 		void showTitle(const bool show);
 		void showXScale(const bool show);
@@ -81,7 +81,7 @@ namespace UI
 
 		lv_draw_buf_t* m_buf = nullptr;
 
-		lv_obj_t* m_title;
+		LvLabel m_title;
 		lv_obj_t* m_canvas;
 		lv_obj_t* m_vScale;
 		lv_obj_t* m_hScale;

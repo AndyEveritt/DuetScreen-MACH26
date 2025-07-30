@@ -27,7 +27,13 @@ namespace UI
 			return;
 		}
 
-		if (m_heightmap == nullptr || !m_heightmap->IsValid())
+		if (m_heightmap == nullptr)
+		{
+			m_view->clear();
+			return;
+		}
+
+		if (!m_heightmap->IsValid())
 		{
 			LOG_WARN("Heightmap is not valid");
 			m_view->clear();
@@ -200,6 +206,7 @@ namespace UI
 
 	bool HeightmapPresenter::checkMode()
 	{
+#if 0
 		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::network)
 		{
 			LOG_WARN("Heightmap not supported in this mode");
@@ -213,6 +220,7 @@ namespace UI
 							  LV_OPA_100);
 			return false;
 		}
+#endif
 
 		return true;
 	}
@@ -220,9 +228,13 @@ namespace UI
 	void HeightmapPresenter::onActivate()
 	{
 		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
-		const std::string& currentHeightmap = OM::GetCurrentHeightmap();
-		std::shared_ptr<OM::Heightmap> map = OM::GetHeightmapData(currentHeightmap);
-		map->LoadFromDuet();
+		std::string_view currentHeightmap = OM::GetCurrentHeightmap();
+		std::shared_ptr<OM::Heightmap> map =
+			currentHeightmap.empty() ? nullptr : OM::GetHeightmapData(currentHeightmap);
+		if (map)
+		{
+			map->LoadFromDuet();
+		}
 		setHeightmap(map);
 		render();
 	}
