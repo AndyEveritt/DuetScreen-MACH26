@@ -83,14 +83,16 @@ add_custom_target(
           -print | xargs clang-format -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Running clang-format")
+add_dependencies(DuetScreen clang-format)
 
 # Touch BuildDate.cpp to ensure it is always compiled
-add_custom_command(
-  TARGET DuetScreen
-  PRE_BUILD
-  COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
-  COMMENT "Touching BuildDate.cpp to force recompilation")
-add_dependencies(DuetScreen clang-format)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_custom_command(
+    TARGET DuetScreen
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
+    COMMENT "Touching BuildDate.cpp to force recompilation")
+endif()
 
 target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
 target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
