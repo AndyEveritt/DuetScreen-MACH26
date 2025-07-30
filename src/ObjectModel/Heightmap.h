@@ -26,7 +26,7 @@ namespace OM
 		~HeightmapMeta();
 
 		void Reset();
-		void Parse(const std::string& meta);
+		void Parse(std::string_view meta);
 
 		std::shared_ptr<Move::Axis> GetAxis(size_t index) const;
 		double GetMin(size_t index) const { return m_min[index]; }
@@ -85,13 +85,12 @@ namespace OM
 		double GetStdDev() const { return m_stdDev; }
 
 		double GetInterpolatedPoint(double axis0, double axis1, bool extrapolate = false) const;
+		bool ParseMeta(std::string_view csvContents);
+		bool ParseData(std::string_view csvContents);
 
 		HeightmapMeta meta;
 
 	  private:
-		bool ParseMeta(const std::string& csvContents);
-		bool ParseData(const std::string& csvContents);
-
 		bool InterpolateAxis0Axis1(
 			size_t axis0Index, size_t axis1Index, double axis0Frac, double axis1Frac, double& result) const;
 		size_t GetMapIndex(size_t axis0Index, size_t axis1Index) const

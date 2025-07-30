@@ -88,6 +88,48 @@ namespace OM::FileSystem
 	using FilePtr = std::shared_ptr<File>;
 	using FolderPtr = std::shared_ptr<Folder>;
 
+	using request_files_cb_t = std::function<void()>;
+	using request_file_contents_cb_t = std::function<void(std::string_view contents)>;
+
+	class FileContents
+	{
+	  public:
+		FileContents(const std::string& filename,
+					 request_file_contents_cb_t callback = nullptr,
+					 bool runEveryTime = false)
+			: m_filename(filename)
+			, m_callback(callback)
+			, m_runEveryTime(runEveryTime)
+		{
+		}
+
+		std::string_view GetFilename() const { return m_filename; }
+		int AppendData(std::string_view data);
+		int GetData(std::string& outData) const;
+		int ClearData();
+
+		void SetOffset(uint32_t offset) { m_offset = offset; }
+		uint32_t GetOffset() const { return m_offset; }
+
+		void SetNext(uint32_t next) { m_next = next; }
+		uint32_t GetNext() const { return m_next; }
+
+		void SetParseError(int16_t parseErr) { m_parseErr = parseErr; }
+		int16_t GetParseError() const { return m_parseErr; }
+
+		void RunCallback();
+
+	  private:
+		std::string m_filename; // Path to the file
+		request_file_contents_cb_t m_callback;
+		bool m_runEveryTime = false;
+		uint32_t m_offset = 0;
+		uint32_t m_next = 0;
+		int16_t m_parseErr = 0;
+	};
+
+	using FileContentsPtr = std::shared_ptr<FileContents>;
+
 	enum class SortBy
 	{
 		NAME,
@@ -112,7 +154,7 @@ namespace OM::FileSystem
 	bool IsInSubFolder();
 	void RequestFiles(const OM::Directories::DirectoryType baseFolder,
 					  const std::string& path,
-					  std::function<void()> callback,
+					  request_files_cb_t callback,
 					  bool runEveryTime = false);
 	void RunCallback(const size_t next);
 	void RequestUsbFiles(const std::string& path);
@@ -128,7 +170,13 @@ namespace OM::FileSystem
 	void PrintAgain();
 	void ClearFileSystem();
 
-	std::string GetFileExtension(const std::string& fileName);
+	void RequestFileContents(const OM::Directories::DirectoryType baseFolder,
+							 std::string_view path,
+							 request_file_contents_cb_t callback,
+							 bool runEveryTime = false);
+	FileContentsPtr GetCurrentFileRequestContents();
+
+	std::string_view GetFileExtension(std::string_view fileName);
 } // namespace OM::FileSystem
 
 #endif /* JNI_OBJECTMODEL_FILES_HPP_ */

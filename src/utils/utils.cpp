@@ -126,7 +126,7 @@ namespace utils
 		return tokens;
 	}
 
-	size_t findInstance(const std::string& str, const std::string& target, size_t instance)
+	size_t findInstance(std::string_view str, std::string_view target, size_t instance)
 	{
 		size_t pos = 0;
 		size_t count = 0;

@@ -464,7 +464,7 @@ namespace Comm
 		return true;
 	}
 
-	bool Duet::DownloadFile(const char* filename, std::string& contents)
+	bool Duet::DownloadFile(std::string_view filename, std::string& contents)
 	{
 		if (!IsConnected())
 		{
@@ -472,7 +472,7 @@ namespace Comm
 			return false;
 		}
 
-		LOG_INFO("Downloading file {:s}", filename);
+		LOG_INFO("Downloading file {}", filename);
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::network:
@@ -483,7 +483,7 @@ namespace Comm
 			query["name"] = filename;
 			if (!Get("/rr_download", r, query))
 			{
-				LOG_ERROR("HTTP error {:d}: Failed to download file: {:s}", (int)r.status_code, filename);
+				LOG_ERROR("HTTP error {:d}: Failed to download file: {}", (int)r.status_code, filename);
 				return false;
 			}
 			contents = r.body;

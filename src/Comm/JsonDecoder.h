@@ -14,6 +14,7 @@
 #include "Comm/Communication.h"
 #include "Comm/FileInfo.h"
 #include "Configuration.h"
+#include "ObjectModel/Files.h"
 #include <Duet3D/General/String.h>
 #include <cstddef>
 #include <memory>
@@ -30,6 +31,7 @@ namespace Comm
 			unknown = 0,
 			filelist,
 			fileInfo,
+			fileContents,
 			thumbnail,
 		};
 
@@ -79,7 +81,11 @@ namespace Comm
 
 		// These variables are used for the
 		ResponseType responseType = ResponseType::unknown;
-		std::variant<void*, FileListDataPtr, FileInfoCache::FileInfoRequestPtr, FileInfoCache::ThumbnailRequestPtr>
+		std::variant<void*,
+					 FileListDataPtr,
+					 FileInfoCache::FileInfoRequestPtr,
+					 FileInfoCache::ThumbnailRequestPtr,
+					 OM::FileSystem::FileContentsPtr>
 			responseData = nullptr;
 
 	  private:

@@ -578,7 +578,7 @@ namespace Comm
 			char c = rxBuffer[m_nextOut];
 			// LOG_VERBOSE("char {:d}: {:c}", m_nextOut, c);
 			m_nextOut = (m_nextOut + 1) % (len + 1);
-			if (c == '\n')
+			if (c == '\n' && m_state != jsStringVal)
 			{
 				if (m_state == jsError)
 				{
@@ -769,7 +769,7 @@ namespace Comm
 						m_state = jsStringEscape;
 						break;
 					default:
-						if (c < ' ')
+						if (c < ' ' && c != '\n')
 						{
 							m_state = jsError;
 

@@ -22,23 +22,23 @@ namespace OM::Directories
 		WEB
 	};
 
-	const std::string& GetDirectory(DirectoryType type);
+	std::string_view GetDirectory(DirectoryType type);
 
-	const std::string& GetFilamentsDirectory();
-	const std::string& GetFirmwareDirectory();
-	const std::string& GetGcodesDirectory();
-	const std::string& GetMacrosDirectory();
-	const std::string& GetMenuDirectory();
-	const std::string& GetSystemDirectory();
-	const std::string& GetWebDirectory();
+	std::string_view GetFilamentsDirectory();
+	std::string_view GetFirmwareDirectory();
+	std::string_view GetGcodesDirectory();
+	std::string_view GetMacrosDirectory();
+	std::string_view GetMenuDirectory();
+	std::string_view GetSystemDirectory();
+	std::string_view GetWebDirectory();
 
-	void SetFilamentsDirectory(const std::string& dir);
-	void SetFirmwareDirectory(const std::string& dir);
-	void SetGcodesDirectory(const std::string& dir);
-	void SetMacrosDirectory(const std::string& dir);
-	void SetMenuDirectory(const std::string& dir);
-	void SetSystemDirectory(const std::string& dir);
-	void SetWebDirectory(const std::string& dir);
+	void SetFilamentsDirectory(std::string_view dir);
+	void SetFirmwareDirectory(std::string_view dir);
+	void SetGcodesDirectory(std::string_view dir);
+	void SetMacrosDirectory(std::string_view dir);
+	void SetMenuDirectory(std::string_view dir);
+	void SetSystemDirectory(std::string_view dir);
+	void SetWebDirectory(std::string_view dir);
 
 	void Reset();
 } // namespace OM::Directories

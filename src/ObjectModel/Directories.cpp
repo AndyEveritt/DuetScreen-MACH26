@@ -20,7 +20,7 @@ namespace OM::Directories
 
 	static std::string s_emptyStr = "";
 
-	const std::string& GetDirectory(DirectoryType type)
+	std::string_view GetDirectory(DirectoryType type)
 	{
 		switch (type)
 		{
@@ -44,62 +44,62 @@ namespace OM::Directories
 		}
 	}
 
-	const std::string& GetFilamentsDirectory()
+	std::string_view GetFilamentsDirectory()
 	{
 		return s_filaments;
 	}
-	const std::string& GetFirmwareDirectory()
+	std::string_view GetFirmwareDirectory()
 	{
 		return s_firmware;
 	}
-	const std::string& GetGcodesDirectory()
+	std::string_view GetGcodesDirectory()
 	{
 		return s_gcodes;
 	}
-	const std::string& GetMacrosDirectory()
+	std::string_view GetMacrosDirectory()
 	{
 		return s_macros;
 	}
-	const std::string& GetMenuDirectory()
+	std::string_view GetMenuDirectory()
 	{
 		return s_menu;
 	}
-	const std::string& GetSystemDirectory()
+	std::string_view GetSystemDirectory()
 	{
 		return s_system;
 	}
-	const std::string& GetWebDirectory()
+	std::string_view GetWebDirectory()
 	{
 		return s_web;
 	}
 
-	void SetFilamentsDirectory(const std::string& dir)
+	void SetFilamentsDirectory(std::string_view dir)
 	{
 		s_filaments = dir;
 	}
-	void SetFirmwareDirectory(const std::string& dir)
+	void SetFirmwareDirectory(std::string_view dir)
 	{
-		s_firmware = dir;
+		s_firmware = std::string(dir);
 	}
-	void SetGcodesDirectory(const std::string& dir)
+	void SetGcodesDirectory(std::string_view dir)
 	{
-		s_gcodes = dir;
+		s_gcodes = std::string(dir);
 	}
-	void SetMacrosDirectory(const std::string& dir)
+	void SetMacrosDirectory(std::string_view dir)
 	{
-		s_macros = dir;
+		s_macros = std::string(dir);
 	}
-	void SetMenuDirectory(const std::string& dir)
+	void SetMenuDirectory(std::string_view dir)
 	{
-		s_menu = dir;
+		s_menu = std::string(dir);
 	}
-	void SetSystemDirectory(const std::string& dir)
+	void SetSystemDirectory(std::string_view dir)
 	{
-		s_system = dir;
+		s_system = std::string(dir);
 	}
-	void SetWebDirectory(const std::string& dir)
+	void SetWebDirectory(std::string_view dir)
 	{
-		s_web = dir;
+		s_web = std::string(dir);
 	}
 
 	void Reset()

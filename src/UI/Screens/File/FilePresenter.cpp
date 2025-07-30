@@ -27,7 +27,7 @@ namespace UI
 		}
 	}
 
-	const std::string& FilePresenter::getBaseFolderPath() const
+	std::string_view FilePresenter::getBaseFolderPath() const
 	{
 		switch (m_baseFolder)
 		{
@@ -36,7 +36,7 @@ namespace UI
 		case BaseFolder::MACROS:
 			return OM::Directories::GetMacrosDirectory();
 		default:
-			return s_emptyStr;
+			return "";
 		}
 	}
 
@@ -56,7 +56,7 @@ namespace UI
 		}
 
 		LOG_DBG("set folder to {:s}", m_currentFolder);
-		m_view->setFolder(getBaseFolderPath() + m_currentFolder);
+		m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), m_currentFolder));
 		requestFiles();
 	}
 
@@ -164,7 +164,7 @@ namespace UI
 					MODEL_LOCK();
 					m_items = OM::FileSystem::GetItems();
 				}
-				this->m_view->setFolder(getBaseFolderPath() + this->m_currentFolder);
+				this->m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), this->m_currentFolder));
 				this->sortFiles();
 				this->displayFiles();
 			},

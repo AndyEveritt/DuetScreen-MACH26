@@ -12,7 +12,7 @@
 
 namespace utils
 {
-	CSV::CSV(const std::string& csvContents, bool hasHeaders)
+	CSV::CSV(std::string_view csvContents, bool hasHeaders)
 		: m_hasHeaders(hasHeaders)
 	{
 		size_t col = 0;
@@ -21,7 +21,7 @@ namespace utils
 		bool inQuote = false;
 
 		LOG_INFO("Parsing CSV: hasHeaders={:d}", hasHeaders);
-		LOG_DBG("CSV contents: {:s}", csvContents.c_str());
+		LOG_DBG("CSV contents: {:s}", csvContents);
 
 		for (size_t i = 0; i < csvContents.size(); i++)
 		{
@@ -128,7 +128,7 @@ namespace utils
 		return m_data.size() > 0 ? m_data[0].size() : 0;
 	}
 
-	bool CSV::GetCell(const std::string& header, size_t row, std::string& val) const
+	bool CSV::GetCell(std::string_view header, size_t row, std::string& val) const
 	{
 		if (!m_hasHeaders)
 		{
@@ -144,7 +144,7 @@ namespace utils
 			}
 		}
 
-		LOG_WARN("Header \"{:s}\" not found", header.c_str());
+		LOG_WARN("Header \"{:s}\" not found", header);
 		return false;
 	}
 
@@ -166,7 +166,7 @@ namespace utils
 		return true;
 	}
 
-	bool CSV::GetCell(const std::string& header, size_t row, size_t& val) const
+	bool CSV::GetCell(std::string_view header, size_t row, size_t& val) const
 	{
 		std::string str;
 		if (!GetCell(header, row, str))
@@ -190,7 +190,7 @@ namespace utils
 		return true;
 	}
 
-	bool CSV::GetCell(const std::string& header, size_t row, double& val) const
+	bool CSV::GetCell(std::string_view header, size_t row, double& val) const
 	{
 		std::string str;
 		if (!GetCell(header, row, str))

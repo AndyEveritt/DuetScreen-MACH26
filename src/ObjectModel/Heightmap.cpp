@@ -23,9 +23,9 @@ namespace OM
 	static std::map<std::string, std::shared_ptr<Heightmap>> s_heightmapCache;
 	static std::string s_emptyStr = "";
 
-	static std::string GetLocalFilePath(const std::string& filename)
+	static std::string GetLocalFilePath(std::string_view filename)
 	{
-		return utils::format("/tmp/heightmaps/%s", filename.c_str());
+		return fmt::format("/tmp/heightmaps/{}", filename);
 	}
 
 	HeightmapMeta::HeightmapMeta()
@@ -53,13 +53,13 @@ namespace OM
 		m_recipSpacing[1] = 0.0f;
 	}
 
-	void HeightmapMeta::Parse(const std::string& meta)
+	void HeightmapMeta::Parse(std::string_view meta)
 	{
 		utils::CSV doc(meta, true);
-		const std::vector<std::string> headers = doc.GetHeaders();
-		for (const std::string& header : headers)
+		const std::vector<std::string>& headers = doc.GetHeaders();
+		for (std::string_view header : headers)
 		{
-			LOG_DBG("Header: \"{:s}\"", header.c_str());
+			LOG_DBG("Header: \"{:s}\"", header);
 		}
 
 		doc.GetCell("axis0", 0, m_axis[0]);
@@ -145,7 +145,7 @@ namespace OM
 	{
 		Reset();
 		std::string csvContents;
-		if (!Comm::DUET.DownloadFile((Directories::GetSystemDirectory() + m_fileName).c_str(), csvContents))
+		if (!Comm::DUET.DownloadFile(fmt::format("{}{}", Directories::GetSystemDirectory(), m_fileName), csvContents))
 		{
 			LOG_ERROR("Failed to download heightmap file {:s}", m_fileName);
 			return false;
@@ -194,37 +194,37 @@ namespace OM
 		return &m_heightmap[y * GetWidth() + x];
 	}
 
-	bool Heightmap::ParseMeta(const std::string& csvContents)
+	bool Heightmap::ParseMeta(std::string_view csvContents)
 	{
-		LOG_INFO("Parsing meta data for heightmap {:s}", m_fileName.c_str());
+		LOG_INFO("Parsing meta data for heightmap {:s}", m_fileName);
 		size_t metaStart = utils::findInstance(csvContents, "\n", 1);
 		size_t metaEnd = utils::findInstance(csvContents, "\n", 3);
 		if (metaStart == std::string::npos || metaEnd == std::string::npos)
 		{
-			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName.c_str());
+			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName);
 			return false;
 		}
 
-		std::string metaStr = csvContents.substr(metaStart, metaEnd - metaStart);
-		LOG_DBG("Meta:\n{:s}", metaStr.c_str());
+		std::string_view metaStr = csvContents.substr(metaStart, metaEnd - metaStart);
+		LOG_DBG("Meta:\n{:s}", metaStr);
 
 		meta.Parse(metaStr);
 		return true;
 	}
 
-	bool Heightmap::ParseData(const std::string& csvContents)
+	bool Heightmap::ParseData(std::string_view csvContents)
 	{
-		LOG_INFO("Parsing data for heightmap {:s}", m_fileName.c_str());
+		LOG_INFO("Parsing data for heightmap {:s}", m_fileName);
 		size_t dataStart = utils::findInstance(csvContents, "\n", 3) + 1;
 		if (dataStart == std::string::npos)
 		{
-			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName.c_str());
+			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName);
 			return false;
 		}
 
 		bool parseError = false;
-		std::string dataStr = csvContents.substr(dataStart);
-		LOG_DBG("Data:\n{:s}", dataStr.c_str());
+		std::string_view dataStr = csvContents.substr(dataStart);
+		LOG_DBG("Data:\n{:s}", dataStr);
 		utils::CSV doc(dataStr, false);
 
 		m_heightmap.clear();

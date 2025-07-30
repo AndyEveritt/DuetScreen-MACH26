@@ -90,7 +90,7 @@ namespace Comm
 		void ProcessReply(HttpResponse& r);
 
 		bool UploadFile(const char* filename, const std::string& contents);
-		bool DownloadFile(const char* filename, std::string& contents);
+		bool DownloadFile(std::string_view filename, std::string& contents);
 
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);

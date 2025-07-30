@@ -360,6 +360,7 @@ namespace Comm
 		// Sort the fieldTable prior searching using binary search
 		system("mkdir /tmp/thumbnails");
 		system("mkdir /tmp/heightmaps");
+		system("mkdir /tmp/files");
 		SortFieldTable();
 		usbInit();
 		ResetSeqs();
