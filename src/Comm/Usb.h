@@ -15,6 +15,17 @@ namespace Comm
 	class UsbDevice
 	{
 	  public:
+		enum class receive_err_t
+		{
+			NONE = 0,
+			BUFFER_TOO_SMALL = -1,
+			OVERFLOW = -2,
+			TIMEOUT = -3,
+			BUSY = -4,
+			NO_DEVICE = -5,
+			OTHER_ERROR = -6
+		};
+
 		UsbDevice();
 		~UsbDevice();
 
@@ -22,7 +33,7 @@ namespace Comm
 		bool connect();
 		void reset();
 		ssize_t send(std::string_view data);
-		int receive(unsigned char* data, size_t len);
+		receive_err_t receive(unsigned char* data, size_t len, int& received);
 		bool isConnected() const { return m_handle != nullptr; }
 
 	  private:

@@ -24,7 +24,16 @@
 
 #include "Debug.h"
 
-#define jserror(fmt, args...) LOG_ERROR("jsError id='{:s}' @ {:d}: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
+#define jserror(fmt, args...)                                                                                          \
+	LOG_ERROR("jsError id='{:s}' [{:d},{:d},{:d},{:d}] val='{:s}' @ {:d}: " fmt,                                       \
+			  m_fieldId.c_str(),                                                                                       \
+			  m_arrayIndices[0],                                                                                       \
+			  m_arrayIndices[1],                                                                                       \
+			  m_arrayIndices[2],                                                                                       \
+			  m_arrayIndices[3],                                                                                       \
+			  m_fieldVal.c_str(),                                                                                      \
+			  m_nextOut,                                                                                               \
+			  ##args)
 
 namespace Comm
 {
@@ -155,9 +164,23 @@ namespace Comm
 		, m_inError(false)
 		, m_arrayDepth(0)
 	{
-		for (size_t i = 0; i < MAX_ARRAY_NESTING; i++)
+		Reset();
+	}
+
+	void JsonDecoder::Reset()
+	{
+		m_fieldPrefix.Clear();
+		m_fieldId.Clear();
+		m_fieldVal.Clear();
+		m_state = jsBegin;
+		m_lastState = jsBegin;
+		m_serialIoErrors = 0;
+		m_nextOut = 0;
+		m_inError = false;
+		m_arrayDepth = 0;
+		for (auto& i : m_arrayIndices)
 		{
-			m_arrayIndices[i] = 0;
+			i = 0;
 		}
 	}
 
@@ -571,14 +594,14 @@ namespace Comm
 	// This is the JSON parser state machine
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
+		LOG_DBG("checking {:d} chars: {:s}", len, std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
 		m_nextOut = 0;
-		LOG_DBG("len={:d}: {:s}", len, reinterpret_cast<const char*>(rxBuffer));
-		while (len != m_nextOut)
+		while (m_nextOut < len)
 		{
 			char c = rxBuffer[m_nextOut];
 			// LOG_VERBOSE("char {:d}: {:c}", m_nextOut, c);
 			m_nextOut = (m_nextOut + 1) % (len + 1);
-			if (c == '\n' && m_state != jsStringVal)
+			if (c == '\n')
 			{
 				if (m_state == jsError)
 				{
@@ -589,7 +612,7 @@ namespace Comm
 					ParserErrorEncountered(m_lastState,
 										   m_fieldId.c_str(),
 										   m_serialIoErrors); // Notify the consumer that we ran into an error
-					LOG_ERROR("rxBuffer: {:s}", reinterpret_cast<const char*>(rxBuffer));
+					LOG_DBG("rxBuffer: {:s}", reinterpret_cast<const char*>(rxBuffer));
 					m_lastState = jsBegin;
 				}
 				m_state = jsBegin; // abandon current parse (if any) and start again
@@ -640,7 +663,7 @@ namespace Comm
 					default:
 						m_state = jsError;
 
-						LOG_ERROR("jsError: jsExpectId, expected [\" or }}] but got \"{:c}\"", c);
+						jserror("jsExpectId, expected \" or }} but got \"{:c}\"", c);
 						break;
 					}
 					break;
@@ -769,7 +792,7 @@ namespace Comm
 						m_state = jsStringEscape;
 						break;
 					default:
-						if (c < ' ' && c != '\n')
+						if (c < ' ')
 						{
 							m_state = jsError;
 

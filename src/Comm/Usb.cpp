@@ -109,14 +109,22 @@ namespace Comm
 			}
 		}
 
-		setDtr(true);
+		r = setDtr(true);
+		if (r < 0)
+		{
+			LOG_ERROR("Closing device");
+			libusb_close(m_handle);
+			m_handle = nullptr;
+			return false;
+		}
 
 		// Claim interface 0 (replace with your interface number)
 		r = libusb_claim_interface(m_handle, 0);
 		if (r < 0)
 		{
-			LOG_ERROR("Cannot claim interface: {:s}", libusb_error_name(r));
+			LOG_ERROR("Cannot claim interface: {:s}\nClosing device", libusb_error_name(r));
 			libusb_close(m_handle);
+			m_handle = nullptr;
 			return false;
 		}
 
@@ -155,44 +163,46 @@ namespace Comm
 		return full_length;
 	}
 
-	int UsbDevice::receive(unsigned char* data, size_t len)
+	UsbDevice::receive_err_t UsbDevice::receive(unsigned char* data, size_t len, int& received)
 	{
-		// std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
-			return -1;
+			return receive_err_t::NO_DEVICE;
 		}
 
 		if (len < m_packetSize)
 		{
-			LOG_WARN("Buffer too small");
-			return -1;
+			LOG_WARN("Buffer too small, must be at least {:d} bytes", m_packetSize);
+			return receive_err_t::BUFFER_TOO_SMALL;
 		}
 
-		int actual_length = 0;
-		int r = libusb_bulk_transfer(m_handle, m_inEndpoint, data, m_packetSize, &actual_length, 1000);
+		received = 0;
+		int r = libusb_bulk_transfer(m_handle, m_inEndpoint, data, len, &received, 1000);
+		LOG_VERBOSE(
+			"Received {:d} bytes: {:s}", received, std::string_view(reinterpret_cast<const char*>(data), received));
 		switch (r)
 		{
 		case LIBUSB_SUCCESS:
-			return actual_length;
+			return receive_err_t::NONE;
 		case LIBUSB_ERROR_TIMEOUT:
 			LOG_DBG("No more data received (timeout)");
-			return 0;
+			return receive_err_t::TIMEOUT;
 		case LIBUSB_ERROR_BUSY:
 			LOG_WARN("Busy receiving data");
-			return 0;
+			return receive_err_t::BUSY;
 		case LIBUSB_ERROR_NO_DEVICE:
 			LOG_WARN("Device disconnected");
 			reset();
-			return -2;
+			return receive_err_t::NO_DEVICE;
 		case LIBUSB_ERROR_IO:
 		case LIBUSB_ERROR_PIPE:
 		case LIBUSB_ERROR_OVERFLOW:
 		default:
 			LOG_ERROR("Error receiving data: {:s}", libusb_error_name(r));
 			reset();
-			return -2;
+			return receive_err_t::OTHER_ERROR;
 		}
 	}
 

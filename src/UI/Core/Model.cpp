@@ -183,11 +183,10 @@ useconds_t Model::requestNewData()
 useconds_t Model::receiveNewUsbData()
 {
 	static constexpr useconds_t s_reconnectDelay = 1000 * 1000; // 1s
-	static constexpr useconds_t s_pollInterval = 5 * 1000;		// 5ms
-	static constexpr size_t bufferSize = 32768;
-	static Comm::JsonDecoder decoder;
-	static BYTE buffer[bufferSize];
-	static size_t bufferLen = 0;
+	static constexpr useconds_t s_pollInterval = 100 * 1000;	// 100ms
+	static constexpr size_t s_bufferSize = 32768;
+	static Comm::JsonDecoder s_decoder;
+	static BYTE s_buffer[s_bufferSize];
 
 	if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::usb)
 	{
@@ -200,34 +199,33 @@ useconds_t Model::receiveNewUsbData()
 		return s_reconnectDelay;
 	}
 
-	int len = Comm::getCurrentUsbDevice().receive(buffer + bufferLen, bufferSize - bufferLen);
+	int len = 0;
+	auto err = Comm::getCurrentUsbDevice().receive(s_buffer, s_bufferSize, len);
 
-	if (len > 0)
+	if (len < 0)
 	{
-		bufferLen += len;
-		if (bufferLen >= bufferSize)
-		{
-			LOG_ERROR("Buffer overflow");
-			bufferLen = 0;
-			return s_pollInterval;
-		}
+		LOG_ERROR("This should be impossible, len < 0: {:d}", len);
+		len = 0;
 	}
-	else if (len < 0)
+
+	switch (err)
 	{
-		LOG_ERROR("Error receiving data");
-		bufferLen = 0;
-		memset(buffer, 0, bufferSize);
+	case Comm::UsbDevice::receive_err_t::NONE:
+		s_decoder.CheckInput(s_buffer, len);
+		break;
+	case Comm::UsbDevice::receive_err_t::BUFFER_TOO_SMALL:
+		LOG_ERROR("USB receive buffer too small");
+		break;
+	case Comm::UsbDevice::receive_err_t::TIMEOUT:
+	case Comm::UsbDevice::receive_err_t::BUSY:
+		break;
+	case Comm::UsbDevice::receive_err_t::NO_DEVICE:
+	case Comm::UsbDevice::receive_err_t::OTHER_ERROR:
+		LOG_DBG("Resetting decoder");
+		s_decoder.Reset();
 		return s_reconnectDelay;
 	}
 
-	if (bufferLen > 0 && buffer[bufferLen - 1] == '\n')
-	{
-		// Process the data
-		LOG_DBG("Received {:d} bytes", bufferLen);
-		decoder.CheckInput(buffer, bufferLen);
-		bufferLen = 0;
-		memset(buffer, 0, bufferSize);
-	}
 	return s_pollInterval;
 }
 

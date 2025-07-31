@@ -18,6 +18,7 @@
 namespace OM
 {
 	class Heightmap;
+	using HeightmapPtr = std::shared_ptr<Heightmap>;
 
 	class HeightmapMeta
 	{
@@ -57,6 +58,8 @@ namespace OM
 	class Heightmap
 	{
 	  public:
+		using load_cb_t = std::function<void(Heightmap& heightmap)>;
+
 		Heightmap(std::string_view filename);
 
 		struct Point
@@ -69,7 +72,7 @@ namespace OM
 
 		void Reset();
 
-		bool LoadFromDuet();
+		bool LoadFromDuet(load_cb_t callback);
 		bool IsValid() const { return meta.IsValid(); }
 
 		std::string_view GetFileName() const { return m_fileName; }
@@ -116,7 +119,7 @@ namespace OM
 	void UnloadHeightmap();
 	void ToggleHeightmap(std::string_view filename);
 
-	std::shared_ptr<Heightmap> GetHeightmapData(std::string_view filename);
+	HeightmapPtr GetHeightmapData(std::string_view filename);
 	size_t ClearHeightmapCache();
 
 	void RequestHeightmapFiles(std::function<void()> callback = nullptr);

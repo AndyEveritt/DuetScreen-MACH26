@@ -94,14 +94,9 @@ namespace OM::FileSystem
 	class FileContents
 	{
 	  public:
-		FileContents(const std::string& filename,
+		FileContents(std::string_view filename,
 					 request_file_contents_cb_t callback = nullptr,
-					 bool runEveryTime = false)
-			: m_filename(filename)
-			, m_callback(callback)
-			, m_runEveryTime(runEveryTime)
-		{
-		}
+					 bool runEveryTime = false);
 
 		std::string_view GetFilename() const { return m_filename; }
 		int AppendData(std::string_view data);

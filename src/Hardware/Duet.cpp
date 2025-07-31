@@ -329,7 +329,7 @@ namespace Comm
 			LOG_DBG("Not connected to Duet, cannot send gcode: {:s}", gcode);
 			return;
 		}
-		LOG_DBG("Sending gcode: {:s}", gcode);
+		LOG_DBG("Sending gcode: '{:s}'", gcode);
 
 		switch (m_config.communicationType)
 		{
@@ -867,8 +867,8 @@ namespace Comm
 			size_t indices[MAX_ARRAY_NESTING] = {0};
 			while (position != std::string::npos)
 			{
-				std::string line = reply.body.substr(prevPosition, position - prevPosition);
-				LOG_DBG("line: {:s}", line.c_str());
+				std::string_view line = reply.body.substr(prevPosition, position - prevPosition);
+				LOG_DBG("line: {:s}", line);
 				prevPosition = position + 1;
 				position = reply.body.find("\n", position + 1); // Find the next occurrence, if any
 				LOG_VERBOSE("position={:d}, prevPosition={:d}", position, prevPosition);
@@ -878,7 +878,7 @@ namespace Comm
 					continue;
 				}
 				// Can skip checking the input since we know it's a gcode response
-				decoder.ProcessReceivedValue(ref, line.c_str(), indices);
+				decoder.ProcessReceivedValue(ref, line.data(), indices);
 			}
 			return;
 		}

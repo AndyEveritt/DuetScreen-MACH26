@@ -20,7 +20,7 @@
 namespace OM
 {
 	static std::string s_currentHeightmapName;
-	static std::vector<std::shared_ptr<Heightmap>> s_heightmapCache;
+	static std::vector<HeightmapPtr> s_heightmapCache;
 	static std::string s_emptyStr = "";
 
 	static std::string GetLocalFilePath(std::string_view filename)
@@ -141,13 +141,13 @@ namespace OM
 		m_area = 0.0f;
 	}
 
-	bool Heightmap::LoadFromDuet()
+	bool Heightmap::LoadFromDuet(Heightmap::load_cb_t callback)
 	{
 		Reset();
 		OM::FileSystem::RequestFileContents(
 			OM::Directories::DirectoryType::SYSTEM,
 			m_fileName,
-			[this](std::string_view csvContents)
+			[this, callback](std::string_view csvContents)
 			{
 				if (csvContents.find("RepRapFirmware height map") == std::string::npos)
 				{
@@ -178,6 +178,8 @@ namespace OM
 					LOG_ERROR("Failed to parse data for heightmap {:s}", m_fileName.c_str());
 					return;
 				}
+
+				callback(*this);
 			});
 
 		return true;
@@ -485,7 +487,7 @@ namespace OM
 		return s_currentHeightmapName;
 	}
 
-	std::shared_ptr<Heightmap> GetHeightmapData(std::string_view filename)
+	HeightmapPtr GetHeightmapData(std::string_view filename)
 	{
 		for (const auto& cachedHeightmap : s_heightmapCache)
 		{
@@ -496,7 +498,7 @@ namespace OM
 		}
 
 		// Not found in cache, create a new one, add it, and return it.
-		std::shared_ptr<Heightmap> heightmap = std::make_shared<Heightmap>(std::string(filename));
+		auto heightmap = std::make_shared<Heightmap>(std::string(filename));
 		s_heightmapCache.push_back(heightmap);
 		return heightmap;
 	}

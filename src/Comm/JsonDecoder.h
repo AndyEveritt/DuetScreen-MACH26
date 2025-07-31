@@ -74,6 +74,8 @@ namespace Comm
 		};
 
 		JsonDecoder();
+		void Reset();
+		void SetNextOut(size_t nextOut) { m_nextOut = nextOut; }
 		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
 		bool SetPrefix(const char* prefix) { return m_fieldPrefix.copy(prefix); }

@@ -80,6 +80,14 @@ namespace OM::FileSystem
 		return fmt::format("/tmp/files/{}", filename);
 	}
 
+	FileContents::FileContents(std::string_view filename, request_file_contents_cb_t callback, bool runEveryTime)
+		: m_filename(filename)
+		, m_callback(callback)
+		, m_runEveryTime(runEveryTime)
+	{
+		ClearData();
+	}
+
 	int FileContents::AppendData(std::string_view data)
 	{
 		if (data.empty())
