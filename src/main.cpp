@@ -169,22 +169,6 @@ int main(int argc, char** argv)
 			}
 		});
 
-	// Create a thread to handle USB responses from Duet
-	s_responseThread = std::thread(
-		[]()
-		{
-#  if SET_THREAD_PRIORITY
-			// Set medium priority for response thread
-			set_thread_priority(pthread_self(), SCHED_RR, 80);
-#  endif
-
-			while (1)
-			{
-				useconds_t delay = Model::get().receiveNewUsbData();
-				usleep(delay);
-			}
-		});
-
 	s_thumbnailThread = std::thread(
 		[]()
 		{

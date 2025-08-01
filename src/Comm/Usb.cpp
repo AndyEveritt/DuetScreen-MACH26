@@ -19,7 +19,9 @@ namespace Comm
 		uint16_t productId;
 	};
 
-	std::recursive_mutex s_usbMutex;
+	static std::recursive_mutex s_usbMutex;
+	static std::mutex s_transferMutex;
+	static std::condition_variable s_completionCondition;
 
 	static UsbDeviceId s_deviceIds[] = {
 		{"Duet 2", 0x60ec},
@@ -42,11 +44,12 @@ namespace Comm
 		reset();
 	}
 
-	bool UsbDevice::init(const char* name, libusb_device* device)
+	bool UsbDevice::init(const char* name, libusb_device* device, receive_cb_t callback)
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		m_name = name;
 		m_device = device;
+		m_receiveCallback = callback;
 		if (!getDeviceInterface())
 		{
 			LOG_ERROR("Failed to get device interface");
@@ -61,6 +64,13 @@ namespace Comm
 		LOG_DBG("Resetting USB device {:s}", m_name);
 		if (m_handle)
 		{
+			// Stop event handling thread before releasing resources
+			m_eventThreadRunning = false;
+			if (m_eventLoopThread.joinable())
+			{
+				m_eventLoopThread.join();
+			}
+
 			LOG_DBG("Releasing interface");
 			libusb_release_interface(m_handle, 0);
 			libusb_close(m_handle);
@@ -104,8 +114,7 @@ namespace Comm
 			if (r < 0)
 			{
 				LOG_ERROR("Cannot detach kernel driver: {:s}", libusb_error_name(r));
-				libusb_close(m_handle);
-				return false;
+				goto close_handle;
 			}
 		}
 
@@ -113,9 +122,7 @@ namespace Comm
 		if (r < 0)
 		{
 			LOG_ERROR("Closing device");
-			libusb_close(m_handle);
-			m_handle = nullptr;
-			return false;
+			goto close_handle;
 		}
 
 		// Claim interface 0 (replace with your interface number)
@@ -123,15 +130,22 @@ namespace Comm
 		if (r < 0)
 		{
 			LOG_ERROR("Cannot claim interface: {:s}\nClosing device", libusb_error_name(r));
-			libusb_close(m_handle);
-			m_handle = nullptr;
-			return false;
+			goto close_handle;
 		}
 
+		m_eventThreadRunning = true;
+		m_eventLoopThread = std::thread(&UsbDevice::eventLoop, this);
+		receive();
+
 		return true;
+
+	close_handle:
+		libusb_close(m_handle);
+		m_handle = nullptr;
+		return false;
 	}
 
-	ssize_t UsbDevice::send(std::string_view data)
+	bool UsbDevice::send(std::string_view data, unsigned int timeoutMs)
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
@@ -139,31 +153,41 @@ namespace Comm
 			LOG_WARN("No USB device handle");
 			return -1;
 		}
-		ssize_t full_length = 0;
-		int actual_length = 0;
-		size_t len = data.length();
-		const char* ptr = data.data();
 
-		LOG_VERBOSE("Sending data: {}, length: {:d}", data, len);
-
-		while (len > 0)
+		struct libusb_transfer* transfer = libusb_alloc_transfer(0);
+		if (!transfer)
 		{
-			int lenToSend = len > m_packetSize ? m_packetSize : len;
-			int r = libusb_bulk_transfer(m_handle, m_outEndpoint, (unsigned char*)ptr, lenToSend, &actual_length, 0);
-			if (r != 0)
-			{
-				LOG_ERROR("Error sending data: {:s}, sent {}/{}", libusb_error_name(r), full_length, len);
-				reset();
-				return -1;
-			}
-			len -= actual_length;
-			ptr += actual_length;
-			full_length += actual_length;
+			LOG_ERROR("Failed to allocate transfer");
+			return false;
 		}
-		return full_length;
+
+		TransferData* transferData = new TransferData();
+		transferData->buffer.assign(data.begin(), data.end());
+		transferData->device = this;
+
+		// Fill bulk transfer structure
+		libusb_fill_bulk_transfer(transfer,
+								  m_handle,
+								  m_outEndpoint,
+								  transferData->buffer.data(),
+								  transferData->buffer.size(),
+								  sendTransferCallback,
+								  transferData,
+								  timeoutMs);
+
+		int r = libusb_submit_transfer(transfer);
+		if (r < 0)
+		{
+			LOG_ERROR("Failed to submit transfer: {:s}", libusb_error_name(r));
+			libusb_free_transfer(transfer);
+			delete transferData;
+			return false;
+		}
+
+		return true;
 	}
 
-	UsbDevice::receive_err_t UsbDevice::receive(unsigned char* data, size_t len, int& received)
+	UsbDevice::receive_err_t UsbDevice::receive(unsigned int timeoutMs)
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
@@ -172,38 +196,31 @@ namespace Comm
 			return receive_err_t::NO_DEVICE;
 		}
 
-		if (len < m_packetSize)
+		struct libusb_transfer* transfer = libusb_alloc_transfer(0);
+		if (!transfer)
 		{
-			LOG_WARN("Buffer too small, must be at least {:d} bytes", m_packetSize);
-			return receive_err_t::BUFFER_TOO_SMALL;
+			LOG_ERROR("Failed to allocate transfer");
+			return receive_err_t::FAILED_TO_ALLOCATE_TRANSFER;
 		}
 
-		received = 0;
-		int r = libusb_bulk_transfer(m_handle, m_inEndpoint, data, len, &received, 1000);
-		LOG_VERBOSE(
-			"Received {:d} bytes: {:s}", received, std::string_view(reinterpret_cast<const char*>(data), received));
-		switch (r)
+		libusb_fill_bulk_transfer(transfer,
+								  m_handle,
+								  m_inEndpoint,
+								  m_receiveBuffer,
+								  s_receiveBufferSize,
+								  receiveTransferCallback,
+								  this,
+								  timeoutMs);
+
+		int r = libusb_submit_transfer(transfer);
+		if (r < 0)
 		{
-		case LIBUSB_SUCCESS:
-			return receive_err_t::NONE;
-		case LIBUSB_ERROR_TIMEOUT:
-			LOG_DBG("No more data received (timeout)");
-			return receive_err_t::TIMEOUT;
-		case LIBUSB_ERROR_BUSY:
-			LOG_WARN("Busy receiving data");
-			return receive_err_t::BUSY;
-		case LIBUSB_ERROR_NO_DEVICE:
-			LOG_WARN("Device disconnected");
-			reset();
-			return receive_err_t::NO_DEVICE;
-		case LIBUSB_ERROR_IO:
-		case LIBUSB_ERROR_PIPE:
-		case LIBUSB_ERROR_OVERFLOW:
-		default:
-			LOG_ERROR("Error receiving data: {:s}", libusb_error_name(r));
-			reset();
-			return receive_err_t::OTHER_ERROR;
+			LOG_ERROR("Failed to submit transfer: {:s}", libusb_error_name(r));
+			libusb_free_transfer(transfer);
+			return receive_err_t::FAILED_TO_SUBMIT_TRANSFER;
 		}
+
+		return receive_err_t::NONE;
 	}
 
 	int UsbDevice::setDtr(bool state)
@@ -271,12 +288,78 @@ namespace Comm
 		return foundIn && foundOut;
 	}
 
+	void LIBUSB_CALL UsbDevice::sendTransferCallback(struct libusb_transfer* transfer)
+	{
+		TransferData* transferData = static_cast<TransferData*>(transfer->user_data);
+
+		// Notify completion for any pending transfers
+		std::unique_lock<std::mutex> lock(s_transferMutex);
+		transferData->completed = true;
+
+		if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
+		{
+			// Data successfully transferred, invoke the callback
+			if (transferData->callback)
+			{
+				transferData->callback(transferData->buffer);
+			}
+		}
+		else
+		{
+			LOG_ERROR("Transfer failed: {}", libusb_error_name(transfer->status));
+			// Handle error, optionally invoke callback with an empty buffer or error code
+		}
+
+		libusb_free_transfer(transfer);		// Free the transfer after processing
+		delete transferData;				// Clean up user data
+		s_completionCondition.notify_all(); // Notify event loop about completion
+	}
+
+	void LIBUSB_CALL UsbDevice::receiveTransferCallback(struct libusb_transfer* transfer)
+	{
+		auto device = static_cast<UsbDevice*>(transfer->user_data);
+
+		// Notify completion for any pending transfers
+		std::unique_lock<std::mutex> lock(s_transferMutex);
+
+		if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
+		{
+			// Data successfully transferred, invoke the callback
+			if (device->m_receiveCallback)
+			{
+				device->m_receiveCallback(transfer->buffer, transfer->actual_length);
+			}
+		}
+		else
+		{
+			LOG_ERROR("Transfer failed: {}", libusb_error_name(transfer->status));
+			// Handle error, optionally invoke callback with an empty buffer or error code
+		}
+
+		device->receive();
+
+		libusb_free_transfer(transfer);		// Free the transfer after processing
+		s_completionCondition.notify_all(); // Notify event loop about completion
+	}
+
+	void UsbDevice::eventLoop()
+	{
+		while (m_eventThreadRunning)
+		{
+			libusb_handle_events(s_context);
+			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Prevent busy-waiting
+		}
+	}
+
 	UsbDevice& getCurrentUsbDevice()
 	{
 		return s_currentUsbDevice;
 	}
 
-	static bool findDuetUsbDevice(libusb_device** device_list, ssize_t device_count)
+	static bool findDuetUsbDevice(libusb_device** device_list,
+								  ssize_t device_count,
+								  const char** found_device_name,
+								  libusb_device** found_device)
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		for (ssize_t i = 0; i < device_count; ++i)
@@ -297,19 +380,24 @@ namespace Comm
 						{
 							LOG_INFO(
 								"{:s} target device (Product ID: {:#x}) found.", deviceId.name, deviceId.productId);
-							return s_currentUsbDevice.init(deviceId.name, device);
+							*found_device_name = deviceId.name;
+							*found_device = device;
+							return true;
 						}
 					}
 				}
 			}
 		}
+
+		*found_device_name = nullptr;
+		*found_device = nullptr;
 		return false;
 	}
 
 	int usbInit()
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
-		return libusb_init(nullptr);
+		return libusb_init(&s_context);
 	}
 
 	bool connectUsbDevice()
@@ -323,7 +411,7 @@ namespace Comm
 
 		LOG_VERBOSE("Getting usb device list");
 		libusb_device** device_list;
-		ssize_t device_count = libusb_get_device_list(nullptr, &device_list);
+		ssize_t device_count = libusb_get_device_list(s_context, &device_list);
 
 		if (device_count < 0)
 		{
@@ -331,22 +419,34 @@ namespace Comm
 			return false;
 		}
 
-		if (!findDuetUsbDevice(device_list, device_count))
+		bool ret = true;
+		const char* device_name = nullptr;
+		libusb_device* device = nullptr;
+		if (!findDuetUsbDevice(device_list, device_count, &device_name, &device))
 		{
 			LOG_ERROR("Target device not found");
-			libusb_free_device_list(device_list, 1);
-			return false;
+			ret = false;
+			goto finish;
 		}
+
+		s_currentUsbDevice.init(device_name,
+								device,
+								[](unsigned char* buf, size_t len)
+								{
+									static Comm::JsonDecoder s_decoder;
+									s_decoder.CheckInput(buf, len);
+								});
 
 		if (!s_currentUsbDevice.connect())
 		{
 			LOG_ERROR("Failed to connect to target device");
-			libusb_free_device_list(device_list, 1);
-			return false;
+			ret = false;
+			goto finish;
 		}
-		libusb_free_device_list(device_list, 1);
 
-		return true;
+	finish:
+		libusb_free_device_list(device_list, 1);
+		return ret;
 	}
 
 	ssize_t sendUsbData(std::string_view data)

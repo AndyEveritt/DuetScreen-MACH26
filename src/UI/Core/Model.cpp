@@ -122,7 +122,6 @@ void Model::runEventLoop()
 
 		bool found = false;
 
-		UI_LOCK();
 		{
 			auto it = m_handlers.find(event.first);
 			if (it != m_handlers.end())
@@ -178,55 +177,6 @@ useconds_t Model::requestNewData()
 	}
 #endif
 	return Comm::DUET.GetScaledPollInterval() * 1000; // Poll interval in microseconds
-}
-
-useconds_t Model::receiveNewUsbData()
-{
-	static constexpr useconds_t s_reconnectDelay = 1000 * 1000; // 1s
-	static constexpr useconds_t s_pollInterval = 100 * 1000;	// 100ms
-	static constexpr size_t s_bufferSize = 32768;
-	static Comm::JsonDecoder s_decoder;
-	static BYTE s_buffer[s_bufferSize];
-
-	if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::usb)
-	{
-		return s_reconnectDelay;
-	}
-
-	if (!Comm::getCurrentUsbDevice().isConnected())
-	{
-		LOG_VERBOSE("USB device disconnected");
-		return s_reconnectDelay;
-	}
-
-	int len = 0;
-	auto err = Comm::getCurrentUsbDevice().receive(s_buffer, s_bufferSize, len);
-
-	if (len < 0)
-	{
-		LOG_ERROR("This should be impossible, len < 0: {:d}", len);
-		len = 0;
-	}
-
-	switch (err)
-	{
-	case Comm::UsbDevice::receive_err_t::NONE:
-		s_decoder.CheckInput(s_buffer, len);
-		break;
-	case Comm::UsbDevice::receive_err_t::BUFFER_TOO_SMALL:
-		LOG_ERROR("USB receive buffer too small");
-		break;
-	case Comm::UsbDevice::receive_err_t::TIMEOUT:
-	case Comm::UsbDevice::receive_err_t::BUSY:
-		break;
-	case Comm::UsbDevice::receive_err_t::NO_DEVICE:
-	case Comm::UsbDevice::receive_err_t::OTHER_ERROR:
-		LOG_DBG("Resetting decoder");
-		s_decoder.Reset();
-		return s_reconnectDelay;
-	}
-
-	return s_pollInterval;
 }
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])

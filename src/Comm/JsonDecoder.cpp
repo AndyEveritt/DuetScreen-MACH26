@@ -594,7 +594,8 @@ namespace Comm
 	// This is the JSON parser state machine
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
-		LOG_DBG("checking {:d} chars: {:s}", len, std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
+		LOG_DBG("checking {:d} chars", len);
+		LOG_VERBOSE("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
 		m_nextOut = 0;
 		while (m_nextOut < len)
 		{
@@ -612,7 +613,7 @@ namespace Comm
 					ParserErrorEncountered(m_lastState,
 										   m_fieldId.c_str(),
 										   m_serialIoErrors); // Notify the consumer that we ran into an error
-					LOG_DBG("rxBuffer: {:s}", reinterpret_cast<const char*>(rxBuffer));
+					LOG_DBG("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
 					m_lastState = jsBegin;
 				}
 				m_state = jsBegin; // abandon current parse (if any) and start again
