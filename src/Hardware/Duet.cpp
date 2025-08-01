@@ -867,7 +867,7 @@ namespace Comm
 			size_t indices[MAX_ARRAY_NESTING] = {0};
 			while (position != std::string::npos)
 			{
-				std::string_view line = reply.body.substr(prevPosition, position - prevPosition);
+				std::string_view line = std::string_view(reply.body).substr(prevPosition, position - prevPosition);
 				LOG_DBG("line: {:s}", line);
 				prevPosition = position + 1;
 				position = reply.body.find("\n", position + 1); // Find the next occurrence, if any
