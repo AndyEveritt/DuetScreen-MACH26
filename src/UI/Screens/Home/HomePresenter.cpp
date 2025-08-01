@@ -9,6 +9,7 @@
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
 #include "utils/UpgradeHelper.h"
+#include <algorithm>
 #include <regex>
 
 namespace UI
@@ -53,6 +54,22 @@ namespace UI
 			}
 			m_view->m_graph.updateSeriesName(i, sensor->name.c_str());
 			m_view->m_graph.addData(i, sensor->lastReading);
+		}
+
+		size_t heaterCount = OM::Heat::GetHeaterCount();
+		if (heaterCount > 0)
+		{
+			int32_t maxTemperature = 0;
+			for (size_t i = 0; i < heaterCount; i++)
+			{
+				auto heater = OM::Heat::GetHeaterBySlot(i);
+				if (heater == nullptr)
+				{
+					continue;
+				}
+				maxTemperature = std::max(maxTemperature, (int32_t)heater->max);
+			}
+			m_view->m_graph.setYRange({0, maxTemperature});
 		}
 	}
 

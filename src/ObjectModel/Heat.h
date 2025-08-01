@@ -79,6 +79,8 @@ namespace OM
 
 		HeaterPtr GetHeater(const size_t heaterIndex);
 		HeaterPtr GetOrCreateHeater(const size_t heaterIndex);
+		HeaterPtr GetHeaterBySlot(const size_t heaterSlot);
+		size_t GetHeaterCount() noexcept;
 		bool IterateHeatersWhile(function_ref<bool(HeaterPtr, size_t)> func, const size_t startAt = 0);
 		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active);
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);

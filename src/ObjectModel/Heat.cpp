@@ -75,6 +75,21 @@ namespace OM
 			return GetOrCreate<HeaterList, Heater>(heaters, index, true);
 		}
 
+		HeaterPtr GetHeaterBySlot(const size_t heaterSlot)
+		{
+			if (heaterSlot >= heaters.Size())
+			{
+				LOG_ERROR("Heater slot {:d} is out of range", heaterSlot);
+				return nullptr;
+			}
+			return heaters[heaterSlot];
+		}
+
+		size_t GetHeaterCount() noexcept
+		{
+			return heaters.Size();
+		}
+
 		bool IterateHeatersWhile(function_ref<bool(HeaterPtr, size_t)> func, const size_t startAt)
 		{
 			return heaters.IterateWhile(func, startAt);
