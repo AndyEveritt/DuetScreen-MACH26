@@ -155,7 +155,7 @@ namespace UI
 			{
 				m_view->setLabel(toolName.c_str());
 			}
-			m_view->setStatus(tHeater->heater->GetHeaterStatusStr());
+			m_view->setStatus(_(tHeater->heater->GetHeaterStatusStr()));
 			m_view->setCurrentTemp(tHeater->heater->current);
 			m_view->setActiveTemp(tHeater->activeTemp);
 			m_view->setStandbyTemp(tHeater->standbyTemp);
