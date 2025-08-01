@@ -33,7 +33,7 @@ namespace Comm
 			{ID_DUET_HOSTNAME, c.hostname},
 			{ID_DUET_PASSWORD, c.password},
 			{ID_DUET_COMMUNICATION_TYPE, c.communicationType},
-			{ID_DUET_POLL_INTERVAL, c.pollInterval},
+			{ID_DUET_POLL_INTERVAL, c.pollInterval.count()},
 			{ID_DUET_BAUD_RATE, c.baudRate},
 		};
 	}
@@ -43,7 +43,7 @@ namespace Comm
 		j.at(ID_DUET_HOSTNAME).get_to(c.hostname);
 		j.at(ID_DUET_PASSWORD).get_to(c.password);
 		j.at(ID_DUET_COMMUNICATION_TYPE).get_to(c.communicationType);
-		j.at(ID_DUET_POLL_INTERVAL).get_to(c.pollInterval);
+		c.pollInterval = std::chrono::milliseconds(j.at(ID_DUET_POLL_INTERVAL).get<int64_t>());
 		j.at(ID_DUET_BAUD_RATE).get_to(c.baudRate);
 	}
 
@@ -61,7 +61,7 @@ namespace Comm
 		// TODO restore from memory
 		DuetConfig config = StorageHelper::getData<DuetConfig>(ID_DUET, DuetConfig());
 
-		SetPollInterval((uint32_t)config.pollInterval);
+		SetPollInterval(config.pollInterval);
 		SetBaudRate(config.baudRate);
 		SetIPAddress(config.ipAddress);
 		SetHostname(config.hostname);
@@ -74,8 +74,8 @@ namespace Comm
 		LOG_VERBOSE("Resetting Duet");
 		m_sessionKey = sm_noSessionKey;
 		m_sbcMode = false;
-		m_sessionTimeout = 0;
-		m_lastRequestTime = 0;
+		m_sessionTimeout = std::chrono::milliseconds(0);
+		m_lastRequestTime = TimeHelper::getCurrentTime();
 		m_pollIntervalScale = 1.0f;
 		m_nextLineNumber = 0;
 		ClearIPAddress();
@@ -126,16 +126,16 @@ namespace Comm
 		return duetCommunicationTypeNames[(int)type];
 	}
 
-	void Duet::SetPollInterval(uint32_t interval)
+	void Duet::SetPollInterval(std::chrono::milliseconds interval)
 	{
 		if (interval < MIN_PRINTER_POLL_INTERVAL)
 		{
-			LOG_WARN("Poll interval too low, setting to {:d}", MIN_PRINTER_POLL_INTERVAL);
+			LOG_WARN("Poll interval too low, setting to {}", MIN_PRINTER_POLL_INTERVAL);
 			interval = MIN_PRINTER_POLL_INTERVAL;
 		}
-		LOG_INFO("Setting poll interval to {:d} (scaled to {:d})",
+		LOG_INFO("Setting poll interval to {} (scaled to {})",
 				 interval,
-				 static_cast<uint32_t>(interval * m_pollIntervalScale));
+				 std::chrono::duration_cast<std::chrono::milliseconds>(interval * m_pollIntervalScale));
 
 		m_config.pollInterval = interval;
 		saveConfig();
@@ -150,24 +150,24 @@ namespace Comm
 			return;
 		}
 
-		LOG_INFO("Scalling poll interval by {:g} from {:d} to {:d}",
+		LOG_INFO("Scalling poll interval by {:g} from {} to {}",
 				 scale,
 				 GetScaledPollInterval(),
-				 static_cast<uint32_t>(m_config.pollInterval * scale));
+				 std::chrono::duration_cast<std::chrono::milliseconds>(m_config.pollInterval * scale));
 
 		m_pollIntervalScale = scale;
 		saveConfig();
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
-	const uint32_t Duet::GetPollInterval() const
+	const std::chrono::milliseconds Duet::GetPollInterval() const
 	{
 		return m_config.pollInterval;
 	}
 
-	const uint32_t Duet::GetScaledPollInterval() const
+	const std::chrono::milliseconds Duet::GetScaledPollInterval() const
 	{
-		return static_cast<uint32_t>(m_config.pollInterval * m_pollIntervalScale);
+		return std::chrono::duration_cast<std::chrono::milliseconds>(m_config.pollInterval * m_pollIntervalScale);
 	}
 
 	void Duet::PrepareRequest(HttpRequest& req, const std::string& subUrl, hv::QueryParams& queryParameters)
@@ -942,9 +942,9 @@ namespace Comm
 
 			if (body.contains("sessionTimeout"))
 			{
-				m_sessionTimeout = body["sessionTimeout"].get<int>();
+				m_sessionTimeout = std::chrono::milliseconds(body["sessionTimeout"].get<int>());
 				m_lastRequestTime = TimeHelper::getCurrentTime();
-				LOG_INFO("Duet session timeout set to {:d}", m_sessionTimeout);
+				LOG_INFO("Duet session timeout set to {}", m_sessionTimeout);
 			}
 
 			if (body.contains("sessionKey"))

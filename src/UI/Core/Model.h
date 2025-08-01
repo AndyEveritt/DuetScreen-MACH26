@@ -199,8 +199,7 @@ class Model
 	void runEventLoop();
 
 	/* tasks */
-	useconds_t requestNewData();
-	useconds_t receiveNewUsbData();
+	std::chrono::milliseconds requestNewData();
 
 	/* Subscribers */
 

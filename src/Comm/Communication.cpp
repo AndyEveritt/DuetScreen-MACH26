@@ -50,7 +50,7 @@
 namespace Comm
 {
 
-	static long long s_lastResponseTime = 0;
+	static std::chrono::milliseconds s_lastResponseTime(0);
 
 	Seq seqs[] = {
 #if FETCH_NETWORK
@@ -300,7 +300,7 @@ namespace Comm
 
 	void KickWatchdog()
 	{
-		const long long now = TimeHelper::getCurrentTime();
+		const std::chrono::milliseconds now = TimeHelper::getCurrentTime();
 		if (now > s_lastResponseTime)
 		{
 			s_lastResponseTime = TimeHelper::getCurrentTime();
@@ -325,13 +325,12 @@ namespace Comm
 	 */
 	bool sendNext()
 	{
-		const long long now = TimeHelper::getCurrentTime();
-		const long long expectedResponseBy =
-			s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
+		const auto now = TimeHelper::getCurrentTime();
+		const auto expectedResponseBy = s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
 		if (now > expectedResponseBy)
 		{
-			LOG_WARN("No response from Duet for {:d} ms", PRINTER_REQUEST_TIMEOUT);
-			LOG_VERBOSE("last response={:d}, now={:d}, expected by={:d}, diff={:d}",
+			LOG_WARN("No response from Duet for {} ms", PRINTER_REQUEST_TIMEOUT);
+			LOG_VERBOSE("last response={}, now={}, expected by={}, diff={}",
 						s_lastResponseTime,
 						now,
 						expectedResponseBy,

@@ -24,7 +24,7 @@ namespace OM
 	{
 		index = 0;
 		lastReading = 0.0;
-		lastReadingTime = 0;
+		lastReadingTime = 0ms;
 		name.Clear();
 	}
 

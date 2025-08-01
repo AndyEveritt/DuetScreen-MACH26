@@ -182,9 +182,10 @@ namespace UI
 		// Poll Interval
 		m_pollInterval.setLabel(_("settings_duet_poll_interval"));
 		m_pollInterval.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL, 2000);
-		m_pollInterval.setValue(Comm::DUET.GetPollInterval());
-		m_pollInterval.setValueChangedCallback([](int32_t value) { Comm::DUET.SetPollInterval((uint32_t)value); });
+		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL.count(), 2000);
+		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
+		m_pollInterval.setValueChangedCallback([](int32_t value)
+											   { Comm::DUET.SetPollInterval(std::chrono::milliseconds(value)); });
 		m_pollInterval.setKeyboard(getMainSettingsView().getKeyboard());
 		m_pollInterval.setFocusedCallback(
 			[this](bool focused)
@@ -289,7 +290,7 @@ namespace UI
 	void DuetSettingsView::onShow()
 	{
 		UI_LOCK();
-		m_pollInterval.setValue(Comm::DUET.GetPollInterval());
+		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
 		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 		showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
 	}

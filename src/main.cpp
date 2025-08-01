@@ -164,8 +164,8 @@ int main(int argc, char** argv)
 			while (1)
 			{
 				// Request next section of the OM
-				useconds_t delay = Model::get().requestNewData();
-				usleep(delay);
+				std::chrono::milliseconds delay = Model::get().requestNewData();
+				std::this_thread::sleep_for(delay);
 			}
 		});
 
@@ -180,7 +180,7 @@ int main(int argc, char** argv)
 			while (1)
 			{
 				FILEINFO_CACHE->Spin();
-				usleep(50 * 1000);
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			}
 		});
 #endif
@@ -222,7 +222,7 @@ int main(int argc, char** argv)
 			// LOG_DBG("Updating UI");
 			lv_timer_handler();
 		}
-		usleep(5 * 1000); // Sleep for 5 milliseconds
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 
 	return 0;

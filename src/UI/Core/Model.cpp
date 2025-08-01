@@ -167,16 +167,16 @@ void Model::runEventLoop()
 	}
 }
 
-useconds_t Model::requestNewData()
+std::chrono::milliseconds Model::requestNewData()
 {
 	bool seqAvailable = Comm::sendNext();
 #if 0
 	if (seqAvailable && Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
 	{
-		return 50 * 1000; // 50ms
+		return 50; // 50ms
 	}
 #endif
-	return Comm::DUET.GetScaledPollInterval() * 1000; // Poll interval in microseconds
+	return Comm::DUET.GetScaledPollInterval();
 }
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])

@@ -8,19 +8,18 @@ class TimeHelper
 	/**
 	 * @brief Get the current date and time in milliseconds
 	 */
-	static int64_t getCurrentTime()
+	static auto getCurrentTime()
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(
-				   std::chrono::system_clock::now().time_since_epoch())
-			.count();
+			std::chrono::system_clock::now().time_since_epoch());
 	}
 
 	/**
 	 * @brief Get the difference between current time and the given time in milliseconds
 	 * @param ms
-	 * @return int64_t
+	 * @return std::chrono::milliseconds
 	 */
-	static int64_t getTimeSince(int64_t ms) { return getCurrentTime() - ms; }
+	static std::chrono::milliseconds getTimeSince(std::chrono::milliseconds ms) { return getCurrentTime() - ms; }
 
 	static bool setDateTime(const char* dateTime) { return true; }
 };

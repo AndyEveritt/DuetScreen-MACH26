@@ -52,7 +52,7 @@ namespace Comm
 		std::string ipAddress = DEFAULT_IP_ADDRESS;
 		std::string hostname = "";
 		std::string password = "";
-		uint32_t pollInterval = DEFAULT_PRINTER_POLL_INTERVAL;
+		std::chrono::milliseconds pollInterval = DEFAULT_PRINTER_POLL_INTERVAL;
 		CommunicationType communicationType = CommunicationType::usb;
 		unsigned int baudRate = B115200;
 
@@ -78,10 +78,10 @@ namespace Comm
 		void SetCommunicationType(CommunicationType type);
 		const CommunicationType GetCommunicationType() const;
 		const char* GetCommunicationTypeName() const;
-		void SetPollInterval(uint32_t interval);
+		void SetPollInterval(std::chrono::milliseconds interval);
 		void ScalePollIntervalScale(float scale);
-		const uint32_t GetPollInterval() const;
-		const uint32_t GetScaledPollInterval() const;
+		const std::chrono::milliseconds GetPollInterval() const;
+		const std::chrono::milliseconds GetScaledPollInterval() const;
 		const uint32_t GetNextLineNumber() { return m_nextLineNumber++; }
 
 		void SendGcode(std::string_view gcode);
@@ -143,7 +143,7 @@ namespace Comm
 		void saveConfig();
 
 		DuetConfig m_config;
-		long long m_lastRequestTime;
+		std::chrono::milliseconds m_lastRequestTime;
 		float m_pollIntervalScale;
 		uint32_t m_nextLineNumber = 0;
 		std::mutex m_sendLock;
@@ -153,7 +153,7 @@ namespace Comm
 		// Network
 		hv::HttpClient m_cli; // for sendAsync() only!
 		uint32_t m_sessionKey;
-		int32_t m_sessionTimeout;
+		std::chrono::milliseconds m_sessionTimeout;
 		bool m_sbcMode;
 		bool m_connected = false;
 

@@ -162,7 +162,7 @@ bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	static unsigned long long lastUpdated = 0;
+	static std::chrono::milliseconds lastUpdated = 0ms;
 
 	if (data[0] == 0)
 	{
