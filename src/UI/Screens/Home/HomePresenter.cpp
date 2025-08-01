@@ -59,7 +59,7 @@ namespace UI
 		size_t heaterCount = OM::Heat::GetHeaterCount();
 		if (heaterCount > 0)
 		{
-			int32_t maxTemperature = 0;
+			int32_t maxTemperature = 300; // Default max temperature
 			for (size_t i = 0; i < heaterCount; i++)
 			{
 				auto heater = OM::Heat::GetHeaterBySlot(i);

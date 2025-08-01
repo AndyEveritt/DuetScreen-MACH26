@@ -144,6 +144,10 @@ namespace UI
 		}
 		if (count < m_series.size())
 		{
+			for (size_t i = count; i < m_series.size(); ++i)
+			{
+				lv_chart_remove_series(m_chart, m_series[i].series);
+			}
 			m_series.resize(count);
 			return;
 		}
