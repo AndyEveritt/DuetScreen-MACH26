@@ -29,6 +29,8 @@ namespace Comm
 		{"Duet 3", 0x60ee},
 	};
 
+	static constexpr int32_t s_usbTimeoutMs = 1000;
+
 	UsbDevice::UsbDevice()
 		: m_name("")
 		, m_device(nullptr)
@@ -135,7 +137,7 @@ namespace Comm
 
 		m_eventThreadRunning = true;
 		m_eventLoopThread = std::thread(&UsbDevice::eventLoop, this);
-		receive();
+		receive(s_usbTimeoutMs);
 
 		return true;
 
@@ -189,7 +191,6 @@ namespace Comm
 
 	UsbDevice::receive_err_t UsbDevice::receive(unsigned int timeoutMs)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
@@ -330,13 +331,20 @@ namespace Comm
 				device->m_receiveCallback(transfer->buffer, transfer->actual_length);
 			}
 		}
+		else if (transfer->status == LIBUSB_TRANSFER_TIMED_OUT)
+		{
+			LOG_DBG("Transfer timed out");
+		}
+		else if (transfer->status == LIBUSB_TRANSFER_OVERFLOW)
+		{
+			LOG_ERROR("Transfer overflow, buffer too small");
+		}
 		else
 		{
 			LOG_ERROR("Transfer failed: {}", libusb_error_name(transfer->status));
-			// Handle error, optionally invoke callback with an empty buffer or error code
 		}
 
-		device->receive();
+		device->receive(s_usbTimeoutMs);
 
 		libusb_free_transfer(transfer);		// Free the transfer after processing
 		s_completionCondition.notify_all(); // Notify event loop about completion
