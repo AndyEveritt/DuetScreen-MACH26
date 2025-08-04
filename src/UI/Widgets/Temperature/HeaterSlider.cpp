@@ -409,7 +409,7 @@ namespace UI
 		const int32_t range = m_maxTempValue - m_minTempValue;
 		if (range <= 0)
 		{
-			LOG_ERROR("Invalid temperature range: min = {:g}, max = {:g}", m_minTempValue, m_maxTempValue);
+			LOG_DBG("Invalid temperature range: min = {:g}, max = {:g}", m_minTempValue, m_maxTempValue);
 			return;
 		}
 		lv_coord_t percentage = std::clamp(100 * (value - (int32_t)m_minTempValue) / range, 0, 100);
