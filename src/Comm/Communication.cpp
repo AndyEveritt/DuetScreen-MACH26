@@ -150,7 +150,7 @@ namespace Comm
 		 .key = "volumes",
 		 .flags = "v"},
 #endif
-	};
+		{.event = rcvOMKeyNone, .seqid = rcvSeqsFreq, .lastSeq = 0, .state = SeqStateInit, .key = "", .flags = "d99f"}};
 
 	Seq* g_currentReqSeq = nullptr;
 
@@ -174,6 +174,12 @@ namespace Comm
 			if (current->state == SeqStateInit || current->state == SeqStateUpdate)
 			{
 				LOG_DBG("seq {:s}", current->key);
+				return current;
+			}
+			if (current->state == SeqStateRequested && current->lastRequestTime + 500ms < TimeHelper::getCurrentTime())
+			{
+				LOG_DBG("seq {:s} was requested but not updated, re-requesting", current->key);
+				current->state = SeqStateUpdate;
 				return current;
 			}
 		}
@@ -218,6 +224,28 @@ namespace Comm
 			seqs[i].lastSeq = 0;
 			seqs[i].state = SeqStateInit;
 		}
+		g_currentReqSeq = nullptr;
+	}
+
+	static void RequestSeq(Seq* seq)
+	{
+		if (seq == nullptr)
+		{
+			LOG_ERROR("RequestSeq called with null seq");
+			return;
+		}
+
+		if (seq->state == SeqStateRequested)
+		{
+			LOG_DBG("Seq {:s} already requested", seq->key);
+			return;
+		}
+
+		LOG_DBG("Requesting seq '{:s}'", seq->key);
+		seq->lastRequestTime = TimeHelper::getCurrentTime();
+		seq->state = SeqStateRequested;
+
+		Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
 	}
 
 	// Try to get an integer value from a string. If it is actually a floating point value, round it.
@@ -338,20 +366,15 @@ namespace Comm
 			Reconnect();
 		}
 
-		// TODO prevent sending the same request multiple times in a row
 		g_currentReqSeq = GetNextSeq(g_currentReqSeq);
-		if (g_currentReqSeq != nullptr)
+		if (g_currentReqSeq == nullptr)
 		{
-			LOG_INFO("requesting {:s}", g_currentReqSeq->key);
-			Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
-			return true;
-		}
-		else
-		{
-			LOG_INFO("requesting frequently changing data");
-			Comm::DUET.RequestModel("d99f");
+			LOG_DBG("No more seqs to request");
 			return false;
 		}
+
+		RequestSeq(g_currentReqSeq);
+		return true;
 	}
 
 	void init()

@@ -194,6 +194,11 @@ namespace Comm
 		{
 			m_seq->state = SeqStateOk;
 			LOG_DBG("seq {:s} {:d} DONE", m_seq->key, (int)m_seq->state);
+
+			if (m_seq->seqid == rcvSeqsFreq)
+			{
+				m_seq->state = SeqStateUpdate;
+			}
 			m_seq = nullptr;
 		}
 
@@ -221,7 +226,7 @@ namespace Comm
 			// modifier)
 
 			id.Erase(0, 6);
-			if (m_seq != nullptr)
+			if (m_seq != nullptr && strcasecmp(m_seq->key, "") != 0)
 			{
 				id.Prepend(m_seq->key);
 			}
@@ -246,7 +251,6 @@ namespace Comm
 		switch (rde)
 		{
 		// M409 section
-		// TODO: Uncomment stuff below related to UI/OM
 		case rcvKey:
 		{
 			// try a quick check otherwise search for key

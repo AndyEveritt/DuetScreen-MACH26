@@ -18,6 +18,7 @@ namespace Comm
 	enum SeqState
 	{
 		SeqStateInit,
+		SeqStateRequested,
 		SeqStateOk,
 		SeqStateUpdate,
 		SeqStateError,
@@ -29,8 +30,9 @@ namespace Comm
 		const ReceivedDataEvent event;
 		const ReceivedDataEvent seqid;
 
-		uint16_t lastSeq;
+		int32_t lastSeq;
 		enum SeqState state;
+		std::chrono::milliseconds lastRequestTime = 0ms;
 
 		const char* const key;
 		const char* const flags;
