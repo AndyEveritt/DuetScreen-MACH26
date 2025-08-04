@@ -36,7 +36,7 @@ constexpr uint32_t DEFAULT_SCREEN_TIMEOUT = 5 * 60 * 1000; // milliseconds
 /* Duet */
 constexpr const char* DEFAULT_GCODES_PATH = "0:/gcodes";
 constexpr const char* DEFAULT_MACROS_PATH = "0:/macros";
-constexpr std::chrono::milliseconds DEFAULT_PRINTER_POLL_INTERVAL = 500ms;
+constexpr std::chrono::milliseconds DEFAULT_PRINTER_POLL_INTERVAL = 250ms;
 constexpr std::chrono::milliseconds MIN_PRINTER_POLL_INTERVAL = 100ms;
 constexpr std::chrono::milliseconds PRINTER_REQUEST_TIMEOUT = 5000ms;
 constexpr int DEFAULT_COMMUNICATION_TYPE = 1;
