@@ -9,6 +9,7 @@
 
 #include "ToolListPresenter.h"
 #include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 #include <memory>
 #include <vector>
@@ -20,19 +21,19 @@ namespace UI
 	class ToolListItem : public View<ToolListItemPresenter>
 	{
 	  public:
-		ToolListItem(ToolList& toolList, const std::string& name, lv_obj_t* parent, layout_t layout);
+		ToolListItem(size_t index, lv_obj_t* parent, ToolList& toolList);
 
 		uint8_t getSlotIndex() const;
 		void setSlotIndex(uint8_t index);
-		void setLabel(const char* text);
+		void setLabel(std::string_view text);
 		void setIcon(lv_img_dsc_t* icon);
 		void setSelected(const bool selected);
-		void setStatus(const char* text);
+		void setStatus(std::string_view text);
 		void setCurrentTemp(float value);
 		void setActiveTemp(int32_t value);
-		void setActiveTempText(const char* text);
+		void setActiveTempText(std::string_view text);
 		void setStandbyTemp(int32_t value);
-		void setStandbyTempText(const char* text);
+		void setStandbyTempText(std::string_view text);
 		void showTemps(bool show);
 
 		ToolList& getToolList() const { return m_toolList; }
@@ -44,12 +45,11 @@ namespace UI
 
 		ToolList& m_toolList;
 
-		lv_obj_t* m_label;
-		lv_obj_t* m_icon;
-		lv_obj_t* m_status;
-		lv_obj_t* m_currentTemp;
-		lv_obj_t* m_activeTemp;
-		lv_obj_t* m_standbyTemp;
+		Button m_toolName;
+		Button m_status;
+		LvLabel m_currentTemp;
+		LvLabel m_activeTemp;
+		LvLabel m_standbyTemp;
 
 		bool m_selected;
 	};
@@ -87,8 +87,8 @@ namespace UI
 		ToolList(const std::string& name, lv_obj_t* parent, layout_t layout);
 
 		void setItemCnt(size_t cnt);
-		size_t getItemCnt() const;
-		std::shared_ptr<ToolListItem> getToolListItem(size_t index) const;
+		size_t getItemCnt() const { return m_list.getItemCount(); }
+		std::shared_ptr<ToolListItem> getToolListItem(size_t index) const { return m_list.getItem(index); }
 
 		void showNumberPad(const ToolListItem& item);
 		void hideNumberPad() { m_numberPad.hide(); }
@@ -98,14 +98,13 @@ namespace UI
 	  private:
 		void init();
 
-		lv_obj_t* m_header;
-		lv_obj_t* m_headerTool;
-		lv_obj_t* m_headerStatus;
-		lv_obj_t* m_headerCurrent;
-		lv_obj_t* m_headerActive;
-		lv_obj_t* m_headerStandby;
-		lv_obj_t* m_list;
-		std::vector<std::shared_ptr<ToolListItem>> m_items;
+		LvContainer m_header;
+		LvLabel m_headerTool;
+		LvLabel m_headerStatus;
+		LvLabel m_headerCurrent;
+		LvLabel m_headerActive;
+		LvLabel m_headerStandby;
+		List<ToolListItem> m_list;
 
 		ToolListNumPad m_numberPad;
 	};

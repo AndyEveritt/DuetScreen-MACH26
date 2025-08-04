@@ -31,26 +31,22 @@ namespace UI
 	{
 		UI_LOCK();
 		setUserData(this);
-		lv_obj_set_user_data(getRoot(), this);
-		lv_obj_set_user_data(m_label, this);
+		m_label.setUserData(this);
 
 		setMinHeight(30);
 		setMinWidth(50);
 
 		// Initialise the label obj
 		m_label.setText(text);
-		m_label.setPos(0, 0);
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_style_align(m_label, LV_ALIGN_CENTER, 0);
-		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
-		// lv_obj_update_layout(getCont());
+		m_label.setAlign(LV_ALIGN_CENTER, 0, 0);
+		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 	}
 
 	void Button::setText(const std::string_view text)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_label, text.data());
-		lv_obj_center(m_label);
+		m_label.setText(text);
 		if (m_icon != nullptr)
 		{
 			lv_obj_set_y(m_icon, LV_PCT(-20));
