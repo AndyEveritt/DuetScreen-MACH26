@@ -8,6 +8,7 @@
 #include "ToolList.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
@@ -158,37 +159,10 @@ namespace UI
 			view->getToolList().hideNumberPad();
 			return;
 		}
-		view->getToolList().showNumberPad(*view);
+		view->getToolList().showNumberPad();
 	}
 
-	ToolListNumPad::ToolListNumPad(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
-		, m_header(lv_label_create(getRoot()))
-		, m_numberPad("tool_list_number_pad", getRoot(), layout_t(0, 0, 100, 100))
-	{
-		UI_LOCK();
-
-		// Layout
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_grow(m_header, 0);
-		lv_obj_set_flex_grow(m_numberPad.getRoot(), 1);
-		lv_obj_set_width(m_header, LV_PCT(100));
-
-		// Header
-		lv_label_set_text(m_header, "");
-
-		// Number Pad
-		m_numberPad.setCloseOnConfirm(false);
-		m_numberPad.setValue(0);
-	}
-
-	bool ToolListNumPad::back()
-	{
-		closeScreen(this, false);
-		return true;
-	}
-
-	ToolList::ToolList(const std::string& name, lv_obj_t* parent)
+	ToolList::ToolList(const std::string& name, lv_obj_t* parent, lv_obj_t* numberPadParent)
 		: View(name, parent)
 		, m_header("header", getRoot())
 		, m_headerTool("tool", m_header)
@@ -197,21 +171,7 @@ namespace UI
 		, m_headerActive("active", m_header)
 		, m_headerStandby("standby", m_header)
 		, m_list("list", getRoot())
-		, m_numberPad("tool_list_number_pad", lv_screen_active(), layout_t(65, 0, 35, 100))
-	{
-		init();
-	}
-
-	ToolList::ToolList(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: View(name, parent, layout)
-		, m_header("header", getRoot())
-		, m_headerTool("tool", m_header)
-		, m_headerStatus("status", m_header)
-		, m_headerCurrent("current", m_header)
-		, m_headerActive("active", m_header)
-		, m_headerStandby("standby", m_header)
-		, m_list("list", getRoot())
-		, m_numberPad("tool_list_number_pad", lv_screen_active(), layout_t(65, 0, 35, 100))
+		, m_numberPad("number_pad", numberPadParent, layout_t(0, 0, 50, 70))
 	{
 		init();
 	}
@@ -257,11 +217,11 @@ namespace UI
 		m_list.setItemCount(cnt, *this);
 	}
 
-	void ToolList::showNumberPad(const ToolListItem& item)
+	void ToolList::showNumberPad()
 	{
 		UI_LOCK();
 		m_numberPad.clear();
-		openScreen(&m_numberPad, false);
+		openModal(&m_numberPad);
 		// m_numberPad.show();
 	}
 

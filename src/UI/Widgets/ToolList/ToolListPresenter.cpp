@@ -272,7 +272,7 @@ namespace UI
 
 	bool ToolListItemPresenter::configureNumberPad(const bool active)
 	{
-		ToolListNumPad& np = m_view->getToolList().m_numberPad;
+		auto& np = m_view->getToolList().m_numberPad;
 		std::shared_ptr<OM::Heat::Heater> heater;
 		std::string header;
 

@@ -8,7 +8,7 @@
 #pragma once
 
 #include "ToolListPresenter.h"
-#include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 #include <memory>
@@ -54,43 +54,19 @@ namespace UI
 		bool m_selected;
 	};
 
-	class ToolListNumPad : public LvObj
-	{
-	  public:
-		using confirm_cb_t = NumberPad::confirm_cb_t;
-
-		ToolListNumPad(const std::string& name, lv_obj_t* parent, layout_t layout);
-
-		void clear() { m_numberPad.clear(); }
-		void setMinValue(int16_t value) { m_numberPad.setMinValue(value); }
-		void setMaxValue(int16_t value) { m_numberPad.setMaxValue(value); }
-		void setValue(int16_t value) { m_numberPad.setValue(value); }
-		int16_t getValue() const { return m_numberPad.getValue(); }
-		void setHeader(const char* text) { lv_label_set_text(m_header, text); }
-		const char* getHeader() const { return lv_label_get_text(m_header); }
-
-		void setConfirmCallback(confirm_cb_t eventCb) { m_numberPad.setConfirmCallback(eventCb); }
-		virtual bool back() override;
-
-	  private:
-		lv_obj_t* m_header;
-		NumberPad m_numberPad;
-	};
-
 	class ToolList : public View<ToolListPresenter>
 	{
 	  public:
 		friend class ToolListPresenter;
 		friend class ToolListItemPresenter;
 
-		ToolList(const std::string& name, lv_obj_t* parent);
-		ToolList(const std::string& name, lv_obj_t* parent, layout_t layout);
+		ToolList(const std::string& name, lv_obj_t* parent, lv_obj_t* numberPadParent);
 
 		void setItemCnt(size_t cnt);
 		size_t getItemCnt() const { return m_list.getItemCount(); }
 		std::shared_ptr<ToolListItem> getToolListItem(size_t index) const { return m_list.getItem(index); }
 
-		void showNumberPad(const ToolListItem& item);
+		void showNumberPad();
 		void hideNumberPad() { m_numberPad.hide(); }
 
 		virtual void onHide() override { hideNumberPad(); }
@@ -106,6 +82,6 @@ namespace UI
 		LvLabel m_headerStandby;
 		List<ToolListItem> m_list;
 
-		ToolListNumPad m_numberPad;
+		ModalNumberPad m_numberPad;
 	};
 } // namespace UI

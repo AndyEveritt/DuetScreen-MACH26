@@ -49,6 +49,7 @@ namespace UI
 		LvKeyboard& getKeyboard() { return m_kb; }
 
 		// Sub-views
+		LvContainer& getMainWindow() { return m_mainWindow; }
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		MoveView& getMoveView() { return m_moveView; }
 		TemperatureView& getExtrudeView() { return m_temperatureView; }
@@ -69,12 +70,12 @@ namespace UI
 
 		StatusBar m_statusBar;
 		SideBar m_sideBar;
-		lv_obj_t* m_mainWindow;
+		LvContainer m_mainWindow;
 		ToolList m_toolList;
 		Graph m_graph;
 
 		// Window selector
-		lv_obj_t* m_windowSelect;
+		LvContainer m_windowSelect;
 		Button m_moveWindow;
 		Button m_temperatureWindow;
 		Button m_statusWindow;

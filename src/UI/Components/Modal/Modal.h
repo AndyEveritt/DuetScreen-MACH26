@@ -31,7 +31,14 @@ namespace UI
 			m_modalBg.addEventCallback(modalBgEventHandler, LV_EVENT_CLICKED, this);
 		}
 
-		void close() { closeModal(this); }
+		void close()
+		{
+			if (closeModal(this) || closeScreen(this, false))
+			{
+				return;
+			}
+			this->hide();
+		}
 
 	  private:
 		static void modalBgEventHandler(lv_event_t* e)
@@ -45,8 +52,8 @@ namespace UI
 			}
 		}
 
-		virtual void onShow() override { m_modalBg.setFlag(LV_OBJ_FLAG_HIDDEN, false); }
-		virtual void onHide() override { m_modalBg.setFlag(LV_OBJ_FLAG_HIDDEN, true); }
+		virtual void onShow() override { m_modalBg.show(true); }
+		virtual void onHide() override { m_modalBg.hide(); }
 
 		LvContainer m_modalBg;
 	};

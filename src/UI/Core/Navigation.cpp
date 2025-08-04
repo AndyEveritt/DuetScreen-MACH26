@@ -232,7 +232,7 @@ namespace UI
 	 * @param view The screen to be closed.
 	 * @param returnable If true, the screen will be added to the list of returnable screens.
 	 */
-	void closeScreen(ViewListItem_t view, bool returnable)
+	bool closeScreen(ViewListItem_t view, bool returnable)
 	{
 		UI_LOCK();
 		LOG_INFO("Closing screen '{:s}'", view->getName());
@@ -240,11 +240,12 @@ namespace UI
 		{
 			view->hide();
 		}
-		removeFromVector(s_openScreens, view);
+		bool removed = removeFromVector(s_openScreens, view);
 		if (returnable)
 		{
 			addToVector(s_returnableScreens, view);
 		}
+		return removed;
 	}
 
 	void openModal(LvObj* view)

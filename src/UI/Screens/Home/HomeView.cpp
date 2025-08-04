@@ -22,10 +22,10 @@ namespace UI
 		: View("HomeView", lv_screen_active(), layout_t(0, 0, 100, 100))
 		, m_statusBar(getRoot())
 		, m_sideBar("sidebar", getRoot())
-		, m_mainWindow(lv_obj_create(getRoot()))
-		, m_toolList("tool_list", m_mainWindow)
+		, m_mainWindow("main_window", getRoot())
+		, m_toolList("tool_list", m_mainWindow, m_mainWindow)
 		, m_graph("graph", m_mainWindow)
-		, m_windowSelect(lv_obj_create(m_mainWindow))
+		, m_windowSelect("window_select", m_mainWindow)
 		, m_moveWindow("move_window_select",
 					   m_windowSelect,
 					   _("move"),
