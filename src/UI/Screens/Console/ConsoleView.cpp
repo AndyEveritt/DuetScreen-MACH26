@@ -21,7 +21,7 @@ namespace UI
 		, m_output("output", m_topCont)
 		, m_inputCont("input_cont", getRoot())
 		, m_input("input", m_inputCont)
-		, m_clear("clear", m_input, LV_SYMBOL_CLOSE)
+		, m_clear("clear", m_input, LV_SYMBOL_TRASH)
 		, m_enter("enter", m_inputCont, LV_SYMBOL_NEW_LINE)
 		, m_kb("keyboard", getRoot())
 	{

@@ -88,6 +88,7 @@ namespace UI
 
 		validateInput();
 	}
+
 	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config)
 		: NumberPad(name, parent, layout)
 	{
