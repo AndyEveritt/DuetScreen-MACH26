@@ -8,6 +8,7 @@
 #include "SideBarPresenter.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "SideBar.h"
 #include <string>
 #include <thread>
 
@@ -24,4 +25,25 @@ namespace UI
 		Model::get().post<EventType::Response>("Emergency Stop, trying to reconnect..."s);
 	}
 
+	void SideBarPresenter::enableBackButton(bool enable)
+	{
+		m_view->enableBackButton(enable);
+	}
+
+	void SideBarPresenter::enableHomeButton(bool enable)
+	{
+		m_view->enableHomeButton(enable);
+	}
+
+	void SideBarPresenter::onInit()
+	{
+		registerEventListener<EventType::NavigationBackEnable>(this, &SideBarPresenter::enableBackButton);
+		registerEventListener<EventType::NavigationHomeEnable>(this, &SideBarPresenter::enableHomeButton);
+	}
+
+	void SideBarPresenter::onActivate()
+	{
+		enableBackButton(false);
+		enableHomeButton(false);
+	}
 } // namespace UI

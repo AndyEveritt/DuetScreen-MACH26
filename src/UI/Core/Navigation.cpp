@@ -43,6 +43,12 @@ namespace UI
 		return true;
 	}
 
+	static void notifySideBar()
+	{
+		Model::get().post<EventType::NavigationHomeEnable>(s_openScreens.size() > 0);
+		Model::get().post<EventType::NavigationBackEnable>(s_openScreens.size() > 0 || s_openModals.size() > 0);
+	}
+
 	/**
 	 * @brief Handles the action of the back button being pressed.
 	 *
@@ -74,17 +80,15 @@ namespace UI
 			LOG_WARN("No current screen");
 			return;
 		}
-		if (currentScreen->back())
+		if (!currentScreen->back())
 		{
-			return;
-		}
+			closeScreen(currentScreen, false);
 
-		closeScreen(currentScreen, false);
-
-		if (!s_returnableScreens.empty())
-		{
-			ViewListItem_t lastReturnable = s_returnableScreens.back();
-			openScreen(lastReturnable);
+			if (!s_returnableScreens.empty())
+			{
+				ViewListItem_t lastReturnable = s_returnableScreens.back();
+				openScreen(lastReturnable);
+			}
 		}
 	}
 
@@ -113,6 +117,7 @@ namespace UI
 
 		s_openScreens.clear();
 		s_returnableScreens.clear();
+		notifySideBar();
 	}
 
 	/**
@@ -192,6 +197,7 @@ namespace UI
 			addToVector(s_openScreens, view);
 		}
 		view->show(true);
+		notifySideBar();
 	}
 
 	/**
@@ -245,6 +251,7 @@ namespace UI
 		{
 			addToVector(s_returnableScreens, view);
 		}
+		notifySideBar();
 		return removed;
 	}
 
@@ -261,6 +268,7 @@ namespace UI
 
 		addToVector(s_openModals, view);
 		view->show(true);
+		notifySideBar();
 	}
 
 	void closeAllModals()
@@ -273,6 +281,7 @@ namespace UI
 			modal->hide();
 		}
 		s_openModals.clear();
+		notifySideBar();
 	}
 
 	bool closeModal(LvObj* view)
@@ -298,6 +307,7 @@ namespace UI
 
 		LOG_INFO("Closing modal '{:s}'", view->getName());
 		view->hide();
+		notifySideBar();
 		return true;
 	}
 
@@ -326,6 +336,7 @@ namespace UI
 		LOG_INFO("Closing modal '{:s}'", lastModal->getName());
 		lastModal->hide();
 		s_openModals.pop_back();
+		notifySideBar();
 		return true;
 	}
 

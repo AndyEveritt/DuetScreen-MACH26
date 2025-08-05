@@ -120,7 +120,9 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(Time)                                                                                                           \
 	XX(ToolData)                                                                                                       \
 	XX(ToolHeaterData, size_t)                                                                                         \
-	XX(Directories)
+	XX(Directories)                                                                                                    \
+	XX(NavigationHomeEnable, bool)                                                                                     \
+	XX(NavigationBackEnable, bool)
 
 enum class EventType
 {

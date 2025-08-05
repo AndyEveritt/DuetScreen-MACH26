@@ -213,6 +213,7 @@ namespace UI
 		// m_heightmapView.show();
 		m_toolList.activate();
 		m_statusBar.activate();
+		m_sideBar.activate();
 	}
 
 	void HomeView::onHide()

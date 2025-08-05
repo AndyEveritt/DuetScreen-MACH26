@@ -16,12 +16,15 @@ namespace UI
 	class SideBarPresenter : public Presenter<SideBar>
 	{
 	  public:
-		using Presenter::Presenter;
-		// TODO work out why this gives a compile error
-		// PRESENTER_CONSTRUCTOR(SideBarPresenter, SideBar)
+		PRESENTER_CONSTRUCTOR(SideBarPresenter, SideBar)
 
 		void eStop();
 
 	  protected:
+		void enableBackButton(bool enable);
+		void enableHomeButton(bool enable);
+
+		void onInit() override;
+		void onActivate() override;
 	};
 } // namespace UI
