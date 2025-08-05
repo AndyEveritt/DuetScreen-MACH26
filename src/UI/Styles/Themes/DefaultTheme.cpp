@@ -45,9 +45,6 @@ namespace UI::Themes
 		lv_style_set_radius(lvgl.card, RADIUS_DEFAULT);
 		lv_style_set_bg_opa(lvgl.card, LV_OPA_COVER);
 		lv_style_set_bg_color(lvgl.card, m_cardColor);
-		lv_style_set_border_color(lvgl.card, m_darkMode ? DARK_GREY : LIGHT_GREY);
-		lv_style_set_border_width(lvgl.card, BORDER_WIDTH);
-		lv_style_set_border_post(lvgl.card, true);
 		lv_style_set_text_color(lvgl.card, m_textColor);
 		lv_style_set_pad_all(lvgl.card, PAD_DEF);
 		lv_style_set_pad_row(lvgl.card, PAD_SMALL);
@@ -135,6 +132,21 @@ namespace UI::Themes
 		lv_style_set_bg_opa(lvgl.bg_color_list_item, LV_OPA_COVER);
 		lv_style_set_text_color(lvgl.bg_color_list_item, m_textColor);
 
+		lv_style_set_border_color(lvgl.border_color_primary, m_primaryColor);
+		lv_style_set_border_width(lvgl.border_color_primary, BORDER_WIDTH);
+		lv_style_set_border_opa(lvgl.border_color_primary, LV_OPA_COVER);
+		lv_style_set_border_side(lvgl.border_color_primary, LV_BORDER_SIDE_FULL);
+
+		lv_style_set_border_color(lvgl.border_color_secondary, m_secondaryColor);
+		lv_style_set_border_width(lvgl.border_color_secondary, BORDER_WIDTH);
+		lv_style_set_border_opa(lvgl.border_color_secondary, LV_OPA_COVER);
+		lv_style_set_border_side(lvgl.border_color_secondary, LV_BORDER_SIDE_FULL);
+
+		lv_style_set_border_color(lvgl.border_color_card, m_cardColor);
+		lv_style_set_border_width(lvgl.border_color_card, BORDER_WIDTH);
+		lv_style_set_border_opa(lvgl.border_color_card, LV_OPA_COVER);
+		lv_style_set_border_side(lvgl.border_color_card, LV_BORDER_SIDE_FULL);
+
 		lv_style_set_radius(lvgl.circle, LV_RADIUS_CIRCLE);
 
 		lv_style_set_radius(lvgl.no_radius, 0);
@@ -160,9 +172,10 @@ namespace UI::Themes
 		lv_style_set_border_opa(lvgl.actionBtn, LV_OPA_COVER);
 		lv_style_set_border_side(lvgl.actionBtn, LV_BORDER_SIDE_FULL);
 
-		lv_style_set_border_color(lvgl.input, m_darkMode ? LIGHT_GREY : DARK_GREY);
-		lv_style_set_border_width(lvgl.input, 2);
-		lv_style_set_radius(lvgl.input, RADIUS_DEFAULT);
+		lv_style_set_border_color(lvgl.input, m_highlightColor);
+		lv_style_set_border_width(lvgl.input, 1);
+		lv_style_set_pad_all(lvgl.input, 20);
+		lv_style_set_radius(lvgl.input, 2);
 		lv_style_set_pad_ver(lvgl.input, 0);
 		lv_style_set_text_align(lvgl.input, LV_TEXT_ALIGN_CENTER);
 

@@ -55,6 +55,9 @@ namespace UI::Themes
 		Style bg_color_secondary_muted;
 		Style bg_color_header;
 		Style bg_color_list_item;
+		Style border_color_primary;
+		Style border_color_secondary;
+		Style border_color_card;
 		Style pressed;
 		Style disabled;
 		Style pad_base;

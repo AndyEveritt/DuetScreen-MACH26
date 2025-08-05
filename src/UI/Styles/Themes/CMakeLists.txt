@@ -4,5 +4,6 @@ target_sources(
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/DefaultTheme.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/DarkTheme.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/GreyScaleTheme.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LightTheme.cpp
 )

@@ -11,14 +11,14 @@
 
 namespace UI::Themes
 {
-	static const lv_color_t s_primaryColor = lv_palette_main(LV_PALETTE_BLUE);
-	static const lv_color_t s_secondaryColor = lv_palette_darken(LV_PALETTE_RED, 3);
-	static const lv_color_t s_cardColor = lv_color_hex(0x282b30);
+	static const lv_color_t s_primaryColor = lv_palette_darken(LV_PALETTE_GREY, 1);
+	static const lv_color_t s_secondaryColor = lv_color_darken(s_primaryColor, 50);
+	static const lv_color_t s_cardColor = lv_palette_darken(LV_PALETTE_GREY, 3);
 	static const lv_color_t s_textColor = lv_palette_lighten(LV_PALETTE_GREY, 5);
-	static const lv_color_t s_highlightColor = lv_color_hex(0x2f3237);
+	static const lv_color_t s_highlightColor = lv_palette_darken(LV_PALETTE_GREY, 1);
 	static const lv_font_t* s_font = LV_FONT_DEFAULT;
 
-	static DefaultTheme s_darkTheme("theme_dark",
+	static DefaultTheme s_greyTheme("theme_grey",
 									s_primaryColor,
 									s_secondaryColor,
 									s_cardColor,

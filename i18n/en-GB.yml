@@ -427,7 +427,6 @@ en-GB:
   settings_screensaver_timeout: Screensaver Timeout
   settings_system_logging: Log system messages to console
   settings_theme: Theme
-  settings_theme_light: Light
   settings_usb_mode: USB-C Mode
   settings_usb_mode_device: USB-C Device
   settings_usb_mode_host: USB-C Host
@@ -458,6 +457,7 @@ en-GB:
   status_z_offset: 'Z Offset: %.2f mm'
   temperature: Temperature
   theme_dark: Dark
+  theme_grey: Greyscale
   theme_light: Light
   tool_list_numpad_header_bed_chamber: '%s %d %s'
   tool_list_numpad_header_tool_heater: Tool %d Heater %d %s

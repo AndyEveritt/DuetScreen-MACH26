@@ -48,8 +48,8 @@ namespace UI
 		Button m_toolName;
 		Button m_status;
 		LvLabel m_currentTemp;
-		LvLabel m_activeTemp;
-		LvLabel m_standbyTemp;
+		Button m_activeTemp;
+		Button m_standbyTemp;
 
 		bool m_selected;
 	};
