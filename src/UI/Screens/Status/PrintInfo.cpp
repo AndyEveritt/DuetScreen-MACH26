@@ -84,7 +84,7 @@ namespace UI
 	void PrintInfo::openExtrudeView(lv_event_t* e)
 	{
 		UI_LOCK();
-		auto& view = HomeView::instance().getExtrudeView();
+		auto& view = HomeView::instance().getTemperatureView();
 		openScreen(&view, true);
 	}
 

@@ -50,7 +50,8 @@ namespace UI
         void setBezier3Path(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 
         /* Getters */
-        uint32_t getDelay() const;
+		void* getVar() const;
+		uint32_t getDelay() const;
         uint32_t getPlaytime() const;
         uint32_t getTime() const;
         uint32_t getRepeatCount() const;

@@ -180,6 +180,9 @@ namespace UI
 		uint32_t getEventCount();
 		lv_result_t sendEvent(lv_event_code_t code, void* param = nullptr);
 
+		void moveToFront();
+		void moveToBack();
+		void moveToIndex(size_t index);
 		void setVisible(bool display, bool move_to_front = false)
 		{
 			display ? show(move_to_front) : hide(move_to_front);
@@ -187,6 +190,7 @@ namespace UI
 		virtual void show(bool move_to_front = false);
 		virtual void hide(bool move_to_back = false);
 		bool isVisible();
+
 		virtual bool back();
 
 	  protected:

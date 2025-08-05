@@ -254,6 +254,15 @@ namespace UI
 	}
 
 	/**
+	 * Get the variable to animate
+	 * @return         pointer to the variable to animate
+	 */
+	void* LvAnim::getVar() const
+	{
+		return m_anim.var;
+	}
+
+	/**
 	 * Get a delay before starting the animation
 	 * @return delay before the animation in milliseconds
 	 */

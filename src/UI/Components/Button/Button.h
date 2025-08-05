@@ -13,7 +13,7 @@ namespace UI
 		Button(const std::string& name, lv_obj_t* parent, const std::string& text);
 		Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout);
 
-		void setText(const std::string_view text);
+		void setText(std::string_view text);
 		std::string_view getText() const { return m_label.getText(); }
 		void addClickedCallback(lv_event_cb_t event_cb, void* user_data);
 		void setIcon(lv_img_dsc_t* icon);

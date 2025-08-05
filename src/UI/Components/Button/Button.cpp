@@ -43,7 +43,7 @@ namespace UI
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 	}
 
-	void Button::setText(const std::string_view text)
+	void Button::setText(std::string_view text)
 	{
 		UI_LOCK();
 		m_label.setText(text);
@@ -109,7 +109,6 @@ namespace UI
 
 	void Button::setDisabled(bool disabled)
 	{
-		UI_LOCK();
 		setState(LV_STATE_DISABLED, disabled);
 	}
 } // namespace UI

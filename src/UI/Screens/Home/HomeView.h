@@ -52,7 +52,7 @@ namespace UI
 		LvContainer& getMainWindow() { return m_mainWindow; }
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		MoveView& getMoveView() { return m_moveView; }
-		TemperatureView& getExtrudeView() { return m_temperatureView; }
+		TemperatureView& getTemperatureView() { return m_temperatureView; }
 		FanView& getFanView() { return m_fanView; }
 		FileView& getFileView() { return m_fileView; }
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
@@ -76,14 +76,7 @@ namespace UI
 
 		// Window selector
 		LvContainer m_windowSelect;
-		Button m_moveWindow;
-		Button m_temperatureWindow;
-		Button m_statusWindow;
-		Button m_heightmapWindow;
-		Button m_fansWindow;
-		Button m_objectCancelWindow;
-		Button m_filesWindow;
-		Button m_settingsWindow;
+		AppDrawer m_appDrawer;
 
 		// Windows
 		ConsoleView m_consoleView;

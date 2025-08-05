@@ -7,6 +7,7 @@
 
 #include "SideBar.h"
 #include "Debug.h"
+#include "UI/Components/LVGL/LvAnim.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Home/HomeView.h"
@@ -22,47 +23,60 @@ namespace UI
 
 	SideBar::SideBar(const std::string& name, lv_obj_t* parent)
 		: View(name, parent, layout_t{0, 0, width, height})
-		, m_homeBtn("Home", getRoot(), _("home"), layout_t{0, 20, 100, 0})
-		, m_backBtn("Back", getRoot(), _("back"), layout_t{0, 0, 100, 0})
-		, m_macrosBtn("Macros", getRoot(), _("macros"), layout_t{0, 40, 100, 0})
-		, m_consoleBtn("Console", getRoot(), _("console"), layout_t{0, 60, 100, 0})
-		, m_eStopBtn("E-Stop", getRoot(), _("estop"))
+		, m_btns("buttons", getRoot())
+		, m_homeBtn("home", m_btns, _("home"))
+		, m_backBtn("back", m_btns, _("back"))
+		, m_menuBtn("menu", m_btns, _("menu"))
+		, m_macrosBtn("macros", m_btns, _("macros"))
+		, m_eStopBtn("estop", m_btns, _("estop"))
+		, m_appDrawer("app_drawer", getRoot())
 	{
-		UI_LOCK();
 		LOG_VERBOSE("Creating SideBar");
 
-		setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_btns.setSize(LV_PCT(100), LV_PCT(100));
+		m_btns.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_btns.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		lv_obj_remove_flag(getRoot(), LV_OBJ_FLAG_SCROLLABLE);
-		lv_obj_set_overflow_visible_flag(getRoot(), 400);
+		m_btns.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
+
+		m_backBtn.setWidth(LV_PCT(100));
+		m_homeBtn.setWidth(LV_PCT(100));
+		m_macrosBtn.setWidth(LV_PCT(100));
+		m_menuBtn.setWidth(LV_PCT(100));
+
+		setExtDrawSize(400);
+		m_btns.setExtDrawSize(400);
 
 		m_backBtn.setFlexGrow(1);
 		m_homeBtn.setFlexGrow(1);
 		m_macrosBtn.setFlexGrow(1);
-		m_consoleBtn.setFlexGrow(1);
+		m_menuBtn.setFlexGrow(1);
 
 		m_eStopBtn.setSize(ESTOP_SIZE, ESTOP_SIZE);
 
 		m_backBtn.addClickedCallback(backBtnEvent, this);
 		m_homeBtn.addClickedCallback(homeBtnEvent, this);
 		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
-		m_consoleBtn.addClickedCallback(consoleBtnEvent, this);
+		m_menuBtn.addClickedCallback(menuBtnEvent, this);
 		m_eStopBtn.setDragCallback(eStopDraggedEvent, this);
 
+		// m_appDrawer.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_appDrawer.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_appDrawer.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
+		m_appDrawer.hide(true);
+
 		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);
+		addStyle(Themes::getLvglStyles().pad_zero);
 		m_eStopBtn.addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
 	}
 
 	void SideBar::enableHomeButton(bool enable)
 	{
-		UI_LOCK();
 		m_homeBtn.setDisabled(!enable);
 	}
 
 	void SideBar::enableBackButton(bool enable)
 	{
-		UI_LOCK();
 		m_backBtn.setDisabled(!enable);
 	}
 
@@ -78,23 +92,22 @@ namespace UI
 
 	void SideBar::macrosBtnEvent(lv_event_t* e)
 	{
-		UI_LOCK();
 		LOG_INFO("Macros button pressed");
 		FileView& fileView = HomeView::instance().getFileView();
 		fileView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
 		openScreen(&fileView, true);
 	}
 
-	void SideBar::consoleBtnEvent(lv_event_t* e)
+	void SideBar::menuBtnEvent(lv_event_t* e)
 	{
-		UI_LOCK();
-		LOG_INFO("Console button pressed");
-		openScreen(&HomeView::instance().getConsoleView(), true);
+		LOG_DBG("Menu button pressed");
+		SideBar& sidebar = *static_cast<SideBar*>(lv_event_get_user_data(e));
+
+		sidebar.showAppDrawer(sidebar.m_appDrawer.hasFlag(LV_OBJ_FLAG_HIDDEN));
 	}
 
 	void SideBar::eStopDraggedEvent(float pct, void* sidebar)
 	{
-		UI_LOCK();
 		LOG_INFO("E-Stop button dragged");
 		SideBar* sb = static_cast<SideBar*>(sidebar);
 		if (pct < 0.5f)
@@ -106,5 +119,39 @@ namespace UI
 		{
 			sb->m_presenter->eStop();
 		}
+	}
+
+	void SideBar::showAppDrawer(bool show)
+	{
+		LvAnim anim;
+		if (show == !m_appDrawer.hasFlag(LV_OBJ_FLAG_HIDDEN))
+		{
+			LOG_DBG("App drawer is already {}", show ? "shown" : "hidden");
+			return;
+		}
+		anim.setDuration(300);
+		anim.setVar(&m_appDrawer);
+		int32_t start = show ? 0 : m_appDrawer.getWidth();
+		int32_t end = show ? m_appDrawer.getWidth() : 0;
+		anim.setValues(start, end);
+		anim.setExecCb(
+			[](void* var, int32_t value)
+			{
+				auto& drawer = *static_cast<AppDrawer*>(var);
+				drawer.setX(value);
+			});
+		anim.setCompletedCb(
+			[](lv_anim_t* anim)
+			{
+				auto& drawer = *static_cast<AppDrawer*>(anim->var);
+				drawer.setFlag(LV_OBJ_FLAG_HIDDEN, !drawer.hasFlag(LV_OBJ_FLAG_HIDDEN));
+			});
+
+		anim.start();
+	}
+
+	void SideBar::onShow()
+	{
+		m_appDrawer.init();
 	}
 } // namespace UI

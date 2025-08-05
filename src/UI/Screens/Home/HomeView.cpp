@@ -26,38 +26,7 @@ namespace UI
 		, m_toolList("tool_list", m_mainWindow, m_mainWindow)
 		, m_graph("graph", m_mainWindow)
 		, m_windowSelect("window_select", m_mainWindow)
-		, m_moveWindow("move_window_select",
-					   m_windowSelect,
-					   _("move"),
-					   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_temperatureWindow("temperature_window_select",
-							  m_windowSelect,
-							  _("temperature"),
-							  layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_statusWindow("status_window_select",
-						 m_windowSelect,
-						 _("status"),
-						 layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_heightmapWindow("heightmap_window_select",
-							m_windowSelect,
-							_("heightmap"),
-							layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_fansWindow("fans_window_select",
-					   m_windowSelect,
-					   _("fans"),
-					   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_objectCancelWindow("object_cancel_window_select",
-							   m_windowSelect,
-							   _("object_cancel"),
-							   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_filesWindow("files_window_select",
-						m_windowSelect,
-						_("files"),
-						layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
-		, m_settingsWindow("settings_window_select",
-						   m_windowSelect,
-						   _("settings"),
-						   layout_t(0, 0, s_windowSelectorItemWidth, s_windowSelectorItemHeight))
+		, m_appDrawer("app_drawer", m_windowSelect)
 		, m_consoleView(m_mainWindow)
 		, m_moveView(m_mainWindow)
 		, m_temperatureView(m_mainWindow)
@@ -111,28 +80,7 @@ namespace UI
 		lv_obj_set_flex_align(m_windowSelect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		// Window select buttons
-		m_moveWindow.setUserData(&m_moveView);
-		m_temperatureWindow.setUserData(&m_temperatureView);
-		m_statusWindow.setUserData(&m_statusView);
-		m_heightmapWindow.setUserData(&m_heightmapView);
-		m_fansWindow.setUserData(&m_fanView);
-		m_filesWindow.setUserData(&m_fileView);
-		m_settingsWindow.setUserData(&m_settingsView);
-
-		m_moveWindow.addClickedCallback(onWindowSelectEvent, this);
-		m_temperatureWindow.addClickedCallback(onWindowSelectEvent, this);
-		m_fansWindow.addClickedCallback(onWindowSelectEvent, this);
-		m_filesWindow.addClickedCallback(
-			[](lv_event_t* e)
-			{
-				FileView* view = static_cast<FileView*>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
-				view->getPresenter()->setBaseFolder(FilePresenter::BaseFolder::GCODES);
-				openScreen(view, false);
-			},
-			this);
-		m_heightmapWindow.addClickedCallback(onWindowSelectEvent, this);
-		m_statusWindow.addClickedCallback(onWindowSelectEvent, this);
-		m_settingsWindow.addClickedCallback(onWindowSelectEvent, this);
+		m_appDrawer.setSize(LV_PCT(100), LV_PCT(100));
 
 		m_consoleView.hide();
 		m_moveView.hide();
@@ -213,7 +161,7 @@ namespace UI
 		// m_heightmapView.show();
 		m_toolList.activate();
 		m_statusBar.activate();
-		m_sideBar.activate();
+		m_sideBar.show(true);
 	}
 
 	void HomeView::onHide()

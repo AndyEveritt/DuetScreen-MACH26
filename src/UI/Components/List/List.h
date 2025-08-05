@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvObj.h"
 #include "UI/Styles/Styles.h"
 #include <memory>
@@ -22,8 +23,8 @@ namespace UI
 			: LvObj(lv_obj_create, fmt::format("{}", index), parent)
 			, m_index(index)
 		{
-			lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_list_item, 0);
-			lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
+			addStyle(Themes::getLvglStyles().bg_color_list_item, 0);
+			addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 		}
 
 		const size_t getIndex() const { return m_index; }

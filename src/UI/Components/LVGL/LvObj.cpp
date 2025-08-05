@@ -563,6 +563,24 @@ namespace UI
 		return lv_obj_send_event(getRoot(), code, param);
 	}
 
+	void LvObj::moveToFront()
+	{
+		UI_LOCK();
+		lv_obj_move_foreground(getRoot());
+	}
+
+	void LvObj::moveToBack()
+	{
+		UI_LOCK();
+		lv_obj_move_background(getRoot());
+	}
+
+	void LvObj::moveToIndex(size_t index)
+	{
+		UI_LOCK();
+		lv_obj_move_to_index(getRoot(), index);
+	}
+
 	/**
 	 * @brief Shows the view.
 	 *
@@ -575,7 +593,7 @@ namespace UI
 		{
 			return;
 		}
-		if (!lv_obj_has_flag(getRoot(), LV_OBJ_FLAG_HIDDEN))
+		if (!hasFlag(LV_OBJ_FLAG_HIDDEN))
 		{
 			LOG_VERBOSE("'{:s}' is already visible", getName());
 			// return;
@@ -584,9 +602,9 @@ namespace UI
 		LOG_DBG("Showing '{:s}'", getName());
 		if (move_to_front)
 		{
-			lv_obj_move_foreground(getRoot());
+			moveToFront();
 		}
-		lv_obj_remove_flag(getRoot(), LV_OBJ_FLAG_HIDDEN);
+		setFlag(LV_OBJ_FLAG_HIDDEN, false);
 		onShow();
 	}
 
@@ -602,7 +620,7 @@ namespace UI
 		{
 			return;
 		}
-		if (lv_obj_has_flag(getRoot(), LV_OBJ_FLAG_HIDDEN))
+		if (hasFlag(LV_OBJ_FLAG_HIDDEN))
 		{
 			LOG_VERBOSE("'{:s}' is already hidden", getName());
 			return;
@@ -611,9 +629,9 @@ namespace UI
 		LOG_DBG("Hiding '{:s}'", getName());
 		if (move_to_back)
 		{
-			lv_obj_move_background(getRoot());
+			moveToBack();
 		}
-		lv_obj_add_flag(getRoot(), LV_OBJ_FLAG_HIDDEN);
+		setFlag(LV_OBJ_FLAG_HIDDEN, true);
 		onHide();
 	}
 

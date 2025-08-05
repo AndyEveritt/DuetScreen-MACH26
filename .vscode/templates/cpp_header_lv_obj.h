@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "UI/Components/LVGL/LvObj.h"
+#include "UI/Components/LVGL/LvContainer.h"
 
 namespace UI
 {
-    class {{file_name}} : public LvObj
+    class {{file_name}} : public LvContainer
     {
       public:
         {{file_name}}(const std::string& name, lv_obj_t* parent);
