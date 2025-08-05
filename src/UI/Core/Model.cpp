@@ -122,6 +122,7 @@ void Model::runEventLoop()
 
 		bool found = false;
 
+		UI_LOCK();
 		{
 			auto it = m_handlers.find(event.first);
 			if (it != m_handlers.end())
