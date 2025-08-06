@@ -25,8 +25,6 @@ namespace UI
 		, m_mainWindow("main_window", getRoot())
 		, m_toolList("tool_list", m_mainWindow, m_mainWindow)
 		, m_graph("graph", m_mainWindow)
-		, m_windowSelect("window_select", m_mainWindow)
-		, m_appDrawer("app_drawer", m_windowSelect)
 		, m_consoleView(m_mainWindow)
 		, m_moveView(m_mainWindow)
 		, m_temperatureView(m_mainWindow)
@@ -56,11 +54,11 @@ namespace UI
 		lv_obj_add_style(m_mainWindow, Themes::getLvglStyles().no_border, 0);
 
 		// Main Window Layout
-		lv_obj_set_layout(m_mainWindow, LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(m_mainWindow, s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
-		lv_obj_set_grid_cell(m_toolList.getRoot(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_graph.getRoot(), LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		lv_obj_set_grid_cell(m_windowSelect, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+		m_mainWindow.setLayoutStyle(LV_LAYOUT_GRID);
+		m_mainWindow.setGridDsc(s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
+		m_mainWindow.setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		m_mainWindow.setGridCell(m_graph, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		m_mainWindow.setGridCell(m_fileView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 
 		// Tool List
 		m_toolList.activate();
@@ -70,23 +68,10 @@ namespace UI
 		m_graph.setYRange({.min = 0, .max = 300});
 		m_graph.setXCount(-m_graph.getXRange().min * MODEL_TICK_HZ * 2);
 
-		// Window select
-		lv_obj_set_style_pad_all(m_windowSelect, 2, LV_PART_MAIN);
-		lv_obj_set_style_pad_row(m_windowSelect, 2, LV_PART_MAIN);
-		lv_obj_set_style_pad_column(m_windowSelect, 2, LV_PART_MAIN);
-		lv_obj_set_pos(m_windowSelect, LV_PCT(60), 0);
-		lv_obj_set_size(m_windowSelect, LV_PCT(40), LV_PCT(100));
-		lv_obj_set_flex_flow(m_windowSelect, LV_FLEX_FLOW_ROW_WRAP);
-		lv_obj_set_flex_align(m_windowSelect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-
-		// Window select buttons
-		m_appDrawer.setSize(LV_PCT(100), LV_PCT(100));
-
 		m_consoleView.hide();
 		m_moveView.hide();
 		m_temperatureView.hide();
 		m_fanView.hide();
-		m_fileView.hide();
 		m_heightmapView.hide();
 		m_statusView.hide();
 		m_settingsView.hide();
@@ -116,36 +101,6 @@ namespace UI
 		m_kb.setSize(LV_PCT(100), LV_PCT(50));
 
 		m_numberpad.hide();
-
-		// Styles::instance().removeTheme(getCont());
-		// lv_obj_remove_style(getCont(), &Styles::instance().debugBorders.style, 0);
-		// lv_theme_apply(getCont());
-		// lv_obj_refresh_style(getCont(), LV_PART_ANY, LV_STYLE_PROP_ANY);
-
-		// lv_obj_t* cont = lv_obj_create(getCont());
-		// lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_PCT(100));
-		// lv_obj_set_layout(cont, LV_LAYOUT_FLEX);
-		// lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
-
-		// lv_obj_t* image = lv_image_create(cont);
-		// lv_obj_set_size(image, 100, 200);
-		// lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
-		// lv_image_set_src(image, IMAGE_ASSET("ffmpeg.png"));
-		// lv_image_set_inner_align(image, LV_IMAGE_ALIGN_CONTAIN);
-
-		// lv_obj_t* image2 = lv_image_create(cont);
-		// lv_obj_set_size(image2, 100, 100);
-		// lv_obj_align(image2, LV_ALIGN_CENTER, 0, 0);
-		// lv_image_set_src(image2, IMAGE_ASSET("qoi.bmp"));
-		// lv_image_set_inner_align(image2, LV_IMAGE_ALIGN_STRETCH);
-
-		// lv_obj_t* player = lv_ffmpeg_player_create(cont);
-		// lv_ffmpeg_player_set_src(player, VIDEO_ASSET("birds.mp4"));
-		// lv_ffmpeg_player_set_auto_restart(player, true);
-		// lv_ffmpeg_player_set_cmd(player, LV_FFMPEG_PLAYER_CMD_START);
-		// lv_obj_set_size(player, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-
-		// m_presenter->init();
 	}
 
 	void HomeView::clear()

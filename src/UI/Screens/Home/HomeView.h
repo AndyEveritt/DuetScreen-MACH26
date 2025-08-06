@@ -74,10 +74,6 @@ namespace UI
 		ToolList m_toolList;
 		Graph m_graph;
 
-		// Window selector
-		LvContainer m_windowSelect;
-		AppDrawer m_appDrawer;
-
 		// Windows
 		ConsoleView m_consoleView;
 		MoveView m_moveView;
