@@ -16,7 +16,7 @@ namespace UI
 		: View("fine_tune", parent, layout_t(0, 0, 100, 100))
 		, m_babystep("fine_tune_babystep", getRoot(), layout_t(0, 0, 100, 100))
 		, m_sliderCont(lv_obj_create(getRoot()))
-		, m_speed("fine_tune_speed", m_sliderCont, layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_speed("fine_tune_speed", m_sliderCont)
 		, m_extruderLabel(lv_label_create(m_sliderCont))
 		, m_extruderCont(lv_obj_create(m_sliderCont))
 		, m_fanLabel(lv_label_create(m_sliderCont))
@@ -130,10 +130,10 @@ namespace UI
 		m_extruders.reserve(count);
 		for (size_t i = getExtruderCount(); i < count; ++i)
 		{
-			m_extruders.emplace_back(
-				std::make_shared<Slider>("extruder_slider", m_extruderCont, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+			m_extruders.emplace_back(std::make_shared<Slider>("extruder_slider", m_extruderCont));
 			Slider& slider = *m_extruders.back();
 
+			slider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 			slider.setKeyboard(m_keyboard);
 			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 			slider.setRange(0, 200);
@@ -159,10 +159,10 @@ namespace UI
 		m_fans.reserve(count);
 		for (size_t i = getFanCount(); i < count; ++i)
 		{
-			m_fans.emplace_back(
-				std::make_shared<Slider>("fan_slider", m_fanCont, layout_t(0, 0, 100, LV_SIZE_CONTENT)));
+			m_fans.emplace_back(std::make_shared<Slider>("fan_slider", m_fanCont));
 			Slider& slider = *m_fans.back();
 
+			slider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 			slider.setKeyboard(m_keyboard);
 			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter->setFanValue(i, value); });

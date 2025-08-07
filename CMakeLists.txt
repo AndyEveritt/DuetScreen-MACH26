@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+include(FetchContent)
 project(DuetScreen C CXX)
 
 # Set C and C++ standards
@@ -39,8 +40,50 @@ if(NOT DEFINED PROCESSOR)
 endif()
 
 # ----------------------------------------------------------------------------
+# Set source files for executable
+# ----------------------------------------------------------------------------
+file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
+${LIBRARIES_DIR}/Duet3D/**.cpp)
+
+list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
+
+add_executable(DuetScreen ${MAIN_SOURCES})
+
+# Add clang-format custom target
+add_custom_target(
+  clang-format
+  COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
+  -print | xargs clang-format -i
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Running clang-format")
+  add_dependencies(DuetScreen clang-format)
+  
+  # Touch BuildDate.cpp to ensure it is always compiled
+  if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_custom_command(
+    TARGET DuetScreen
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
+    COMMENT "Touching BuildDate.cpp to force recompilation")
+    endif()
+    
+target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
+target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
+
+add_subdirectory(src)
+
+# ----------------------------------------------------------------------------
 # Libraries
 # ----------------------------------------------------------------------------
+
+# Color manipulation library
+FetchContent_Declare(
+  colorm
+  GIT_REPOSITORY https://github.com/soreja/colorm.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(colorm)
+target_include_directories(DuetScreen PRIVATE ${colorm_SOURCE_DIR})
 
 # option(BUILD_SHARED_LIBS "Set default library type to shared" OFF)
 
@@ -65,39 +108,6 @@ add_subdirectory(${LIBRARIES_DIR}/json)
 
 # Logging
 include(${LIBRARIES_DIR}/spdlog.cmake)
-
-# ----------------------------------------------------------------------------
-# Set source files for executable
-# ----------------------------------------------------------------------------
-file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
-     ${LIBRARIES_DIR}/Duet3D/**.cpp)
-
-list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
-
-add_executable(DuetScreen ${MAIN_SOURCES})
-
-# Add clang-format custom target
-add_custom_target(
-  clang-format
-  COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
-          -print | xargs clang-format -i
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMMENT "Running clang-format")
-add_dependencies(DuetScreen clang-format)
-
-# Touch BuildDate.cpp to ensure it is always compiled
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  add_custom_command(
-    TARGET DuetScreen
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
-    COMMENT "Touching BuildDate.cpp to force recompilation")
-endif()
-
-target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
-target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
-
-add_subdirectory(src)
 
 # Include libusb headers
 target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})

@@ -33,6 +33,8 @@ namespace UI
 	{
 		LOG_VERBOSE("Creating SideBar");
 
+		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
+
 		m_btns.setSize(LV_PCT(100), LV_PCT(100));
 		m_btns.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_btns.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -78,6 +80,7 @@ namespace UI
 	void SideBar::enableBackButton(bool enable)
 	{
 		m_backBtn.setDisabled(!enable);
+		showAppDrawer(false);
 	}
 
 	void SideBar::backBtnEvent(lv_event_t* e)

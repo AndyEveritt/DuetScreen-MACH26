@@ -11,8 +11,8 @@
 
 namespace UI
 {
-	Slider::Slider(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
+	Slider::Slider(const std::string& name, lv_obj_t* parent)
+		: LvObj(lv_obj_create, name, parent)
 		, m_label("label", getRoot())
 		, m_sliderCont("slider_cont", getRoot())
 		, m_decrement("slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)
@@ -74,8 +74,10 @@ namespace UI
 			LV_EVENT_ALL,
 			this);
 
+		setRange(0, 100);
+
 		m_input.setOneLine(true);
-		m_input.setAcceptedChars("0123456789");
+		m_input.setAcceptedChars("0123456789-.");
 		m_input.setMaxLength(4);
 		m_input.setCursorClickPos(false);
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
@@ -111,12 +113,29 @@ namespace UI
 		m_label.setText(text);
 	}
 
-	void Slider::setValue(int32_t value)
+	void Slider::setIncrementValue(float value)
+	{
+		UI_LOCK();
+		m_incrementValue = value;
+		m_slider.setMaxValue((m_max - m_min) / m_incrementValue);
+	}
+
+	void Slider::setRange(float min, float max)
+	{
+		UI_LOCK();
+		m_min = min;
+		m_max = max;
+		boundValue(m_value);
+		m_slider.setMaxValue((m_max - m_min) / m_incrementValue);
+		m_slider.setValue(m_value);
+	}
+
+	void Slider::setValue(float value)
 	{
 		UI_LOCK();
 		boundValue(value);
 		m_value = value;
-		m_slider.setValue(value);
+		m_slider.setValue(normaliseValue(value));
 
 		if (!m_input.hasState(LV_STATE_FOCUSED))
 		{
@@ -141,7 +160,11 @@ namespace UI
 			slider->m_focused = true;
 			break;
 		case LV_EVENT_VALUE_CHANGED:
-			slider->m_value = slider->m_slider.getValue();
+		{
+			slider->m_value = (slider->m_slider.getValue() - slider->m_slider.getMinValue()) /
+								  static_cast<float>(slider->m_slider.getMaxValue() - slider->m_slider.getMinValue()) *
+								  (slider->getMax() - slider->getMin()) +
+							  slider->getMin();
 			if (slider->boundValue(slider->m_value))
 			{
 				slider->setValue(slider->m_value);
@@ -155,7 +178,7 @@ namespace UI
 				slider->updateText();
 			}
 			break;
-
+		}
 		case LV_EVENT_RELEASED:
 			slider->m_focused = false;
 			if (slider->m_valueChangedCallback)
@@ -204,14 +227,14 @@ namespace UI
 		}
 		case LV_EVENT_READY:
 		{
-			int32_t value = atoi(slider->m_input.getText().data());
+			float value = atof(slider->m_input.getText().data());
 			slider->setValue(value);
 			break;
 		}
 		}
 	}
 
-	bool Slider::boundValue(int32_t& value)
+	bool Slider::boundValue(float& value)
 	{
 		UI_LOCK();
 		bool outOfRange = false;
@@ -243,9 +266,28 @@ namespace UI
 		return outOfRange;
 	}
 
+	int32_t Slider::normaliseValue(float value) const
+	{
+		if (value < getMin())
+		{
+			return m_slider.getMinValue();
+		}
+		else if (value > getMax())
+		{
+			return m_slider.getMaxValue();
+		}
+		else
+		{
+			const int32_t slider_min = m_slider.getMinValue();
+			const int32_t slider_max = m_slider.getMaxValue();
+			const int32_t slider_range = slider_max - slider_min;
+			return static_cast<int32_t>((slider_range * (value - getMin())) / (getMax() - getMin())) + slider_min;
+		}
+	}
+
 	void Slider::updateText()
 	{
 		UI_LOCK();
-		m_input.setText(std::to_string(getValue()).c_str());
+		m_input.setText(fmt::format("{:g}", getValue()));
 	}
 } // namespace UI

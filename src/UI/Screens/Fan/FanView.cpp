@@ -69,7 +69,7 @@ namespace UI
 		, m_view(view)
 		, m_index(index)
 		, m_off(utils::format("fan_off_%d", index).c_str(), getRoot(), _("off"))
-		, m_slider(utils::format("fan_slider_%d", index).c_str(), getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_slider(utils::format("fan_slider_%d", index).c_str(), getRoot())
 		, m_max(utils::format("fan_max_%d", index).c_str(), getRoot(), _("max"))
 	{
 		UI_LOCK();
@@ -79,6 +79,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_slider.getRoot(), 1);
 
 		m_slider.setLabel(_("fan"));
+		m_slider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_slider.setRange(0, 100);
 		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter->setFanSpeed(m_index, value); });
 		m_slider.setStylePad(5, LV_PART_MAIN, Padding::ALL);

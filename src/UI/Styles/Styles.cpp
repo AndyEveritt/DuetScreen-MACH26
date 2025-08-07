@@ -873,13 +873,9 @@ namespace UI::Themes
 		return s_themes;
 	}
 
-	const Theme& getCurrentTheme()
+	Theme* getCurrentTheme()
 	{
-		if (s_currentTheme == nullptr)
-		{
-			LOG_FATAL_THROW("Current theme is null");
-		}
-		return *s_currentTheme;
+		return s_currentTheme;
 	}
 
 	const Theme* getTheme(const size_t index)
@@ -908,6 +904,21 @@ namespace UI::Themes
 	const size_t getThemeCount()
 	{
 		return s_themes.size();
+	}
+
+	bool refreshCurrentTheme()
+	{
+		UI_LOCK();
+		if (s_currentTheme)
+		{
+			s_currentTheme->setThemeActive();
+			return true;
+		}
+		else
+		{
+			LOG_ERROR("No current theme set");
+			return false;
+		}
 	}
 
 	const std::vector<std::string> getThemeNames()

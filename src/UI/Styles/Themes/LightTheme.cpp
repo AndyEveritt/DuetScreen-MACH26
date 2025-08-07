@@ -9,32 +9,24 @@
 #include "DefaultTheme.h"
 #include "UI/Styles/Styles.h"
 
-#define COLOR_SCR lv_palette_lighten(LV_PALETTE_GREY, 4)
-#define COLOR_CARD lv_color_white()
-#define COLOR_TEXT lv_palette_darken(LV_PALETTE_GREY, 4)
-#define COLOR_BORDER lv_palette_lighten(LV_PALETTE_ORANGE, 2)
-
 namespace UI::Themes
 {
+	static const uint16_t s_primaryHue = 0;
+	static const uint16_t s_secondaryHue = (s_primaryHue + 240) & 360;
+	static const float s_chroma = 0.2f;
+	static const lv_font_t* s_font = LV_FONT_DEFAULT;
+	static bool s_darkMode = false;
+
+	static ThemeColors s_colors = createThemeColors(s_primaryHue, s_secondaryHue, s_chroma, s_darkMode);
+
 	static DefaultTheme s_lightTheme("theme_light",
-									 lv_palette_main(LV_PALETTE_GREEN),
-									 lv_palette_main(LV_PALETTE_YELLOW),
-									 lv_color_white(),
-									 COLOR_TEXT,
-									 COLOR_BORDER,
-									 LV_FONT_DEFAULT,
-									 false,
+									 s_colors,
+									 s_font,
+									 s_darkMode,
 									 [](Theme* theme)
 									 {
-										 lv_style_set_bg_color(theme->lvgl.screen, COLOR_SCR);
-										 lv_style_set_bg_color(theme->lvgl.card, COLOR_CARD);
-										 lv_style_set_border_color(theme->lvgl.card, COLOR_BORDER);
-
-										 lv_style_set_bg_color(theme->lvgl.bg_color_list_item,
-															   lv_palette_main(LV_PALETTE_PINK));
-
+										 // E-Stop color
 										 lv_style_set_bg_color(theme->components.estop,
 															   lv_palette_main(LV_PALETTE_RED));
-										 // lv_style_set_text_color(m_estop, COLOR_TEXT);
 									 });
 } // namespace UI::Themes

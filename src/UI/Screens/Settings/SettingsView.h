@@ -7,9 +7,10 @@
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/Input/TextBox.h"
+#include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Core/View.h"
 
-	namespace UI
+namespace UI
 {
 	class SettingsView;
 
@@ -83,6 +84,7 @@
 		lv_obj_t* m_buildTime;
 		DropdownMenu m_language;
 		DropdownMenu m_theme;
+		ThemePreview m_themePreview;
 		DropdownMenu m_usbMode;
 		Slider m_brightness;
 		Slider m_screensaverTimeout;

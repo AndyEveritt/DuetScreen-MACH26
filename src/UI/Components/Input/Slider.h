@@ -34,20 +34,20 @@ namespace UI
 			LOWER, // Allow the value to go out of range in the -ve direction
 		};
 
-		Slider(const std::string& name, lv_obj_t* parent, layout_t layout);
+		Slider(const std::string& name, lv_obj_t* parent);
 
-		int32_t getValue() const { return m_value; }
-		int32_t getMin() const { return m_slider.getMinValue(); }
-		int32_t getMax() const { return m_slider.getMaxValue(); }
+		float getValue() const { return m_value; }
+		float getMin() const { return m_min; }
+		float getMax() const { return m_max; }
 		lv_obj_t* getInput() const { return m_input; }
 
 		bool isFocused() const { return m_focused; }
 
 		void setOutOfRangeMode(OutOfRange mode);
 		void setLabel(const std::string& text);
-		void setIncrementValue(int32_t value) { m_incrementValue = value; }
-		void setRange(int32_t min, int32_t max) { m_slider.setRange(min, max); }
-		void setValue(int32_t value);
+		void setIncrementValue(float value);
+		void setRange(float min, float max);
+		void setValue(float value);
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
 		void setKeyboard(lv_obj_t* keyboard) { m_keyboard = keyboard; }
@@ -58,7 +58,8 @@ namespace UI
 		static void onValueChanged(lv_event_t* e);
 		static void onInputEvent(lv_event_t* e);
 
-		bool boundValue(int32_t& value);
+		bool boundValue(float& value);
+		int32_t normaliseValue(float value) const;
 		void updateText();
 
 		LvLabel m_label;
@@ -69,10 +70,12 @@ namespace UI
 		Button m_increment;
 		LvTextArea m_input;
 
-		int32_t m_incrementValue;
+		float m_incrementValue;
 		lv_obj_t* m_keyboard;
 
-		int32_t m_value;
+		float m_min;
+		float m_max;
+		float m_value;
 		bool m_focused = false;
 		bool m_longPressEnabled = true;
 		SendMode m_sendMode = SendMode::VALUE_CONFIRMED;

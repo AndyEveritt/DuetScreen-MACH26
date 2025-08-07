@@ -28,7 +28,7 @@ namespace UI
 		, m_deviceSettingsView(m_subWindow, *this)
 		, m_networkSettingsView(m_subWindow, *this)
 		, m_developerSettingsView(m_subWindow, *this)
-		, m_currentSubView(&m_duetSettingsView)
+		, m_currentSubView(&m_deviceSettingsView)
 	{
 		UI_LOCK();
 		// Layout
@@ -163,8 +163,8 @@ namespace UI
 		, m_usbSettings(*this)
 		, m_wifiSettings(*this)
 		, m_uartSettings(*this)
-		, m_pollInterval("duet_settings_poll_interval", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_infoTimeout("duet_settings_info_timeout", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_pollInterval("duet_settings_poll_interval", getRoot())
+		, m_infoTimeout("duet_settings_info_timeout", getRoot())
 	{
 		UI_LOCK();
 
@@ -180,6 +180,7 @@ namespace UI
 		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType());
 
 		// Poll Interval
+		m_pollInterval.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_pollInterval.setLabel(_("settings_duet_poll_interval"));
 		m_pollInterval.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL.count(), 2000);
@@ -192,6 +193,7 @@ namespace UI
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_pollInterval.getInput()); });
 
 		// Info Timeout
+		m_infoTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_infoTimeout.setLabel(_("settings_duet_info_timeout"));
 		m_infoTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_infoTimeout.setRange(0, 5000);
@@ -301,9 +303,10 @@ namespace UI
 		, m_buildTime(lv_label_create(getRoot()))
 		, m_language("language", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_theme("theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_themePreview("theme_demo", getRoot())
 		, m_usbMode("usb_mode", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_brightness("brightness", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_screensaverTimeout("screensaver_timeout", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_brightness("brightness", getRoot())
+		, m_screensaverTimeout("screensaver_timeout", getRoot())
 		, m_systemLogging(lv_checkbox_create(getRoot()))
 		, m_displayConnectedMessage(lv_checkbox_create(getRoot()))
 	{
@@ -333,12 +336,14 @@ namespace UI
 					return;
 				}
 				theme->setThemeActive();
+				view->m_themePreview.updateSwatches();
 				StorageHelper::setData(ID_THEME, selected);
 				// view->getMainSettingsPresenter()->setTheme(selected);
 			},
 			LV_EVENT_VALUE_CHANGED,
 			this);
 		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
+		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		m_usbMode.setLabel(_("settings_usb_mode"));
 		m_usbMode.setOptions(
@@ -357,6 +362,7 @@ namespace UI
 		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 
 		// Brightness
+		m_brightness.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_brightness.setRange(0, 100);
 		m_brightness.setLabel(_("settings_brightness"));
 		m_brightness.setValue(DisplayHelper::getBrightness());
@@ -368,6 +374,7 @@ namespace UI
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_brightness.getInput()); });
 
 		// Screensaver Timeout
+		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_screensaverTimeout.setLabel(_("settings_screensaver_timeout"));
 		m_screensaverTimeout.setRange(0, 30 * 60); // seconds
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
