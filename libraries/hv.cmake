@@ -1,9 +1,9 @@
+set(BUILD_SHARED OFF CACHE BOOL "Build shared library")
+set(BUILD_STATIC ON CACHE BOOL "Build static library")
+
 FetchContent_Declare(
   hv
   GIT_REPOSITORY https://github.com/ithewei/libhv.git
   GIT_TAG master
 )
 FetchContent_MakeAvailable(hv)
-set_target_properties(hv PROPERTIES 
-  BUILD_SHARED OFF 
-  BUILD_STATIC ON)
