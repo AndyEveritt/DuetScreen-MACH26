@@ -77,13 +77,7 @@ add_subdirectory(src)
 # ----------------------------------------------------------------------------
 
 # Color manipulation library
-FetchContent_Declare(
-  colorm
-  GIT_REPOSITORY https://github.com/soreja/colorm.git
-  GIT_TAG master
-)
-FetchContent_MakeAvailable(colorm)
-target_include_directories(DuetScreen PRIVATE ${colorm_SOURCE_DIR})
+include (${LIBRARIES_DIR}/colorm.cmake)
 
 # option(BUILD_SHARED_LIBS "Set default library type to shared" OFF)
 
@@ -101,10 +95,7 @@ pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 find_package(SDL2 REQUIRED)
 
 # Find json library
-set(JSON_BuildTests
-    OFF
-    CACHE INTERNAL "")
-add_subdirectory(${LIBRARIES_DIR}/json)
+include(${LIBRARIES_DIR}/json.cmake)
 
 # Logging
 include(${LIBRARIES_DIR}/spdlog.cmake)

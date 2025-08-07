@@ -23,7 +23,8 @@ namespace UI::Themes
 									s_colors,
 									s_font,
 									s_darkMode,
-									[](Theme* theme) {
+									[](Theme* theme)
+									{
 										lv_style_set_bg_color(theme->components.estop, lv_palette_main(LV_PALETTE_RED));
 									});
 } // namespace UI::Themes
