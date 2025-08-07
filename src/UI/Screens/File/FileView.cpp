@@ -23,6 +23,9 @@ namespace UI
 		, m_type(lv_label_create(getRoot()))
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
+
 		// Layout
 		constexpr lv_coord_t pad = 2;
 		lv_obj_set_height(getRoot(), LV_SIZE_CONTENT);

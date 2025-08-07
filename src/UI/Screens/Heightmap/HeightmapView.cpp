@@ -18,6 +18,9 @@ namespace UI
 			, m_load("load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		{
 			UI_LOCK();
+
+			addStyle(Themes::getLvglStyles().bg_dark);
+
 			setFlexFlow(LV_FLEX_FLOW_ROW);
 			lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 			lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);

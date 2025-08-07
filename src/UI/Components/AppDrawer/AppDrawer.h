@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "UI/Components/LVGL/LvContainer.h"
 #include "App.h"
+#include "UI/Components/Card/Card.h"
 #include "UI/Components/List/List.h"
 
 namespace UI
 {
-    class AppDrawer : public LvContainer
-    {
+	class AppDrawer : public Card
+	{
       public:
         AppDrawer(const std::string& name, lv_obj_t* parent);
         void init();

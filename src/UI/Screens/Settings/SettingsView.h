@@ -14,7 +14,7 @@ namespace UI
 {
 	class SettingsView;
 
-	class SettingsSubView : public LvContainer
+	class SettingsSubView : public Card
 	{
 	  public:
 		SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView);

@@ -171,6 +171,7 @@ namespace UI
 					  bool recursive = false);
 		void setStylePad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);
 		void setStyleBgColor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
+		void setStyleBgOpa(lv_opa_t opa, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector = LV_PART_MAIN);
 
 		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);

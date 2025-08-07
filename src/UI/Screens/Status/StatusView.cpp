@@ -1,6 +1,7 @@
 #include "StatusView.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
 /**
@@ -35,6 +36,8 @@ namespace UI
 		, m_fineTune(getRoot())
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
 
 		// Layout
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);

@@ -19,7 +19,7 @@ namespace UI
 	};
 
 	AppDrawer::AppDrawer(const std::string& name, lv_obj_t* parent)
-		: LvContainer(name, parent)
+		: Card(name, parent)
 		, m_apps("apps", getRoot())
 	{
 		setMinWidth(LV_SIZE_CONTENT);

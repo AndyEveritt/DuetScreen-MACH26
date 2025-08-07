@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Components/LVGL/LvObj.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -23,12 +24,16 @@ namespace UI
 		{
 			UI_LOCK();
 
+			this->addStyle(Themes::getLvglStyles().card);
+
 			this->setAlign(LV_ALIGN_CENTER, 0, 0);
 			lv_obj_set_parent(this->getRoot(), m_modalBg);
-			lv_obj_set_style_bg_opa(m_modalBg, LV_OPA_70, LV_PART_MAIN);
 			m_modalBg.setFlag(LV_OBJ_FLAG_FLOATING, true);
 
 			m_modalBg.addEventCallback(modalBgEventHandler, LV_EVENT_CLICKED, this);
+
+			m_modalBg.addStyle(Themes::getLvglStyles().bg);
+			lv_obj_set_style_bg_opa(m_modalBg, LV_OPA_70, LV_PART_MAIN);
 		}
 
 		void close()

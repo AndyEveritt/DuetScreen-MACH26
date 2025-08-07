@@ -36,6 +36,8 @@ namespace UI
 	{
 		UI_LOCK();
 
+		addStyle(Themes::getLvglStyles().bg_dark);
+
 		m_homeAll.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_trueBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_meshBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);

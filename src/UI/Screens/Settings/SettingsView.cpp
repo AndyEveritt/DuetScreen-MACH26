@@ -31,6 +31,9 @@ namespace UI
 		, m_currentSubView(&m_deviceSettingsView)
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
+
 		// Layout
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
@@ -123,7 +126,7 @@ namespace UI
 	}
 
 	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView)
-		: LvContainer(name, parent, layout_t(0, 0, 100, 100))
+		: Card(name, parent, layout_t(0, 0, 100, 100))
 		, m_mainSettingsView(mainSettingsView)
 	{
 		UI_LOCK();

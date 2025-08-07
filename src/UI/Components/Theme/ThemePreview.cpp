@@ -27,6 +27,7 @@ namespace UI
 			m_colorBox.setWidth(LV_PCT(100));
 			m_colorBox.setFlexGrow(1);
 			m_colorBox.setMinHeight(20);
+			m_colorBox.setStyleBgOpa(LV_OPA_COVER);
 			m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 			m_label.setMinWidth(LV_SIZE_CONTENT);
 			m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);

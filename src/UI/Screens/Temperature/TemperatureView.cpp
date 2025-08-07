@@ -19,6 +19,8 @@ namespace UI
 	{
 		UI_LOCK();
 
+		addStyle(Themes::getLvglStyles().bg_dark);
+
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 
 		m_temperatureCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);

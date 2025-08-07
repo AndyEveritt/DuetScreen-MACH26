@@ -167,12 +167,31 @@ namespace UI::Themes
 
 		lv_style_set_bg_opa(lvgl.scrollbar_scrolled, LV_OPA_COVER);
 
+		/* Base */
+
+		lv_style_set_bg_opa(lvgl.base, LV_OPA_TRANSP);
+
+		/* Screen */
+
+		lv_style_set_bg_color(lvgl.screen, m_colors.bg_dark);
+		lv_style_set_bg_opa(lvgl.screen, LV_OPA_COVER);
+
 		/* Card */
 
 		lv_style_set_radius(lvgl.card, RADIUS_DEFAULT);
 		lv_style_set_pad_all(lvgl.card, PAD_DEF);
 		lv_style_set_pad_row(lvgl.card, PAD_SMALL);
 		lv_style_set_pad_column(lvgl.card, PAD_SMALL);
+
+		lv_style_set_bg_opa(lvgl.card, LV_OPA_COVER);
+		lv_style_set_bg_color(lvgl.card, m_colors.bg_light);
+		lv_style_set_bg_grad_color(lvgl.card, m_colors.bg);
+		lv_style_set_bg_grad_dir(lvgl.card, LV_GRAD_DIR_VER);
+
+		lv_style_set_border_color(lvgl.card, m_colors.border);
+		lv_style_set_border_width(lvgl.card, BORDER_WIDTH);
+		lv_style_set_border_opa(lvgl.card, LV_OPA_COVER);
+		lv_style_set_border_side(lvgl.card, LV_BORDER_SIDE_FULL);
 
 		/* Button */
 

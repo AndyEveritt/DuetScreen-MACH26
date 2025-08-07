@@ -27,6 +27,8 @@ namespace UI
 	{
 		UI_LOCK();
 
+		addStyle(Themes::getLvglStyles().bg_dark);
+
 		// Layout
 		setAlign(LV_ALIGN_CENTER, 0, 0);
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);

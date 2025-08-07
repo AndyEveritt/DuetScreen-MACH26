@@ -184,9 +184,10 @@ namespace UI::Themes
 			return;
 		}
 
+#if 1
 		if (lv_obj_check_type(obj, &lv_obj_class))
 		{
-#if LV_USE_TABVIEW
+#  if LV_USE_TABVIEW
 			/*Tabview content area*/
 			if (lv_obj_check_type(parent, &lv_tabview_class) && lv_obj_get_child(parent, 1) == obj)
 			{
@@ -211,9 +212,9 @@ namespace UI::Themes
 								 static_cast<int>(LV_PART_SCROLLBAR) | static_cast<int>(LV_STATE_SCROLLED));
 				return;
 			}
-#endif
+#  endif
 
-#if LV_USE_WIN
+#  if LV_USE_WIN
 			/*Header*/
 			if (lv_obj_check_type(parent, &lv_win_class) && lv_obj_get_child(parent, 0) == obj)
 			{
@@ -232,28 +233,27 @@ namespace UI::Themes
 								 static_cast<int>(LV_PART_SCROLLBAR) | static_cast<int>(LV_STATE_SCROLLED));
 				return;
 			}
-#endif
+#  endif
 
-#if LV_USE_CALENDAR
+#  if LV_USE_CALENDAR
 			if (lv_obj_check_type(parent, &lv_calendar_class))
 			{
 				/*No style*/
 				return;
 			}
-#endif
+#  endif
 
-			lv_obj_add_style(obj, s_lvglStyles.card, 0);
 			lv_obj_add_style(obj, s_lvglStyles.pad_base, 0);
 			lv_obj_add_style(obj, s_lvglStyles.scrollbar, LV_PART_SCROLLBAR);
 			lv_obj_add_style(obj,
 							 s_lvglStyles.scrollbar_scrolled,
 							 static_cast<int>(LV_PART_SCROLLBAR) | static_cast<int>(LV_STATE_SCROLLED));
 		}
-#if LV_USE_BUTTON
+#  if LV_USE_BUTTON
 		else if (lv_obj_check_type(obj, &lv_button_class))
 		{
 
-#  if LV_USE_TABVIEW
+#	if LV_USE_TABVIEW
 			lv_obj_t* tv = lv_obj_get_parent(parent); /*parent is the tabview header*/
 			if (tv && lv_obj_get_child(tv, 0) == parent)
 			{ /*The button is on the tab view header*/
@@ -269,7 +269,7 @@ namespace UI::Themes
 				}
 			}
 
-#  endif
+#	endif
 			lv_obj_add_style(obj, s_lvglStyles.pad_base, 0);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, 0);
 			lv_obj_add_style(obj, s_lvglStyles.btn, 0);
@@ -281,29 +281,29 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_secondary, LV_STATE_CHECKED);
 			lv_obj_add_style(obj, s_lvglStyles.disabled, LV_STATE_DISABLED);
 
-#  if LV_USE_MENU
+#	if LV_USE_MENU
 			if (lv_obj_check_type(parent, &lv_menu_sidebar_header_cont_class) ||
 				lv_obj_check_type(parent, &lv_menu_main_header_cont_class))
 			{
 				lv_obj_add_style(obj, s_lvglStyles.menu_header_btn, 0);
 				lv_obj_add_style(obj, s_lvglStyles.menu_pressed, LV_STATE_PRESSED);
 			}
-#  endif
+#	endif
 		}
-#endif
+#  endif
 
-#if LV_USE_LINE
+#  if LV_USE_LINE
 		else if (lv_obj_check_type(obj, &lv_line_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.line, 0);
 		}
-#endif
+#  endif
 
-#if LV_USE_BUTTONMATRIX
+#  if LV_USE_BUTTONMATRIX
 		else if (lv_obj_check_type(obj, &lv_buttonmatrix_class))
 		{
 
-#  if LV_USE_CALENDAR
+#	if LV_USE_CALENDAR
 			if (lv_obj_check_type(parent, &lv_calendar_class))
 			{
 				lv_obj_add_style(obj, s_lvglStyles.calendar_btnm_bg, 0);
@@ -322,7 +322,7 @@ namespace UI::Themes
 								 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_EDITED));
 				return;
 			}
-#  endif
+#	endif
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
 			lv_obj_add_style(obj, s_lvglStyles.btnm_bg, 0);
 			lv_obj_add_style(obj, s_lvglStyles.outline_primary, LV_STATE_FOCUS_KEY);
@@ -343,9 +343,9 @@ namespace UI::Themes
 							 s_lvglStyles.outline_secondary,
 							 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_EDITED));
 		}
-#endif
+#  endif
 
-#if LV_USE_CANVAS
+#  if LV_USE_CANVAS
 		else if (lv_obj_check_type(obj, &lv_canvas_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -353,9 +353,9 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.canvas, LV_PART_MAIN);
 		}
-#endif
+#  endif
 
-#if LV_USE_BAR
+#  if LV_USE_BAR
 		else if (lv_obj_check_type(obj, &lv_bar_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary_muted, 0);
@@ -365,9 +365,9 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, s_lvglStyles.bar_indic, LV_PART_INDICATOR);
 		}
-#endif
+#  endif
 
-#if LV_USE_SLIDER
+#  if LV_USE_SLIDER
 		else if (lv_obj_check_type(obj, &lv_slider_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary_muted, 0);
@@ -385,9 +385,9 @@ namespace UI::Themes
 							 s_lvglStyles.transition_normal,
 							 static_cast<int>(LV_PART_KNOB) | static_cast<int>(LV_STATE_PRESSED));
 		}
-#endif
+#  endif
 
-#if LV_USE_TABLE
+#  if LV_USE_TABLE
 		else if (lv_obj_check_type(obj, &lv_table_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -410,9 +410,9 @@ namespace UI::Themes
 							 s_lvglStyles.bg_color_secondary,
 							 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_EDITED));
 		}
-#endif
+#  endif
 
-#if LV_USE_CHECKBOX
+#  if LV_USE_CHECKBOX
 		else if (lv_obj_check_type(obj, &lv_checkbox_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.pad_gap, 0);
@@ -435,9 +435,9 @@ namespace UI::Themes
 							 static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_PRESSED));
 			lv_obj_add_style(obj, s_lvglStyles.transition_delayed, LV_PART_INDICATOR);
 		}
-#endif
+#  endif
 
-#if LV_USE_SWITCH
+#  if LV_USE_SWITCH
 		else if (lv_obj_check_type(obj, &lv_switch_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_switch, 0);
@@ -455,9 +455,9 @@ namespace UI::Themes
 							 static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_CHECKED));
 			lv_obj_add_style(obj, s_lvglStyles.transition_normal, LV_PART_INDICATOR);
 		}
-#endif
+#  endif
 
-#if LV_USE_CHART
+#  if LV_USE_CHART
 		else if (lv_obj_check_type(obj, &lv_chart_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -471,9 +471,9 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.chart_indic, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, s_lvglStyles.chart_series, LV_PART_CURSOR);
 		}
-#endif
+#  endif
 
-#if LV_USE_ROLLER
+#  if LV_USE_ROLLER
 		else if (lv_obj_check_type(obj, &lv_roller_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -484,9 +484,9 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_PART_SELECTED);
 		}
-#endif
+#  endif
 
-#if LV_USE_DROPDOWN
+#  if LV_USE_DROPDOWN
 		else if (lv_obj_check_type(obj, &lv_dropdown_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -515,9 +515,9 @@ namespace UI::Themes
 			lv_obj_add_style(
 				obj, s_lvglStyles.pressed, static_cast<int>(LV_PART_SELECTED) | static_cast<int>(LV_STATE_PRESSED));
 		}
-#endif
+#  endif
 
-#if LV_USE_ARC
+#  if LV_USE_ARC
 		else if (lv_obj_check_type(obj, &lv_arc_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.arc_indic, 0);
@@ -525,18 +525,18 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.arc_indic_primary, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, s_lvglStyles.knob, LV_PART_KNOB);
 		}
-#endif
+#  endif
 
-#if LV_USE_SPINNER
+#  if LV_USE_SPINNER
 		else if (lv_obj_check_type(obj, &lv_spinner_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.arc_indic, 0);
 			lv_obj_add_style(obj, s_lvglStyles.arc_indic, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, s_lvglStyles.arc_indic_primary, LV_PART_INDICATOR);
 		}
-#endif
+#  endif
 
-#if LV_USE_TEXTAREA
+#  if LV_USE_TEXTAREA
 		else if (lv_obj_check_type(obj, &lv_textarea_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -552,31 +552,31 @@ namespace UI::Themes
 				obj, s_lvglStyles.ta_cursor, static_cast<int>(LV_PART_CURSOR) | static_cast<int>(LV_STATE_FOCUSED));
 			lv_obj_add_style(obj, s_lvglStyles.ta_placeholder, LV_PART_TEXTAREA_PLACEHOLDER);
 		}
-#endif
+#  endif
 
-#if LV_USE_CALENDAR
+#  if LV_USE_CALENDAR
 		else if (lv_obj_check_type(obj, &lv_calendar_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
 			lv_obj_add_style(obj, s_lvglStyles.pad_zero, 0);
 		}
 
-#  if LV_USE_CALENDAR_HEADER_ARROW
+#	if LV_USE_CALENDAR_HEADER_ARROW
 		else if (lv_obj_check_type(obj, &lv_calendar_header_arrow_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.calendar_header, 0);
 		}
-#  endif
+#	endif
 
-#  if LV_USE_CALENDAR_HEADER_DROPDOWN
+#	if LV_USE_CALENDAR_HEADER_DROPDOWN
 		else if (lv_obj_check_type(obj, &lv_calendar_header_dropdown_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.calendar_header, 0);
 		}
+#	endif
 #  endif
-#endif
 
-#if LV_USE_KEYBOARD
+#  if LV_USE_KEYBOARD
 		else if (lv_obj_check_type(obj, &lv_keyboard_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.screen, 0);
@@ -599,16 +599,16 @@ namespace UI::Themes
 							 s_lvglStyles.bg_color_secondary_muted,
 							 static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_EDITED));
 		}
-#endif
+#  endif
 
-#if LV_USE_LABEL && LV_USE_TEXTAREA
+#  if LV_USE_LABEL && LV_USE_TEXTAREA
 		else if (lv_obj_check_type(obj, &lv_label_class) && lv_obj_check_type(parent, &lv_textarea_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_PART_SELECTED);
 		}
-#endif
+#  endif
 
-#if LV_USE_LIST
+#  if LV_USE_LIST
 		else if (lv_obj_check_type(obj, &lv_list_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -636,8 +636,8 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.list_item_grow, LV_STATE_PRESSED);
 			lv_obj_add_style(obj, s_lvglStyles.pressed, LV_STATE_PRESSED);
 		}
-#endif
-#if LV_USE_MENU
+#  endif
+#  if LV_USE_MENU
 		else if (lv_obj_check_type(obj, &lv_menu_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -690,8 +690,8 @@ namespace UI::Themes
 		{
 			lv_obj_add_style(obj, s_lvglStyles.menu_separator, 0);
 		}
-#endif
-#if LV_USE_MSGBOX
+#  endif
+#  if LV_USE_MSGBOX
 		else if (lv_obj_check_type(obj, &lv_msgbox_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -738,9 +738,9 @@ namespace UI::Themes
 			return;
 		}
 
-#endif
+#  endif
 
-#if LV_USE_SPINBOX
+#  if LV_USE_SPINBOX
 		else if (lv_obj_check_type(obj, &lv_spinbox_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
@@ -749,8 +749,8 @@ namespace UI::Themes
 			lv_obj_add_style(obj, s_lvglStyles.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, s_lvglStyles.bg_color_primary, LV_PART_CURSOR);
 		}
-#endif
-#if LV_USE_TILEVIEW
+#  endif
+#  if LV_USE_TILEVIEW
 		else if (lv_obj_check_type(obj, &lv_tileview_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.screen, 0);
@@ -766,45 +766,46 @@ namespace UI::Themes
 							 s_lvglStyles.scrollbar_scrolled,
 							 static_cast<int>(LV_PART_SCROLLBAR) | static_cast<int>(LV_STATE_SCROLLED));
 		}
-#endif
+#  endif
 
-#if LV_USE_TABVIEW
+#  if LV_USE_TABVIEW
 		else if (lv_obj_check_type(obj, &lv_tabview_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.screen, 0);
 			lv_obj_add_style(obj, s_lvglStyles.pad_zero, 0);
 		}
-#endif
+#  endif
 
-#if LV_USE_WIN
+#  if LV_USE_WIN
 		else if (lv_obj_check_type(obj, &lv_win_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.clip_corner, 0);
 		}
-#endif
+#  endif
 
-#if LV_USE_LED
+#  if LV_USE_LED
 		else if (lv_obj_check_type(obj, &lv_led_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.led, 0);
 		}
-#endif
+#  endif
 
-#if LV_USE_SCALE
+#  if LV_USE_SCALE
 		else if (lv_obj_check_type(obj, &lv_scale_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.scale, LV_PART_MAIN);
 			lv_obj_add_style(obj, s_lvglStyles.scale, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, s_lvglStyles.scale, LV_PART_ITEMS);
 		}
-#endif
+#  endif
 
-#if DEBUG_BORDERS
+#  if DEBUG_BORDERS
 		if (lv_obj_has_style(lv_screen_active(), s_debugBorders))
 		{
 			// Add debug borders to any newly created objects
 			lv_obj_add_style(obj, s_debugBorders, LV_PART_MAIN);
 		}
+#  endif
 #endif
 	}
 
