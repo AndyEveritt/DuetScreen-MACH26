@@ -7,6 +7,7 @@
 
 #include "FineTune.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include <algorithm>
 
@@ -15,44 +16,47 @@ namespace UI
 	FineTune::FineTune(lv_obj_t* parent)
 		: View("fine_tune", parent, layout_t(0, 0, 100, 100))
 		, m_babystep("fine_tune_babystep", getRoot(), layout_t(0, 0, 100, 100))
-		, m_sliderCont(lv_obj_create(getRoot()))
-		, m_speed("fine_tune_speed", m_sliderCont)
-		, m_extruderLabel(lv_label_create(m_sliderCont))
-		, m_extruderCont(lv_obj_create(m_sliderCont))
-		, m_fanLabel(lv_label_create(m_sliderCont))
-		, m_fanCont(lv_obj_create(m_sliderCont))
-		, m_keyboard(lv_keyboard_create(getRoot()))
+		, m_sliderCont("sliders", getRoot())
+		, m_speed("speed", m_sliderCont)
+		, m_extruders("extruders", m_sliderCont)
+		, m_fans("fans", m_sliderCont)
+		, m_keyboard("kb", getRoot())
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		addStyle(Themes::getLvglStyles().bg_dark);
+		m_babystep.addStyle(Themes::getLvglStyles().card);
+		m_speed.addStyle(Themes::getLvglStyles().card);
+		m_extruders.addStyle(Themes::getLvglStyles().card);
+		m_fans.addStyle(Themes::getLvglStyles().card);
+
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
 		{
 			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
 			lv_obj_set_height(child, LV_PCT(100));
 		}
-		lv_obj_set_flex_grow(m_babystep.getRoot(), 2);
-		lv_obj_set_flex_grow(m_sliderCont, 5);
-		lv_obj_set_flex_grow(m_keyboard, 6);
+		m_babystep.setFlexGrow(2);
+		m_sliderCont.setFlexGrow(5);
+		m_keyboard.setFlexGrow(6);
 
-		lv_obj_set_style_max_width(m_babystep.getRoot(), 200, 0);
+		m_babystep.setMaxWidth(200);
 
-		lv_obj_set_layout(m_sliderCont, LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(m_sliderCont, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(m_sliderCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < lv_obj_get_child_cnt(m_sliderCont); i++)
-		{
-			lv_obj_t* child = lv_obj_get_child(m_sliderCont, i);
-			lv_obj_set_size(child, LV_PCT(100), LV_SIZE_CONTENT);
-		}
+		m_speed.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_extruders.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_fans.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		lv_keyboard_set_mode(m_keyboard, LV_KEYBOARD_MODE_NUMBER);
-		lv_obj_add_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_event_cb(
-			m_keyboard,
+		m_extruders.setTitle(_("fine_tune_extruder_header"));
+		m_fans.setTitle(_("fine_tune_fan_header"));
+
+		m_keyboard.setMode(LV_KEYBOARD_MODE_NUMBER);
+		m_keyboard.hide();
+		m_keyboard.addEventCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
@@ -77,8 +81,7 @@ namespace UI
 		m_speed.setRange(1, 200);
 		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter->setSpeedFactor(value); });
 
-		lv_obj_add_event_cb(
-			m_sliderCont,
+		m_sliderCont.addEventCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
@@ -87,16 +90,6 @@ namespace UI
 			},
 			LV_EVENT_SCROLL,
 			this);
-
-		lv_label_set_text(m_extruderLabel, _("fine_tune_extruder_header"));
-		lv_obj_set_layout(m_extruderCont, LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(m_extruderCont, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(m_extruderCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-
-		lv_label_set_text(m_fanLabel, _("fine_tune_fan_header"));
-		lv_obj_set_layout(m_fanCont, LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(m_fanCont, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(m_fanCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	}
 
 	void FineTune::setBabyStepValue(float value)
@@ -115,99 +108,80 @@ namespace UI
 	 */
 	void FineTune::setExtruderCount(size_t count)
 	{
-		UI_LOCK();
-		if (count == getExtruderCount())
-		{
-			return;
-		}
-
-		if (count < getExtruderCount())
-		{
-			m_extruders.resize(count);
-			return;
-		}
-
-		m_extruders.reserve(count);
-		for (size_t i = getExtruderCount(); i < count; ++i)
-		{
-			m_extruders.emplace_back(std::make_shared<Slider>("extruder_slider", m_extruderCont));
-			Slider& slider = *m_extruders.back();
-
-			slider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-			slider.setKeyboard(m_keyboard);
-			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
-			slider.setRange(0, 200);
-			slider.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter->setExtruderFactor(i, value); });
-		}
+		m_extruders.setItemCount(count,
+								 [this](size_t index, lv_obj_t* parent)
+								 {
+									 auto slider = std::make_shared<Slider>(fmt::format("{:d}", index), parent);
+									 slider->setSize(LV_PCT(100), LV_SIZE_CONTENT);
+									 slider->setKeyboard(m_keyboard);
+									 slider->setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+									 slider->setRange(0, 200);
+									 slider->setOutOfRangeMode(Slider::OutOfRange::UPPER);
+									 slider->setValueChangedCallback([this, index](int32_t value)
+																	 { m_presenter->setExtruderFactor(index, value); });
+									 return slider;
+								 });
 	}
 
 	void FineTune::setFanCount(size_t count)
 	{
-		UI_LOCK();
-		if (count == getFanCount())
-		{
-			return;
-		}
+		m_fans.setItemCount(count,
+							[this](size_t index, lv_obj_t* parent)
+							{
+								auto slider = std::make_shared<Slider>(fmt::format("{:d}", index), parent);
 
-		if (count < getFanCount())
-		{
-			m_fans.resize(count);
-			return;
-		}
-
-		m_fans.reserve(count);
-		for (size_t i = getFanCount(); i < count; ++i)
-		{
-			m_fans.emplace_back(std::make_shared<Slider>("fan_slider", m_fanCont));
-			Slider& slider = *m_fans.back();
-
-			slider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-			slider.setKeyboard(m_keyboard);
-			slider.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
-			slider.setValueChangedCallback([this, i](int32_t value) { m_presenter->setFanValue(i, value); });
-		}
+								slider->setSize(LV_PCT(100), LV_SIZE_CONTENT);
+								slider->setKeyboard(m_keyboard);
+								slider->setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+								slider->setValueChangedCallback([this, index](int32_t value)
+																{ m_presenter->setFanValue(index, value); });
+								return slider;
+							});
 	}
 
-	void FineTune::setExtruderLabel(size_t index, const char* label)
+	void FineTune::setExtruderLabel(size_t index, std::string_view label)
 	{
 		UI_LOCK();
-		if (index >= m_extruders.size())
+		auto extruder = m_extruders.getItem(index);
+		if (!extruder || extruder->isFocused())
 		{
 			return;
 		}
-		m_extruders[index]->setLabel(label);
+		extruder->setLabel(label);
 	}
 
 	void FineTune::setExtruderValue(size_t index, uint32_t value)
 	{
 		UI_LOCK();
-		if (index >= m_extruders.size() || m_extruders[index]->isFocused())
+		auto extruder = m_extruders.getItem(index);
+		if (!extruder || extruder->isFocused())
 		{
 			return;
 		}
-		m_extruders[index]->setValue(value);
+		extruder->setValue(value);
 	}
 
-	void FineTune::setFanLabel(size_t index, const char* label)
+	void FineTune::setFanLabel(size_t index, std::string_view label)
 	{
 		UI_LOCK();
-		if (index >= m_fans.size())
+		auto fan = m_fans.getItem(index);
+		if (!fan || fan->isFocused())
 		{
 			return;
 		}
-		m_fans[index]->setLabel(label);
+		fan->setLabel(label);
 	}
 
 	void FineTune::setFanValue(size_t index, uint32_t value)
 	{
 		UI_LOCK();
-		if (index >= m_fans.size() || m_fans[index]->isFocused())
+		auto fan = m_fans.getItem(index);
+		if (!fan || fan->isFocused())
 		{
 			return;
 		}
 
-		m_fans[index]->setValue(value);
+		fan->setValue(value);
 	}
 
 	void FineTune::showKeyboard(bool show)

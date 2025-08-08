@@ -11,6 +11,8 @@
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Button/VerticalButtonPanel.h"
 #include "UI/Components/Input/Slider.h"
+#include "UI/Components/LVGL/LvKeyboard.h"
+#include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -26,13 +28,13 @@ namespace UI
 
 		void setExtruderCount(size_t count);
 		void setFanCount(size_t count);
-		size_t getExtruderCount() const { return m_extruders.size(); }
-		size_t getFanCount() const { return m_fans.size(); }
+		size_t getExtruderCount() const { return m_extruders.getItemCount(); }
+		size_t getFanCount() const { return m_fans.getItemCount(); }
 
-		void setExtruderLabel(size_t index, const char* label);
+		void setExtruderLabel(size_t index, std::string_view label);
 		void setExtruderValue(size_t index, uint32_t value);
 
-		void setFanLabel(size_t index, const char* label);
+		void setFanLabel(size_t index, std::string_view label);
 		void setFanValue(size_t index, uint32_t value);
 
 	  protected:
@@ -44,21 +46,17 @@ namespace UI
 		void showKeyboard(bool show);
 
 		VerticalButtonPanel m_babystep;
-		lv_obj_t* m_sliderCont;
+		LvContainer m_sliderCont;
 
 		// Speed Factor
 		Slider m_speed;
 
 		// Extruders
-		lv_obj_t* m_extruderLabel;
-		lv_obj_t* m_extruderCont;
-		std::vector<std::shared_ptr<Slider>> m_extruders;
+		List<Slider> m_extruders;
 
 		// Fans
-		lv_obj_t* m_fanLabel;
-		lv_obj_t* m_fanCont;
-		std::vector<std::shared_ptr<Slider>> m_fans;
+		List<Slider> m_fans;
 
-		lv_obj_t* m_keyboard;
+		LvKeyboard m_keyboard;
 	};
 } // namespace UI

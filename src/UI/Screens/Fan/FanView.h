@@ -3,6 +3,7 @@
 #include "FanPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/Slider.h"
+#include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -10,12 +11,12 @@ namespace UI
 	class FanView : public View<FanPresenter>
 	{
 	  public:
-		class FanItem : LvObj
+		class FanItem : ListItem
 		{
 		  public:
-			FanItem(size_t index, FanView& view);
+			FanItem(size_t index, lv_obj_t* parent, FanView& view);
 
-			void setLabel(const char* label);
+			void setLabel(std::string_view label);
 			void setValue(uint32_t value);
 
 		  private:
@@ -24,7 +25,6 @@ namespace UI
 
 			// Fans
 			FanView& m_view;
-			size_t m_index;
 			Button m_off;
 			Slider m_slider;
 			Button m_max;
@@ -32,13 +32,12 @@ namespace UI
 
 		FanView(lv_obj_t* parent);
 
-		size_t getFanCount() const { return m_fans.size(); }
+		size_t getFanCount() const { return m_fans.getItemCount(); }
 		void setFanCount(size_t count);
-		void setFanLabel(size_t index, const char* label);
+		void setFanLabel(size_t index, std::string_view label);
 		void setFanValue(size_t index, uint32_t value);
 
 	  private:
-		lv_obj_t* m_fanHeader;
-		std::vector<std::shared_ptr<FanItem>> m_fans;
+		List<FanItem> m_fans;
 	};
 } // namespace UI

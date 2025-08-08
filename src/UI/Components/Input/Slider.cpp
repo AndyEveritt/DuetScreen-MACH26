@@ -106,7 +106,7 @@ namespace UI
 		m_outOfRangeMode = mode;
 	}
 
-	void Slider::setLabel(const std::string& text)
+	void Slider::setLabel(std::string_view text)
 	{
 		UI_LOCK();
 		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, text.empty());

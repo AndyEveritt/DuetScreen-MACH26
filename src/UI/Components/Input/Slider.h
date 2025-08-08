@@ -44,7 +44,7 @@ namespace UI
 		bool isFocused() const { return m_focused; }
 
 		void setOutOfRangeMode(OutOfRange mode);
-		void setLabel(const std::string& text);
+		void setLabel(std::string_view text);
 		void setIncrementValue(float value);
 		void setRange(float min, float max);
 		void setValue(float value);
