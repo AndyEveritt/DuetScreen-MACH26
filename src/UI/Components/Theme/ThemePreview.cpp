@@ -21,6 +21,8 @@ namespace UI
 			, m_colorBox("color_box", getRoot())
 			, m_label("label", getRoot())
 		{
+			m_colorBox.addStyle(Themes::getLvglStyles().border);
+
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 			setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
