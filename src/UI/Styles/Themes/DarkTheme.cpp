@@ -11,9 +11,9 @@
 
 namespace UI::Themes
 {
-	static const uint16_t s_primaryHue = 0;
-	static const uint16_t s_secondaryHue = (s_primaryHue + 60) & 360;
-	static const float s_chroma = 0.2f;
+	static const uint16_t s_primaryHue = 245;
+	static const uint16_t s_secondaryHue = 190;
+	static const float s_chroma = 0.1f;
 	static const lv_font_t* s_font = LV_FONT_DEFAULT;
 	static bool s_darkMode = true;
 
