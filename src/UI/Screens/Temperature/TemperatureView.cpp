@@ -20,6 +20,8 @@ namespace UI
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
+		m_temperatureCont.addStyle(Themes::getLvglStyles().card);
+		m_filamentSelect.addStyle(Themes::getLvglStyles().card);
 
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 
@@ -37,13 +39,6 @@ namespace UI
 		m_tools.setTitle(_("tools"));
 		m_beds.setTitle(_("beds"));
 		m_chambers.setTitle(_("chambers"));
-
-		m_tools.addStyle(Themes::getLvglStyles().no_border);
-		m_beds.addStyle(Themes::getLvglStyles().no_border);
-		m_chambers.addStyle(Themes::getLvglStyles().no_border);
-		// m_tools.addListStyle(Themes::getLvglStyles().no_border);
-		// m_beds.addListStyle(Themes::getLvglStyles().no_border);
-		// m_chambers.addListStyle(Themes::getLvglStyles().no_border);
 	}
 
 	void TemperatureView::onShow()

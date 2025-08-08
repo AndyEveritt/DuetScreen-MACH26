@@ -14,16 +14,14 @@ namespace UI::Themes
 #define TRANSITION_TIME 80
 #define BORDER_WIDTH 2
 #define OUTLINE_WIDTH 3
+#define SHADOW_WIDTH 3
+#define SHADOW_OFFSET 3
 
 #define RADIUS_DEFAULT 5
 
 #define PAD_DEF 5
 #define PAD_SMALL 2
 #define PAD_TINY 1
-
-#define GREY lv_palette_main(LV_PALETTE_GREY)
-#define LIGHT_GREY lv_palette_lighten(LV_PALETTE_GREY, 2)
-#define DARK_GREY lv_palette_darken(LV_PALETTE_GREY, 2)
 
 	static constexpr float s_minColorChroma = 0.1f;
 
@@ -40,15 +38,18 @@ namespace UI::Themes
 
 		const float bgChroma = chroma / 2;
 		const float colorChroma = std::max(s_minColorChroma, chroma);
+		static float mutedDiff = 0.2f;
 
 		colors.bg_dark = Color(darkMode ? 0.1 : 0.92, bgChroma, primaryHue);
-		colors.bg = Color(darkMode ? 0.25 : 0.96, bgChroma, primaryHue);
-		colors.bg_light = Color(darkMode ? 0.35 : 1.0, bgChroma, primaryHue);
+		colors.bg = Color(darkMode ? 0.15 : 0.96, bgChroma, primaryHue);
+		colors.bg_light = Color(darkMode ? 0.2 : 1.0, bgChroma, primaryHue);
 
-		colors.primary = Color(darkMode ? 0.76 : 0.4, colorChroma, primaryHue);
-		colors.primary_muted = Color(darkMode ? 0.56 : 0.6, colorChroma, primaryHue);
-		colors.secondary = Color(darkMode ? 0.76 : 0.4, colorChroma, secondaryHue);
-		colors.secondary_muted = Color(darkMode ? 0.56 : 0.6, colorChroma, secondaryHue);
+		colors.primary = Color(darkMode ? 0.56 : 0.6, colorChroma, primaryHue);
+		colors.primary_muted =
+			Color(colors.primary.getL() + (darkMode ? -mutedDiff : mutedDiff), colorChroma, primaryHue);
+		colors.secondary = Color(darkMode ? 0.56 : 0.6, colorChroma, secondaryHue);
+		colors.secondary_muted =
+			Color(colors.secondary.getL() + (darkMode ? -mutedDiff : mutedDiff), colorChroma, secondaryHue);
 
 		colors.text = Color(darkMode ? 0.96 : 0.15, chroma, primaryHue);
 		colors.text_muted = Color(darkMode ? 0.76 : 0.40, chroma, primaryHue);
@@ -57,6 +58,7 @@ namespace UI::Themes
 		colors.border = Color(darkMode ? 0.40 : 0.6, chroma, primaryHue);
 		colors.border_muted = Color(darkMode ? 0.30 : 0.7, chroma, primaryHue);
 		colors.highlight = Color(darkMode ? 0.50 : 1.0, chroma, primaryHue);
+		colors.shadow = Color(darkMode ? 0.2 : 0.4, bgChroma, primaryHue);
 
 		if (customizer)
 		{
@@ -170,6 +172,8 @@ namespace UI::Themes
 		/* Base */
 
 		lv_style_set_bg_opa(lvgl.base, LV_OPA_TRANSP);
+		lv_style_set_text_color(lvgl.base, m_colors.text);
+		lv_style_set_text_font(lvgl.base, m_fontNormal);
 
 		/* Screen */
 
@@ -196,18 +200,15 @@ namespace UI::Themes
 		/* Button */
 
 		lv_style_set_radius(lvgl.btn, RADIUS_DEFAULT);
-		if (!m_darkMode)
-		{
-			lv_style_set_shadow_color(lvgl.btn, GREY);
-			lv_style_set_shadow_width(lvgl.btn, LV_DPX(3));
-			lv_style_set_shadow_opa(lvgl.btn, LV_OPA_50);
-			lv_style_set_shadow_offset_y(lvgl.btn, LV_DPX_CALC(lv_display_get_dpi(NULL), LV_DPX(4)));
-		}
+		lv_style_set_shadow_color(lvgl.btn, m_colors.shadow);
+		lv_style_set_shadow_width(lvgl.btn, SHADOW_WIDTH);
+		lv_style_set_shadow_opa(lvgl.btn, LV_OPA_50);
+		lv_style_set_shadow_offset_y(lvgl.btn, SHADOW_OFFSET);
 
 		lv_style_set_recolor(lvgl.pressed, lv_color_black());
 		lv_style_set_recolor_opa(lvgl.pressed, 35);
 
-		lv_style_set_recolor(lvgl.disabled, m_darkMode ? DARK_GREY : LIGHT_GREY);
+		lv_style_set_recolor(lvgl.disabled, m_colors.bg);
 		lv_style_set_recolor_opa(lvgl.disabled, LV_OPA_50);
 
 		lv_style_set_clip_corner(lvgl.clip_corner, true);
@@ -262,7 +263,7 @@ namespace UI::Themes
 		lv_style_set_border_opa(lvgl.actionBtn, LV_OPA_COVER);
 		lv_style_set_border_side(lvgl.actionBtn, LV_BORDER_SIDE_FULL);
 
-		lv_style_set_border_color(lvgl.input, m_colors.highlight);
+		lv_style_set_border_color(lvgl.input, m_colors.border);
 		lv_style_set_border_width(lvgl.input, 1);
 		lv_style_set_pad_all(lvgl.input, 20);
 		lv_style_set_radius(lvgl.input, 2);
@@ -295,7 +296,7 @@ namespace UI::Themes
 			&m_dragCompleteTransition, drag_complete_props, lv_anim_path_ease_in_out, TRANSITION_TIME, 0, NULL);
 		lv_style_set_transition(lvgl.dragging, &m_dragCompleteTransition);
 
-		lv_style_set_outline_color(lvgl.drag_complete, lv_color_white());
+		lv_style_set_outline_color(lvgl.drag_complete, m_colors.highlight);
 		lv_style_set_outline_width(lvgl.drag_complete, 3);
 
 #if LV_USE_ARC
@@ -326,17 +327,17 @@ namespace UI::Themes
 		lv_style_set_bg_opa(lvgl.cb_marker, LV_OPA_COVER);
 		lv_style_set_radius(lvgl.cb_marker, RADIUS_DEFAULT / 2);
 		lv_style_set_text_font(lvgl.cb_marker, m_fontSmall);
-		lv_style_set_text_color(lvgl.cb_marker, lv_color_white());
+		lv_style_set_text_color(lvgl.cb_marker, m_colors.text);
 
 		lv_style_set_bg_image_src(lvgl.cb_marker_checked, LV_SYMBOL_OK);
 #endif
 
 #if LV_USE_SWITCH
-		lv_style_set_bg_color(lvgl.bg_switch, GREY);
+		lv_style_set_bg_color(lvgl.bg_switch, m_colors.bg_light);
 		lv_style_set_bg_opa(lvgl.bg_switch, LV_OPA_COVER);
 		lv_style_set_radius(lvgl.bg_switch, LV_RADIUS_CIRCLE);
 		lv_style_set_pad_all(lvgl.switch_knob, -LV_DPX_CALC(lv_display_get_dpi(NULL), 4));
-		lv_style_set_bg_color(lvgl.switch_knob, lv_color_white());
+		lv_style_set_bg_color(lvgl.switch_knob, m_colors.text);
 		lv_style_set_radius(lvgl.switch_knob, LV_RADIUS_CIRCLE);
 #endif
 
@@ -411,7 +412,7 @@ namespace UI::Themes
 		lv_style_set_pad_gap(lvgl.menu_page, 0);
 
 		lv_style_set_bg_opa(lvgl.menu_pressed, LV_OPA_20);
-		lv_style_set_bg_color(lvgl.menu_pressed, GREY);
+		lv_style_set_bg_color(lvgl.menu_pressed, m_colors.bg_light);
 
 		lv_style_set_bg_opa(lvgl.menu_separator, LV_OPA_TRANSP);
 		lv_style_set_pad_ver(lvgl.menu_separator, PAD_TINY);
@@ -435,7 +436,7 @@ namespace UI::Themes
 		lv_style_set_border_side(lvgl.ta_cursor, LV_BORDER_SIDE_LEFT);
 		lv_style_set_anim_duration(lvgl.ta_cursor, 400);
 
-		lv_style_set_text_color(lvgl.ta_placeholder, m_darkMode ? DARK_GREY : LIGHT_GREY);
+		lv_style_set_text_color(lvgl.ta_placeholder, m_colors.text_muted);
 #endif
 
 #if LV_USE_CALENDAR
@@ -457,16 +458,16 @@ namespace UI::Themes
 		lv_style_set_bg_color(lvgl.canvas, m_colors.bg);
 		lv_style_set_bg_opa(lvgl.canvas, LV_OPA_COVER);
 		lv_style_set_border_width(lvgl.canvas, BORDER_WIDTH);
-		lv_style_set_border_color(lvgl.canvas, m_darkMode ? LIGHT_GREY : DARK_GREY);
+		lv_style_set_border_color(lvgl.canvas, m_colors.border);
 		lv_style_set_border_side(lvgl.canvas, LV_BORDER_SIDE_FULL);
 #endif
 
 #if LV_USE_MSGBOX
-		lv_style_set_bg_color(lvgl.msgbox_backdrop_bg, GREY);
-		lv_style_set_bg_opa(lvgl.msgbox_backdrop_bg, LV_OPA_50);
+		// lv_style_set_bg_color(lvgl.msgbox_backdrop_bg, m_colors.bg);
+		// lv_style_set_bg_opa(lvgl.msgbox_backdrop_bg, LV_OPA_50);
 #endif
 #if LV_USE_KEYBOARD
-		lv_style_set_bg_color(lvgl.keyboard_button_bg, m_darkMode ? DARK_GREY : LIGHT_GREY);
+		lv_style_set_bg_color(lvgl.keyboard_button_bg, m_colors.bg_light);
 		lv_style_set_shadow_width(lvgl.keyboard_button_bg, 0);
 		lv_style_set_radius(lvgl.keyboard_button_bg, RADIUS_DEFAULT);
 		lv_style_set_bg_color(lvgl.keyboard_button_checked_bg, m_colors.highlight);
@@ -501,7 +502,7 @@ namespace UI::Themes
 #if LV_USE_LED
 		lv_style_set_bg_opa(lvgl.led, LV_OPA_COVER);
 		lv_style_set_bg_color(lvgl.led, lv_color_white());
-		lv_style_set_bg_grad_color(lvgl.led, GREY);
+		lv_style_set_bg_grad_color(lvgl.led, m_colors.bg_dark);
 		lv_style_set_radius(lvgl.led, LV_RADIUS_CIRCLE);
 		lv_style_set_shadow_width(lvgl.led, LV_DPX_CALC(lv_display_get_dpi(NULL), 15));
 		lv_style_set_shadow_color(lvgl.led, lv_color_white());
@@ -532,7 +533,7 @@ namespace UI::Themes
 		lv_style_set_bg_grad_color(components.temperature_bar, lv_palette_main(LV_PALETTE_RED));
 		lv_style_set_bg_grad_dir(components.temperature_bar, LV_GRAD_DIR_HOR);
 
-		lv_style_set_bg_color(components.temperature_bar_indic, lv_color_white());
+		lv_style_set_bg_color(components.temperature_bar_indic, m_colors.border);
 		lv_style_set_bg_opa(components.temperature_bar_indic, LV_OPA_COVER);
 	}
 } // namespace UI::Themes

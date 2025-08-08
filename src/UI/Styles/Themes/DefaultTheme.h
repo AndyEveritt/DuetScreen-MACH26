@@ -21,10 +21,6 @@ namespace UI::Themes
 		Color primary_muted;
 		Color secondary;
 		Color secondary_muted;
-		Color tertiary;
-		Color tertiary_muted;
-		Color accent;
-		Color accent_muted;
 
 		Color text;
 		Color text_muted;
@@ -33,6 +29,7 @@ namespace UI::Themes
 		Color border;
 		Color border_muted;
 		Color highlight;
+		Color shadow;
 	};
 
 	ThemeColors createThemeColors(uint16_t primaryHue,
