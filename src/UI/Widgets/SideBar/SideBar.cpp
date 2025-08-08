@@ -69,6 +69,7 @@ namespace UI
 
 		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);
 		addStyle(Themes::getLvglStyles().pad_zero);
+		m_btns.addStyle(Themes::getLvglStyles().bg_dark);
 		m_eStopBtn.addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
 	}
 
@@ -147,8 +148,11 @@ namespace UI
 			[](lv_anim_t* anim)
 			{
 				auto& drawer = *static_cast<AppDrawer*>(anim->var);
-				drawer.setFlag(LV_OBJ_FLAG_HIDDEN, !drawer.hasFlag(LV_OBJ_FLAG_HIDDEN));
+				drawer.setFlag(LV_OBJ_FLAG_HIDDEN, drawer.getCoords().x1 <= 0);
 			});
+
+		if (show)
+			m_appDrawer.setFlag(LV_OBJ_FLAG_HIDDEN, false);
 
 		anim.start();
 	}
