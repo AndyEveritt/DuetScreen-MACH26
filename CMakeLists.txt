@@ -49,14 +49,17 @@ list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
 
 add_executable(DuetScreen ${MAIN_SOURCES})
 
+# Find clang-format-19
+find_program(CLANG_FORMAT_19 clang-format-19 REQUIRED)
+
 # Add clang-format custom target
 add_custom_target(
   clang-format
   COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
-  -print | xargs clang-format -i
+  -print | xargs ${CLANG_FORMAT_19} -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMMENT "Running clang-format")
-  add_dependencies(DuetScreen clang-format)
+  COMMENT "Running clang-format-19")
+add_dependencies(DuetScreen clang-format)
   
   # Touch BuildDate.cpp to ensure it is always compiled
   if(CMAKE_BUILD_TYPE STREQUAL "Release")
