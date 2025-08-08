@@ -212,7 +212,7 @@ int main(int argc, char** argv)
 				}
 			}
 		},
-		100, // Timer period in milliseconds
+		1000, // Timer period in milliseconds
 		NULL);
 
 	// Try to set UI thread to real-time priority first
