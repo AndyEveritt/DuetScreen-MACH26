@@ -19,12 +19,5 @@ namespace UI::Themes
 
 	static ThemeColors s_colors = createThemeColors(s_primaryHue, s_secondaryHue, s_chroma, s_darkMode);
 
-	static DefaultTheme s_greyTheme("theme_grey",
-									s_colors,
-									s_font,
-									s_darkMode,
-									[](Theme* theme)
-									{
-										lv_style_set_bg_color(theme->components.estop, lv_palette_main(LV_PALETTE_RED));
-									});
+	static DefaultTheme s_greyTheme("theme_grey", s_colors, s_font, s_darkMode, [](Theme* theme) {});
 } // namespace UI::Themes

@@ -14,7 +14,7 @@ namespace UI::Themes
 #define TRANSITION_TIME 80
 #define BORDER_WIDTH 2
 #define OUTLINE_WIDTH 3
-#define SHADOW_WIDTH 3
+#define SHADOW_WIDTH 2
 #define SHADOW_OFFSET 3
 
 #define RADIUS_DEFAULT 5
@@ -44,12 +44,10 @@ namespace UI::Themes
 		colors.bg = Color(darkMode ? 0.15 : 0.96, bgChroma, primaryHue);
 		colors.bg_light = Color(darkMode ? 0.2 : 1.0, bgChroma, primaryHue);
 
-		colors.primary = Color(darkMode ? 0.56 : 0.6, colorChroma, primaryHue);
-		colors.primary_muted =
-			Color(colors.primary.getL() + (darkMode ? -mutedDiff : mutedDiff), colorChroma, primaryHue);
-		colors.secondary = Color(darkMode ? 0.56 : 0.6, colorChroma, secondaryHue);
-		colors.secondary_muted =
-			Color(colors.secondary.getL() + (darkMode ? -mutedDiff : mutedDiff), colorChroma, secondaryHue);
+		colors.primary = Color(darkMode ? 0.56 : 0.8, colorChroma, primaryHue);
+		colors.primary_muted = Color(colors.primary.getL() - mutedDiff, colorChroma, primaryHue);
+		colors.secondary = Color(darkMode ? 0.56 : 0.8, colorChroma, secondaryHue);
+		colors.secondary_muted = Color(colors.secondary.getL() - mutedDiff, colorChroma, secondaryHue);
 
 		colors.text = Color(darkMode ? 0.96 : 0.15, chroma, primaryHue);
 		colors.text_muted = Color(darkMode ? 0.76 : 0.40, chroma, primaryHue);
@@ -57,7 +55,7 @@ namespace UI::Themes
 
 		colors.border = Color(darkMode ? 0.40 : 0.6, chroma, primaryHue);
 		colors.border_muted = Color(darkMode ? 0.30 : 0.7, chroma, primaryHue);
-		colors.highlight = Color(darkMode ? 0.50 : 1.0, chroma, primaryHue);
+		colors.highlight = Color(darkMode ? 0.70 : 1.0, chroma, primaryHue);
 		colors.shadow = Color(darkMode ? 0.2 : 0.4, bgChroma, primaryHue);
 
 		if (customizer)
@@ -79,30 +77,39 @@ namespace UI::Themes
 
 		lv_style_set_bg_color(lvgl.bg_dark, m_colors.bg_dark);
 		lv_style_set_bg_opa(lvgl.bg_dark, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_dark, LV_GRAD_DIR_NONE);
 
 		lv_style_set_bg_color(lvgl.bg, m_colors.bg);
 		lv_style_set_bg_opa(lvgl.bg, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg, LV_GRAD_DIR_NONE);
 
 		lv_style_set_bg_color(lvgl.bg_light, m_colors.bg_light);
 		lv_style_set_bg_opa(lvgl.bg_light, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_light, LV_GRAD_DIR_NONE);
 
 		lv_style_set_bg_color(lvgl.bg_color_primary, m_colors.primary);
 		lv_style_set_bg_opa(lvgl.bg_color_primary, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_color_primary, LV_GRAD_DIR_NONE);
 
 		lv_style_set_bg_color(lvgl.bg_color_primary_muted, m_colors.primary_muted);
 		lv_style_set_bg_opa(lvgl.bg_color_primary_muted, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_color_primary_muted, LV_GRAD_DIR_NONE);
 
 		lv_style_set_bg_color(lvgl.bg_color_secondary, m_colors.secondary);
 		lv_style_set_bg_opa(lvgl.bg_color_secondary, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_color_secondary, LV_GRAD_DIR_NONE);
 
 		lv_style_set_bg_color(lvgl.bg_color_secondary_muted, m_colors.secondary_muted);
 		lv_style_set_bg_opa(lvgl.bg_color_secondary_muted, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_color_secondary_muted, LV_GRAD_DIR_NONE);
 
 		lv_style_set_bg_color(lvgl.bg_color_header, m_colors.bg_light);
 		lv_style_set_bg_opa(lvgl.bg_color_header, LV_OPA_COVER);
+		lv_style_set_bg_grad_color(lvgl.bg_color_header, m_colors.bg);
 
 		lv_style_set_bg_color(lvgl.bg_color_list_item, m_colors.bg);
 		lv_style_set_bg_opa(lvgl.bg_color_list_item, LV_OPA_COVER);
+		lv_style_set_bg_grad_color(lvgl.bg_color_list_item, m_colors.bg_light);
 
 		/* Text */
 
@@ -200,10 +207,13 @@ namespace UI::Themes
 		/* Button */
 
 		lv_style_set_radius(lvgl.btn, RADIUS_DEFAULT);
-		lv_style_set_shadow_color(lvgl.btn, m_colors.shadow);
-		lv_style_set_shadow_width(lvgl.btn, SHADOW_WIDTH);
-		lv_style_set_shadow_opa(lvgl.btn, LV_OPA_50);
-		lv_style_set_shadow_offset_y(lvgl.btn, SHADOW_OFFSET);
+
+		lv_style_set_bg_opa(lvgl.btn, LV_OPA_COVER);
+		lv_style_set_bg_color(lvgl.btn, m_colors.primary);
+		lv_style_set_bg_grad_color(lvgl.btn, m_colors.primary_muted);
+		lv_style_set_bg_grad_dir(lvgl.btn, LV_GRAD_DIR_VER);
+
+		/* Modifiers */
 
 		lv_style_set_recolor(lvgl.pressed, lv_color_black());
 		lv_style_set_recolor_opa(lvgl.pressed, 35);
@@ -296,7 +306,7 @@ namespace UI::Themes
 			&m_dragCompleteTransition, drag_complete_props, lv_anim_path_ease_in_out, TRANSITION_TIME, 0, NULL);
 		lv_style_set_transition(lvgl.dragging, &m_dragCompleteTransition);
 
-		lv_style_set_outline_color(lvgl.drag_complete, m_colors.highlight);
+		lv_style_set_outline_color(lvgl.drag_complete, lv_color_white());
 		lv_style_set_outline_width(lvgl.drag_complete, 3);
 
 #if LV_USE_ARC
@@ -523,6 +533,8 @@ namespace UI::Themes
 #endif
 
 		lv_style_set_bg_color(components.estop, lv_palette_main(LV_PALETTE_RED));
+		lv_style_set_bg_grad_color(components.estop, lv_palette_darken(LV_PALETTE_RED, 4));
+		lv_style_set_text_color(components.estop, lv_color_white());
 		lv_style_set_radius(components.estop, LV_RADIUS_CIRCLE);
 		lv_style_set_bg_color(components.folder, m_colors.primary);
 
