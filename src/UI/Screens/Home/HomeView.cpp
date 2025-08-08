@@ -42,6 +42,8 @@ namespace UI
 		LOG_INFO("Creating UI");
 
 		addStyle(Themes::getLvglStyles().bg_dark);
+		m_toolList.addStyle(Themes::getLvglStyles().card);
+		m_graph.addStyle(Themes::getLvglStyles().card);
 
 		addHomeScreen(this);
 
@@ -51,10 +53,10 @@ namespace UI
 		setGridCell(m_sideBar, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		setGridCell(m_mainWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		lv_obj_set_flex_grow(m_mainWindow, 1);
-		lv_obj_set_height(m_mainWindow, LV_PCT(100));
-		lv_obj_add_style(m_mainWindow, Themes::getLvglStyles().pad_zero, 0);
-		lv_obj_add_style(m_mainWindow, Themes::getLvglStyles().no_border, 0);
+		m_mainWindow.setFlexGrow(1);
+		m_mainWindow.setHeight(LV_PCT(100));
+		m_mainWindow.addStyle(Themes::getLvglStyles().pad_zero);
+		m_mainWindow.addStyle(Themes::getLvglStyles().pad_gap);
 
 		// Main Window Layout
 		m_mainWindow.setLayoutStyle(LV_LAYOUT_GRID);
