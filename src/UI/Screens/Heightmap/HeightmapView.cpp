@@ -19,8 +19,6 @@ namespace UI
 		{
 			UI_LOCK();
 
-			addStyle(Themes::getLvglStyles().bg_dark);
-
 			setFlexFlow(LV_FLEX_FLOW_ROW);
 			lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 			lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
@@ -201,6 +199,13 @@ namespace UI
 		, m_renderMode(getRoot(), *getPresenter().get())
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
+		m_heightmap.addStyle(Themes::getLvglStyles().card);
+		m_heightmapList.addStyle(Themes::getLvglStyles().card);
+		m_statistics.addStyle(Themes::getLvglStyles().card);
+		m_renderMode.addStyle(Themes::getLvglStyles().card);
+
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 
 		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
