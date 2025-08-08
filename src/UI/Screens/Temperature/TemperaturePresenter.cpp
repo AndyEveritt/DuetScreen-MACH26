@@ -40,6 +40,7 @@ namespace UI
 							   auto control = std::make_shared<ToolControl>(fmt::format("{}", index), parent);
 							   control->getPresenter()->setToolIndex(toolIndices[index]);
 							   control->setNumberPad(&m_view->getNumberPad());
+							   control->addStyle(Themes::getLvglStyles().card);
 							   control->activate();
 							   return control;
 						   });
@@ -55,6 +56,7 @@ namespace UI
 							  auto control = std::make_shared<HeaterSlider>(fmt::format("{}", index), parent);
 							  control->getPresenter()->setBedIndex(index);
 							  control->setNumberPad(&m_view->getNumberPad());
+							  control->addStyle(Themes::getLvglStyles().card);
 							  control->activate();
 							  return control;
 						  });
@@ -70,6 +72,7 @@ namespace UI
 								  auto control = std::make_shared<HeaterSlider>(fmt::format("{}", index), parent);
 								  control->getPresenter()->setChamberIndex(index);
 								  control->setNumberPad(&m_view->getNumberPad());
+								  control->addStyle(Themes::getLvglStyles().card);
 								  control->activate();
 								  return control;
 							  });
