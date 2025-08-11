@@ -10,8 +10,8 @@ namespace UI
 	{
 	  public:
 		Button(const std::string& name, lv_obj_t* parent);
-		Button(const std::string& name, lv_obj_t* parent, const std::string& text);
-		Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout);
+		Button(const std::string& name, lv_obj_t* parent, std::string_view text);
+		Button(const std::string& name, lv_obj_t* parent, std::string_view text, layout_t layout);
 
 		void setText(std::string_view text);
 		std::string_view getText() const { return m_label.getText(); }
@@ -27,7 +27,7 @@ namespace UI
 		lv_obj_t* getIcon() const { return m_icon; }
 
 	  private:
-		void init(const std::string& text);
+		void init(std::string_view text);
 
 		LvLabel m_label;
 		lv_obj_t* m_icon;

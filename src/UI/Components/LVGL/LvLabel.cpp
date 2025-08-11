@@ -33,7 +33,7 @@ namespace UI
 	void LvLabel::setText(const std::string_view text)
 	{
 		UI_LOCK();
-		lv_label_set_text(getRoot(), text.data());
+		lv_label_set_text_with_length(getRoot(), text.data(), text.length());
 	}
 
 	void LvLabel::setTextF(const char* fmt, ...)

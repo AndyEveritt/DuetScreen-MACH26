@@ -8,146 +8,143 @@
 #include "lvgl/lvgl_private.h"
 #include "utils/StorageHelper.h"
 
+#define ENABLE_BREADCRUMB_SEPARATOR 1
+
 namespace UI
 {
-	FileView::FileItem::FileItem(const size_t index, FileView* view, lv_obj_t* parent, layout_t layout)
-		: LvObj(lv_obj_create, utils::format("file_item_%u", index), parent, layout)
+	FileView::FileItem::FileItem(const size_t index, lv_obj_t* parent, FileView& view)
+		: ListItem(index, parent)
 		, m_index(index)
 		, m_list(view)
 		, m_layoutColDsc{LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_label(lv_label_create(getRoot()))
-		, m_date(lv_label_create(getRoot()))
-		, m_size(lv_label_create(getRoot()))
-		, m_thumbnail(lv_image_create(getRoot()))
-		, m_type(lv_label_create(getRoot()))
+		, m_label("label", getRoot())
+		, m_date("date", getRoot())
+		, m_size("size", getRoot())
+		, m_thumbnail("thumb", getRoot())
+		, m_type("type", getRoot())
 	{
 		UI_LOCK();
 
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		addStyle(Themes::getLvglStyles().bg_dark);
 
-		// Layout
-		constexpr lv_coord_t pad = 2;
-		lv_obj_set_height(getRoot(), LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(getRoot(), pad, 0);
-		lv_obj_set_style_pad_column(getRoot(), pad, 0);
+		setLayoutStyle(LV_LAYOUT_GRID);
+		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
+		setGridCell(m_label, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
+		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 1, 1);
+		setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
+		setGridCell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+		setGridCell(m_type, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
-		lv_obj_set_grid_cell(m_label, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
-		lv_obj_set_grid_cell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 1, 1);
-		lv_obj_set_grid_cell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
-		lv_obj_set_grid_cell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-		lv_obj_set_grid_cell(m_type, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+		m_label.setHeight(LV_SIZE_CONTENT);
+		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 
-		lv_obj_set_height(m_label, LV_SIZE_CONTENT);
-
-		lv_image_set_inner_align(m_thumbnail, LV_IMAGE_ALIGN_CONTAIN);
-
-		// Callbacks
-		lv_obj_add_event_cb(getRoot(), onClick, LV_EVENT_CLICKED, this);
+		addEventCallback(onClick, LV_EVENT_CLICKED, this);
 
 		// Styles
 		addStyle(Themes::getComponentStyles().file);
 		addStyle(Themes::getComponentStyles().folder, LV_STATE_CHECKED);
 	}
 
-	void FileView::FileItem::setLabel(const char* name)
+	void FileView::FileItem::setFileLabel(const char* name)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_label, name);
+		m_label.setText(name);
 	}
 
-	void FileView::FileItem::setDate(const char* date)
+	void FileView::FileItem::setFileDate(const char* date)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_date, date);
+		m_date.setText(date);
 	}
 
-	void FileView::FileItem::setSize(const char* size)
+	void FileView::FileItem::setFileSize(const char* size)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_size, size);
+		m_size.setText(size);
 	}
 
 	void FileView::FileItem::setThumbnail(const char* thumbnail)
 	{
 		UI_LOCK();
-		lv_image_set_src(m_thumbnail, thumbnail);
+		m_thumbnail.setSrc(thumbnail);
 	}
 
 	void FileView::FileItem::setType(const bool isFolder)
 	{
 		UI_LOCK();
 		m_isFolder = isFolder;
-		lv_label_set_text(m_type, isFolder ? _("folder") : _("file"));
-		lv_obj_set_state(getRoot(), LV_STATE_CHECKED, isFolder);
+		m_type.setText(isFolder ? _("folder") : _("file"));
+		setState(LV_STATE_CHECKED, isFolder);
 	}
 
 	const char* FileView::FileItem::getLabel() const
 	{
 		UI_LOCK();
-		return lv_label_get_text(m_label);
+		return m_label.getText().data();
 	}
 
 	const char* FileView::FileItem::getDate() const
 	{
 		UI_LOCK();
-		return lv_label_get_text(m_date);
+		return m_date.getText().data();
 	}
 
 	const char* FileView::FileItem::getSize() const
 	{
 		UI_LOCK();
-		return lv_label_get_text(m_size);
+		return m_size.getText().data();
 	}
 
 	void FileView::FileItem::onClick(lv_event_t* e)
 	{
 		UI_LOCK();
 		FileItem* item = static_cast<FileItem*>(lv_event_get_user_data(e));
-		item->getList()->onItemClicked(item->m_index, item->m_isFolder);
+		item->getList().onItemClicked(item->m_index, item->m_isFolder);
 	}
 
 	FileView::FileView(lv_obj_t* parent)
 		: View("file_view", parent, layout_t(0, 0, 100, 100))
-		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_listHeader(lv_label_create(getRoot()))
-		, m_listCont(lv_obj_create(getRoot()))
-		, m_sideBar(lv_obj_create(getRoot()))
-		, m_refresh("file_refresh", m_sideBar, _("refresh"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_sortName("file_sort_name", m_sideBar, _("sort_by_name"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_sortDate("file_sort_date", m_sideBar, _("sort_by_date"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_sortSize("file_sort_size", m_sideBar, _("sort_by_size"), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_footer(lv_label_create(getRoot()))
-		, m_startPrint("file_messageBox", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_sideBar("sidebar", getRoot())
+		, m_fileList("list", getRoot())
+		, m_refresh("refresh", m_sideBar, _("refresh"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		, m_sortName("sort_name", m_sideBar, _("sort_by_name"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		, m_sortDate("sort_date", m_sideBar, _("sort_by_date"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		, m_sortSize("sort_size", m_sideBar, _("sort_by_size"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		, m_footer("footer", getRoot())
+		, m_breadcrumbPrefix("breadcrumb_prefix", m_fileList.getHeader())
+		, m_breadcrumbCont("breadcrumb_container", m_fileList.getHeader())
+		, m_startPrint("messageBox", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
-		lv_obj_set_grid_cell(
-			m_listHeader, LV_GRID_ALIGN_STRETCH, 0, ARRAY_SIZE(m_layoutColDsc) - 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_listCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		lv_obj_set_grid_cell(
-			m_sideBar, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, ARRAY_SIZE(m_layoutRowDsc) - 2);
-		lv_obj_set_grid_cell(m_footer, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		// Header
-		lv_label_set_text(m_listHeader, utils::format(_("file_header"), "").c_str());
+		// Header (from List) becomes breadcrumb container
+		m_fileList.getHeader().setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_fileList.getHeader().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_fileList.showHeader(true);
+		m_breadcrumbPrefix.setText(_("file_header_prefix"));
+		m_breadcrumbPrefix.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_breadcrumbCont.setHeight(LV_SIZE_CONTENT);
+		m_breadcrumbCont.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
+		m_breadcrumbCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		m_breadcrumbCont.setFlexGrow(1);
+		m_breadcrumbCont.addStyle(Themes::getLvglStyles().pad_tiny);
+		setFolder("");
 
-		// List
-		lv_obj_set_flex_flow(m_listCont, LV_FLEX_FLOW_ROW_WRAP);
-		lv_obj_set_flex_align(m_listCont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-		lv_obj_set_style_pad_all(m_listCont, 10, 0);
-		lv_obj_set_style_pad_column(m_listCont, 10, 0);
+		// List container styling
+		m_fileList.setWidth(LV_PCT(100));
+		m_fileList.setFlexGrow(1);
+		m_fileList.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
+		m_fileList.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
 		// Sidebar
-		lv_obj_set_flex_flow(m_sideBar, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(m_sideBar, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_style_pad_all(m_sideBar, 2, 0);
+		m_sideBar.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_sideBar.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_sideBar.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_sortName.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::NAME)));
 		m_sortDate.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::DATE)));
 		m_sortSize.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(FilePresenter::SortBy::SIZE)));
@@ -156,13 +153,11 @@ namespace UI
 		m_sortSize.setCheckable(true);
 
 		// Footer
-		constexpr lv_coord_t footerPad = 2;
-		lv_obj_set_style_pad_all(m_footer, footerPad, 0);
 
 		// Start Print
-		lv_obj_add_flag(m_startPrint.getRoot(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_set_align(m_startPrint.getRoot(), LV_ALIGN_CENTER);
-		lv_obj_set_style_max_height(m_startPrint.getRoot(), LV_PCT(70), 0);
+		m_startPrint.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_startPrint.setAlign(LV_ALIGN_CENTER, 0, 0);
+		m_startPrint.setMaxHeight(LV_PCT(70));
 		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
 		m_startPrint.setImageSize(200, 200);
 
@@ -176,44 +171,116 @@ namespace UI
 	void FileView::setFileCount(const size_t count)
 	{
 		UI_LOCK();
-		if (count == getFileCount())
-		{
-			return;
-		}
-		if (count < getFileCount())
-		{
-			m_fileItems.resize(count);
-			return;
-		}
-
-		m_fileItems.reserve(count);
-		for (size_t i = getFileCount(); i < count; ++i)
-		{
-			m_fileItems.emplace_back(
-				std::make_unique<FileItem>(i, this, m_listCont, layout_t(0, 0, 49, LV_SIZE_CONTENT)));
-		}
+		m_fileList.setItemCount(count, *this);
 	}
 
 	std::shared_ptr<FileView::FileItem> FileView::getFileItem(size_t index) const
 	{
-		UI_LOCK();
-		if (index < m_fileItems.size())
-		{
-			return m_fileItems[index];
-		}
-		return nullptr;
+		return m_fileList.getItem(index);
 	}
 
 	void FileView::setFolder(const std::string& folder)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_listHeader, utils::format(_("file_header"), folder.c_str()).c_str());
+		// Clear previous breadcrumb elements
+		m_breadcrumbButtons.clear();
+		m_breadcrumbLabels.clear();
+		m_fileList.showHeader(true); // ensure visible
+
+		m_breadcrumbPaths.clear();
+		std::string_view basePath = m_presenter->getBaseFolderPath();
+
+		// Remove base path prefix from full path to get relative path
+		std::string_view relPath = folder;
+		std::vector<std::string_view> segments;
+		if (!basePath.empty() && relPath.starts_with(basePath))
+		{
+			segments.emplace_back(basePath);
+			relPath = relPath.substr(basePath.size());
+			if (!relPath.empty() && relPath.front() == '/')
+			{
+				relPath.remove_prefix(1);
+			}
+		}
+
+		if (!relPath.empty())
+		{
+			size_t start = 0;
+			while (start < relPath.size())
+			{
+				size_t end = relPath.find('/', start);
+				if (end == std::string_view::npos)
+					end = relPath.size();
+				if (end > start)
+				{
+#if ENABLE_BREADCRUMB_SEPARATOR
+					segments.emplace_back(relPath.substr(start, end - start));
+#else
+					segments.emplace_back(relPath.substr(start, end - start + 1));
+#endif
+				}
+				start = end + 1;
+			}
+		}
+
+		std::string accum;
+		m_breadcrumbButtons.reserve(segments.size());
+		for (size_t i = 0; i < segments.size(); ++i)
+		{
+			if (!accum.empty())
+			{
+				accum += '/';
+			}
+			accum += segments[i];
+			m_breadcrumbPaths.push_back(accum); // relative path accumulation
+		}
+
+		m_breadcrumbLabels.reserve(segments.size());
+		m_breadcrumbButtons.reserve(segments.size());
+		for (size_t i = 0; i < segments.size(); ++i)
+		{
+#if ENABLE_BREADCRUMB_SEPARATOR
+			if (i > 0)
+			{
+				auto sep = std::make_unique<LvLabel>(utils::format("crumb_sep_{}", i), m_breadcrumbCont);
+				sep->setText("/");
+				m_breadcrumbLabels.push_back(std::move(sep));
+			}
+#endif // ENABLE_BREADCRUMB_SEPARATOR
+			if (i == segments.size() - 1)
+			{
+				// Last segment is not clickable
+				auto label = std::make_unique<LvLabel>(utils::format("crumb_label_{}", i), m_breadcrumbCont);
+				label->setText(segments[i]);
+				m_breadcrumbLabels.push_back(std::move(label));
+				continue;
+			}
+
+			auto btn = std::make_unique<Button>(utils::format("crumb_btn_{}", i), m_breadcrumbCont, segments[i]);
+			btn->setUserData(reinterpret_cast<void*>(i));
+			btn->addClickedCallback(onBreadcrumbClicked, this);
+			m_breadcrumbButtons.push_back(std::move(btn));
+		}
+	}
+
+	void FileView::onBreadcrumbClicked(lv_event_t* e)
+	{
+		UI_LOCK();
+		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
+		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target(e);
+		size_t index = reinterpret_cast<size_t>(lv_obj_get_user_data(btn));
+		if (index >= view->m_breadcrumbPaths.size())
+		{
+			return;
+		}
+		// Set folder relative path using presenter->setFolder
+		view->m_presenter->setFolder(view->m_breadcrumbPaths[index]);
 	}
 
 	void FileView::onItemClicked(size_t index, bool isFolder)
 	{
 		UI_LOCK();
-		if (index >= m_fileItems.size())
+		if (index >= m_fileList.getItemCount())
 		{
 			return;
 		}

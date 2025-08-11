@@ -29,22 +29,31 @@ namespace UI
 
 	std::string_view FilePresenter::getBaseFolderPath() const
 	{
+		std::string_view baseFolder;
 		switch (m_baseFolder)
 		{
 		case BaseFolder::GCODES:
-			return OM::Directories::GetGcodesDirectory();
+			baseFolder = OM::Directories::GetGcodesDirectory();
+			break;
 		case BaseFolder::MACROS:
-			return OM::Directories::GetMacrosDirectory();
+			baseFolder = OM::Directories::GetMacrosDirectory();
+			break;
 		default:
-			return "";
+			baseFolder = "";
 		}
+
+		if (baseFolder.back() == '/')
+		{
+			return baseFolder.substr(0, baseFolder.size() - 1);
+		}
+		return baseFolder;
 	}
 
-	void FilePresenter::setFolder(const std::string& folder)
+	void FilePresenter::setFolder(std::string_view folder)
 	{
 		if (!folder.empty() && folder.starts_with(getBaseFolderPath()))
 		{
-			m_currentFolder = folder.substr(getBaseFolderPath().length() + 1);
+			m_currentFolder = folder.substr(getBaseFolderPath().length());
 		}
 		else
 		{
@@ -131,11 +140,11 @@ namespace UI
 			{
 				continue;
 			}
-			item->setLabel(file->GetName().c_str());
+			item->setFileLabel(file->GetName().c_str());
 			std::string date = file->GetDate();
 			std::replace(date.begin(), date.end(), 'T', ' ');
-			item->setDate(date.c_str());
-			item->setSize(file->GetReadableSize().c_str());
+			item->setFileDate(date.c_str());
+			item->setFileSize(file->GetReadableSize().c_str());
 			item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
 
 			// Set thumbnail

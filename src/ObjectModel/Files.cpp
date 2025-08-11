@@ -34,7 +34,13 @@ namespace OM::FileSystem
 	{
 		if (s_currentDirPath.empty())
 			return m_name;
-		return s_currentDirPath + "/" + m_name;
+
+		std::string path = s_currentDirPath;
+		if (path.back() != '/')
+		{
+			path += '/';
+		}
+		return path + m_name;
 	}
 
 	std::string FileSystemItem::GetReadableSize() const

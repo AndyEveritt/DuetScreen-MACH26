@@ -11,7 +11,7 @@ namespace UI
 		init("");
 	}
 
-	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text)
+	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text)
 		: LvObj(lv_button_create, name, parent)
 		, m_label("label", getRoot())
 		, m_icon(nullptr)
@@ -19,7 +19,7 @@ namespace UI
 		init(text);
 	}
 
-	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout)
+	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text, layout_t layout)
 		: LvObj(lv_button_create, name, parent, layout)
 		, m_label("label", getRoot())
 		, m_icon(nullptr)
@@ -27,7 +27,7 @@ namespace UI
 		init(text);
 	}
 
-	void Button::init(const std::string& text)
+	void Button::init(std::string_view text)
 	{
 		UI_LOCK();
 		setUserData(this);

@@ -184,6 +184,8 @@ namespace UI
 		void moveToFront();
 		void moveToBack();
 		void moveToIndex(size_t index);
+		void clearChildren();
+
 		void setVisible(bool display, bool move_to_front = false)
 		{
 			display ? show(move_to_front) : hide(move_to_front);

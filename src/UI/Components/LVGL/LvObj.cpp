@@ -587,6 +587,16 @@ namespace UI
 		lv_obj_move_to_index(getRoot(), index);
 	}
 
+	void UI::LvObj::clearChildren()
+	{
+		UI_LOCK();
+		while (lv_obj_get_child_cnt(getRoot()) > 0)
+		{
+			lv_obj_t* child = lv_obj_get_child(getRoot(), 0);
+			lv_obj_delete(child);
+		}
+	}
+
 	/**
 	 * @brief Shows the view.
 	 *

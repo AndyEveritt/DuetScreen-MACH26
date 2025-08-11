@@ -22,7 +22,7 @@ namespace UI
 		// Actions
 		void setBaseFolder(BaseFolder folder) { m_baseFolder = folder; }
 		std::string_view getBaseFolderPath() const;
-		void setFolder(const std::string& folder);
+		void setFolder(std::string_view folder);
 		void itemClicked(const size_t index);
 		void startPrint();
 		void runMacro();

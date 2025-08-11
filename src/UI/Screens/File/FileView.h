@@ -2,22 +2,27 @@
 
 #include "FilePresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvImage.h"
+#include "UI/Components/LVGL/LvLabel.h"
+#include "UI/Components/List/List.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
+#include <memory>
 
 namespace UI
 {
 	class FileView : public View<FilePresenter>
 	{
 	  public:
-		class FileItem : public LvObj
+		class FileItem : public ListItem
 		{
 		  public:
-			FileItem(const size_t index, FileView* view, lv_obj_t* parent, layout_t layout);
-			void setLabel(const char* name);
-			void setDate(const char* date);
-			void setSize(const char* size);
+			FileItem(const size_t index, lv_obj_t* parent, FileView& view);
+			void setFileLabel(const char* name);
+			void setFileDate(const char* date);
+			void setFileSize(const char* size);
 			void setThumbnail(const char* thumbnail);
 			void setType(const bool isFolder);
 
@@ -26,28 +31,28 @@ namespace UI
 			const char* getSize() const;
 
 		  private:
-			FileView* getList() const { return m_list; }
+			FileView& getList() const { return m_list; }
 
 			static void onClick(lv_event_t* e);
 
 			size_t m_index;
-			FileView* m_list;
+			FileView& m_list;
 
 			int32_t m_layoutColDsc[3];
 			int32_t m_layoutRowDsc[4];
 
-			lv_obj_t* m_label;
-			lv_obj_t* m_date;
-			lv_obj_t* m_size;
-			lv_obj_t* m_thumbnail;
-			lv_obj_t* m_type;
+			LvLabel m_label;
+			LvLabel m_date;
+			LvLabel m_size;
+			LvImage m_thumbnail;
+			LvLabel m_type;
 
 			bool m_isFolder;
 		};
 
 		FileView(lv_obj_t* parent);
 
-		const size_t getFileCount() const { return m_fileItems.size(); }
+		const size_t getFileCount() const { return m_fileList.getItemCount(); }
 		void setFileCount(const size_t count);
 		std::shared_ptr<FileItem> getFileItem(size_t index) const;
 
@@ -68,22 +73,24 @@ namespace UI
 	  private:
 		static void onRefreshClicked(lv_event_t* e);
 		static void onSortClicked(lv_event_t* e);
+		static void onBreadcrumbClicked(lv_event_t* e);
 
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		int32_t m_layoutColDsc[3];
-		int32_t m_layoutRowDsc[4];
-
-		lv_obj_t* m_listHeader;
-		lv_obj_t* m_listCont;
-		std::vector<std::shared_ptr<FileItem>> m_fileItems;
-		lv_obj_t* m_sideBar;
+		LvContainer m_sideBar;
+		List<FileItem> m_fileList; // manages header (breadcrumbs) + items container
 		Button m_refresh;
 		Button m_sortName;
 		Button m_sortDate;
 		Button m_sortSize;
-		lv_obj_t* m_footer;
+		LvLabel m_footer;
+
+		LvLabel m_breadcrumbPrefix;
+		LvContainer m_breadcrumbCont;
+		std::vector<std::string> m_breadcrumbPaths; // relative paths for each breadcrumb index
+		std::vector<std::unique_ptr<Button>> m_breadcrumbButtons;
+		std::vector<std::unique_ptr<LvLabel>> m_breadcrumbLabels;
 
 		Modal<MessageBox> m_startPrint;
 	};

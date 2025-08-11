@@ -35,7 +35,7 @@ en-GB:
   filament_management_header: ~
   filament_select: Select Filament
   file: File
-  file_header: 'Folder: %s'
+  file_header_prefix: 'Folder: '
   file_run_macro_message: 'Do you want to run {}?'
   file_run_macro_title: Run Macro
   file_start_print_message: 'File: {}\nDate: {}\nSize: {}'
@@ -481,3 +481,7 @@ en-GB:
   update_confirm: Update
   updating: Updating
   usb: USB
+  primary_hue: ~
+  secondary_hue: ~
+  chroma: ~
+  menu: ~
