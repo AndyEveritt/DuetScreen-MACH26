@@ -83,13 +83,21 @@ namespace UI
 		lv_obj_t* m_firmwareVersion;
 		lv_obj_t* m_buildTime;
 		DropdownMenu m_language;
-		DropdownMenu m_theme;
-		ThemePreview m_themePreview;
 		DropdownMenu m_usbMode;
 		Slider m_brightness;
 		Slider m_screensaverTimeout;
 		lv_obj_t* m_systemLogging;
 		lv_obj_t* m_displayConnectedMessage;
+	};
+
+	class ThemeSettingsView : public SettingsSubView
+	{
+	  public:
+		ThemeSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+
+	  private:
+		DropdownMenu m_theme;
+		ThemePreview m_themePreview;
 	};
 
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>
@@ -172,6 +180,7 @@ namespace UI
 		friend class SettingsSubView;
 		friend class DuetSettingsView;
 		friend class ScreenSettingsView;
+		friend class ThemeSettingsView;
 
 	  public:
 		SettingsView(lv_obj_t* parent);
@@ -204,6 +213,7 @@ namespace UI
 
 		lv_obj_t* m_screenHeader;
 		lv_obj_t* m_screenSettings;
+		lv_obj_t* m_themeSettings;
 		lv_obj_t* m_connectivityHeader;
 		lv_obj_t* m_duetSettings;
 		lv_obj_t* m_networkSettings;
@@ -212,6 +222,7 @@ namespace UI
 
 		DuetSettingsView m_duetSettingsView;
 		ScreenSettingsView m_deviceSettingsView;
+		ThemeSettingsView m_themeSettingsView;
 		NetworkSettingsView m_networkSettingsView;
 		DeveloperSettingsView m_developerSettingsView;
 

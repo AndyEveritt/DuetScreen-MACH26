@@ -19,6 +19,7 @@ namespace UI
 		, m_keyboard(lv_keyboard_create(getRoot()))
 		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings_screen_header")))
 		, m_screenSettings(lv_list_add_button(m_settingsList, NULL, _("settings_screen")))
+		, m_themeSettings(lv_list_add_button(m_settingsList, NULL, _("settings_theme")))
 		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header")))
 		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet")))
 		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network")))
@@ -26,6 +27,7 @@ namespace UI
 		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer")))
 		, m_duetSettingsView(m_subWindow, *this)
 		, m_deviceSettingsView(m_subWindow, *this)
+		, m_themeSettingsView(m_subWindow, *this)
 		, m_networkSettingsView(m_subWindow, *this)
 		, m_developerSettingsView(m_subWindow, *this)
 		, m_currentSubView(&m_deviceSettingsView)
@@ -44,11 +46,13 @@ namespace UI
 		// List
 		lv_obj_set_user_data(m_duetSettings, &m_duetSettingsView);
 		lv_obj_set_user_data(m_screenSettings, &m_deviceSettingsView);
+		lv_obj_set_user_data(m_themeSettings, &m_themeSettingsView);
 		lv_obj_set_user_data(m_networkSettings, &m_networkSettingsView);
 		lv_obj_set_user_data(m_developerSettings, &m_developerSettingsView);
 
 		lv_obj_add_event_cb(m_duetSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_screenSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_themeSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_networkSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_developerSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 
@@ -305,8 +309,6 @@ namespace UI
 		, m_firmwareVersion(lv_label_create(getRoot()))
 		, m_buildTime(lv_label_create(getRoot()))
 		, m_language("language", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_theme("theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_themePreview("theme_demo", getRoot())
 		, m_usbMode("usb_mode", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_brightness("brightness", getRoot())
 		, m_screensaverTimeout("screensaver_timeout", getRoot())
@@ -320,33 +322,6 @@ namespace UI
 
 		m_language.setLabel(_("settings_language"));
 		m_language.setOptions(_("settings_language_en"));
-
-		m_theme.setLabel(_("settings_theme"));
-		for (auto& theme : Themes::getThemes())
-		{
-			m_theme.addOption(_(theme->getName().c_str()));
-		}
-		m_theme.addEventCallback(
-			[](lv_event_t* e)
-			{
-				UI_LOCK();
-				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
-				ScreenSettingsView* view = (ScreenSettingsView*)lv_event_get_user_data(e);
-				int32_t selected = view->m_theme.getSelected();
-				auto theme = Themes::getTheme(selected);
-				if (theme == nullptr)
-				{
-					return;
-				}
-				theme->setThemeActive();
-				view->m_themePreview.updateSwatches();
-				StorageHelper::setData(ID_THEME, selected);
-				// view->getMainSettingsPresenter()->setTheme(selected);
-			},
-			LV_EVENT_VALUE_CHANGED,
-			this);
-		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
-		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		m_usbMode.setLabel(_("settings_usb_mode"));
 		m_usbMode.setOptions(
@@ -427,6 +402,41 @@ namespace UI
 		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
+	}
+
+	ThemeSettingsView::ThemeSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+		: SettingsSubView("screen", parent, mainSettingsView)
+		, m_theme("theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_themePreview("theme_demo", getRoot())
+	{
+		UI_LOCK();
+
+		m_theme.setLabel(_("settings_theme"));
+		for (auto& theme : Themes::getThemes())
+		{
+			m_theme.addOption(_(theme->getName().c_str()));
+		}
+		m_theme.addEventCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
+				auto view = (ThemeSettingsView*)lv_event_get_user_data(e);
+				int32_t selected = view->m_theme.getSelected();
+				auto theme = Themes::getTheme(selected);
+				if (theme == nullptr)
+				{
+					return;
+				}
+				theme->setThemeActive();
+				view->m_themePreview.updateSwatches();
+				StorageHelper::setData(ID_THEME, selected);
+				// view->getMainSettingsPresenter()->setTheme(selected);
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
+		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
+		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 	}
 
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
