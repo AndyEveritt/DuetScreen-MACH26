@@ -138,16 +138,6 @@ namespace UI
 		m_toolList.hideNumberPad();
 	}
 
-	void HomeView::onWindowSelectEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		HomeView* view = (HomeView*)lv_event_get_user_data(e);
-		LvObj* selectedWindow = (LvObj*)lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e));
-
-		// Don't close the home screen as it contains the side bar an the screen that is being opened
-		openScreen(selectedWindow, false);
-	}
-
 	std::shared_ptr<MessageBox> HomeView::createMessageBox()
 	{
 		UI_LOCK();

@@ -43,6 +43,7 @@ namespace OM::FileSystem
 		const std::string& GetName() const { return m_name; }
 		void SetName(const std::string name);
 		std::string GetPath() const;
+		void SetPath(const std::string& path) { m_path = path; }
 		const std::string& GetDate() const { return m_date; }
 		void SetDate(const std::string& date) { m_date = date; }
 		size_t GetSize() const { return m_size; }
@@ -50,6 +51,7 @@ namespace OM::FileSystem
 		void SetSize(const size_t size) { m_size = size; }
 
 	  private:
+		std::string m_path;
 		std::string m_name;
 		FileSystemItemType m_type;
 		size_t m_size;

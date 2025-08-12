@@ -67,8 +67,6 @@ namespace UI
 		virtual void onShow();
 		virtual void onHide();
 
-		static void onWindowSelectEvent(lv_event_t* e);
-
 		StatusBar m_statusBar;
 		SideBar m_sideBar;
 		LvContainer m_mainWindow;

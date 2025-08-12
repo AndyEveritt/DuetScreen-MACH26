@@ -32,10 +32,10 @@ namespace OM::FileSystem
 
 	std::string FileSystemItem::GetPath() const
 	{
-		if (s_currentDirPath.empty())
+		if (m_path.empty())
 			return m_name;
 
-		std::string path = s_currentDirPath;
+		std::string path = m_path;
 		if (path.back() != '/')
 		{
 			path += '/';

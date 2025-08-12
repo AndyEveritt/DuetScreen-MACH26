@@ -59,13 +59,15 @@ bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
+	auto responseData = std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData);
+	uint32_t index = indices[0] + responseData->first;
 	LOG_DBG("Files: item[{:d}] name={:s}", index, data);
 	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return false;
 
 	item->SetName(data);
+	item->SetPath(responseData->dir);
 	return true;
 }
 
