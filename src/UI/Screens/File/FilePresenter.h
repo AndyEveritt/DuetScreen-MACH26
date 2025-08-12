@@ -53,6 +53,6 @@ namespace UI
 		std::string m_gcodePath; // path to gcode file to print
 		SortBy m_sortBy = SortBy::DATE;
 		bool m_sortOrder = true;
-		std::vector<std::shared_ptr<OM::FileSystem::FileSystemItem>> m_items;
+		std::vector<OM::FileSystem::ItemPtr> m_items;
 	};
 } // namespace UI
