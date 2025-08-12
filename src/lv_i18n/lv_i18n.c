@@ -51,7 +51,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"filament_select", "Select Filament"},
     {"file", "File"},
     {"file_header_prefix", "Folder: "},
-    {"file_crumb_separator", ">"},
+    {"file_crumb_separator", " > "},
     {"file_run_macro_message", "Do you want to run {}?"},
     {"file_run_macro_title", "Run Macro"},
     {"file_start_print_message", "File: {}\nDate: {}\nSize: {}"},
@@ -492,6 +492,11 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"update_confirm", "Update"},
     {"updating", "Updating"},
     {"usb", "USB"},
+    {"primary_hue", "Primary Hue"},
+    {"secondary_hue", "Secondary Hue"},
+    {"chroma", "Chroma"},
+    {"menu", "Menu"},
+    {"select_view", "Select View"},
     {NULL, NULL} // End mark
 };
 

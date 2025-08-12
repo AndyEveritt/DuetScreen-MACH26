@@ -23,8 +23,8 @@ namespace UI
 			: LvObj(lv_obj_create, fmt::format("{}", index), parent)
 			, m_index(index)
 		{
-			addStyle(Themes::getLvglStyles().bg_color_list_item, 0);
-			addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
+			// addStyle(Themes::getLvglStyles().bg_color_list_item, 0);
+			// addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 		}
 
 		const size_t getIndex() const { return m_index; }
@@ -57,7 +57,6 @@ namespace UI
 			m_listCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 			m_listCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 			m_listCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-			m_listCont.addStyle(Themes::getLvglStyles().no_border, LV_PART_MAIN);
 
 			m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
