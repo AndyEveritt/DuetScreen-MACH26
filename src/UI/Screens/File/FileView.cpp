@@ -154,6 +154,7 @@ namespace UI
 		m_sortSize.setCheckable(true);
 
 		// Footer
+		m_footer.hide();
 
 		// Start Print
 		m_startPrint.setFlag(LV_OBJ_FLAG_FLOATING, true);
