@@ -97,9 +97,9 @@ namespace UI
 	void SideBar::macrosBtnEvent(lv_event_t* e)
 	{
 		LOG_INFO("Macros button pressed");
-		FileView& fileView = HomeView::instance().getFileView();
-		fileView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
-		openScreen(&fileView, true);
+		FileView& macrosView = HomeView::instance().getMacroView();
+		macrosView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
+		openScreen(&macrosView, true);
 	}
 
 	void SideBar::menuBtnEvent(lv_event_t* e)

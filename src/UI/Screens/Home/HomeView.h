@@ -55,6 +55,7 @@ namespace UI
 		TemperatureView& getTemperatureView() { return m_temperatureView; }
 		FanView& getFanView() { return m_fanView; }
 		FileView& getFileView() { return m_fileView; }
+		FileView& getMacroView() { return m_macroView; }
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
 		SettingsView& getSettingsView() { return m_settingsView; }
 		StatusView& getStatusView() { return m_statusView; }
@@ -80,6 +81,7 @@ namespace UI
 		TemperatureView m_temperatureView;
 		FanView m_fanView;
 		FileView m_fileView;
+		FileView m_macroView;
 		HeightmapView m_heightmapView;
 		SettingsView m_settingsView;
 		StatusView m_statusView;

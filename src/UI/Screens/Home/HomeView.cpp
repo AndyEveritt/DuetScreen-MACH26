@@ -30,6 +30,7 @@ namespace UI
 		, m_temperatureView(m_mainWindow)
 		, m_fanView(m_mainWindow)
 		, m_fileView(m_mainWindow)
+		, m_macroView(m_mainWindow)
 		, m_heightmapView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 		, m_statusView(m_mainWindow)
@@ -57,6 +58,7 @@ namespace UI
 		m_mainWindow.setHeight(LV_PCT(100));
 		m_mainWindow.addStyle(Themes::getLvglStyles().pad_zero);
 		m_mainWindow.addStyle(Themes::getLvglStyles().pad_gap);
+		m_fileView.addStyle(Themes::getLvglStyles().card);
 
 		// Main Window Layout
 		m_mainWindow.setLayoutStyle(LV_LAYOUT_GRID);
@@ -77,9 +79,12 @@ namespace UI
 		m_moveView.hide();
 		m_temperatureView.hide();
 		m_fanView.hide();
+		m_macroView.hide();
 		m_heightmapView.hide();
 		m_statusView.hide();
 		m_settingsView.hide();
+
+		m_macroView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
 
 		// Message Box
 		m_alert.hide();
@@ -118,7 +123,7 @@ namespace UI
 
 	void HomeView::onShow()
 	{
-		// m_heightmapView.show();
+		m_fileView.show();
 		m_toolList.activate();
 		m_statusBar.activate();
 		m_sideBar.show(true);

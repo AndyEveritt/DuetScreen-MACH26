@@ -39,7 +39,7 @@ namespace UI
 			{_("move"), &HomeView::instance().getMoveView()},
 			{_("temperature"), &HomeView::instance().getTemperatureView()},
 			{_("fan"), &HomeView::instance().getFanView()},
-			{_("file"), &HomeView::instance().getFileView()},
+			// {_("macros"), &HomeView::instance().getMacroView()},
 			{_("heightmap"), &HomeView::instance().getHeightmapView()},
 			{_("settings"), &HomeView::instance().getSettingsView()},
 			{_("status"), &HomeView::instance().getStatusView()},

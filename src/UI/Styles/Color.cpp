@@ -11,14 +11,11 @@
 
 namespace UI
 {
-	Color::Color(float l_, float c_, float h_)
-		: m_l(l_)
-		, m_c(c_)
-		, m_h(h_)
+	Color::Color(float l, float c, float h)
 	{
-		m_l = std::clamp(m_l, 0.0f, 1.0f);
-		m_c = std::clamp(m_c, 0.0f, 0.2f);
-		m_h = std::clamp(m_h, 0.0f, 360.0f);
+		setL(l);
+		setC(c);
+		setH(h);
 	}
 
 	Color::Color(lv_color_t rgb)
@@ -44,5 +41,20 @@ namespace UI
 		lv_color.green = static_cast<uint8_t>(rgb.green8());
 		lv_color.blue = static_cast<uint8_t>(rgb.blue8());
 		return lv_color;
+	}
+
+	void Color::setL(float l)
+	{
+		m_l = std::clamp(l, 0.0f, 1.0f);
+	}
+
+	void Color::setC(float c)
+	{
+		m_c = std::clamp(c, 0.0f, 0.4f);
+	}
+
+	void Color::setH(float h)
+	{
+		m_h = std::clamp(h, 0.0f, 360.0f);
 	}
 } // namespace UI

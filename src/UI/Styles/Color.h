@@ -21,6 +21,10 @@ namespace UI
 
 		operator lv_color_t() const; // implicit cast to RGB
 
+		void setL(float);
+		void setC(float);
+		void setH(float);
+
 		float getL() const { return m_l; }
 		float getC() const { return m_c; }
 		float getH() const { return m_h; }

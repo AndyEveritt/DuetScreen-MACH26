@@ -27,7 +27,6 @@ namespace UI
 		UI_LOCK();
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		addStyle(Themes::getLvglStyles().bg_dark);
 
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
@@ -118,6 +117,8 @@ namespace UI
 		, m_startPrint("messageBox", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
 
 		// Layout
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -243,7 +244,7 @@ namespace UI
 			if (i > 0)
 			{
 				auto sep = std::make_unique<LvLabel>(utils::format("crumb_sep_{}", i), m_breadcrumbCont);
-				sep->setText("/");
+				sep->setText(_("file_crumb_separator"));
 				m_breadcrumbLabels.push_back(std::move(sep));
 			}
 #endif // ENABLE_BREADCRUMB_SEPARATOR
