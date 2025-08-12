@@ -213,6 +213,14 @@ namespace UI::Themes
 		lv_style_set_bg_grad_color(lvgl.btn, m_colors.primary_muted);
 		lv_style_set_bg_grad_dir(lvgl.btn, LV_GRAD_DIR_VER);
 
+		lv_style_set_bg_grad_dir(lvgl.btn_checked, LV_GRAD_DIR_NONE);
+		lv_style_merge(lvgl.btn_checked, lvgl.border_highlight);
+
+		lv_style_set_bg_opa(lvgl.actionBtn, LV_OPA_COVER);
+		lv_style_set_bg_color(lvgl.actionBtn, m_colors.secondary);
+		lv_style_set_bg_grad_color(lvgl.actionBtn, m_colors.secondary_muted);
+		lv_style_set_bg_grad_dir(lvgl.actionBtn, LV_GRAD_DIR_VER);
+
 		/* Modifiers */
 
 		lv_style_set_recolor(lvgl.pressed, lv_color_black());
@@ -267,11 +275,6 @@ namespace UI::Themes
 		lv_style_set_anim_duration(lvgl.anim, 200);
 
 		lv_style_set_anim_duration(lvgl.anim_fast, 120);
-
-		lv_style_set_border_color(lvgl.actionBtn, m_colors.secondary);
-		lv_style_set_border_width(lvgl.actionBtn, BORDER_WIDTH);
-		lv_style_set_border_opa(lvgl.actionBtn, LV_OPA_COVER);
-		lv_style_set_border_side(lvgl.actionBtn, LV_BORDER_SIDE_FULL);
 
 		lv_style_set_border_color(lvgl.input, m_colors.border);
 		lv_style_set_border_width(lvgl.input, 1);

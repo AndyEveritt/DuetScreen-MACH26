@@ -4,6 +4,7 @@
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/List/List.h"
+#include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Core/View.h"
 #include "UI/Widgets/Filament/FilamentSelect.h"
 #include "UI/Widgets/Temperature/ToolControl.h"

@@ -5,6 +5,7 @@
 #include "StatusPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/MessageBox/MessageBox.h"
+#include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -76,7 +77,7 @@ namespace UI
 		Button m_printAgainBtn;
 		Button m_cancelBtn;
 		Button m_fineTuneBtn;
-		MessageBox m_confirmCancel;
+		Modal<MessageBox> m_confirmCancel;
 
 		// Fine tune
 		FineTune m_fineTune;

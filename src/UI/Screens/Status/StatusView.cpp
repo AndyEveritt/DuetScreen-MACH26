@@ -88,12 +88,11 @@ namespace UI
 		m_resumeBtn.hide();
 
 		// Cancel confirmation setup
-		m_confirmCancel.setMode(OM::Alert::Mode::ConfirmCancel);
 		m_confirmCancel.setTitle(_("print_cancel_title"));
 		m_confirmCancel.setText(_("print_cancel_message"));
+		m_confirmCancel.okVisible(true);
+		m_confirmCancel.cancelVisible(true);
 		m_confirmCancel.hide();
-		lv_obj_add_flag(m_confirmCancel.getRoot(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(m_confirmCancel.getRoot(), LV_ALIGN_CENTER, 0, 0);
 
 		// Callbacks
 		m_pauseBtn.addClickedCallback(onPauseClicked, this);

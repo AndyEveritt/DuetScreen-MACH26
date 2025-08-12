@@ -17,11 +17,11 @@ namespace OM
 		{
 			choices[i].Clear();
 		}
-		limits.numberInt.min = INT32_MIN;
-		limits.numberInt.max = INT32_MAX;
-		limits.numberFloat.min = -FLT_MAX;
-		limits.numberFloat.max = FLT_MAX;
+		limits.numberInt.min = std::numeric_limits<int32_t>::min();
+		limits.numberInt.max = std::numeric_limits<int32_t>::max();
+		limits.numberFloat.min = std::numeric_limits<float>::lowest();
+		limits.numberFloat.max = std::numeric_limits<float>::max();
 		limits.text.min = 0;
-		limits.text.max = INT32_MAX;
+		limits.text.max = std::numeric_limits<int32_t>::max();
 	}
 } // namespace OM

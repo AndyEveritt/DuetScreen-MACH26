@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Components/LVGL/LvObj.h"
+#include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 
 namespace UI

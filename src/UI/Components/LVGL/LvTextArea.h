@@ -16,7 +16,7 @@ namespace UI
       public:
         LvTextArea(const std::string& name, lv_obj_t* parent);
 
-		void setText(const std::string& text);
+		void setText(std::string_view text);
 		std::string_view getText() const;
 		lv_obj_t* getTextArea() const { return getRoot(); }
 

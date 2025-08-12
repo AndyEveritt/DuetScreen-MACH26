@@ -161,24 +161,29 @@ namespace Comm
 			current = seqs;
 		}
 
+		if (current == &seqs[ARRAY_SIZE(seqs) - 1])
+		{
+			current = seqs;
+		}
+
 		for (size_t i = current - seqs; i < ARRAY_SIZE(seqs); ++i)
 		{
 			current = &seqs[i];
 			if (current->state == SeqStateError)
 			{
-				LOG_WARN("seq {:s} had an error", current->key);
+				LOG_WARN("seq '{:s}' had an error", current->key);
 				// skip and re-init if last request had an error
 				current->state = SeqStateInit;
 				continue;
 			}
 			if (current->state == SeqStateInit || current->state == SeqStateUpdate)
 			{
-				LOG_DBG("seq {:s}", current->key);
+				LOG_DBG("seq '{:s}'", current->key);
 				return current;
 			}
 			if (current->state == SeqStateRequested && current->lastRequestTime + 500ms < TimeHelper::getCurrentTime())
 			{
-				LOG_DBG("seq {:s} was requested but not updated, re-requesting", current->key);
+				LOG_DBG("seq '{:s}' was requested but not updated, re-requesting", current->key);
 				current->state = SeqStateUpdate;
 				return current;
 			}

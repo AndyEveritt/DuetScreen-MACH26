@@ -30,8 +30,6 @@ namespace UI
 			m_filament.setFlexGrow(1);
 			m_filament.setUserData(&m_filament);
 			m_filament.addClickedCallback(onToolSelectEvent, this);
-
-			m_filament.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		}
 
 		void setToolName(std::string_view name) { m_toolName.setText(name); }
@@ -71,12 +69,13 @@ namespace UI
 		FilamentSelect& m_widget;
 	};
 
-	FilamentSelect::FilamentSelect(const std::string& name, lv_obj_t* parent)
+	FilamentSelect::FilamentSelect(const std::string& name, lv_obj_t* parent, lv_obj_t* messageBoxParent)
 		: View(name, parent)
 		, m_header("header", getRoot())
 		, m_cont("cont", getRoot())
 		, m_toolList("tool_list", m_cont)
-		, m_filamentOptions("filament_options", m_cont)
+		, m_confirmation("confirmation", messageBoxParent, layout_t(0, 0, 50, 70))
+		, m_filamentOptions("filament_options", m_confirmation)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -102,9 +101,6 @@ namespace UI
 		m_header.setText(_("filament_management_header"));
 		m_toolList.setTitle(_("select_tool"));
 		m_filamentOptions.setTitle(_("select_filament"));
-
-		m_toolList.addStyle(Themes::getLvglStyles().no_border);
-		m_filamentOptions.addStyle(Themes::getLvglStyles().no_border);
 	}
 
 	void FilamentSelect::setToolCount(size_t count)
@@ -183,10 +179,10 @@ namespace UI
 		}
 		else
 		{
-			control.m_confirmation->setText(fmt::format(fmt::runtime(_("confirm_filament_change")), selectedFilament));
-			control.m_confirmation->setOkCallback([presenter, selectedFilament]()
-												  { presenter->setFilament(selectedFilament); });
-			control.m_confirmation->show(true);
+			control.m_confirmation.setText(fmt::format(fmt::runtime(_("confirm_filament_change")), selectedFilament));
+			control.m_confirmation.setOkCallback([presenter, selectedFilament]()
+												 { presenter->setFilament(selectedFilament); });
+			control.m_confirmation.show(true);
 		}
 	}
 

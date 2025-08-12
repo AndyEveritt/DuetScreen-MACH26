@@ -160,9 +160,9 @@ namespace UI
 		m_startPrint.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_startPrint.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_startPrint.setMaxHeight(LV_PCT(70));
-		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
+		m_startPrint.okVisible(true);
+		m_startPrint.cancelVisible(true);
 		m_startPrint.setImageSize(LV_PCT(50), 200);
-		m_startPrint.removeStyle(Themes::getLvglStyles().card);
 
 		// Callbacks
 		m_refresh.addClickedCallback(onRefreshClicked, this);

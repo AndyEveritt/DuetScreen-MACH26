@@ -71,6 +71,7 @@ namespace UI::Themes
 		Style scrollbar_scrolled;
 		Style card;
 		Style btn;
+		Style btn_checked;
 
 		/*Utility*/
 		Style pressed;
@@ -278,4 +279,3 @@ namespace UI::Themes
 bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style);
 void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
 void lv_obj_remove_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
-void lv_style_merge(lv_style_t* dest, const lv_style_t* src);

@@ -242,6 +242,17 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_INFO("Closing screen '{:s}'", view->getName());
+		if (view == nullptr)
+		{
+			LOG_WARN("Trying to close a nullptr screen");
+			return false;
+		}
+
+		if (inVector(s_openModals, view))
+		{
+			return closeModal(view);
+		}
+
 		if (view->isVisible())
 		{
 			view->hide();
@@ -339,5 +350,4 @@ namespace UI
 		notifySideBar();
 		return true;
 	}
-
 } // namespace UI

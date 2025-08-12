@@ -11,6 +11,7 @@
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
 #include "UI/Components/MessageBox/MessageBox.h"
+#include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -20,14 +21,11 @@ namespace UI
 	  public:
 		class ToolItem;
 
-		FilamentSelect(const std::string& name, lv_obj_t* parent);
+		FilamentSelect(const std::string& name, lv_obj_t* parent, lv_obj_t* messageBoxParent = nullptr);
 
 		void setToolCount(size_t count);
 		void setToolData(size_t index, std::string_view toolName, std::string_view filamentName);
 		void setFilamentOptions(const std::vector<std::string>& options);
-
-		void setMessageBox(MessageBox* confirmation) { m_confirmation = confirmation; }
-		MessageBox* getMessageBox() const { return m_confirmation; }
 
 		void showToolSelect(bool show);
 		void setSelectedFilament(std::string_view filamentName);
@@ -40,8 +38,8 @@ namespace UI
 		LvLabel m_header;
 		LvContainer m_cont;
 		List<ToolItem> m_toolList;
-		List<Button> m_filamentOptions;
 
-		MessageBox* m_confirmation = nullptr;
+		Modal<MessageBox> m_confirmation;
+		List<Button> m_filamentOptions;
 	};
 } // namespace UI

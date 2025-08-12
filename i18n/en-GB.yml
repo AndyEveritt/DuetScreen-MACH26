@@ -364,9 +364,9 @@ en-GB:
   msgbox_cancel: Cancel
   msgbox_close: Close
   msgbox_ok: Ok
-  msgbox_warning_float_range: Value must be between %f and %f
-  msgbox_warning_int_range: Value must be between %d and %d
-  msgbox_warning_text_length: Input must be between %d and %d characters
+  msgbox_warning_float_range: 'Value must be between {:g} and {:g}'
+  msgbox_warning_int_range: 'Value must be between {:d} and {:d}'
+  msgbox_warning_text_length: 'Input must be between {:d} and {:d} characters'
   network: Network
   none: None
   object_cancel: Object Cancel

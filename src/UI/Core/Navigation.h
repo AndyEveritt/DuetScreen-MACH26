@@ -19,4 +19,6 @@ namespace UI
 	void closeAllModals();
 	bool closeModal(LvObj* view);
 	bool closeLastModal();
+
+	bool close(LvObj* view);
 } // namespace UI

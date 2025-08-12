@@ -6,6 +6,7 @@
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
+#include "UI/Components/MessageBox/AlertMessageBox.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"
@@ -86,7 +87,7 @@ namespace UI
 
 		// Message box
 		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;
-		MessageBox m_alert;
+		AlertMessageBox m_alert;
 
 		// Update prompt
 		MessageBox m_updatePrompt;
