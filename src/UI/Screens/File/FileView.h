@@ -50,7 +50,7 @@ namespace UI
 			bool m_isFolder;
 		};
 
-		FileView(lv_obj_t* parent);
+		FileView(lv_obj_t* parent, lv_obj_t* msgBoxParent = nullptr);
 
 		const size_t getFileCount() const { return m_fileList.getItemCount(); }
 		void setFileCount(const size_t count);

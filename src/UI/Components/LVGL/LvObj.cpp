@@ -477,6 +477,12 @@ namespace UI
 		lv_obj_add_style(getRoot(), style, selector, recursive);
 	}
 
+	void LvObj::removeStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
+	{
+		UI_LOCK();
+		lv_obj_remove_style(getRoot(), style, selector, recursive);
+	}
+
 	void LvObj::setStylePad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
 	{
 		UI_LOCK();

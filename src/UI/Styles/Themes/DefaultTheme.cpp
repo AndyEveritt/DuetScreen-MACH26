@@ -536,7 +536,12 @@ namespace UI::Themes
 		lv_style_set_bg_grad_color(components.estop, lv_palette_darken(LV_PALETTE_RED, 4));
 		lv_style_set_text_color(components.estop, lv_color_white());
 		lv_style_set_radius(components.estop, LV_RADIUS_CIRCLE);
-		lv_style_set_bg_color(components.folder, m_colors.primary);
+
+		lv_style_copy(components.folder, lvgl.btn);
+
+		lv_style_merge(components.file, lvgl.btn);
+		lv_style_merge(components.file, lvgl.bg_light);
+		lv_style_merge(components.file, lvgl.border);
 
 		lv_style_set_bg_color(components.unhomed, lv_color_hex(0xfb9514));
 

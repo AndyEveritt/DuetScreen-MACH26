@@ -169,6 +169,9 @@ namespace UI
 		void addStyle(const lv_style_t* style,
 					  const lv_style_selector_t selector = LV_PART_MAIN,
 					  bool recursive = false);
+		void removeStyle(const lv_style_t* style,
+						 const lv_style_selector_t selector = LV_PART_MAIN,
+						 bool recursive = false);
 		void setStylePad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);
 		void setStyleBgColor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleBgOpa(lv_opa_t opa, lv_style_selector_t selector = LV_PART_MAIN);

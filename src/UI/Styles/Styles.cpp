@@ -695,7 +695,6 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_msgbox_class))
 		{
 			lv_obj_add_style(obj, s_lvglStyles.card, 0);
-			lv_obj_add_style(obj, s_lvglStyles.pad_zero, 0);
 			lv_obj_add_style(obj, s_lvglStyles.clip_corner, 0);
 			return;
 		}
@@ -1010,4 +1009,37 @@ void lv_obj_remove_style(lv_obj_t* obj,
 
 	// Raw lvgl call
 	lv_obj_remove_style(obj, style, selector);
+}
+
+void lv_style_merge(lv_style_t* dst, const lv_style_t* src)
+{
+	UI_LOCK();
+	if (dst == nullptr || src == nullptr)
+		return;
+
+	/*Source is empty*/
+	if (src->values_and_props == NULL)
+		return;
+	if (src->prop_cnt == 0)
+		return;
+
+	// Merge the styles
+	int32_t i;
+	if (lv_style_is_const(src))
+	{
+		lv_style_const_prop_t* props_and_values = (lv_style_const_prop_t*)src->values_and_props;
+		for (i = 0; props_and_values[i].prop != LV_STYLE_PROP_INV; i++)
+		{
+			lv_style_set_prop(dst, props_and_values[i].prop, props_and_values[i].value);
+		}
+	}
+	else
+	{
+		lv_style_prop_t* props = (lv_style_prop_t*)src->values_and_props + src->prop_cnt * sizeof(lv_style_value_t);
+		lv_style_value_t* values = (lv_style_value_t*)src->values_and_props;
+		for (i = 0; i < src->prop_cnt; i++)
+		{
+			lv_style_set_prop(dst, props[i], values[i]);
+		}
+	}
 }

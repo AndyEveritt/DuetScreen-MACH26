@@ -29,7 +29,7 @@ namespace UI
 		, m_moveView(m_mainWindow)
 		, m_temperatureView(m_mainWindow)
 		, m_fanView(m_mainWindow)
-		, m_fileView(m_mainWindow)
+		, m_fileView(m_mainWindow, m_mainWindow)
 		, m_macroView(m_mainWindow)
 		, m_heightmapView(m_mainWindow)
 		, m_settingsView(m_mainWindow)

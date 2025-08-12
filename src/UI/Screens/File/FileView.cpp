@@ -103,7 +103,7 @@ namespace UI
 		item->getList().onItemClicked(item->m_index, item->m_isFolder);
 	}
 
-	FileView::FileView(lv_obj_t* parent)
+	FileView::FileView(lv_obj_t* parent, lv_obj_t* msgBoxParent)
 		: View("file_view", parent, layout_t(0, 0, 100, 100))
 		, m_sideBar("sidebar", getRoot())
 		, m_fileList("list", getRoot())
@@ -114,7 +114,7 @@ namespace UI
 		, m_footer("footer", getRoot())
 		, m_breadcrumbPrefix("breadcrumb_prefix", m_fileList.getHeader())
 		, m_breadcrumbCont("breadcrumb_container", m_fileList.getHeader())
-		, m_startPrint("messageBox", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
+		, m_startPrint("messageBox", msgBoxParent ? msgBoxParent : getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
@@ -161,7 +161,8 @@ namespace UI
 		m_startPrint.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_startPrint.setMaxHeight(LV_PCT(70));
 		m_startPrint.setMode(OM::Alert::Mode::ConfirmCancel);
-		m_startPrint.setImageSize(200, 200);
+		m_startPrint.setImageSize(LV_PCT(50), 200);
+		m_startPrint.removeStyle(Themes::getLvglStyles().card);
 
 		// Callbacks
 		m_refresh.addClickedCallback(onRefreshClicked, this);

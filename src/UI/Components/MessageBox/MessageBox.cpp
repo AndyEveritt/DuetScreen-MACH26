@@ -80,6 +80,8 @@ namespace UI
 		lv_obj_set_flex_flow(m_centralCont, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_flow(m_bottomCont, LV_FLEX_FLOW_ROW);
 
+		// lv_obj_set_flex_align(m_topCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
 		// Top Container
 		lv_obj_set_flex_grow(m_text, 1);
 		lv_obj_set_height(m_text, LV_SIZE_CONTENT);
