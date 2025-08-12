@@ -107,7 +107,7 @@ namespace UI
 		LOG_DBG("Menu button pressed");
 		SideBar& sidebar = *static_cast<SideBar*>(lv_event_get_user_data(e));
 
-		sidebar.showAppDrawer(sidebar.m_appDrawer.hasFlag(LV_OBJ_FLAG_HIDDEN));
+		sidebar.showAppDrawer(!sidebar.m_appDrawer.hasState(LV_STATE_USER_1));
 	}
 
 	void SideBar::eStopDraggedEvent(float pct, void* sidebar)
@@ -128,14 +128,14 @@ namespace UI
 	void SideBar::showAppDrawer(bool show)
 	{
 		LvAnim anim;
-		if (show == !m_appDrawer.hasFlag(LV_OBJ_FLAG_HIDDEN))
+		if (show == m_appDrawer.hasState(LV_STATE_USER_1))
 		{
 			LOG_DBG("App drawer is already {}", show ? "shown" : "hidden");
 			return;
 		}
 		anim.setDuration(300);
 		anim.setVar(&m_appDrawer);
-		int32_t start = show ? 0 : m_appDrawer.getWidth();
+		int32_t start = m_appDrawer.getX();
 		int32_t end = show ? m_appDrawer.getWidth() : 0;
 		anim.setValues(start, end);
 		anim.setExecCb(
@@ -144,15 +144,17 @@ namespace UI
 				auto& drawer = *static_cast<AppDrawer*>(var);
 				drawer.setX(value);
 			});
-		anim.setCompletedCb(
+		anim.setDeletedCb(
 			[](lv_anim_t* anim)
 			{
 				auto& drawer = *static_cast<AppDrawer*>(anim->var);
-				drawer.setFlag(LV_OBJ_FLAG_HIDDEN, drawer.getCoords().x1 <= 0);
+				drawer.setFlag(LV_OBJ_FLAG_HIDDEN, !drawer.hasState(LV_STATE_USER_1));
 			});
 
 		if (show)
 			m_appDrawer.setFlag(LV_OBJ_FLAG_HIDDEN, false);
+
+		m_appDrawer.setState(LV_STATE_USER_1, show);
 
 		anim.start();
 	}
