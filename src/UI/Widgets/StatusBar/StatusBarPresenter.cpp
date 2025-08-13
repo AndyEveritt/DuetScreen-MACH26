@@ -16,12 +16,14 @@ namespace UI
 
 	void StatusBarPresenter::onConnect()
 	{
-		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("connected")));
+		m_view->setDuetStatus(
+			fmt::format("{:s} - {:s}", _(Comm::DUET.GetCommunicationTypeName().data()), _("connected")));
 	}
 
 	void StatusBarPresenter::onDisconnect()
 	{
-		m_view->setDuetStatus(utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _("disconnected")));
+		m_view->setDuetStatus(
+			fmt::format("{:s} - {:s}", _(Comm::DUET.GetCommunicationTypeName().data()), _("disconnected")));
 		m_view->setDuetName("");
 	}
 
@@ -33,7 +35,7 @@ namespace UI
 	void StatusBarPresenter::newStatus(const OM::PrinterStatus& status)
 	{
 		m_view->setDuetStatus(
-			utils::format("%s - %s", _(Comm::DUET.GetCommunicationTypeName()), _(OM::GetStatusText())));
+			fmt::format("{:s} - {:s}", _(Comm::DUET.GetCommunicationTypeName().data()), _(OM::GetStatusText())));
 	}
 
 	void StatusBarPresenter::newTime()

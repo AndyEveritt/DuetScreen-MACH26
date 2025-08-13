@@ -445,7 +445,7 @@ namespace OM::FileSystem
 
 	void RunMacro(const std::string& path)
 	{
-		Comm::DUET.SendGcodef("M98 P\"%s\"\n", path.c_str());
+		Comm::DUET.SendGcodef("M98 P\"{:s}\"\n", path);
 	}
 
 	void UploadFile(const File* file)
@@ -461,7 +461,7 @@ namespace OM::FileSystem
 
 	void StartPrint(const std::string& path)
 	{
-		Comm::DUET.SendGcodef("M32 \"%s\"\n", path.c_str());
+		Comm::DUET.SendGcodef("M32 \"{:s}\"\n", path);
 	}
 
 	void ResumePrint()
@@ -481,7 +481,7 @@ namespace OM::FileSystem
 
 	void PrintAgain()
 	{
-		Comm::DUET.SendGcodef("M23 \"%s\"\nM24\n", OM::GetLastJobName().c_str());
+		Comm::DUET.SendGcodef("M23 \"{:s}\"\nM24\n", OM::GetLastJobName());
 	}
 
 	void ClearFileSystem()
@@ -510,7 +510,7 @@ namespace OM::FileSystem
 		else
 		{
 			s_fileContents = std::make_shared<FileContents>(fullPath, callback, runEveryTime);
-			Comm::DUET.SendGcodef("M36.2 P\"%s\" S0\n", fullPath.c_str());
+			Comm::DUET.SendGcodef("M36.2 P\"{:s}\" S0\n", fullPath);
 		}
 	}
 

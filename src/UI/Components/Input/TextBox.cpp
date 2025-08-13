@@ -72,7 +72,7 @@ namespace UI
 		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, label.empty());
 		m_label.setText(label);
 	}
-	void TextBox::setText(const std::string& text)
+	void TextBox::setText(std::string_view text)
 	{
 		m_textArea.setText(text);
 		m_textArea.setCursorPos(0);

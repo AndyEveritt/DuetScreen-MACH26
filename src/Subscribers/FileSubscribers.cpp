@@ -224,7 +224,7 @@ bool FileSubscribers::setFragErr(Comm::JsonDecoder* decoder, const char* data, c
 
 	if (fileContents->GetNext() != 0)
 	{
-		Comm::DUET.SendGcodef("M36.2 P\"%s\" S%d", fileContents->GetFilename().data(), fileContents->GetNext());
+		Comm::DUET.SendGcodef("M36.2 P\"{:s}\" S{:d}", fileContents->GetFilename(), fileContents->GetNext());
 	}
 
 	return true;

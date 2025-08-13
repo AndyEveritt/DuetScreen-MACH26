@@ -218,7 +218,7 @@ namespace UI
 				[seq]()
 				{
 					LOG_INFO("MessageBox OK callback");
-					Comm::DUET.SendGcodef("M292 S%u", seq);
+					Comm::DUET.SendGcodef("M292 S{:d}", seq);
 				});
 			break;
 
@@ -227,7 +227,7 @@ namespace UI
 				[seq](size_t index)
 				{
 					LOG_INFO("MessageBox Choice callback");
-					Comm::DUET.SendGcodef("M292 R{%u} S%u", index, seq);
+					Comm::DUET.SendGcodef("M292 R{{{:d}}} S{:d}", index, seq); // `{{` and `}}` to print `{` and `}`
 				});
 			break;
 
@@ -281,7 +281,7 @@ namespace UI
 				{
 					UI_LOCK();
 					int value = std::atoi(msgBox.getInput().data());
-					Comm::DUET.SendGcodef("M292 R{%d} S%u", value, seq);
+					Comm::DUET.SendGcodef("M292 R{{{:d}}} S{:d}", value, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 		}
@@ -331,7 +331,7 @@ namespace UI
 				[seq, &msgBox]()
 				{
 					float value = std::atof(msgBox.getInput().data());
-					Comm::DUET.SendGcodef("M292 R{%.8f} S%u", value, seq);
+					Comm::DUET.SendGcodef("M292 R{{{:g}}} S{:d}", value, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
@@ -362,7 +362,7 @@ namespace UI
 					std::string text(msgBox.getInput());
 					text = std::regex_replace(text, std::regex("\""), "\"\"");
 					text = std::regex_replace(text, std::regex("\'"), "\'\'");
-					Comm::DUET.SendGcodef("M292 R{\"%s\"} S%u", text.c_str(), seq);
+					Comm::DUET.SendGcodef("M292 R\"{:s}\" S{:d}", text, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
@@ -400,7 +400,7 @@ namespace UI
 				[seq]()
 				{
 					LOG_INFO("MessageBox Cancel callback");
-					Comm::DUET.SendGcodef("M292 P1 S%u", seq);
+					Comm::DUET.SendGcodef("M292 P1 S{:d}", seq);
 				});
 		}
 

@@ -165,7 +165,7 @@ namespace OM
 		if (command.IsEmpty())
 			return false;
 
-		Comm::DUET.SendGcodef("M568 P%d %s%s\n", index, active ? "S" : "R", command.c_str());
+		Comm::DUET.SendGcodef("M568 P{:d} {:c}{:s}\n", index, active ? 'S' : 'R', command.c_str());
 
 		return true;
 	}
@@ -298,7 +298,7 @@ namespace OM
 			break;
 		case ToolStatus::standby:
 		case ToolStatus::off:
-			Comm::DUET.SendGcodef("T%d\n", index);
+			Comm::DUET.SendGcodef("T{:d}\n", index);
 			break;
 		}
 	}
@@ -313,16 +313,16 @@ namespace OM
 		switch (toolHeater->heater->status)
 		{
 		case Heat::HeaterStatus::active:
-			Comm::DUET.SendGcodef("M568 P%d A1\n", index);
+			Comm::DUET.SendGcodef("M568 P{:d} A1\n", index);
 			break;
 		case Heat::HeaterStatus::fault:
-			Comm::DUET.SendGcodef("M562 P%d\n", toolHeater->heater->index);
+			Comm::DUET.SendGcodef("M562 P{:d}\n", toolHeater->heater->index);
 			break;
 		case Heat::HeaterStatus::off:
-			Comm::DUET.SendGcodef("M568 P%d A2\n", index);
+			Comm::DUET.SendGcodef("M568 P{:d} A2\n", index);
 			break;
 		case Heat::HeaterStatus::standby:
-			Comm::DUET.SendGcodef("M568 P%d A0\n", index);
+			Comm::DUET.SendGcodef("M568 P{:d} A0\n", index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
@@ -340,10 +340,10 @@ namespace OM
 		{
 		case SpindleState::forward:
 		case SpindleState::reverse:
-			Comm::DUET.SendGcodef("M5\n");
+			Comm::DUET.SendGcode("M5\n");
 			break;
 		case SpindleState::stopped:
-			Comm::DUET.SendGcodef("M3\n");
+			Comm::DUET.SendGcode("M3\n");
 			break;
 		}
 	}
@@ -354,7 +354,7 @@ namespace OM
 		{
 			return;
 		}
-		Comm::DUET.SendGcodef("M568 P%d F%d\n", index, rpm);
+		Comm::DUET.SendGcodef("M568 P{:d} F{:d}\n", index, rpm);
 	}
 
 	void Tool::ChangeFilament(const char* filament)
@@ -410,7 +410,7 @@ namespace OM
 			return;
 		}
 
-		Comm::DUET.SendGcodef("T%d M701 S\"%s\"\n", index, filament);
+		Comm::DUET.SendGcodef("T{:d} M701 S\"{:s}\"\n", index, filament);
 	}
 
 	void Tool::UnloadFilament()
@@ -431,7 +431,7 @@ namespace OM
 			return;
 		}
 
-		Comm::DUET.SendGcodef("T%d M702\n", index);
+		Comm::DUET.SendGcodef("T{:d} M702\n", index);
 	}
 
 	void Tool::Reset()

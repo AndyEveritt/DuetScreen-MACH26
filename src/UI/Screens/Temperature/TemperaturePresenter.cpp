@@ -10,12 +10,12 @@ namespace UI
 {
 	void TemperaturePresenter::retract(uint32_t distance, uint32_t feedrate)
 	{
-		Comm::DUET.SendGcodef("G1 E-%u F%u\n", distance, feedrate * 60);
+		Comm::DUET.SendGcodef("G1 E-{:d} F{:d}\n", distance, feedrate * 60);
 	}
 
 	void TemperaturePresenter::extrude(uint32_t distance, uint32_t feedrate)
 	{
-		Comm::DUET.SendGcodef("G1 E%u F%u\n", distance, feedrate * 60);
+		Comm::DUET.SendGcodef("G1 E{:d} F{:d}\n", distance, feedrate * 60);
 	}
 
 	void TemperaturePresenter::newToolData()

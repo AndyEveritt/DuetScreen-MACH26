@@ -179,7 +179,7 @@ namespace UI
 		std::vector<std::string> options;
 		for (const auto& method : Comm::duetCommunicationTypeNames)
 		{
-			options.push_back(_(method));
+			options.push_back(_(method.data()));
 		}
 		m_connectionMethod.setLabel(_("settings_duet_connection_method"));
 		m_connectionMethod.setOptions(options);

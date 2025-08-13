@@ -461,7 +461,7 @@ namespace OM
 	void LoadHeightmap(std::string_view filename)
 	{
 		LOG_INFO("Loading heightmap {:s}", filename);
-		Comm::DUET.SendGcodef("G29 S1 P\"%s\"\n", filename.data());
+		Comm::DUET.SendGcodef("G29 S1 P\"{:s}\"\n", filename);
 	}
 
 	/* Sends command to Duet to unload the heightmap */

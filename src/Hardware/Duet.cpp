@@ -116,7 +116,7 @@ namespace Comm
 		return m_config.communicationType;
 	}
 
-	const char* Duet::GetCommunicationTypeName() const
+	std::string_view Duet::GetCommunicationTypeName() const
 	{
 		CommunicationType type = m_config.communicationType;
 		if (type >= CommunicationType::COUNT || type <= CommunicationType::none)
@@ -170,7 +170,7 @@ namespace Comm
 		return std::chrono::duration_cast<std::chrono::milliseconds>(m_config.pollInterval * m_pollIntervalScale);
 	}
 
-	void Duet::PrepareRequest(HttpRequest& req, const std::string& subUrl, hv::QueryParams& queryParameters)
+	void Duet::PrepareRequest(HttpRequest& req, std::string_view subUrl, hv::QueryParams& queryParameters)
 	{
 		req.method = HTTP_GET;
 		req.host = GetBaseUrl();
@@ -210,7 +210,7 @@ namespace Comm
 		return true;
 	}
 
-	bool Duet::AsyncGet(const std::string& path,
+	bool Duet::AsyncGet(std::string_view path,
 						hv::QueryParams& queryParameters,
 						HttpResponseCallback callback,
 						bool queue = false)
@@ -224,7 +224,7 @@ namespace Comm
 
 		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
-			(path != "/rr_connect"))
+			(path != "/rr_connect" && path != "/rr_disconnect"))
 		{
 			if (!Connect())
 			{
@@ -249,7 +249,7 @@ namespace Comm
 	Tries to make a get request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
 	again
 	*/
-	bool Duet::Get(const std::string& path, HttpResponse& r, hv::QueryParams& queryParameters)
+	bool Duet::Get(std::string_view path, HttpResponse& r, hv::QueryParams& queryParameters)
 	{
 		if (!IsConnected() && path != "/rr_connect")
 		{
@@ -259,7 +259,7 @@ namespace Comm
 
 		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
-			(path != "/rr_connect"))
+			(path != "/rr_connect" && path != "/rr_disconnect"))
 		{
 			if (!Connect())
 			{
@@ -292,10 +292,7 @@ namespace Comm
 	Tries to make a post request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
 	again
 	*/
-	bool Duet::Post(const std::string& subUrl,
-					HttpResponse& r,
-					hv::QueryParams& queryParameters,
-					const std::string& data)
+	bool Duet::Post(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters, std::string_view data)
 	{
 #if 0
 		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
@@ -400,15 +397,7 @@ namespace Comm
 		}
 	}
 
-	void Duet::SendGcodef(const char* fmt, ...)
-	{
-		va_list args;
-		va_start(args, fmt);
-		SendGcode(utils::vformat(fmt, args).c_str());
-		va_end(args);
-	}
-
-	bool Duet::UploadFile(const char* filename, const std::string& contents)
+	bool Duet::UploadFile(std::string_view filename, const std::string& contents)
 	{
 		if (!IsConnected())
 		{
@@ -432,7 +421,7 @@ namespace Comm
 				return false;
 			}
 
-			SendGcodef("M28 \"%s\"\n", filename);
+			SendGcodef("M28 \"{:s}\"\n", filename);
 			size_t prevPosition = 0;
 			size_t position = contents.find("\n"); // Find the first occurrence of \n
 			std::string line;
@@ -497,13 +486,13 @@ namespace Comm
 		return true;
 	}
 
-	void Duet::RequestModel(const char* flags)
+	void Duet::RequestModel(std::string_view flags)
 	{
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M409 F\"%s\"\n", flags);
+			SendGcodef("M409 F\"{:s}\"\n", flags);
 			break;
 		case CommunicationType::network:
 		{
@@ -543,13 +532,13 @@ namespace Comm
 		}
 	}
 
-	void Duet::RequestModel(const char* key, const char* flags)
+	void Duet::RequestModel(std::string_view key, std::string_view flags)
 	{
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M409 K\"%s\" F\"%s\"\n", key, flags);
+			SendGcodef("M409 K\"{:s}\" F\"{:s}\"\n", key, flags);
 			break;
 		case CommunicationType::network:
 		{
@@ -595,7 +584,7 @@ namespace Comm
 		return;
 	}
 
-	bool Duet::RequestFileList(const std::string& dir, const size_t first)
+	bool Duet::RequestFileList(std::string_view dir, const size_t first)
 	{
 		bool ret = true;
 		LOG_DBG("dir = {:s}, first = {:d}", dir, first);
@@ -603,7 +592,7 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M20 S3 P\"%s\" R%d\n", dir.c_str(), first);
+			SendGcodef("M20 S3 P\"{:s}\" R{:d}\n", dir, first);
 			break;
 		case CommunicationType::network:
 		{
@@ -639,7 +628,7 @@ namespace Comm
 		return ret;
 	}
 
-	bool Duet::RequestFileInfo(const char* filename)
+	bool Duet::RequestFileInfo(std::string_view filename)
 	{
 		LOG_DBG("for {:s}", filename);
 		bool ret = true;
@@ -647,7 +636,7 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M36 \"%s\"\n", filename);
+			SendGcodef("M36 \"{:s}\"\n", filename);
 			break;
 		case CommunicationType::network:
 		{
@@ -796,7 +785,7 @@ namespace Comm
 		return ret;
 	}
 
-	bool Duet::RequestThumbnail(const char* filename, uint32_t offset)
+	bool Duet::RequestThumbnail(std::string_view filename, uint32_t offset)
 	{
 		LOG_DBG("for {:s}, offset={:d}", filename, offset);
 		bool ret = true;
@@ -804,7 +793,7 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 		case CommunicationType::usb:
-			SendGcodef("M36.1 P\"%s\" S%d\n", filename, offset);
+			SendGcodef("M36.1 P\"{:s}\" S{:d}\n", filename, offset);
 			break;
 		case CommunicationType::network:
 		{
@@ -910,7 +899,7 @@ namespace Comm
 		}
 		case CommunicationType::network:
 		{
-			LOG_INFO("Connecting to Duet at {:s}", GetBaseUrl().c_str());
+			LOG_INFO("Connecting to Duet at {:s}", GetBaseUrl());
 
 			HttpResponse r;
 			hv::QueryParams query;
@@ -1036,7 +1025,7 @@ namespace Comm
 		return ret;
 	}
 
-	const std::string& Duet::GetBaseUrl() const
+	const std::string_view Duet::GetBaseUrl() const
 	{
 		if (!m_config.ipAddress.empty())
 		{
@@ -1081,13 +1070,13 @@ namespace Comm
 		return baudRates[0];
 	}
 
-	void Duet::SetIPAddress(const std::string& ipAddress)
+	void Duet::SetIPAddress(std::string_view ipAddress)
 	{
 		m_config.ipAddress = ipAddress;
 		saveConfig();
 	}
 
-	const std::string& Duet::GetIPAddress() const
+	const std::string_view Duet::GetIPAddress() const
 	{
 		return m_config.ipAddress;
 	}
@@ -1098,9 +1087,9 @@ namespace Comm
 		LOG_DBG("IP address cleared \"{:s}\"", m_config.ipAddress.c_str());
 	}
 
-	void Duet::SetHostname(const std::string hostname)
+	void Duet::SetHostname(std::string_view hostname)
 	{
-		LOG_DBG("Hostname = {:s}", hostname.c_str());
+		LOG_DBG("Hostname = {:s}", hostname);
 		// TODO store hostname
 		m_config.hostname.clear();
 
@@ -1126,18 +1115,18 @@ namespace Comm
 		saveConfig();
 	}
 
-	const std::string& Duet::GetHostname() const
+	const std::string_view Duet::GetHostname() const
 	{
 		return m_config.hostname;
 	}
 
-	void Duet::SetPassword(const std::string& password)
+	void Duet::SetPassword(std::string_view password)
 	{
 		m_config.password = password;
 		saveConfig();
 	}
 
-	const std::string& Duet::GetPassword() const
+	const std::string_view Duet::GetPassword() const
 	{
 		return m_config.password;
 	}

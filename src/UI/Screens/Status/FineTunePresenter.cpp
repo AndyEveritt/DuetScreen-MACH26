@@ -73,7 +73,7 @@ namespace UI
 
 	void FineTunePresenter::babystep(float change)
 	{
-		Comm::DUET.SendGcodef("M290 S%.3f\n", change);
+		Comm::DUET.SendGcodef("M290 S{:g}\n", change);
 	}
 
 	void FineTunePresenter::resetBabystep()
@@ -87,7 +87,7 @@ namespace UI
 		{
 			return;
 		}
-		Comm::DUET.SendGcodef("M220 S%d\n", value);
+		Comm::DUET.SendGcodef("M220 S{:d}\n", value);
 	}
 
 	void FineTunePresenter::setExtruderFactor(size_t slot, uint32_t value)
@@ -98,7 +98,7 @@ namespace UI
 			return;
 		}
 
-		Comm::DUET.SendGcodef("M221 D%u S%u\n", extruder->index, value);
+		Comm::DUET.SendGcodef("M221 D{:d} S{:d}\n", extruder->index, value);
 	}
 
 	void FineTunePresenter::setFanValue(size_t slot, uint32_t value)
@@ -109,6 +109,6 @@ namespace UI
 			return;
 		}
 
-		Comm::DUET.SendGcodef("M106 P%u S%u\n", fan->index, (uint32_t)std::round(2.55 * value));
+		Comm::DUET.SendGcodef("M106 P{:d} S{:d}\n", fan->index, (uint32_t)std::round(2.55 * value));
 	}
 } // namespace UI

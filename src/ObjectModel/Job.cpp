@@ -208,7 +208,7 @@ namespace OM
 			LOG_WARN("Failed to get job object {:d}\n", index);
 			return;
 		};
-		Comm::DUET.SendGcodef("M486 %c%d\n", active ? 'U' : 'P', index);
+		Comm::DUET.SendGcodef("M486 {:c}{:d}\n", active ? 'U' : 'P', index);
 	}
 
 	void CancelCurrentJobObject()
