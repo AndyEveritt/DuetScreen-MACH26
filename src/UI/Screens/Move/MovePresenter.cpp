@@ -213,8 +213,7 @@ namespace UI
 				LOG_WARN("Tool {:d} not found", i);
 				continue;
 			}
-			m_view->setToolName(
-				i, tool->name.IsEmpty() ? fmt::format("{} {}", _("default_tool_name"), i) : tool->name.c_str());
+			m_view->setToolName(i, tool->GetName());
 			if (currentTool && currentTool == tool)
 			{
 				UI_LOCK();

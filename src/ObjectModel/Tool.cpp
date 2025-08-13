@@ -12,6 +12,7 @@
 #include "ListHelpers.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Utils.h"
+#include "lv_i18n/lv_i18n.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.h>
 
@@ -35,6 +36,15 @@ namespace OM
 	{
 		Tool* t = static_cast<Tool*>(p);
 		FreelistManager::Release<Tool>(p);
+	}
+
+	std::string Tool::GetName() const
+	{
+		if (name.IsEmpty())
+		{
+			return fmt::format(fmt::runtime(_("default_tool_name")), index);
+		}
+		return name.c_str();
 	}
 
 	ToolHeaterPtr Tool::GetHeater(const uint8_t toolHeaterIndex)

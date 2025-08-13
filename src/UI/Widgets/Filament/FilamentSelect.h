@@ -19,8 +19,6 @@ namespace UI
 	class FilamentSelect : public View<FilamentSelectPresenter>
 	{
 	  public:
-		class ToolItem;
-
 		FilamentSelect(const std::string& name, lv_obj_t* parent, lv_obj_t* messageBoxParent = nullptr);
 
 		void setToolCount(size_t count);
@@ -28,6 +26,7 @@ namespace UI
 		void setFilamentOptions(const std::vector<std::string>& options);
 
 		void showToolSelect(bool show);
+		void showSelection(std::string_view toolName, std::string_view filamentName);
 		void setSelectedFilament(std::string_view filamentName);
 
 	  private:
@@ -35,11 +34,16 @@ namespace UI
 
 		void onShow() override;
 
+		class ToolItem;
+
 		LvLabel m_header;
 		LvContainer m_cont;
 		List<ToolItem> m_toolList;
 
 		Modal<MessageBox> m_confirmation;
 		List<Button> m_filamentOptions;
+		Button m_unload;
+
+		size_t m_selectedFilamentIndex;
 	};
 } // namespace UI

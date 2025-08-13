@@ -9,13 +9,13 @@ en-GB:
   chamber: Chamber
   chambers: Chambers
   changingTool: Changing Tool
-  confirm_filament_change: ~
+  confirm_filament_change: Confirm Filament Change
   connected: Connected
   connected_message: Connected to Duet
   connecting: Connecting
   console: \xEF\x84\x9C\nConsole
   console_input_placeholder: ~
-  default_tool_name: Tool
+  default_tool_name: 'Tool {:d}'
   disable_motors: Disable Motors
   disconnected: Disconnected
   disconnected_message: Disconnected from Duet
@@ -32,8 +32,9 @@ en-GB:
   fan_header: Fans
   fans: Fans
   fault: Fault
-  filament_management_header: ~
+  filament_management_header: Currently Loaded Filament
   filament_select: Select Filament
+  filament_select_tool: 'Select Filament for {:s}'
   file: File
   file_header_prefix: 'Folder: '
   file_crumb_separator: ' > '
@@ -386,8 +387,7 @@ en-GB:
   resuming: Resuming
   retract: Retract
   save: Save
-  select_filament: ~
-  select_tool: ~
+  filament_select_tool_list_header: Tools
   set_temperature_numpad_header: 'Set {} Temperature for {}'
   settings: Settings
   settings_brightness: Brightness
@@ -487,3 +487,4 @@ en-GB:
   chroma: Chroma
   menu: Menu
   select_view: Select View
+  select_filament: ~

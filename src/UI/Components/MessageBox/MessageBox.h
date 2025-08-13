@@ -27,6 +27,12 @@ namespace UI
 		LvContainer& getHeader() { return m_header; }
 		LvContainer& getBody() { return m_body; }
 		LvContainer& getFooter() { return m_footer; }
+		LvLabel& getTitle() { return m_title; }
+		LvLabel& getText() { return m_text; }
+		LvImage& getImage() { return m_image; }
+		Button& getCancelBtn() { return m_cancelBtn; }
+		Button& getOkBtn() { return m_okBtn; }
+		LvBar& getProgressBar() { return m_progress; }
 
 		void ok();
 		void cancel();

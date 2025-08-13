@@ -22,7 +22,8 @@ namespace UI
 		}
 		m_selectedTool = m_tools[slot];
 		// getView()->showToolSelect(m_tools.size() > 1);
-		getView()->setSelectedFilament(m_selectedTool->GetFilament().c_str());
+		// getView()->setSelectedFilament(m_selectedTool->GetFilament().c_str());
+		getView()->showSelection(m_selectedTool->GetName(), m_selectedTool->GetFilament().c_str());
 	}
 
 	void FilamentSelectPresenter::setFilament(std::string_view filamentName)
@@ -33,6 +34,17 @@ namespace UI
 			return;
 		}
 		m_selectedTool->ChangeFilament(filamentName.data());
+	}
+
+	void FilamentSelectPresenter::unloadFilament()
+	{
+		if (m_selectedTool == nullptr)
+		{
+			LOG_ERROR("No tool selected, cannot unload filament");
+			return;
+		}
+
+		m_selectedTool->UnloadFilament();
 	}
 
 	void FilamentSelectPresenter::clear()
@@ -72,16 +84,13 @@ namespace UI
 		{
 			m_selectedTool = m_tools[0];
 		}
-		getView()->showToolSelect(m_tools.size() > 1);
+		// getView()->showToolSelect(m_tools.size() > 1);
 
 		getView()->setToolCount(m_tools.size());
 		for (size_t i = 0; i < m_tools.size(); i++)
 		{
 			auto& tool = m_tools[i];
-			getView()->setToolData(i,
-								   tool->name.IsEmpty() ? fmt::format("{} {}", _("default_tool_name"), i)
-														: tool->name.c_str(),
-								   tool->GetFilament().c_str());
+			getView()->setToolData(i, tool->GetName(), tool->GetFilament().c_str());
 		}
 
 		if (m_selectedTool)

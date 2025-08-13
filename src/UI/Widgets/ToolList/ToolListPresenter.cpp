@@ -141,19 +141,17 @@ namespace UI
 		m_view->setSelected(tool->status == OM::ToolStatus::active);
 
 		// Set tool name
-		std::string toolName = tool->name.IsEmpty()
-								   ? utils::format("%s %d", _("default_tool_name"), tool->index).c_str()
-								   : tool->name.c_str();
+		std::string toolName = tool->GetName();
 
 		if (tHeater != nullptr)
 		{
 			if (tool->GetHeaterCount() > 1)
 			{
-				m_view->setLabel(utils::format("%s (%d)", toolName.c_str(), tHeaterIndex).c_str());
+				m_view->setLabel(fmt::format("{:s} ({:d})", toolName, tHeaterIndex));
 			}
 			else
 			{
-				m_view->setLabel(toolName.c_str());
+				m_view->setLabel(toolName);
 			}
 			m_view->setStatus(_(tHeater->heater->GetHeaterStatusStr()));
 			m_view->setCurrentTemp(tHeater->heater->current);
@@ -164,7 +162,7 @@ namespace UI
 
 		else if (spindle != nullptr)
 		{
-			m_view->setLabel((toolName + " (spindle)").c_str());
+			m_view->setLabel(fmt::format("{:s} (spindle)", toolName));
 			m_view->setActiveTemp(tool->spindleRpm);
 			m_view->setStandbyTempText("RPM");
 			m_view->setCurrentTemp(spindle->current);
@@ -174,7 +172,7 @@ namespace UI
 
 		else
 		{
-			m_view->setLabel(toolName.c_str());
+			m_view->setLabel(toolName);
 			m_view->showTemps(false);
 		}
 

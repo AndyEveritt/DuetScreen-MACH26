@@ -26,6 +26,7 @@ namespace UI
 
 		// Actions
 		void setFilament(std::string_view filamentName);
+		void unloadFilament();
 
 		// Observers
 		void clear();

@@ -21,13 +21,14 @@ namespace UI
 			, m_widget(widget)
 		{
 			UI_LOCK();
-			setFlexFlow(LV_FLEX_FLOW_ROW);
+			setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 			setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 			setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 			m_toolName.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 			m_filament.setHeight(LV_SIZE_CONTENT);
 			m_filament.setFlexGrow(1);
+			m_filament.setMinWidth(LV_SIZE_CONTENT);
 			m_filament.setUserData(&m_filament);
 			m_filament.addClickedCallback(onToolSelectEvent, this);
 		}
@@ -48,20 +49,6 @@ namespace UI
 
 			auto presenter = control.m_widget.getPresenter();
 			presenter->setSelectedToolBySlot(control.getIndex());
-
-			lv_anim_t anim;
-			lv_anim_init(&anim);
-			lv_anim_set_duration(&anim, 300);
-			lv_anim_set_var(&anim, &control.m_widget);
-			lv_anim_set_values(&anim, control.m_widget.m_cont.getHeight(), 0);
-			lv_anim_set_exec_cb(&anim,
-								[](void* var, int32_t value)
-								{
-									auto& widget = *static_cast<FilamentSelect*>(var);
-									widget.m_filamentOptions.setY(value);
-								});
-
-			lv_anim_start(&anim);
 		}
 
 		LvLabel m_toolName;
@@ -74,8 +61,10 @@ namespace UI
 		, m_header("header", getRoot())
 		, m_cont("cont", getRoot())
 		, m_toolList("tool_list", m_cont)
-		, m_confirmation("confirmation", messageBoxParent, layout_t(0, 0, 50, 70))
-		, m_filamentOptions("filament_options", m_confirmation)
+		, m_confirmation(
+			  "confirmation", messageBoxParent ? messageBoxParent : getRoot(), layout_t(0, 0, 50, LV_SIZE_CONTENT))
+		, m_filamentOptions("filament_options", m_confirmation.getBody())
+		, m_unload("unload", m_confirmation.getFooter(), _("unload"))
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -91,16 +80,39 @@ namespace UI
 
 		m_toolList.setListFlow(LV_FLEX_FLOW_COLUMN);
 		m_toolList.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_toolList.setListGrow(1);
+
+		m_header.setText(_("filament_management_header"));
+		m_toolList.setTitle(_("filament_select_tool_list_header"));
+
+		m_confirmation.setMaxHeight(LV_PCT(70));
+		m_confirmation.cancelVisible(true);
+		m_confirmation.setOkBtnText(_("confirm_filament_change"));
+		m_confirmation.setOkCallback(
+			[this]()
+			{
+				auto selectedFilament = m_filamentOptions.getItem(m_selectedFilamentIndex);
+				if (!selectedFilament)
+				{
+					return;
+				}
+				getPresenter()->setFilament(selectedFilament->getLabel().getText());
+			});
 
 		m_filamentOptions.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
 		m_filamentOptions.getListContainer().setFlexAlign(
 			LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		m_toolList.setListGrow(1);
-
-		m_header.setText(_("filament_management_header"));
-		m_toolList.setTitle(_("select_tool"));
-		m_filamentOptions.setTitle(_("select_filament"));
+		m_unload.setHeight(LV_SIZE_CONTENT);
+		m_unload.setFlexGrow(1);
+		m_unload.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto& control = *static_cast<FilamentSelect*>(lv_event_get_user_data(e));
+				control.getPresenter()->unloadFilament();
+				control.m_confirmation.close();
+			},
+			this);
 	}
 
 	void FilamentSelect::setToolCount(size_t count)
@@ -139,7 +151,8 @@ namespace UI
 										   auto btn = std::make_shared<Button>(fmt::format("{}", index), parent);
 										   btn->setText(options[index]);
 										   btn->setFlexGrow(1);
-										   btn->setUserData(btn.get());
+										   //    btn->setMinWidth(LV_SIZE_CONTENT);
+										   btn->setUserData(reinterpret_cast<void*>(index));
 										   btn->addClickedCallback(onFilamentOptionClicked, this);
 										   return btn;
 									   });
@@ -150,9 +163,10 @@ namespace UI
 		m_toolList.setVisible(show);
 	}
 
-	void FilamentSelect::setSelectedFilament(std::string_view filamentName)
+	void FilamentSelect::showSelection(std::string_view toolName, std::string_view filamentName)
 	{
-		LOG_DBG("Setting selected filament to {}", filamentName);
+		UI_LOCK();
+		m_confirmation.setTitle(fmt::format(fmt::runtime(_("filament_select_tool")), toolName));
 		for (size_t i = 0; i < m_filamentOptions.getItemCount(); i++)
 		{
 			auto item = m_filamentOptions.getItem(i);
@@ -161,33 +175,66 @@ namespace UI
 				LOG_ERROR("Failed to get filament option item at index {} in {}", i, getName());
 				continue;
 			}
-			item->setChecked(item->getLabel().getText() == filamentName);
+			bool match = item->getText() == filamentName;
+			item->setVisible(!match);
+		}
+		m_unload.setVisible(!filamentName.empty());
+		m_confirmation.getOkBtn().hide();
+		openModal(&m_confirmation);
+	}
+
+	void FilamentSelect::setSelectedFilament(std::string_view filamentName)
+	{
+		LOG_DBG("Setting selected filament to {}", filamentName);
+		UI_LOCK();
+		if (m_confirmation.isVisible())
+		{
+			return;
+		}
+		for (size_t i = 0; i < m_filamentOptions.getItemCount(); i++)
+		{
+			auto item = m_filamentOptions.getItem(i);
+			if (!item)
+			{
+				LOG_ERROR("Failed to get filament option item at index {} in {}", i, getName());
+				continue;
+			}
+			bool match = item->getLabel().getText() == filamentName;
+			item->setChecked(match);
+			if (match)
+			{
+				m_selectedFilamentIndex = i;
+			}
 		}
 	}
 
 	void FilamentSelect::onFilamentOptionClicked(lv_event_t* e)
 	{
 		auto& control = *static_cast<FilamentSelect*>(lv_event_get_user_data(e));
-		auto& btn = *static_cast<Button*>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
-
+		lv_obj_t* obj = lv_event_get_target_obj(e);
+		size_t index = reinterpret_cast<size_t>(lv_obj_get_user_data(obj));
 		auto presenter = control.getPresenter();
 
-		std::string_view selectedFilament = btn.getText();
-		if (!control.m_confirmation)
+		auto btn = control.m_filamentOptions.getItem(index);
+		if (!btn)
 		{
-			presenter->setFilament(selectedFilament);
+			return;
 		}
-		else
+
+		std::string_view selectedFilament = btn->getText();
+		auto prev_btn = control.m_filamentOptions.getItem(control.m_selectedFilamentIndex);
+		if (prev_btn)
 		{
-			control.m_confirmation.setText(fmt::format(fmt::runtime(_("confirm_filament_change")), selectedFilament));
-			control.m_confirmation.setOkCallback([presenter, selectedFilament]()
-												 { presenter->setFilament(selectedFilament); });
-			control.m_confirmation.show(true);
+			prev_btn->setChecked(false);
 		}
+		btn->setChecked(true);
+		control.m_selectedFilamentIndex = index;
+		control.m_unload.hide();
+		control.m_confirmation.getOkBtn().show();
 	}
 
 	void FilamentSelect::onShow()
 	{
-		m_filamentOptions.setY(m_cont.getHeight());
+		m_confirmation.hide();
 	}
 } // namespace UI

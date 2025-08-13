@@ -78,6 +78,8 @@ namespace OM
 		ToolStatus status;
 		int8_t filamentExtruder;
 
+		std::string GetName() const;
+
 		ToolHeaterPtr GetHeater(const uint8_t toolHeaterIndex);
 		ToolHeaterPtr GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
 
