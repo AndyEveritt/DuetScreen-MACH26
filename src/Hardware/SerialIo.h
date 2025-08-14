@@ -21,8 +21,8 @@ namespace SerialIo
 {
 	bool Init(const char* device, speed_t baudRate);
 	void Shutdown();
-	bool Send(const std::string& gcode);
-	size_t Sendf(const char* fmt, ...) __attribute__((format(printf, 1, 0)));
+	ssize_t Send(std::string_view gcode);
+	ssize_t Sendf(const char* fmt, ...) __attribute__((format(printf, 1, 0)));
 
 	// New methods to control UART
 	bool SetBaudRate(speed_t baudRate);

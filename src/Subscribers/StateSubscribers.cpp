@@ -92,6 +92,8 @@ bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* d
 
 	if (OM::g_currentAlert.seq != OM::g_lastAlertSeq)
 	{
+		LOG_DBG("New message box alert: '{}', seq={}", OM::g_currentAlert.title.c_str(), OM::g_currentAlert.seq);
+		OM::g_lastAlertSeq = OM::g_currentAlert.seq;
 		Model::get().post<EventType::MessageBoxData>(OM::g_currentAlert);
 	}
 	return true;
@@ -101,8 +103,8 @@ bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* dat
 {
 	if (data[0] == 0)
 	{
-		OM::g_currentAlert.limits.numberInt.min = INT32_MIN;
-		OM::g_currentAlert.limits.numberFloat.min = FLT_MIN;
+		OM::g_currentAlert.limits.numberInt.min = std::numeric_limits<int32_t>::min();
+		OM::g_currentAlert.limits.numberFloat.min = std::numeric_limits<float>::lowest();
 		OM::g_currentAlert.limits.text.min = 0;
 		return true;
 	}
@@ -116,9 +118,9 @@ bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* dat
 {
 	if (data[0] == 0)
 	{
-		OM::g_currentAlert.limits.numberInt.max = INT32_MAX;
-		OM::g_currentAlert.limits.numberFloat.max = FLT_MAX;
-		OM::g_currentAlert.limits.text.max = INT32_MAX;
+		OM::g_currentAlert.limits.numberInt.max = std::numeric_limits<int32_t>::max();
+		OM::g_currentAlert.limits.numberFloat.max = std::numeric_limits<float>::max();
+		OM::g_currentAlert.limits.text.max = std::numeric_limits<int32_t>::max();
 		return true;
 	}
 	Comm::GetInteger(data, OM::g_currentAlert.limits.numberInt.max);
@@ -162,7 +164,7 @@ bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	static unsigned long long lastUpdated = 0;
+	static std::chrono::milliseconds lastUpdated = 0ms;
 
 	if (data[0] == 0)
 	{

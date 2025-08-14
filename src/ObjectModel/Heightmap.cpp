@@ -20,12 +20,12 @@
 namespace OM
 {
 	static std::string s_currentHeightmapName;
-	static std::map<std::string, std::shared_ptr<Heightmap>> s_heightmapCache;
+	static std::vector<HeightmapPtr> s_heightmapCache;
 	static std::string s_emptyStr = "";
 
-	static std::string GetLocalFilePath(const std::string& filename)
+	static std::string GetLocalFilePath(std::string_view filename)
 	{
-		return utils::format("/tmp/heightmaps/%s", filename.c_str());
+		return fmt::format("/tmp/heightmaps/{}", filename);
 	}
 
 	HeightmapMeta::HeightmapMeta()
@@ -53,13 +53,13 @@ namespace OM
 		m_recipSpacing[1] = 0.0f;
 	}
 
-	void HeightmapMeta::Parse(const std::string& meta)
+	void HeightmapMeta::Parse(std::string_view meta)
 	{
 		utils::CSV doc(meta, true);
-		const std::vector<std::string> headers = doc.GetHeaders();
-		for (const std::string& header : headers)
+		const std::vector<std::string>& headers = doc.GetHeaders();
+		for (std::string_view header : headers)
 		{
-			LOG_DBG("Header: \"{:s}\"", header.c_str());
+			LOG_DBG("Header: \"{:s}\"", header);
 		}
 
 		doc.GetCell("axis0", 0, m_axis[0]);
@@ -125,7 +125,7 @@ namespace OM
 		}
 	}
 
-	Heightmap::Heightmap(const std::string& filename)
+	Heightmap::Heightmap(std::string_view filename)
 		: m_fileName(filename)
 	{
 	}
@@ -141,45 +141,46 @@ namespace OM
 		m_area = 0.0f;
 	}
 
-	bool Heightmap::LoadFromDuet()
+	bool Heightmap::LoadFromDuet(Heightmap::load_cb_t callback)
 	{
 		Reset();
-		std::string csvContents;
-		if (!Comm::DUET.DownloadFile((Directories::GetSystemDirectory() + m_fileName).c_str(), csvContents))
-		{
-			LOG_ERROR("Failed to download heightmap file {:s}", m_fileName);
-			return false;
-		}
+		OM::FileSystem::RequestFileContents(
+			OM::Directories::DirectoryType::SYSTEM,
+			m_fileName,
+			[this, callback](std::string_view csvContents)
+			{
+				if (csvContents.find("RepRapFirmware height map") == std::string::npos)
+				{
+					LOG_WARN("CSV file \"{:s}\" not a heightmap", m_fileName);
+					return;
+				}
 
-		if (csvContents.find("RepRapFirmware height map") == std::string::npos)
-		{
-			LOG_WARN("CSV file \"{:s}\" not a heightmap", m_fileName);
-			return false;
-		}
+				// Write the file to disk
+				std::string localFilePath = GetLocalFilePath(m_fileName);
+				std::ofstream file(localFilePath.c_str(), std::ios::out | std::ios::binary);
+				if (!file.is_open())
+				{
+					LOG_ERROR("Failed to open file {:s} for writing", localFilePath.c_str());
+					return;
+				}
 
-		// Write the file to disk
-		std::string localFilePath = GetLocalFilePath(m_fileName);
-		std::ofstream file(localFilePath.c_str(), std::ios::out | std::ios::binary);
-		if (!file.is_open())
-		{
-			LOG_ERROR("Failed to open file {:s} for writing", localFilePath.c_str());
-			return false;
-		}
+				LOG_INFO("Writing heightmap to {:s}", localFilePath.c_str());
+				file.write(csvContents.data(), csvContents.length());
 
-		LOG_INFO("Writing heightmap to {:s}", localFilePath.c_str());
-		file.write(csvContents.c_str(), csvContents.length());
+				if (!ParseMeta(csvContents))
+				{
+					LOG_ERROR("Failed to parse meta data for heightmap {:s}", m_fileName.c_str());
+					return;
+				}
 
-		if (!ParseMeta(csvContents))
-		{
-			LOG_ERROR("Failed to parse meta data for heightmap {:s}", m_fileName.c_str());
-			return false;
-		}
+				if (!ParseData(csvContents))
+				{
+					LOG_ERROR("Failed to parse data for heightmap {:s}", m_fileName.c_str());
+					return;
+				}
 
-		if (!ParseData(csvContents))
-		{
-			LOG_ERROR("Failed to parse data for heightmap {:s}", m_fileName.c_str());
-			return false;
-		}
+				callback(*this);
+			});
 
 		return true;
 	}
@@ -194,37 +195,37 @@ namespace OM
 		return &m_heightmap[y * GetWidth() + x];
 	}
 
-	bool Heightmap::ParseMeta(const std::string& csvContents)
+	bool Heightmap::ParseMeta(std::string_view csvContents)
 	{
-		LOG_INFO("Parsing meta data for heightmap {:s}", m_fileName.c_str());
+		LOG_INFO("Parsing meta data for heightmap {:s}", m_fileName);
 		size_t metaStart = utils::findInstance(csvContents, "\n", 1);
 		size_t metaEnd = utils::findInstance(csvContents, "\n", 3);
 		if (metaStart == std::string::npos || metaEnd == std::string::npos)
 		{
-			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName.c_str());
+			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName);
 			return false;
 		}
 
-		std::string metaStr = csvContents.substr(metaStart, metaEnd - metaStart);
-		LOG_DBG("Meta:\n{:s}", metaStr.c_str());
+		std::string_view metaStr = csvContents.substr(metaStart, metaEnd - metaStart);
+		LOG_DBG("Meta:\n{:s}", metaStr);
 
 		meta.Parse(metaStr);
 		return true;
 	}
 
-	bool Heightmap::ParseData(const std::string& csvContents)
+	bool Heightmap::ParseData(std::string_view csvContents)
 	{
-		LOG_INFO("Parsing data for heightmap {:s}", m_fileName.c_str());
+		LOG_INFO("Parsing data for heightmap {:s}", m_fileName);
 		size_t dataStart = utils::findInstance(csvContents, "\n", 3) + 1;
 		if (dataStart == std::string::npos)
 		{
-			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName.c_str());
+			LOG_ERROR("Corrupt heightmap file {:s}", m_fileName);
 			return false;
 		}
 
 		bool parseError = false;
-		std::string dataStr = csvContents.substr(dataStart);
-		LOG_DBG("Data:\n{:s}", dataStr.c_str());
+		std::string_view dataStr = csvContents.substr(dataStart);
+		LOG_DBG("Data:\n{:s}", dataStr);
 		utils::CSV doc(dataStr, false);
 
 		m_heightmap.clear();
@@ -420,24 +421,24 @@ namespace OM
 		return true;
 	}
 
-	const std::string& GetHeightmapNameAt(int index)
+	std::string_view GetHeightmapNameAt(int index)
 	{
 		std::vector<std::shared_ptr<FileSystem::FileSystemItem>> filenames = GetHeightmapFiles();
 		if (index < 0 || index >= (int)filenames.size())
 		{
 			LOG_ERROR("Invalid heightmap index {:d}", index);
-			return s_emptyStr;
+			return "";
 		}
 		std::shared_ptr<FileSystem::FileSystemItem> item = filenames[index];
 		if (item == nullptr)
 		{
 			LOG_ERROR("Filesystem item at index {:d} is null", index);
-			return s_emptyStr;
+			return "";
 		}
 		return item->GetName();
 	}
 
-	void SetCurrentHeightmap(const std::string& filename)
+	void SetCurrentHeightmap(std::string_view filename)
 	{
 		size_t pos = filename.find_last_of('/');
 		if (pos != std::string::npos)
@@ -448,7 +449,7 @@ namespace OM
 		{
 			s_currentHeightmapName = filename;
 		}
-		LOG_DBG("Set current heightmap to \"{:s}\" ({:s})", s_currentHeightmapName.c_str(), filename.c_str());
+		LOG_DBG("Set current heightmap to \"{:s}\" ({:s})", s_currentHeightmapName, filename);
 	}
 
 	void ClearCurrentHeightmap()
@@ -457,20 +458,20 @@ namespace OM
 	}
 
 	/* Sends command to Duet to use the heightmap called `filename` */
-	void LoadHeightmap(const char* filename)
+	void LoadHeightmap(std::string_view filename)
 	{
 		LOG_INFO("Loading heightmap {:s}", filename);
-		Comm::DUET.SendGcodef("G29 S1 P\"%s\"", filename);
+		Comm::DUET.SendGcodef("G29 S1 P\"{:s}\"\n", filename);
 	}
 
 	/* Sends command to Duet to unload the heightmap */
 	void UnloadHeightmap()
 	{
 		LOG_INFO("Unloading heightmap");
-		Comm::DUET.SendGcode("G29 S2");
+		Comm::DUET.SendGcode("G29 S2\n");
 	}
 
-	void ToggleHeightmap(const char* filename)
+	void ToggleHeightmap(std::string_view filename)
 	{
 		if (s_currentHeightmapName != filename)
 		{
@@ -481,28 +482,32 @@ namespace OM
 		ClearCurrentHeightmap();
 	}
 
-	const std::string& GetCurrentHeightmap()
+	std::string_view GetCurrentHeightmap()
 	{
 		return s_currentHeightmapName;
 	}
 
-	std::shared_ptr<Heightmap> GetHeightmapData(const std::string& filename)
+	HeightmapPtr GetHeightmapData(std::string_view filename)
 	{
-		auto it = s_heightmapCache.find(filename);
-		if (it == s_heightmapCache.end())
+		for (const auto& cachedHeightmap : s_heightmapCache)
 		{
-			std::shared_ptr<Heightmap> heightmap = std::make_shared<Heightmap>(filename);
-			s_heightmapCache[filename] = heightmap;
-			return s_heightmapCache[filename];
+			if (cachedHeightmap->GetFileName() == filename)
+			{
+				return cachedHeightmap;
+			}
 		}
-		return it->second;
+
+		// Not found in cache, create a new one, add it, and return it.
+		auto heightmap = std::make_shared<Heightmap>(std::string(filename));
+		s_heightmapCache.push_back(heightmap);
+		return heightmap;
 	}
 
 	size_t ClearHeightmapCache()
 	{
 		size_t count = s_heightmapCache.size();
 		s_heightmapCache.clear();
-		return count - s_heightmapCache.size();
+		return count;
 	}
 
 	void RequestHeightmapFiles(std::function<void()> callback)

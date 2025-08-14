@@ -7,10 +7,9 @@
 
 #pragma once
 
-#include "ObjectModel/Alert.h"
-#include "ObjectModel/Axis.h"
 #include "UI/Components/Button/Button.h"
-#include "UI/Core/View.h"
+#include "UI/Components/LVGL/LvBar.h"
+#include "UI/Components/LVGL/LvImage.h"
 #include <functional>
 #include <map>
 #include <memory>
@@ -18,114 +17,49 @@
 namespace UI
 {
 
-	class MessageBox : public LvObj
+	class MessageBox : public LvContainer
 	{
 
 	  public:
-		enum class VerticalPosition
-		{
-			top = 0,
-			center,
-			bottom,
-		};
-
-		enum class HorizontalPosition
-		{
-			left = 0,
-			center,
-			right,
-		};
-
-		class AxisJog : public LvObj
-		{
-		  public:
-			AxisJog(const size_t index, lv_obj_t* parent, MessageBox& msgBox);
-			void setAxisLetter(char letter);
-			const char* getAxisLetter() const { return m_axisLetter; }
-			void setPosition(float position);
-			void setEnabled(bool enabled);
-
-		  private:
-			static void onRelMoveEvent(lv_event_t* e);
-
-			const size_t m_index;
-			MessageBox& m_msgBox;
-
-			char m_axisLetter[2];
-			float m_position;
-
-			lv_obj_t* m_label;
-			Button m_relMove[6];
-		};
-
-		friend class AxisJog;
-
 		MessageBox(const std::string& name, lv_obj_t* parent, layout_t layout);
 		virtual ~MessageBox();
 
+		LvContainer& getHeader() { return m_header; }
+		LvContainer& getBody() { return m_body; }
+		LvContainer& getFooter() { return m_footer; }
+		LvLabel& getTitle() { return m_title; }
+		LvLabel& getText() { return m_text; }
+		LvImage& getImage() { return m_image; }
+		Button& getCancelBtn() { return m_cancelBtn; }
+		Button& getOkBtn() { return m_okBtn; }
+		LvBar& getProgressBar() { return m_progress; }
+
 		void ok();
 		void cancel();
-		void setPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal);
-		void setTitle(const std::string& title);
-		void setText(const std::string& text);
-		void setOkBtnText(const std::string& text);
-		void setCancelBtnText(const std::string& text);
+		void close();
+		void clear();
+
+		void setTitle(std::string_view title);
+		void setText(std::string_view text);
+
 		void setImage(const char* imagePath);
 		void autoSizeImage(bool autoSize) { m_autoSizeImage = autoSize; }
 		void setImageSize(int32_t width, int32_t height);
+
+		void setOkBtnText(std::string_view text);
+		void setCancelBtnText(std::string_view text);
 		void setProgress(int percent);
-		void setMode(OM::Alert::Mode mode);
-		void preventClosing(bool prevent);
-		void close();
 
 		void setOkCallback(std::function<void()> cb) { m_okCb = cb; }
 		void setCancelCallback(std::function<void()> cb) { m_cancelCb = cb; }
-		void setChoiceCallback(std::function<void(size_t)> cb) { m_choiceCb = cb; }
 		void setCloseCallback(std::function<void()> cb) { m_closeCb = cb; }
 		void setProgressCallback(std::function<uint32_t(MessageBox*)> cb) { m_progressCb = cb; }
-		void setInputValidationCallback(std::function<bool(const char*)> cb);
-		void setShowKeyboardCallback(std::function<void(bool)> cb) { m_showKeyboardCb = cb; }
 
-		void setKeyboard(lv_obj_t* keyboard);
-
-		bool isOpen() const;
-		bool isBlocking() const;
-		bool isResponse() const;
-		void clear();
-
-		void setMinTextf(const char* format, ...);
-		void setMaxTextf(const char* format, ...);
-		void setWarningTextf(const char* format, ...);
-		void setInput(int32_t val);
-		void setInput(float val);
-		void setInput(const char* text);
-
-		void imageVisible(bool visible);
 		void okVisible(bool visible);
 		void cancelVisible(bool visible);
-		void selectionVisible(bool visible);
-		void inputVisible(bool visible);
-		void warningTextVisible(bool visible);
-		void minTextVisible(bool visible);
-		void maxTextVisible(bool visible);
-		void axisJogVisible(bool visible);
+		void imageVisible(bool visible);
 		void progressVisible(bool visible);
 		void updateVisibility();
-
-		// Axis Jog
-		size_t getJogAxisCount() const;
-		void setJogAxisCount(size_t count);
-		const char* getJogAxisLetter(int index) const;
-		void setJogAxisLetter(size_t index, char letter);
-		void setJogAxisPosition(size_t index, float position);
-		void setJogAxisEnabled(size_t index, bool enabled);
-
-		// Choices
-		size_t getChoiceCount() const;
-		void setChoiceCount(size_t count);
-		void setChoice(size_t index, const std::string& text);
-
-		const char* getInput() const;
 
 		void cancelTimeout();
 		void setTimeout(uint32_t timeout);
@@ -133,74 +67,35 @@ namespace UI
 		uint32_t getTimeRemaining() const;
 		uint32_t getTimeOutPercentage() const;
 
-		bool validate();
-
-		bool validateIntegerInput(const char* text);
-		bool validateFloatInput(const char* text);
-		bool validateTextInput(const char* text);
-
-		const OM::Alert::Mode getMode() const { return m_mode; }
-
-	  private:
+	  protected:
 		static void onOkEvent(lv_event_t* e);
 		static void onCancelEvent(lv_event_t* e);
-		static void onChoiceEvent(lv_event_t* e);
-		static void onInputEvent(lv_event_t* e);
-
 		static void onProgressTimer(lv_timer_t* timer);
 
 		void init();
-		bool validateIntegerInputInner(const char* text);
-		bool validateFloatInputInner(const char* text);
-		bool validateTextInputInner(const char* text);
 
-		int32_t m_layoutColDsc[4];
-		int32_t m_layoutRowDsc[3];
+		LvContainer m_header;
+		LvContainer m_body;
+		LvContainer m_footer;
 
-		lv_obj_t* m_msgBox;
-		lv_obj_t* m_title;
+		// Header
+		LvLabel m_title;
 
-		lv_obj_t* m_topCont;
-		lv_obj_t* m_centralCont;
-		lv_obj_t* m_bottomCont;
+		// Body
+		LvContainer m_bodyTop;
+		LvLabel m_text;
+		LvImage m_image;
 
-		// Top container
-		lv_obj_t* m_text;
-		lv_obj_t* m_image;
-
-		// Central Container
-		lv_obj_t* m_inputCont;
-		lv_obj_t* m_axisJogCont;
-
-		lv_obj_t* m_choicesList;
-
-		// Input Container
-		lv_obj_t* m_warningText;
-		lv_obj_t* m_minText;
-		lv_obj_t* m_maxText;
-		lv_obj_t* m_input;
-
-		// Axis Jog Container
-		std::vector<std::shared_ptr<AxisJog>> m_axisJogList;
-
-		// Choices
-		std::vector<std::shared_ptr<Button>> m_choices;
-
-		// Bottom Container
+		// Footer
 		Button m_cancelBtn;
 		Button m_okBtn;
-		lv_obj_t* m_progress;
-
-		lv_obj_t* m_kb; // Keyboard
+		LvBar m_progress;
 
 		std::function<void()> m_okCb;
 		std::function<void()> m_cancelCb;
-		std::function<void(size_t)> m_choiceCb;
 		std::function<void()> m_closeCb;
 		std::function<uint32_t(MessageBox*)> m_progressCb;
-		std::function<bool(const char*)> m_inputValidationCb;
-		std::function<void(bool)> m_showKeyboardCb;
-		OM::Alert::Mode m_mode = OM::Alert::Mode::None;
+
 		uint32_t m_timeout = 0;
 		bool m_autoSizeImage = true;
 

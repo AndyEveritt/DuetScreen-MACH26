@@ -30,6 +30,7 @@ namespace OM
 			offline,
 			standby,
 			tuning,
+			unknown,
 		};
 
 		struct HeaterStatusMapEntry
@@ -46,6 +47,7 @@ namespace OM
 			{"offline", HeaterStatus::offline},
 			{"standby", HeaterStatus::standby},
 			{"tuning", HeaterStatus::tuning},
+			{"unknown", HeaterStatus::unknown},
 		};
 
 		struct Heater
@@ -64,8 +66,6 @@ namespace OM
 			std::shared_ptr<AnalogSensor> sensor;
 
 			void Reset();
-			int32_t GetTemperature();
-			int32_t GetHeaterTarget(const bool active);
 			const char* GetName() const;
 			const char* GetHeaterStatusStr() const;
 			void UpdateTarget(const int32_t temp, const bool active);
@@ -75,9 +75,13 @@ namespace OM
 			void UpdateMax(const float max) { this->max = max; }
 		};
 
-		std::shared_ptr<Heater> GetHeater(const size_t heaterIndex);
-		std::shared_ptr<Heater> GetOrCreateHeater(const size_t heaterIndex);
-		bool IterateHeatersWhile(function_ref<bool(std::shared_ptr<Heater>, size_t)> func, const size_t startAt = 0);
+		using HeaterPtr = std::shared_ptr<Heater>;
+
+		HeaterPtr GetHeater(const size_t heaterIndex);
+		HeaterPtr GetOrCreateHeater(const size_t heaterIndex);
+		HeaterPtr GetHeaterBySlot(const size_t heaterSlot);
+		size_t GetHeaterCount() noexcept;
+		bool IterateHeatersWhile(function_ref<bool(HeaterPtr, size_t)> func, const size_t startAt = 0);
 		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active);
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);
 		bool UpdateHeaterPwm(const size_t heaterIndex, const float pwm);

@@ -171,7 +171,7 @@ namespace OM
 				auto sensor = GetAnalogSensor(i);
 				if (sensor != nullptr)
 				{
-					LOG_INFO("    [{:d}]: {:s}, {:g} @ time({:d})",
+					LOG_INFO("    [{:d}]: {:s}, {:g} @ time({}ms)",
 							 sensor->index,
 							 sensor->name.c_str(),
 							 sensor->lastReading,

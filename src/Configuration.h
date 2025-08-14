@@ -8,11 +8,14 @@
 #ifndef JNI_CONFIGURATION_H_
 #define JNI_CONFIGURATION_H_
 
+#include <chrono>
 #include <stdint.h>
 #include <sys/types.h>
 #include <termios.h>
 
 #define UPGRADE_FILE_NAME "DuetScreen"
+
+using namespace std::chrono_literals;
 
 /* Logging */
 #if SIMULATION
@@ -33,24 +36,24 @@ constexpr uint32_t DEFAULT_SCREEN_TIMEOUT = 5 * 60 * 1000; // milliseconds
 /* Duet */
 constexpr const char* DEFAULT_GCODES_PATH = "0:/gcodes";
 constexpr const char* DEFAULT_MACROS_PATH = "0:/macros";
-constexpr uint32_t DEFAULT_PRINTER_POLL_INTERVAL = 500;
-constexpr uint32_t MIN_PRINTER_POLL_INTERVAL = 100;
-constexpr uint32_t PRINTER_REQUEST_TIMEOUT = 5000;
+constexpr std::chrono::milliseconds DEFAULT_PRINTER_POLL_INTERVAL = 250ms;
+constexpr std::chrono::milliseconds MIN_PRINTER_POLL_INTERVAL = 100ms;
+constexpr std::chrono::milliseconds PRINTER_REQUEST_TIMEOUT = 5000ms;
 constexpr int DEFAULT_COMMUNICATION_TYPE = 1;
 constexpr const char* DEFAULT_IP_ADDRESS = "192.168.0.";
 constexpr const char* DEFAULT_UART_PORT = "/dev/ttyS5";
 constexpr const int DEFAULT_BAUD_RATE = B115200;
 constexpr size_t MAX_IP_LENGTH = 50;
 constexpr size_t MAX_HOSTNAME_LENGTH = 64;
-constexpr unsigned long long TIME_SYNC_INTERVAL = 10e3; // Interval to resynchronize time with the Duet in milliseconds
+constexpr std::chrono::milliseconds TIME_SYNC_INTERVAL = 10000ms; // Interval to resynchronize time with the Duet
 constexpr size_t MAX_UART_UPLOAD_SIZE = 1024;
 constexpr const char* DEFAULT_FILAMENTS_FILE = "filaments.csv";
 constexpr const char* DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
 
 /* Thumbnails */
-constexpr int32_t FILE_CACHE_REQUEST_TIMEOUT = 5000;
+constexpr std::chrono::milliseconds FILE_CACHE_REQUEST_TIMEOUT = 5000ms;
 constexpr size_t MAX_THUMBNAIL_CACHE_PIXELS = 64; // Largest pixel width/height thumbnail that is allowed to be cached
-constexpr int32_t BACKGROUND_FILE_CACHE_POLL_INTERVAL = 500;
+constexpr std::chrono::milliseconds BACKGROUND_FILE_CACHE_POLL_INTERVAL = 500ms;
 constexpr size_t MAX_FILEINFO_REQUESTS = 2;
 constexpr size_t MAX_THUMBNAIL_REQUESTS = 2;
 
@@ -124,6 +127,6 @@ constexpr size_t ALERT_CHOICES_TEXT_LENGTH = 50; // maximum characters in the al
 constexpr float DEFAULT_TEMP_GRAPH_MAX = 300;
 constexpr size_t DEFAULT_TEMP_GRAPH_TIME_RANGE = 60;
 constexpr float TEMP_GRAPH_Y_AXIS_PADDING = 10;
-constexpr size_t GRAPH_DATAPOINTS = DEFAULT_TEMP_GRAPH_TIME_RANGE * (1000 / MIN_PRINTER_POLL_INTERVAL);
+constexpr size_t GRAPH_DATAPOINTS = DEFAULT_TEMP_GRAPH_TIME_RANGE * (1000 / MIN_PRINTER_POLL_INTERVAL.count());
 
 #endif /* JNI_CONFIGURATION_H_ */

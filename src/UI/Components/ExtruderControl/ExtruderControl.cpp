@@ -19,15 +19,15 @@ namespace UI
 
 	ExtruderControl::ExtruderControl(const std::string& name, lv_obj_t* parent)
 		: LvContainer(name, parent)
-		, m_toolSelect(name + "_tool_select", getRoot())
-		, m_filamentContainer(name + "_filament", getRoot())
-		, m_filamentSelect(name + "_filament_select", m_filamentContainer)
-		, m_filamentUnloadBtn(name + "_filament_load_unload", m_filamentContainer, _("unload"))
-		, m_controlsContainer(name + "_controls", getRoot())
-		, m_retractBtn(name + "_retract", m_controlsContainer, LV_SYMBOL_UP)
-		, m_extrudeBtn(name + "_extrude", m_controlsContainer, LV_SYMBOL_DOWN)
-		, m_distanceInput(name + "_distance_input", m_controlsContainer)
-		, m_feedrateInput(name + "_feedrate_input", m_controlsContainer)
+		, m_toolSelect("tool_select", getRoot())
+		, m_filamentContainer("filament", getRoot())
+		, m_filamentSelect("filament_select", m_filamentContainer)
+		, m_filamentUnloadBtn("filament_load_unload", m_filamentContainer, _("unload"))
+		, m_controlsContainer("controls", getRoot())
+		, m_retractBtn("retract", m_controlsContainer, LV_SYMBOL_UP)
+		, m_extrudeBtn("extrude", m_controlsContainer, LV_SYMBOL_DOWN)
+		, m_distanceInput("distance_input", m_controlsContainer)
+		, m_feedrateInput("feedrate_input", m_controlsContainer)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -91,6 +91,14 @@ namespace UI
 		m_filamentSelect.getDropdownMenu().addStyle(Themes::getLvglStyles().actionBtn);
 		m_distanceInput.addStyle(Themes::getLvglStyles().no_border);
 		m_feedrateInput.addStyle(Themes::getLvglStyles().no_border);
+	}
+
+	void ExtruderControl::clear()
+	{
+		m_toolSelect.clear();
+		setFilamentDisabled(true);
+		m_retractBtn.setState(LV_STATE_DISABLED, true);
+		m_extrudeBtn.setState(LV_STATE_DISABLED, true);
 	}
 
 	void ExtruderControl::setToolCallback(tool_select_cb_t cb)
@@ -415,12 +423,11 @@ namespace UI
 		}
 	}
 
-	std::shared_ptr<Button> ExtruderControl::createBaseListButton(const std::string& name,
-																  size_t index,
-																  lv_obj_t* parent)
+	std::shared_ptr<Button> ExtruderControl::createBaseListButton(size_t index, lv_obj_t* parent)
 	{
-		LOG_DBG("Creating base list button {} for {} {}", index, getName(), name);
-		auto btn = std::make_shared<Button>(fmt::format("{}_{}{}", getName(), name, index), parent);
+		UI_LOCK();
+		LOG_DBG("Creating base list button {} for {}", index, lv_obj_get_name(parent));
+		auto btn = std::make_shared<Button>(fmt::format("{}", index), parent);
 		btn->setFlexGrow(1);
 		btn->setHeight(LV_SIZE_CONTENT);
 		btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
@@ -430,7 +437,7 @@ namespace UI
 	std::shared_ptr<Button> ExtruderControl::createToolButton(size_t index, lv_obj_t* parent)
 	{
 		LOG_DBG("Creating tool button {} for {}", index, getName());
-		auto btn = createBaseListButton("tool", index, parent);
+		auto btn = createBaseListButton(index, parent);
 		btn->addClickedCallback(onToolSelectEvent, this);
 		btn->addStyle(Themes::getLvglStyles().actionBtn);
 		return btn;
@@ -439,7 +446,7 @@ namespace UI
 	std::shared_ptr<Button> ExtruderControl::createDistanceButton(size_t index, lv_obj_t* parent)
 	{
 		LOG_DBG("Creating distance button {} for {}", index, getName());
-		auto btn = createBaseListButton("distance", index, parent);
+		auto btn = createBaseListButton(index, parent);
 		btn->addEventCallback(onDistanceEvent, LV_EVENT_ALL, this);
 		btn->setHeight(LV_PCT(100));
 		btn->setChecked(index == m_selectedDistanceIndex);
@@ -459,7 +466,7 @@ namespace UI
 	std::shared_ptr<Button> ExtruderControl::createFeedrateButton(size_t index, lv_obj_t* parent)
 	{
 		LOG_DBG("Creating feedrate button {} for {}", index, getName());
-		auto btn = createBaseListButton("feedrate", index, parent);
+		auto btn = createBaseListButton(index, parent);
 		btn->addEventCallback(onFeedrateEvent, LV_EVENT_ALL, this);
 		btn->setHeight(LV_PCT(100));
 		btn->setChecked(index == m_selectedFeedrateIndex);

@@ -6,10 +6,8 @@
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
+#include "UI/Components/MessageBox/AlertMessageBox.h"
 #include "UI/Components/MessageBox/MessageBox.h"
-#include "UI/Components/SideBar/SideBar.h"
-#include "UI/Components/StatusBar/StatusBar.h"
-#include "UI/Components/ToolList/ToolList.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"
 #include "UI/Screens/Fan/FanView.h"
@@ -19,6 +17,9 @@
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Screens/Status/StatusView.h"
 #include "UI/Screens/Temperature/TemperatureView.h"
+#include "UI/Widgets/SideBar/SideBar.h"
+#include "UI/Widgets/StatusBar/StatusBar.h"
+#include "UI/Widgets/ToolList/ToolList.h"
 #include "lvgl/lvgl.h"
 #include <list>
 #include <memory>
@@ -49,10 +50,14 @@ namespace UI
 		LvKeyboard& getKeyboard() { return m_kb; }
 
 		// Sub-views
+		LvContainer& getMainWindow() { return m_mainWindow; }
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		MoveView& getMoveView() { return m_moveView; }
-		TemperatureView& getExtrudeView() { return m_temperatureView; }
+		TemperatureView& getTemperatureView() { return m_temperatureView; }
+		FanView& getFanView() { return m_fanView; }
 		FileView& getFileView() { return m_fileView; }
+		FileView& getMacroView() { return m_macroView; }
+		HeightmapView& getHeightmapView() { return m_heightmapView; }
 		SettingsView& getSettingsView() { return m_settingsView; }
 		StatusView& getStatusView() { return m_statusView; }
 
@@ -63,24 +68,11 @@ namespace UI
 		virtual void onShow();
 		virtual void onHide();
 
-		static void onWindowSelectEvent(lv_event_t* e);
-
 		StatusBar m_statusBar;
 		SideBar m_sideBar;
-		lv_obj_t* m_mainWindow;
+		LvContainer m_mainWindow;
 		ToolList m_toolList;
 		Graph m_graph;
-
-		// Window selector
-		lv_obj_t* m_windowSelect;
-		Button m_moveWindow;
-		Button m_temperatureWindow;
-		Button m_statusWindow;
-		Button m_heightmapWindow;
-		Button m_fansWindow;
-		Button m_objectCancelWindow;
-		Button m_filesWindow;
-		Button m_settingsWindow;
 
 		// Windows
 		ConsoleView m_consoleView;
@@ -88,13 +80,14 @@ namespace UI
 		TemperatureView m_temperatureView;
 		FanView m_fanView;
 		FileView m_fileView;
+		FileView m_macroView;
 		HeightmapView m_heightmapView;
 		SettingsView m_settingsView;
 		StatusView m_statusView;
 
 		// Message box
 		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;
-		MessageBox m_alert;
+		AlertMessageBox m_alert;
 
 		// Update prompt
 		MessageBox m_updatePrompt;

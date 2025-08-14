@@ -21,8 +21,8 @@ namespace UI
 
 		// Actions
 		void setBaseFolder(BaseFolder folder) { m_baseFolder = folder; }
-		const std::string& getBaseFolderPath() const;
-		void setFolder(const std::string& folder);
+		std::string_view getBaseFolderPath() const;
+		void setFolder(std::string_view folder);
 		void itemClicked(const size_t index);
 		void startPrint();
 		void runMacro();
@@ -34,19 +34,16 @@ namespace UI
 		bool back();
 
 		// Observers
-		void connected();
-		void disconnected();
 		void newThumbnailData(const std::string& filename);
 
 	  private:
 		void onActivate() override;
-
-		virtual void onInit() override
+		void onInit() override
 		{
-			registerEventListener<EventType::Connected>(this, &FilePresenter::connected);
-			registerEventListener<EventType::Disconnected>(this, &FilePresenter::disconnected);
 			registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
 		}
+		void onConnect() override;
+		void onDisconnect() override;
 
 		void displayFiles();
 		void sortFiles();
@@ -56,6 +53,6 @@ namespace UI
 		std::string m_gcodePath; // path to gcode file to print
 		SortBy m_sortBy = SortBy::DATE;
 		bool m_sortOrder = true;
-		std::vector<std::shared_ptr<OM::FileSystem::FileSystemItem>> m_items;
+		std::vector<OM::FileSystem::ItemPtr> m_items;
 	};
 } // namespace UI

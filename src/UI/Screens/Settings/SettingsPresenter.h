@@ -39,7 +39,7 @@ namespace UI
 		void setWifiEnabled(bool enabled);
 		void scanWifi();
 		void connectToNetwork(const std::string& ssid);
-		void connectToNetwork(const std::string& ssid, const std::string& password);
+		void connectToNetwork(const std::string& ssid, std::string_view password);
 		void forgetNetwork(const std::string& ssid);
 
 	  private:

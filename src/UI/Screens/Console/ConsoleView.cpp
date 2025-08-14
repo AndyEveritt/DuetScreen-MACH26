@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Gcodes.h"
 #include "Hardware/Duet.h"
+#include "UI/Components/LVGL/LvAnim.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
@@ -9,38 +10,49 @@
 
 namespace UI
 {
+#define TABLE_GCODE_WIDTH 100
+#define TABLE_DESCRIPTION_WIDTH 500
+
 	ConsoleView::ConsoleView(lv_obj_t* parent)
-		: View(lv_obj_create, "console_view", parent, layout_t(0, 0, 100, 100))
-		, m_topCont(lv_obj_create(getRoot()))
-		, m_commandList(lv_table_create(m_topCont))
-		, m_output(lv_textarea_create(m_topCont))
-		, m_inputCont(lv_obj_create(getRoot()))
-		, m_input(lv_textarea_create(m_inputCont))
-		, m_clear("console_clear", m_input, LV_SYMBOL_CLOSE)
-		, m_enter("console_enter", m_inputCont, LV_SYMBOL_NEW_LINE)
-		, m_kb(lv_keyboard_create(getRoot()))
+		: View("console_view", parent, layout_t(0, 0, 100, 100))
+		, m_topCont("top_cont", getRoot())
+		, m_commandList(lv_table_create, "command_list", m_topCont)
+		, m_commandVisibility("command_visibility", m_topCont, LV_SYMBOL_LIST)
+		, m_output("output", m_topCont)
+		, m_inputCont("input_cont", getRoot())
+		, m_input("input", m_inputCont)
+		, m_clear("clear", m_input, LV_SYMBOL_TRASH)
+		, m_enter("enter", m_inputCont, LV_SYMBOL_NEW_LINE)
+		, m_kb("keyboard", getRoot())
 	{
 		UI_LOCK();
 
+		addStyle(Themes::getLvglStyles().bg_dark);
+
 		// Layout
-		lv_obj_align(getRoot(), LV_ALIGN_CENTER, 0, 0);
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_width(m_topCont, LV_PCT(100));
-		lv_obj_set_flex_grow(m_topCont, 1);
-		lv_obj_set_size(m_inputCont, LV_PCT(100), LV_SIZE_CONTENT);
+		setAlign(LV_ALIGN_CENTER, 0, 0);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_topCont.setWidth(LV_PCT(100));
+		m_topCont.setFlexGrow(1);
+		m_inputCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		// Top Container
-		lv_obj_set_flex_flow(m_topCont, LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_grow(m_commandList, 2);
-		lv_obj_set_flex_grow(m_output, 3);
-		lv_obj_set_height(m_commandList, LV_PCT(100));
-		lv_obj_set_height(m_output, LV_PCT(100));
-		lv_textarea_set_cursor_click_pos(m_output, false);
+		m_topCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_commandVisibility.setCheckable(true);
+		m_commandVisibility.setChecked(true);
+		m_commandVisibility.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
+		m_commandVisibility.updateLayout();
+		m_commandList.setFlexGrow(20);
+		m_commandList.setMinWidth(TABLE_GCODE_WIDTH);
+		m_output.setFlexGrow(30);
+		m_commandList.setHeight(LV_PCT(100));
+		m_output.setHeight(LV_PCT(100));
+		m_output.setCursorClickPos(false);
 
 		// Command List
 		lv_table_set_column_count(m_commandList, 2);
-		lv_table_set_column_width(m_commandList, 0, 100);
-		lv_table_set_column_width(m_commandList, 1, 500);
+		lv_table_set_column_width(m_commandList, 0, TABLE_GCODE_WIDTH);
+		lv_table_set_column_width(m_commandList, 1, TABLE_DESCRIPTION_WIDTH);
 		lv_table_set_row_count(m_commandList, Gcodes::getGcodeCount());
 		for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
 		{
@@ -50,30 +62,65 @@ namespace UI
 		}
 
 		// Input Area
-		lv_obj_set_flex_align(m_inputCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_flex_flow(m_inputCont, LV_FLEX_FLOW_ROW);
-		lv_obj_set_style_pad_all(m_inputCont, 0, 0);
-		lv_obj_set_flex_grow(m_input, 1);
-		lv_textarea_set_one_line(m_input, true);
-		lv_textarea_set_placeholder_text(m_input, _("console_input_placeholder"));
-		lv_obj_set_style_text_align(m_input, LV_TEXT_ALIGN_LEFT, 0);
-		lv_obj_align(m_clear.getRoot(), LV_ALIGN_RIGHT_MID, 0, 0);
-		lv_obj_set_height(m_input, LV_SIZE_CONTENT);
-		lv_obj_set_size(m_clear.getRoot(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_size(m_enter.getRoot(), LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(m_input, 0, 0);
-		lv_obj_set_style_pad_all(m_clear.getRoot(), 0, 0);
-		lv_obj_set_style_pad_all(m_enter.getRoot(), 0, 0);
+		m_inputCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_inputCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_inputCont.addStyle(Themes::getLvglStyles().pad_zero);
+
+		m_input.setFlexGrow(1);
+		m_input.setOneLine(true);
+		m_input.setPlaceholderText(_("console_input_placeholder"));
+		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT, 0);
+		m_clear.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
+		m_input.setHeight(LV_SIZE_CONTENT);
+		m_clear.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_enter.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_topCont.addStyle(Themes::getLvglStyles().no_border);
+		m_inputCont.addStyle(Themes::getLvglStyles().no_border);
+		m_input.addStyle(Themes::getLvglStyles().pad_zero);
+		m_clear.addStyle(Themes::getLvglStyles().pad_zero);
+		m_enter.addStyle(Themes::getLvglStyles().pad_zero);
 
 		// Hide keyboard initially
-		lv_keyboard_set_mode(m_kb, LV_KEYBOARD_MODE_TEXT_UPPER);
-		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
+		m_kb.setSize(LV_PCT(100), LV_PCT(40));
+		m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
+		m_kb.hide();
 
 		// Callbacks
 		m_clear.addClickedCallback(onClearEvent, this);
 		m_enter.addClickedCallback(onSendEvent, this);
-		lv_obj_add_event_cb(m_commandList, onCommandListEvent, LV_EVENT_ALL, this);
-		lv_obj_add_event_cb(m_input, onKeyboardEvent, LV_EVENT_ALL, this);
+		m_commandList.addEventCallback(onCommandListEvent, LV_EVENT_ALL, this);
+		m_input.addEventCallback(onKeyboardEvent, LV_EVENT_ALL, this);
+		m_commandVisibility.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				ConsoleView& view = *static_cast<ConsoleView*>(lv_event_get_user_data(e));
+				LvAnim anim;
+				anim.setDuration(300);
+				anim.setVar(&view);
+				bool isVisible = !view.m_commandVisibility.hasState(LV_STATE_CHECKED);
+				anim.setValues(isVisible ? 20 : 1, isVisible ? 1 : 20);
+				anim.setExecCb(
+					[](void* var, int32_t value)
+					{
+						ConsoleView& view = *static_cast<ConsoleView*>(var);
+						view.m_commandList.setFlexGrow(value);
+						view.updateBtnPos();
+					});
+				anim.setDeletedCb(
+					[](lv_anim_t* anim)
+					{
+						ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
+						view.m_commandList.setScrollDir(
+							view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL : LV_DIR_VER);
+						view.m_output.updateLayout();
+						view.m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
+					}
+
+				);
+				anim.start();
+			},
+			this);
 	}
 
 	void ConsoleView::clear()
@@ -89,12 +136,10 @@ namespace UI
 
 	void ConsoleView::addResponse(const char* resp)
 	{
-		UI_LOCK();
+		m_output.addText(resp);
+		m_output.addChar('\n');
 
-		lv_textarea_add_text(m_output, resp);
-		lv_textarea_add_char(m_output, '\n');
-
-		std::string currentText = lv_textarea_get_text(m_output);
+		std::string_view currentText = m_output.getText();
 
 		int newLineCount = std::count(currentText.begin(), currentText.end(), '\n');
 
@@ -106,7 +151,7 @@ namespace UI
 				pos = currentText.find('\n', pos) + 1;
 			}
 			currentText = currentText.substr(pos);
-			lv_textarea_set_text(m_output, currentText.c_str());
+			m_output.setText(currentText.data());
 		}
 	}
 
@@ -154,15 +199,15 @@ namespace UI
 		{
 		case LV_EVENT_FOCUSED:
 		{
-			lv_keyboard_set_textarea(view->m_kb, view->m_input);
-			lv_keyboard_set_mode(view->m_kb, LV_KEYBOARD_MODE_TEXT_UPPER);
-			lv_obj_remove_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+			view->m_kb.setTextArea(&view->m_input);
+			view->m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
+			view->m_kb.show(true);
 			break;
 		}
 		case LV_EVENT_DEFOCUSED:
 		{
-			lv_keyboard_set_textarea(view->m_kb, NULL);
-			lv_obj_add_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+			view->m_kb.setTextArea(nullptr);
+			view->m_kb.hide();
 			break;
 		}
 		case LV_EVENT_VALUE_CHANGED:
@@ -221,11 +266,18 @@ namespace UI
 		return false;
 	}
 
+	void ConsoleView::updateBtnPos()
+	{
+		m_commandList.updateLayout();
+		m_commandVisibility.setPos(m_commandList.getX2() - m_commandVisibility.getWidth() - 5,
+								   m_commandList.getY() + 5);
+	}
+
 	void ConsoleView::onShow()
 	{
-		UI_LOCK();
-		lv_obj_scroll_to_x(m_commandList, 0, LV_ANIM_OFF);
-		lv_obj_add_flag(m_kb, LV_OBJ_FLAG_HIDDEN);
+		m_commandList.scrollToX(0, LV_ANIM_OFF);
+		m_kb.hide();
+		updateBtnPos();
 	}
 
 	void ConsoleView::onHide()

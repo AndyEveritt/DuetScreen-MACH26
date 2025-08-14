@@ -52,11 +52,11 @@ namespace UI
 		// Observers
 		void newAxesData();
 		void newToolData();
-		void disconnected();
-
-	  protected:
+		
+		protected:
 		virtual void onActivate() override;
 		virtual void onInit() override;
+		void onDisconnect() override;
 
 	  private:
 		AxisDataList m_axisData;

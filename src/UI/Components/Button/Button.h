@@ -10,10 +10,11 @@ namespace UI
 	{
 	  public:
 		Button(const std::string& name, lv_obj_t* parent);
-		Button(const std::string& name, lv_obj_t* parent, const std::string& text);
-		Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout);
+		Button(const std::string& name, lv_obj_t* parent, std::string_view text);
+		Button(const std::string& name, lv_obj_t* parent, std::string_view text, layout_t layout);
 
-		void setText(const std::string& text);
+		void setText(std::string_view text);
+		std::string_view getText() const { return m_label.getText(); }
 		void addClickedCallback(lv_event_cb_t event_cb, void* user_data);
 		void setIcon(lv_img_dsc_t* icon);
 		void setCheckable(bool checkable);
@@ -26,7 +27,7 @@ namespace UI
 		lv_obj_t* getIcon() const { return m_icon; }
 
 	  private:
-		void init(const std::string& text);
+		void init(std::string_view text);
 
 		LvLabel m_label;
 		lv_obj_t* m_icon;

@@ -40,12 +40,12 @@ namespace OM
 		return (stateFromMap != nullptr) ? stateFromMap->key : "unknown";
 	}
 
-	std::shared_ptr<Spindle> GetSpindle(const size_t index)
+	SpindlePtr GetSpindle(const size_t index)
 	{
 		return GetOrCreate<SpindleList, Spindle>(s_spindles, index, false);
 	}
 
-	std::shared_ptr<Spindle> GetOrCreateSpindle(const size_t index)
+	SpindlePtr GetOrCreateSpindle(const size_t index)
 	{
 		return GetOrCreate<SpindleList, Spindle>(s_spindles, index, true);
 	}
@@ -63,7 +63,7 @@ namespace OM
 			LOG_ERROR("spindle[{:d}] greater than MAX_SLOTS", index);                                                  \
 			return false;                                                                                              \
 		}                                                                                                              \
-		std::shared_ptr<Spindle> spindle = GetOrCreateSpindle(index);                                                  \
+		SpindlePtr spindle = GetOrCreateSpindle(index);                                                                \
 		if (spindle == nullptr)                                                                                        \
 		{                                                                                                              \
 			LOG_ERROR("Could not get or create spindle {:d}", index);                                                  \

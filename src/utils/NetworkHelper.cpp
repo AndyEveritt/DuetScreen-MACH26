@@ -285,7 +285,7 @@ namespace NetworkHelper
 		{
 			if (network.ssid == ssid)
 			{
-				std::string cmd = "SELECT_NETWORK " + std::to_string(network.id);
+				std::string cmd = fmt::format("SELECT_NETWORK {}", network.id);
 				sendCommand(cmd);
 				return;
 			}
@@ -293,7 +293,7 @@ namespace NetworkHelper
 		LOG_ERROR("Network \"{:s}\" not found in known networks", ssid.c_str());
 	}
 
-	void connect(const std::string& ssid, const std::string& password)
+	void connect(const std::string& ssid, std::string_view password)
 	{
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid.c_str());
 		if (!isNetworkKnown(ssid))
@@ -302,13 +302,13 @@ namespace NetworkHelper
 			std::string output = sendCommand(cmd);
 			int networkId = std::stoi(output);
 
-			cmd = "SET_NETWORK " + std::to_string(networkId) + " ssid \"" + ssid + "\"";
+			cmd = fmt::format("SET_NETWORK {} ssid \"{}\"", networkId, ssid);
 			sendCommand(cmd);
 
-			cmd = "SET_NETWORK " + std::to_string(networkId) + " psk \"" + password + "\"";
+			cmd = fmt::format("SET_NETWORK {} psk \"{}\"", networkId, password);
 			sendCommand(cmd);
 
-			cmd = "ENABLE_NETWORK " + std::to_string(networkId);
+			cmd = fmt::format("ENABLE_NETWORK {}", networkId);
 			sendCommand(cmd);
 
 			sendCommand("SAVE_CONFIG");

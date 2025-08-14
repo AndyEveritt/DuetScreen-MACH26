@@ -65,17 +65,32 @@ namespace OM
 			standbyTemp = temp;
 		}
 
-		std::shared_ptr<Heater> GetHeater(const size_t index)
+		HeaterPtr GetHeater(const size_t index)
 		{
 			return GetOrCreate<HeaterList, Heater>(heaters, index, false);
 		}
 
-		std::shared_ptr<Heater> GetOrCreateHeater(const size_t index)
+		HeaterPtr GetOrCreateHeater(const size_t index)
 		{
 			return GetOrCreate<HeaterList, Heater>(heaters, index, true);
 		}
 
-		bool IterateHeatersWhile(function_ref<bool(std::shared_ptr<Heater>, size_t)> func, const size_t startAt)
+		HeaterPtr GetHeaterBySlot(const size_t heaterSlot)
+		{
+			if (heaterSlot >= heaters.Size())
+			{
+				LOG_ERROR("Heater slot {:d} is out of range", heaterSlot);
+				return nullptr;
+			}
+			return heaters[heaterSlot];
+		}
+
+		size_t GetHeaterCount() noexcept
+		{
+			return heaters.Size();
+		}
+
+		bool IterateHeatersWhile(function_ref<bool(HeaterPtr, size_t)> func, const size_t startAt)
 		{
 			return heaters.IterateWhile(func, startAt);
 		}

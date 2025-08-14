@@ -2,6 +2,9 @@
 
 #include "ConsolePresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvKeyboard.h"
+#include "UI/Components/LVGL/LvTextArea.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -26,16 +29,19 @@ namespace UI
 		static void onCommandListEvent(lv_event_t* e);
 		static void onKeyboardEvent(lv_event_t* e);
 
+		void updateBtnPos();
+		
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		lv_obj_t* m_topCont;
-		lv_obj_t* m_commandList;
-		lv_obj_t* m_output;
-		lv_obj_t* m_inputCont;
-		lv_obj_t* m_input;
+		LvContainer m_topCont;
+		LvObj m_commandList;
+		Button m_commandVisibility;
+		LvTextArea m_output;
+		LvContainer m_inputCont;
+		LvTextArea m_input;
 		Button m_clear;
 		Button m_enter;
-		lv_obj_t* m_kb;
+		LvKeyboard m_kb;
 	};
 } // namespace UI

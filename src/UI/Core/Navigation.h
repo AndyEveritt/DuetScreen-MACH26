@@ -13,10 +13,12 @@ namespace UI
 	LvObj* getCurrentScreen();
 	void openScreen(LvObj* view, bool closePrevious = true);
 	bool closeLastScreen();
-	void closeScreen(LvObj* view, bool returnable = true);
+	bool closeScreen(LvObj* view, bool returnable = true);
 
 	void openModal(LvObj* view);
 	void closeAllModals();
 	bool closeModal(LvObj* view);
 	bool closeLastModal();
+
+	bool close(LvObj* view);
 } // namespace UI

@@ -89,7 +89,7 @@ namespace UI
 
 		virtual ~LvObj();
 
-		inline const std::string& getName() const { return m_name; }
+		std::string_view getName() const;
 		/**
 		 * @return Get the base container for the view
 		 */
@@ -100,7 +100,19 @@ namespace UI
 		lv_obj_t* getParent() const;
 		lv_obj_t* getChild(int32_t id) const;
 		uint32_t getChildCnt() const;
-		layout_t getLayout();
+		layout_t getLayout() const;
+		layout_t getLayoutPct() const;
+		lv_area_t getCoords() const;
+		lv_coord_t getX() const;
+		lv_coord_t getX2() const;
+		lv_coord_t getY() const;
+		lv_coord_t getY2() const;
+		lv_coord_t getWidth() const;
+		lv_coord_t getHeight() const;
+		lv_coord_t getContentWidth() const;
+		lv_coord_t getContentHeight() const;
+		lv_coord_t getSelfWidth() const;
+		lv_coord_t getSelfHeight() const;
 
 		void setUserData(void* user_data);
 		void* getUserData() const;
@@ -135,16 +147,34 @@ namespace UI
 		void setState(lv_state_t state, bool enable, bool recursive = false);
 		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
 
+		void updateLayout();
+		bool refreshSelfSize();
+		void invalidate();
+
+		void setExtDrawSize(int32_t size);
+		void setExtClickArea(int32_t size);
+		void getClickArea(lv_area_t* area) const;
+
+		void scrollBy(int32_t dx, int32_t dy, lv_anim_enable_t anim = LV_ANIM_OFF);
 		void scrollToX(lv_coord_t x, lv_anim_enable_t anim = LV_ANIM_OFF);
 		void scrollToY(lv_coord_t y, lv_anim_enable_t anim = LV_ANIM_OFF);
+		void setScrollDir(lv_dir_t dir);
+		lv_coord_t getScrollLeft() const;
+		lv_coord_t getScrollRight() const;
+		lv_coord_t getScrollTop() const;
+		lv_coord_t getScrollBottom() const;
 
 		/* Styling */
 
 		void addStyle(const lv_style_t* style,
 					  const lv_style_selector_t selector = LV_PART_MAIN,
 					  bool recursive = false);
+		void removeStyle(const lv_style_t* style,
+						 const lv_style_selector_t selector = LV_PART_MAIN,
+						 bool recursive = false);
 		void setStylePad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL);
 		void setStyleBgColor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
+		void setStyleBgOpa(lv_opa_t opa, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector = LV_PART_MAIN);
 
 		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
@@ -154,10 +184,19 @@ namespace UI
 		uint32_t getEventCount();
 		lv_result_t sendEvent(lv_event_code_t code, void* param = nullptr);
 
-		void setVisible(bool display) { display ? show() : hide(); }
-		virtual void show();
-		virtual void hide();
+		void moveToFront();
+		void moveToBack();
+		void moveToIndex(size_t index);
+		void clearChildren();
+
+		void setVisible(bool display, bool move_to_front = false)
+		{
+			display ? show(move_to_front) : hide(move_to_front);
+		}
+		virtual void show(bool move_to_front = false);
+		virtual void hide(bool move_to_back = false);
 		bool isVisible();
+
 		virtual bool back();
 
 	  protected:

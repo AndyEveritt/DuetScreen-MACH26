@@ -53,8 +53,10 @@ namespace OM
 		const char* GetStateStr() const;
 	};
 
-	std::shared_ptr<Spindle> GetSpindle(const size_t index);
-	std::shared_ptr<Spindle> GetOrCreateSpindle(const size_t index);
+	using SpindlePtr = std::shared_ptr<Spindle>;
+
+	SpindlePtr GetSpindle(const size_t index);
+	SpindlePtr GetOrCreateSpindle(const size_t index);
 	size_t RemoveSpindle(const size_t index, const bool allFollowing);
 
 	bool SetSpindleActive(size_t index, uint32_t active);

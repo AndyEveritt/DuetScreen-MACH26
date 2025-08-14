@@ -17,7 +17,7 @@ namespace UI
 		LvLabel(const std::string& name, lv_obj_t* parent);
 		LvLabel(const std::string& name, lv_obj_t* parent, const std::string& text);
 
-		void setText(const std::string& text);
+		void setText(const std::string_view text);
 		void setTextF(const char* fmt, ...);
 		void setTextStatic(const char* text);
 		void setLongMode(lv_label_long_mode_t mode);
@@ -25,7 +25,7 @@ namespace UI
 		void setTextSelectionEnd(uint32_t index);
 		void setRecolor(bool enable);
 
-		std::string getText() const;
+		std::string_view getText() const;
 		lv_label_long_mode_t getLongMode() const;
 		void getLetterPos(uint32_t char_id, lv_point_t* pos) const;
 		uint32_t getLetterOn(lv_point_t* pos_in, bool bidi = false) const;

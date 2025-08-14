@@ -50,7 +50,7 @@
 namespace Comm
 {
 
-	static long long s_lastResponseTime = 0;
+	static std::chrono::milliseconds s_lastResponseTime(0);
 
 	Seq seqs[] = {
 #if FETCH_NETWORK
@@ -150,7 +150,7 @@ namespace Comm
 		 .key = "volumes",
 		 .flags = "v"},
 #endif
-	};
+		{.event = rcvOMKeyNone, .seqid = rcvSeqsFreq, .lastSeq = 0, .state = SeqStateInit, .key = "", .flags = "d99f"}};
 
 	Seq* g_currentReqSeq = nullptr;
 
@@ -161,19 +161,30 @@ namespace Comm
 			current = seqs;
 		}
 
+		if (current == &seqs[ARRAY_SIZE(seqs) - 1])
+		{
+			current = seqs;
+		}
+
 		for (size_t i = current - seqs; i < ARRAY_SIZE(seqs); ++i)
 		{
 			current = &seqs[i];
 			if (current->state == SeqStateError)
 			{
-				LOG_WARN("seq {:s} had an error", current->key);
+				LOG_WARN("seq '{:s}' had an error", current->key);
 				// skip and re-init if last request had an error
 				current->state = SeqStateInit;
 				continue;
 			}
 			if (current->state == SeqStateInit || current->state == SeqStateUpdate)
 			{
-				LOG_DBG("seq {:s}", current->key);
+				LOG_DBG("seq '{:s}'", current->key);
+				return current;
+			}
+			if (current->state == SeqStateRequested && current->lastRequestTime + 500ms < TimeHelper::getCurrentTime())
+			{
+				LOG_DBG("seq '{:s}' was requested but not updated, re-requesting", current->key);
+				current->state = SeqStateUpdate;
 				return current;
 			}
 		}
@@ -218,6 +229,28 @@ namespace Comm
 			seqs[i].lastSeq = 0;
 			seqs[i].state = SeqStateInit;
 		}
+		g_currentReqSeq = nullptr;
+	}
+
+	static void RequestSeq(Seq* seq)
+	{
+		if (seq == nullptr)
+		{
+			LOG_ERROR("RequestSeq called with null seq");
+			return;
+		}
+
+		if (seq->state == SeqStateRequested)
+		{
+			LOG_DBG("Seq {:s} already requested", seq->key);
+			return;
+		}
+
+		LOG_DBG("Requesting seq '{:s}'", seq->key);
+		seq->lastRequestTime = TimeHelper::getCurrentTime();
+		seq->state = SeqStateRequested;
+
+		Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
 	}
 
 	// Try to get an integer value from a string. If it is actually a floating point value, round it.
@@ -288,7 +321,7 @@ namespace Comm
 
 	void Reconnect()
 	{
-		LOG_WARN("Reconnecting");
+		LOG_DBG("Reconnecting");
 		KickWatchdog();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
@@ -300,7 +333,7 @@ namespace Comm
 
 	void KickWatchdog()
 	{
-		const long long now = TimeHelper::getCurrentTime();
+		const std::chrono::milliseconds now = TimeHelper::getCurrentTime();
 		if (now > s_lastResponseTime)
 		{
 			s_lastResponseTime = TimeHelper::getCurrentTime();
@@ -325,13 +358,12 @@ namespace Comm
 	 */
 	bool sendNext()
 	{
-		const long long now = TimeHelper::getCurrentTime();
-		const long long expectedResponseBy =
-			s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
+		const auto now = TimeHelper::getCurrentTime();
+		const auto expectedResponseBy = s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
 		if (now > expectedResponseBy)
 		{
-			LOG_WARN("No response from Duet for {:d} ms", PRINTER_REQUEST_TIMEOUT);
-			LOG_VERBOSE("last response={:d}, now={:d}, expected by={:d}, diff={:d}",
+			LOG_WARN("No response from Duet for {} ms", PRINTER_REQUEST_TIMEOUT);
+			LOG_VERBOSE("last response={}, now={}, expected by={}, diff={}",
 						s_lastResponseTime,
 						now,
 						expectedResponseBy,
@@ -339,20 +371,15 @@ namespace Comm
 			Reconnect();
 		}
 
-		// TODO prevent sending the same request multiple times in a row
 		g_currentReqSeq = GetNextSeq(g_currentReqSeq);
-		if (g_currentReqSeq != nullptr)
+		if (g_currentReqSeq == nullptr)
 		{
-			LOG_INFO("requesting {:s}", g_currentReqSeq->key);
-			Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
-			return true;
-		}
-		else
-		{
-			LOG_INFO("requesting frequently changing data");
-			Comm::DUET.RequestModel("d99f");
+			LOG_DBG("No more seqs to request");
 			return false;
 		}
+
+		RequestSeq(g_currentReqSeq);
+		return true;
 	}
 
 	void init()
@@ -360,7 +387,10 @@ namespace Comm
 		// Sort the fieldTable prior searching using binary search
 		system("mkdir /tmp/thumbnails");
 		system("mkdir /tmp/heightmaps");
+		system("mkdir /tmp/files");
 		SortFieldTable();
 		usbInit();
+		ResetSeqs();
+		KickWatchdog();
 	}
 } // namespace Comm

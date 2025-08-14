@@ -11,12 +11,12 @@
 
 namespace UI
 {
-    class LvContainer : public LvObj
-    {
-      public:
-        LvContainer(const std::string& name, lv_obj_t* parent);
+	class LvContainer : public LvObj
+	{
+	  public:
+		LvContainer(const std::string& name, lv_obj_t* parent);
 		LvContainer(const std::string& name, lv_obj_t* parent, layout_t layout);
 
 	  private:
-    };
+	};
 } // namespace UI

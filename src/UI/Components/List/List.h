@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvObj.h"
 #include "UI/Styles/Styles.h"
 #include <memory>
@@ -18,12 +19,12 @@ namespace UI
 	class ListItem : public LvObj
 	{
 	  public:
-		ListItem(const std::string& name, size_t index, lv_obj_t* parent)
-			: LvObj(lv_obj_create, utils::format("%s_%u", name.c_str(), index), parent)
+		ListItem(size_t index, lv_obj_t* parent)
+			: LvObj(lv_obj_create, fmt::format("{}", index), parent)
 			, m_index(index)
 		{
-			lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_list_item, 0);
-			lv_obj_add_style(getRoot(), Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
+			// addStyle(Themes::getLvglStyles().bg_color_list_item, 0);
+			// addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 		}
 
 		const size_t getIndex() const { return m_index; }
@@ -42,9 +43,9 @@ namespace UI
 
 		List(const std::string& name, lv_obj_t* parent)
 			: LvObj(lv_obj_create, name, parent)
-			, m_header(name + "_header", getRoot())
-			, m_title(name + "_title", m_header.getRoot())
-			, m_listCont(name + "_list", getRoot())
+			, m_header("header", getRoot())
+			, m_title("title", m_header.getRoot())
+			, m_listCont("list", getRoot())
 		{
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
@@ -55,9 +56,7 @@ namespace UI
 
 			m_listCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 			m_listCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-			m_listCont.setSize(LV_PCT(100), LV_PCT(100));
-			m_listCont.addStyle(Themes::getLvglStyles().no_border, LV_PART_MAIN);
-			lv_obj_set_style_pad_all(m_listCont, 0, LV_PART_MAIN);
+			m_listCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 			m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 

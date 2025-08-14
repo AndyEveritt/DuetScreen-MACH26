@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+include(FetchContent)
 project(DuetScreen C CXX)
 
 # Set C and C++ standards
@@ -31,13 +32,55 @@ endif()
 
 set(MAIN_SOURCES "")
 
-if (NOT DEFINED PROCESSOR)
-  message(FATAL_ERROR "PROCESSOR variable is not defined. Please set it to 'T113' or 'Simulation'.")
+if(NOT DEFINED PROCESSOR)
+  message(
+    FATAL_ERROR
+      "PROCESSOR variable is not defined. Please set it to 'T113' or 'Simulation'."
+  )
 endif()
+
+# ----------------------------------------------------------------------------
+# Set source files for executable
+# ----------------------------------------------------------------------------
+file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
+${LIBRARIES_DIR}/Duet3D/**.cpp)
+
+list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
+
+add_executable(DuetScreen ${MAIN_SOURCES})
+
+# Find clang-format-19
+find_program(CLANG_FORMAT_19 clang-format-19 REQUIRED)
+
+# Add clang-format custom target
+add_custom_target(
+  clang-format
+  COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
+  -print | xargs ${CLANG_FORMAT_19} -i
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Running clang-format-19")
+add_dependencies(DuetScreen clang-format)
+  
+  # Touch BuildDate.cpp to ensure it is always compiled
+  if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_custom_command(
+    TARGET DuetScreen
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
+    COMMENT "Touching BuildDate.cpp to force recompilation")
+    endif()
+    
+target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
+target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
+
+add_subdirectory(src)
 
 # ----------------------------------------------------------------------------
 # Libraries
 # ----------------------------------------------------------------------------
+
+# Color manipulation library
+include (${LIBRARIES_DIR}/colorm.cmake)
 
 # option(BUILD_SHARED_LIBS "Set default library type to shared" OFF)
 
@@ -55,37 +98,10 @@ pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 find_package(SDL2 REQUIRED)
 
 # Find json library
-set(JSON_BuildTests
-    OFF
-    CACHE INTERNAL "")
-add_subdirectory(${LIBRARIES_DIR}/json)
+include(${LIBRARIES_DIR}/json.cmake)
 
 # Logging
 include(${LIBRARIES_DIR}/spdlog.cmake)
-
-# ----------------------------------------------------------------------------
-# Set source files for executable
-# ----------------------------------------------------------------------------
-file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
-     ${LIBRARIES_DIR}/Duet3D/**.cpp)
-
-list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
-
-add_executable(DuetScreen ${MAIN_SOURCES})
-
-# Add clang-format custom target
-add_custom_target(
-  clang-format
-  COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
-          -print | xargs clang-format -i
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMMENT "Running clang-format")
-add_dependencies(DuetScreen clang-format)
-
-target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
-target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
-
-add_subdirectory(src)
 
 # Include libusb headers
 target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})
@@ -95,6 +111,9 @@ target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})
 # ----------------------------------------------------------------------------
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(DuetScreen PRIVATE DEBUG)
+else()
+  set_target_properties(DuetScreen PROPERTIES CMAKE_INTERPROCEDURAL_OPTIMIZATION
+                                              TRUE)
 endif()
 target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
 
@@ -157,8 +176,6 @@ target_compile_definitions(DuetScreen PRIVATE LV_CONF_INCLUDE_SIMPLE)
 target_link_libraries(
   DuetScreen
   PRIVATE lvgl
-          # lvgl::examples lvgl::demos
-          # lvgl::thorvg
           ${SDL2_LIBRARIES}
           ${LIBUSB_LIBRARIES} # Link libusb library
           m

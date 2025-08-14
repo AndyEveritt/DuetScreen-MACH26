@@ -52,12 +52,17 @@ namespace SerialIo
 		}
 	}
 
-	bool Send(const std::string& data)
+	ssize_t Send(std::string_view data)
 	{
-		return s_uart && s_uart->send(data);
+		if (!s_uart)
+		{
+			LOG_ERROR("UART not initialized");
+			return -1;
+		}
+		return s_uart->send(data);
 	}
 
-	size_t Sendf(const char* fmt, ...)
+	ssize_t Sendf(const char* fmt, ...)
 	{
 		va_list vargs;
 		va_start(vargs, fmt);
@@ -65,13 +70,16 @@ namespace SerialIo
 		std::string buf = utils::vformat(fmt, vargs);
 		LOG_INFO("Sending {:s}", buf.c_str());
 
-		if (s_uart)
+		if (!s_uart)
 		{
-			s_uart->send(buf);
+			LOG_ERROR("UART not initialized");
+			return -1;
 		}
 
+		ssize_t ret = s_uart->send(buf);
+
 		va_end(vargs);
-		return buf.length();
+		return ret;
 	}
 
 	bool SetBaudRate(speed_t baudRate)

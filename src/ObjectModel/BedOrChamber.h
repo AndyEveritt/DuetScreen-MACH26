@@ -55,7 +55,7 @@ namespace OM
 		uint8_t slot;
 
 		void Reset();
-		int32_t GetCurrentTemp();
+		float GetCurrentTemp();
 		int32_t GetCurrentTarget();
 		int32_t GetActiveTemp();
 		int32_t GetStandbyTemp();
@@ -67,23 +67,26 @@ namespace OM
 		bool ToggleChamberState();
 	};
 
-	typedef BedOrChamber Bed;
-	typedef BedOrChamber Chamber;
+	using Bed = BedOrChamber;
+	using Chamber = BedOrChamber;
+	using BedPtr = std::shared_ptr<Bed>;
+	using ChamberPtr = std::shared_ptr<Chamber>;
+	using BedOrChamberPtr = std::shared_ptr<BedOrChamber>;
 
-	std::shared_ptr<Bed> GetBedBySlot(const size_t index);
-	std::shared_ptr<Bed> GetBed(const size_t index);
-	std::shared_ptr<Bed> GetOrCreateBed(const size_t index);
-	std::shared_ptr<Bed> GetFirstBed();
+	BedPtr GetBedBySlot(const size_t index);
+	BedPtr GetBed(const size_t index);
+	BedPtr GetOrCreateBed(const size_t index);
+	BedPtr GetFirstBed();
 	size_t GetBedCount();
-	bool IterateBedsWhile(function_ref<bool(std::shared_ptr<Bed>, size_t)> func, const size_t startAt = 0);
+	bool IterateBedsWhile(function_ref<bool(BedPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveBed(const size_t index, const bool allFollowing);
 
-	std::shared_ptr<Chamber> GetChamberBySlot(const size_t index);
-	std::shared_ptr<Chamber> GetChamber(const size_t index);
-	std::shared_ptr<Chamber> GetOrCreateChamber(const size_t index);
-	std::shared_ptr<Chamber> GetFirstChamber();
+	ChamberPtr GetChamberBySlot(const size_t index);
+	ChamberPtr GetChamber(const size_t index);
+	ChamberPtr GetOrCreateChamber(const size_t index);
+	ChamberPtr GetFirstChamber();
 	size_t GetChamberCount();
-	bool IterateChambersWhile(function_ref<bool(std::shared_ptr<Chamber>, size_t)> func, const size_t startAt = 0);
+	bool IterateChambersWhile(function_ref<bool(ChamberPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveChamber(const size_t index, const bool allFollowing);
 	bool SetBedHeater(const uint8_t bedIndex, const int8_t heaterNumber);
 	bool SetChamberHeater(const uint8_t chamberIndex, const int8_t heaterNumber);

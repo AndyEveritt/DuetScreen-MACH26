@@ -103,8 +103,8 @@ namespace Comm
 			}
 			void Complete(bool failed = false) { m_state = failed ? RequestState::FAILED : RequestState::COMPLETE; }
 
-			int64_t GetRequestTime() const { return m_requestTime; }
-			bool HasTimedOut(uint32_t timeout) const
+			std::chrono::milliseconds GetRequestTime() const { return m_requestTime; }
+			bool HasTimedOut(std::chrono::milliseconds timeout) const
 			{
 				const bool requestTimedOut =
 					m_state == RequestState::REQUESTED && TimeHelper::getTimeSince(m_requestTime) > timeout;
@@ -132,8 +132,8 @@ namespace Comm
 
 			std::shared_ptr<T> m_data;
 			RequestState m_state = RequestState::UNKNOWN;
-			int64_t m_requestTime = 0;
-			int64_t m_receiveTime = 0;
+			std::chrono::milliseconds m_requestTime = 0ms;
+			std::chrono::milliseconds m_receiveTime = 0ms;
 		};
 
 		struct FileInfoRequest : public Request<FileInfo>
@@ -216,7 +216,7 @@ namespace Comm
 		std::map<std::string, FileInfoPtr> m_cache; // cache of file path and their associated file info
 		std::list<FileInfoRequestPtr> m_fileInfoRequestQueue;
 		std::list<ThumbnailRequestPtr> m_thumbnailRequestQueue;
-		int64_t m_lastRequestTime = 0;
+		std::chrono::milliseconds m_lastRequestTime = 0ms;
 	};
 
 	tm ParseSeconds(uint32_t seconds);

@@ -13,12 +13,13 @@
 #include "Duet3D/General/StringRef.h"
 #include "termios.h"
 #include "utils/utils.h"
+#include <fmt/format.h>
 #include <hv/requests.h>
 #include <nlohmann/json.hpp>
 
 namespace Comm
 {
-	constexpr const char* const duetCommunicationTypeNames[] = {"usb", "network", "uart"};
+	constexpr std::string_view const duetCommunicationTypeNames[] = {"usb", "network", "uart"};
 
 	typedef struct
 	{
@@ -52,7 +53,7 @@ namespace Comm
 		std::string ipAddress = DEFAULT_IP_ADDRESS;
 		std::string hostname = "";
 		std::string password = "";
-		uint32_t pollInterval = DEFAULT_PRINTER_POLL_INTERVAL;
+		std::chrono::milliseconds pollInterval = DEFAULT_PRINTER_POLL_INTERVAL;
 		CommunicationType communicationType = CommunicationType::usb;
 		unsigned int baudRate = B115200;
 
@@ -77,25 +78,33 @@ namespace Comm
 
 		void SetCommunicationType(CommunicationType type);
 		const CommunicationType GetCommunicationType() const;
-		const char* GetCommunicationTypeName() const;
-		void SetPollInterval(uint32_t interval);
+		std::string_view GetCommunicationTypeName() const;
+		void SetPollInterval(std::chrono::milliseconds interval);
 		void ScalePollIntervalScale(float scale);
-		const uint32_t GetPollInterval() const;
-		const uint32_t GetScaledPollInterval() const;
+		const std::chrono::milliseconds GetPollInterval() const;
+		const std::chrono::milliseconds GetScaledPollInterval() const;
+		const uint32_t GetNextLineNumber() { return m_nextLineNumber++; }
 
-		void SendGcode(const std::string& gcode);
-		void SendGcodef(const char* fmt, ...);
+		void SendGcode(std::string_view gcode);
+
+		template <typename... Args>
+		void SendGcodef(fmt::format_string<Args...> fmt, Args&&... args)
+		{
+			std::string formatted = fmt::format(fmt, std::forward<Args>(args)...);
+			SendGcode(formatted);
+		}
+
 		void RequestReply(HttpResponse& r);
 		void ProcessReply(HttpResponse& r);
 
-		bool UploadFile(const char* filename, const std::string& contents);
-		bool DownloadFile(const char* filename, std::string& contents);
+		bool UploadFile(std::string_view filename, const std::string& contents);
+		bool DownloadFile(std::string_view filename, std::string& contents);
 
-		void RequestModel(const char* flags = "d99f");
-		void RequestModel(const char* key, const char* flags);
-		bool RequestFileList(const std::string& dir, const size_t first = 0);
-		bool RequestFileInfo(const char* filename);
-		bool RequestThumbnail(const char* filename, uint32_t offset);
+		void RequestModel(std::string_view flags = "d99f");
+		void RequestModel(std::string_view key, std::string_view flags);
+		bool RequestFileList(std::string_view dir, const size_t first = 0);
+		bool RequestFileInfo(std::string_view filename);
+		bool RequestThumbnail(std::string_view filename, uint32_t offset);
 
 		// UART methods
 		void SetBaudRate(const unsigned int baudRateCode);
@@ -108,17 +117,17 @@ namespace Comm
 		const bool IsConnected() const { return m_connected; }
 		const bool IsSbcMode() const { return m_sbcMode; }
 
-		const std::string& GetBaseUrl() const;
+		const std::string_view GetBaseUrl() const;
 
-		void SetIPAddress(const std::string& ipAddress);
-		const std::string& GetIPAddress() const;
+		void SetIPAddress(std::string_view ipAddress);
+		const std::string_view GetIPAddress() const;
 		void ClearIPAddress();
 
-		void SetHostname(const std::string hostname);
-		const std::string& GetHostname() const;
+		void SetHostname(std::string_view hostname);
+		const std::string_view GetHostname() const;
 
-		void SetPassword(const std::string& password);
-		const std::string& GetPassword() const;
+		void SetPassword(std::string_view password);
+		const std::string_view GetPassword() const;
 
 		void SetSessionKey(const uint32_t sessionKey);
 
@@ -127,30 +136,29 @@ namespace Comm
 	  private:
 		Duet();
 
-		void PrepareRequest(HttpRequest& req, const std::string& subUrl, hv::QueryParams& queryParameters);
-		bool AsyncGet(const std::string& subUrl,
+		void PrepareRequest(HttpRequest& req, std::string_view subUrl, hv::QueryParams& queryParameters);
+		bool AsyncGet(std::string_view subUrl,
 					  hv::QueryParams& queryParameters,
 					  HttpResponseCallback callback,
 					  bool queue);
 		void AsyncGetInner(const HttpRequestPtr& req, HttpResponseCallback callback);
 		bool AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback);
-		bool Get(const std::string& subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
-		bool Post(const std::string& subUrl,
-				  HttpResponse& r,
-				  hv::QueryParams& queryParameters,
-				  const std::string& data);
+		bool Get(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
+		bool Post(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters, std::string_view data);
 		void saveConfig();
 
 		DuetConfig m_config;
-		long long m_lastRequestTime;
+		std::chrono::milliseconds m_lastRequestTime;
 		float m_pollIntervalScale;
+		uint32_t m_nextLineNumber = 0;
+		std::mutex m_sendLock;
 
 		// USB
 
 		// Network
 		hv::HttpClient m_cli; // for sendAsync() only!
 		uint32_t m_sessionKey;
-		int32_t m_sessionTimeout;
+		std::chrono::milliseconds m_sessionTimeout;
 		bool m_sbcMode;
 		bool m_connected = false;
 

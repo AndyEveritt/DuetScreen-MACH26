@@ -29,7 +29,7 @@ namespace utils
 	size_t removeCharFromString(std::string& nString, char c);
 	void replaceSubstring(std::string& nString, const std::string& target, const std::string& replacement);
 	std::vector<std::string> splitString(const std::string& str, const std::string& delimiter);
-	size_t findInstance(const std::string& str, const std::string& target, size_t instance);
+	size_t findInstance(std::string_view str, std::string_view target, size_t instance);
 } // namespace utils
 
 #endif /* JNI_LOGIC_UTILS_H_ */

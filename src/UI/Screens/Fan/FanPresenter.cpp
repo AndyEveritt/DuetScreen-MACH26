@@ -15,7 +15,7 @@ namespace UI
 			return;
 		}
 
-		Comm::DUET.SendGcodef("M106 P%u S%u", fan->index, (uint32_t)std::round(2.55 * value));
+		Comm::DUET.SendGcodef("M106 P{:d} S{:d}\n", fan->index, (uint32_t)std::round(2.55 * value));
 	}
 
 	void FanPresenter::newFanData()
@@ -31,7 +31,7 @@ namespace UI
 			});
 	}
 
-	void FanPresenter::disconnected()
+	void FanPresenter::onDisconnect()
 	{
 		m_view->setFanCount(0);
 	}

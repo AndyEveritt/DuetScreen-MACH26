@@ -27,24 +27,33 @@ namespace UI
 		}
 	}
 
-	const std::string& FilePresenter::getBaseFolderPath() const
+	std::string_view FilePresenter::getBaseFolderPath() const
 	{
+		std::string_view baseFolder;
 		switch (m_baseFolder)
 		{
 		case BaseFolder::GCODES:
-			return OM::Directories::GetGcodesDirectory();
+			baseFolder = OM::Directories::GetGcodesDirectory();
+			break;
 		case BaseFolder::MACROS:
-			return OM::Directories::GetMacrosDirectory();
+			baseFolder = OM::Directories::GetMacrosDirectory();
+			break;
 		default:
-			return s_emptyStr;
+			baseFolder = "";
 		}
+
+		if (baseFolder.back() == '/')
+		{
+			return baseFolder.substr(0, baseFolder.size() - 1);
+		}
+		return baseFolder;
 	}
 
-	void FilePresenter::setFolder(const std::string& folder)
+	void FilePresenter::setFolder(std::string_view folder)
 	{
-		if (folder.starts_with(getBaseFolderPath()))
+		if (!folder.empty() && folder.starts_with(getBaseFolderPath()))
 		{
-			m_currentFolder = folder.substr(getBaseFolderPath().length() + 1);
+			m_currentFolder = folder.substr(getBaseFolderPath().length());
 		}
 		else
 		{
@@ -56,7 +65,7 @@ namespace UI
 		}
 
 		LOG_DBG("set folder to {:s}", m_currentFolder);
-		m_view->setFolder(getBaseFolderPath() + m_currentFolder);
+		m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), m_currentFolder));
 		requestFiles();
 	}
 
@@ -94,10 +103,10 @@ namespace UI
 
 		Comm::FileInfoPtr fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
 		FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
-		m_view->confirmStartPrint(item->GetName().c_str(),
-								  item->GetDate().c_str(),
-								  item->GetReadableSize().c_str(),
-								  GetThumbnailPath(item->GetPath().c_str()).c_str());
+		std::string date = item->GetDate();
+		std::replace(date.begin(), date.end(), 'T', ' ');
+		m_view->confirmStartPrint(
+			item->GetName(), date, item->GetReadableSize(), GetThumbnailPath(item->GetPath().c_str()));
 	}
 
 	void FilePresenter::startPrint()
@@ -131,9 +140,11 @@ namespace UI
 			{
 				continue;
 			}
-			item->setLabel(file->GetName().c_str());
-			item->setDate(file->GetDate().c_str());
-			item->setSize(file->GetReadableSize().c_str());
+			item->setFileLabel(file->GetName().c_str());
+			std::string date = file->GetDate();
+			std::replace(date.begin(), date.end(), 'T', ' ');
+			item->setFileDate(date.c_str());
+			item->setFileSize(file->GetReadableSize().c_str());
 			item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
 
 			// Set thumbnail
@@ -162,7 +173,7 @@ namespace UI
 					MODEL_LOCK();
 					m_items = OM::FileSystem::GetItems();
 				}
-				this->m_view->setFolder(getBaseFolderPath() + this->m_currentFolder);
+				this->m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), this->m_currentFolder));
 				this->sortFiles();
 				this->displayFiles();
 			},
@@ -220,17 +231,6 @@ namespace UI
 		return false;
 	}
 
-	void FilePresenter::connected()
-	{
-		requestFiles();
-	}
-
-	void FilePresenter::disconnected()
-	{
-		m_items.clear();
-		m_view->setFileCount(0);
-	}
-
 	void FilePresenter::newThumbnailData(const std::string& filename)
 	{
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
@@ -262,5 +262,16 @@ namespace UI
 		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
 				StorageHelper::getData(ID_FILE_SORT_DESCENDING, true));
 		setFolder("");
+	}
+
+	void FilePresenter::onConnect()
+	{
+		requestFiles();
+	}
+
+	void FilePresenter::onDisconnect()
+	{
+		m_items.clear();
+		m_view->setFileCount(0);
 	}
 } // namespace UI

@@ -5,21 +5,19 @@
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/DropdownMenu.h"
 #include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/Input/Slider.h"
 #include "UI/Components/Input/TextBox.h"
-#include "UI/Components/Slider.h"
+#include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Core/View.h"
 
 namespace UI
 {
 	class SettingsView;
 
-	class SettingsSubView : public LvObj
+	class SettingsSubView : public Card
 	{
 	  public:
-		SettingsSubView(lv_create_t initFunc,
-						const std::string& name,
-						lv_obj_t* parent,
-						SettingsView& mainSettingsView);
+		SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView);
 
 		SettingsView& getMainSettingsView() const { return m_mainSettingsView; }
 		std::shared_ptr<SettingsPresenter> getMainSettingsPresenter() const;
@@ -34,7 +32,7 @@ namespace UI
 	  public:
 		DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
-		class UsbSettings : public LvObj
+		class UsbSettings : public LvContainer
 		{
 		  public:
 			UsbSettings(DuetSettingsView& parent);
@@ -42,7 +40,7 @@ namespace UI
 		  private:
 		};
 
-		class WifiSettings : public LvObj
+		class WifiSettings : public LvContainer
 		{
 		  public:
 			WifiSettings(DuetSettingsView& parent);
@@ -52,7 +50,7 @@ namespace UI
 			TextBox m_password;
 		};
 
-		class UartSettings : public LvObj
+		class UartSettings : public LvContainer
 		{
 		  public:
 			UartSettings(DuetSettingsView& parent);
@@ -74,10 +72,10 @@ namespace UI
 		Slider m_infoTimeout;
 	};
 
-	class DeviceSettingsView : public SettingsSubView
+	class ScreenSettingsView : public SettingsSubView
 	{
 	  public:
-		DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+		ScreenSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
 
 	  private:
 		void onShow() override;
@@ -85,12 +83,21 @@ namespace UI
 		lv_obj_t* m_firmwareVersion;
 		lv_obj_t* m_buildTime;
 		DropdownMenu m_language;
-		DropdownMenu m_theme;
 		DropdownMenu m_usbMode;
 		Slider m_brightness;
 		Slider m_screensaverTimeout;
 		lv_obj_t* m_systemLogging;
 		lv_obj_t* m_displayConnectedMessage;
+	};
+
+	class ThemeSettingsView : public SettingsSubView
+	{
+	  public:
+		ThemeSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+
+	  private:
+		DropdownMenu m_theme;
+		ThemePreview m_themePreview;
 	};
 
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>
@@ -172,7 +179,8 @@ namespace UI
 	{
 		friend class SettingsSubView;
 		friend class DuetSettingsView;
-		friend class DeviceSettingsView;
+		friend class ScreenSettingsView;
+		friend class ThemeSettingsView;
 
 	  public:
 		SettingsView(lv_obj_t* parent);
@@ -203,15 +211,18 @@ namespace UI
 		lv_obj_t* m_subWindow;
 		lv_obj_t* m_keyboard;
 
+		lv_obj_t* m_screenHeader;
+		lv_obj_t* m_screenSettings;
+		lv_obj_t* m_themeSettings;
 		lv_obj_t* m_connectivityHeader;
 		lv_obj_t* m_duetSettings;
-		lv_obj_t* m_deviceSettings;
 		lv_obj_t* m_networkSettings;
 		lv_obj_t* m_devHeader;
 		lv_obj_t* m_developerSettings;
 
 		DuetSettingsView m_duetSettingsView;
-		DeviceSettingsView m_deviceSettingsView;
+		ScreenSettingsView m_deviceSettingsView;
+		ThemeSettingsView m_themeSettingsView;
 		NetworkSettingsView m_networkSettingsView;
 		DeveloperSettingsView m_developerSettingsView;
 

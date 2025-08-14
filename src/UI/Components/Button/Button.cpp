@@ -5,53 +5,48 @@ namespace UI
 {
 	Button::Button(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_button_create, name, parent)
-		, m_label(name + "_label", getRoot())
+		, m_label("label", getRoot())
 		, m_icon(nullptr)
 	{
 		init("");
 	}
 
-	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text)
+	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text)
 		: LvObj(lv_button_create, name, parent)
-		, m_label(name + "_label", getRoot())
+		, m_label("label", getRoot())
 		, m_icon(nullptr)
 	{
 		init(text);
 	}
 
-	Button::Button(const std::string& name, lv_obj_t* parent, const std::string& text, layout_t layout)
+	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text, layout_t layout)
 		: LvObj(lv_button_create, name, parent, layout)
-		, m_label(name + "_label", getRoot())
+		, m_label("label", getRoot())
 		, m_icon(nullptr)
 	{
 		init(text);
 	}
 
-	void Button::init(const std::string& text)
+	void Button::init(std::string_view text)
 	{
 		UI_LOCK();
 		setUserData(this);
-		lv_obj_set_user_data(getRoot(), this);
-		lv_obj_set_user_data(m_label, this);
+		m_label.setUserData(this);
 
 		setMinHeight(30);
 		setMinWidth(50);
 
 		// Initialise the label obj
 		m_label.setText(text);
-		m_label.setPos(0, 0);
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_set_style_align(m_label, LV_ALIGN_CENTER, 0);
-		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
-		// lv_obj_update_layout(getCont());
+		m_label.setAlign(LV_ALIGN_CENTER, 0, 0);
+		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 	}
 
-	void Button::setText(const std::string& text)
+	void Button::setText(std::string_view text)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_label, text.c_str());
-		lv_obj_set_size(m_label, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		lv_obj_center(m_label);
+		m_label.setText(text);
 		if (m_icon != nullptr)
 		{
 			lv_obj_set_y(m_icon, LV_PCT(-20));
@@ -114,7 +109,6 @@ namespace UI
 
 	void Button::setDisabled(bool disabled)
 	{
-		UI_LOCK();
 		setState(LV_STATE_DISABLED, disabled);
 	}
 } // namespace UI

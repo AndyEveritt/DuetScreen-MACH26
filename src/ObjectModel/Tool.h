@@ -22,12 +22,13 @@
 
 namespace OM
 {
-	// Status that a tool may report to us.
+	// Status that a tool may report to us. Must be in alphabetical order.
 	enum class ToolStatus
 	{
-		off = 0,
-		active = 1,
-		standby = 2,
+		active = 0,
+		off,
+		standby,
+		unknown,
 	};
 
 	struct ToolStatusMapEntry
@@ -41,6 +42,7 @@ namespace OM
 		{"active", ToolStatus::active},
 		{"off", ToolStatus::off},
 		{"standby", ToolStatus::standby},
+		{"unknown", ToolStatus::unknown},
 	};
 
 	struct ToolHeater
@@ -51,10 +53,12 @@ namespace OM
 		uint8_t index;
 		int32_t activeTemp;
 		int32_t standbyTemp;
-		std::shared_ptr<Heat::Heater> heater;
+		Heat::HeaterPtr heater;
 
 		void Reset();
 	};
+
+	using ToolHeaterPtr = std::shared_ptr<ToolHeater>;
 
 	struct Tool
 	{
@@ -64,25 +68,26 @@ namespace OM
 		// tool number
 		uint8_t index;
 		String<MAX_TOOL_NAME_LENGTH> name;
-		std::shared_ptr<ToolHeater> heaters[MAX_HEATERS_PER_TOOL];
-		std::shared_ptr<Move::ExtruderAxis> extruders[MAX_EXTRUDERS_PER_TOOL];
+		ToolHeaterPtr heaters[MAX_HEATERS_PER_TOOL];
+		Move::ExtruderAxisPtr extruders[MAX_EXTRUDERS_PER_TOOL];
 		float mix[MAX_EXTRUDERS_PER_TOOL];
-		std::shared_ptr<Fan> fans[MAX_FANS];
-		std::shared_ptr<Spindle> spindle;
+		FanPtr fans[MAX_FANS];
+		SpindlePtr spindle;
 		int32_t spindleRpm;
 		float offsets[MAX_TOTAL_AXES];
 		ToolStatus status;
 		int8_t filamentExtruder;
 
-		std::shared_ptr<ToolHeater> GetHeater(const uint8_t toolHeaterIndex);
-		std::shared_ptr<ToolHeater> GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
+		std::string GetName() const;
 
-		std::shared_ptr<Move::ExtruderAxis> GetExtruder(const uint8_t toolExtruderIndex) const;
-		std::shared_ptr<Move::ExtruderAxis> GetOrCreateExtruder(const uint8_t toolExtruderIndex,
-																const uint8_t extruderIndex);
+		ToolHeaterPtr GetHeater(const uint8_t toolHeaterIndex);
+		ToolHeaterPtr GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
 
-		std::shared_ptr<Fan> GetFan(const uint8_t toolFanIndex);
-		std::shared_ptr<Fan> GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex);
+		Move::ExtruderAxisPtr GetExtruder(const uint8_t toolExtruderIndex) const;
+		Move::ExtruderAxisPtr GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex);
+
+		FanPtr GetFan(const uint8_t toolFanIndex);
+		FanPtr GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex);
 
 		StringRef GetFilament() const;
 
@@ -91,14 +96,14 @@ namespace OM
 		bool SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active);
 		uint8_t GetHeaterCount() const;
 		int8_t HasHeater(const uint8_t heaterIndex) const;
-		void IterateHeaters(function_ref<void(std::shared_ptr<ToolHeater>, size_t)> func, const size_t startAt = 0);
-		void IterateExtruders(function_ref<void(std::shared_ptr<Move::ExtruderAxis>, size_t)> func,
-							  const size_t startAt = 0);
-		void IterateFans(function_ref<void(std::shared_ptr<Fan>, size_t)> func, const size_t startAt = 0);
+		void IterateHeaters(function_ref<void(ToolHeaterPtr, size_t)> func, const size_t startAt = 0);
+		void IterateExtruders(function_ref<void(Move::ExtruderAxisPtr, size_t)> func, const size_t startAt = 0);
+		void IterateFans(function_ref<void(FanPtr, size_t)> func, const size_t startAt = 0);
 		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
 		size_t RemoveExtrudersFrom(const uint8_t toolExtruderIndex);
 		size_t RemoveFansFrom(const uint8_t toolFanIndex);
 		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
+		const char* GetStatusStr() const;
 		void ToggleState();
 		void ToggleHeaterState(const uint8_t toolHeaterIndex);
 		void ToggleSpindleState();
@@ -111,11 +116,13 @@ namespace OM
 		void Reset();
 	};
 
-	std::shared_ptr<Tool> GetTool(const size_t index);
-	std::shared_ptr<Tool> GetOrCreateTool(const size_t index);
-	std::shared_ptr<Tool> GetToolBySlot(const size_t slot);
+	using ToolPtr = std::shared_ptr<Tool>;
+
+	ToolPtr GetTool(const size_t index);
+	ToolPtr GetOrCreateTool(const size_t index);
+	ToolPtr GetToolBySlot(const size_t slot);
 	const size_t GetToolCount();
-	bool IterateToolsWhile(function_ref<bool(std::shared_ptr<Tool>, size_t)> func, const size_t startAt = 0);
+	bool IterateToolsWhile(function_ref<bool(ToolPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveTool(const size_t index, const bool allFollowing);
 
 	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex);
@@ -138,5 +145,5 @@ namespace OM
 	bool UpdateToolSpindleRpm(const size_t toolIndex, const int32_t rpm);
 
 	void SetCurrentTool(const int32_t toolIndex);
-	std::shared_ptr<Tool> GetCurrentTool();
+	ToolPtr GetCurrentTool();
 } // namespace OM

@@ -1,4 +1,5 @@
 #include "SettingsView.h"
+#include "BuildDate.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
@@ -12,23 +13,29 @@
 namespace UI
 {
 	SettingsView::SettingsView(lv_obj_t* parent)
-		: View(lv_obj_create, "settings_view", parent, layout_t(0, 0, 100, 100))
+		: View("settings_view", parent, layout_t(0, 0, 100, 100))
 		, m_settingsList(lv_list_create(getRoot()))
 		, m_subWindow(lv_obj_create(getRoot()))
 		, m_keyboard(lv_keyboard_create(getRoot()))
+		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings_screen_header")))
+		, m_screenSettings(lv_list_add_button(m_settingsList, NULL, _("settings_screen")))
+		, m_themeSettings(lv_list_add_button(m_settingsList, NULL, _("settings_theme")))
 		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header")))
 		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet")))
-		, m_deviceSettings(lv_list_add_button(m_settingsList, NULL, _("settings_device")))
 		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network")))
 		, m_devHeader(lv_list_add_text(m_settingsList, _("settings_dev_header")))
 		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer")))
 		, m_duetSettingsView(m_subWindow, *this)
 		, m_deviceSettingsView(m_subWindow, *this)
+		, m_themeSettingsView(m_subWindow, *this)
 		, m_networkSettingsView(m_subWindow, *this)
 		, m_developerSettingsView(m_subWindow, *this)
-		, m_currentSubView(&m_duetSettingsView)
+		, m_currentSubView(&m_deviceSettingsView)
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
+
 		// Layout
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
@@ -38,12 +45,14 @@ namespace UI
 
 		// List
 		lv_obj_set_user_data(m_duetSettings, &m_duetSettingsView);
-		lv_obj_set_user_data(m_deviceSettings, &m_deviceSettingsView);
+		lv_obj_set_user_data(m_screenSettings, &m_deviceSettingsView);
+		lv_obj_set_user_data(m_themeSettings, &m_themeSettingsView);
 		lv_obj_set_user_data(m_networkSettings, &m_networkSettingsView);
 		lv_obj_set_user_data(m_developerSettings, &m_developerSettingsView);
 
 		lv_obj_add_event_cb(m_duetSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
-		lv_obj_add_event_cb(m_deviceSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_screenSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
+		lv_obj_add_event_cb(m_themeSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_networkSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_developerSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 
@@ -69,7 +78,7 @@ namespace UI
 		}
 
 		view->showKeyboard(false);
-		subView->show();
+		subView->show(true);
 		view->m_currentSubView = subView;
 	}
 
@@ -117,14 +126,11 @@ namespace UI
 	void SettingsView::onShow()
 	{
 		showKeyboard(false);
-		m_currentSubView->show();
+		m_currentSubView->show(true);
 	}
 
-	SettingsSubView::SettingsSubView(lv_create_t initFunc,
-									 const std::string& name,
-									 lv_obj_t* parent,
-									 SettingsView& mainSettingsView)
-		: LvObj(initFunc, name, parent, layout_t(0, 0, 100, 100))
+	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView)
+		: Card(name, parent, layout_t(0, 0, 100, 100))
 		, m_mainSettingsView(mainSettingsView)
 	{
 		UI_LOCK();
@@ -159,13 +165,13 @@ namespace UI
 	}
 
 	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: SettingsSubView(lv_obj_create, "duet_settings_view", parent, mainSettingsView)
+		: SettingsSubView("duet_settings_view", parent, mainSettingsView)
 		, m_connectionMethod("duet_settings_connection_method", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_usbSettings(*this)
 		, m_wifiSettings(*this)
 		, m_uartSettings(*this)
-		, m_pollInterval("duet_settings_poll_interval", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_infoTimeout("duet_settings_info_timeout", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_pollInterval("duet_settings_poll_interval", getRoot())
+		, m_infoTimeout("duet_settings_info_timeout", getRoot())
 	{
 		UI_LOCK();
 
@@ -173,7 +179,7 @@ namespace UI
 		std::vector<std::string> options;
 		for (const auto& method : Comm::duetCommunicationTypeNames)
 		{
-			options.push_back(_(method));
+			options.push_back(_(method.data()));
 		}
 		m_connectionMethod.setLabel(_("settings_duet_connection_method"));
 		m_connectionMethod.setOptions(options);
@@ -181,17 +187,20 @@ namespace UI
 		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType());
 
 		// Poll Interval
+		m_pollInterval.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_pollInterval.setLabel(_("settings_duet_poll_interval"));
 		m_pollInterval.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL, 2000);
-		m_pollInterval.setValue(Comm::DUET.GetPollInterval());
-		m_pollInterval.setValueChangedCallback([](int32_t value) { Comm::DUET.SetPollInterval((uint32_t)value); });
+		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL.count(), 2000);
+		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
+		m_pollInterval.setValueChangedCallback([](int32_t value)
+											   { Comm::DUET.SetPollInterval(std::chrono::milliseconds(value)); });
 		m_pollInterval.setKeyboard(getMainSettingsView().getKeyboard());
 		m_pollInterval.setFocusedCallback(
 			[this](bool focused)
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_pollInterval.getInput()); });
 
 		// Info Timeout
+		m_infoTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_infoTimeout.setLabel(_("settings_duet_info_timeout"));
 		m_infoTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_infoTimeout.setRange(0, 5000);
@@ -205,13 +214,13 @@ namespace UI
 	}
 
 	DuetSettingsView::UsbSettings::UsbSettings(DuetSettingsView& parent)
-		: LvObj(lv_obj_create, "duet_settings_usb", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		: LvContainer("duet_settings_usb", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 	}
 
 	DuetSettingsView::WifiSettings::WifiSettings(DuetSettingsView& parent)
-		: LvObj(lv_obj_create, "duet_settings_wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		: LvContainer("duet_settings_wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_hostname("duet_settings_hostname", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_password("duet_settings_password", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
@@ -251,7 +260,7 @@ namespace UI
 	}
 
 	DuetSettingsView::UartSettings::UartSettings(DuetSettingsView& parent)
-		: LvObj(lv_obj_create, "duet_settings_uart", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		: LvContainer("duet_settings_uart", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 	}
@@ -260,7 +269,21 @@ namespace UI
 	{
 		UI_LOCK();
 		DuetSettingsView* view = (DuetSettingsView*)lv_event_get_user_data(e);
-		Comm::DUET.SetCommunicationType((Comm::CommunicationType)(view->m_connectionMethod.getSelected()));
+		auto comm_type = (Comm::CommunicationType)(view->m_connectionMethod.getSelected());
+		Comm::DUET.SetCommunicationType(comm_type);
+		switch (comm_type)
+		{
+		case Comm::CommunicationType::uart:
+		case Comm::CommunicationType::usb:
+			view->getMainSettingsPresenter()->setUsbMode(UsbMode::Host);
+			break;
+		case Comm::CommunicationType::network:
+			view->getMainSettingsPresenter()->setUsbMode(UsbMode::InternalWiFi);
+			break;
+		default:
+			break;
+		}
+
 		view->showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
 	}
 
@@ -271,66 +294,34 @@ namespace UI
 		m_usbSettings.setVisible(method == Comm::CommunicationType::usb);
 		m_wifiSettings.setVisible(method == Comm::CommunicationType::network);
 		m_uartSettings.setVisible(method == Comm::CommunicationType::uart);
-		lv_obj_move_foreground(m_usbSettings);
-		lv_obj_move_foreground(m_wifiSettings);
-		lv_obj_move_foreground(m_uartSettings);
-		lv_obj_move_to_index(m_usbSettings, 1);
-		lv_obj_move_to_index(m_wifiSettings, 1);
-		lv_obj_move_to_index(m_uartSettings, 1);
 	}
 
 	void DuetSettingsView::onShow()
 	{
 		UI_LOCK();
-		m_pollInterval.setValue(Comm::DUET.GetPollInterval());
+		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
 		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 		showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
 	}
 
-	DeviceSettingsView::DeviceSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: SettingsSubView(lv_obj_create, "device_settings_view", parent, mainSettingsView)
+	ScreenSettingsView::ScreenSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+		: SettingsSubView("screen", parent, mainSettingsView)
 		, m_firmwareVersion(lv_label_create(getRoot()))
 		, m_buildTime(lv_label_create(getRoot()))
-		, m_language("device_settings_language", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_theme("device_settings_theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_usbMode("device_settings_usb_mode", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_brightness("settings_brightness", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_screensaverTimeout("settings_screensaver_timeout", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_language("language", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_usbMode("usb_mode", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_brightness("brightness", getRoot())
+		, m_screensaverTimeout("screensaver_timeout", getRoot())
 		, m_systemLogging(lv_checkbox_create(getRoot()))
 		, m_displayConnectedMessage(lv_checkbox_create(getRoot()))
 	{
 		UI_LOCK();
 
 		lv_label_set_text(m_firmwareVersion, utils::format(_("settings_firmware_version"), FIRMWARE_VERSION).c_str());
-		lv_label_set_text(m_buildTime, utils::format(_("settings_build_time"), __DATE__, __TIME__).c_str());
+		lv_label_set_text(m_buildTime, utils::format(_("settings_build_time"), BuildDateText, BuildTimeSuffix).c_str());
 
 		m_language.setLabel(_("settings_language"));
 		m_language.setOptions(_("settings_language_en"));
-
-		m_theme.setLabel(_("settings_theme"));
-		for (auto& theme : Themes::getThemes())
-		{
-			m_theme.addOption(_(theme->getName().c_str()));
-		}
-		m_theme.addEventCallback(
-			[](lv_event_t* e)
-			{
-				UI_LOCK();
-				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
-				DeviceSettingsView* view = (DeviceSettingsView*)lv_event_get_user_data(e);
-				int32_t selected = view->m_theme.getSelected();
-				auto theme = Themes::getTheme(selected);
-				if (theme == nullptr)
-				{
-					return;
-				}
-				theme->setThemeActive();
-				StorageHelper::setData(ID_THEME, selected);
-				// view->getMainSettingsPresenter()->setTheme(selected);
-			},
-			LV_EVENT_VALUE_CHANGED,
-			this);
-		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
 
 		m_usbMode.setLabel(_("settings_usb_mode"));
 		m_usbMode.setOptions(
@@ -340,7 +331,7 @@ namespace UI
 			{
 				UI_LOCK();
 				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
-				DeviceSettingsView* view = (DeviceSettingsView*)lv_event_get_user_data(e);
+				ScreenSettingsView* view = (ScreenSettingsView*)lv_event_get_user_data(e);
 				int32_t selected = view->m_usbMode.getSelected();
 				view->getMainSettingsPresenter()->setUsbMode((UsbMode(selected)));
 			},
@@ -349,6 +340,7 @@ namespace UI
 		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 
 		// Brightness
+		m_brightness.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_brightness.setRange(0, 100);
 		m_brightness.setLabel(_("settings_brightness"));
 		m_brightness.setValue(DisplayHelper::getBrightness());
@@ -360,6 +352,7 @@ namespace UI
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_brightness.getInput()); });
 
 		// Screensaver Timeout
+		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_screensaverTimeout.setLabel(_("settings_screensaver_timeout"));
 		m_screensaverTimeout.setRange(0, 30 * 60); // seconds
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
@@ -403,15 +396,51 @@ namespace UI
 			this);
 	}
 
-	void DeviceSettingsView::onShow()
+	void ScreenSettingsView::onShow()
 	{
 		UI_LOCK();
+		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
 	}
 
+	ThemeSettingsView::ThemeSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+		: SettingsSubView("screen", parent, mainSettingsView)
+		, m_theme("theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		, m_themePreview("theme_demo", getRoot())
+	{
+		UI_LOCK();
+
+		m_theme.setLabel(_("settings_theme"));
+		for (auto& theme : Themes::getThemes())
+		{
+			m_theme.addOption(_(theme->getName().c_str()));
+		}
+		m_theme.addEventCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
+				auto view = (ThemeSettingsView*)lv_event_get_user_data(e);
+				int32_t selected = view->m_theme.getSelected();
+				auto theme = Themes::getTheme(selected);
+				if (theme == nullptr)
+				{
+					return;
+				}
+				theme->setThemeActive();
+				view->m_themePreview.updateSwatches();
+				StorageHelper::setData(ID_THEME, selected);
+				// view->getMainSettingsPresenter()->setTheme(selected);
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
+		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
+		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+	}
+
 	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: View(lv_obj_create, "network_settings_view", parent, mainSettingsView)
+		: View("network_settings_view", parent, mainSettingsView)
 		, m_topBar(lv_obj_create(getRoot()))
 		, m_ipAddress(lv_label_create(m_topBar))
 		, m_enable(lv_checkbox_create(m_topBar))
@@ -600,7 +629,7 @@ namespace UI
 	}
 
 	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
-		: SettingsSubView(lv_obj_create, "developer_settings_view", parent, mainSettingsView)
+		: SettingsSubView("developer_settings_view", parent, mainSettingsView)
 		, m_debugLevelCont(lv_obj_create(getRoot()))
 		, m_debugLevelLabel(lv_label_create(m_debugLevelCont))
 		, m_debugLevel(lv_dropdown_create(m_debugLevelCont))

@@ -19,12 +19,13 @@ namespace UI
 		setCursorClickPos(true);
 	}
 
-	void LvTextArea::setText(const std::string& text)
+	void LvTextArea::setText(std::string_view text)
 	{
 		UI_LOCK();
-		lv_textarea_set_text(getTextArea(), text.c_str());
+		lv_textarea_set_text(getTextArea(), text.data());
 	}
-	std::string LvTextArea::getText() const
+
+	std::string_view LvTextArea::getText() const
 	{
 		UI_LOCK();
 		return lv_textarea_get_text(getTextArea());

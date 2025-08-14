@@ -14,6 +14,7 @@
 #include "Hardware/Usb.h"
 #include "ObjectModel/Job.h"
 #include <algorithm>
+#include <fstream>
 
 namespace OM::FileSystem
 {
@@ -21,17 +22,25 @@ namespace OM::FileSystem
 	static std::vector<ItemPtr> s_items;
 	static struct
 	{
-		std::function<void()> cb;
+		request_files_cb_t cb;
 		bool runEveryTime;
 	} s_callback;
 	static bool s_inMacroFolder = false;
 	static bool s_usbFolder = false;
 
+	static FileContentsPtr s_fileContents;
+
 	std::string FileSystemItem::GetPath() const
 	{
-		if (s_currentDirPath.empty())
+		if (m_path.empty())
 			return m_name;
-		return s_currentDirPath + "/" + m_name;
+
+		std::string path = m_path;
+		if (path.back() != '/')
+		{
+			path += '/';
+		}
+		return path + m_name;
 	}
 
 	std::string FileSystemItem::GetReadableSize() const
@@ -69,6 +78,103 @@ namespace OM::FileSystem
 	FileSystemItem::~FileSystemItem()
 	{
 		LOG_DBG("Files: destructing item {:s}", GetPath().c_str());
+	}
+
+	static std::string GetLocalFilePath(std::string_view filename)
+	{
+		filename = filename.substr(filename.find_last_of('/') + 1); // Get the file name only
+		return fmt::format("/tmp/files/{}", filename);
+	}
+
+	FileContents::FileContents(std::string_view filename, request_file_contents_cb_t callback, bool runEveryTime)
+		: m_filename(filename)
+		, m_callback(callback)
+		, m_runEveryTime(runEveryTime)
+	{
+		ClearData();
+	}
+
+	int FileContents::AppendData(std::string_view data)
+	{
+		if (data.empty())
+		{
+			return 0;
+		}
+
+		const std::string fullPath = GetLocalFilePath(m_filename);
+		std::ofstream file(fullPath, std::ios::app | std::ios::binary);
+		if (!file.is_open())
+		{
+			LOG_ERROR("Failed to open file {} for appending data", fullPath);
+			return -1;
+		}
+
+		if (!file.write(data.data(), data.size()))
+		{
+			LOG_ERROR("Failed to write data to file {}", fullPath);
+			return -2;
+		}
+
+		return 0;
+	}
+
+	int FileContents::GetData(std::string& outData) const
+	{
+		const std::string fullPath = GetLocalFilePath(m_filename);
+		std::ifstream file(fullPath, std::ios::binary);
+		if (!file.is_open())
+		{
+			LOG_ERROR("Failed to open file {} for reading", fullPath);
+			return -1;
+		}
+
+		outData.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		if (outData.empty() && !file.eof())
+		{
+			LOG_ERROR("Failed to read data from file {}", fullPath);
+			return -2;
+		}
+		return 0;
+	}
+
+	int FileContents::ClearData()
+	{
+		const std::string fullPath = GetLocalFilePath(m_filename);
+		std::ofstream file(fullPath, std::ios::trunc | std::ios::binary);
+		if (!file.is_open())
+		{
+			LOG_ERROR("Failed to open file {} for clearing data", fullPath);
+			return -1;
+		}
+		return 0;
+	}
+
+	void FileContents::RunCallback()
+	{
+		if (m_parseErr != 0)
+		{
+			LOG_ERROR("File {} has parse error: {}", m_filename, m_parseErr);
+			return;
+		}
+
+		if (m_next != 0 && !m_runEveryTime)
+		{
+			LOG_DBG("File {} has next offset: {}, not running callback", m_filename, m_next);
+			return;
+		}
+
+		if (m_callback)
+		{
+			std::string contents;
+			if (GetData(contents) == 0)
+			{
+				m_callback(contents);
+			}
+			else
+			{
+				LOG_ERROR("Failed to get data for callback from file {}", m_filename);
+			}
+		}
 	}
 
 	FilePtr AddFileAt(const size_t index)
@@ -168,6 +274,8 @@ namespace OM::FileSystem
 				while (temp != first)
 				{
 					auto prev = std::prev(temp);
+					if (*prev == nullptr)
+						return;
 					if (sortFunc(*temp, *prev))
 					{
 						std::iter_swap(temp, prev);
@@ -263,7 +371,7 @@ namespace OM::FileSystem
 
 	void RequestFiles(OM::Directories::DirectoryType baseFolder,
 					  const std::string& path,
-					  std::function<void()> callback,
+					  request_files_cb_t callback,
 					  bool runEveryTime)
 	{
 		s_usbFolder = false;
@@ -271,7 +379,7 @@ namespace OM::FileSystem
 		s_callback.cb = callback;
 		s_callback.runEveryTime = runEveryTime;
 		LOG_INFO("Files: requesting files in {:s}", path.c_str());
-		Comm::DUET.RequestFileList(OM::Directories::GetDirectory(baseFolder) + path);
+		Comm::DUET.RequestFileList(fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path));
 	}
 
 	void RunCallback(const size_t next)
@@ -337,7 +445,7 @@ namespace OM::FileSystem
 
 	void RunMacro(const std::string& path)
 	{
-		Comm::DUET.SendGcodef("M98 P\"%s\"\n", path.c_str());
+		Comm::DUET.SendGcodef("M98 P\"{:s}\"\n", path);
 	}
 
 	void UploadFile(const File* file)
@@ -353,7 +461,7 @@ namespace OM::FileSystem
 
 	void StartPrint(const std::string& path)
 	{
-		Comm::DUET.SendGcodef("M32 \"%s\"\n", path.c_str());
+		Comm::DUET.SendGcodef("M32 \"{:s}\"\n", path);
 	}
 
 	void ResumePrint()
@@ -373,7 +481,7 @@ namespace OM::FileSystem
 
 	void PrintAgain()
 	{
-		Comm::DUET.SendGcodef("M23 \"%s\"\nM24", OM::GetLastJobName().c_str());
+		Comm::DUET.SendGcodef("M23 \"{:s}\"\nM24\n", OM::GetLastJobName());
 	}
 
 	void ClearFileSystem()
@@ -382,7 +490,36 @@ namespace OM::FileSystem
 		s_items.clear();
 	}
 
-	std::string GetFileExtension(const std::string& filename)
+	void RequestFileContents(const OM::Directories::DirectoryType baseFolder,
+							 std::string_view path,
+							 request_file_contents_cb_t callback,
+							 bool runEveryTime)
+	{
+		LOG_INFO("Requesting file contents of {}", path);
+		std::string fullPath = fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path);
+		if (Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
+		{
+			std::string contents;
+			if (!Comm::DUET.DownloadFile(fullPath, contents))
+			{
+				LOG_ERROR("Failed to download file contents of {}", fullPath);
+				return;
+			}
+			callback(contents);
+		}
+		else
+		{
+			s_fileContents = std::make_shared<FileContents>(fullPath, callback, runEveryTime);
+			Comm::DUET.SendGcodef("M36.2 P\"{:s}\" S0\n", fullPath);
+		}
+	}
+
+	FileContentsPtr GetCurrentFileRequestContents()
+	{
+		return s_fileContents;
+	}
+
+	std::string_view GetFileExtension(std::string_view filename)
 	{
 		size_t dot = filename.find_last_of('.');
 		if (dot != std::string::npos)

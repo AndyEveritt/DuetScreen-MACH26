@@ -12,12 +12,13 @@
 #include "ListHelpers.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Utils.h"
+#include "lv_i18n/lv_i18n.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.h>
 
 #include "Debug.h"
 
-typedef Vector<std::shared_ptr<OM::Tool>, MAX_SLOTS> ToolList;
+typedef Vector<OM::ToolPtr, MAX_SLOTS> ToolList;
 static ToolList s_tools;
 
 namespace OM
@@ -37,7 +38,16 @@ namespace OM
 		FreelistManager::Release<Tool>(p);
 	}
 
-	std::shared_ptr<ToolHeater> Tool::GetHeater(const uint8_t toolHeaterIndex)
+	std::string Tool::GetName() const
+	{
+		if (name.IsEmpty())
+		{
+			return fmt::format(fmt::runtime(_("default_tool_name")), index);
+		}
+		return name.c_str();
+	}
+
+	ToolHeaterPtr Tool::GetHeater(const uint8_t toolHeaterIndex)
 	{
 		if (toolHeaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
@@ -46,7 +56,7 @@ namespace OM
 		return heaters[toolHeaterIndex];
 	}
 
-	std::shared_ptr<ToolHeater> Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
+	ToolHeaterPtr Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
 	{
 		auto th = GetHeater(toolHeaterIndex);
 		if (th != nullptr && th->heater->index == heaterIndex)
@@ -66,7 +76,7 @@ namespace OM
 		return th;
 	}
 
-	std::shared_ptr<Move::ExtruderAxis> Tool::GetExtruder(const uint8_t toolExtruderIndex) const
+	Move::ExtruderAxisPtr Tool::GetExtruder(const uint8_t toolExtruderIndex) const
 	{
 		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL || toolExtruderIndex < 0)
 		{
@@ -75,8 +85,7 @@ namespace OM
 		return extruders[toolExtruderIndex];
 	}
 
-	std::shared_ptr<Move::ExtruderAxis> Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex,
-																  const uint8_t extruderIndex)
+	Move::ExtruderAxisPtr Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex)
 	{
 		auto extruder = GetExtruder(toolExtruderIndex);
 		if (extruder != nullptr && extruder->index == extruderIndex)
@@ -89,7 +98,7 @@ namespace OM
 		return extruder;
 	}
 
-	std::shared_ptr<Fan> Tool::GetFan(const uint8_t toolFanIndex)
+	FanPtr Tool::GetFan(const uint8_t toolFanIndex)
 	{
 		if (toolFanIndex >= MAX_FANS)
 		{
@@ -98,7 +107,7 @@ namespace OM
 		return fans[toolFanIndex];
 	}
 
-	std::shared_ptr<Fan> Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
+	FanPtr Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
 	{
 		auto fan = GetFan(toolFanIndex);
 		if (fan != nullptr && fan->index == fanIndex)
@@ -166,7 +175,7 @@ namespace OM
 		if (command.IsEmpty())
 			return false;
 
-		Comm::DUET.SendGcodef("M568 P%d %s%s", index, active ? "S" : "R", command.c_str());
+		Comm::DUET.SendGcodef("M568 P{:d} {:c}{:s}\n", index, active ? 'S' : 'R', command.c_str());
 
 		return true;
 	}
@@ -192,7 +201,7 @@ namespace OM
 		return -1;
 	}
 
-	void Tool::IterateHeaters(function_ref<void(std::shared_ptr<ToolHeater>, size_t)> func, const size_t startAt)
+	void Tool::IterateHeaters(function_ref<void(ToolHeaterPtr, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
@@ -200,8 +209,7 @@ namespace OM
 		}
 	}
 
-	void Tool::IterateExtruders(function_ref<void(std::shared_ptr<Move::ExtruderAxis>, size_t)> func,
-								const size_t startAt)
+	void Tool::IterateExtruders(function_ref<void(Move::ExtruderAxisPtr, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_EXTRUDERS_PER_TOOL && extruders[i] != nullptr; ++i)
 		{
@@ -209,7 +217,7 @@ namespace OM
 		}
 	}
 
-	void Tool::IterateFans(function_ref<void(std::shared_ptr<Fan>, size_t)> func, const size_t startAt)
+	void Tool::IterateFans(function_ref<void(FanPtr, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MAX_FANS && fans[i] != nullptr; ++i)
 		{
@@ -279,16 +287,28 @@ namespace OM
 		}
 	}
 
+	const char* Tool::GetStatusStr() const
+	{
+		const ToolStatusMapEntry key = {"unknown", status};
+		const ToolStatusMapEntry* statusFromMap = (ToolStatusMapEntry*)bsearch(&key,
+																			   toolStatusMap,
+																			   ARRAY_SIZE(toolStatusMap),
+																			   sizeof(ToolStatusMapEntry),
+																			   compareValue<ToolStatusMapEntry>);
+
+		return (statusFromMap != nullptr) ? statusFromMap->key : "unknown";
+	}
+
 	void Tool::ToggleState()
 	{
 		switch (status)
 		{
 		case ToolStatus::active:
-			Comm::DUET.SendGcode("T-1");
+			Comm::DUET.SendGcode("T-1\n");
 			break;
 		case ToolStatus::standby:
 		case ToolStatus::off:
-			Comm::DUET.SendGcodef("T%d", index);
+			Comm::DUET.SendGcodef("T{:d}\n", index);
 			break;
 		}
 	}
@@ -303,16 +323,16 @@ namespace OM
 		switch (toolHeater->heater->status)
 		{
 		case Heat::HeaterStatus::active:
-			Comm::DUET.SendGcodef("M568 P%d A1", index);
+			Comm::DUET.SendGcodef("M568 P{:d} A1\n", index);
 			break;
 		case Heat::HeaterStatus::fault:
-			Comm::DUET.SendGcodef("M562 P%d", toolHeater->heater->index);
+			Comm::DUET.SendGcodef("M562 P{:d}\n", toolHeater->heater->index);
 			break;
 		case Heat::HeaterStatus::off:
-			Comm::DUET.SendGcodef("M568 P%d A2", index);
+			Comm::DUET.SendGcodef("M568 P{:d} A2\n", index);
 			break;
 		case Heat::HeaterStatus::standby:
-			Comm::DUET.SendGcodef("M568 P%d A0", index);
+			Comm::DUET.SendGcodef("M568 P{:d} A0\n", index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
@@ -330,10 +350,10 @@ namespace OM
 		{
 		case SpindleState::forward:
 		case SpindleState::reverse:
-			Comm::DUET.SendGcodef("M5");
+			Comm::DUET.SendGcode("M5\n");
 			break;
 		case SpindleState::stopped:
-			Comm::DUET.SendGcodef("M3");
+			Comm::DUET.SendGcode("M3\n");
 			break;
 		}
 	}
@@ -344,7 +364,7 @@ namespace OM
 		{
 			return;
 		}
-		Comm::DUET.SendGcodef("M568 P%d F%d", index, rpm);
+		Comm::DUET.SendGcodef("M568 P{:d} F{:d}\n", index, rpm);
 	}
 
 	void Tool::ChangeFilament(const char* filament)
@@ -400,7 +420,7 @@ namespace OM
 			return;
 		}
 
-		Comm::DUET.SendGcodef("T%d M701 S\"%s\"\n", index, filament);
+		Comm::DUET.SendGcodef("T{:d} M701 S\"{:s}\"\n", index, filament);
 	}
 
 	void Tool::UnloadFilament()
@@ -421,7 +441,7 @@ namespace OM
 			return;
 		}
 
-		Comm::DUET.SendGcodef("T%d M702\n", index);
+		Comm::DUET.SendGcodef("T{:d} M702\n", index);
 	}
 
 	void Tool::Reset()
@@ -453,18 +473,18 @@ namespace OM
 		status = ToolStatus::off;
 	}
 
-	std::shared_ptr<Tool> GetTool(const size_t index)
+	ToolPtr GetTool(const size_t index)
 	{
 		return GetOrCreate<ToolList, Tool>(s_tools, index, false);
 	}
 
-	std::shared_ptr<Tool> GetOrCreateTool(const size_t index)
+	ToolPtr GetOrCreateTool(const size_t index)
 	{
 		LOG_DBG("{:d}", index);
 		return GetOrCreate<ToolList, Tool>(s_tools, index, true);
 	}
 
-	std::shared_ptr<Tool> GetToolBySlot(const size_t slot)
+	ToolPtr GetToolBySlot(const size_t slot)
 	{
 		if (slot >= s_tools.Size())
 		{
@@ -478,7 +498,7 @@ namespace OM
 		return s_tools.Size();
 	}
 
-	bool IterateToolsWhile(function_ref<bool(std::shared_ptr<Tool>, size_t)> func, const size_t startAt)
+	bool IterateToolsWhile(function_ref<bool(ToolPtr, size_t)> func, const size_t startAt)
 	{
 		return s_tools.IterateWhile(func, startAt);
 	}
@@ -644,10 +664,10 @@ namespace OM
 			return false;
 		}
 
-		const ToolStatusMapEntry key = {statusStr, ToolStatus::off};
+		const ToolStatusMapEntry key = {statusStr, ToolStatus::unknown};
 		const ToolStatusMapEntry* statusFromMap = (ToolStatusMapEntry*)bsearch(
 			&key, toolStatusMap, ARRAY_SIZE(toolStatusMap), sizeof(ToolStatusMapEntry), compareKey<ToolStatusMapEntry>);
-		ToolStatus status = (statusFromMap != nullptr) ? statusFromMap->val : ToolStatus::off;
+		ToolStatus status = (statusFromMap != nullptr) ? statusFromMap->val : ToolStatus::unknown;
 		tool->status = status;
 		return true;
 	}
@@ -686,7 +706,7 @@ namespace OM
 		s_currentTool = toolIndex;
 	}
 
-	std::shared_ptr<Tool> GetCurrentTool()
+	ToolPtr GetCurrentTool()
 	{
 		if (s_currentTool < 0)
 		{

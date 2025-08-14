@@ -11,15 +11,13 @@
 
 namespace UI::Themes
 {
-	static DefaultTheme s_darkTheme("theme_dark",
-									lv_palette_main(LV_PALETTE_BLUE),
-									lv_palette_darken(LV_PALETTE_RED, 3),
-									lv_color_hex(0x282b30),
-									lv_palette_lighten(LV_PALETTE_GREY, 5),
-									lv_color_hex(0x2f3237),
-									LV_FONT_DEFAULT,
-									true,
-									[](Theme* theme) {
-										lv_style_set_bg_color(theme->components.estop, lv_palette_main(LV_PALETTE_RED));
-									});
+	static const uint16_t s_primaryHue = 245;
+	static const uint16_t s_secondaryHue = 50;
+	static const float s_chroma = 0.02f;
+	static const lv_font_t* s_font = LV_FONT_DEFAULT;
+	static bool s_darkMode = true;
+
+	static ThemeColors s_colors = createThemeColors(s_primaryHue, s_secondaryHue, s_chroma, s_darkMode);
+
+	static DefaultTheme s_darkTheme("theme_dark", s_colors, s_font, s_darkMode, [](Theme* theme) {});
 } // namespace UI::Themes

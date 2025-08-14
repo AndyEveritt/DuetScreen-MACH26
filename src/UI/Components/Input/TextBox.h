@@ -21,8 +21,8 @@ namespace UI
 		TextBox(const std::string& name, lv_obj_t* parent, layout_t layout);
 
         void setLabel(const std::string& label);
-		void setText(const std::string& text);
-		std::string getText() const;
+		void setText(std::string_view text);
+		std::string_view getText() const;
 		LvTextArea& getTextArea() { return m_textArea; }
 
 		void addChar(uint32_t c);

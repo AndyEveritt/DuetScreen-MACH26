@@ -16,13 +16,9 @@ namespace UI
 
 		// Observers
 		void newFanData();
-		void disconnected();
 
 	  private:
-		virtual void onInit() override
-		{
-			registerEventListener<EventType::FanData>(this, &FanPresenter::newFanData);
-			registerEventListener<EventType::Disconnected>(this, &FanPresenter::disconnected);
-		}
+		  virtual void onInit() override { registerEventListener<EventType::FanData>(this, &FanPresenter::newFanData); }
+		  void onDisconnect() override;
 	};
 } // namespace UI

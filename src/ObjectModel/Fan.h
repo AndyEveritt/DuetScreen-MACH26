@@ -33,11 +33,13 @@ namespace OM
 		void Reset();
 	};
 
-	std::shared_ptr<Fan> GetFan(const size_t fanIndex);
-	std::shared_ptr<Fan> GetFanBySlot(const size_t index);
-	std::shared_ptr<Fan> GetOrCreateFan(const size_t fanIndex);
+	using FanPtr = std::shared_ptr<Fan>;
+
+	FanPtr GetFan(const size_t fanIndex);
+	FanPtr GetFanBySlot(const size_t index);
+	FanPtr GetOrCreateFan(const size_t fanIndex);
 	const size_t GetFanCount();
-	bool IterateFansWhile(function_ref<bool(std::shared_ptr<Fan>, size_t)> func, const size_t startAt = 0);
+	bool IterateFansWhile(function_ref<bool(FanPtr, size_t)> func, const size_t startAt = 0);
 	bool UpdateFanActualVal(const size_t fanIndex, const float val);
 	bool UpdateFanRequestedVal(const size_t fanIndex, const float val);
 	bool UpdateFanRpm(const size_t fanIndex, const int32_t val);

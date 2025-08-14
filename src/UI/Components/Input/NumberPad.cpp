@@ -36,11 +36,11 @@ namespace UI
 
 	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_header(name + "_header", getRoot())
-		, m_textCont(name + "_textcont", getRoot())
-		, m_textBox(name + "_textarea", m_textCont)
+		, m_header("header", getRoot())
+		, m_textCont("textcont", getRoot())
+		, m_textBox("textarea", m_textCont)
 		, m_clearBtn("Clear", m_textCont, LV_SYMBOL_TRASH, layout_t{LV_PCT(75), 0, LV_PCT(20), LV_PCT(80)})
-		, m_btnMatrix(name + "_btnmatrix", getRoot())
+		, m_btnMatrix("btnmatrix", getRoot())
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -88,6 +88,7 @@ namespace UI
 
 		validateInput();
 	}
+
 	NumberPad::NumberPad(const std::string& name, lv_obj_t* parent, layout_t layout, const NumberPadConfig& config)
 		: NumberPad(name, parent, layout)
 	{
@@ -160,7 +161,7 @@ namespace UI
 
 	float NumberPad::getValue() const
 	{
-		return atof(m_textBox.getText().c_str());
+		return atof(m_textBox.getText().data());
 	}
 
 	bool NumberPad::validateInput()
@@ -238,18 +239,18 @@ namespace UI
 		else if (lv_strcmp(txt, "+/-") == 0)
 		{
 			uint32_t cur = ta.getCursorPos();
-			const char* ta_txt = ta.getText().c_str();
-			if (ta_txt[0] == '-')
-			{
-				ta.setCursorPos(1);
-				ta.deleteChar();
-				ta.setCursorPos(cur > 0 ? cur - 1 : 0);
-			}
-			else
+			std::string_view ta_txt = ta.getText();
+			if (ta_txt.empty() || ta_txt[0] != '-')
 			{
 				ta.setCursorPos(0);
 				ta.addChar('-');
 				ta.setCursorPos(cur + 1);
+			}
+			else
+			{
+				ta.setCursorPos(1);
+				ta.deleteChar();
+				ta.setCursorPos(cur > 0 ? cur - 1 : 0);
 			}
 			np.validateInput();
 		}

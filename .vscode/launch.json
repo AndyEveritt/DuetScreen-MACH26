@@ -88,19 +88,15 @@
             "preLaunchTask": "Start gdbserver on DuetScreen",
             "stopAtEntry": false,
             "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb-multiarch",
             "miDebuggerServerAddress": "${config:duetscreen_ip}:3000",
-            "miDebuggerPath": "${config:buildroot_path}/output/host/bin/arm-none-linux-gnueabihf-gdb",
+            "miDebuggerArgs": "-x '${workspaceFolder}/.vscode/gdb.conf'",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 },
-                {
-                    "description": "Set scheduler-locking",
-                    "text": "set scheduler-locking on",
-                    "ignoreFailures": false
-                }
             ],
             "externalConsole": false,
             "sourceFileMap": {

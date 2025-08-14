@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Model.h"
-#include "UI/Components/LVGL/LvObj.h"
+#include "UI/Components/Card/Card.h"
+#include "UI/Components/LVGL/LvContainer.h"
 #include "lvgl/src/osal/lv_os.h"
 #include <fmt/ostream.h>
 #include <memory>
@@ -26,7 +27,7 @@ namespace UI
 	 *
 	 * @note All views in the application must be a subclass of this type.
 	 */
-	template <class T, class BaseViewType = LvObj>
+	template <class T, class BaseViewType = LvContainer>
 	class View : public BaseViewType
 	{
 		static_assert(std::is_base_of<LvObj, BaseViewType>::value, "BaseViewType must derive from BaseView");
@@ -34,15 +35,19 @@ namespace UI
 
 	  public:
 		template <typename... Args>
-		View(lv_create_t initFunc, const std::string& name, lv_obj_t* parent, Args&&... args)
-			: BaseViewType(initFunc, name, parent, std::forward<Args>(args)...)
+		View(const std::string& name, lv_obj_t* parent, Args&&... args)
+			: BaseViewType(name, parent, std::forward<Args>(args)...)
 			, m_presenter(std::make_shared<T>(this))
 		{
+			m_presenter->init();
 		}
 
 		virtual ~View()
 		{
-			deactivate();
+			// Can't call deactivate here because any inherited classes will have been destroyed and if the presenter
+			// uses `m_view` or `getView()` it will cause a crash since the memory for `m_view` will only contain data
+			// from this base class. The compiler does not catch this.
+			Model::get().unbind(m_presenter);
 			if (m_presenter)
 			{
 				m_presenter->setView(nullptr);
@@ -56,26 +61,18 @@ namespace UI
 
 		std::shared_ptr<T> getPresenter() { return m_presenter; }
 
-		void activate()
-		{
-			Model::get().bind(m_presenter);
-			m_presenter->activate();
-		}
-		void deactivate()
-		{
-			Model::get().unbind(m_presenter);
-			m_presenter->deactivate();
-		}
+		void activate() { m_presenter->activate(); }
+		void deactivate() { m_presenter->deactivate(); }
 
 		/**
 		 * @brief Shows the view by activating its presenter and then showing the view itself.
 		 *
 		 * @note This function calls the `onShow()` virtual method before showing the view.
 		 */
-		void show() final
+		void show(bool move_to_front = false) final
 		{
 			activate();
-			BaseViewType::show();
+			BaseViewType::show(move_to_front);
 		}
 
 		/**
@@ -83,10 +80,10 @@ namespace UI
 		 *
 		 * @note This function calls the `onHide()` virtual method before hiding the view.
 		 */
-		void hide() final
+		void hide(bool move_to_back = false) final
 		{
 			deactivate();
-			BaseViewType::hide();
+			BaseViewType::hide(move_to_back);
 		}
 
 	  protected:

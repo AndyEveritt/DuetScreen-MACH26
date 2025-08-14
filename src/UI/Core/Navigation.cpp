@@ -43,6 +43,12 @@ namespace UI
 		return true;
 	}
 
+	static void notifySideBar()
+	{
+		Model::get().post<EventType::NavigationHomeEnable>(s_openScreens.size() > 0);
+		Model::get().post<EventType::NavigationBackEnable>(s_openScreens.size() > 0 || s_openModals.size() > 0);
+	}
+
 	/**
 	 * @brief Handles the action of the back button being pressed.
 	 *
@@ -74,17 +80,15 @@ namespace UI
 			LOG_WARN("No current screen");
 			return;
 		}
-		if (currentScreen->back())
+		if (!currentScreen->back())
 		{
-			return;
-		}
+			closeScreen(currentScreen, false);
 
-		closeScreen(currentScreen, false);
-
-		if (!s_returnableScreens.empty())
-		{
-			ViewListItem_t lastReturnable = s_returnableScreens.back();
-			openScreen(lastReturnable);
+			if (!s_returnableScreens.empty())
+			{
+				ViewListItem_t lastReturnable = s_returnableScreens.back();
+				openScreen(lastReturnable);
+			}
 		}
 	}
 
@@ -113,6 +117,7 @@ namespace UI
 
 		s_openScreens.clear();
 		s_returnableScreens.clear();
+		notifySideBar();
 	}
 
 	/**
@@ -191,7 +196,8 @@ namespace UI
 		{
 			addToVector(s_openScreens, view);
 		}
-		view->show();
+		view->show(true);
+		notifySideBar();
 	}
 
 	/**
@@ -232,19 +238,32 @@ namespace UI
 	 * @param view The screen to be closed.
 	 * @param returnable If true, the screen will be added to the list of returnable screens.
 	 */
-	void closeScreen(ViewListItem_t view, bool returnable)
+	bool closeScreen(ViewListItem_t view, bool returnable)
 	{
 		UI_LOCK();
 		LOG_INFO("Closing screen '{:s}'", view->getName());
+		if (view == nullptr)
+		{
+			LOG_WARN("Trying to close a nullptr screen");
+			return false;
+		}
+
+		if (inVector(s_openModals, view))
+		{
+			return closeModal(view);
+		}
+
 		if (view->isVisible())
 		{
 			view->hide();
 		}
-		removeFromVector(s_openScreens, view);
+		bool removed = removeFromVector(s_openScreens, view);
 		if (returnable)
 		{
 			addToVector(s_returnableScreens, view);
 		}
+		notifySideBar();
+		return removed;
 	}
 
 	void openModal(LvObj* view)
@@ -259,7 +278,8 @@ namespace UI
 		LOG_INFO("Opening modal '{:s}'", view->getName());
 
 		addToVector(s_openModals, view);
-		view->show();
+		view->show(true);
+		notifySideBar();
 	}
 
 	void closeAllModals()
@@ -272,6 +292,7 @@ namespace UI
 			modal->hide();
 		}
 		s_openModals.clear();
+		notifySideBar();
 	}
 
 	bool closeModal(LvObj* view)
@@ -297,6 +318,7 @@ namespace UI
 
 		LOG_INFO("Closing modal '{:s}'", view->getName());
 		view->hide();
+		notifySideBar();
 		return true;
 	}
 
@@ -325,7 +347,7 @@ namespace UI
 		LOG_INFO("Closing modal '{:s}'", lastModal->getName());
 		lastModal->hide();
 		s_openModals.pop_back();
+		notifySideBar();
 		return true;
 	}
-
 } // namespace UI

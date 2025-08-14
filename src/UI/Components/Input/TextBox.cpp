@@ -14,18 +14,18 @@ namespace UI
 {
 	TextBox::TextBox(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_label(name + "_label", getRoot())
-		, m_textArea(name + "_textarea", getRoot())
-		, m_showPassword(name + "_show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
+		, m_label("label", getRoot())
+		, m_textArea("textarea", getRoot())
+		, m_showPassword("show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
 	{
 		init();
 	}
 
 	TextBox::TextBox(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label(name + "_label", getRoot())
-		, m_textArea(name + "_textarea", getRoot())
-		, m_showPassword(name + "_show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
+		, m_label("label", getRoot())
+		, m_textArea("textarea", getRoot())
+		, m_showPassword("show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
 	{
 		init();
 	}
@@ -72,13 +72,13 @@ namespace UI
 		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, label.empty());
 		m_label.setText(label);
 	}
-	void TextBox::setText(const std::string& text)
+	void TextBox::setText(std::string_view text)
 	{
 		m_textArea.setText(text);
 		m_textArea.setCursorPos(0);
 		m_textArea.scrollToX(0, LV_ANIM_OFF);
 	}
-	std::string TextBox::getText() const
+	std::string_view TextBox::getText() const
 	{
 		return m_textArea.getText();
 	}

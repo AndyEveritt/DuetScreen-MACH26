@@ -26,12 +26,12 @@ namespace OM
 		rpm = -1;
 	}
 
-	std::shared_ptr<Fan> GetFan(const size_t index)
+	FanPtr GetFan(const size_t index)
 	{
 		return GetOrCreate<FanList, Fan>(s_fans, index, false);
 	}
 
-	std::shared_ptr<Fan> GetFanBySlot(const size_t index)
+	FanPtr GetFanBySlot(const size_t index)
 	{
 		if (index >= s_fans.Size())
 			return nullptr;
@@ -39,7 +39,7 @@ namespace OM
 		return s_fans[index];
 	}
 
-	std::shared_ptr<Fan> GetOrCreateFan(const size_t index)
+	FanPtr GetOrCreateFan(const size_t index)
 	{
 		return GetOrCreate<FanList, Fan>(s_fans, index, true);
 	}
@@ -49,7 +49,7 @@ namespace OM
 		return s_fans.Size();
 	}
 
-	bool IterateFansWhile(function_ref<bool(std::shared_ptr<Fan>, size_t)> func, const size_t startAt)
+	bool IterateFansWhile(function_ref<bool(FanPtr, size_t)> func, const size_t startAt)
 	{
 		return s_fans.IterateWhile(func, startAt);
 	}

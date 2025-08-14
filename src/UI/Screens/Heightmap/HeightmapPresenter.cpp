@@ -18,6 +18,10 @@ namespace UI
 	void HeightmapPresenter::setHeightmap(const std::shared_ptr<OM::Heightmap>& heightmap)
 	{
 		m_heightmap = heightmap;
+		if (m_heightmap == nullptr)
+		{
+			m_view->clear();
+		}
 	}
 
 	void HeightmapPresenter::render()
@@ -27,7 +31,13 @@ namespace UI
 			return;
 		}
 
-		if (m_heightmap == nullptr || !m_heightmap->IsValid())
+		if (m_heightmap == nullptr)
+		{
+			m_view->clear();
+			return;
+		}
+
+		if (!m_heightmap->IsValid())
 		{
 			LOG_WARN("Heightmap is not valid");
 			m_view->clear();
@@ -114,8 +124,7 @@ namespace UI
 		const std::string& name = m_heightmapFiles[index]->GetName();
 		LOG_INFO("Loading heightmap {:s}", name);
 		m_heightmap = OM::GetHeightmapData(name);
-		m_heightmap->LoadFromDuet();
-		render();
+		m_heightmap->LoadFromDuet([this](OM::Heightmap& heightmap) { render(); });
 	}
 
 	void HeightmapPresenter::toggleHeightmap(const size_t index)
@@ -175,23 +184,6 @@ namespace UI
 		}
 	}
 
-	void HeightmapPresenter::disconnected()
-	{
-		LOG_DBG("Disconnect");
-		if (m_heightmap != nullptr)
-		{
-			m_heightmap = nullptr;
-			m_view->clear();
-			m_view->setHeightmapCount(0);
-		}
-	}
-
-	void HeightmapPresenter::connected()
-	{
-		LOG_DBG("Connected");
-		checkMode();
-	}
-
 	void HeightmapPresenter::updateHeightmapList()
 	{
 		// UI_LOCK();
@@ -217,6 +209,7 @@ namespace UI
 
 	bool HeightmapPresenter::checkMode()
 	{
+#if 0
 		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::network)
 		{
 			LOG_WARN("Heightmap not supported in this mode");
@@ -230,17 +223,39 @@ namespace UI
 							  LV_OPA_100);
 			return false;
 		}
+#endif
 
 		return true;
 	}
 
 	void HeightmapPresenter::onActivate()
 	{
+		LOG_DBG("activate");
 		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
-		const std::string& currentHeightmap = OM::GetCurrentHeightmap();
-		std::shared_ptr<OM::Heightmap> map = OM::GetHeightmapData(currentHeightmap);
-		map->LoadFromDuet();
+		std::string_view currentHeightmap = OM::GetCurrentHeightmap();
+		std::shared_ptr<OM::Heightmap> map =
+			currentHeightmap.empty() ? nullptr : OM::GetHeightmapData(currentHeightmap);
+		if (map)
+		{
+			map->LoadFromDuet([this](OM::Heightmap& heightmap) { render(); });
+		}
 		setHeightmap(map);
-		render();
+	}
+
+	void HeightmapPresenter::onConnect()
+	{
+		LOG_DBG("Connected");
+		checkMode();
+	}
+
+	void HeightmapPresenter::onDisconnect()
+	{
+		LOG_DBG("Disconnect");
+		if (m_heightmap != nullptr)
+		{
+			m_heightmap = nullptr;
+			m_view->clear();
+			m_view->setHeightmapCount(0);
+		}
 	}
 } // namespace UI

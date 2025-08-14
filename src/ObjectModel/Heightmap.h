@@ -18,6 +18,7 @@
 namespace OM
 {
 	class Heightmap;
+	using HeightmapPtr = std::shared_ptr<Heightmap>;
 
 	class HeightmapMeta
 	{
@@ -26,7 +27,7 @@ namespace OM
 		~HeightmapMeta();
 
 		void Reset();
-		void Parse(const std::string& meta);
+		void Parse(std::string_view meta);
 
 		std::shared_ptr<Move::Axis> GetAxis(size_t index) const;
 		double GetMin(size_t index) const { return m_min[index]; }
@@ -57,7 +58,9 @@ namespace OM
 	class Heightmap
 	{
 	  public:
-		Heightmap(const std::string& filename);
+		using load_cb_t = std::function<void(Heightmap& heightmap)>;
+
+		Heightmap(std::string_view filename);
 
 		struct Point
 		{
@@ -69,10 +72,10 @@ namespace OM
 
 		void Reset();
 
-		bool LoadFromDuet();
+		bool LoadFromDuet(load_cb_t callback);
 		bool IsValid() const { return meta.IsValid(); }
 
-		const std::string& GetFileName() const { return m_fileName; }
+		std::string_view GetFileName() const { return m_fileName; }
 		size_t GetHeight() const { return meta.GetSamples(1); }
 		size_t GetWidth() const { return meta.GetSamples(0); }
 		const std::vector<Point>& GetPoints() const { return m_heightmap; }
@@ -85,13 +88,12 @@ namespace OM
 		double GetStdDev() const { return m_stdDev; }
 
 		double GetInterpolatedPoint(double axis0, double axis1, bool extrapolate = false) const;
+		bool ParseMeta(std::string_view csvContents);
+		bool ParseData(std::string_view csvContents);
 
 		HeightmapMeta meta;
 
 	  private:
-		bool ParseMeta(const std::string& csvContents);
-		bool ParseData(const std::string& csvContents);
-
 		bool InterpolateAxis0Axis1(
 			size_t axis0Index, size_t axis1Index, double axis0Frac, double axis1Frac, double& result) const;
 		size_t GetMapIndex(size_t axis0Index, size_t axis1Index) const
@@ -108,16 +110,16 @@ namespace OM
 		std::vector<Point> m_heightmap;
 	};
 
-	const std::string& GetHeightmapNameAt(int index);
-	void SetCurrentHeightmap(const std::string& filename);
+	std::string_view GetHeightmapNameAt(int index);
+	void SetCurrentHeightmap(std::string_view filename);
 	void ClearCurrentHeightmap();
-	const std::string& GetCurrentHeightmap();
+	std::string_view GetCurrentHeightmap();
 
-	void LoadHeightmap(const char* filename);
+	void LoadHeightmap(std::string_view filename);
 	void UnloadHeightmap();
-	void ToggleHeightmap(const char* filename);
+	void ToggleHeightmap(std::string_view filename);
 
-	std::shared_ptr<Heightmap> GetHeightmapData(const std::string& filename);
+	HeightmapPtr GetHeightmapData(std::string_view filename);
 	size_t ClearHeightmapCache();
 
 	void RequestHeightmapFiles(std::function<void()> callback = nullptr);

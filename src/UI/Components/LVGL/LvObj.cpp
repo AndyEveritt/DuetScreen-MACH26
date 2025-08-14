@@ -17,12 +17,31 @@ namespace UI
 	}
 
 	LvObj::LvObj(lv_create_t initFunc, const std::string& name, lv_obj_t* parent)
-		: m_name(name)
 	{
 		UI_LOCK();
 		m_root = initFunc(parent);
 
-		LOG_VERBOSE("Creating view '{:s}' ({})", getName(), static_cast<const void*>(m_root));
+		lv_obj_set_name(m_root, name.c_str());
+#if DEBUG
+		std::string fullName = name;
+		while (parent != nullptr)
+		{
+			const char* parentName = lv_obj_get_name(parent);
+			parent = lv_obj_get_parent(parent);
+			if (parentName == nullptr || parentName[0] == '\0')
+			{
+				continue;
+			}
+			fullName = std::string(parentName) + "." + fullName;
+		}
+		m_name = std::move(fullName);
+#else
+		{
+			m_name = name;
+		}
+#endif
+
+		LOG_VERBOSE("Creating view '{}' ({})", getName(), static_cast<const void*>(m_root));
 		lv_obj_null_on_delete(&m_root);
 	}
 
@@ -38,8 +57,13 @@ namespace UI
 	LvObj::~LvObj()
 	{
 		UI_LOCK();
-		LOG_VERBOSE("Deleting view '{:s}' ({})", getName(), static_cast<const void*>(m_root));
+		LOG_VERBOSE("Deleting obj '{}' ({})", getName(), static_cast<const void*>(m_root));
 		lv_obj_delete(getRoot());
+	}
+
+	std::string_view LvObj::getName() const
+	{
+		return m_name;
 	}
 
 	lv_obj_t* LvObj::getScreen() const
@@ -66,23 +90,99 @@ namespace UI
 		return lv_obj_get_child_count(getRoot());
 	}
 
-	layout_t LvObj::getLayout()
+	layout_t LvObj::getLayout() const
 	{
 		UI_LOCK();
 		layout_t layout;
-		lv_coord_t x = lv_obj_get_x(getRoot());
-		lv_coord_t y = lv_obj_get_y(getRoot());
-		lv_coord_t w = lv_obj_get_width(getRoot());
-		lv_coord_t h = lv_obj_get_height(getRoot());
-		lv_coord_t wParent = lv_obj_get_width(lv_obj_get_parent(getRoot()));
-		lv_coord_t hParent = lv_obj_get_height(lv_obj_get_parent(getRoot()));
-
-		layout.x = getPct(x, wParent);
-		layout.y = getPct(y, hParent);
-		layout.w = getPct(w, wParent);
-		layout.h = getPct(h, hParent);
+		layout.x = lv_obj_get_x(getRoot());
+		layout.y = lv_obj_get_y(getRoot());
+		layout.w = lv_obj_get_width(getRoot());
+		layout.h = lv_obj_get_height(getRoot());
 
 		return layout;
+	}
+
+	layout_t LvObj::getLayoutPct() const
+	{
+		UI_LOCK();
+		layout_t layout = getLayout();
+		lv_coord_t wParent = lv_obj_get_width(getParent());
+		lv_coord_t hParent = lv_obj_get_height(getParent());
+
+		layout.x = getPct(layout.x, wParent);
+		layout.y = getPct(layout.y, hParent);
+		layout.w = getPct(layout.w, wParent);
+		layout.h = getPct(layout.h, hParent);
+
+		return layout;
+	}
+
+	lv_area_t LvObj::getCoords() const
+	{
+		UI_LOCK();
+		lv_area_t area;
+		lv_obj_get_coords(getRoot(), &area);
+		return area;
+	}
+
+	lv_coord_t LvObj::getX() const
+	{
+		UI_LOCK();
+		return lv_obj_get_x(getRoot());
+	}
+
+	lv_coord_t LvObj::getY() const
+	{
+		UI_LOCK();
+		return lv_obj_get_y(getRoot());
+	}
+
+	lv_coord_t LvObj::getX2() const
+	{
+		UI_LOCK();
+		return lv_obj_get_x2(getRoot());
+	}
+
+	lv_coord_t LvObj::getY2() const
+	{
+		UI_LOCK();
+		return lv_obj_get_y2(getRoot());
+	}
+
+	lv_coord_t LvObj::getWidth() const
+	{
+		UI_LOCK();
+		return lv_obj_get_width(getRoot());
+	}
+
+	lv_coord_t LvObj::getHeight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_height(getRoot());
+	}
+
+	lv_coord_t LvObj::getContentWidth() const
+	{
+		UI_LOCK();
+		return lv_obj_get_content_width(getRoot());
+	}
+
+	lv_coord_t LvObj::getContentHeight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_content_height(getRoot());
+	}
+
+	lv_coord_t LvObj::getSelfWidth() const
+	{
+		UI_LOCK();
+		return lv_obj_get_self_width(getRoot());
+	}
+
+	lv_coord_t LvObj::getSelfHeight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_self_height(getRoot());
 	}
 
 	void LvObj::setUserData(void* user_data)
@@ -270,6 +370,65 @@ namespace UI
 		lv_obj_align(getRoot(), align, x, y);
 	}
 
+	void LvObj::updateLayout()
+	{
+		UI_LOCK();
+		lv_obj_update_layout(getRoot());
+	}
+
+	bool LvObj::refreshSelfSize()
+	{
+		UI_LOCK();
+		return lv_obj_refresh_self_size(getRoot());
+	}
+
+	void LvObj::invalidate()
+	{
+		UI_LOCK();
+		lv_obj_invalidate(getRoot());
+	}
+
+	static void __obj_set_ext_draw_size_cb(lv_event_t* e)
+	{
+		UI_LOCK();
+		int32_t s = (int32_t)(intptr_t)lv_event_get_user_data(e);
+		lv_event_code_t code = lv_event_get_code(e);
+		if (code == LV_EVENT_REFR_EXT_DRAW_SIZE)
+		{
+			lv_event_set_ext_draw_size(e, s);
+		}
+		else
+		{
+			LOG_FATAL_THROW("Unexpected event code: {}", (int32_t)code);
+		}
+	}
+
+	void LvObj::setExtDrawSize(int32_t size)
+	{
+		UI_LOCK();
+		setFlag(LV_OBJ_FLAG_OVERFLOW_VISIBLE, true);
+		removeEventCallback(__obj_set_ext_draw_size_cb);
+		addEventCallback(__obj_set_ext_draw_size_cb, LV_EVENT_REFR_EXT_DRAW_SIZE, (void*)(intptr_t)size);
+	}
+
+	void LvObj::setExtClickArea(int32_t size)
+	{
+		UI_LOCK();
+		lv_obj_set_ext_click_area(getRoot(), size);
+	}
+
+	void LvObj::getClickArea(lv_area_t* area) const
+	{
+		UI_LOCK();
+		lv_obj_get_click_area(getRoot(), area);
+	}
+
+	void LvObj::scrollBy(int32_t dx, int32_t dy, lv_anim_enable_t anim)
+	{
+		UI_LOCK();
+		lv_obj_scroll_by(getRoot(), dx, dy, anim);
+	}
+
 	void LvObj::scrollToX(lv_coord_t x, lv_anim_enable_t anim)
 	{
 		UI_LOCK();
@@ -282,10 +441,46 @@ namespace UI
 		lv_obj_scroll_to_y(getRoot(), y, anim);
 	}
 
+	void LvObj::setScrollDir(lv_dir_t dir)
+	{
+		UI_LOCK();
+		lv_obj_set_scroll_dir(getRoot(), dir);
+	}
+
+	lv_coord_t LvObj::getScrollLeft() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_left(getRoot());
+	}
+
+	lv_coord_t LvObj::getScrollRight() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_right(getRoot());
+	}
+
+	lv_coord_t LvObj::getScrollTop() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_top(getRoot());
+	}
+
+	lv_coord_t LvObj::getScrollBottom() const
+	{
+		UI_LOCK();
+		return lv_obj_get_scroll_bottom(getRoot());
+	}
+
 	void LvObj::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
 	{
 		UI_LOCK();
 		lv_obj_add_style(getRoot(), style, selector, recursive);
+	}
+
+	void LvObj::removeStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
+	{
+		UI_LOCK();
+		lv_obj_remove_style(getRoot(), style, selector, recursive);
 	}
 
 	void LvObj::setStylePad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
@@ -332,6 +527,12 @@ namespace UI
 		lv_obj_set_style_bg_color(getRoot(), color, selector);
 	}
 
+	void LvObj::setStyleBgOpa(lv_opa_t opa, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_bg_opa(getRoot(), opa, selector);
+	}
+
 	void LvObj::setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector)
 	{
 		UI_LOCK();
@@ -374,27 +575,58 @@ namespace UI
 		return lv_obj_send_event(getRoot(), code, param);
 	}
 
+	void LvObj::moveToFront()
+	{
+		UI_LOCK();
+		lv_obj_move_foreground(getRoot());
+	}
+
+	void LvObj::moveToBack()
+	{
+		UI_LOCK();
+		lv_obj_move_background(getRoot());
+	}
+
+	void LvObj::moveToIndex(size_t index)
+	{
+		UI_LOCK();
+		lv_obj_move_to_index(getRoot(), index);
+	}
+
+	void UI::LvObj::clearChildren()
+	{
+		UI_LOCK();
+		while (lv_obj_get_child_cnt(getRoot()) > 0)
+		{
+			lv_obj_t* child = lv_obj_get_child(getRoot(), 0);
+			lv_obj_delete(child);
+		}
+	}
+
 	/**
 	 * @brief Shows the view.
 	 *
 	 * @note This function calls the `onShow()` virtual method before showing the view.
 	 */
-	void LvObj::show()
+	void LvObj::show(bool move_to_front)
 	{
 		UI_LOCK();
 		if (getRoot() == nullptr)
 		{
 			return;
 		}
-		if (!lv_obj_has_flag(getRoot(), LV_OBJ_FLAG_HIDDEN))
+		if (!hasFlag(LV_OBJ_FLAG_HIDDEN))
 		{
 			LOG_VERBOSE("'{:s}' is already visible", getName());
-			return;
+			// return;
 		}
 
 		LOG_DBG("Showing '{:s}'", getName());
-		lv_obj_move_foreground(getRoot());
-		lv_obj_remove_flag(getRoot(), LV_OBJ_FLAG_HIDDEN);
+		if (move_to_front)
+		{
+			moveToFront();
+		}
+		setFlag(LV_OBJ_FLAG_HIDDEN, false);
 		onShow();
 	}
 
@@ -403,22 +635,25 @@ namespace UI
 	 *
 	 * @note This function calls the `onHide()` virtual method before hiding the view.
 	 */
-	void LvObj::hide()
+	void LvObj::hide(bool move_to_back)
 	{
 		UI_LOCK();
 		if (getRoot() == nullptr)
 		{
 			return;
 		}
-		if (lv_obj_has_flag(getRoot(), LV_OBJ_FLAG_HIDDEN))
+		if (hasFlag(LV_OBJ_FLAG_HIDDEN))
 		{
 			LOG_VERBOSE("'{:s}' is already hidden", getName());
 			return;
 		}
 
 		LOG_DBG("Hiding '{:s}'", getName());
-		lv_obj_move_background(getRoot());
-		lv_obj_add_flag(getRoot(), LV_OBJ_FLAG_HIDDEN);
+		if (move_to_back)
+		{
+			moveToBack();
+		}
+		setFlag(LV_OBJ_FLAG_HIDDEN, true);
 		onHide();
 	}
 

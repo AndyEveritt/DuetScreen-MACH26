@@ -74,6 +74,7 @@ namespace Comm
 		rcvOMKeyState,
 		rcvOMKeyTools,
 		rcvOMKeyVolumes,
+		rcvOMKeyNone,
 
 		// Keys for boards response
 		rcvBoardsFirmwareName,
@@ -138,6 +139,7 @@ namespace Comm
 		rcvSeqsState,
 		rcvSeqsTools,
 		rcvSeqsVolumes,
+		rcvSeqsFreq,
 
 		// Keys for spindles response
 		rcvSpindlesActive,

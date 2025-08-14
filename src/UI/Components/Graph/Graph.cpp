@@ -144,6 +144,10 @@ namespace UI
 		}
 		if (count < m_series.size())
 		{
+			for (size_t i = count; i < m_series.size(); ++i)
+			{
+				lv_chart_remove_series(m_chart, m_series[i].series);
+			}
 			m_series.resize(count);
 			return;
 		}
@@ -154,7 +158,7 @@ namespace UI
 	{
 		if (index >= m_series.size())
 		{
-			LOG_WARN("Series index out of range");
+			LOG_DBG("Series index out of range");
 			return nullptr;
 		}
 		return &m_series[index];
@@ -173,17 +177,14 @@ namespace UI
 
 		size_t index = getSeriesCount();
 
-		std::shared_ptr<legend_obj_t> legendObj =
-			std::make_shared<legend_obj_t>(utils::format("%s_%u_legend_obj", getName(), index),
-										   m_legend,
-										   displayName.c_str(),
-										   layout_t(0, 0, 100, 20));
+		std::shared_ptr<legend_obj_t> legendObj = std::make_shared<legend_obj_t>(
+			fmt::format("legend_obj_{}", index), m_legend, displayName.c_str(), layout_t(0, 0, 100, 20));
 		legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
 		legendObj->setStyleBgColor(s_hiddenColor, LV_STATE_DEFAULT);
 		legendObj->setCheckable(true);
 		legendObj->setChecked(true);
 		legendObj->addClickedCallback(legendEvent, this);
-		legendObj->setUserData(new size_t(index));
+		legendObj->setUserData((void*)(uintptr_t)index);
 		m_series.push_back(series_t(series, color, legendObj));
 		return true;
 	}
@@ -233,8 +234,8 @@ namespace UI
 		for (auto& series : m_series)
 		{
 			lv_chart_remove_series(m_chart, series.series);
-			delete (size_t*)series.legendObj->getUserData();
 		}
+		lv_chart_refresh(m_chart);
 		m_series.clear();
 	}
 
@@ -248,7 +249,7 @@ namespace UI
 			return;
 		}
 		lv_chart_remove_series(m_chart, series->series);
-		delete (std::string*)series->legendObj->getUserData();
+		lv_chart_refresh(m_chart);
 		m_series.erase(m_series.begin() + index);
 	}
 
@@ -269,7 +270,7 @@ namespace UI
 		UI_LOCK();
 		Graph* g = (Graph*)lv_event_get_user_data(e);
 		lv_obj_t* btn = lv_event_get_target_obj(e);
-		size_t index = *(size_t*)lv_obj_get_user_data(btn);
+		size_t index = (uintptr_t)lv_obj_get_user_data(btn);
 
 		// checked is inverted since this callback runs before the state is updated
 		g->showSeries(index, lv_obj_has_state(btn, LV_STATE_CHECKED));

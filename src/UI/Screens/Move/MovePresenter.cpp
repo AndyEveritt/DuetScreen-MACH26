@@ -5,6 +5,8 @@
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "UI/Core/Navigation.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "lv_i18n/lv_i18n.h"
 
 namespace UI
@@ -15,7 +17,6 @@ namespace UI
 
 		registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
 		registerEventListener<EventType::ToolData>(this, &MovePresenter::newToolData);
-		registerEventListener<EventType::Disconnected>(this, &MovePresenter::disconnected);
 	}
 
 	void MovePresenter::onActivate()
@@ -62,7 +63,7 @@ namespace UI
 
 	void MovePresenter::heightmap()
 	{
-		// TODO Open HeightmapView
+		openScreen(&HomeView::instance().getHeightmapView());
 	}
 
 	void MovePresenter::disableMotors()
@@ -176,11 +177,6 @@ namespace UI
 
 	void MovePresenter::newAxesData()
 	{
-		size_t axisCount = OM::Move::GetAxisCount(false);
-		auto x = OM::Move::GetAxisByLetter('X');
-		auto y = OM::Move::GetAxisByLetter('Y');
-		auto z = OM::Move::GetAxisByLetter('Z');
-
 		std::vector<OM::Move::AxisPtr> axes = OM::Move::GetAxes(false);
 		{
 			/*
@@ -199,44 +195,6 @@ namespace UI
 
 			m_view->setAxisData(m_axisData);
 		}
-
-#if 0
-		for (auto& axis : {x, y, z})
-		{
-			if (axis != nullptr && axis->visible)
-			{
-				axisCount--;
-			}
-		}
-#endif
-
-		if (x == nullptr || !x->visible)
-		{
-		}
-
-#if 0
-		m_view->setAxisCount(axisCount);
-		for (size_t i = 0; i < axisCount; i++)
-		{
-			auto axis = OM::Move::GetAxis(i);
-			if (axis == nullptr)
-			{
-				LOG_WARN("Axis {:d} not found", i);
-				continue;
-			}
-			std::shared_ptr<AxisItem> item = m_view->getAxisItem(i);
-			if (item == nullptr)
-			{
-				LOG_WARN("AxisItem {:d} not found", i);
-				continue;
-			}
-			item->setAxisLetter(axis->letter);
-			item->setHomed(axis->homed);
-			item->setToolPosition(axis->userPosition);
-			item->setMachinePosition(axis->machinePosition);
-			item->disableHome(OM::Move::GetKinematics().IsDelta());
-		}
-#endif
 	}
 
 	void MovePresenter::newToolData()
@@ -255,8 +213,7 @@ namespace UI
 				LOG_WARN("Tool {:d} not found", i);
 				continue;
 			}
-			m_view->setToolName(
-				i, tool->name.IsEmpty() ? fmt::format("{} {}", _("default_tool_name"), i) : tool->name.c_str());
+			m_view->setToolName(i, tool->GetName());
 			if (currentTool && currentTool == tool)
 			{
 				UI_LOCK();
@@ -267,7 +224,7 @@ namespace UI
 		}
 	}
 
-	void MovePresenter::disconnected()
+	void MovePresenter::onDisconnect()
 	{
 		m_view->clear();
 	}

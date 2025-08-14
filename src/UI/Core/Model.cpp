@@ -32,18 +32,44 @@ Model::Model()
 	addEventListener<EventType::Disconnected>(this, &Model::disconnected);
 }
 
-void Model::bind(std::shared_ptr<UI::BasePresenter> presenter)
+void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
+	if (presenter.expired())
+	{
+		LOG_WARN("Attempted to bind an expired presenter");
+		return;
+	}
 	unbind(presenter);
+	LOG_DBG("Binding presenter '{:s}'", presenter.lock()->getName());
 	m_presenters.push_back(presenter);
 }
 
-void Model::unbind(std::shared_ptr<UI::BasePresenter> presenter)
+void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 {
 	UI_LOCK();
-	LOG_DBG("Unbinding presenter {:s}", presenter->getName());
-	m_presenters.remove(presenter);
+	if (presenter.expired())
+	{
+		LOG_WARN("Attempted to unbind an expired presenter");
+		return;
+	}
+	std::shared_ptr<UI::BasePresenter> sharedPresenter = presenter.lock();
+	m_presenters.remove_if(
+		[&sharedPresenter](const std::weak_ptr<UI::BasePresenter>& p)
+		{
+			bool remove = false;
+			if (p.expired())
+			{
+				LOG_DBG("Unbinding expired presenter");
+				remove = true;
+			}
+			else if (p.lock() == sharedPresenter)
+			{
+				LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter->getName());
+				remove = true;
+			}
+			return remove;
+		});
 }
 
 void Model::startEventLoop()
@@ -115,10 +141,10 @@ void Model::runEventLoop()
 			std::shared_ptr<UI::BasePresenter> presenter;
 			while (it != m_presenters.end())
 			{
-				presenter = *it;
-				if (!presenter->isActive())
+				presenter = (*it).lock();
+				if (!presenter)
 				{
-					++it;
+					it = m_presenters.erase(it);
 					continue;
 				}
 				auto handler = presenter->getEventHandler(event.first);
@@ -142,67 +168,16 @@ void Model::runEventLoop()
 	}
 }
 
-useconds_t Model::requestNewData()
+std::chrono::milliseconds Model::requestNewData()
 {
 	bool seqAvailable = Comm::sendNext();
 #if 0
 	if (seqAvailable && Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
 	{
-		return 50 * 1000; // 50ms
+		return 50; // 50ms
 	}
 #endif
-	return Comm::DUET.GetScaledPollInterval() * 1000; // Poll interval in microseconds
-}
-
-useconds_t Model::receiveNewUsbData()
-{
-	static constexpr useconds_t s_reconnectDelay = 1000 * 1000; // 1s
-	static constexpr useconds_t s_pollInterval = 5 * 1000;		// 5ms
-	static constexpr size_t bufferSize = 32768;
-	static Comm::JsonDecoder decoder;
-	static BYTE buffer[bufferSize];
-	static size_t bufferLen = 0;
-
-	if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::usb)
-	{
-		return s_reconnectDelay;
-	}
-
-	if (!Comm::getCurrentUsbDevice().isConnected())
-	{
-		LOG_VERBOSE("USB device disconnected");
-		return s_reconnectDelay;
-	}
-
-	int len = Comm::getCurrentUsbDevice().receive(buffer + bufferLen, bufferSize - bufferLen);
-
-	if (len > 0)
-	{
-		bufferLen += len;
-		if (bufferLen >= bufferSize)
-		{
-			LOG_ERROR("Buffer overflow");
-			bufferLen = 0;
-			return s_pollInterval;
-		}
-	}
-	else if (len < 0)
-	{
-		LOG_ERROR("Error receiving data");
-		bufferLen = 0;
-		memset(buffer, 0, bufferSize);
-		return s_reconnectDelay;
-	}
-
-	if (bufferLen > 0 && buffer[bufferLen - 1] == '\n')
-	{
-		// Process the data
-		LOG_DBG("Received {:d} bytes", bufferLen);
-		decoder.CheckInput(buffer, bufferLen);
-		bufferLen = 0;
-		memset(buffer, 0, bufferSize);
-	}
-	return s_pollInterval;
+	return Comm::DUET.GetScaledPollInterval();
 }
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])

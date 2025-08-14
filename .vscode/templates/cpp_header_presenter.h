@@ -18,9 +18,20 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR({{file_name}}, MyView);
 
+		// Setters
+
+		// Getters
+
+		// Actions
+
+		// Observers
+
 	  protected:
 		virtual void onInit() override {}
 		virtual void onActivate() override {}
 		virtual void onDeactivate() override {}
+
+		virtual void onConnect() {}
+		virtual void onDisconnect() {}
 	};
 } // namespace UI

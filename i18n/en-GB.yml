@@ -1,407 +1,490 @@
 en-GB:
-  heater: 'Heater: %s'
+  active: Active
   back: \xEF\x95\x9A\nBack
-  open_sub_view: Open Sub View
-  home: Home
-  macros: Macros
+  bed: Bed
+  beds: Beds
+  busy: Busy
+  cancel: Cancel
+  cancelling: Cancelling
+  chamber: Chamber
+  chambers: Chambers
+  changingTool: Changing Tool
+  confirm_filament_change: Confirm Filament Change
+  connected: Connected
+  connected_message: Connected to Duet
+  connecting: Connecting
   console: \xEF\x84\x9C\nConsole
+  console_input_placeholder: ~
+  default_tool_name: 'Tool {:d}'
+  disable_motors: Disable Motors
+  disconnected: Disconnected
+  disconnected_message: Disconnected from Duet
   estop: \xEF\x81\xB1
   estop_prompt: Drag to E-Stop!
-  toollist_tool: Tool
-  toollist_status: Status
-  toollist_current: Current
-  toollist_active: Active
-  toollist_standby: Standby
-  default_tool_name: Tool
-  bed: Bed
-  chamber: Chamber
-  active: Active
-  fault: Fault
-  'off': 'Off'
-  offline: Offline
-  standby: Standby
-  tuning: Tuning
-  tool_list_numpad_header_tool_heater: Tool %d Heater %d %s
-  tool_list_numpad_header_tool_spindle: Tool %d Spindle
-  tool_list_numpad_header_bed_chamber: '%s %d %s'
-  move: Move
   extrude: Extrude
-  temperature: Temperature
-  status: Status
-  fans: Fans
-  files: Files
-  object_cancel: Object Cancel
-  settings: Settings
-  settings_debug_level: Debug Level
-  settings_debug_borders: Enable Debug Borders
-  settings_developer: Developer
-  move_axis_home: Home %s
-  home_all: Home All
-  true_bed_level: True Bed Level
-  mesh_bed_level: Mesh Bed Level
-  heightmap: Heightmap
-  disable_motors: Disable Motors
-  move_tool_position: Tool Pos (mm)
-  move_machine_position: Machine Pos (mm)
-  move_distance: Move Distance (mm)
-  settings_duet: Duet
-  save: Save
-  settings_duet_hostname: 'IP Address: '
-  settings_duet_password: 'Password: '
-  settings_duet_poll_interval: Poll Interval (ms)
-  unload: Unload
-  retract: Retract
+  extrude_distance_header: Set Extrusion Distance (mm)
+  extrude_distance_input: 'Extrude Distance: {:.2g} mm'
   extrude_feed_dist: Feed Distance (mm)
   extrude_feed_rate: Feed Rate (mm/s)
-  toollist_filament: Filament
-  none: None
-  file_header: 'Folder: %s'
-  refresh: Refresh
-  console_input_placeholder: ~
+  extrude_feedrate_header: ~
+  extrude_feedrate_input: 'Extrude Feedrate: {:.2g} mm/s'
+  fan: Fan
+  fan_header: Fans
+  fans: Fans
+  fault: Fault
+  filament_management_header: Currently Loaded Filament
+  filament_select: Select Filament
+  filament_select_tool: 'Select Filament for {:s}'
+  file: File
+  file_header_prefix: 'Folder: '
+  file_crumb_separator: ' > '
+  file_run_macro_message: 'Do you want to run {}?'
+  file_run_macro_title: Run Macro
+  file_start_print_message: 'File: {}\nDate: {}\nSize: {}'
+  file_start_print_title: Start Print
+  files: Jobs
+  fine_tune: Fine Tune
+  fine_tune_babystep_decrement: '-'
+  fine_tune_babystep_increment: +
+  fine_tune_babystep_reset: Reset %.3fmm
+  fine_tune_extruder: Extruder %u
+  fine_tune_extruder_header: Extrusion Factor
+  fine_tune_fan: Fan %u
+  fine_tune_fan_header: Fans
+  fine_tune_speed_factor: Speed Factor
+  folder: Folder
   gcode_G0_desc: Rapid move
+  gcode_G10_temperature_desc: Tool Temperature Setting
+  gcode_G10_workplace_desc: Set workplace coordinate offset or tool offset
+  gcode_G10_desc: Retract
+  gcode_G11_desc: Unretract
+  gcode_G17_desc: Select XY plane for arc moves
+  gcode_G18_desc: Select XZ plane for arc moves
+  gcode_G19_desc: Select YZ plane for arc moves
   gcode_G1_desc: Controlled linear move
-  gcode_G2G3_desc: ~
-  gcode_G4_desc: ~
-  gcode_G10_temperature_desc: ~
-  gcode_G10_workplace_desc: ~
-  gcode_G10_retract_desc: ~
-  gcode_G11_desc: ~
-  gcode_G17_desc: ~
-  gcode_G20_desc: ~
-  gcode_G21_desc: ~
-  gcode_G28_desc: ~
-  gcode_G29_desc: ~
-  gcode_G30_desc: ~
-  gcode_G31_desc: ~
-  gcode_G32_desc: ~
-  gcode_G38.2_desc: ~
-  gcode_G53_desc: ~
-  gcode_G54_desc: ~
-  gcode_G60_desc: ~
-  gcode_G90_desc: ~
-  gcode_G91_desc: ~
-  gcode_G92_desc: ~
-  gcode_M0_desc: ~
-  gcode_M1_desc: ~
-  gcode_M3_desc: ~
-  gcode_M4_desc: ~
-  gcode_M5_desc: ~
-  gcode_M18_desc: ~
-  gcode_M20_desc: ~
-  gcode_M21_desc: ~
-  gcode_M22_desc: ~
-  gcode_M23_desc: ~
-  gcode_M24_desc: ~
-  gcode_M25_desc: ~
-  gcode_M26_desc: ~
-  gcode_M27_desc: ~
-  gcode_M28_desc: ~
-  gcode_M29_desc: ~
-  gcode_M30_desc: ~
-  gcode_M32_desc: ~
-  gcode_M36_desc: ~
-  gcode_M37_desc: ~
-  gcode_M38_desc: ~
-  gcode_M39_desc: ~
-  gcode_M42_desc: ~
-  gcode_M80_desc: ~
-  gcode_M81_desc: ~
-  gcode_M82_desc: ~
-  gcode_M83_desc: ~
-  gcode_M84_desc: ~
-  gcode_M92_desc: ~
-  gcode_M98_desc: ~
-  gcode_M99_desc: ~
-  gcode_M104_desc: ~
-  gcode_M105_desc: ~
-  gcode_M106_desc: ~
-  gcode_M107_desc: ~
-  gcode_M108_desc: ~
-  gcode_M109_desc: ~
-  gcode_M110_desc: ~
-  gcode_M111_desc: ~
-  gcode_M112_desc: ~
-  gcode_M114_desc: ~
-  gcode_M115_desc: ~
-  gcode_M116_desc: ~
+  gcode_G20_desc: Set Units to Inches
+  gcode_G21_desc: Set Units to Millimeters
+  gcode_G28_desc: Home
+  gcode_G29_desc: Mesh bed probe
+  gcode_G2_desc: Controlled Arc Move
+  gcode_G30_desc: Single Z-Probe
+  gcode_G31_desc: Set or Report Current Probe status
+  gcode_G32_desc: Run bed.g macro
+  gcode_G382_desc: Straight Probe
+  gcode_G383_desc: Straight Probe
+  gcode_G384_desc: Straight Probe
+  gcode_G385_desc: Straight Probe
+  gcode_G3_desc: Controlled Arc Move
+  gcode_G4_desc: Dwell
+  gcode_G53_desc: Use machine coordinates
+  gcode_G54_desc: Select coordinate system
+  gcode_G55_desc: Select coordinate system
+  gcode_G56_desc: Select coordinate system
+  gcode_G57_desc: Select coordinate system
+  gcode_G58_desc: Select coordinate system
+  gcode_G591_desc: Select coordinate system
+  gcode_G592_desc: Select coordinate system
+  gcode_G593_desc: Select coordinate system
+  gcode_G59_desc: Select coordinate system
+  gcode_G60_desc: Save current position to slot
+  gcode_G68_desc: Coordinate rotation
+  gcode_G69_desc: Cancel coordinate rotation
+  gcode_G90_desc: Set to Absolute Positioning
+  gcode_G91_desc: Set to Relative Positioning
+  gcode_G92_desc: Set User Position
+  gcode_G93_desc: Feed Rate Mode (Inverse Time Mode)
+  gcode_G94_desc: Feed Rate Mode (Units per Minute)
+  gcode_M0_desc: Stop or Unconditional stop
+  gcode_M101_desc: Un-retract filament
+  gcode_M102_desc: Turn extruder on (ignored)
+  gcode_M103_desc: Retract filament
+  gcode_M104_desc: Set Extruder Temperature
+  gcode_M105_desc: Get Extruder Temperature
+  gcode_M106_desc: Fan On
+  gcode_M107_desc: Fan Off
+  gcode_M108_desc: Cancel Heating
+  gcode_M109_desc: Set Extruder Temperature and Wait
+  gcode_M110_desc: Set Current Line Number
+  gcode_M111_desc: Set Debug Level
+  gcode_M112_desc: Emergency Stop
+  gcode_M114_desc: Get Current Position
+  gcode_M115_desc: Get Firmware Version and Capabilities
+  gcode_M116_desc: Wait for temperature to be reached
   gcode_M117_desc: Display Message
   gcode_M118_desc: Send Message to Specific Target
-  gcode_M119_desc: ~
-  gcode_M120_desc: ~
-  gcode_M121_desc: ~
-  gcode_M122_desc: ~
-  gcode_M135_desc: ~
-  gcode_M140_desc: ~
-  gcode_M141_desc: ~
-  gcode_M143_desc: ~
-  gcode_M144_desc: ~
-  gcode_M150_desc: ~
-  gcode_M190_desc: ~
-  gcode_M191_desc: ~
-  gcode_M200_desc: ~
-  gcode_M201_desc: ~
-  gcode_M203_desc: ~
-  gcode_M204_desc: ~
-  gcode_M205_desc: ~
-  gcode_M206_desc: ~
-  gcode_M207_desc: ~
-  gcode_M208_desc: ~
-  gcode_M220_desc: ~
-  gcode_M221_desc: ~
-  gcode_M226_desc: ~
-  gcode_M260_desc: ~
-  gcode_M261_desc: ~
-  gcode_M280_desc: ~
-  gcode_M290_desc: ~
-  gcode_M291_desc: ~
-  gcode_M292_desc: ~
-  gcode_M300_desc: ~
-  gcode_M301_desc: ~
-  gcode_M302_desc: ~
-  gcode_M303_desc: ~
-  gcode_M304_desc: ~
-  gcode_M305_desc: ~
-  gcode_M307_desc: ~
-  gcode_M308_desc: ~
-  gcode_M350_desc: ~
-  gcode_M374_desc: ~
-  gcode_M375_desc: ~
-  gcode_M376_desc: ~
-  gcode_M400_desc: ~
-  gcode_M401_desc: ~
-  gcode_M402_desc: ~
-  gcode_M404_desc: ~
-  gcode_M408_desc: ~
-  gcode_M409_desc: ~
-  gcode_M450_desc: ~
-  gcode_M451_desc: ~
-  gcode_M452_desc: ~
-  gcode_M453_desc: ~
-  gcode_M470_desc: ~
-  gcode_M471_desc: ~
-  gcode_M486_desc: ~
-  gcode_M500_desc: ~
-  gcode_M501_desc: ~
-  gcode_M502_desc: ~
-  gcode_M503_desc: ~
-  gcode_M505_desc: ~
-  gcode_M540_desc: ~
-  gcode_M550_desc: ~
-  gcode_M551_desc: ~
-  gcode_M552_desc: ~
-  gcode_M553_desc: ~
-  gcode_M554_desc: ~
-  gcode_M555_desc: ~
-  gcode_M556_desc: ~
-  gcode_M557_desc: ~
-  gcode_M558_desc: ~
-  gcode_M559_desc: ~
-  gcode_M560_desc: ~
-  gcode_M561_desc: ~
-  gcode_M562_desc: ~
-  gcode_M563_desc: ~
-  gcode_M564_desc: ~
-  gcode_M566_desc: ~
-  gcode_M567_desc: ~
-  gcode_M568_desc: ~
-  gcode_M569_desc: ~
-  gcode_M569.1_desc: ~
-  gcode_M570_desc: ~
-  gcode_M571_desc: ~
-  gcode_M572_desc: ~
-  gcode_M573_desc: ~
-  gcode_M574_desc: ~
-  gcode_M575_desc: ~
-  gcode_M577_desc: ~
-  gcode_M578_desc: ~
-  gcode_M579_desc: ~
-  gcode_M580_desc: ~
-  gcode_M581_desc: ~
-  gcode_M582_desc: ~
-  gcode_M584_desc: ~
-  gcode_M585_desc: ~
-  gcode_M586_desc: ~
-  gcode_M587_desc: ~
-  gcode_M588_desc: ~
-  gcode_M589_desc: ~
-  gcode_M591_desc: ~
-  gcode_M592_desc: ~
-  gcode_M593_desc: ~
-  gcode_M594_desc: ~
-  gcode_M600_desc: ~
-  gcode_M650_desc: ~
-  gcode_M651_desc: ~
-  gcode_M665_desc: ~
-  gcode_M666_desc: ~
-  gcode_M667_desc: ~
-  gcode_M669_desc: ~
-  gcode_M670_desc: ~
-  gcode_M671_desc: ~
-  gcode_M672_desc: ~
-  gcode_M673_desc: ~
-  gcode_M674_desc: ~
-  gcode_M675_desc: ~
-  gcode_M701_desc: ~
-  gcode_M702_desc: ~
-  gcode_M703_desc: ~
-  gcode_M750_desc: ~
-  gcode_M751_desc: ~
-  gcode_M752_desc: ~
-  gcode_M753_desc: ~
-  gcode_M754_desc: ~
-  gcode_M755_desc: ~
-  gcode_M756_desc: ~
-  gcode_M851_desc: ~
-  gcode_M905_desc: ~
-  gcode_M906_desc: ~
-  gcode_M911_desc: ~
-  gcode_M912_desc: ~
-  gcode_M913_desc: ~
-  gcode_M914_desc: ~
-  gcode_M915_desc: ~
-  gcode_M916_desc: ~
-  gcode_M917_desc: ~
-  gcode_M918_desc: ~
-  gcode_M929_desc: ~
-  gcode_M950_desc: ~
-  gcode_M951_desc: ~
-  gcode_M952_desc: ~
-  gcode_M953_desc: ~
-  gcode_M997_desc: ~
-  gcode_M998_desc: ~
-  gcode_M999_desc: ~
-  gcode_T_desc: ~
-  folder: Folder
-  file: File
-  settings_network_ip_address: 'IP Address: %s'
-  settings_connectivity_header: Connectivity
-  settings_network: Network
-  settings_dev_header: Developer
-  settings_network_ssid: SSID
-  settings_network_signal: Signal
-  settings_network_known: Known
-  settings_network_forget: Forget
-  settings_network_connected: Connected
-  settings_network_password_title: Password
-  settings_network_enter_password: Enter Password
-  settings_enable_ssh: Enable SSH
-  settings_network_enable: Enable WiFi
-  msgbox_cancel: Cancel
-  msgbox_ok: Ok
-  open_console: Open Console
-  msgbox_close: Close
-  msgbox_warning_int_range: Value must be between %d and %d
-  msgbox_warning_float_range: Value must be between %f and %f
-  msgbox_warning_text_length: Input must be between %d and %d characters
-  file_start_print_title: Start Print
-  file_start_print_message: 'File: %s\nDate: %s\nSize: %s'
-  settings_duet_info_timeout: Notification Timeout (ms)
-  pause: Pause
-  resume: Resume
-  cancel: Cancel
-  print_cancel_title: Cancel Print
-  print_cancel_message: Are you sure you want to cancel the print?
-  status_printed_header: 'Printed: %s'
-  status_tool_temp: 'Tool: %.1f/%d °C'
-  status_bed_temp: 'Bed: %.1f/%d °C'
-  status_speed: '%.1f/%.1f mm/s'
-  status_speed_detailed: 'Speed: %.1f/%.1f mm/s'
-  status_flow_rate: '%.1f mm/s^3'
-  status_flow_multiplier: 'Flow: %u%%'
-  status_speed_multiplier: 'Speed: %u%%'
-  status_elapsed_time: 'Elapsed: %s'
-  status_remaining_time: 'Remaining: %s'
-  status_layer: 'Z: %.2f/%.2f mm'
-  status_fan_speed: 'Fan: %u%%'
-  print_again: Print Again
-  file_run_macro_title: Run Macro
-  file_run_macro_message: Do you want to run %s?
-  settings_restart: Restart
-  settings_erase_and_restart: Erase and Restart
-  settings_reboot: Reboot
-  fine_tune_babystep_increment: +
-  fine_tune_babystep_decrement: '-'
-  fine_tune_babystep_reset: Reset %.3fmm
-  fine_tune_speed_factor: Speed Factor
-  fine_tune_extruder_header: Extrusion Factor
-  fine_tune_fan_header: Fans
-  fine_tune_extruder: Extruder %u
-  fine_tune_fan: Fan %u
-  fine_tune: Fine Tune
-  fan_header: Fans
-  max: Max
-  fan: Fan
-  sort_by_name: Name
-  sort_by_date: Date
-  sort_by_size: Size
-  settings_device: Device
-  settings_brightness: Brightness
-  settings_screensaver_timeout: Screensaver Timeout
-  update_available: Update Available
-  update_available_text: Confirm to install the update
-  update_confirm: Update
-  update_cancel: Cancel
-  settings_system_logging: Log system messages to console
-  heightmap_unload: Unload
-  heightmap_load: Load
-  heightmap_list_header: Heightmaps
-  heightmap_num_points: 'Number of points: %u'
+  gcode_M119_desc: Get Endstop Status
+  gcode_M120_desc: Push
+  gcode_M121_desc: Pop
+  gcode_M122_desc: Diagnose
+  gcode_M135_desc: Set PID sample interval
+  gcode_M140_desc: Set Bed Temperature (Fast) or Configure Bed Heater
+  gcode_M141_desc: Set Chamber Temperature (Fast) or Configure Chamber Heater
+  gcode_M143_desc: Maximum heater temperature
+  gcode_M144_desc: Bed Standby
+  gcode_M150_desc: Set LED colours
+  gcode_M17_desc: Enable motors
+  gcode_M18_desc: Disable motors
+  gcode_M190_desc: Wait for bed temperature to reach target temp
+  gcode_M191_desc: Wait for chamber temperature to reach target temp
+  gcode_M1_desc: Sleep or Conditional stop
+  gcode_M200_desc: Volumetric extrusion
+  gcode_M2011_desc: Set reduced acceleration for special move types
+  gcode_M201_desc: Set max acceleration
+  gcode_M203_desc: Set maximum feedrate
+  gcode_M204_desc: Set printing and travel accelerations
+  gcode_M205_desc: Set max instantaneous speed change in mm/sec
+  gcode_M206_desc: Offset axes
+  gcode_M207_desc: Set retract length
+  gcode_M208_desc: Set axis max travel
+  gcode_M20_desc: List SD card
+  gcode_M21_desc: Initialize SD card
+  gcode_M220_desc: Set speed factor override percentage
+  gcode_M221_desc: Set extrude factor override percentage
+  gcode_M226_desc: Synchronous Pause
+  gcode_M22_desc: Release SD card
+  gcode_M23_desc: Select SD file
+  gcode_M24_desc: Start/resume SD print
+  gcode_M25_desc: Pause SD print
+  gcode_M2601_desc: Modbus write registers or coils
+  gcode_M2602_desc: UART write
+  gcode_M2603_desc: Write to Nordson Ultimus V
+  gcode_M2604_desc: Raw Modbus transaction
+  gcode_M260_desc: i2c Send and/or request Data
+  gcode_M2611_desc: 'Modbus read registers, coils or inputs'
+  gcode_M2612_desc: UART read
+  gcode_M261_desc: i2c Request Data
+  gcode_M26_desc: Set SD position
+  gcode_M27_desc: Report SD print status
+  gcode_M280_desc: Set servo position
+  gcode_M28_desc: Begin write to SD card
+  gcode_M290_desc: Baby stepping
+  gcode_M291_desc: Display message and optionally wait for response
+  gcode_M292_desc: Acknowledge blocking message
+  gcode_M29_desc: Stop writing to SD card
+  gcode_M2_desc: Program End
+  gcode_M300_desc: Play beep sound
+  gcode_M301_desc: Set PID parameters
+  gcode_M302_desc: Allow cold extrudes
+  gcode_M303_desc: Run heater tuning
+  gcode_M304_desc: Set PID parameters - Bed
+  gcode_M305_desc: Set temperature sensor parameters
+  gcode_M307_desc: Set or report heating process parameters
+  gcode_M308_desc: Set or report sensor parameters
+  gcode_M309_desc: Set or report heater feedforward
+  gcode_M30_desc: Delete a file on the SD card
+  gcode_M32_desc: Select file and start SD print
+  gcode_M350_desc: Set microstepping mode
+  gcode_M361_desc: Return embedded thumbnail data
+  gcode_M362_desc: Return height map data
+  gcode_M36_desc: Return file information
+  gcode_M374_desc: Save height map
+  gcode_M375_desc: Load height map
+  gcode_M376_desc: Set bed compensation taper
+  gcode_M37_desc: Simulation mode
+  gcode_M38_desc: Compute CRC32 hash of target file
+  gcode_M39_desc: Report SD card information
+  gcode_M3_desc: 'Spindle On, Clockwise'
+  gcode_M400_desc: Wait for current moves to finish
+  gcode_M401_desc: Deploy z-probe
+  gcode_M402_desc: Retract z-probe
+  gcode_M404_desc: Filament diameter
+  gcode_M408_desc: Report JSON-style response
+  gcode_M409_desc: Query object model
+  gcode_M425_desc: Configure backlash compensation
+  gcode_M42_desc: Switch I/O pin
+  gcode_M450_desc: Report Printer Mode
+  gcode_M451_desc: Select FFF Printer Mode
+  gcode_M452_desc: Select Laser Device Mode
+  gcode_M453_desc: Select CNC Device Mode
+  gcode_M470_desc: Create Directory on SD-Card
+  gcode_M471_desc: Rename File/Directory on SD-Card
+  gcode_M472_desc: Delete File/Directory on SD-Card
+  gcode_M486_desc: Object cancellation
+  gcode_M4_desc: 'Spindle On, Counterclockwise'
+  gcode_M500_desc: Store parameters
+  gcode_M501_desc: Read stored parameters
+  gcode_M502_desc: Revert stored parameters
+  gcode_M503_desc: Print settings
+  gcode_M505_desc: Set configuration file folder
+  gcode_M540_desc: Set MAC address
+  gcode_M550_desc: Set Name
+  gcode_M551_desc: Set Password
+  gcode_M552_desc: 'Set IP address, enable/disable network interface'
+  gcode_M553_desc: Set Netmask
+  gcode_M554_desc: Set Gateway and/or DNS server
+  gcode_M555_desc: Set compatibility
+  gcode_M556_desc: Axis skew compensation
+  gcode_M557_desc: Set Z probe point or define probing grid
+  gcode_M5581_desc: 'Calibrate, set or report height vs reading of scanning Z probe'
+  gcode_M5582_desc: >-
+    Calibrate, set or report drive current and reading offset for scanning Z
+    probe
+  gcode_M5583_desc: Set touch mode parameters for analog probe
+  gcode_M558_desc: Create or modify probe
+  gcode_M559_desc: Upload file
+  gcode_M560_desc: Upload file
+  gcode_M561_desc: Set Identity Transform
+  gcode_M562_desc: Reset temperature fault
+  gcode_M563_desc: Define or remove a tool
+  gcode_M564_desc: Limit axes
+  gcode_M566_desc: Set allowable instantaneous speed change
+  gcode_M567_desc: Set tool mix ratios
+  gcode_M568_desc: Turn off/on tool mix ratios (deprecated)
+  gcode_M5691_desc: Stepper driver closed loop configuration
+  gcode_M5692_desc: Read or write stepper driver register
+  gcode_M5693_desc: Read Motor Driver Encoder via secondary CAN bus
+  gcode_M5694_desc: Set Motor Driver Torque Mode
+  gcode_M5695_desc: Closed loop data collection
+  gcode_M5696_desc: Execute closed loop tuning move
+  gcode_M5697_desc: Configure motor brake port
+  gcode_M5698_desc: Read motor force via secondary CAN bus
+  gcode_M5699_desc: Configure driver sense resistor and maximum current
+  gcode_M569_desc: 'Set motor driver direction, enable polarity, mode and step pulse timing'
+  gcode_M570_desc: Configure heater fault detection
+  gcode_M571_desc: Set output on extrude
+  gcode_M572_desc: Set or report extruder pressure advance
+  gcode_M573_desc: Report heater PWM
+  gcode_M574_desc: Set endstop configuration
+  gcode_M575_desc: Set serial comms parameters
+  gcode_M576_desc: Set SPI comms parameters
+  gcode_M577_desc: Wait until endstop is triggered
+  gcode_M578_desc: Fire inkjet bits
+  gcode_M579_desc: Scale Cartesian axes
+  gcode_M580_desc: Select Roland
+  gcode_M581_desc: Configure external trigger
+  gcode_M582_desc: Check external trigger
+  gcode_M584_desc: Set drive mapping
+  gcode_M585_desc: Probe Tool
+  gcode_M5864_desc: Configure MQTT Client
+  gcode_M586_desc: Configure network protocols
+  gcode_M5871_desc: Start network scan
+  gcode_M5872_desc: Return network scan results
+  gcode_M587_desc: 'Add WiFi host network to remembered list, or list remembered networks'
+  gcode_M588_desc: Forget WiFi host network
+  gcode_M589_desc: Configure access point parameters
+  gcode_M591_desc: Configure filament sensing
+  gcode_M592_desc: Configure nonlinear extrusion
+  gcode_M593_desc: Configure Input Shaping
+  gcode_M594_desc: Enter/Leave Height Following mode
+  gcode_M595_desc: Set movement queue length
+  gcode_M596_desc: Select movement queue number
+  gcode_M597_desc: Collision avoidance
+  gcode_M598_desc: Synchronise motion systems
+  gcode_M599_desc: Define keepout zone
+  gcode_M5_desc: Spindle Off
+  gcode_M600_desc: Filament change pause
+  gcode_M606_desc: Fork input file reader
+  gcode_M650_desc: Set peel move parameters
+  gcode_M651_desc: Execute peel move
+  gcode_M655_desc: Send request to custom CAN-connected expansion board
+  gcode_M665_desc: Set delta configuration
+  gcode_M666_desc: Set delta endstop adjustment
+  gcode_M667_desc: Select CoreXY or related mode
+  gcode_M669_desc: Set kinematics type and kinematics parameters
+  gcode_M670_desc: Set IO port bit mapping
+  gcode_M671_desc: Define positions of Z pivot points or bed levelling screws
+  gcode_M672_desc: Program Z probe
+  gcode_M673_desc: Align plane on rotary axis
+  gcode_M674_desc: Set Z to center point
+  gcode_M675_desc: Find center of cavity
+  gcode_M701_desc: Load filament
+  gcode_M702_desc: Unload filament
+  gcode_M703_desc: Configure filament
+  gcode_M73_desc: Set remaining print time
+  gcode_M750_desc: Enable 3D scanner extension
+  gcode_M751_desc: Register 3D scanner extension over USB
+  gcode_M752_desc: Start 3D scan
+  gcode_M753_desc: Cancel current 3D scanner action
+  gcode_M754_desc: Calibrate 3D scanner
+  gcode_M755_desc: Set alignment mode for 3D scanner
+  gcode_M756_desc: Shutdown 3D scanner
+  gcode_M80_desc: ATX Power On
+  gcode_M81_desc: ATX Power Off
+  gcode_M82_desc: Set extruder to absolute mode
+  gcode_M83_desc: Set extruder to relative mode
+  gcode_M84_desc: Stop idle hold
+  gcode_M851_desc: Set Z-Probe Offset (Marlin Compatibility)
+  gcode_M905_desc: Set local date and time
+  gcode_M906_desc: Set motor currents
+  gcode_M911_desc: Configure auto save on loss of power
+  gcode_M912_desc: Set electronics temperature monitor adjustment
+  gcode_M913_desc: Set motor percentage of normal current
+  gcode_M914_desc: Set/Get Expansion Voltage Level Translator
+  gcode_M915_desc: Configure motor stall detection
+  gcode_M916_desc: Resume print after power failure
+  gcode_M917_desc: Set motor standstill current reduction
+  gcode_M918_desc: Configure direct-connect display
+  gcode_M929_desc: Start/stop event logging to SD card
+  gcode_M92_desc: Set axis steps per unit
+  gcode_M950_desc: 'Create heater, fan, spindle, LED strip or GPIO/servo pin'
+  gcode_M951_desc: Set height following mode parameters
+  gcode_M952_desc: Set CAN-FD expansion board address and/or normal data rate
+  gcode_M953_desc: Set CAN-FD bus fast data rate
+  gcode_M954_desc: Configure as CAN expansion board
+  gcode_M955_desc: Configure Accelerometer
+  gcode_M956_desc: Collect accelerometer data and write to file
+  gcode_M957_desc: Raise event
+  gcode_M9701_desc: Configure phase stepping velocity constant
+  gcode_M9702_desc: Configure phase stepping acceleration constant
+  gcode_M970_desc: Enable/disable phase stepping
+  gcode_M98_desc: Call Macro/Subprogram
+  gcode_M997_desc: Perform in-application firmware update
+  gcode_M998_desc: Request resend of line
+  gcode_M999_desc: Restart
+  gcode_M99_desc: Return from Macro/Subprogram
+  gcode_T_desc: Select Tool
+  halted: Halted
+  heater: 'Heater: %s'
+  heightmap: Heightmap
   heightmap_area: 'Probe area: %.2f cm^2'
-  heightmap_min_error: 'Min deviation: %.2f mm'
+  heightmap_auto: Auto
+  heightmap_fixed: Fixed
+  heightmap_list_header: Heightmaps
+  heightmap_load: Load
   heightmap_max_error: 'Max deviation: %.2f mm'
   heightmap_mean_error: 'Mean error: %.2f mm'
-  heightmap_std_dev: 'RMS error: %.2f mm'
-  heightmap_fixed: Fixed
-  heightmap_auto: Auto
+  heightmap_min_error: 'Min deviation: %.2f mm'
+  heightmap_not_supported: Heightmap not supported in %s mode
+  heightmap_num_points: 'Number of points: %u'
   heightmap_render_mode: 'Render Mode:'
-  heightmap_title: 'Heightmap: %s'
-  connected_message: Connected to Duet
-  disconnected_message: Disconnected from Duet
-  settings_duet_connection_method: 'Connection Method: '
-  settings_duet_hostname_prompt: Enter IP Address
-  settings_duet_password_prompt: Enter Password
-  usb: USB
-  network: Network
-  uart: UART
-  settings_language: Language
-  settings_language_en: English
-  settings_theme: Theme
-  settings_theme_light: Light
-  settings_usb_mode: USB-C Mode
-  settings_usb_mode_host: USB-C Host
-  settings_usb_mode_device: USB-C Device
-  settings_usb_mode_internal_wifi: Internal WiFi
-  settings_firmware_version: 'Firmware Version: %s'
-  settings_build_time: 'Firmware built on: %s %s'
-  settings_display_connected_message: Display Connection Message
-  connected: Connected
-  disconnected: Disconnected
-  busy: Busy
-  cancelling: Cancelling
-  changingTool: Changing Tool
-  connecting: Connecting
-  halted: Halted
+  heightmap_std_dev: 'RMS error: %.2f mm'
+  heightmap_title: 'Heightmap: {:s}'
+  heightmap_unload: Unload
+  home: Home
+  home_all: Home All
   idle: Idle
+  macros: Macros
+  max: Max
+  mesh_bed_level: Mesh Bed Level
+  move: Move
+  move_axis_home: Home %s
+  move_distance: Move Distance (mm)
+  move_machine_position: Machine Pos (mm)
+  move_set_position: 'Set absolute position for axis {}'
+  move_tool_position: Tool Pos (mm)
+  msgbox_cancel: Cancel
+  msgbox_close: Close
+  msgbox_ok: Ok
+  msgbox_warning_float_range: 'Value must be between {:g} and {:g}'
+  msgbox_warning_int_range: 'Value must be between {:d} and {:d}'
+  msgbox_warning_text_length: 'Input must be between {:d} and {:d} characters'
+  network: Network
+  none: None
+  object_cancel: Object Cancel
+  'off': 'Off'
+  offline: Offline
+  open_console: Open Console
+  open_sub_view: Open Sub View
+  pause: Pause
   paused: Paused
   pausing: Pausing
+  print_again: Print Again
+  print_cancel_message: Are you sure you want to cancel the print?
+  print_cancel_title: Cancel Print
   processing: Processing
+  refresh: Refresh
+  resume: Resume
   resuming: Resuming
+  retract: Retract
+  save: Save
+  filament_select_tool_list_header: Tools
+  set_temperature_numpad_header: 'Set {} Temperature for {}'
+  settings: Settings
+  settings_brightness: Brightness
+  settings_build_time: 'Firmware built on: %s %s'
+  settings_connectivity_header: Connectivity
+  settings_debug_borders: Enable Debug Borders
+  settings_debug_level: Debug Level
+  settings_dev_header: Developer
+  settings_developer: Developer
+  settings_display_connected_message: Display Connection Message
+  settings_duet: Duet
+  settings_duet_connection_method: 'Connection Method: '
+  settings_duet_hostname: 'IP Address: '
+  settings_duet_hostname_prompt: Enter IP Address
+  settings_duet_info_timeout: Notification Timeout (ms)
+  settings_duet_password: 'Password: '
+  settings_duet_password_prompt: Enter Password
+  settings_duet_poll_interval: Poll Interval (ms)
+  settings_enable_ssh: Enable SSH
+  settings_erase_and_restart: Erase and Restart
+  settings_firmware_version: 'Firmware Version: %s'
+  settings_language: Language
+  settings_language_en: English
+  settings_network: Network
+  settings_network_connected: Connected
+  settings_network_enable: Enable WiFi
+  settings_network_enter_password: Enter Password
+  settings_network_forget: Forget
+  settings_network_ip_address: 'IP Address: %s'
+  settings_network_known: Known
+  settings_network_password_title: Password
+  settings_network_signal: Signal
+  settings_network_ssid: SSID
+  settings_reboot: Reboot
+  settings_restart: Restart
+  settings_screen: Screen
+  settings_screen_header: Screen Settings
+  settings_screensaver_timeout: Screensaver Timeout
+  settings_system_logging: Log system messages to console
+  settings_theme: Theme
+  settings_usb_mode: USB-C Mode
+  settings_usb_mode_device: USB-C Device
+  settings_usb_mode_host: USB-C Host
+  settings_usb_mode_internal_wifi: Internal WiFi
   simulating: Simulating
+  sort_by_date: Date
+  sort_by_name: Name
+  sort_by_size: Size
+  standby: Standby
   starting: Starting
-  updating: Updating
-  heightmap_not_supported: Heightmap not supported in %s mode
+  status: Status
   status_acceleration: 'Acceleration: %.1f mm/s^2'
-  status_position: 'X: %.2f Y: %.2f Z: %.2f'
-  status_z_offset: 'Z Offset: %.2f mm'
-  status_print_height: 'Height: %.2f mm'
+  status_bed_temp: 'Bed: %.1f/%d °C'
+  status_elapsed_time: 'Elapsed: %s'
+  status_fan_speed: 'Fan: %u%%'
+  status_flow_multiplier: 'Flow: %u%%'
+  status_flow_rate: '%.1f mm/s^3'
+  status_layer: 'Z: %.2f/%.2f mm'
   status_layer_number: 'Layer: %u'
+  status_position: 'X: %.2f Y: %.2f Z: %.2f'
+  status_print_height: 'Height: %.2f mm'
+  status_printed_header: 'Printed: %s'
+  status_remaining_time: 'Remaining: %s'
+  status_speed: '%.1f/%.1f mm/s'
+  status_speed_detailed: 'Speed: %.1f/%.1f mm/s'
+  status_speed_multiplier: 'Speed: %u%%'
+  status_tool_temp: 'Tool: %.1f/%d °C'
+  status_z_offset: 'Z Offset: %.2f mm'
+  temperature: Temperature
   theme_dark: Dark
+  theme_grey: Greyscale
   theme_light: Light
+  tool_list_numpad_header_bed_chamber: '%s %d %s'
+  tool_list_numpad_header_tool_heater: Tool %d Heater %d %s
+  tool_list_numpad_header_tool_spindle: Tool %d Spindle
   tool_select: Select Tool
-  filament_select: Select Filament
-  extrude_distance_input: 'Extrude Distance: {:.2g} mm'
-  extrude_feedrate_input: 'Extrude Feedrate: {:.2g} mm/s'
-  extrude_distance_header: Set Extrusion Distance (mm)
-  move_set_position: 'Set absolute position for axis {}'
+  toollist_active: Active
+  toollist_current: Current
+  toollist_filament: Filament
+  toollist_standby: Standby
+  toollist_status: Status
+  toollist_tool: Tool
+  tools: Tools
+  true_bed_level: True Bed Level
+  tuning: Tuning
+  uart: UART
   unknown: ~
-  extrude_feedrate_header: ~
+  unload: Unload
+  update_available: Update Available
+  update_available_text: Confirm to install the update
+  update_cancel: Cancel
+  update_confirm: Update
+  updating: Updating
+  usb: USB
+  primary_hue: Primary Hue
+  secondary_hue: Secondary Hue
+  chroma: Chroma
+  menu: Menu
+  select_view: Select View
+  select_filament: ~

@@ -20,7 +20,7 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_title(lv_label_create(getRoot()))
+		, m_title("title", getRoot())
 		, m_canvas(lv_canvas_create(getRoot()))
 		, m_vScale(lv_scale_create(getRoot()))
 		, m_hScale(lv_scale_create(getRoot()))
@@ -32,7 +32,7 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent, layout)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_title(lv_label_create(getRoot()))
+		, m_title("title", getRoot())
 		, m_canvas(lv_canvas_create(getRoot()))
 		, m_vScale(lv_scale_create(getRoot()))
 		, m_hScale(lv_scale_create(getRoot()))
@@ -84,10 +84,9 @@ namespace UI
 		lv_image_set_inner_align(m_canvas, LV_IMAGE_ALIGN_STRETCH);
 	}
 
-	void Canvas::setTitle(const std::string& title)
+	void Canvas::setTitle(std::string_view title)
 	{
-		UI_LOCK();
-		lv_label_set_text(m_title, title.c_str());
+		m_title.setText(title);
 	}
 
 	void Canvas::showTitle(const bool show)

@@ -29,8 +29,8 @@ namespace UI::Themes
 		operator const lv_style_t*() const { return &style; }
 
 	  private:
-		const char* name;
 		lv_style_t style;
+		const char* name;
 		std::function<void(lv_style_t*)> initFunc;
 	};
 
@@ -40,13 +40,10 @@ namespace UI::Themes
 
 		Style base; // Base style applied to all objects
 
-		Style screen;
-		Style scrollbar;
-		Style scrollbar_scrolled;
-		Style card;
-		Style btn;
-
-		/*Utility*/
+		/* Background */
+		Style bg_dark;
+		Style bg;
+		Style bg_light;
 		Style bg_color_primary; // button, button matrix (checked), bar indicator, slider indicator, table part focus
 								// key, checkbox indicator, switch indicator, roller selected, dropdown list selected,
 								// textarea selected, list button focus key, spinbox cursor, msgbox buttons
@@ -55,6 +52,28 @@ namespace UI::Themes
 		Style bg_color_secondary_muted;
 		Style bg_color_header;
 		Style bg_color_list_item;
+
+		/* Text */
+		Style text;
+		Style text_muted;
+		Style text_header;
+
+		/* Border */
+		Style border;
+		Style border_muted;
+		Style border_highlight;
+		Style border_color_primary;
+		Style border_color_secondary;
+		Style border_color_card;
+
+		Style screen;
+		Style scrollbar;
+		Style scrollbar_scrolled;
+		Style card;
+		Style btn;
+		Style btn_checked;
+
+		/*Utility*/
 		Style pressed;
 		Style disabled;
 		Style pad_base;
@@ -196,11 +215,13 @@ namespace UI::Themes
 
 	struct ComponentStyles
 	{
-		Style estop;   // Emergency stop button style
-		Style file;	   // File item style
-		Style folder;  // Folder item style
-		Style unhomed; // Used for the move view
-		Style sidebar; // Sidebar style
+		Style estop;				 // Emergency stop button style
+		Style file;					 // File item style
+		Style folder;				 // Folder item style
+		Style unhomed;				 // Used for the move view
+		Style sidebar;				 // Sidebar style
+		Style temperature_bar;		 // Temperature bar style
+		Style temperature_bar_indic; // Temperature bar indicator style
 	};
 
 	const LvglStyles& getLvglStyles();
@@ -242,10 +263,11 @@ namespace UI::Themes
 
 	void init(lv_display_t* display);
 	const std::vector<Theme*>& getThemes();
-	const Theme& getCurrentTheme();
+	Theme* getCurrentTheme();
 	const Theme* getTheme(const size_t index);
 	const Theme* getThemeByName(const char* name);
 	const size_t getThemeCount();
+	bool refreshCurrentTheme();
 	const std::vector<std::string> getThemeNames();
 
 #if DEBUG_BORDERS
@@ -257,4 +279,3 @@ namespace UI::Themes
 bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style);
 void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
 void lv_obj_remove_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
-void lv_obj_set_overflow_visible_flag(lv_obj_t* obj, int32_t size);

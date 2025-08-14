@@ -24,9 +24,7 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"dependsOn": [
-				// "CMake: configure"
-			]
+			"dependsOn": []
 		},
 		{
 			"type": "shell",
@@ -76,6 +74,21 @@
 				"kind": "none",
 				"isDefault": false
 			}
+		},
+		{
+			"label": "Clean DuetScreen for Remote",
+			"type": "shell",
+			"command": "rm -rf output/build/duetscreen-HEAD; rm -rf dl/duetscreen",
+			"args": [],
+			"options": {
+				"cwd": "${config:buildroot_path}"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"detail": "Cleans the DuetScreen build directory for remote debugging"
 		},
 		{
 			"label": "Build DuetScreen for Remote",
@@ -228,6 +241,12 @@
 			"dependsOn": [
 				"Build DuetScreen for Remote - Release"
 			]
+		},
+		{
+			"label": "Print Release Notes",
+			"type": "shell",
+			"command": "./scripts/release_notes.sh",
+			"problemMatcher": []
 		}
 	]
 }

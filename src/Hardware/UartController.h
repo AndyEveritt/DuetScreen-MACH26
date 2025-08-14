@@ -30,8 +30,7 @@ class UartController
 	bool setParameters(int dataBits, int stopBits, char parity);
 
 	// Data handling
-	bool send(const uint8_t* data, size_t length);
-	bool send(const std::string& data) { return send((const uint8_t*)data.c_str(), data.length()); }
+	ssize_t send(std::string_view data);
 	void setReceiveCallback(DataCallback callback) { m_receiveCallback = callback; }
 
 	// Buffer management
@@ -50,6 +49,7 @@ class UartController
 
 	void readLoop();
 	bool configurePort();
+	ssize_t _send(const uint8_t* data, size_t length);
 };
 
 #endif

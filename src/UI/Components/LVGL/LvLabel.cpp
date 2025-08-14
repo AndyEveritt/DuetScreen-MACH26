@@ -30,10 +30,10 @@ namespace UI
 		setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 	}
 
-	void LvLabel::setText(const std::string& text)
+	void LvLabel::setText(const std::string_view text)
 	{
 		UI_LOCK();
-		lv_label_set_text(getRoot(), text.c_str());
+		lv_label_set_text_with_length(getRoot(), text.data(), text.length());
 	}
 
 	void LvLabel::setTextF(const char* fmt, ...)
@@ -75,7 +75,7 @@ namespace UI
 		lv_label_set_recolor(getRoot(), enable);
 	}
 
-	std::string LvLabel::getText() const
+	std::string_view LvLabel::getText() const
 	{
 		UI_LOCK();
 		return lv_label_get_text(getRoot());

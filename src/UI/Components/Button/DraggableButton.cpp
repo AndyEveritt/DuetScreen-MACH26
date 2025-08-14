@@ -15,13 +15,13 @@ namespace UI
 		: Button(name, parent, text)
 	{
 		// lv_obj_add_flag(getCont(), LV_OBJ_FLAG_OVERFLOW_VISIBLE);
-		lv_obj_set_overflow_visible_flag(getRoot(), 200);
-		lv_obj_remove_flag(getRoot(), LV_OBJ_FLAG_SCROLLABLE);
+		setExtDrawSize(200);
+		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
 		// Add styles
-		lv_obj_add_style(getButton(), Themes::getLvglStyles().draggable, 0);
-		lv_obj_add_style(getButton(), Themes::getLvglStyles().dragging, LV_STATE_PRESSED);
-		lv_obj_add_style(getButton(), Themes::getLvglStyles().drag_complete, LV_STATE_USER_1);
+		addStyle(Themes::getLvglStyles().draggable, 0);
+		addStyle(Themes::getLvglStyles().dragging, LV_STATE_PRESSED);
+		addStyle(Themes::getLvglStyles().drag_complete, LV_STATE_USER_1);
 
 		// Add event callback
 		lv_obj_add_event_cb(getButton(), dragEventCallback, LV_EVENT_ALL, this);

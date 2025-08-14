@@ -9,6 +9,7 @@
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
 #include "utils/UpgradeHelper.h"
+#include <algorithm>
 #include <regex>
 
 namespace UI
@@ -16,7 +17,6 @@ namespace UI
 	void HomePresenter::onInit()
 	{
 		registerEventListener<EventType::Tick>(this, &HomePresenter::tick);
-		registerEventListener<EventType::Disconnected>(this, &HomePresenter::disconnected);
 		registerEventListener<EventType::UpdateAvailable>(this, &HomePresenter::newUpdateAvailable);
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
@@ -55,9 +55,25 @@ namespace UI
 			m_view->m_graph.updateSeriesName(i, sensor->name.c_str());
 			m_view->m_graph.addData(i, sensor->lastReading);
 		}
+
+		size_t heaterCount = OM::Heat::GetHeaterCount();
+		if (heaterCount > 0)
+		{
+			int32_t maxTemperature = 300; // Default max temperature
+			for (size_t i = 0; i < heaterCount; i++)
+			{
+				auto heater = OM::Heat::GetHeaterBySlot(i);
+				if (heater == nullptr)
+				{
+					continue;
+				}
+				maxTemperature = std::max(maxTemperature, (int32_t)heater->max);
+			}
+			m_view->m_graph.setYRange({0, maxTemperature});
+		}
 	}
 
-	void HomePresenter::disconnected()
+	void HomePresenter::clear()
 	{
 		UI_LOCK();
 		m_view->clear();
@@ -127,6 +143,7 @@ namespace UI
 				openScreen(&m_view->m_consoleView);
 			});
 		msgBox->okVisible(true);
+		msgBox->cancelVisible(true);
 		msgBox->progressVisible(true);
 		if (m_view->getMessageBoxCount() == 1)
 		{
@@ -142,7 +159,7 @@ namespace UI
 
 	void HomePresenter::newMessageBoxData(const OM::Alert& alert)
 	{
-		MessageBox& msgBox = m_view->m_alert;
+		AlertMessageBox& msgBox = m_view->m_alert;
 
 		// First clear any existing alert state
 		m_alertAxes.clear();
@@ -201,7 +218,7 @@ namespace UI
 				[seq]()
 				{
 					LOG_INFO("MessageBox OK callback");
-					Comm::DUET.SendGcodef("M292 S%u", seq);
+					Comm::DUET.SendGcodef("M292 S{:d}", seq);
 				});
 			break;
 
@@ -210,7 +227,7 @@ namespace UI
 				[seq](size_t index)
 				{
 					LOG_INFO("MessageBox Choice callback");
-					Comm::DUET.SendGcodef("M292 R{%u} S%u", index, seq);
+					Comm::DUET.SendGcodef("M292 R{{{:d}}} S{:d}", index, seq); // `{{` and `}}` to print `{` and `}`
 				});
 			break;
 
@@ -218,11 +235,11 @@ namespace UI
 		{
 			UI_LOCK();
 			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
-			msgBox.setKeyboard(m_view->m_kb);
+			msgBox.setKeyboard(&m_view->m_kb);
 
 			if (alert.limits.numberInt.min > INT32_MIN)
 			{
-				msgBox.setMinTextf("%d", alert.limits.numberInt.min);
+				msgBox.setMinText(fmt::format("{:d}", alert.limits.numberInt.min));
 				msgBox.minTextVisible(true);
 			}
 			else
@@ -232,7 +249,7 @@ namespace UI
 
 			if (alert.limits.numberInt.max < INT32_MAX)
 			{
-				msgBox.setMaxTextf("%d", alert.limits.numberInt.max);
+				msgBox.setMaxText(fmt::format("{:d}", alert.limits.numberInt.max));
 				msgBox.maxTextVisible(true);
 			}
 			else
@@ -246,15 +263,15 @@ namespace UI
 			const int32_t min = alert.limits.numberInt.min;
 			const int32_t max = alert.limits.numberInt.max;
 			msgBox.setInputValidationCallback(
-				[min, max, &msgBox](const char* text) -> bool
+				[min, max, &msgBox](std::string_view text) -> bool
 				{
 					UI_LOCK();
-					int value = std::atoi(text);
+					int value = std::atoi(text.data());
 					bool valid = value >= min && value <= max;
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningTextf(_("msgbox_warning_int_range"), min, max);
+						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox_warning_int_range")), min, max));
 					}
 					return valid;
 				});
@@ -263,20 +280,20 @@ namespace UI
 				[seq, &msgBox]()
 				{
 					UI_LOCK();
-					int value = std::atoi(msgBox.getInput());
-					Comm::DUET.SendGcodef("M292 R{%d} S%u", value, seq);
+					int value = std::atoi(msgBox.getInput().data());
+					Comm::DUET.SendGcodef("M292 R{{{:d}}} S{:d}", value, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 		}
 		break;
 
 		case OM::Alert::Mode::NumberFloat:
-			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
-			msgBox.setKeyboard(m_view->m_kb);
+			m_view->m_kb.setMode(LV_KEYBOARD_MODE_NUMBER);
+			msgBox.setKeyboard(&m_view->m_kb);
 
 			if (alert.limits.numberFloat.min > -FLT_MAX)
 			{
-				msgBox.setMinTextf("%.1f", alert.limits.numberFloat.min);
+				msgBox.setMinText(fmt::format("{:g}", alert.limits.numberFloat.min));
 				msgBox.minTextVisible(true);
 			}
 			else
@@ -286,7 +303,7 @@ namespace UI
 
 			if (alert.limits.numberFloat.max < FLT_MAX)
 			{
-				msgBox.setMaxTextf("%.1f", alert.limits.numberFloat.max);
+				msgBox.setMaxText(fmt::format("{:g}", alert.limits.numberFloat.max));
 				msgBox.maxTextVisible(true);
 			}
 			else
@@ -296,55 +313,56 @@ namespace UI
 
 			msgBox.setInput(alert.limits.numberFloat.valueDefault);
 			msgBox.setInputValidationCallback(
-				[alert, &msgBox](const char* text) -> bool
+				[alert, &msgBox](std::string_view text) -> bool
 				{
 					UI_LOCK();
-					float value = std::atof(text);
+					float value = std::atof(text.data());
 					bool valid = value >= alert.limits.numberFloat.min && value <= alert.limits.numberFloat.max;
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningTextf(_("msgbox_warning_float_range"),
-											   alert.limits.numberFloat.min,
-											   alert.limits.numberFloat.max);
+						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox_warning_float_range")),
+														  alert.limits.numberFloat.min,
+														  alert.limits.numberFloat.max));
 					}
 					return valid;
 				});
 			msgBox.setOkCallback(
 				[seq, &msgBox]()
 				{
-					float value = std::atof(msgBox.getInput());
-					Comm::DUET.SendGcodef("M292 R{%.8f} S%u", value, seq);
+					float value = std::atof(msgBox.getInput().data());
+					Comm::DUET.SendGcodef("M292 R{{{:g}}} S{:d}", value, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
 		case OM::Alert::Mode::Text:
 		{
-			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_TEXT_LOWER);
-			msgBox.setKeyboard(m_view->m_kb);
+			m_view->m_kb.setMode(LV_KEYBOARD_MODE_TEXT_LOWER);
+			msgBox.setKeyboard(&m_view->m_kb);
 
 			msgBox.setInput(alert.limits.text.valueDefault.c_str());
 			msgBox.setInputValidationCallback(
-				[alert, &msgBox](const char* text) -> bool
+				[alert, &msgBox](std::string_view text) -> bool
 				{
 					UI_LOCK();
-					int32_t len = (int32_t)strlen(text);
+					int32_t len = (int32_t)text.length();
 					bool valid = len >= alert.limits.text.min && len <= alert.limits.text.max;
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningTextf(
-							_("msgbox_warning_text_length"), alert.limits.text.min, alert.limits.text.max);
+						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox_warning_text_length")),
+														  alert.limits.text.min,
+														  alert.limits.text.max));
 					}
 					return valid;
 				});
 			msgBox.setOkCallback(
 				[seq, &msgBox]()
 				{
-					std::string text = msgBox.getInput();
+					std::string text(msgBox.getInput());
 					text = std::regex_replace(text, std::regex("\""), "\"\"");
 					text = std::regex_replace(text, std::regex("\'"), "\'\'");
-					Comm::DUET.SendGcodef("M292 R{\"%s\"} S%u", text.c_str(), seq);
+					Comm::DUET.SendGcodef("M292 R\"{:s}\" S{:d}", text, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
@@ -382,7 +400,7 @@ namespace UI
 				[seq]()
 				{
 					LOG_INFO("MessageBox Cancel callback");
-					Comm::DUET.SendGcodef("M292 P1 S%u", seq);
+					Comm::DUET.SendGcodef("M292 P1 S{:d}", seq);
 				});
 		}
 

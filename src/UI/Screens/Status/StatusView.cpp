@@ -1,6 +1,7 @@
 #include "StatusView.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 
 /**
@@ -13,7 +14,7 @@ namespace UI
 	 * @param parent
 	 */
 	StatusView::StatusView(lv_obj_t* parent)
-		: View(lv_obj_create, "print_view", parent, layout_t(0, 0, 100, 100))
+		: View("print_view", parent, layout_t(0, 0, 100, 100))
 		// Create all panels first
 		, m_header(lv_obj_create(getRoot()))
 		, m_centerCont(lv_obj_create(getRoot()))
@@ -35,6 +36,8 @@ namespace UI
 		, m_fineTune(getRoot())
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
 
 		// Layout
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
@@ -85,12 +88,11 @@ namespace UI
 		m_resumeBtn.hide();
 
 		// Cancel confirmation setup
-		m_confirmCancel.setMode(OM::Alert::Mode::ConfirmCancel);
 		m_confirmCancel.setTitle(_("print_cancel_title"));
 		m_confirmCancel.setText(_("print_cancel_message"));
+		m_confirmCancel.okVisible(true);
+		m_confirmCancel.cancelVisible(true);
 		m_confirmCancel.hide();
-		lv_obj_add_flag(m_confirmCancel.getRoot(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(m_confirmCancel.getRoot(), LV_ALIGN_CENTER, 0, 0);
 
 		// Callbacks
 		m_pauseBtn.addClickedCallback(onPauseClicked, this);

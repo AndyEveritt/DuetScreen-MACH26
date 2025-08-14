@@ -12,12 +12,13 @@ namespace UI
 	{
 	  public:
 		HeightmapItem(size_t index, lv_obj_t* parent, HeightmapView& view)
-			: ListItem("heightmap_item", index, parent)
+			: ListItem(index, parent)
 			, m_view(view)
 			, m_label(lv_label_create(getRoot()))
-			, m_load("heightmap_load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+			, m_load("load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		{
 			UI_LOCK();
+
 			setFlexFlow(LV_FLEX_FLOW_ROW);
 			lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 			lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
@@ -189,7 +190,7 @@ namespace UI
 	}
 
 	HeightmapView::HeightmapView(lv_obj_t* parent)
-		: View(lv_obj_create, "HeightmapView", parent, layout_t(0, 0, 100, 100))
+		: View("HeightmapView", parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_heightmap("heightmap", getRoot(), layout_t(0, 0, 100, 100))
@@ -198,6 +199,13 @@ namespace UI
 		, m_renderMode(getRoot(), *getPresenter().get())
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().bg_dark);
+		m_heightmap.addStyle(Themes::getLvglStyles().card);
+		m_heightmapList.addStyle(Themes::getLvglStyles().card);
+		m_statistics.addStyle(Themes::getLvglStyles().card);
+		m_renderMode.addStyle(Themes::getLvglStyles().card);
+
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 
 		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
@@ -255,10 +263,10 @@ namespace UI
 		}
 	}
 
-	void HeightmapView::setShownHeightmapName(const std::string& name)
+	void HeightmapView::setShownHeightmapName(std::string_view name)
 	{
 		UI_LOCK();
-		m_heightmap.setTitle(utils::format(_("heightmap_title"), name.c_str()));
+		m_heightmap.setTitle(fmt::format(fmt::runtime(_("heightmap_title")), name));
 	}
 
 	void HeightmapView::addMeasurementPoint(float x, float y)

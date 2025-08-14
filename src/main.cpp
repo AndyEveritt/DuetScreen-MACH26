@@ -164,24 +164,8 @@ int main(int argc, char** argv)
 			while (1)
 			{
 				// Request next section of the OM
-				useconds_t delay = Model::get().requestNewData();
-				usleep(delay);
-			}
-		});
-
-	// Create a thread to handle USB responses from Duet
-	s_responseThread = std::thread(
-		[]()
-		{
-#  if SET_THREAD_PRIORITY
-			// Set medium priority for response thread
-			set_thread_priority(pthread_self(), SCHED_RR, 80);
-#  endif
-
-			while (1)
-			{
-				useconds_t delay = Model::get().receiveNewUsbData();
-				usleep(delay);
+				std::chrono::milliseconds delay = Model::get().requestNewData();
+				std::this_thread::sleep_for(delay);
 			}
 		});
 
@@ -196,7 +180,7 @@ int main(int argc, char** argv)
 			while (1)
 			{
 				FILEINFO_CACHE->Spin();
-				usleep(50 * 1000);
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			}
 		});
 #endif
@@ -228,17 +212,29 @@ int main(int argc, char** argv)
 				}
 			}
 		},
-		100, // Timer period in milliseconds
+		1000, // Timer period in milliseconds
 		NULL);
+
+	// Try to set UI thread to real-time priority first
+	if (set_thread_priority(pthread_self(), SCHED_FIFO, sched_get_priority_max(SCHED_FIFO)) != 0)
+	{
+		// If real-time priority fails, fall back to highest normal priority
+		LOG_WARN("Failed to set real-time priority, falling back to SCHED_OTHER");
+		set_thread_priority(pthread_self(), SCHED_OTHER, sched_get_priority_max(SCHED_OTHER));
+	}
+
+	const auto targetInterval = std::chrono::milliseconds(5);
+	auto nextRunTime = std::chrono::steady_clock::now();
 
 	while (1)
 	{
 		{
 			UI_LOCK();
-			// LOG_DBG("Updating UI");
 			lv_timer_handler();
 		}
-		usleep(5 * 1000); // Sleep for 5 milliseconds
+
+		nextRunTime += targetInterval;
+		std::this_thread::sleep_until(nextRunTime);
 	}
 
 	return 0;
@@ -331,9 +327,10 @@ int set_thread_priority(pthread_t thread_id, int policy, int priority)
 	int current_policy;
 	pthread_getschedparam(thread_id, &current_policy, &sch);
 	sch.sched_priority = priority;
-	if (pthread_setschedparam(thread_id, policy, &sch) != 0)
+	int ret = pthread_setschedparam(thread_id, policy, &sch);
+	if (ret != 0)
 	{
-		LOG_WARN("Failed to set thread priority for thread {}", thread_id);
+		LOG_WARN("Failed to set thread priority for thread {}, err {} '{}'", thread_id, ret, strerror(ret));
 		return -1;
 	}
 	return 0;

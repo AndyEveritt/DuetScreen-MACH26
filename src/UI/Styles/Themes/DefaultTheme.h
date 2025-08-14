@@ -7,29 +7,47 @@
 
 #pragma once
 
+#include "UI/Styles/Color.h"
 #include "UI/Styles/Styles.h"
 
 namespace UI::Themes
 {
+	struct ThemeColors
+	{
+		Color bg_dark;
+		Color bg;
+		Color bg_light;
+		Color primary;
+		Color primary_muted;
+		Color secondary;
+		Color secondary_muted;
+
+		Color text;
+		Color text_muted;
+		Color text_header;
+
+		Color border;
+		Color border_muted;
+		Color highlight;
+		Color shadow;
+	};
+
+	ThemeColors createThemeColors(uint16_t primaryHue,
+								  uint16_t secondaryHue,
+								  float chroma,
+								  bool darkMode,
+								  std::function<void(ThemeColors& colors)> customizer = nullptr);
 
 	class DefaultTheme : public Theme
 	{
 	  public:
 		DefaultTheme(const char* name,
-					 lv_color_t primaryColor,
-					 lv_color_t secondaryColor,
-					 lv_color_t cardColor,
-					 lv_color_t textColor,
-					 lv_color_t highlightColor,
+					 ThemeColors colors,
 					 const lv_font_t* font,
 					 bool darkMode,
 					 std::function<void(Theme* theme)> styleOverrides = nullptr)
 			: Theme(name, styleOverrides)
-			, m_primaryColor(primaryColor)
-			, m_secondaryColor(secondaryColor)
-			, m_cardColor(cardColor)
-			, m_textColor(textColor)
-			, m_highlightColor(highlightColor)
+			, m_colors(colors)
 			, m_fontSmall(font)
 			, m_fontNormal(font)
 			, m_fontLarge(font)
@@ -37,12 +55,11 @@ namespace UI::Themes
 		{
 		}
 
+		bool isDarkMode() const { return m_darkMode; }
+		void updateColors(const ThemeColors& colors);
+
 	  protected:
-		lv_color_t m_primaryColor;
-		lv_color_t m_secondaryColor;
-		lv_color_t m_cardColor;
-		lv_color_t m_textColor;
-		lv_color_t m_highlightColor;
+		ThemeColors m_colors;
 		const lv_font_t* m_fontSmall;
 		const lv_font_t* m_fontNormal;
 		const lv_font_t* m_fontLarge;
