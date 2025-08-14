@@ -30,6 +30,7 @@ namespace UI
 	{
 	  public:
 		friend class HomePresenter;
+		friend class HomeViewTest;
 
 		static HomeView& instance()
 		{
@@ -63,8 +64,10 @@ namespace UI
 
 		void showUpdatePrompt(bool show);
 
-	  private:
 		HomeView();
+
+	  protected:
+	  private:
 		virtual void onShow();
 		virtual void onHide();
 

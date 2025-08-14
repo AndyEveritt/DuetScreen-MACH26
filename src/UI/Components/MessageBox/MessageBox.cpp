@@ -36,6 +36,10 @@ namespace UI
 	MessageBox::~MessageBox()
 	{
 		UI_LOCK();
+		if (!lv_is_initialized())
+		{
+			return;
+		}
 		if (m_timers.timeout != nullptr)
 		{
 			lv_timer_delete(m_timers.timeout);
@@ -125,7 +129,7 @@ namespace UI
 		UI_LOCK();
 		if (getRoot()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
 		{
-			closeScreen(this);
+			closeScreen(this, false);
 		}
 		if (m_closeCb)
 		{
