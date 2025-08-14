@@ -300,8 +300,6 @@ bool IsThumbnailCached(std::string_view filepath, bool includeBlank)
 	return false;
 }
 
-void SetThumbnail(lv_obj_t* base, std::string_view filepath) {}
-
 bool ClearAllCachedThumbnails()
 {
 	LOG_INFO("Clearing all cached thumbnails");

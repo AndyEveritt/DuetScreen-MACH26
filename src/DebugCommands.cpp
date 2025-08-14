@@ -7,7 +7,12 @@
 
 namespace Debug
 {
-	static std::map<const char*, DebugCommand*> commandsMap;
+	// Use construct-on-first-use to avoid static initialization order issues
+	static std::map<const char*, DebugCommand*>& registry()
+	{
+		static std::map<const char*, DebugCommand*> commandsMap;
+		return commandsMap;
+	}
 
 // TODO reenable log files
 #if 0
@@ -43,27 +48,29 @@ namespace Debug
 		: id(id)
 		, callback(callback)
 	{
-		commandsMap[id] = this;
+		registry()[id] = this;
 	}
 
 	DebugCommand* GetCommand(const char* id)
 	{
-		if (commandsMap.find(id) == commandsMap.end())
+		auto& cmds = registry();
+		if (cmds.find(id) == cmds.end())
 		{
 			LOG_WARN("id {:s} not found", id);
 			return nullptr;
 		}
-		return commandsMap[id];
+		return cmds[id];
 	}
 
 	DebugCommand* GetCommandByIndex(size_t index)
 	{
-		if (index >= commandsMap.size())
+		auto& cmds = registry();
+		if (index >= cmds.size())
 		{
 			LOG_WARN("Index out of range");
 			return nullptr;
 		}
-		auto it = commandsMap.begin();
+		auto it = cmds.begin();
 		for (size_t i = 0; i < index; i++)
 		{
 			it++;
@@ -73,6 +80,6 @@ namespace Debug
 
 	size_t GetCommandCount()
 	{
-		return commandsMap.size();
+		return registry().size();
 	}
 } // namespace Debug

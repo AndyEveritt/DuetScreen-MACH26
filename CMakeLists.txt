@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
-include(FetchContent)
 project(DuetScreen C CXX)
+include(FetchContent)
+include(CTest) # Enables BUILD_TESTING and CTest integration
 
 # Set C and C++ standards
 set(CMAKE_C_STANDARD 99)
@@ -47,7 +48,8 @@ ${LIBRARIES_DIR}/Duet3D/**.cpp)
 
 list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
 
-add_executable(DuetScreen ${MAIN_SOURCES})
+add_library(DuetScreen.lib ${MAIN_SOURCES})
+add_executable(DuetScreen)
 
 # Find clang-format-19
 find_program(CLANG_FORMAT_19 clang-format-19 REQUIRED)
@@ -59,7 +61,7 @@ add_custom_target(
   -print | xargs ${CLANG_FORMAT_19} -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Running clang-format-19")
-add_dependencies(DuetScreen clang-format)
+add_dependencies(DuetScreen.lib clang-format)
   
   # Touch BuildDate.cpp to ensure it is always compiled
   if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -70,8 +72,9 @@ add_dependencies(DuetScreen clang-format)
     COMMENT "Touching BuildDate.cpp to force recompilation")
     endif()
     
-target_include_directories(DuetScreen PUBLIC ${INCLUDE_DIR})
-target_include_directories(DuetScreen PRIVATE ${SRC_DIR})
+target_include_directories(DuetScreen.lib PUBLIC ${INCLUDE_DIR})
+target_include_directories(DuetScreen.lib PUBLIC ${SRC_DIR})
+target_include_directories(DuetScreen.lib PUBLIC ${LIBRARIES_DIR})
 
 add_subdirectory(src)
 
@@ -104,43 +107,43 @@ include(${LIBRARIES_DIR}/json.cmake)
 include(${LIBRARIES_DIR}/spdlog.cmake)
 
 # Include libusb headers
-target_include_directories(DuetScreen PRIVATE ${LIBUSB_INCLUDE_DIRS})
+target_include_directories(DuetScreen.lib PUBLIC ${LIBUSB_INCLUDE_DIRS})
 
 # ----------------------------------------------------------------------------
 # Add Definitions
 # ----------------------------------------------------------------------------
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_definitions(DuetScreen PRIVATE DEBUG)
+  target_compile_definitions(DuetScreen.lib PUBLIC DEBUG)
 else()
-  set_target_properties(DuetScreen PROPERTIES CMAKE_INTERPROCEDURAL_OPTIMIZATION
+  set_target_properties(DuetScreen.lib PROPERTIES CMAKE_INTERPROCEDURAL_OPTIMIZATION
                                               TRUE)
 endif()
-target_compile_definitions(DuetScreen PRIVATE MULTITHREADED)
+target_compile_definitions(DuetScreen.lib PUBLIC MULTITHREADED)
 
 if(PROCESSOR STREQUAL "T113")
   target_compile_definitions(lvgl PUBLIC LV_USE_LINUX_FBDEV=1)
   target_compile_definitions(lvgl PUBLIC LV_USE_EVDEV=1)
-  target_compile_definitions(DuetScreen PUBLIC T113=1)
+  target_compile_definitions(DuetScreen.lib PUBLIC T113=1)
   # add_compile_definitions(T113=1)
 elseif(PROCESSOR STREQUAL "Simulation")
   target_compile_definitions(lvgl PUBLIC LV_USE_SDL=1)
-  target_compile_definitions(DuetScreen PRIVATE SIMULATION=1)
+  target_compile_definitions(DuetScreen.lib PUBLIC SIMULATION=1)
 endif()
 
 if(DEBUG_BORDERS)
-  target_compile_definitions(DuetScreen PRIVATE DEBUG_BORDERS=1)
+  target_compile_definitions(DuetScreen.lib PUBLIC DEBUG_BORDERS=1)
 endif()
 
 if(LOG_TIMESTAMPS)
-  target_compile_definitions(DuetScreen PRIVATE LOG_TIMESTAMPS=1)
+  target_compile_definitions(DuetScreen.lib PUBLIC LOG_TIMESTAMPS=1)
 endif()
 
 if(LOG_THREAD)
-  target_compile_definitions(DuetScreen PRIVATE LOG_THREAD=1)
+  target_compile_definitions(DuetScreen.lib PUBLIC LOG_THREAD=1)
 endif()
 
 if(ASYNC_RR_MODEL)
-  target_compile_definitions(DuetScreen PRIVATE ASYNC_RR_MODEL=1)
+  target_compile_definitions(DuetScreen.lib PUBLIC ASYNC_RR_MODEL=1)
 endif()
 
 # Helper function to add preprocesor definition of FILE_BASENAME to pass the
@@ -169,13 +172,14 @@ function(define_file_relpath_for_sources targetname)
   endforeach()
 endfunction()
 
+define_file_relpath_for_sources(DuetScreen.lib)
 define_file_relpath_for_sources(DuetScreen)
 
 # Define LVGL configuration as a simple include
-target_compile_definitions(DuetScreen PRIVATE LV_CONF_INCLUDE_SIMPLE)
+target_compile_definitions(DuetScreen.lib PUBLIC LV_CONF_INCLUDE_SIMPLE)
 target_link_libraries(
-  DuetScreen
-  PRIVATE lvgl
+  DuetScreen.lib
+  PUBLIC lvgl
           ${SDL2_LIBRARIES}
           ${LIBUSB_LIBRARIES} # Link libusb library
           m
@@ -186,8 +190,15 @@ target_link_libraries(
           fmt::fmt)
 
 if(PROCESSOR STREQUAL "T113")
-  target_link_libraries(DuetScreen PRIVATE gpiod wpa_client)
+  target_link_libraries(DuetScreen.lib PRIVATE gpiod wpa_client)
 endif()
+
+# Link the executable with the DuetScreen core library.
+# There is some static initialisation in some translation units so force linker to include everything.
+target_link_libraries(DuetScreen
+    -Wl,--whole-archive DuetScreen.lib -Wl,--no-whole-archive
+)
+# target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
 
 # Custom target to run the executable
 add_custom_target(
@@ -201,14 +212,14 @@ if(CONFIG_LV_USE_DRAW_SDL)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
   find_package(SDL2_image REQUIRED)
   target_include_directories(lvgl PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen PRIVATE ${SDL2_IMAGE_LIBRARIES})
+  target_link_libraries(DuetScreen.lib PRIVATE ${SDL2_IMAGE_LIBRARIES})
 endif()
 
 # Conditionally include and link libpng if LV_USE_LIBPNG is enabled
 if(CONFIG_LV_USE_LIBPNG)
   find_package(PNG REQUIRED)
   target_include_directories(lvgl PUBLIC ${PNG_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen PRIVATE ${PNG_LIBRARIES})
+  target_link_libraries(DuetScreen.lib PRIVATE ${PNG_LIBRARIES})
 endif()
 
 # Conditionally include and link libjpeg-turbo if LV_USE_LIBJPEG_TURBO is
@@ -216,19 +227,19 @@ endif()
 if(CONFIG_LV_USE_LIBJPEG_TURBO)
   find_package(JPEG REQUIRED)
   target_include_directories(lvgl PUBLIC ${JPEG_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen PRIVATE ${JPEG_LIBRARIES})
+  target_link_libraries(DuetScreen.lib PRIVATE ${JPEG_LIBRARIES})
 endif()
 
 # Conditionally include and link FFmpeg libraries if LV_USE_FFMPEG is enabled
 if(CONFIG_LV_USE_FFMPEG)
-  target_link_libraries(DuetScreen PRIVATE avformat avcodec avutil swscale z)
+  target_link_libraries(DuetScreen.lib PRIVATE avformat avcodec avutil swscale z)
 endif()
 
 # Conditionally include and link FreeType if LV_USE_FREETYPE is enabled
 if(CONFIG_LV_USE_FREETYPE)
   find_package(Freetype REQUIRED)
   target_include_directories(lvgl PUBLIC ${FREETYPE_INCLUDE_DIRS})
-  target_link_libraries(DuetScreen PRIVATE ${FREETYPE_LIBRARIES})
+  target_link_libraries(DuetScreen.lib PRIVATE ${FREETYPE_LIBRARIES})
 endif()
 
 # Apply additional compile options if the build type is Debug
@@ -279,4 +290,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   else()
     message(STATUS "AddressSanitizer disabled")
   endif()
+endif()
+
+# ----------------------------------------------------------------------------
+# Tests
+# ----------------------------------------------------------------------------
+if(BUILD_TESTING)
+  add_subdirectory(tests)
 endif()

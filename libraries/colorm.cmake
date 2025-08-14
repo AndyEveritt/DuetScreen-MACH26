@@ -4,4 +4,4 @@ FetchContent_Declare(
   GIT_TAG master
 )
 FetchContent_MakeAvailable(colorm)
-target_include_directories(DuetScreen PRIVATE ${colorm_SOURCE_DIR})
+target_include_directories(DuetScreen.lib PUBLIC ${colorm_SOURCE_DIR})

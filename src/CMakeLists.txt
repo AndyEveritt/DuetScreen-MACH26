@@ -6,7 +6,7 @@ else()
 endif()
 
 target_sources(
-  DuetScreen
+  DuetScreen.lib
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lv_i18n/lv_i18n.c
           ${CMAKE_CURRENT_SOURCE_DIR}/BuildDate.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/DeadlockDetector.cpp
@@ -15,7 +15,7 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/DebugCommands.cpp)
 
 if(PROCESSOR STREQUAL "Simulation")
-  target_sources(DuetScreen
+  target_sources(DuetScreen.lib
                  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/mouse_cursor_icon.c)
 endif()
 
