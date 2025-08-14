@@ -262,6 +262,14 @@ namespace UI
 		{
 			addToVector(s_returnableScreens, view);
 		}
+
+		if (s_openScreens.empty())
+		{
+			for (auto& home : s_homeScreens)
+			{
+				home->show();
+			}
+		}
 		notifySideBar();
 		return removed;
 	}

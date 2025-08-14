@@ -7,3 +7,4 @@ FetchContent_Declare(
   GIT_TAG master
 )
 FetchContent_MakeAvailable(hv)
+# target_include_directories(DuetScreen.lib PUBLIC ${hv_SOURCE_DIR})

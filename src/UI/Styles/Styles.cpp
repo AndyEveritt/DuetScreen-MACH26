@@ -16,8 +16,18 @@
 namespace UI::Themes
 {
 	static lv_theme_t s_theme;
-	static std::vector<Style*> s_uninitializedStyles;
-	static std::vector<Theme*> s_themes;
+	// Use function-local statics to avoid cross-TU static initialization order issues
+	static std::vector<Style*>& uninitializedStyles()
+	{
+		static std::vector<Style*> v;
+		return v;
+	}
+
+	static std::vector<Theme*>& themes()
+	{
+		static std::vector<Theme*> v;
+		return v;
+	}
 
 	static LvglStyles s_lvglStyles;
 	static ComponentStyles s_componentStyles;
@@ -55,7 +65,7 @@ namespace UI::Themes
 		{
 			LOG_DBG("LVGL not initialized, deferring style initialization");
 			this->initFunc = initFunc;
-			s_uninitializedStyles.push_back(this);
+			uninitializedStyles().push_back(this);
 		}
 		else
 		{
@@ -102,7 +112,7 @@ namespace UI::Themes
 
 	static bool themeExists(const char* name)
 	{
-		for (const auto& theme : s_themes)
+		for (const auto& theme : themes())
 		{
 			if (theme->getName() == name)
 			{
@@ -121,7 +131,7 @@ namespace UI::Themes
 			LOG_FATAL_THROW("Theme with name {:s} already exists", name);
 			return;
 		}
-		s_themes.push_back(this);
+		themes().push_back(this);
 		LOG_INFO("Theme {:s} created", name);
 	}
 
@@ -818,14 +828,14 @@ namespace UI::Themes
 		}
 
 		// Initialize uninitialized styles
-		for (auto& style : s_uninitializedStyles)
+		for (auto& style : uninitializedStyles())
 		{
 			style->init();
 		}
-		s_uninitializedStyles.clear();
+		uninitializedStyles().clear();
 
 		// Initialize all themes
-		for (const auto& theme : s_themes)
+		for (const auto& theme : themes())
 		{
 			theme->init();
 		}
@@ -869,7 +879,7 @@ namespace UI::Themes
 
 	const std::vector<Theme*>& getThemes()
 	{
-		return s_themes;
+		return themes();
 	}
 
 	Theme* getCurrentTheme()
@@ -879,17 +889,17 @@ namespace UI::Themes
 
 	const Theme* getTheme(const size_t index)
 	{
-		if (index < 0 || index >= s_themes.size())
+		if (index < 0 || index >= themes().size())
 		{
 			LOG_ERROR("Theme with index {:d} not found", index);
 			return nullptr;
 		}
-		return s_themes[index];
+		return themes()[index];
 	}
 
 	const Theme* getThemeByName(const char* name)
 	{
-		for (const auto& theme : s_themes)
+		for (const auto& theme : themes())
 		{
 			if (theme->getName() == name)
 			{
@@ -902,7 +912,7 @@ namespace UI::Themes
 
 	const size_t getThemeCount()
 	{
-		return s_themes.size();
+		return themes().size();
 	}
 
 	bool refreshCurrentTheme()
@@ -923,7 +933,7 @@ namespace UI::Themes
 	const std::vector<std::string> getThemeNames()
 	{
 		std::vector<std::string> names;
-		for (const auto& theme : s_themes)
+		for (const auto& theme : themes())
 		{
 			names.push_back(theme->getName());
 		}

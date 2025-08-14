@@ -49,7 +49,7 @@ namespace UI
 		friend class AxisJog;
 
 		AlertMessageBox(const std::string& name, lv_obj_t* parent, layout_t layout);
-		virtual ~AlertMessageBox();
+		virtual ~AlertMessageBox() = default;
 
 		void setMode(OM::Alert::Mode mode);
         

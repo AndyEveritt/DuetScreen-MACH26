@@ -14,3 +14,4 @@ sudo apt-get install -y \
     libpng-dev \
     libspdlog-dev \
     gdb-multiarch \
+    libgtest-dev \

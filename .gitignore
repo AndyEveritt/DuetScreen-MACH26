@@ -455,3 +455,6 @@ config.json
 !.vscode/file_templates.json
 !.vscode/gdb.conf
 version.h
+
+# Tests
+tests/ref_imgs/*_err.png

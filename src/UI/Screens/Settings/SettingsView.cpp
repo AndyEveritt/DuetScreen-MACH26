@@ -147,6 +147,11 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_event_code_t code = lv_event_get_code(e);
+		if (code != LV_EVENT_FOCUSED && code != LV_EVENT_DEFOCUSED)
+		{
+			return;
+		}
+
 		lv_obj_t* ta = (lv_obj_t*)lv_event_get_target(e);
 		SettingsSubView* view = (SettingsSubView*)lv_event_get_user_data(e);
 		const char* acceptedChars = lv_textarea_get_accepted_chars(ta);

@@ -50,6 +50,35 @@
             "preLaunchTask": "CMake: build"
         },
         {
+            "name": "Debug GTest",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/tests/DuetScreen.tests",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "CMake: build",
+            "stopAtEntry": false,
+            "linux": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+            ],
+            "miDebuggerArgs": "-x '${workspaceFolder}/.vscode/gdb.conf'"
+        },
+        {
             // This configuration does not work yet.
             // Issues:
             // - Source mapping does not work fully

@@ -11,6 +11,14 @@
 
 namespace UI
 {
+	void lv_timer_delete_safe(lv_timer_t* timer)
+	{
+		if (timer && lv_is_initialized())
+		{
+			lv_timer_delete(timer);
+		}
+	}
+
 	static lv_coord_t getPct(lv_coord_t value, lv_coord_t base)
 	{
 		return (value * 100 + base / 2) / base;
@@ -58,7 +66,10 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_VERBOSE("Deleting obj '{}' ({})", getName(), static_cast<const void*>(m_root));
-		lv_obj_delete(getRoot());
+		if (getRoot() != nullptr)
+		{
+			lv_obj_delete(getRoot());
+		}
 	}
 
 	std::string_view LvObj::getName() const

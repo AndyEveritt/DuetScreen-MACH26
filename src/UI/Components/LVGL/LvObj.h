@@ -13,6 +13,8 @@
 
 namespace UI
 {
+	void lv_timer_delete_safe(lv_timer_t* timer);
+
 	/**
 	 * @brief Position and size layout in percentage 0-100
 	 */

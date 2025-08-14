@@ -30,19 +30,6 @@ namespace UI
 		init();
 	}
 
-	AlertMessageBox::~AlertMessageBox()
-	{
-		UI_LOCK();
-		if (m_timers.timeout != nullptr)
-		{
-			lv_timer_delete(m_timers.timeout);
-		}
-		if (m_timers.progress != nullptr)
-		{
-			lv_timer_delete(m_timers.progress);
-		}
-	}
-
 	void AlertMessageBox::init()
 	{
 		UI_LOCK();
