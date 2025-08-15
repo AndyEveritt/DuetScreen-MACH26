@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "test_utils/utils.h"
 #include <gtest/gtest.h>
 
 class UiTestSuite : public ::testing::Test

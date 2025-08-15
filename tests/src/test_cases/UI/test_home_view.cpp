@@ -10,24 +10,19 @@
 #include "UI/Screens/Home/HomeView.h"
 #include "lv_i18n/lv_i18n.h"
 #include "test_utils/UiTestSuite.h"
-#include "test_utils/utils.h"
 #include "utils/StorageHelper.h"
 #include <gtest/gtest.h>
 
 class HomeViewTest : public UiTestSuite
 {
   protected:
-	HomeViewTest()
-		: m_view()
-	{
-		m_view.show();
-	}
+	HomeViewTest() {}
 
 	virtual ~HomeViewTest()
 	{
 	}
 
-	UI::HomeView m_view;
+	UI::HomeView view;
 };
 
 TEST_F(HomeViewTest, BlankView)

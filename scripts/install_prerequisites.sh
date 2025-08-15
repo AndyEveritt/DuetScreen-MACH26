@@ -15,3 +15,9 @@ sudo apt-get install -y \
     libspdlog-dev \
     gdb-multiarch \
     libgtest-dev \
+    imagemagick \
+    python3-tk \
+
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt

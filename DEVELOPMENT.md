@@ -73,6 +73,95 @@ VSCode has been configured for both of these scenarios.
   - If the code is already running, you need to kill it first. This can be done by pushing a new build to the Duet3D screen with the `Push DuetScreen - SSH - Debug` task.
 
 
+## Testing
+
+The project is setup to use Google Test (gtest) for unit testing.
+
+### UI testing (image comparison)
+The UI has image-based regression tests that render components/views and compare them against validated reference images.
+
+- Test sources: `tests/src/test_cases/UI/`
+- Reference images: `tests/ref_imgs/`
+- On mismatch, a new image is created next to the reference with the suffix `_err`.
+
+A test suite would look like this:
+```cpp
+#include "test_utils/UiTestSuite.h"
+#include <gtest/gtest.h>
+
+class MyTestSuite : public UiTestSuite
+{
+  public:
+	MyTestSuite() // run before each test in suite
+		: btn("test_button", lv_screen_active())
+	{
+	}
+
+  ~MyTestSuite() = default; // run after each test in suite
+
+	UI::Button btn;
+};
+
+TEST_F(MyTestSuite, Basic) {
+    EXPECT_EQUAL_SCREENSHOT("button_basic.png");
+}
+
+TEST_F(MyTestSuite, WithText) {
+    btn.setText("Click Me");
+    EXPECT_EQUAL_SCREENSHOT("button_with_text.png");
+}
+```
+
+#### How to run
+You can run the tests via VS Code or from the terminal.
+
+- VS Code task: Terminal > Run Task… > `Run Tests`
+- CLI:
+```bash
+python3 scripts/run_tests.py
+```
+
+The script will:
+1) Delete any existing `*_err.*` files in `tests/ref_imgs/`
+2) Configure CMake if needed (default preset: `Simulation`)
+3) Build the test binary (`DuetScreen.tests`)
+4) Run the tests (via `ctest`)
+5) If any `*_err` images are produced, open a full-screen review window where you can update references
+
+#### Review UI
+- Layout: Top row shows Reference (left) and New (_err) (right). Bottom row shows the visual Difference (RGB-only) centered.
+- Images auto-scale to fit the window/display while keeping aspect ratio.
+- Controls: Previous [←], Next [→], Update [Y], Skip [N], Update All [A], Quit [Q/Esc]
+- “Update” replaces the reference image with the `_err` image and removes the `_err` file.
+
+#### Prerequisites
+- Build tools: cmake, ninja, SDL2, etc. (see Simulating section above)
+- Python packages for the GUI reviewer:
+  - Pillow (for image loading and scaling)
+  - Tkinter (for the GUI)
+
+On Ubuntu/Debian you can install these with:
+```bash
+sudo apt-get install -y python3-pil python3-tk
+```
+Alternatively, install Pillow via pip:
+```bash
+pip install pillow
+```
+
+If Pillow/Tkinter are unavailable, the script falls back to a CLI prompt without image previews.
+
+#### Environment variables (optional)
+- `DUETSCREEN_CMAKE_PRESET` — CMake preset to configure (default: `Simulation`)
+- `DUETSCREEN_BUILD_DIR` — Use a specific build directory (otherwise auto-detected under `out/build`)
+- `DUETSCREEN_SCREEN_WIDTH` / `DUETSCREEN_SCREEN_HEIGHT` — Override detected screen size for scaling (useful in headless/remote sessions)
+
+#### Troubleshooting
+- If no build directory is found, the script runs `cmake --preset <preset>` automatically.
+- If tests fail to run, check that `DuetScreen.tests` exists in `out/build/<preset>/tests/` and that `ctest` is available in PATH.
+- If the review window doesn’t appear (headless), set the screen width/height env vars or run with CLI fallback.
+
+
 ## Logs
 The code generates logs that are output to 3 places:
 1. The console

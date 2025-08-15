@@ -1,0 +1,576 @@
+#!/usr/bin/env python3
+"""
+Run DuetScreen UI tests and assist with image difference review.
+
+Steps:
+1) Delete any *_err images in tests/ref_imgs
+2) Run tests (via CTest if available)
+3) For any *_err images produced, show reference, diff, and error images
+4) Prompt to update references with *_err images
+
+Usage:
+  python3 scripts/run_tests.py
+
+Optional env vars:
+  DUETSCREEN_BUILD_DIR   Override the CTest build dir (default: auto-detected under out/build)
+
+This has been heavily vibe coded since it is none critical
+
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+import subprocess
+from pathlib import Path
+from typing import List, Optional, Tuple, Any
+
+REF_IMGS_DIR = Path(__file__).resolve().parents[1] / "tests" / "ref_imgs"
+BUILD_ROOT = Path(__file__).resolve().parents[1] / "out" / "build"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def log(msg: str) -> None:
+	print(msg, flush=True)
+
+
+def clean_err_images(ref_dir: Path) -> List[Path]:
+	removed: List[Path] = []
+	if not ref_dir.exists():
+		return removed
+	for p in sorted(ref_dir.glob("*_err.*")):
+		try:
+			p.unlink()
+			removed.append(p)
+		except Exception as e:
+			log(f"Warning: failed to remove '{p}': {e}")
+	return removed
+
+
+def find_build_dir() -> Optional[Path]:
+	# 1) Env override
+	env_override = os.environ.get("DUETSCREEN_BUILD_DIR")
+	if env_override:
+		d = Path(env_override).expanduser().resolve()
+		if (d / "CTestTestfile.cmake").exists() or (d / "tests" / "DuetScreen.tests").exists():
+			return d
+
+	# 2) Prefer an existing Simulation build (most common for local UI testing)
+	sim_dir = BUILD_ROOT / "Simulation"
+	if (sim_dir / "CTestTestfile.cmake").exists() or (sim_dir / "tests" / "DuetScreen.tests").exists():
+		return sim_dir
+
+	# 3) Fallback: pick the most recently modified directory under out/build that looks like a CMake build
+	candidates: List[Tuple[float, Path]] = []
+	if BUILD_ROOT.exists():
+		for child in BUILD_ROOT.iterdir():
+			if not child.is_dir():
+				continue
+			if (child / "CTestTestfile.cmake").exists() or (child / "tests" / "DuetScreen.tests").exists():
+				try:
+					mtime = child.stat().st_mtime
+				except Exception:
+					mtime = 0
+				candidates.append((mtime, child))
+	if candidates:
+		candidates.sort(reverse=True)
+		return candidates[0][1]
+
+	return None
+
+
+def run_ctest(build_dir: Path) -> int:
+	# Prefer running `ctest` in the build dir. If not available, try the test binary.
+	ctest_cmd = ["ctest", "--output-on-failure", "-j", str(os.cpu_count() or 2)]
+	log(f"Running tests in: {build_dir}")
+	try:
+		result = subprocess.run(ctest_cmd, cwd=str(build_dir), check=False)
+		return result.returncode
+	except FileNotFoundError:
+		log("ctest not found, trying to run test binary directly…")
+
+	test_bin = build_dir / "tests" / "DuetScreen.tests"
+	if test_bin.exists() and os.access(test_bin, os.X_OK):
+		result = subprocess.run([str(test_bin)], cwd=str(build_dir), check=False)
+		return result.returncode
+
+	log("Error: Neither ctest nor the test binary was found/executable.")
+	return 127
+
+
+def get_cmake_preset() -> str:
+	return os.environ.get("DUETSCREEN_CMAKE_PRESET", "Simulation")
+
+
+def configure_cmake(preset: Optional[str] = None) -> bool:
+	"""Run `cmake --preset <preset>` in the project root to configure the build."""
+	preset = preset or get_cmake_preset()
+	log(f"Configuring CMake preset: {preset}")
+	try:
+		result = subprocess.run(["cmake", "--preset", preset], cwd=str(PROJECT_ROOT), check=False)
+		if result.returncode != 0:
+			log(f"CMake configure failed with code {result.returncode}")
+			return False
+		return True
+	except FileNotFoundError:
+		log("Error: cmake not found in PATH.")
+		return False
+
+
+def build_tests(build_dir: Path) -> int:
+	"""Build the test target before running them."""
+	jobs = str(os.cpu_count() or 2)
+	log(f"Building tests in: {build_dir}")
+	try:
+		result = subprocess.run(
+			[
+				"cmake",
+				"--build",
+				str(build_dir),
+				"--target",
+				"DuetScreen.tests",
+				"--parallel",
+				jobs,
+			],
+			cwd=str(build_dir),
+			check=False,
+		)
+		return result.returncode
+	except FileNotFoundError:
+		log("Error: cmake not found in PATH.")
+		return 127
+
+
+def list_err_images(ref_dir: Path) -> List[Path]:
+	return sorted(ref_dir.glob("*_err.*"))
+
+
+def load_images_for_compare(ref_path: Path, err_path: Path):
+	try:
+		from PIL import Image, ImageChops, ImageOps, ImageDraw, ImageFont
+	except Exception as e:  # pragma: no cover - optional dependency
+		log("Note: Install 'Pillow' (pip install pillow) for visual diff popups.")
+		return None
+
+	try:
+		ref = Image.open(ref_path).convert("RGBA")
+		err = Image.open(err_path).convert("RGBA")
+	except Exception as e:
+		log(f"Warning: failed to open images: {e}")
+		return None
+
+	# Ensure same size for comparison canvas by padding smaller image
+	w = max(ref.width, err.width)
+	h = max(ref.height, err.height)
+
+	def pad(img):
+		if img.width == w and img.height == h:
+			return img
+		bg = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+		bg.paste(img, (0, 0))
+		return bg
+
+	ref_p = pad(ref)
+	err_p = pad(err)
+
+	# Compute difference on RGB channels only (ignore alpha), so the diff isn't fully transparent
+	ref_rgb = ref_p.convert("RGB")
+	err_rgb = err_p.convert("RGB")
+	diff = ImageChops.difference(ref_rgb, err_rgb)
+	# Improve visibility of small changes
+	try:
+		diff = ImageOps.autocontrast(diff)
+	except Exception:
+		pass
+
+	# Composite layout:
+	#  Row 1: [Reference] [New (_err)]
+	#  Row 2: [Difference] (centered across the width)
+	gap = 10
+	label_h = 24
+
+	top_row_content_w = w * 2 + gap
+	out_w = top_row_content_w + gap * 2
+	out_h = (label_h + h) * 2 + gap * 3  # top label+img + gap + bottom label+img + margins
+	canvas = Image.new("RGBA", (out_w, out_h), (24, 24, 24, 255))
+
+	# Label drawing helper (with custom width)
+	def draw_label(x: int, y: int, width: int, text: str):
+		draw = ImageDraw.Draw(canvas)
+		font = ImageFont.load_default()
+		bx = x
+		by = y
+		bw = width
+		bh = label_h
+		draw.rectangle([bx, by, bx + bw, by + bh], fill=(40, 40, 40, 255))
+		# Center vertically
+		try:
+			tw, th = draw.textsize(text, font=font)
+		except Exception:
+			tw, th = (len(text) * 6, 12)
+		draw.text((bx + 6, by + (bh - th) // 2), text, fill=(220, 220, 220, 255), font=font)
+
+	# Positions
+	x_left = gap
+	x_right = gap + w + gap
+	y_top_label = gap
+	y_top_img = y_top_label + label_h
+
+	# Top row labels
+	draw_label(x_left, y_top_label, w, "Reference")
+	draw_label(x_right, y_top_label, w, "New (_err)")
+
+	# Top row images
+	canvas.paste(ref_p, (x_left, y_top_img))
+	canvas.paste(err_p, (x_right, y_top_img))
+
+	# Bottom row (Difference)
+	y_bottom_label = y_top_img + h + gap
+	y_bottom_img = y_bottom_label + label_h
+	draw_label(x_left, y_bottom_label, top_row_content_w, "Difference")
+
+	# Center difference image horizontally across both columns
+	diff_x = gap + (top_row_content_w - diff.width) // 2
+	canvas.paste(diff, (diff_x, y_bottom_img))
+
+	return canvas
+
+
+class UIDiffReviewer:
+	"""Single-window Tkinter UI to review and update reference images."""
+
+	def __init__(self, items: List[Tuple[Path, Path, Any]]):
+		import tkinter as tk  # type: ignore
+		from PIL import ImageTk  # type: ignore
+
+		self.tk = tk
+		self.ImageTk = ImageTk
+
+		self.items = items
+		self.index = 0
+		self.apply_all = False
+
+		self.root = tk.Tk()
+		self.root.title("DuetScreen Visual Diff Reviewer")
+		# Start in full screen; allow toggling with F11
+		self._fullscreen = True
+		try:
+			self.root.attributes('-fullscreen', True)
+		except Exception:
+			# Fallback to maximized state if fullscreen not supported
+			try:
+				self.root.state('zoomed')
+			except Exception:
+				pass
+
+		# Window layout
+		self.root.rowconfigure(1, weight=1)
+		self.root.columnconfigure(0, weight=1)
+
+		# Header with filename and index
+		self.header_var = tk.StringVar()
+		self.header = tk.Label(self.root, textvariable=self.header_var, anchor="w")
+		self.header.grid(row=0, column=0, sticky="ew", padx=8, pady=(8, 0))
+
+		# Image display area
+		self.image_frame = tk.Frame(self.root, bd=0, highlightthickness=0)
+		self.image_frame.grid(row=1, column=0, sticky="nsew", padx=8, pady=8)
+		self.image_frame.rowconfigure(0, weight=1)
+		self.image_frame.columnconfigure(0, weight=1)
+
+		self.image_label = tk.Label(self.image_frame, bd=0)
+		self.image_label.grid(row=0, column=0, sticky="nsew")
+		self.image_frame.bind("<Configure>", self._on_resize)
+
+		# Controls
+		self.controls = tk.Frame(self.root)
+		self.controls.grid(row=2, column=0, sticky="ew", padx=8, pady=(0, 8))
+		for i in range(6):
+			self.controls.columnconfigure(i, weight=1)
+
+		self.btn_prev = tk.Button(self.controls, text="Previous [←]", command=self.prev_item)
+		self.btn_prev.grid(row=0, column=0, padx=4)
+
+		self.btn_skip = tk.Button(self.controls, text="Skip [N]", command=self.skip_item)
+		self.btn_skip.grid(row=0, column=1, padx=4)
+
+		self.btn_update = tk.Button(self.controls, text="Update [Y]", command=self.update_item)
+		self.btn_update.grid(row=0, column=2, padx=4)
+
+		self.btn_update_all = tk.Button(self.controls, text="Update All [A]", command=self.update_all)
+		self.btn_update_all.grid(row=0, column=3, padx=4)
+
+		self.btn_next = tk.Button(self.controls, text="Next [→]", command=self.next_item)
+		self.btn_next.grid(row=0, column=4, padx=4)
+
+		self.btn_quit = tk.Button(self.controls, text="Quit [Q/Esc]", command=self.root.destroy)
+		self.btn_quit.grid(row=0, column=5, padx=4)
+
+		# Keyboard shortcuts
+		self.root.bind("<KeyPress-q>", lambda e: self.root.destroy())
+		self.root.bind("<KeyPress-Escape>", lambda e: self.root.destroy())
+		self.root.bind("<F11>", self._toggle_fullscreen)
+		self.root.bind("<KeyPress-Right>", lambda e: self.next_item())
+		self.root.bind("<KeyPress-Left>", lambda e: self.prev_item())
+		self.root.bind("<KeyPress-y>", lambda e: self.update_item())
+		self.root.bind("<KeyPress-n>", lambda e: self.skip_item())
+		self.root.bind("<KeyPress-a>", lambda e: self.update_all())
+
+		self._tk_image = None  # keep reference to prevent GC
+		self._current_composite = None
+
+		self.render_current()
+
+	def _toggle_fullscreen(self, event=None):
+		self._fullscreen = not self._fullscreen
+		try:
+			self.root.attributes('-fullscreen', self._fullscreen)
+		except Exception:
+			try:
+				self.root.state('zoomed' if self._fullscreen else 'normal')
+			except Exception:
+				pass
+
+	def _current_paths(self) -> Tuple[Path, Path]:
+		ref, err, _ = self.items[self.index]
+		return ref, err
+
+	def _current_composite_image(self):
+		_, _, comp = self.items[self.index]
+		return comp
+
+	def _set_header(self):
+		ref, err = self._current_paths()
+		self.header_var.set(f"{self.index + 1}/{len(self.items)}  —  {err.name}  (ref: {ref.name})")
+
+	def _on_resize(self, event=None):
+		# Re-render scaled image to fit the available area
+		self._render_image_to_label()
+
+	def _render_image_to_label(self):
+		from PIL import Image  # type: ignore
+
+		if not self.items:
+			return
+
+		# Make sure geometry is up-to-date before measuring
+		try:
+			self.root.update_idletasks()
+		except Exception:
+			pass
+
+		comp = self._current_composite_image()
+
+		# Fit within image_frame size with a small margin
+		w = max(1, self.image_frame.winfo_width() - 4)
+		h = max(1, self.image_frame.winfo_height() - 4)
+
+		# If the frame hasn't been laid out yet, retry shortly
+		if w <= 1 or h <= 1:
+			try:
+				self.root.after(50, self._render_image_to_label)
+			except Exception:
+				pass
+			return
+
+		scale = min(w / comp.width, h / comp.height, 1.0)
+		if scale < 1.0:
+			new_size = (max(1, int(comp.width * scale)), max(1, int(comp.height * scale)))
+			disp = comp.resize(new_size, Image.LANCZOS)
+		else:
+			disp = comp
+
+		self._tk_image = self.ImageTk.PhotoImage(disp)
+		# Attach to label as well to ensure strong reference
+		self.image_label.configure(image=self._tk_image)
+		self.image_label.image = self._tk_image
+
+	def render_current(self):
+		if not self.items:
+			self.header_var.set("No differences to review.")
+			return
+		self.index = max(0, min(self.index, len(self.items) - 1))
+		self._set_header()
+		self._render_image_to_label()
+		self._update_buttons_state()
+
+	def _update_buttons_state(self):
+		self.btn_prev.configure(state=("normal" if self.index > 0 else "disabled"))
+		self.btn_next.configure(state=("normal" if self.index < len(self.items) - 1 else "disabled"))
+
+	def prev_item(self):
+		if self.index > 0:
+			self.index -= 1
+			self.render_current()
+
+	def next_item(self):
+		if self.index < len(self.items) - 1:
+			self.index += 1
+			self.render_current()
+
+	def skip_item(self):
+		# If we're on the last item, quitting is expected when skipping
+		if not self.items or self.index >= len(self.items) - 1:
+			try:
+				self.header_var.set("Review complete. Closing…")
+			except Exception:
+				pass
+			try:
+				self.root.after(100, self.root.destroy)
+			except Exception:
+				self.root.destroy()
+			return
+		self.next_item()
+
+	def update_item(self):
+		ref, err = self._current_paths()
+		update_reference(ref, err)
+		# Remove from list and render next
+		del self.items[self.index]
+		if self.index >= len(self.items):
+			self.index = len(self.items) - 1
+		if not self.items:
+			self.header_var.set("All updates applied. Done.")
+			self.image_label.configure(image="")
+			# Auto-close after a short delay
+			self.root.after(600, self.root.destroy)
+			return
+		self.render_current()
+
+	def update_all(self):
+		# Apply updates to all remaining items
+		while self.items:
+			ref, err = self.items[0][0], self.items[0][1]
+			update_reference(ref, err)
+			del self.items[0]
+		self.header_var.set("All updates applied. Done.")
+		self.image_label.configure(image="")
+		self.root.after(600, self.root.destroy)
+        
+	def run(self):
+		self.root.mainloop()
+
+
+def ask_yes_no(prompt: str, default: str = "n") -> str:
+	valid = {"y", "n", "a", "q"}
+	default = default.lower()
+	assert default in {"y", "n"}
+	suffix = " [y/N/a/q]: " if default == "n" else " [Y/n/a/q]: "
+	while True:
+		resp = input(prompt + suffix).strip().lower()
+		if not resp:
+			return default
+		if resp in valid:
+			return resp
+		log("Please respond with 'y', 'n', 'a' (all), or 'q' (quit).")
+
+
+def update_reference(ref_path: Path, err_path: Path) -> None:
+	data = err_path.read_bytes()
+	ref_path.write_bytes(data)
+	try:
+		err_path.unlink()
+	except Exception:
+		pass
+
+
+def main(argv: List[str]) -> int:
+	log("Step 1/4: Cleaning existing *_err images…")
+	removed = clean_err_images(REF_IMGS_DIR)
+	if removed:
+		log(f"  Removed {len(removed)} file(s) from {REF_IMGS_DIR}")
+	else:
+		log("  Nothing to remove.")
+
+	log("Step 2/5: Ensure build is configured…")
+	build_dir = find_build_dir()
+	if build_dir is None:
+		# Try to configure automatically using a preset
+		if not configure_cmake():
+			log("Failed to configure the project. Aborting.")
+			return 2
+		build_dir = find_build_dir()
+		if build_dir is None:
+			log("Error: Could not locate a CTest build directory after configure.")
+			return 2
+
+	log("Step 3/5: Building tests…")
+	brc = build_tests(build_dir)
+	if brc != 0:
+		log(f"Build failed with return code {brc}.")
+		return brc
+
+	log("Step 4/5: Running tests…")
+	rc = run_ctest(build_dir)
+	if rc != 0:
+		log(f"Tests finished with return code {rc} (there may be failures).")
+	else:
+		log("Tests completed successfully.")
+
+	log("Step 5/5: Scanning for *_err images…")
+	err_images = list_err_images(REF_IMGS_DIR)
+	if not err_images:
+		log("No *_err images were produced. Visual checks passed.")
+		return rc
+
+	# Build list of items for the reviewer UI
+	items: List[Tuple[Path, Path, object]] = []
+	pil_ok = True
+	try:
+		for err_path in err_images:
+			ref_path = Path(str(err_path).replace("_err", ""))
+			comp = load_images_for_compare(ref_path, err_path)
+			if comp is None:
+				pil_ok = False
+				break
+			items.append((ref_path, err_path, comp))
+	except Exception as e:
+		pil_ok = False
+
+	if not pil_ok:
+		log("Pillow not available or failed to process images. Falling back to CLI prompts.")
+		apply_all = False
+		for err_path in err_images:
+			ref_path = Path(str(err_path).replace("_err", ""))
+			log("")
+			log(f"Reviewing: {err_path.name}")
+			log(f"  Reference: {ref_path}")
+			log(f"  New (_err): {err_path}")
+			if apply_all:
+				choice = "y"
+			else:
+				choice = ask_yes_no("Update reference with new image?", default="n")
+				if choice == "a":
+					apply_all = True
+					choice = "y"
+				if choice == "q":
+					log("Aborting by user request.")
+					return 130
+			if choice == "y":
+				update_reference(ref_path, err_path)
+				log(f"  Updated: {ref_path.name}")
+			else:
+				log("  Skipped update.")
+		log("Done. Review complete.")
+		return rc
+
+	# Start Tkinter review UI
+	try:
+		reviewer = UIDiffReviewer(items)
+		reviewer.run()
+	except Exception as e:
+		log(f"Failed to open Tk UI: {e}")
+		return 1
+
+	log("Done. Review complete.")
+	return rc
+
+
+if __name__ == "__main__":
+	try:
+		sys.exit(main(sys.argv[1:]))
+	except KeyboardInterrupt:
+		log("Interrupted.")
+		sys.exit(130)
+
