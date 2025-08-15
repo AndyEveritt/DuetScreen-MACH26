@@ -134,6 +134,8 @@ The script will:
 - Controls: Previous [←], Next [→], Update [Y], Skip [N], Update All [A], Quit [Q/Esc]
 - “Update” replaces the reference image with the `_err` image and removes the `_err` file.
 
+![Example of a failed UI test](docs/ui_test_example.png)
+
 #### Prerequisites
 - Build tools: cmake, ninja, SDL2, etc. (see Simulating section above)
 - Python packages for the GUI reviewer:
