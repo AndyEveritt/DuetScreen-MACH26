@@ -544,6 +544,18 @@ namespace UI
 		lv_obj_set_style_bg_opa(getRoot(), opa, selector);
 	}
 
+	void LvObj::setStyleRecolor(lv_color_t color, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_recolor(getRoot(), color, selector);
+	}
+
+	void LvObj::setStyleRecolorOpa(lv_opa_t opa, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_recolor_opa(getRoot(), opa, selector);
+	}
+
 	void LvObj::setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector)
 	{
 		UI_LOCK();

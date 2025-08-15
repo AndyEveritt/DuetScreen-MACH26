@@ -456,5 +456,7 @@ config.json
 !.vscode/gdb.conf
 version.h
 
+*Zone.Identifier
+
 # Tests
 tests/ref_imgs/*_err.png

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UI/Components/LVGL/LvImage.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
 #include "lvgl/lvgl.h"
@@ -16,7 +17,7 @@ namespace UI
 		void setText(std::string_view text);
 		std::string_view getText() const { return m_label.getText(); }
 		void addClickedCallback(lv_event_cb_t event_cb, void* user_data);
-		void setIcon(lv_img_dsc_t* icon);
+		void setIcon(const char* icon_path);
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);
 		const bool getChecked() const;
@@ -24,12 +25,12 @@ namespace UI
 
 		LvLabel& getLabel() { return m_label; }
 		lv_obj_t* getButton() const { return getRoot(); }
-		lv_obj_t* getIcon() const { return m_icon; }
+		LvImage& getIcon() { return m_icon; }
 
 	  private:
 		void init(std::string_view text);
 
 		LvLabel m_label;
-		lv_obj_t* m_icon;
+		LvImage m_icon;
 	};
 } // namespace UI

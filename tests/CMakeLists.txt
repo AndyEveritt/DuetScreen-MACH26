@@ -7,6 +7,15 @@ enable_testing()
 
 add_executable(DuetScreen.tests)
 
+# Add clang-format custom target
+add_custom_target(
+  clang-format-tests
+  COMMAND find tests/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
+  -print | xargs ${CLANG_FORMAT_19} -i
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Running clang-format-19-tests")
+add_dependencies(DuetScreen.tests clang-format-tests)
+
 file(GLOB_RECURSE DUETSCREEN_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 target_sources(DuetScreen.tests PRIVATE ${DUETSCREEN_TEST_SOURCES})
 
@@ -34,4 +43,7 @@ target_link_libraries(DuetScreen.tests PRIVATE
 define_file_relpath_for_sources(DuetScreen.tests)
 
 include(GoogleTest)
-gtest_discover_tests(DuetScreen.tests)
+# Ensure tests run from the project root so any relative paths in tests behave as expected
+gtest_discover_tests(DuetScreen.tests
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)

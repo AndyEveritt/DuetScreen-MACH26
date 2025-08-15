@@ -382,7 +382,7 @@ namespace UI
 		lv_canvas_finish_layer(m_canvas, &layer);
 	}
 
-	void Canvas::drawLine(lv_point_precise_t p1, lv_point_precise_t p2, lv_color_t color, lv_opa_t opa)
+	void Canvas::drawLine(lv_point_t p1, lv_point_t p2, lv_color_t color, lv_opa_t opa)
 	{
 		UI_LOCK();
 		LOG_DBG("p1: ({}, {}), p2: ({}, {})", p1.x, p1.y, p2.x, p2.y);
@@ -400,15 +400,19 @@ namespace UI
 		drawLinePx(p1, p2, color, opa);
 	}
 
-	void Canvas::drawLinePx(lv_point_precise_t p1, lv_point_precise_t p2, lv_color_t color, lv_opa_t opa)
+	void Canvas::drawLinePx(lv_point_t p1, lv_point_t p2, lv_color_t color, lv_opa_t opa)
 	{
 		UI_LOCK();
 		LOG_DBG("p1: ({}, {}), p2: ({}, {})", p1.x, p1.y, p2.x, p2.y);
 
 		lv_draw_line_dsc_t line_dsc;
 		lv_draw_line_dsc_init(&line_dsc);
-		line_dsc.p1 = p1;
-		line_dsc.p2 = p2;
+
+		lv_point_precise_t p1_precise = {static_cast<lv_value_precise_t>(p1.x), static_cast<lv_value_precise_t>(p1.y)};
+		lv_point_precise_t p2_precise = {static_cast<lv_value_precise_t>(p2.x), static_cast<lv_value_precise_t>(p2.y)};
+
+		line_dsc.p1 = p1_precise;
+		line_dsc.p2 = p2_precise;
 		line_dsc.width = 1;
 		line_dsc.opa = opa;
 		line_dsc.color = color;

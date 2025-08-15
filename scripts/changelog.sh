@@ -18,6 +18,7 @@ declare -a FEATURES=()
 declare -a CHORES=()
 declare -a REFACTORS=()
 declare -a DOCS=()
+declare -a TESTS=()
 declare -a OTHERS=()
 
 # Function to process a commit part
@@ -52,6 +53,11 @@ process_commit_part() {
         local message=$(echo "$part" | sed 's/docs([^)]*)//')
         DOCS+=("**${scope}**${message}")
         return 0
+    elif [[ "$part" == *"test("* ]]; then
+        local scope=$(echo "$part" | sed -n 's/test(\([^)]*\)).*/\1/p')
+        local message=$(echo "$part" | sed 's/test([^)]*)//')
+        TESTS+=("**${scope}**${message}")
+        return 0
     fi
     return 1
 }
@@ -71,7 +77,7 @@ while IFS= read -r line; do
     fi
     
     # Split the commit message into parts based on conventional commit keywords
-    parts=$(echo "$line" | sed -E 's/(fix\(|feat\(|chore\(|refactor\(|docs\()/\n\1/g')
+    parts=$(echo "$line" | sed -E 's/(fix\(|feat\(|chore\(|refactor\(|docs\(|test\()/\n\1/g')
     
     while IFS= read -r part; do
         # Trim leading and trailing whitespace without xargs
@@ -117,6 +123,11 @@ fi
 if [ ${#DOCS[@]} -gt 0 ]; then
     echo -e "\n### 📄 Documentation"
     printf "* %s\n" "${DOCS[@]}"
+fi
+
+if [ ${#TESTS[@]} -gt 0 ]; then
+    echo -e "\n### 🧪 Tests"
+    printf "* %s\n" "${TESTS[@]}"
 fi
 
 if [ ${#OTHERS[@]} -gt 0 ]; then

@@ -16,6 +16,5 @@ class {{file_name_pascal_case}} : public UiTestSuite
     {
     }
 
-  private:
 };
 

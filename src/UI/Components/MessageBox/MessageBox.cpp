@@ -153,7 +153,7 @@ namespace UI
 	void MessageBox::setImage(const char* imagePath)
 	{
 		UI_LOCK();
-		lv_image_set_src(m_image, imagePath);
+		m_image.setSrc(imagePath);
 		if (m_autoSizeImage)
 		{
 			m_image.setWidth(m_image.getSrcWidth());

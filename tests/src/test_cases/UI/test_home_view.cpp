@@ -18,9 +18,7 @@ class HomeViewTest : public UiTestSuite
   protected:
 	HomeViewTest() {}
 
-	virtual ~HomeViewTest()
-	{
-	}
+	virtual ~HomeViewTest() {}
 
 	UI::HomeView view;
 };

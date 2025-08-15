@@ -246,7 +246,7 @@ namespace UI
 #if ENABLE_BREADCRUMB_SEPARATOR
 			if (i > 0)
 			{
-				auto sep = std::make_unique<LvLabel>(utils::format("crumb_sep_{}", i), m_breadcrumbCont);
+				auto sep = std::make_unique<LvLabel>(fmt::format("crumb_sep_{}", i), m_breadcrumbCont);
 				sep->setText(_("file_crumb_separator"));
 				m_breadcrumbLabels.push_back(std::move(sep));
 			}
@@ -254,13 +254,13 @@ namespace UI
 			if (i == segments.size() - 1)
 			{
 				// Last segment is not clickable
-				auto label = std::make_unique<LvLabel>(utils::format("crumb_label_{}", i), m_breadcrumbCont);
+				auto label = std::make_unique<LvLabel>(fmt::format("crumb_label_{}", i), m_breadcrumbCont);
 				label->setText(segments[i]);
 				m_breadcrumbLabels.push_back(std::move(label));
 				continue;
 			}
 
-			auto btn = std::make_unique<Button>(utils::format("crumb_btn_{}", i), m_breadcrumbCont, segments[i]);
+			auto btn = std::make_unique<Button>(fmt::format("crumb_btn_{}", i), m_breadcrumbCont, segments[i]);
 			btn->setUserData(reinterpret_cast<void*>(i));
 			btn->addClickedCallback(onBreadcrumbClicked, this);
 			m_breadcrumbButtons.push_back(std::move(btn));

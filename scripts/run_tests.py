@@ -35,6 +35,39 @@ def log(msg: str) -> None:
 	print(msg, flush=True)
 
 
+def maximize_window(win: "Any") -> None:
+	"""Best-effort maximize that prefers WM maximize over fullscreen.
+
+	Tries, in order:
+	  1) state('zoomed')
+	  2) attributes('-zoomed', True)
+	"""
+	try:
+		win.update_idletasks()
+	except Exception:
+		pass
+
+	# Attempt native maximize
+	tried_zoomed = False
+	try:
+		win.state('zoomed')
+		tried_zoomed = True
+		win.update_idletasks()
+	except Exception:
+		# Some WMs support this attribute
+		try:
+			win.attributes('-zoomed', True)
+			win.update_idletasks()
+		except Exception:
+			pass
+
+	ww, wh = win.winfo_width(), win.winfo_height()
+	sw, sh = win.winfo_screenwidth(), win.winfo_screenheight()
+	if (abs(ww - sw) > 80) or (abs(wh - sh) > 80):
+		win.geometry(f"{2500}x{1500}+0+0")
+	pass
+
+
 def clean_err_images(ref_dir: Path) -> List[Path]:
 	removed: List[Path] = []
 	if not ref_dir.exists():
@@ -46,6 +79,40 @@ def clean_err_images(ref_dir: Path) -> List[Path]:
 		except Exception as e:
 			log(f"Warning: failed to remove '{p}': {e}")
 	return removed
+
+
+def snapshot_existing_refs(ref_dir: Path) -> set[str]:
+	"""Return a snapshot of existing reference image basenames before tests run.
+
+	This excludes any *_err.* files; only baselines are tracked.
+	"""
+	existing: set[str] = set()
+	if not ref_dir.exists():
+		return existing
+	for p in ref_dir.iterdir():
+		if not p.is_file():
+			continue
+		name = p.name
+		if "_err." in name:
+			continue
+		existing.add(name)
+	return existing
+
+
+def list_new_refs(ref_dir: Path, before: set[str]) -> List[Path]:
+	"""List files that exist now but did not exist in the 'before' snapshot."""
+	created: List[Path] = []
+	if not ref_dir.exists():
+		return created
+	for p in sorted(ref_dir.iterdir()):
+		if not p.is_file():
+			continue
+		name = p.name
+		if "_err." in name:
+			continue
+		if name not in before:
+			created.append(p)
+	return created
 
 
 def find_build_dir() -> Optional[Path]:
@@ -80,20 +147,23 @@ def find_build_dir() -> Optional[Path]:
 	return None
 
 
-def run_ctest(build_dir: Path) -> int:
+def run_tests(build_dir: Path) -> int:
 	# Prefer running `ctest` in the build dir. If not available, try the test binary.
-	ctest_cmd = ["ctest", "--output-on-failure", "-j", str(os.cpu_count() or 2)]
 	log(f"Running tests in: {build_dir}")
-	try:
-		result = subprocess.run(ctest_cmd, cwd=str(build_dir), check=False)
-		return result.returncode
-	except FileNotFoundError:
-		log("ctest not found, trying to run test binary directly…")
 
-	test_bin = build_dir / "tests" / "DuetScreen.tests"
-	if test_bin.exists() and os.access(test_bin, os.X_OK):
-		result = subprocess.run([str(test_bin)], cwd=str(build_dir), check=False)
-		return result.returncode
+	if 1:
+		ctest_cmd = ["ctest", "--test-dir", build_dir / "tests", "--output-on-failure", "-j", str(os.cpu_count() or 2)]
+		try:
+			result = subprocess.run(ctest_cmd, cwd=str(PROJECT_ROOT), check=False)
+			return result.returncode
+		except FileNotFoundError:
+			log("ctest not found, trying to run test binary directly…")
+
+	if 1:
+		test_bin = build_dir / "tests" / "DuetScreen.tests"
+		if test_bin.exists() and os.access(test_bin, os.X_OK):
+			result = subprocess.run([str(test_bin)], cwd=str(PROJECT_ROOT), check=False)
+			return result.returncode
 
 	log("Error: Neither ctest nor the test binary was found/executable.")
 	return 127
@@ -237,10 +307,256 @@ def load_images_for_compare(ref_path: Path, err_path: Path):
 	return canvas
 
 
+def load_single_image_view(img_path: Path):
+	"""Build a labeled canvas to display a single image (for new references)."""
+	try:
+		from PIL import Image, ImageDraw, ImageFont  # type: ignore
+	except Exception:
+		log("Note: Install 'Pillow' (pip install pillow) for visual previews.")
+		return None
+
+	try:
+		img = Image.open(img_path).convert("RGBA")
+	except Exception as e:
+		log(f"Warning: failed to open image '{img_path}': {e}")
+		return None
+
+	gap = 10
+	label_h = 24
+	out_w = img.width + gap * 2
+	out_h = label_h + gap + img.height + gap
+	canvas = Image.new("RGBA", (max(1, out_w), max(1, out_h)), (24, 24, 24, 255))
+
+	# Header
+	draw = ImageDraw.Draw(canvas)
+	try:
+		font = ImageFont.load_default()
+	except Exception:
+		font = None
+	draw.rectangle([gap, gap, gap + img.width, gap + label_h], fill=(40, 40, 40, 255))
+	label = f"New reference image: {img_path.name}"
+	try:
+		tw, th = draw.textsize(label, font=font)
+	except Exception:
+		tw, th = (len(label) * 6, 12)
+	draw.text((gap + 6, gap + (label_h - th) // 2), label, fill=(220, 220, 220, 255), font=font)
+
+	# Image body
+	canvas.paste(img, (gap, gap + label_h + gap))
+	return canvas
+
+
+class UINewRefReviewer:
+	"""Tkinter UI to review newly created reference images (keep/delete)."""
+
+	def __init__(self, items: List[Path]):
+		import tkinter as tk  # type: ignore
+		from PIL import ImageTk  # type: ignore
+
+		self.tk = tk
+		self.ImageTk = ImageTk
+
+		self.items = items
+		self.index = 0
+		self.keep_all = False
+
+		self.root = tk.Tk()
+		self.root.title("DuetScreen New Reference Reviewer")
+		# Start maximized (not fullscreen)
+		self._fullscreen = False
+		maximize_window(self.root)
+
+		self.root.rowconfigure(1, weight=1)
+		self.root.columnconfigure(0, weight=1)
+
+		self.header_var = tk.StringVar()
+		self.header = tk.Label(self.root, textvariable=self.header_var, anchor="w")
+		self.header.grid(row=0, column=0, sticky="ew", padx=8, pady=(8, 0))
+
+		self.image_frame = tk.Frame(self.root, bd=0, highlightthickness=0)
+		self.image_frame.grid(row=1, column=0, sticky="nsew", padx=8, pady=8)
+		self.image_frame.rowconfigure(0, weight=1)
+		self.image_frame.columnconfigure(0, weight=1)
+
+		self.image_label = tk.Label(self.image_frame, bd=0)
+		self.image_label.grid(row=0, column=0, sticky="nsew")
+		self.image_frame.bind("<Configure>", self._on_resize)
+
+		self.controls = tk.Frame(self.root)
+		self.controls.grid(row=2, column=0, sticky="ew", padx=8, pady=(0, 8))
+		for i in range(6):
+			self.controls.columnconfigure(i, weight=1)
+
+		self.btn_prev = tk.Button(self.controls, text="Previous [←]", command=self.prev_item)
+		self.btn_prev.grid(row=0, column=0, padx=4)
+
+		self.btn_delete = tk.Button(self.controls, text="Delete [D]", command=self.delete_item)
+		self.btn_delete.grid(row=0, column=1, padx=4)
+
+		self.btn_keep = tk.Button(self.controls, text="Keep [Y]", command=self.keep_item)
+		self.btn_keep.grid(row=0, column=2, padx=4)
+
+		self.btn_keep_all = tk.Button(self.controls, text="Keep All [A]", command=self.keep_all_items)
+		self.btn_keep_all.grid(row=0, column=3, padx=4)
+
+		self.btn_next = tk.Button(self.controls, text="Next [→]", command=self.next_item)
+		self.btn_next.grid(row=0, column=4, padx=4)
+
+		self.btn_quit = tk.Button(self.controls, text="Quit [Q/Esc]", command=self.root.destroy)
+		self.btn_quit.grid(row=0, column=5, padx=4)
+
+		self.root.bind("<KeyPress-q>", lambda e: self.root.destroy())
+		self.root.bind("<KeyPress-Escape>", lambda e: self.root.destroy())
+		self.root.bind("<F11>", self._toggle_fullscreen)
+		self.root.bind("<KeyPress-Right>", lambda e: self.next_item())
+		self.root.bind("<KeyPress-Left>", lambda e: self.prev_item())
+		self.root.bind("<KeyPress-y>", lambda e: self.keep_item())
+		self.root.bind("<KeyPress-d>", lambda e: self.delete_item())
+		self.root.bind("<KeyPress-a>", lambda e: self.keep_all_items())
+
+		self._tk_image = None
+		self._current_composite = None  # PIL Image for current index
+
+		self.render_current()
+
+	def _toggle_fullscreen(self, event=None):
+		self._fullscreen = not self._fullscreen
+		try:
+			self.root.attributes('-fullscreen', self._fullscreen)
+		except Exception:
+			try:
+				self.root.state('zoomed' if self._fullscreen else 'normal')
+			except Exception:
+				pass
+
+	def _current_path(self) -> Path:
+		return self.items[self.index]
+
+	def _ensure_current_composite(self):
+		if self._current_composite is None:
+			p = self._current_path()
+			self._current_composite = load_single_image_view(p)
+		return self._current_composite
+
+	def _set_header(self):
+		p = self._current_path()
+		self.header_var.set(f"{self.index + 1}/{len(self.items)}  —  {p.name}")
+
+	def _on_resize(self, event=None):
+		self._render_image_to_label()
+
+	def _render_image_to_label(self):
+		from PIL import Image  # type: ignore
+
+		if not self.items:
+			return
+		try:
+			self.root.update_idletasks()
+		except Exception:
+			pass
+
+		comp = self._ensure_current_composite()
+		if comp is None:
+			return
+		w = max(1, self.image_frame.winfo_width() - 4)
+		h = max(1, self.image_frame.winfo_height() - 4)
+		if w <= 1 or h <= 1:
+			try:
+				self.root.after(50, self._render_image_to_label)
+			except Exception:
+				pass
+			return
+
+		scale = min(w / comp.width, h / comp.height, 1.0)
+		if scale < 1.0:
+			new_size = (max(1, int(comp.width * scale)), max(1, int(comp.height * scale)))
+			disp = comp.resize(new_size, Image.LANCZOS)
+		else:
+			disp = comp
+
+		self._tk_image = self.ImageTk.PhotoImage(disp)
+		self.image_label.configure(image=self._tk_image)
+		self.image_label.image = self._tk_image
+
+	def render_current(self):
+		if not self.items:
+			self.header_var.set("No new reference images to review.")
+			return
+		self.index = max(0, min(self.index, len(self.items) - 1))
+		self._current_composite = None
+		self._set_header()
+		self._render_image_to_label()
+		self._update_buttons_state()
+
+	def _update_buttons_state(self):
+		self.btn_prev.configure(state=("normal" if self.index > 0 else "disabled"))
+		self.btn_next.configure(state=("normal" if self.index < len(self.items) - 1 else "disabled"))
+
+	def prev_item(self):
+		if self.index > 0:
+			self.index -= 1
+			self.render_current()
+
+	def next_item(self):
+		if self.index < len(self.items) - 1:
+			self.index += 1
+			self.render_current()
+
+	def skip_and_close_if_done(self):
+		if not self.items or self.index >= len(self.items) - 1:
+			try:
+				self.header_var.set("Review complete. Closing…")
+			except Exception:
+				pass
+			try:
+				self.root.after(100, self.root.destroy)
+			except Exception:
+				self.root.destroy()
+			return True
+		return False
+
+	def delete_item(self):
+		p = self._current_path()
+		try:
+			p.unlink()
+		except Exception:
+			pass
+		del self.items[self.index]
+		if self.index >= len(self.items):
+			self.index = len(self.items) - 1
+		if not self.items:
+			self.header_var.set("All deletions applied. Done.")
+			self.image_label.configure(image="")
+			self.root.after(600, self.root.destroy)
+			return
+		self.render_current()
+
+	def keep_item(self):
+		# Keeping means do nothing and advance
+		if self.keep_all:
+			# If already keeping all, fast-forward
+			self.next_item()
+			return
+		if self.skip_and_close_if_done():
+			return
+		self.next_item()
+
+	def keep_all_items(self):
+		self.keep_all = True
+		# Nothing to delete; just close quickly
+		self.header_var.set("All kept. Done.")
+		self.image_label.configure(image="")
+		self.root.after(400, self.root.destroy)
+
+	def run(self):
+		self.root.mainloop()
+
+
+
 class UIDiffReviewer:
 	"""Single-window Tkinter UI to review and update reference images."""
 
-	def __init__(self, items: List[Tuple[Path, Path, Any]]):
+	def __init__(self, items: List[Tuple[Path, Path]]):
 		import tkinter as tk  # type: ignore
 		from PIL import ImageTk  # type: ignore
 
@@ -253,16 +569,9 @@ class UIDiffReviewer:
 
 		self.root = tk.Tk()
 		self.root.title("DuetScreen Visual Diff Reviewer")
-		# Start in full screen; allow toggling with F11
-		self._fullscreen = True
-		try:
-			self.root.attributes('-fullscreen', True)
-		except Exception:
-			# Fallback to maximized state if fullscreen not supported
-			try:
-				self.root.state('zoomed')
-			except Exception:
-				pass
+		# Start maximized (not fullscreen); allow toggling fullscreen with F11
+		self._fullscreen = False
+		maximize_window(self.root)
 
 		# Window layout
 		self.root.rowconfigure(1, weight=1)
@@ -501,12 +810,55 @@ def main(argv: List[str]) -> int:
 		log(f"Build failed with return code {brc}.")
 		return brc
 
+	# Snapshot existing references before running tests so we can detect newly created ones
+	before_snapshot = snapshot_existing_refs(REF_IMGS_DIR)
+
 	log("Step 4/5: Running tests…")
-	rc = run_ctest(build_dir)
+	rc = run_tests(build_dir)
 	if rc != 0:
 		log(f"Tests finished with return code {rc} (there may be failures).")
 	else:
 		log("Tests completed successfully.")
+
+	# First, check for any newly created reference images (created because a reference didn't exist)
+	created_refs = list_new_refs(REF_IMGS_DIR, before_snapshot)
+	if created_refs:
+		log("Review newly created reference images…")
+		# Try Pillow/Tk UI first (lazy-loading inside the UI)
+		pil_ok = True
+		try:
+			reviewer_nr = UINewRefReviewer(created_refs)
+			reviewer_nr.run()
+		except Exception as e:
+			log(f"Failed to open Tk UI for new references: {e}")
+			pil_ok = False
+
+		if not pil_ok:
+			# Fallback to CLI flow
+			apply_all = False
+			for p in created_refs:
+				log("")
+				log(f"New reference image created: {p.name}")
+				if apply_all:
+					choice = "y"
+				else:
+					choice = ask_yes_no("Keep this new reference image?", default="n")
+					if choice == "a":
+						apply_all = True
+						choice = "y"
+					if choice == "q":
+						log("Aborting by user request.")
+						return 130
+				if choice == "y":
+					log("  Kept.")
+				else:
+					try:
+						p.unlink()
+						log("  Deleted.")
+					except Exception as e:
+						log(f"  Failed to delete: {e}")
+	else:
+		log("No newly created reference images were detected.")
 
 	log("Step 5/5: Scanning for *_err images…")
 	err_images = list_err_images(REF_IMGS_DIR)

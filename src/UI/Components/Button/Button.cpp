@@ -6,7 +6,7 @@ namespace UI
 	Button::Button(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_button_create, name, parent)
 		, m_label("label", getRoot())
-		, m_icon(nullptr)
+		, m_icon("icon", getRoot())
 	{
 		init("");
 	}
@@ -14,7 +14,7 @@ namespace UI
 	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text)
 		: LvObj(lv_button_create, name, parent)
 		, m_label("label", getRoot())
-		, m_icon(nullptr)
+		, m_icon("icon", getRoot())
 	{
 		init(text);
 	}
@@ -22,7 +22,7 @@ namespace UI
 	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text, layout_t layout)
 		: LvObj(lv_button_create, name, parent, layout)
 		, m_label("label", getRoot())
-		, m_icon(nullptr)
+		, m_icon("icon", getRoot())
 	{
 		init(text);
 	}
@@ -33,25 +33,28 @@ namespace UI
 		setUserData(this);
 		m_label.setUserData(this);
 
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
 		setMinHeight(30);
 		setMinWidth(50);
 
 		// Initialise the label obj
-		m_label.setText(text);
+		setText(text);
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_label.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+
+		// icon
+		m_icon.hide();
+		m_icon.setSize(100, 100);
+		m_icon.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 	}
 
 	void Button::setText(std::string_view text)
 	{
 		UI_LOCK();
 		m_label.setText(text);
-		if (m_icon != nullptr)
-		{
-			lv_obj_set_y(m_icon, LV_PCT(-20));
-			lv_obj_set_y(m_label, LV_PCT(30));
-		}
+		m_label.setVisible(!text.empty());
 	}
 
 	void Button::addClickedCallback(lv_event_cb_t event_cb, void* user_data)
@@ -60,29 +63,19 @@ namespace UI
 		lv_obj_add_event_cb(getRoot(), event_cb, LV_EVENT_CLICKED, user_data);
 	}
 
-	void Button::setIcon(lv_img_dsc_t* icon)
+	void Button::setIcon(const char* icon_path)
 	{
 		UI_LOCK();
 		// If the icon is null, remove the icon and center the label
-		if (icon == nullptr)
-		{
-			lv_obj_delete(m_icon);
-			m_icon = nullptr;
-			lv_obj_center(m_label);
-			return;
-		}
+		m_icon.setSrc(icon_path);
 
-		// If the icon is not null, create the icon and set the icon
-		if (m_icon == nullptr)
+		// Check the icon has loaded correctly
+		bool icon_loaded = m_icon.getSrc() != nullptr;
+		if (icon_path && !icon_loaded)
 		{
-			m_icon = lv_image_create(getRoot());
-			lv_obj_set_user_data(m_icon, this);
+			LOG_ERROR("Failed to load icon from path: {}", icon_path);
 		}
-
-		lv_image_set_src(m_icon, icon);
-		lv_obj_center(m_icon);
-		lv_obj_set_y(m_icon, lv_pct(-20));
-		lv_obj_set_y(m_label, lv_pct(30));
+		m_icon.setVisible(icon_loaded);
 	}
 
 	void Button::setCheckable(bool checkable)
