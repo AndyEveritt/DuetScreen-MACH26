@@ -221,6 +221,10 @@ namespace UI::Themes
 		lv_style_set_bg_grad_color(lvgl.actionBtn, m_colors.secondary_muted);
 		lv_style_set_bg_grad_dir(lvgl.actionBtn, LV_GRAD_DIR_VER);
 
+		/* Icons */
+		lv_style_set_recolor(lvgl.icon_recolor, m_colors.text);
+		lv_style_set_recolor_opa(lvgl.icon_recolor, LV_OPA_COVER);
+
 		/* Modifiers */
 
 		lv_style_set_recolor(lvgl.pressed, lv_color_black());
@@ -555,5 +559,13 @@ namespace UI::Themes
 
 		lv_style_set_bg_color(components.temperature_bar_indic, m_colors.border);
 		lv_style_set_bg_opa(components.temperature_bar_indic, LV_OPA_COVER);
+
+		lv_style_merge(components.tool_selected, lvgl.border_color_primary);
+		lv_style_set_border_width(components.tool_selected, 3);
+		lv_style_set_shadow_color(components.tool_selected, lv_color_darken(m_colors.primary, 10));
+		lv_style_set_shadow_opa(components.tool_selected, LV_OPA_50);
+		lv_style_set_shadow_width(components.tool_selected, 0);
+		lv_style_set_shadow_offset_x(components.tool_selected, -SHADOW_OFFSET);
+		lv_style_set_shadow_offset_y(components.tool_selected, SHADOW_OFFSET);
 	}
 } // namespace UI::Themes

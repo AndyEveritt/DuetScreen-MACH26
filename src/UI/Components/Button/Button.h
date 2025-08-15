@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UI/Components/LVGL/LvImage.h"
+#include "UI/Components/Icon/Icon.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
 #include "lvgl/lvgl.h"
@@ -25,12 +25,12 @@ namespace UI
 
 		LvLabel& getLabel() { return m_label; }
 		lv_obj_t* getButton() const { return getRoot(); }
-		LvImage& getIcon() { return m_icon; }
+		Icon& getIcon() { return m_icon; }
 
 	  private:
 		void init(std::string_view text);
 
+		Icon m_icon;
 		LvLabel m_label;
-		LvImage m_icon;
 	};
 } // namespace UI

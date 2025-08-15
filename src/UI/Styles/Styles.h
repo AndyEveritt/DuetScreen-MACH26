@@ -73,6 +73,10 @@ namespace UI::Themes
 		Style btn;
 		Style btn_checked;
 
+		/* Icons */
+		Style icon;
+		Style icon_recolor;
+
 		/*Utility*/
 		Style pressed;
 		Style disabled;
@@ -222,6 +226,7 @@ namespace UI::Themes
 		Style sidebar;				 // Sidebar style
 		Style temperature_bar;		 // Temperature bar style
 		Style temperature_bar_indic; // Temperature bar indicator style
+		Style tool_selected;		 // Used in tool list
 	};
 
 	const LvglStyles& getLvglStyles();

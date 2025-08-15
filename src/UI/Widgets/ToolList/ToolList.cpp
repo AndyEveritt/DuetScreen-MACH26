@@ -50,7 +50,8 @@ namespace UI
 
 		// Styles
 		addStyle(Themes::getLvglStyles().bg_color_list_item);
-		addStyle(Themes::getLvglStyles().bg_color_primary, LV_STATE_CHECKED);
+		// addStyle(Themes::getLvglStyles().border_color_secondary, LV_STATE_CHECKED);
+		addStyle(Themes::getComponentStyles().tool_selected, LV_STATE_CHECKED);
 
 		m_toolName.addStyle(Themes::getLvglStyles().actionBtn);
 		m_toolName.addStyle(Themes::getLvglStyles().border_color_card, LV_STATE_CHECKED);

@@ -5,24 +5,24 @@ namespace UI
 {
 	Button::Button(const std::string& name, lv_obj_t* parent)
 		: LvObj(lv_button_create, name, parent)
-		, m_label("label", getRoot())
 		, m_icon("icon", getRoot())
+		, m_label("label", getRoot())
 	{
 		init("");
 	}
 
 	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text)
 		: LvObj(lv_button_create, name, parent)
-		, m_label("label", getRoot())
 		, m_icon("icon", getRoot())
+		, m_label("label", getRoot())
 	{
 		init(text);
 	}
 
 	Button::Button(const std::string& name, lv_obj_t* parent, std::string_view text, layout_t layout)
 		: LvObj(lv_button_create, name, parent, layout)
-		, m_label("label", getRoot())
 		, m_icon("icon", getRoot())
+		, m_label("label", getRoot())
 	{
 		init(text);
 	}
@@ -36,8 +36,8 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		setMinHeight(30);
-		setMinWidth(50);
+		setMinHeight(25);
+		setMinWidth(25);
 
 		// Initialise the label obj
 		setText(text);
@@ -46,8 +46,10 @@ namespace UI
 
 		// icon
 		m_icon.hide();
-		m_icon.setSize(100, 100);
-		m_icon.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
+		m_icon.setWidth(LV_PCT(100));
+		m_icon.setFlexGrow(1);
+		m_icon.setMinHeight(25);
+		m_icon.setMinWidth(25);
 	}
 
 	void Button::setText(std::string_view text)
