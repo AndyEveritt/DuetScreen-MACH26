@@ -422,6 +422,11 @@ namespace UI
 		}
 	}
 
+	void ToolListItemPresenter::onActivate()
+	{
+		update();
+	}
+
 	void ToolListItemPresenter::numberPadConfirmCallback(float value)
 	{
 		setTemp(value);
@@ -439,6 +444,7 @@ namespace UI
 				if (item != nullptr)
 				{
 					item->setSlotIndex(i);
+					item->activate();
 				}
 			}
 		}
@@ -484,5 +490,10 @@ namespace UI
 			totalHeaterCount += chamberCount;
 		}
 		return totalHeaterCount;
+	}
+
+	void ToolListPresenter::onActivate()
+	{
+		update();
 	}
 } // namespace UI

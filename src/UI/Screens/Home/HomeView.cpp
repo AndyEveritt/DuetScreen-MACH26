@@ -9,6 +9,8 @@
 
 namespace UI
 {
+	HomeView* HomeView::s_overrideInstance = nullptr;
+
 	static constexpr lv_coord_t s_windowSelectorItemWidth = 30;	 // %
 	static constexpr lv_coord_t s_windowSelectorItemHeight = 25; // %
 
@@ -56,8 +58,6 @@ namespace UI
 
 		m_mainWindow.setFlexGrow(1);
 		m_mainWindow.setHeight(LV_PCT(100));
-		m_mainWindow.addStyle(Themes::getLvglStyles().pad_zero);
-		m_mainWindow.addStyle(Themes::getLvglStyles().pad_gap);
 		m_fileView.addStyle(Themes::getLvglStyles().card);
 
 		// Main Window Layout
@@ -66,9 +66,7 @@ namespace UI
 		m_mainWindow.setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		m_mainWindow.setGridCell(m_graph, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		m_mainWindow.setGridCell(m_fileView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-
-		// Tool List
-		m_toolList.activate();
+		m_mainWindow.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
 		// Graph
 		m_graph.setXRange({.min = -60, .max = 0});
@@ -111,6 +109,22 @@ namespace UI
 		m_kb.setSize(LV_PCT(100), LV_PCT(50));
 
 		m_numberpad.hide();
+	}
+
+	HomeView& HomeView::instance()
+	{
+		// Allow tests to override the singleton instance when needed
+		if (s_overrideInstance)
+		{
+			return *s_overrideInstance;
+		}
+		static HomeView view;
+		return view;
+	}
+
+	void HomeView::setInstance(HomeView* instance)
+	{
+		s_overrideInstance = instance;
 	}
 
 	void HomeView::clear()

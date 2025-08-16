@@ -53,9 +53,10 @@ process_commit_part() {
         local message=$(echo "$part" | sed 's/docs([^)]*)//')
         DOCS+=("**${scope}**${message}")
         return 0
-    elif [[ "$part" == *"test("* ]]; then
-        local scope=$(echo "$part" | sed -n 's/test(\([^)]*\)).*/\1/p')
-        local message=$(echo "$part" | sed 's/test([^)]*)//')
+    elif [[ "$part" =~ tests?\( ]]; then
+        # Support both test(scope) and tests(scope)
+        local scope=$(echo "$part" | sed -E -n 's/tests?\(([^)]*)\).*/\1/p')
+        local message=$(echo "$part" | sed -E 's/tests?\([^)]*\)//')
         TESTS+=("**${scope}**${message}")
         return 0
     fi
@@ -77,7 +78,7 @@ while IFS= read -r line; do
     fi
     
     # Split the commit message into parts based on conventional commit keywords
-    parts=$(echo "$line" | sed -E 's/(fix\(|feat\(|chore\(|refactor\(|docs\(|test\()/\n\1/g')
+    parts=$(echo "$line" | sed -E 's/(fix\(|feat\(|chore\(|refactor\(|docs\(|tests?\()/\n\1/g')
     
     while IFS= read -r part; do
         # Trim leading and trailing whitespace without xargs

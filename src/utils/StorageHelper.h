@@ -27,6 +27,7 @@ class StorageHelper
 		save();
 	}
 
+	static bool setConfigFile(std::string_view filename);
 	static bool save();
 	static bool load();
 	static bool clear();

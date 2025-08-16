@@ -40,6 +40,8 @@ namespace UI
 			registerEventListener<EventType::ToolData>(this, &ToolListItemPresenter::update);
 			registerEventListener<EventType::HeaterData>(this, &ToolListItemPresenter::update);
 		}
+		void onActivate() override;
+
 		void numberPadConfirmCallback(float value);
 
 		bool updateView(const std::shared_ptr<OM::Tool> tool,
@@ -85,5 +87,6 @@ namespace UI
 			registerEventListener<EventType::ToolData>(this, &ToolListPresenter::update);
 			registerEventListener<EventType::HeaterData>(this, &ToolListPresenter::update);
 		}
+		void onActivate() override;
 	};
 } // namespace UI

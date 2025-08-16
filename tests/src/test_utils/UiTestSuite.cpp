@@ -6,12 +6,28 @@
  */
 
 #include "UiTestSuite.h"
+#include "Comm/JsonDecoder.h"
 #include "Configuration.h"
 #include "DeadlockDetector.h"
 #include "Debug.h"
+#include "ObjectModel/Utils.h"
 #include "UI/Styles/Styles.h"
 #include "lv_i18n/lv_i18n.h"
 #include "test_utils/utils.h"
+#include "utils/StorageHelper.h"
+#include <fstream>
+
+UiTestSuite::UiTestSuite()
+{
+	/* Run at start of each test */
+	OM::RemoveAll();
+}
+
+UiTestSuite::~UiTestSuite()
+{
+	/* Run at end of each test */
+	OM::RemoveAll();
+}
 
 void UiTestSuite::SetUpTestSuite()
 {
@@ -44,10 +60,31 @@ void UiTestSuite::SetUpTestSuite()
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	UI::Themes::init(display);
+
+	StorageHelper::setConfigFile("tests/config.json");
 }
 
 void UiTestSuite::TearDownTestSuite()
 {
 	// Cleanup
-	lv_mem_deinit();
+	lv_deinit();
+}
+
+bool UiTestSuite::load_model_data_from_file(std::string_view filename)
+{
+	// Read from file and send data to JsonDecoder
+
+	std::ifstream file(filename.data());
+
+	EXPECT_TRUE(file.is_open());
+
+	std::string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	return load_model_data(data);
+}
+
+bool UiTestSuite::load_model_data(std::string_view data)
+{
+	Comm::JsonDecoder decoder;
+	decoder.CheckInput(reinterpret_cast<const unsigned char*>(data.data()), static_cast<unsigned int>(data.size()));
+	return true;
 }

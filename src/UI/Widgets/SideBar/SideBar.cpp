@@ -69,6 +69,9 @@ namespace UI
 		m_appDrawer.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_appDrawer.hide(true);
 
+		enableBackButton(false);
+		enableHomeButton(false);
+
 		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);
 		addStyle(Themes::getLvglStyles().pad_zero);
 		m_btns.addStyle(Themes::getLvglStyles().bg_dark);

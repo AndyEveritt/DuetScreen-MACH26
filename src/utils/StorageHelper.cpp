@@ -6,6 +6,19 @@ static std::string filename_ = "/etc/duetscreen.json";
 static std::string filename_ = "config.json";
 #endif
 
+bool StorageHelper::setConfigFile(std::string_view filename)
+{
+	filename_ = filename;
+	if (!load())
+	{
+		LOG_ERROR("Failed to load config file: {:s}", filename_.c_str());
+		return false;
+	}
+
+	LOG_INFO("Loaded config file: {:s}", filename_.c_str());
+	return true;
+}
+
 bool StorageHelper::save()
 {
 	std::ofstream file(filename_);

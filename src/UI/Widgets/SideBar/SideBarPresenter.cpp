@@ -41,9 +41,5 @@ namespace UI
 		registerEventListener<EventType::NavigationHomeEnable>(this, &SideBarPresenter::enableHomeButton);
 	}
 
-	void SideBarPresenter::onActivate()
-	{
-		enableBackButton(false);
-		enableHomeButton(false);
-	}
+	void SideBarPresenter::onActivate() {}
 } // namespace UI

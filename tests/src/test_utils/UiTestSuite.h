@@ -13,11 +13,14 @@
 class UiTestSuite : public ::testing::Test
 {
   protected:
-	UiTestSuite() = default;
-	
-	virtual ~UiTestSuite() = default;
+	UiTestSuite();
+
+	virtual ~UiTestSuite();
 
 	static void SetUpTestSuite();
 
 	static void TearDownTestSuite();
+
+	static bool load_model_data_from_file(std::string_view filename);
+	static bool load_model_data(std::string_view data);
 };

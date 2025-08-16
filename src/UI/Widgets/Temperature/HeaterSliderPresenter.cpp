@@ -248,15 +248,17 @@ namespace UI
 		}
 		}
 
-		if (heater != nullptr)
+		if (heater == nullptr)
 		{
-			name = heater->GetName();
-			state = heater->status;
-			state_str = _(heater->GetHeaterStatusStr());
-			currentTemp = heater->current;
-			minTemp = heater->min;
-			maxTemp = heater->max;
+			return;
 		}
+
+		name = heater->GetName();
+		state = heater->status;
+		state_str = _(heater->GetHeaterStatusStr());
+		currentTemp = heater->current;
+		minTemp = heater->min;
+		maxTemp = heater->max;
 
 		m_view->setHeaterName(name);
 		m_view->setHeaterState(state, state_str);

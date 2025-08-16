@@ -10,6 +10,7 @@
 #include "lvgl/lvgl.h"
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -242,17 +243,23 @@ namespace UI::Themes
 		void init();
 
 		void setThemeActive() const;
+		const LvglStyles& getLvglStyles() const;
+		const ComponentStyles& getComponentStyles() const;
 
 		const std::string& getName() const { return m_name; }
 
-		// Base LVGL styles applied to existing and newly created objects
-		LvglStyles lvgl;
-
-		// Specific component styles
-		ComponentStyles components;
+	  protected:
+		LvglStyles& getLvglStyles();
+		ComponentStyles& getComponentStyles();
 
 	  private:
 		virtual void onInit() {}
+
+		// Base LVGL styles applied to existing and newly created objects
+		std::unique_ptr<LvglStyles> lvgl;
+
+		// Specific component styles
+		std::unique_ptr<ComponentStyles> components;
 
 		const std::string m_name;
 		std::function<void(Theme*)> m_initFunc;

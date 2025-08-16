@@ -19,6 +19,7 @@ namespace UI
 
 	  private:
 		  virtual void onInit() override { registerEventListener<EventType::FanData>(this, &FanPresenter::newFanData); }
+		  void onActivate() override;
 		  void onDisconnect() override;
 	};
 } // namespace UI

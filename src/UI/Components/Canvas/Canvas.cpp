@@ -43,6 +43,10 @@ namespace UI
 	Canvas::~Canvas()
 	{
 		UI_LOCK();
+		if (!lv_is_initialized())
+		{
+			return;
+		}
 		lv_draw_buf_destroy(m_buf);
 	}
 

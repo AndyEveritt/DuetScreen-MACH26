@@ -32,11 +32,8 @@ namespace UI
 		friend class HomePresenter;
 		friend class HomeViewTest;
 
-		static HomeView& instance()
-		{
-			static HomeView view;
-			return view;
-		}
+		static HomeView& instance();
+		static void setInstance(HomeView* instance);
 
 		void clear();
 
@@ -68,6 +65,8 @@ namespace UI
 
 	  protected:
 	  private:
+		// Test seam: when set (by friend HomeViewTest), instance() returns this instead of the static singleton
+		static HomeView* s_overrideInstance;
 		virtual void onShow();
 		virtual void onHide();
 

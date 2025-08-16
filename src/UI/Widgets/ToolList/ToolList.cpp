@@ -23,8 +23,6 @@ namespace UI
 		, m_activeTemp("active_temp", getRoot())
 		, m_standbyTemp("standby_temp", getRoot())
 	{
-		activate();
-
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		UI_LOCK();
