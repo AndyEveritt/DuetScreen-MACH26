@@ -1,0 +1,94 @@
+{
+  "flags": "v",
+  "key": "sensors",
+  "result": {
+    "analog": [
+      {
+        "beta": 4725.0,
+        "c": 7.06e-08,
+        "lastReading": -273.15,
+        "name": "Bed",
+        "offsetAdj": 0,
+        "port": "temp0",
+        "r25": 100000.0,
+        "rRef": 2200.0,
+        "slopeAdj": 0,
+        "state": "openCircuit",
+        "type": "thermistor"
+      },
+      {
+        "beta": 4725.0,
+        "c": 7.06e-08,
+        "lastReading": 21.74,
+        "name": "Revo",
+        "offsetAdj": 0,
+        "port": "temp1",
+        "r25": 100000.0,
+        "rRef": 2200.0,
+        "slopeAdj": 0,
+        "state": "ok",
+        "type": "thermistor"
+      }
+    ],
+    "endstops": [
+      {
+        "highEnd": false,
+        "triggered": true,
+        "type": "inputPin"
+      },
+      {
+        "highEnd": false,
+        "triggered": false,
+        "type": "motorStallAny"
+      },
+      {
+        "highEnd": true,
+        "triggered": false,
+        "type": "motorStallAny"
+      }
+    ],
+    "filamentMonitors": [],
+    "gpIn": [
+      null,
+      null,
+      {
+        "value": 1
+      }
+    ],
+    "probes": [
+      {
+        "calibrationTemperature": 25.0,
+        "deployedByUser": false,
+        "disablesHeaters": false,
+        "diveHeights": [
+          7.0,
+          7.0
+        ],
+        "lastStopHeight": 0,
+        "maxProbeCount": 1,
+        "offsets": [
+          0,
+          0,
+          0
+        ],
+        "recoveryTime": 0,
+        "speeds": [
+          100.0,
+          100.0
+        ],
+        "temperatureCoefficients": [
+          0,
+          0
+        ],
+        "threshold": 600,
+        "tolerance": 0.03,
+        "travelSpeed": 6000.0,
+        "triggerHeight": 0,
+        "type": 5,
+        "value": [
+          1000
+        ]
+      }
+    ]
+  }
+}

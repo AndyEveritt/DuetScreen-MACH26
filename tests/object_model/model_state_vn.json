@@ -1,0 +1,115 @@
+{
+  "flags": "vn",
+  "key": "state",
+  "result": {
+    "atxPower": null,
+    "atxPowerPort": null,
+    "beep": null,
+    "currentTool": 0,
+    "deferredPowerDown": null,
+    "displayMessage": "",
+    "gpOut": [
+      null,
+      {
+        "freq": 500,
+        "pwm": 1.0
+      }
+    ],
+    "laserPwm": null,
+    "logFile": "",
+    "logLevel": "off",
+    "machineMode": "FFF",
+    "macroRestarted": false,
+    "messageBox": null,
+    "msUpTime": 785,
+    "nextTool": 0,
+    "powerFailScript": "",
+    "previousTool": 2,
+    "restorePoints": [
+      {
+        "coords": [
+          0,
+          0,
+          0
+        ],
+        "extruderPos": 0,
+        "fanPwm": 0,
+        "feedRate": 50.0,
+        "ioBits": 0,
+        "laserPwm": null,
+        "toolNumber": -1
+      },
+      {
+        "coords": [
+          0,
+          0,
+          0
+        ],
+        "extruderPos": 0,
+        "fanPwm": 0,
+        "feedRate": 50.0,
+        "ioBits": 0,
+        "laserPwm": null,
+        "toolNumber": -1
+      },
+      {
+        "coords": [
+          0,
+          0,
+          0
+        ],
+        "extruderPos": 0,
+        "fanPwm": 0,
+        "feedRate": 50.0,
+        "ioBits": 0,
+        "laserPwm": null,
+        "toolNumber": 2
+      },
+      {
+        "coords": [
+          0,
+          0,
+          0
+        ],
+        "extruderPos": 0,
+        "fanPwm": 0,
+        "feedRate": 50.0,
+        "ioBits": 0,
+        "laserPwm": null,
+        "toolNumber": -1
+      },
+      {
+        "coords": [
+          0,
+          0,
+          0
+        ],
+        "extruderPos": 0,
+        "fanPwm": 0,
+        "feedRate": 50.0,
+        "ioBits": 0,
+        "laserPwm": null,
+        "toolNumber": -1
+      },
+      {
+        "coords": [
+          0,
+          0,
+          0
+        ],
+        "extruderPos": 0,
+        "fanPwm": 0,
+        "feedRate": 50.0,
+        "ioBits": 0,
+        "laserPwm": null,
+        "toolNumber": -1
+      }
+    ],
+    "startupError": null,
+    "status": "idle",
+    "thisActive": null,
+    "thisInput": null,
+    "time": "2025-08-16T11:37:25",
+    "upTime": 241554
+  }
+}

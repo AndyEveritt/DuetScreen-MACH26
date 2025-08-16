@@ -1,0 +1,29 @@
+{
+  "flags": "v",
+  "key": "spindles",
+  "next": 0,
+  "result": [
+    {
+      "active": 0,
+      "canReverse": false,
+      "current": 0,
+      "frequency": 0,
+      "idlePwm": 0,
+      "max": 10000,
+      "maxPwm": 1.0,
+      "min": 60,
+      "minPwm": 0,
+      "state": "stopped",
+      "type": "enaDir"
+    },
+    {
+      "state": "unconfigured"
+    },
+    {
+      "state": "unconfigured"
+    },
+    {
+      "state": "unconfigured"
+    }
+  ]
+}

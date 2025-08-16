@@ -1,0 +1,59 @@
+{
+  "flags": "v",
+  "key": "boards",
+  "next": 0,
+  "result": [
+    {
+      "canAddress": 0,
+      "drivers": [
+        {
+          "status": 65536
+        },
+        {
+          "status": 65536
+        },
+        {
+          "status": 65536
+        },
+        {
+          "status": 65536
+        },
+        {
+          "status": 65536
+        },
+        {
+          "status": 65536
+        }
+      ],
+      "firmwareDate": "2025-08-13",
+      "firmwareFileName": "Duet3Firmware_MB6HC.bin",
+      "firmwareName": "RepRapFirmware for Duet 3 MB6HC",
+      "firmwareVersion": "3.6.0+5",
+      "freeRam": 75196,
+      "iapFileNameSBC": "Duet3_SBCiap32_MB6HC.bin",
+      "iapFileNameSD": "Duet3_SDiap32_MB6HC.bin",
+      "maxHeaters": 32,
+      "maxMotors": 6,
+      "mcuTemp": {
+        "current": 40.0,
+        "max": 47.4,
+        "min": 36.6
+      },
+      "name": "Duet 3 MB6HC",
+      "shortName": "MB6HC",
+      "supportsDirectDisplay": false,
+      "uniqueId": "08DLM-9K6R1-L83T8-6J1FA-3S46P-KDJTN",
+      "v12": {
+        "current": 12.3,
+        "max": 12.6,
+        "min": 12.0
+      },
+      "vIn": {
+        "current": 23.8,
+        "max": 23.8,
+        "min": 23.7
+      },
+      "wifiFirmwareFileName": "DuetWiFiModule_32S3.bin"
+    }
+  ]
+}

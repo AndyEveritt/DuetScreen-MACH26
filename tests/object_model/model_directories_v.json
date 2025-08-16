@@ -1,0 +1,13 @@
+{
+  "flags": "v",
+  "key": "directories",
+  "result": {
+    "filaments": "0:/filaments/",
+    "firmware": "0:/firmware/",
+    "gCodes": "0:/gcodes/",
+    "macros": "0:/macros/",
+    "menu": "0:/menu/",
+    "system": "0:/sys/DuetScreen/",
+    "web": "0:/www/"
+  }
+}

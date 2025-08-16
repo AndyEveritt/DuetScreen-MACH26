@@ -180,5 +180,16 @@
             "console": "integratedTerminal",
             "args": "${input:log_filters}"
         },
+        {
+            "name": "Python: Get Object Model Data",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "scripts/get_object_model_data.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--ip",
+                "${config:duetscreen_ip}"
+            ]
+        }
     ],
 }
