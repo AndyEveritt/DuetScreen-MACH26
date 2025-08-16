@@ -12,28 +12,45 @@
 
 class TestButton : public UiTestSuite
 {
-  public:
-	TestButton()
-		: btn("test_button", lv_screen_active())
-	{
-	}
-
-	UI::Button btn;
 };
 
 TEST_F(TestButton, Basic)
 {
+	UI::Button btn("btn", lv_screen_active());
 	EXPECT_EQUAL_SCREENSHOT("button_basic.png");
 }
 
 TEST_F(TestButton, WithText)
 {
+	UI::Button btn("btn", lv_screen_active());
 	btn.setText("Click Me");
 	EXPECT_EQUAL_SCREENSHOT("button_with_text.png");
 }
 
+TEST_F(TestButton, LongText)
+{
+	UI::LvContainer cont("cont", lv_screen_active());
+	cont.setSize(LV_PCT(100), LV_PCT(100));
+	cont.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
+
+	// Btn not given any size. Text does not wrap
+	UI::Button btn("btn", cont);
+	btn.setText("This is a long text that might overflow");
+
+	UI::Button btn2("btn2", cont);
+	btn2.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+	btn2.setText("This is a long text that should not overflow");
+
+	UI::Button btn3("btn3", cont);
+	btn3.setWidth(100);
+	btn3.setText("This is a long text that should be truncated");
+
+	EXPECT_EQUAL_SCREENSHOT("button_long_text.png");
+}
+
 TEST_F(TestButton, SetIconBmp)
 {
+	UI::Button btn("btn", lv_screen_active());
 	btn.setIcon(IMAGE_ASSET("examples/example.bmp"));
 	btn.getIcon().enableRecolor(false);
 	EXPECT_EQUAL_SCREENSHOT("button_with_bmp.png");
@@ -41,14 +58,13 @@ TEST_F(TestButton, SetIconBmp)
 
 TEST_F(TestButton, SetIconPng)
 {
+	UI::Button btn("btn", lv_screen_active());
 	btn.setIcon(IMAGE_ASSET("examples/example.png"));
 	EXPECT_EQUAL_SCREENSHOT("button_with_png.png");
 }
 
 TEST_F(TestButton, IconScaling)
 {
-	btn.hide();
-
 	UI::LvContainer cont("cont", lv_screen_active());
 	cont.setSize(LV_PCT(100), LV_PCT(100));
 	cont.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
@@ -89,6 +105,7 @@ TEST_F(TestButton, IconScaling)
 
 TEST_F(TestButton, SetIconBadPath)
 {
+	UI::Button btn("btn", lv_screen_active());
 	btn.setIcon(IMAGE_ASSET("bad_path.bmp"));
 	EXPECT_EQUAL_SCREENSHOT("button_with_bad_path_icon.png");
 }

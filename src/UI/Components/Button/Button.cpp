@@ -43,6 +43,7 @@ namespace UI
 		setText(text);
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_label.setLongMode(LV_LABEL_LONG_MODE_DOTS);
 
 		// icon
 		m_icon.hide();
