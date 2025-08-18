@@ -475,7 +475,9 @@ namespace UI
 		getResolution(res_x, res_y);
 
 		lv_point_t txt_size;
-		lv_text_get_size(&txt_size, dsc.text, dsc.font, 0, 0, (int32_t)res_x, LV_TEXT_FLAG_NONE);
+		lv_text_attributes_t txt_attr;
+		lv_text_attributes_init(&txt_attr);
+		lv_text_get_size(&txt_size, dsc.text, dsc.font, &txt_attr);
 
 		lv_area_t area;
 		area.x1 = pos.x - txt_size.x / 2;

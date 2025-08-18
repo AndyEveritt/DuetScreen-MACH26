@@ -25,6 +25,7 @@ namespace UI
 
 	void ConsolePresenter::sendGcode(const char* gcode)
 	{
+		m_view->addCommand(gcode);
 		Comm::DUET.SendGcode(gcode);
 	}
 

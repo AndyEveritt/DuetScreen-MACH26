@@ -244,8 +244,6 @@ namespace UI
 			const char* text = lv_textarea_get_text(view->m_input);
 			if (strlen(text) > 0)
 			{
-				// Send the command
-				view->addCommand(text);
 				view->m_presenter->sendGcode(text);
 			}
 			break;

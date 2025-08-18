@@ -26,6 +26,7 @@ target_include_directories(DuetScreen.tests PRIVATE
 target_compile_definitions(lvgl PUBLIC
     LV_USE_TEST=1
     LV_USE_TEST_SCREENSHOT_COMPARE=1
+    LV_BUILD_TEST=1
     REF_IMGS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/ref_imgs/"
 )
 

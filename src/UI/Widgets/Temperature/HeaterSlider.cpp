@@ -169,8 +169,14 @@ namespace UI
 		snprintf(buf, sizeof(buf), "%.1f", slider.m_currentTempValue);
 
 		lv_point_t txt_size;
-		lv_text_get_size(
-			&txt_size, buf, label_dsc.font, label_dsc.letter_space, label_dsc.line_space, LV_COORD_MAX, label_dsc.flag);
+		lv_text_attributes_t txt_attr;
+		lv_text_attributes_init(&txt_attr);
+		txt_attr.letter_space = label_dsc.letter_space;
+		txt_attr.line_space = label_dsc.line_space;
+		txt_attr.text_flags = label_dsc.flag;
+		txt_attr.max_width = LV_COORD_MAX;
+
+		lv_text_get_size(&txt_size, buf, label_dsc.font, &txt_attr);
 
 		lv_area_t txt_area;
 		txt_area.x1 = 0;
