@@ -111,6 +111,9 @@ namespace UI::Themes
 		lv_style_set_bg_opa(getLvglStyles().bg_color_list_item, LV_OPA_COVER);
 		lv_style_set_bg_grad_color(getLvglStyles().bg_color_list_item, m_colors.bg_light);
 
+		lv_style_set_bg_color(getLvglStyles().bg_modal, m_colors.bg);
+		lv_style_set_bg_opa(getLvglStyles().bg_modal, LV_OPA_70);
+
 		/* Text */
 
 		lv_style_set_text_color(getLvglStyles().text, m_colors.text);

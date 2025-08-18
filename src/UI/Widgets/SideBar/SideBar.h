@@ -11,6 +11,7 @@
 #include "UI/Components/AppDrawer/AppDrawer.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Button/DraggableButton.h"
+#include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -41,5 +42,6 @@ namespace UI
 		Button m_macrosBtn;
 		DraggableButton m_eStopBtn;
 		AppDrawer m_appDrawer;
+		LvContainer m_appDrawerModalBg;
 	};
 } // namespace UI

@@ -53,6 +53,7 @@ namespace UI::Themes
 		Style bg_color_secondary_muted;
 		Style bg_color_header;
 		Style bg_color_list_item;
+		Style bg_modal;
 
 		/* Text */
 		Style text;

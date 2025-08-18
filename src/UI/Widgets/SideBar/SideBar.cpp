@@ -30,6 +30,7 @@ namespace UI
 		, m_macrosBtn("macros", m_btns, _("macros"))
 		, m_eStopBtn("estop", m_btns, _("estop"))
 		, m_appDrawer("app_drawer", getRoot())
+		, m_appDrawerModalBg("app_drawer_modal_bg", getRoot())
 	{
 		LOG_VERBOSE("Creating SideBar");
 
@@ -46,7 +47,7 @@ namespace UI
 		m_macrosBtn.setWidth(LV_PCT(100));
 		m_menuBtn.setWidth(LV_PCT(100));
 
-		setExtDrawSize(700);
+		setExtDrawSize(lv_obj_get_width(getScreen()));
 		m_btns.setExtDrawSize(400);
 
 		m_backBtn.setFlexGrow(1);
@@ -64,10 +65,20 @@ namespace UI
 		m_menuBtn.addClickedCallback(menuBtnEvent, this);
 		m_eStopBtn.setDragCallback(eStopDraggedEvent, this);
 
-		// m_appDrawer.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_appDrawer.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_appDrawer.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_appDrawer.hide(true);
+
+		m_appDrawerModalBg.setSize(lv_obj_get_width(getScreen()), LV_PCT(100));
+		m_appDrawerModalBg.hide(true);
+		m_appDrawerModalBg.addEventCallback(
+			[](lv_event_t* e)
+			{
+				auto& sidebar = *static_cast<SideBar*>(lv_event_get_user_data(e));
+				sidebar.showAppDrawer(false);
+			},
+			LV_EVENT_CLICKED,
+			this);
 
 		enableBackButton(false);
 		enableHomeButton(false);
@@ -76,6 +87,7 @@ namespace UI
 		addStyle(Themes::getLvglStyles().pad_zero);
 		m_btns.addStyle(Themes::getLvglStyles().bg_dark);
 		m_eStopBtn.addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
+		m_appDrawerModalBg.addStyle(Themes::getLvglStyles().bg_modal);
 	}
 
 	void SideBar::enableHomeButton(bool enable)
@@ -140,37 +152,41 @@ namespace UI
 
 		m_appDrawer.updateLayout();
 		m_appDrawer.setState(LV_STATE_USER_1, show);
+		m_appDrawerModalBg.setVisible(show);
 		int32_t end = show ? m_appDrawer.getWidth() : 0;
 
 		if (animate == LV_ANIM_ON)
 		{
 			LvAnim anim;
 			anim.setDuration(300);
-			anim.setVar(&m_appDrawer);
+			anim.setVar(this);
 			int32_t start = m_appDrawer.getX();
 			anim.setValues(start, end);
 			anim.setExecCb(
 				[](void* var, int32_t value)
 				{
-					auto& drawer = *static_cast<AppDrawer*>(var);
+					auto& drawer = static_cast<SideBar*>(var)->m_appDrawer;
 					drawer.setX(value);
 				});
 			anim.setDeletedCb(
 				[](lv_anim_t* anim)
 				{
-					auto& drawer = *static_cast<AppDrawer*>(anim->var);
-					drawer.setFlag(LV_OBJ_FLAG_HIDDEN, !drawer.hasState(LV_STATE_USER_1));
+					auto& sideBar = *static_cast<SideBar*>(anim->var);
+					sideBar.m_appDrawer.setVisible(sideBar.m_appDrawer.hasState(LV_STATE_USER_1));
+					sideBar.m_appDrawerModalBg.setVisible(sideBar.m_appDrawer.hasState(LV_STATE_USER_1));
 				});
 
 			if (show)
-				m_appDrawer.setFlag(LV_OBJ_FLAG_HIDDEN, false);
-
+			{
+				m_appDrawerModalBg.setVisible(true);
+				m_appDrawer.setVisible(true);
+			}
 			anim.start();
 		}
 		else
 		{
 			m_appDrawer.setX(end);
-			m_appDrawer.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
+			m_appDrawer.setVisible(show);
 		}
 	}
 

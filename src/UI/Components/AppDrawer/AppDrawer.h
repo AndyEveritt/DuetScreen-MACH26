@@ -15,11 +15,11 @@ namespace UI
 {
 	class AppDrawer : public Card
 	{
-      public:
-        AppDrawer(const std::string& name, lv_obj_t* parent);
-        void init();
+	  public:
+		AppDrawer(const std::string& name, lv_obj_t* parent);
+		void init();
 
-      private:
-        List<App> m_apps; // List of apps in the drawer
-    };
+	  private:
+		List<App> m_apps; // List of apps in the drawer
+	};
 } // namespace UI

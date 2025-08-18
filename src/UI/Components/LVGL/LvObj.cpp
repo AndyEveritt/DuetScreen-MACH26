@@ -208,6 +208,12 @@ namespace UI
 		return lv_obj_get_user_data(getRoot());
 	}
 
+	void LvObj::setParent(lv_obj_t* parent)
+	{
+		UI_LOCK();
+		lv_obj_set_parent(getRoot(), parent);
+	}
+
 	void LvObj::setLayoutStyle(lv_layout_t style)
 	{
 		UI_LOCK();

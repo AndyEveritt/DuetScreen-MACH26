@@ -122,6 +122,7 @@ namespace UI
 		bool hasFlag(lv_obj_flag_t flag) const;
 		bool hasState(lv_state_t state) const;
 
+		void setParent(lv_obj_t* parent);
 		void setLayoutStyle(lv_layout_t style);
 		void setFlexGrow(uint8_t grow);
 		void setFlexFlow(lv_flex_flow_t flow);
