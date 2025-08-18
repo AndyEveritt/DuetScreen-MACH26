@@ -41,6 +41,6 @@ namespace UI
 			return;
 		}
 
-		openScreen(screen, false);
+		openScreen(screen, true);
 	}
 } // namespace UI
