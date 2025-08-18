@@ -112,6 +112,8 @@ class TestHomeViewWithData : public TestHomeView
 		load_model_data_from_file("tests/object_model/model_tools_v.json");
 		load_model_data_from_file("tests/object_model/model_volumes_v.json");
 		load_model_data_from_file("tests/object_model/model_all_d99f.json");
+
+		view.show();
 	}
 };
 
@@ -119,8 +121,6 @@ TEST_F(TestHomeViewWithData, HomeView)
 {
 	EXPECT_EQ(OM::Heat::GetHeaterCount(), 4);
 	EXPECT_EQ(OM::GetToolCount(), 4);
-
-	view.show();
 
 	/* Populate graph with fake sensor data */
 	auto sensor = OM::GetAnalogSensorBySlot(0);

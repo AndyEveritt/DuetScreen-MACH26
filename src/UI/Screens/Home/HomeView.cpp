@@ -69,6 +69,7 @@ namespace UI
 		m_mainWindow.setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		m_mainWindow.setGridCell(m_graph, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		m_mainWindow.setGridCell(m_fileView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+		m_mainWindow.setGridCell(m_statusView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		m_mainWindow.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
 		// Graph
