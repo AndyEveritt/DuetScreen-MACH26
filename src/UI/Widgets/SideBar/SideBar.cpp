@@ -46,7 +46,7 @@ namespace UI
 		m_macrosBtn.setWidth(LV_PCT(100));
 		m_menuBtn.setWidth(LV_PCT(100));
 
-		setExtDrawSize(400);
+		setExtDrawSize(700);
 		m_btns.setExtDrawSize(400);
 
 		m_backBtn.setFlexGrow(1);
@@ -130,38 +130,48 @@ namespace UI
 		}
 	}
 
-	void SideBar::showAppDrawer(bool show)
+	void SideBar::showAppDrawer(bool show, bool animate)
 	{
-		LvAnim anim;
 		if (show == m_appDrawer.hasState(LV_STATE_USER_1))
 		{
 			LOG_DBG("App drawer is already {}", show ? "shown" : "hidden");
 			return;
 		}
-		anim.setDuration(300);
-		anim.setVar(&m_appDrawer);
-		int32_t start = m_appDrawer.getX();
-		int32_t end = show ? m_appDrawer.getWidth() : 0;
-		anim.setValues(start, end);
-		anim.setExecCb(
-			[](void* var, int32_t value)
-			{
-				auto& drawer = *static_cast<AppDrawer*>(var);
-				drawer.setX(value);
-			});
-		anim.setDeletedCb(
-			[](lv_anim_t* anim)
-			{
-				auto& drawer = *static_cast<AppDrawer*>(anim->var);
-				drawer.setFlag(LV_OBJ_FLAG_HIDDEN, !drawer.hasState(LV_STATE_USER_1));
-			});
 
-		if (show)
-			m_appDrawer.setFlag(LV_OBJ_FLAG_HIDDEN, false);
-
+		m_appDrawer.updateLayout();
 		m_appDrawer.setState(LV_STATE_USER_1, show);
+		int32_t end = show ? m_appDrawer.getWidth() : 0;
 
-		anim.start();
+		if (animate == LV_ANIM_ON)
+		{
+			LvAnim anim;
+			anim.setDuration(300);
+			anim.setVar(&m_appDrawer);
+			int32_t start = m_appDrawer.getX();
+			anim.setValues(start, end);
+			anim.setExecCb(
+				[](void* var, int32_t value)
+				{
+					auto& drawer = *static_cast<AppDrawer*>(var);
+					drawer.setX(value);
+				});
+			anim.setDeletedCb(
+				[](lv_anim_t* anim)
+				{
+					auto& drawer = *static_cast<AppDrawer*>(anim->var);
+					drawer.setFlag(LV_OBJ_FLAG_HIDDEN, !drawer.hasState(LV_STATE_USER_1));
+				});
+
+			if (show)
+				m_appDrawer.setFlag(LV_OBJ_FLAG_HIDDEN, false);
+
+			anim.start();
+		}
+		else
+		{
+			m_appDrawer.setX(end);
+			m_appDrawer.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
+		}
 	}
 
 	void SideBar::onShow()

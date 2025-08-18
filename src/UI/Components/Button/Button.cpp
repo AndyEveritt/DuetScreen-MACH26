@@ -51,6 +51,60 @@ namespace UI
 		m_icon.setFlexGrow(1);
 		m_icon.setMinHeight(25);
 		m_icon.setMinWidth(25);
+
+		addEventCallback(
+			[](lv_event_t* e)
+			{
+				// Update the label width
+				auto& btn = *static_cast<Button*>(lv_event_get_user_data(e));
+				lv_obj_t* parent = btn.getParent();
+
+				// while (parent != nullptr)
+				// {
+
+				// 	if (!(LV_COORD_IS_PCT(parent_width) && parent_min_width == LV_SIZE_CONTENT))
+				// 	{
+				// 		can_set_full_width = true;
+				// 		break;
+				// 	}
+
+				// 	parent = lv_obj_get_parent(parent);
+				// }
+				lv_layout_t parent_layout = static_cast<lv_layout_t>(lv_obj_get_style_layout(parent, LV_PART_MAIN));
+				lv_flex_flow_t parent_flex_flow = lv_obj_get_style_flex_flow(parent, LV_PART_MAIN);
+				int32_t parent_width = lv_obj_get_style_width(parent, LV_PART_MAIN);
+				int32_t parent_height = lv_obj_get_style_height(parent, LV_PART_MAIN);
+				int32_t parent_min_width = lv_obj_get_style_min_width(parent, LV_PART_MAIN);
+				int32_t parent_min_height = lv_obj_get_style_min_height(parent, LV_PART_MAIN);
+
+				uint8_t flex_grow = lv_obj_get_style_flex_grow(btn, LV_PART_MAIN);
+				int32_t width = lv_obj_get_style_width(btn, LV_PART_MAIN);
+				int32_t height = lv_obj_get_style_height(btn, LV_PART_MAIN);
+				int32_t min_width = lv_obj_get_style_min_width(btn, LV_PART_MAIN);
+				int32_t min_height = lv_obj_get_style_min_height(btn, LV_PART_MAIN);
+
+				if ((width != LV_SIZE_CONTENT && min_width != LV_SIZE_CONTENT) ||
+					(parent_layout == LV_LAYOUT_FLEX && parent_flex_flow == LV_FLEX_FLOW_ROW && flex_grow > 0))
+				{
+					btn.m_label.setWidth(LV_PCT(100));
+				}
+				else
+				{
+					btn.m_label.setWidth(LV_SIZE_CONTENT);
+				}
+
+				if ((height != LV_SIZE_CONTENT && min_height != LV_SIZE_CONTENT) ||
+					(parent_layout == LV_LAYOUT_FLEX && parent_flex_flow == LV_FLEX_FLOW_COLUMN && flex_grow > 0))
+				{
+					btn.m_label.setMaxHeight(LV_PCT(100));
+				}
+				else
+				{
+					btn.m_label.setMaxHeight(LV_SIZE_CONTENT);
+				}
+			},
+			static_cast<lv_event_code_t>(LV_EVENT_STYLE_CHANGED),
+			this);
 	}
 
 	void Button::setText(std::string_view text)

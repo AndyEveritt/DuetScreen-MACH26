@@ -64,7 +64,9 @@ def maximize_window(win: "Any") -> None:
 	ww, wh = win.winfo_width(), win.winfo_height()
 	sw, sh = win.winfo_screenwidth(), win.winfo_screenheight()
 	if (abs(ww - sw) > 80) or (abs(wh - sh) > 80):
-		win.geometry(f"{2500}x{1500}+0+0")
+		width = min(sw, 2500)
+		height = min(sh - 80, 1500)
+		win.geometry(f"{width}x{height}+0+0")
 	pass
 
 

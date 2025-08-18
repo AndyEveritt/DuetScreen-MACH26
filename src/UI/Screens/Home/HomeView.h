@@ -48,6 +48,10 @@ namespace UI
 		LvKeyboard& getKeyboard() { return m_kb; }
 
 		// Sub-views
+		StatusBar& getStatusBar() { return m_statusBar; }
+		SideBar& getSideBar() { return m_sideBar; }
+		ToolList& getToolList() { return m_toolList; }
+		Graph& getGraph() { return m_graph; }
 		LvContainer& getMainWindow() { return m_mainWindow; }
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		MoveView& getMoveView() { return m_moveView; }

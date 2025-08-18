@@ -44,11 +44,12 @@ namespace UI
 		List(const std::string& name, lv_obj_t* parent)
 			: LvObj(lv_obj_create, name, parent)
 			, m_header("header", getRoot())
-			, m_title("title", m_header.getRoot())
+			, m_title("title", m_header)
 			, m_listCont("list", getRoot())
 		{
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
+			m_header.setMinWidth(LV_SIZE_CONTENT);
 			m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 			m_header.setFlexFlow(LV_FLEX_FLOW_ROW);
 			m_header.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);

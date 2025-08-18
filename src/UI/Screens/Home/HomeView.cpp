@@ -44,7 +44,10 @@ namespace UI
 		UI_LOCK();
 		LOG_INFO("Creating UI");
 
+		lv_obj_set_style_pad_all(lv_screen_active(), 0, LV_PART_MAIN);
+
 		addStyle(Themes::getLvglStyles().bg_dark);
+		addStyle(Themes::getLvglStyles().pad_zero);
 		m_toolList.addStyle(Themes::getLvglStyles().card);
 		m_graph.addStyle(Themes::getLvglStyles().card);
 

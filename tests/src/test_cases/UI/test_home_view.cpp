@@ -13,16 +13,16 @@
 #include "utils/StorageHelper.h"
 #include <gtest/gtest.h>
 
-class HomeViewTest : public UiTestSuite
+class TestHomeView : public UiTestSuite
 {
   protected:
-	HomeViewTest()
+	TestHomeView()
 	{
 		// Override the singleton so code using HomeView::instance() uses our local view
 		UI::HomeView::setInstance(&view);
 	}
 
-	virtual ~HomeViewTest()
+	virtual ~TestHomeView()
 	{
 		// Reset override
 		UI::HomeView::setInstance(nullptr);
@@ -31,60 +31,73 @@ class HomeViewTest : public UiTestSuite
 	UI::HomeView view;
 };
 
-TEST_F(HomeViewTest, BlankView){EXPECT_EQUAL_SCREENSHOT("home_view_blank.png")}
+TEST_F(TestHomeView, BlankView)
+{
+	EXPECT_EQUAL_SCREENSHOT("home_view_blank.png")
 
-TEST_F(HomeViewTest, BlankConsoleView)
+	view.showKeyboard(true);
+	EXPECT_EQUAL_SCREENSHOT("home_view_keyboard.png");
+}
+
+TEST_F(TestHomeView, BlankConsoleView)
 {
 	openScreen(&view.getConsoleView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_console_view_blank.png")
 }
 
-TEST_F(HomeViewTest, BlankMoveView)
+TEST_F(TestHomeView, BlankMoveView)
 {
 	openScreen(&view.getMoveView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_move_view_blank.png")
 }
 
-TEST_F(HomeViewTest, BlankTemperatureView)
+TEST_F(TestHomeView, BlankTemperatureView)
 {
 	openScreen(&view.getTemperatureView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_temperature_view_blank.png")
 }
 
-TEST_F(HomeViewTest, BlankFanView)
+TEST_F(TestHomeView, BlankFanView)
 {
 	openScreen(&view.getFanView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_fan_view_blank.png")
 }
 
-TEST_F(HomeViewTest, BlankMacroView)
+TEST_F(TestHomeView, BlankMacroView)
 {
 	openScreen(&view.getMacroView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_macro_view_blank.png")
 }
 
-TEST_F(HomeViewTest, BlankHeightmapView)
+TEST_F(TestHomeView, BlankHeightmapView)
 {
 	openScreen(&view.getHeightmapView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_heightmap_view_blank.png")
 }
 
-TEST_F(HomeViewTest, BlankSettingsView)
+TEST_F(TestHomeView, BlankSettingsView)
 {
 	openScreen(&view.getSettingsView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_settings_view_blank.png")
 }
 
-TEST_F(HomeViewTest, BlankStatusView)
+TEST_F(TestHomeView, BlankStatusView)
 {
 	openScreen(&view.getStatusView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_status_view_blank.png")
 }
 
-class HomeViewWithDataTest : public HomeViewTest
+TEST_F(TestHomeView, AppDrawer)
+{
+	view.show();
+	view.getSideBar().showAppDrawer(true, LV_ANIM_OFF);
+	EXPECT_EQUAL_SCREENSHOT("home_view_app_drawer.png");
+}
+
+class TestHomeViewWithData : public TestHomeView
 {
   protected:
-	HomeViewWithDataTest()
+	TestHomeViewWithData()
 	{
 		load_model_data_from_file("tests/object_model/model_boards_v.json");
 		load_model_data_from_file("tests/object_model/model_directories_v.json");
@@ -102,13 +115,14 @@ class HomeViewWithDataTest : public HomeViewTest
 	}
 };
 
-TEST_F(HomeViewWithDataTest, HomeView)
+TEST_F(TestHomeViewWithData, HomeView)
 {
 	EXPECT_EQ(OM::Heat::GetHeaterCount(), 4);
 	EXPECT_EQ(OM::GetToolCount(), 4);
 
 	view.show();
 
+	/* Populate graph with fake sensor data */
 	auto sensor = OM::GetAnalogSensorBySlot(0);
 	sensor->lastReading = 25.0f;
 	for (size_t i = 0; i < 1000; i++)
@@ -117,9 +131,14 @@ TEST_F(HomeViewWithDataTest, HomeView)
 		sensor->lastReading = (int32_t)(sensor->lastReading + 1) % 300;
 	}
 	EXPECT_EQUAL_SCREENSHOT("home_view.png");
+
+	/* Open the tool list numberpad */
+	view.getToolList().getToolListItem(0)->getPresenter()->configureNumberPad(true);
+	view.getToolList().showNumberPad();
+	EXPECT_EQUAL_SCREENSHOT("home_view_tool_list_numberpad.png");
 }
 
-TEST_F(HomeViewWithDataTest, ConsoleView)
+TEST_F(TestHomeViewWithData, ConsoleView)
 {
 	openScreen(&view.getConsoleView(), false);
 
@@ -133,43 +152,43 @@ TEST_F(HomeViewWithDataTest, ConsoleView)
 	EXPECT_EQUAL_SCREENSHOT("home_console_view.png")
 }
 
-TEST_F(HomeViewWithDataTest, MoveView)
+TEST_F(TestHomeViewWithData, MoveView)
 {
 	openScreen(&view.getMoveView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_move_view.png")
 }
 
-TEST_F(HomeViewWithDataTest, TemperatureView)
+TEST_F(TestHomeViewWithData, TemperatureView)
 {
 	openScreen(&view.getTemperatureView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_temperature_view.png")
 }
 
-TEST_F(HomeViewWithDataTest, FanView)
+TEST_F(TestHomeViewWithData, FanView)
 {
 	openScreen(&view.getFanView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_fan_view.png")
 }
 
-TEST_F(HomeViewWithDataTest, MacroView)
+TEST_F(TestHomeViewWithData, MacroView)
 {
 	openScreen(&view.getMacroView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_macro_view.png")
 }
 
-TEST_F(HomeViewWithDataTest, HeightmapView)
+TEST_F(TestHomeViewWithData, HeightmapView)
 {
 	openScreen(&view.getHeightmapView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_heightmap_view.png")
 }
 
-TEST_F(HomeViewWithDataTest, SettingsView)
+TEST_F(TestHomeViewWithData, SettingsView)
 {
 	openScreen(&view.getSettingsView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_settings_view.png")
 }
 
-TEST_F(HomeViewWithDataTest, StatusView)
+TEST_F(TestHomeViewWithData, StatusView)
 {
 	openScreen(&view.getStatusView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_status_view.png")

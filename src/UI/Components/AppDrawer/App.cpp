@@ -17,11 +17,9 @@ namespace UI
 		, m_button("app_button", getRoot())
 	{
 		addStyle(Themes::getLvglStyles().pad_zero);
+		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
-		setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_button.setSize(LV_PCT(100), LV_PCT(100));
-		m_button.setMinWidth(LV_SIZE_CONTENT);
-		m_button.setMinHeight(LV_SIZE_CONTENT);
 
 		m_button.addClickedCallback(appClickedEvent, this);
 	}

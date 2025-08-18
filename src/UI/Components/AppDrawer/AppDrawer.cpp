@@ -25,16 +25,16 @@ namespace UI
 		setMinWidth(LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		m_apps.setMinWidth(LV_SIZE_CONTENT);
-		m_apps.setWidth(LV_PCT(100));
+		m_apps.setWidth(LV_SIZE_CONTENT);
 		m_apps.setFlexGrow(1);
 		m_apps.setTitle(_("select_view"));
 
 		auto& list_cont = m_apps.getListContainer();
-		list_cont.setMinWidth(LV_SIZE_CONTENT);
-		// list_cont.setHeight(LV_PCT(100));
+		list_cont.setWidth(LV_SIZE_CONTENT);
+		// list_cont.setFlag(LV_OBJ_FLAG_SCROLLABLE, true);
 		list_cont.setFlexGrow(1);
-		// list_cont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		list_cont.setFlexFlow(LV_FLEX_FLOW_COLUMN_WRAP);
+		list_cont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	}
 
 	void AppDrawer::init()
@@ -56,10 +56,10 @@ namespace UI
 								auto app = std::make_shared<App>(index, parent);
 								const auto& appInfo = apps[index];
 								app->setName(appInfo.name);
-								app->setWidth(LV_PCT(100));
+								app->setSize(100, 100);
 								app->setMinWidth(LV_SIZE_CONTENT);
 								// app->setMinHeight(LV_SIZE_CONTENT);
-								app->setFlexGrow(1);
+								// app->setFlexGrow(1);
 								app->setUserData((void*)appInfo.screen);
 								return app;
 							});

@@ -21,6 +21,8 @@ UiTestSuite::UiTestSuite()
 {
 	/* Run at start of each test */
 	OM::RemoveAll();
+
+	lv_obj_set_flex_flow(lv_screen_active(), LV_FLEX_FLOW_COLUMN_WRAP);
 }
 
 UiTestSuite::~UiTestSuite()

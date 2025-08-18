@@ -23,13 +23,14 @@ namespace UI
 		void enableHomeButton(bool enable);
 		void enableBackButton(bool enable);
 
+		void showAppDrawer(bool show, bool animate = LV_ANIM_ON);
+
 	  private:
 		static void backBtnEvent(lv_event_t* e);
 		static void homeBtnEvent(lv_event_t* e);
 		static void macrosBtnEvent(lv_event_t* e);
 		static void menuBtnEvent(lv_event_t* e);
 		static void eStopDraggedEvent(float pct, void* e);
-		void showAppDrawer(bool show);
 
 		void onShow() override;
 
