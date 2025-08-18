@@ -1,0 +1,7 @@
+#!/bin/sh
+
+git submodule update --init --recursive
+
+cd libraries/lvgl || exit 1
+
+git config core.hooksPath ../../hooks/lvgl

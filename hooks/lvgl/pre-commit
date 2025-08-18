@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "Formatting LVGL code pre-commit"
+env/bin/python scripts/code-format.py
+
+# Stage modified staged files
+echo "Staging modified staged files"
+git update-index --again
+
+exit 0
