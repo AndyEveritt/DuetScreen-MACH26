@@ -331,6 +331,8 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_BAR
+		lv_style_set_bg_color(lvgl.bar, m_colors.highlight);
+		lv_style_set_bg_opa(lvgl.bar, LV_OPA_COVER);
 		lv_style_set_radius(lvgl.bar, LV_RADIUS_CIRCLE);
 		lv_style_set_radius(lvgl.bar_indic, LV_RADIUS_CIRCLE);
 #endif
@@ -539,6 +541,8 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_SLIDER
+		lv_style_set_bg_color(lvgl.slider, m_colors.highlight);
+		lv_style_set_bg_opa(lvgl.slider, LV_OPA_COVER);
 		lv_style_set_radius(lvgl.slider, LV_RADIUS_CIRCLE);
 		lv_style_set_radius(lvgl.slider_indic, LV_RADIUS_CIRCLE);
 #endif

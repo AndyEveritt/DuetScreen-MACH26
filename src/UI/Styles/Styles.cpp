@@ -442,7 +442,6 @@ namespace UI::Themes
 #  if LV_USE_BAR
 		else if (lv_obj_check_type(obj, &lv_bar_class))
 		{
-			lv_obj_add_style(obj, lvgl.bg_color_primary_muted, 0);
 			lv_obj_add_style(obj, lvgl.bar, 0);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, lvgl.outline_secondary, LV_STATE_EDITED);
@@ -591,6 +590,16 @@ namespace UI::Themes
 
 #  if LV_USE_ARC
 		else if (lv_obj_check_type(obj, &lv_arc_class))
+		{
+			lv_obj_add_style(obj, lvgl.arc_indic, 0);
+			lv_obj_add_style(obj, lvgl.arc_indic, LV_PART_INDICATOR);
+			lv_obj_add_style(obj, lvgl.arc_indic_primary, LV_PART_INDICATOR);
+			lv_obj_add_style(obj, lvgl.knob, LV_PART_KNOB);
+		}
+#  endif
+
+#  if LV_USE_ARCLABEL
+		else if (lv_obj_check_type(obj, &lv_arclabel_class))
 		{
 			lv_obj_add_style(obj, lvgl.arc_indic, 0);
 			lv_obj_add_style(obj, lvgl.arc_indic, LV_PART_INDICATOR);

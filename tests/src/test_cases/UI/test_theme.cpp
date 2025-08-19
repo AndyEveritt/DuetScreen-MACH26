@@ -111,6 +111,7 @@ TEST_F(TestTheme, Widgets)
 	/* LvBar */
 	LvBar bar("bar", cont);
 	bar.setWidth(col_width);
+	bar.setValue(40);
 
 	/* LvButtonMatrix */
 	LvButtonMatrix button_matrix("button_matrix", cont);
