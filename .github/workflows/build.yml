@@ -38,8 +38,10 @@ jobs:
 
       - name: Install Linux Dependencies
         run: |
-          ./DuetScreen/scripts/install_prerequisites.sh
-          ./buildroot-duetscreen/scripts/install_prerequisites.sh
+          cd DuetScreen
+          ./scripts/install_prerequisites.sh
+          cd ../buildroot-duetscreen
+          ./scripts/install_prerequisites.sh
 
       - name: Update Version
         working-directory: DuetScreen
