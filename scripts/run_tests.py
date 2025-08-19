@@ -721,18 +721,16 @@ class UIDiffReviewer:
 			self.render_current()
 
 	def skip_item(self):
-		# If we're on the last item, quitting is expected when skipping
-		if not self.items or self.index >= len(self.items) - 1:
-			try:
-				self.header_var.set("Review complete. Closing…")
-			except Exception:
-				pass
-			try:
-				self.root.after(100, self.root.destroy)
-			except Exception:
-				self.root.destroy()
+		del self.items[self.index]
+		if self.index >= len(self.items):
+			self.index = len(self.items) - 1
+		if not self.items:
+			self.header_var.set("All differences reviewed. Done.")
+			self.image_label.configure(image="")
+			# Auto-close after a short delay
+			self.root.after(600, self.root.destroy)
 			return
-		self.next_item()
+		self.render_current()
 
 	def update_item(self):
 		ref, err = self._current_paths()
