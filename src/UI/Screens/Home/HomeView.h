@@ -15,6 +15,7 @@
 #include "UI/Screens/Heightmap/HeightmapView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
+#include "UI/Screens/Status/FineTune.h"
 #include "UI/Screens/Status/StatusView.h"
 #include "UI/Screens/Temperature/TemperatureView.h"
 #include "UI/Widgets/SideBar/SideBar.h"
@@ -59,6 +60,7 @@ namespace UI
 		FanView& getFanView() { return m_fanView; }
 		FileView& getFileView() { return m_fileView; }
 		FileView& getMacroView() { return m_macroView; }
+		FineTune& getFineTuneView() { return m_fineTuneView; }
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
 		SettingsView& getSettingsView() { return m_settingsView; }
 		StatusView& getStatusView() { return m_statusView; }
@@ -66,6 +68,7 @@ namespace UI
 		void showUpdatePrompt(bool show);
 
 		HomeView();
+		~HomeView();
 
 	  protected:
 	  private:
@@ -87,6 +90,7 @@ namespace UI
 		FanView m_fanView;
 		FileView m_fileView;
 		FileView m_macroView;
+		FineTune m_fineTuneView;
 		HeightmapView m_heightmapView;
 		SettingsView m_settingsView;
 		StatusView m_statusView;

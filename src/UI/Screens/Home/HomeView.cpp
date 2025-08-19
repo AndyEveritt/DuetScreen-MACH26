@@ -33,6 +33,7 @@ namespace UI
 		, m_fanView(m_mainWindow)
 		, m_fileView(m_mainWindow, m_mainWindow)
 		, m_macroView(m_mainWindow)
+		, m_fineTuneView(m_mainWindow)
 		, m_heightmapView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
 		, m_statusView(m_mainWindow)
@@ -82,6 +83,7 @@ namespace UI
 		m_temperatureView.hide();
 		m_fanView.hide();
 		m_macroView.hide();
+		m_fineTuneView.hide();
 		m_heightmapView.hide();
 		m_statusView.hide();
 		m_settingsView.hide();
@@ -113,6 +115,11 @@ namespace UI
 		m_kb.setSize(LV_PCT(100), LV_PCT(50));
 
 		m_numberpad.hide();
+	}
+
+	HomeView::~HomeView()
+	{
+		removeHomeScreen(this);
 	}
 
 	HomeView& HomeView::instance()

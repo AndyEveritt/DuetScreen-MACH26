@@ -128,7 +128,22 @@ namespace UI
 	void addHomeScreen(ViewListItem_t view)
 	{
 		UI_LOCK();
+		if (view == nullptr)
+		{
+			return;
+		}
+		if (inVector(s_homeScreens, view))
+		{
+			LOG_WARN("Home screen {:s} already exists", view->getName());
+			return;
+		}
 		s_homeScreens.push_back(view);
+	}
+
+	void removeHomeScreen(ViewListItem_t view)
+	{
+		UI_LOCK();
+		removeFromVector(s_homeScreens, view);
 	}
 
 	/**
