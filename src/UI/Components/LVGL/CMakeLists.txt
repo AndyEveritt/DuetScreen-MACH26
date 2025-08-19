@@ -10,6 +10,7 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/LvLabel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvImage.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvObj.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LvCheckbox.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvSlider.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvTextArea.cpp
 )
