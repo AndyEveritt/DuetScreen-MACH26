@@ -88,7 +88,7 @@ namespace UI
 		m_xyControl.setXLabelCallback([this](float position) { configureNumberpadForAxis('X', position); });
 		m_xyControl.setYLabelCallback([this](float position) { configureNumberpadForAxis('Y', position); });
 
-		m_zControl.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_zControl.setSize(LV_PCT(10), LV_PCT(100));
 		m_zControl.setAxisLetter('Z');
 		m_zControl.setJogCallback(
 			[this](char axis_letter, bool forward)
@@ -310,7 +310,8 @@ namespace UI
 			[this](size_t i, lv_obj_t* parent)
 			{
 				auto control = std::make_shared<GenericAxisControl>(fmt::format("{}", i), parent);
-				control->setSize(LV_SIZE_CONTENT, LV_PCT(100));
+				lv_coord_t width = m_zControl.getWidth();
+				control->setSize(width, LV_PCT(100));
 				control->setJogCallback(
 					[this](char axis_letter, bool forward)
 					{

@@ -23,11 +23,9 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_DBG("Activating presenter '{}'", getName());
-		if (!m_active)
-		{
-			onActivate();
-			m_active = true;
-		}
+
+		onActivate();
+		m_active = true;
 	}
 
 	void BasePresenter::deactivate()

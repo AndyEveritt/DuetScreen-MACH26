@@ -1,0 +1,1 @@
+{"key":"volumes","flags":"v","result":[{"capacity":30803181568,"freeSpace":19394854912,"mounted":true,"name":null,"openFiles":null,"partitionSize":30803181568,"path":"/","speed":null},{"capacity":534763520,"freeSpace":445087744,"mounted":true,"name":"/boot/firmware","openFiles":null,"partitionSize":534763520,"path":"/boot/firmware","speed":null}],"next":0}

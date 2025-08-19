@@ -444,7 +444,7 @@ namespace UI
 				if (item != nullptr)
 				{
 					item->setSlotIndex(i);
-					item->activate();
+					item->getPresenter()->update();
 				}
 			}
 		}

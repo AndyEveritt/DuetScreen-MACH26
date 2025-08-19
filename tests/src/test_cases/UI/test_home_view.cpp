@@ -100,19 +100,19 @@ class TestHomeViewWithData : public TestHomeView
   protected:
 	TestHomeViewWithData()
 	{
-		load_model_data_from_file("tests/object_model/model_boards_v.json");
-		load_model_data_from_file("tests/object_model/model_directories_v.json");
-		load_model_data_from_file("tests/object_model/model_fans_v.json");
-		load_model_data_from_file("tests/object_model/model_heat_v.json");
-		load_model_data_from_file("tests/object_model/model_job_vn.json");
-		load_model_data_from_file("tests/object_model/model_move_vn.json");
-		load_model_data_from_file("tests/object_model/model_network_v.json");
-		load_model_data_from_file("tests/object_model/model_sensors_v.json");
-		load_model_data_from_file("tests/object_model/model_spindles_v.json");
-		load_model_data_from_file("tests/object_model/model_state_vn.json");
-		load_model_data_from_file("tests/object_model/model_tools_v.json");
-		load_model_data_from_file("tests/object_model/model_volumes_v.json");
-		load_model_data_from_file("tests/object_model/model_all_d99f.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_boards_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_directories_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_fans_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_heat_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_job_vn.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_move_vn.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_network_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_sensors_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_spindles_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_state_vn.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_tools_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_volumes_v.json");
+		load_model_data_from_file("tests/object_model/test_bench/model_all_d99f.json");
 
 		view.show();
 	}
@@ -157,6 +157,10 @@ TEST_F(TestHomeViewWithData, MoveView)
 {
 	openScreen(&view.getMoveView());
 	EXPECT_EQUAL_SCREENSHOT("home_move_view.png")
+
+	load_model_data_from_file("tests/object_model/5_axis/model_move_vn.json");
+	view.getMoveView().activate();
+	EXPECT_EQUAL_SCREENSHOT("home_move_view_5_axis.png")
 }
 
 TEST_F(TestHomeViewWithData, TemperatureView)
