@@ -115,8 +115,8 @@ TEST_F(TestTheme, Widgets)
 
 	/* LvButtonMatrix */
 	LvButtonMatrix button_matrix("button_matrix", cont);
-	static const char* btnm_map[] = {"Default", "Checked"};
-	static const lv_buttonmatrix_ctrl_t btnm_ctrl_map[] = {
+	const char* btnm_map[] = {"Default", "Checked", "\0"};
+	const lv_buttonmatrix_ctrl_t btnm_ctrl_map[] = {
 		LV_BUTTONMATRIX_CTRL_WIDTH_1,
 		LV_BUTTONMATRIX_CTRL_CHECKED,
 	};
@@ -164,7 +164,9 @@ TEST_F(TestTheme, Widgets)
 	arc.setSize(LV_PCT(40), LV_PCT(100));
 
 	LvArcLabel arc_label("arc_label", arc_cont);
-	arc_label.setRadius(50);
+	arc_label.setRadius(30);
+	arc_label.setAngleStart(270);
+	arc_label.setAngleSize(180);
 	arc_label.setSize(LV_PCT(40), LV_PCT(100));
 	arc_label.setText("Arc label");
 

@@ -107,6 +107,7 @@ namespace UI
 		m_genericAxisControls.setListFlow(LV_FLEX_FLOW_ROW);
 		m_genericAxisControls.addStyle(Themes::getLvglStyles().no_border);
 		m_genericAxisControls.addStyle(Themes::getLvglStyles().pad_zero);
+		m_genericAxisControls.getListContainer().addStyle(Themes::getLvglStyles().pad_zero);
 
 		m_axisList.setFlexGrow(1);
 		m_axisList.setHeight(LV_PCT(100));

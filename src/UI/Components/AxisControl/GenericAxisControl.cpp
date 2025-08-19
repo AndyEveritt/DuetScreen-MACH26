@@ -23,7 +23,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_label.setMinWidth(LV_SIZE_CONTENT);
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_label.setFlag(LV_OBJ_FLAG_CLICKABLE, true);

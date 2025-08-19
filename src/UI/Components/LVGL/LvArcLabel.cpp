@@ -31,7 +31,7 @@ namespace UI
 	void LvArcLabel::setText(std::string_view text)
 	{
 		UI_LOCK();
-		lv_arclabel_set_text_fmt(getRoot(), ".*s", text.data(), text.size());
+		lv_arclabel_set_text_fmt(getRoot(), "%.*s", (int)text.length(), text.data());
 	}
 
 	/**
