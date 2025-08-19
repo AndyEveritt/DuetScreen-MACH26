@@ -7,6 +7,7 @@
 
 #include "Graph.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -76,8 +77,6 @@ namespace UI
 
 		// Legend
 		lv_obj_set_flex_flow(m_legend, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_style_pad_all(m_legend, 0, LV_PART_MAIN);
-		lv_obj_set_style_pad_row(m_legend, 0, LV_PART_MAIN);
 
 		showLegend(true);
 	}
@@ -180,7 +179,8 @@ namespace UI
 		std::shared_ptr<legend_obj_t> legendObj = std::make_shared<legend_obj_t>(
 			fmt::format("legend_obj_{}", index), m_legend, displayName.c_str(), layout_t(0, 0, 100, 20));
 		legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
-		legendObj->setStyleBgColor(s_hiddenColor, LV_STATE_DEFAULT);
+		legendObj->addStyle(Themes::getLvglStyles().border);
+		legendObj->addStyle(Themes::getLvglStyles().bg_light, LV_STATE_DEFAULT);
 		legendObj->setCheckable(true);
 		legendObj->setChecked(true);
 		legendObj->addClickedCallback(legendEvent, this);
