@@ -51,6 +51,7 @@ namespace UI
 		addStyle(Themes::getLvglStyles().pad_zero);
 		m_toolList.addStyle(Themes::getLvglStyles().card);
 		m_graph.addStyle(Themes::getLvglStyles().card);
+		m_macroView.addStyle(Themes::getLvglStyles().card);
 
 		addHomeScreen(this);
 

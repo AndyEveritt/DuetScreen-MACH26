@@ -61,9 +61,6 @@ namespace UI
 		m_currentTemperature.addEventCallback(drawCurrentTemperatureEvent, LV_EVENT_DRAW_MAIN_END, this);
 
 		// Add styles
-		addStyle(Themes::getLvglStyles().no_border);
-		m_heaterInfoCont.addStyle(Themes::getLvglStyles().no_border);
-		m_temperatureCont.addStyle(Themes::getLvglStyles().no_border);
 		m_activeTemperature.addStyle(Themes::getLvglStyles().pad_normal);
 		m_standbyTemperature.addStyle(Themes::getLvglStyles().pad_normal);
 		m_activeTemperature.addStyle(Themes::getLvglStyles().input);
@@ -72,8 +69,8 @@ namespace UI
 		m_currentTemperature.addStyle(Themes::getComponentStyles().temperature_bar, LV_PART_INDICATOR);
 		m_activeTemperature.addStyle(Themes::getComponentStyles().temperature_bar_indic, LV_PART_INDICATOR);
 		m_standbyTemperature.addStyle(Themes::getComponentStyles().temperature_bar_indic, LV_PART_INDICATOR);
-		m_activeTemperature.addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
-		m_standbyTemperature.addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
+		// m_activeTemperature.addStyle(Themes::getLvglStyles().btn_checked, LV_STATE_CHECKED);
+		// m_standbyTemperature.addStyle(Themes::getLvglStyles().btn_checked, LV_STATE_CHECKED);
 	}
 
 	void HeaterSlider::setHeaterName(const std::string_view name)
@@ -408,7 +405,7 @@ namespace UI
 		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
-	void HeaterSlider::updateLabelPosition(LvLabel& label, int32_t value)
+	void HeaterSlider::updateLabelPosition(LvObj& label, int32_t value)
 	{
 		LOG_DBG("Updating label '{}' position for value: {:d}", label.getName(), value);
 		// Calculate the position based on the current temperature value

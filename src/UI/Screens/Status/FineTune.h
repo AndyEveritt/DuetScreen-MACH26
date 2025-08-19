@@ -10,6 +10,7 @@
 #include "FineTunePresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Button/VerticalButtonPanel.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/List/List.h"
@@ -20,7 +21,7 @@ namespace UI
 	class FineTune : public View<FineTunePresenter>
 	{
 	  public:
-		FineTune(lv_obj_t* parent);
+		FineTune(lv_obj_t* parent, lv_obj_t* numberpad_parent = nullptr);
 
 		void setBabyStepValue(float value);
 
@@ -37,13 +38,13 @@ namespace UI
 		void setFanLabel(size_t index, std::string_view label);
 		void setFanValue(size_t index, uint32_t value);
 
+		void showKeyboard(bool show);
+
 	  protected:
 		static void onBabyStepIncrementClicked(lv_event_t* e);
 		static void onBabyStepDecrementClicked(lv_event_t* e);
 		static void onBabyStepResetClicked(lv_event_t* e);
 		static void onBabyStepValueClicked(lv_event_t* e);
-
-		void showKeyboard(bool show);
 
 		VerticalButtonPanel m_babystep;
 		LvContainer m_sliderCont;
@@ -58,5 +59,6 @@ namespace UI
 		List<Slider> m_fans;
 
 		LvKeyboard m_keyboard;
+		ModalNumberPad m_numberPad;
 	};
 } // namespace UI

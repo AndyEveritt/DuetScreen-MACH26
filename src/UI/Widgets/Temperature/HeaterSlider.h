@@ -33,15 +33,15 @@ namespace UI
 		virtual void onShow() override;
 
 		void updateLabelPositions();
-		void updateLabelPosition(LvLabel& label, int32_t value);
+		void updateLabelPosition(LvObj& label, int32_t value);
 
 		LvContainer m_heaterInfoCont;
 		Button m_heaterName;
 		LvLabel m_heaterState;
 		LvContainer m_temperatureCont;
 		LvBar m_currentTemperature;
-		LvLabel m_activeTemperature;
-		LvLabel m_standbyTemperature;
+		Button m_activeTemperature;
+		Button m_standbyTemperature;
 
 		lv_point_t m_pressedPoint;
 		lv_point_t m_pressedPointOffset;

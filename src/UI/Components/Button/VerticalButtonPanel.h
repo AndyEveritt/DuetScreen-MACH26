@@ -33,7 +33,7 @@ namespace UI
 		Button m_increment;
 		Button m_decrement;
 
-		lv_obj_t* m_valueCont;
+		LvContainer m_valueCont;
 		Button m_values[2];
 
         uint8_t m_selectedValueIndex = 0;

@@ -27,6 +27,8 @@ namespace UI
 		void setChroma(float chroma);
 		void setDarkMode(bool enable);
 
+		void showControls(bool show);
+
 	  private:
 		void updateThemeColors();
 

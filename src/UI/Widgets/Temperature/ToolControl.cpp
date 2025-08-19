@@ -39,8 +39,7 @@ namespace UI
 			},
 			this);
 
-		addStyle(Themes::getLvglStyles().no_border);
-		m_toolInfoCont.addStyle(Themes::getLvglStyles().no_border);
+		addStyle(Themes::getComponentStyles().tool_selected, LV_STATE_CHECKED);
 	}
 
 	void ToolControl::setToolName(std::string_view name)
@@ -50,7 +49,9 @@ namespace UI
 
 	void ToolControl::setToolState(ToolControlPresenter::tool_state_t state, std::string_view str)
 	{
-		m_name.setChecked(state == ToolControlPresenter::tool_state_t::active);
+		bool active = state == ToolControlPresenter::tool_state_t::active;
+		setState(LV_STATE_CHECKED, active);
+		m_name.setChecked(active);
 		m_state.setText(str);
 	}
 

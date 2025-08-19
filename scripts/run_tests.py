@@ -249,16 +249,33 @@ def load_images_for_compare(ref_path: Path, err_path: Path):
 	# Compute difference on RGB channels only (ignore alpha), so the diff isn't fully transparent
 	ref_rgb = ref_p.convert("RGB")
 	err_rgb = err_p.convert("RGB")
-	diff = ImageChops.difference(ref_rgb, err_rgb)
+	diff_raw = ImageChops.difference(ref_rgb, err_rgb)
+	diff = diff_raw
 	# Improve visibility of small changes
 	try:
 		diff = ImageOps.autocontrast(diff)
 	except Exception:
 		pass
 
+	# Build an additional view: the NEW image in greyscale with the difference highlighted in red
+	# 1) Greyscale version of the new image
+	new_gray_rgba = ImageOps.grayscale(err_p).convert("RGBA")
+	# 2) Generate a luminance mask from the raw diff (before autocontrast to avoid artifacts)
+	try:
+		diff_mask = diff_raw.convert("L")
+		# Optionally boost contrast for clearer highlights
+		diff_mask = ImageOps.autocontrast(diff_mask)
+	except Exception:
+		diff_mask = diff_raw.convert("L")
+	# 3) Create red overlay with alpha from the diff mask
+	red_overlay = Image.new("RGBA", (w, h), (255, 0, 0, 0))
+	red_overlay.putalpha(diff_mask)
+	# 4) Composite red overlay over greyscale new image
+	new_gray_with_red = Image.alpha_composite(new_gray_rgba, red_overlay)
+
 	# Composite layout:
-	#  Row 1: [Reference] [New (_err)]
-	#  Row 2: [Difference] (centered across the width)
+	#  Row 1: [Reference]               [New (_err)]
+	#  Row 2: [Difference]              [New (grey + red diff)]
 	gap = 10
 	label_h = 24
 
@@ -297,14 +314,15 @@ def load_images_for_compare(ref_path: Path, err_path: Path):
 	canvas.paste(ref_p, (x_left, y_top_img))
 	canvas.paste(err_p, (x_right, y_top_img))
 
-	# Bottom row (Difference)
+	# Bottom row (Difference + Greyscale with red diff)
 	y_bottom_label = y_top_img + h + gap
 	y_bottom_img = y_bottom_label + label_h
-	draw_label(x_left, y_bottom_label, top_row_content_w, "Difference")
-
-	# Center difference image horizontally across both columns
-	diff_x = gap + (top_row_content_w - diff.width) // 2
-	canvas.paste(diff, (diff_x, y_bottom_img))
+	# Left: Difference
+	draw_label(x_left, y_bottom_label, w, "Difference")
+	canvas.paste(diff.convert("RGBA"), (x_left, y_bottom_img))
+	# Right: New greyscale with red diff overlay
+	draw_label(x_right, y_bottom_label, w, "New (grey + red diff)")
+	canvas.paste(new_gray_with_red, (x_right, y_bottom_img))
 
 	return canvas
 

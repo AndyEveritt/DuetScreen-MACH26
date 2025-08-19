@@ -42,7 +42,7 @@ namespace UI
 			char m_axisLetter[2];
 			float m_position;
 
-			lv_obj_t* m_label;
+			LvLabel m_label;
 			Button m_relMove[6];
 		};
 

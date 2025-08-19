@@ -424,7 +424,7 @@ namespace UI
 		: LvObj(lv_obj_create, utils::format("msgbox_axis_jog_%u", index), parent)
 		, m_index(index)
 		, m_msgBox(msgBox)
-		, m_label(lv_label_create(getRoot()))
+		, m_label("label", getRoot())
 		, m_relMove{Button(utils::format("msgbox_axis_%u_rel_move_1", index), getRoot(), "", layout_t(0, 0, 0, 100)),
 					Button(utils::format("msgbox_axis_%u_rel_move_2", index), getRoot(), "", layout_t(0, 0, 0, 100)),
 					Button(utils::format("msgbox_axis_%u_rel_move_3", index), getRoot(), "", layout_t(0, 0, 0, 100)),
@@ -434,11 +434,12 @@ namespace UI
 
 	{
 		UI_LOCK();
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_style_pad_all(getRoot(), 2, 0);
-		lv_obj_set_style_pad_column(getRoot(), 2, 0);
+
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		setStylePad(2, 0, Padding::ALL);
+		setStylePad(2, 0, Padding::COLUMN);
 
 		setUserData(this);
 
@@ -446,16 +447,16 @@ namespace UI
 		{
 			Button& btn = m_relMove[i];
 			btn.setText(utils::format("%.2f", s_jogAmounts[i]).c_str());
-			lv_obj_set_style_text_align(btn.getRoot(), LV_TEXT_ALIGN_CENTER, 0);
-			lv_obj_set_flex_grow(btn.getRoot(), 1);
-			lv_obj_set_height(btn.getRoot(), LV_SIZE_CONTENT);
+			btn.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+			btn.setFlexGrow(1);
+			btn.setHeight(LV_SIZE_CONTENT);
 			btn.setUserData(reinterpret_cast<void*>(const_cast<float*>(&s_jogAmounts[i])));
 			btn.addClickedCallback(onRelMoveEvent, &btn);
 		}
 
-		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
-		lv_obj_set_flex_grow(m_label, 3);
-		lv_obj_move_to_index(m_label, 3);
+		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_label.setFlexGrow(3);
+		m_label.moveToIndex(3);
 	}
 
 	void AlertMessageBox::AxisJog::setAxisLetter(char letter)
@@ -463,14 +464,14 @@ namespace UI
 		UI_LOCK();
 		m_axisLetter[0] = letter;
 		m_axisLetter[1] = '\0';
-		lv_label_set_text(m_label, utils::format("%s = %.2f", m_axisLetter, m_position).c_str());
+		m_label.setText(fmt::format("{:s} = {:.2f}", m_axisLetter, m_position).c_str());
 	}
 
 	void AlertMessageBox::AxisJog::setPosition(float position)
 	{
 		UI_LOCK();
 		m_position = position;
-		lv_label_set_text(m_label, utils::format("%s = %.2f", m_axisLetter, m_position).c_str());
+		m_label.setText(fmt::format("{:s} = {:.2f}", m_axisLetter, m_position).c_str());
 	}
 
 	void AlertMessageBox::AxisJog::setEnabled(bool enabled)

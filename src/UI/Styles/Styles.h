@@ -190,7 +190,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_KEYBOARD
-		Style keyboard_button_bg;
+		Style keyboard_button;
 		Style keyboard_button_checked_bg;
 #endif
 
@@ -247,7 +247,7 @@ namespace UI::Themes
 		const LvglStyles& getLvglStyles() const;
 		const ComponentStyles& getComponentStyles() const;
 
-		const std::string& getName() const { return m_name; }
+		const std::string_view getName() const { return m_name; }
 
 	  protected:
 		LvglStyles& getLvglStyles();
@@ -257,10 +257,10 @@ namespace UI::Themes
 		virtual void onInit() {}
 
 		// Base LVGL styles applied to existing and newly created objects
-		std::unique_ptr<LvglStyles> lvgl;
+		std::unique_ptr<LvglStyles> m_lvgl;
 
 		// Specific component styles
-		std::unique_ptr<ComponentStyles> components;
+		std::unique_ptr<ComponentStyles> m_components;
 
 		const std::string m_name;
 		std::function<void(Theme*)> m_initFunc;
@@ -282,7 +282,7 @@ namespace UI::Themes
 	const Theme* getDefaultTheme();
 	const size_t getThemeCount();
 	bool refreshCurrentTheme();
-	const std::vector<std::string> getThemeNames();
+	const std::vector<std::string_view> getThemeNames();
 
 #if DEBUG_BORDERS
 	bool isdebugBorderVisible(lv_obj_t* obj);

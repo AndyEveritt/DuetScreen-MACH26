@@ -419,7 +419,7 @@ namespace UI
 		m_theme.setLabel(_("settings_theme"));
 		for (auto& theme : Themes::getThemes())
 		{
-			m_theme.addOption(_(theme->getName().c_str()));
+			m_theme.addOption(_(theme->getName().data()));
 		}
 		m_theme.addEventCallback(
 			[](lv_event_t* e)

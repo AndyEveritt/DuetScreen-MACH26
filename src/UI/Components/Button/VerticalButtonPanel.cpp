@@ -16,7 +16,7 @@ namespace UI
 		, m_reset("reset", getRoot(), "")
 		, m_increment("increment", getRoot(), "")
 		, m_decrement("decrement", getRoot(), "")
-		, m_valueCont(lv_obj_create(getRoot()))
+		, m_valueCont("value_cont", getRoot())
 		, m_values{Button("value1", m_valueCont, ""), Button("value2", m_valueCont, "")}
 	{
 		UI_LOCK();
@@ -30,24 +30,18 @@ namespace UI
 			lv_obj_set_width(child, LV_PCT(100));
 		}
 
-		lv_obj_set_flex_grow(m_reset.getRoot(), 1);
-		lv_obj_set_flex_grow(m_increment.getRoot(), 3);
-		lv_obj_set_flex_grow(m_decrement.getRoot(), 3);
-		lv_obj_set_flex_grow(m_valueCont, 2);
+		m_reset.setFlexGrow(1);
+		m_increment.setFlexGrow(3);
+		m_decrement.setFlexGrow(3);
+		m_valueCont.setFlexGrow(2);
 
-		lv_obj_set_layout(m_valueCont, LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(m_valueCont, LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(m_valueCont, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-
-		for (size_t i = 0; i < lv_obj_get_child_cnt(m_valueCont); i++)
-		{
-			lv_obj_t* child = lv_obj_get_child(m_valueCont, i);
-			lv_obj_set_height(child, LV_PCT(100));
-			lv_obj_set_flex_grow(child, 1);
-		}
+		m_valueCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_valueCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		for (auto& v : m_values)
 		{
+			v.setHeight(LV_PCT(100));
+			v.setFlexGrow(1);
 			v.setCheckable(true);
 			v.setChecked(false);
 			v.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&v - m_values)));

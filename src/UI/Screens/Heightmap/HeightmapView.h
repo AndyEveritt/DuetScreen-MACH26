@@ -11,7 +11,7 @@ namespace UI
 {
 	class HeightmapItem;
 
-	class HeightmapRenderMode : public LvObj
+	class HeightmapRenderMode : public LvContainer
 	{
 	  public:
 		HeightmapRenderMode(lv_obj_t* parent, HeightmapPresenter& presenter);
@@ -20,14 +20,14 @@ namespace UI
 	  private:
 		HeightmapPresenter& m_presenter;
 
-		lv_obj_t* m_title;
-		lv_obj_t* m_btns;
+		LvLabel m_title;
+		LvContainer m_btns;
 
 		Button m_fixed;
 		Button m_auto;
 	};
 
-	class HeightmapStatistics : public LvObj
+	class HeightmapStatistics : public LvContainer
 	{
 	  public:
 		HeightmapStatistics(const std::string& name, lv_obj_t* parent);
@@ -35,12 +35,12 @@ namespace UI
 			size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev);
 
 	  private:
-		lv_obj_t* m_numPoints;
-		lv_obj_t* m_area;
-		lv_obj_t* m_minError;
-		lv_obj_t* m_maxError;
-		lv_obj_t* m_meanError;
-		lv_obj_t* m_stdDev;
+		LvLabel m_numPoints;
+		LvLabel m_area;
+		LvLabel m_minError;
+		LvLabel m_maxError;
+		LvLabel m_meanError;
+		LvLabel m_stdDev;
 	};
 
 	class HeightmapView : public View<HeightmapPresenter>

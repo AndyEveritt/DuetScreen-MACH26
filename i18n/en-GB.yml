@@ -336,18 +336,18 @@ en-GB:
   halted: Halted
   heater: 'Heater: %s'
   heightmap: Heightmap
-  heightmap_area: 'Probe area: %.2f cm^2'
+  heightmap_area: 'Probe area: {:g} cm^2'
   heightmap_auto: Auto
   heightmap_fixed: Fixed
   heightmap_list_header: Heightmaps
   heightmap_load: Load
-  heightmap_max_error: 'Max deviation: %.2f mm'
-  heightmap_mean_error: 'Mean error: %.2f mm'
-  heightmap_min_error: 'Min deviation: %.2f mm'
-  heightmap_not_supported: Heightmap not supported in %s mode
-  heightmap_num_points: 'Number of points: %u'
+  heightmap_max_error: 'Max deviation: {:g} mm'
+  heightmap_mean_error: 'Mean error: {:g} mm'
+  heightmap_min_error: 'Min deviation: {:g} mm'
+  heightmap_not_supported: 'Heightmap not supported in {:s} mode'
+  heightmap_num_points: 'Number of points: {:d}'
   heightmap_render_mode: 'Render Mode:'
-  heightmap_std_dev: 'RMS error: %.2f mm'
+  heightmap_std_dev: 'RMS error: {:g} mm'
   heightmap_title: 'Heightmap: {:s}'
   heightmap_unload: Unload
   home: Home
@@ -488,3 +488,4 @@ en-GB:
   menu: Menu
   select_view: Select View
   select_filament: ~
+  dark_mode: ~

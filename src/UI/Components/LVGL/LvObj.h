@@ -148,7 +148,7 @@ namespace UI
 		void setPos(lv_coord_t x, lv_coord_t y);
 		void setFlag(lv_obj_flag_t flag, bool enable, bool recursive = false);
 		void setState(lv_state_t state, bool enable, bool recursive = false);
-		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
+		void setAlign(lv_align_t align, lv_coord_t x = 0, lv_coord_t y = 0);
 
 		void updateLayout();
 		bool refreshSelfSize();

@@ -7,9 +7,9 @@ namespace UI
 {
 	StatusBar::StatusBar(lv_obj_t* parent)
 		: View("status_bar", parent)
-		, m_duetStatus(lv_label_create(getRoot()))
-		, m_duetName(lv_label_create(getRoot()))
-		, m_time(lv_label_create(getRoot()))
+		, m_duetStatus("status", getRoot())
+		, m_duetName("name", getRoot())
+		, m_time("time", getRoot())
 	{
 		activate();
 
@@ -19,26 +19,26 @@ namespace UI
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		lv_obj_set_align(m_duetStatus, LV_ALIGN_LEFT_MID);
-		lv_obj_set_align(m_duetName, LV_ALIGN_CENTER);
-		lv_obj_set_align(m_time, LV_ALIGN_RIGHT_MID);
+		m_duetStatus.setAlign(LV_ALIGN_LEFT_MID);
+		m_duetName.setAlign(LV_ALIGN_CENTER);
+		m_time.setAlign(LV_ALIGN_RIGHT_MID);
 	}
 
-	void StatusBar::setDuetName(const std::string& name)
+	void StatusBar::setDuetName(std::string_view name)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_duetName, name.c_str());
+		m_duetName.setText(name);
 	}
 
-	void StatusBar::setDuetStatus(const std::string& status)
+	void StatusBar::setDuetStatus(std::string_view status)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_duetStatus, status.c_str());
+		m_duetStatus.setText(status);
 	}
 
-	void StatusBar::setTime(const std::string& time)
+	void StatusBar::setTime(std::string_view time)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_time, time.c_str());
+		m_time.setText(time);
 	}
 } // namespace UI

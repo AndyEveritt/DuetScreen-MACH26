@@ -121,7 +121,8 @@ namespace UI
 								[this, &swatch_styles](size_t index, lv_obj_t* parent)
 								{
 									auto swatch = std::make_shared<Swatch>(fmt::format("{:d}", index), parent);
-									swatch->setSize(LV_PCT(20), LV_SIZE_CONTENT);
+									swatch->setSize(180, LV_SIZE_CONTENT);
+									swatch->setMaxWidth(LV_PCT(100));
 									auto& style = swatch_styles[index];
 									swatch->setLabel(style.name);
 
@@ -163,6 +164,14 @@ namespace UI
 	{
 		m_darkMode.setChecked(enable);
 		updateThemeColors();
+	}
+
+	void ThemePreview::showControls(bool show)
+	{
+		m_primaryHueSlider.setVisible(show);
+		m_secondaryHueSlider.setVisible(show);
+		m_chromaSlider.setVisible(show);
+		m_darkMode.setVisible(show);
 	}
 
 	void ThemePreview::updateThemeColors()

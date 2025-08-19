@@ -45,17 +45,13 @@ namespace UI
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW);
+		setFlexFlow(LV_FLEX_FLOW_ROW);
 
-		lv_obj_set_flex_grow(m_canvas, 1);
-		lv_obj_set_height(m_canvas, LV_PCT(100));
-		lv_obj_set_size(m_colorBar, LV_SIZE_CONTENT, LV_PCT(100));
+		m_canvas.setFlexGrow(1);
+		m_canvas.setHeight(LV_PCT(100));
+		m_colorBar.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 
 		addStyle(Themes::getLvglStyles().pad_zero);
-		addStyle(Themes::getLvglStyles().no_border);
-		m_canvas.addStyle(Themes::getLvglStyles().no_border);
-		m_colorBar.addStyle(Themes::getLvglStyles().no_border);
 
 		m_canvas.setTitle("");
 		m_canvas.setResolution(100, 100);
@@ -72,7 +68,7 @@ namespace UI
 	void Heatmap::showScale(const bool show)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(m_colorBar, LV_OBJ_FLAG_HIDDEN, !show);
+		m_colorBar.setVisible(show);
 		m_columnDsc[2] = show ? LV_GRID_CONTENT : 0;
 	}
 
@@ -132,7 +128,7 @@ namespace UI
 	{
 		UI_LOCK();
 		// Get the canvas dimensions
-		lv_obj_update_layout(m_canvas);
+		m_canvas.updateLayout();
 		uint32_t width;
 		uint32_t height;
 		m_canvas.getResolution(width, height);
@@ -163,7 +159,7 @@ namespace UI
 	{
 		UI_LOCK();
 		// Also render a color scale on the color bar
-		lv_obj_update_layout(m_colorBar);
+		m_colorBar.updateLayout();
 		uint32_t barWidth;
 		uint32_t barHeight;
 		m_colorBar.getResolution(barWidth, barHeight);

@@ -43,7 +43,7 @@ namespace UI
 	Canvas::~Canvas()
 	{
 		UI_LOCK();
-		if (!lv_is_initialized())
+		if (!lv_is_initialized() || m_buf == nullptr)
 		{
 			return;
 		}
@@ -246,7 +246,7 @@ namespace UI
 		getResolution(res_x, res_y);
 
 		px = (size_t)((x - xRange.min) * (float)res_x / (xRange.max - xRange.min));
-		py = (size_t)((y - yRange.min) * (float)res_y / (yRange.max - yRange.min));
+		py = (size_t)(res_y - (y - yRange.min) * (float)res_y / (yRange.max - yRange.min));
 
 		return true;
 	}
@@ -301,8 +301,9 @@ namespace UI
 		}
 		width = std::max(width, 1u);
 		height = std::max(height, 1u);
-		m_buf = lv_draw_buf_create(width, height, LV_COLOR_FORMAT_RGB565, 0);
+		m_buf = lv_draw_buf_create(width, height, lv_display_get_color_format(lv_obj_get_display(getRoot())), 0);
 		lv_canvas_set_draw_buf(m_canvas, m_buf);
+		clear();
 	}
 
 	void Canvas::drawGrid()
@@ -412,6 +413,13 @@ namespace UI
 		lv_draw_line_dsc_t line_dsc;
 		lv_draw_line_dsc_init(&line_dsc);
 
+		uint32_t res_x, res_y;
+		getResolution(res_x, res_y);
+		p1.x = std::clamp<int32_t>(p1.x, 0, res_x - 1);
+		p1.y = std::clamp<int32_t>(p1.y, 0, res_y - 1);
+		p2.x = std::clamp<int32_t>(p2.x, 0, res_x - 1);
+		p2.y = std::clamp<int32_t>(p2.y, 0, res_y - 1);
+
 		lv_point_precise_t p1_precise = {static_cast<lv_value_precise_t>(p1.x), static_cast<lv_value_precise_t>(p1.y)};
 		lv_point_precise_t p2_precise = {static_cast<lv_value_precise_t>(p2.x), static_cast<lv_value_precise_t>(p2.y)};
 
@@ -477,13 +485,20 @@ namespace UI
 		lv_point_t txt_size;
 		lv_text_attributes_t txt_attr;
 		lv_text_attributes_init(&txt_attr);
+		txt_attr.max_width = std::min((res_x - pos.x) * 2, res_x);
 		lv_text_get_size(&txt_size, dsc.text, dsc.font, &txt_attr);
 
 		lv_area_t area;
 		area.x1 = pos.x - txt_size.x / 2;
-		area.y1 = pos.y - txt_size.y / 2;
+		area.y1 = res_y - (pos.y + txt_size.y / 2);
 		area.x2 = pos.x + txt_size.x / 2;
-		area.y2 = pos.y + txt_size.y / 2;
+		area.y2 = res_y - (pos.y - txt_size.y / 2);
+
+		// if (area.x1 < 0 || area.y1 < 0 || area.x2 >= (int32_t)res_x || area.y2 >= (int32_t)res_y)
+		// {
+		// 	LOG_WARN("Label position out of bounds: ({:d}, {:d})", pos.x, pos.y);
+		// 	return;
+		// }
 
 		lv_draw_label(&layer, &dsc, &area);
 

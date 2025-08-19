@@ -14,20 +14,19 @@ namespace UI
 		HeightmapItem(size_t index, lv_obj_t* parent, HeightmapView& view)
 			: ListItem(index, parent)
 			, m_view(view)
-			, m_label(lv_label_create(getRoot()))
+			, m_label("label", getRoot())
 			, m_load("load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		{
 			UI_LOCK();
 
 			setFlexFlow(LV_FLEX_FLOW_ROW);
-			lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-			lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
-			lv_obj_set_height(m_label, LV_SIZE_CONTENT);
-			lv_obj_set_flex_grow(m_label, 1);
+			setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+			setSize(LV_PCT(100), LV_SIZE_CONTENT);
+			m_label.setHeight(LV_SIZE_CONTENT);
+			m_label.setFlexGrow(1);
 
-			lv_obj_add_flag(getRoot(), LV_OBJ_FLAG_CLICKABLE);
-			lv_obj_add_event_cb(
-				getRoot(),
+			setFlag(LV_OBJ_FLAG_CLICKABLE, true);
+			addEventCallback(
 				[](lv_event_t* event)
 				{
 					UI_LOCK();
@@ -63,10 +62,10 @@ namespace UI
 			m_load.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		}
 
-		void setLabel(const std::string& label)
+		void setLabel(std::string_view label)
 		{
 			UI_LOCK();
-			lv_label_set_text(m_label, label.c_str());
+			m_label.setText(label);
 		}
 
 		void setSelected(bool selected)
@@ -80,27 +79,27 @@ namespace UI
 	  private:
 		HeightmapView& m_view;
 
-		lv_obj_t* m_label;
+		LvLabel m_label;
 		Button m_load;
 	};
 
 	HeightmapRenderMode::HeightmapRenderMode(lv_obj_t* parent, HeightmapPresenter& presenter)
-		: LvObj(lv_obj_create, "heightmap_render_mode", parent)
+		: LvContainer("heightmap_render_mode", parent)
 		, m_presenter(presenter)
-		, m_title(lv_label_create(getRoot()))
-		, m_btns(lv_obj_create(getRoot()))
+		, m_title("label", getRoot())
+		, m_btns("btns", getRoot())
 		, m_fixed("heightmap_fixed", m_btns, _("heightmap_fixed"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		, m_auto("heightmap_auto", m_btns, _("heightmap_auto"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		lv_label_set_text(m_title, _("heightmap_render_mode"));
+		m_title.setText(_("heightmap_render_mode"));
 
-		lv_obj_set_flex_flow(m_btns, LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(m_btns, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		m_btns.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_btns.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
-		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_size(m_btns, LV_PCT(100), LV_SIZE_CONTENT);
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_btns.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_fixed.setHeight(LV_SIZE_CONTENT);
 		m_auto.setHeight(LV_SIZE_CONTENT);
 
@@ -159,13 +158,13 @@ namespace UI
 	}
 
 	HeightmapStatistics::HeightmapStatistics(const std::string& name, lv_obj_t* parent)
-		: LvObj(lv_obj_create, name, parent)
-		, m_numPoints(lv_label_create(getRoot()))
-		, m_area(lv_label_create(getRoot()))
-		, m_minError(lv_label_create(getRoot()))
-		, m_maxError(lv_label_create(getRoot()))
-		, m_meanError(lv_label_create(getRoot()))
-		, m_stdDev(lv_label_create(getRoot()))
+		: LvContainer(name, parent)
+		, m_numPoints("num_points", getRoot())
+		, m_area("area", getRoot())
+		, m_minError("min_error", getRoot())
+		, m_maxError("max_error", getRoot())
+		, m_meanError("mean_error", getRoot())
+		, m_stdDev("std_dev", getRoot())
 	{
 		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
 		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW_WRAP);
@@ -181,12 +180,12 @@ namespace UI
 		size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_numPoints, utils::format(_("heightmap_num_points"), numPoints).c_str());
-		lv_label_set_text(m_area, utils::format(_("heightmap_area"), area).c_str());
-		lv_label_set_text(m_minError, utils::format(_("heightmap_min_error"), minError).c_str());
-		lv_label_set_text(m_maxError, utils::format(_("heightmap_max_error"), maxError).c_str());
-		lv_label_set_text(m_meanError, utils::format(_("heightmap_mean_error"), meanError).c_str());
-		lv_label_set_text(m_stdDev, utils::format(_("heightmap_std_dev"), stdDev).c_str());
+		m_numPoints.setText(fmt::format(fmt::runtime(_("heightmap_num_points")), numPoints));
+		m_area.setText(fmt::format(fmt::runtime(_("heightmap_area")), area));
+		m_minError.setText(fmt::format(fmt::runtime(_("heightmap_min_error")), minError));
+		m_maxError.setText(fmt::format(fmt::runtime(_("heightmap_max_error")), maxError));
+		m_meanError.setText(fmt::format(fmt::runtime(_("heightmap_mean_error")), meanError));
+		m_stdDev.setText(fmt::format(fmt::runtime(_("heightmap_std_dev")), stdDev));
 	}
 
 	HeightmapView::HeightmapView(lv_obj_t* parent)
@@ -208,11 +207,11 @@ namespace UI
 
 		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 
-		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
-		lv_obj_set_grid_cell(m_heightmap, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-		lv_obj_set_grid_cell(m_heightmapList, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_renderMode, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);
-		lv_obj_set_grid_cell(m_statistics, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 2, 1);
+		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
+		setGridCell(m_heightmap, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+		setGridCell(m_heightmapList, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_renderMode, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);
+		setGridCell(m_statistics, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 2, 1);
 
 		m_heightmap.setResolution(200, 200);
 

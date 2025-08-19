@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StatusBarPresenter.h"
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -10,13 +11,13 @@ namespace UI
 	  public:
 		StatusBar(lv_obj_t* parent);
 
-		void setDuetName(const std::string& name);
-		void setDuetStatus(const std::string& status);
-		void setTime(const std::string& time);
+		void setDuetName(std::string_view name);
+		void setDuetStatus(std::string_view status);
+		void setTime(std::string_view time);
 
 	  private:
-		lv_obj_t* m_duetName;
-		lv_obj_t* m_duetStatus;
-		lv_obj_t* m_time;
+		LvLabel m_duetName;
+		LvLabel m_duetStatus;
+		LvLabel m_time;
 	};
 } // namespace UI
