@@ -154,13 +154,17 @@ TEST_F(TestTheme, Widgets)
 	keyboard.setWidth(250);
 
 	/* LvArc */
-	LvArc arc("arc", cont);
-	arc.setWidth(100);
+	LvContainer arc_cont("arc_cont", cont);
+	arc_cont.setSize(col_width, 100);
+	// arc_cont.setFlexGrow(1);
+	arc_cont.setFlexFlow(LV_FLEX_FLOW_ROW);
 
-	/* LvArcLabel */
-	LvArcLabel arc_label("arc_label", cont);
+	LvArc arc("arc", arc_cont);
+	arc.setSize(LV_PCT(40), LV_PCT(100));
+
+	LvArcLabel arc_label("arc_label", arc_cont);
 	arc_label.setRadius(50);
-	arc_label.setSize(100, 100);
+	arc_label.setSize(LV_PCT(40), LV_PCT(100));
 	arc_label.setText("Arc label");
 
 	/* LvList */
@@ -203,6 +207,31 @@ TEST_F(TestTheme, Widgets)
 	/* Graph */
 	Graph graph("graph", cont);
 	graph.setWidth(250);
+	graph.showLegend(true);
+	srand(0);
+	for (size_t i = 0; i < 3; ++i)
+	{
+		graph.createSeries(lv_palette_main((lv_palette_t)graph.getSeriesCount()), fmt::format("Series {}", i));
+		for (size_t j = 0; j < 100; ++j)
+		{
+			graph.addData(i, rand() % 100);
+		}
+	}
+	graph.getSeries(0)->legendObj->setText("Hidden");
+	graph.showSeries(0, false);
+
+	/* lv_table */
+	lv_obj_t* table = lv_table_create(cont);
+	lv_obj_set_size(table, col_width, LV_SIZE_CONTENT);
+	const size_t table_cols = 3;
+	const size_t table_rows = 4;
+	lv_table_set_column_count(table, table_cols);
+	lv_table_set_row_count(table, table_rows);
+	lv_table_set_selected_cell(table, 1, 1);
+	for (size_t i = 0; i < table_cols * table_rows; i++)
+	{
+		lv_table_set_cell_value(table, i % table_cols, i / table_cols, fmt::format("Cell {}", i).c_str());
+	}
 
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{

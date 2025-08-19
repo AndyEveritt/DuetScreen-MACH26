@@ -226,6 +226,7 @@ namespace UI
 			return;
 		}
 		lv_chart_hide_series(m_chart, series->series, !show);
+		series->legendObj->setChecked(show);
 	}
 
 	void Graph::clear()

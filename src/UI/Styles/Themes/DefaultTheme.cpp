@@ -511,8 +511,8 @@ namespace UI::Themes
 		lv_style_set_pad_gap(lvgl.list_bg, 0);
 		lv_style_set_clip_corner(lvgl.list_bg, true);
 
-		lv_style_set_border_width(lvgl.list_btn, LV_DPX_CALC(lv_display_get_dpi(NULL), 1));
-		lv_style_set_border_color(lvgl.list_btn, m_colors.highlight);
+		lv_style_set_border_width(lvgl.list_btn, 1);
+		lv_style_set_border_color(lvgl.list_btn, m_colors.border);
 		lv_style_set_border_side(lvgl.list_btn, LV_BORDER_SIDE_BOTTOM);
 		lv_style_set_pad_all(lvgl.list_btn, PAD_SMALL);
 		lv_style_set_pad_column(lvgl.list_btn, PAD_SMALL);
