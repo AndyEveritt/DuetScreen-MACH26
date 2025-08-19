@@ -238,7 +238,7 @@ namespace UI::Themes
 	{
 	  public:
 		Theme(const char* name, std::function<void(Theme* theme)> initFunc = nullptr);
-		~Theme() = default;
+		~Theme();
 		Theme& operator=(const Theme&) = delete;
 
 		void init();
@@ -279,6 +279,7 @@ namespace UI::Themes
 	Theme* getCurrentTheme();
 	const Theme* getTheme(const size_t index);
 	const Theme* getThemeByName(const char* name);
+	const Theme* getDefaultTheme();
 	const size_t getThemeCount();
 	bool refreshCurrentTheme();
 	const std::vector<std::string> getThemeNames();

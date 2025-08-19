@@ -58,6 +58,7 @@ namespace UI
 		, m_primaryHueSlider("primary_hue_slider", getRoot())
 		, m_secondaryHueSlider("secondary_hue_slider", getRoot())
 		, m_chromaSlider("chroma_slider", getRoot())
+		, m_darkMode("dark_mode", getRoot())
 	{
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
@@ -84,6 +85,10 @@ namespace UI
 		m_chromaSlider.setValue(0.2);
 		m_chromaSlider.setLabel(_("chroma"));
 		m_chromaSlider.setValueChangedCallback([this](int32_t) { updateThemeColors(); });
+
+		m_darkMode.setText(_("dark_mode"));
+		m_darkMode.setChecked(true);
+		m_darkMode.setCheckedCallback([this](bool checked) { updateThemeColors(); });
 
 		updateSwatches();
 	}
@@ -136,6 +141,30 @@ namespace UI
 								});
 	}
 
+	void ThemePreview::setPrimaryHue(size_t hue)
+	{
+		m_primaryHueSlider.setValue(static_cast<float>(hue));
+		updateThemeColors();
+	}
+
+	void ThemePreview::setSecondaryHue(size_t hue)
+	{
+		m_secondaryHueSlider.setValue(static_cast<float>(hue));
+		updateThemeColors();
+	}
+
+	void ThemePreview::setChroma(float chroma)
+	{
+		m_chromaSlider.setValue(chroma);
+		updateThemeColors();
+	}
+
+	void ThemePreview::setDarkMode(bool enable)
+	{
+		m_darkMode.setChecked(enable);
+		updateThemeColors();
+	}
+
 	void ThemePreview::updateThemeColors()
 	{
 		UI::Themes::Theme* theme = Themes::getCurrentTheme();
@@ -156,7 +185,7 @@ namespace UI
 		auto colors = UI::Themes::createThemeColors(m_primaryHueSlider.getValue(),
 													m_secondaryHueSlider.getValue(),
 													m_chromaSlider.getValue(),
-													defaultTheme->isDarkMode());
+													m_darkMode.getChecked());
 		defaultTheme->updateColors(colors);
 
 		UI::Themes::refreshCurrentTheme();

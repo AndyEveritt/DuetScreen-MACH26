@@ -78,6 +78,7 @@ TEST_F(TestHomeView, BlankHeightmapView)
 TEST_F(TestHomeView, BlankSettingsView)
 {
 	openScreen(&view.getSettingsView(), false);
+	view.getSettingsView().getDuetSettingsView().show(true);
 	EXPECT_EQUAL_SCREENSHOT("home_settings_view_blank.png")
 }
 
@@ -140,7 +141,7 @@ TEST_F(TestHomeViewWithData, HomeView)
 
 TEST_F(TestHomeViewWithData, ConsoleView)
 {
-	openScreen(&view.getConsoleView(), false);
+	openScreen(&view.getConsoleView());
 
 	auto presenter = view.getConsoleView().getPresenter();
 	view.getConsoleView().addCommand("M115");
@@ -154,42 +155,53 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 
 TEST_F(TestHomeViewWithData, MoveView)
 {
-	openScreen(&view.getMoveView(), false);
+	openScreen(&view.getMoveView());
 	EXPECT_EQUAL_SCREENSHOT("home_move_view.png")
 }
 
 TEST_F(TestHomeViewWithData, TemperatureView)
 {
-	openScreen(&view.getTemperatureView(), false);
+	openScreen(&view.getTemperatureView());
 	EXPECT_EQUAL_SCREENSHOT("home_temperature_view.png")
 }
 
 TEST_F(TestHomeViewWithData, FanView)
 {
-	openScreen(&view.getFanView(), false);
+	openScreen(&view.getFanView());
 	EXPECT_EQUAL_SCREENSHOT("home_fan_view.png")
 }
 
 TEST_F(TestHomeViewWithData, MacroView)
 {
-	openScreen(&view.getMacroView(), false);
+	openScreen(&view.getMacroView());
 	EXPECT_EQUAL_SCREENSHOT("home_macro_view.png")
 }
 
 TEST_F(TestHomeViewWithData, HeightmapView)
 {
-	openScreen(&view.getHeightmapView(), false);
+	openScreen(&view.getHeightmapView());
 	EXPECT_EQUAL_SCREENSHOT("home_heightmap_view.png")
 }
 
 TEST_F(TestHomeViewWithData, SettingsView)
 {
-	openScreen(&view.getSettingsView(), false);
+	openScreen(&view.getSettingsView());
+	view.getSettingsView().getDuetSettingsView().show(true);
 	EXPECT_EQUAL_SCREENSHOT("home_settings_view.png")
 }
 
 TEST_F(TestHomeViewWithData, StatusView)
 {
-	openScreen(&view.getStatusView(), false);
+	openScreen(&view.getStatusView());
 	EXPECT_EQUAL_SCREENSHOT("home_status_view.png")
+}
+
+TEST_F(TestHomeViewWithData, FineTuneView)
+{
+	UI::FineTune& fineTuneView = view.getFineTuneView();
+	openScreen(&fineTuneView);
+	EXPECT_EQUAL_SCREENSHOT("home_fine_tune_view.png")
+
+	fineTuneView.showKeyboard(true);
+	EXPECT_EQUAL_SCREENSHOT("home_fine_tune_view_keyboard.png")
 }

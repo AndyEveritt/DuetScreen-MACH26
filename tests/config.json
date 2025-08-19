@@ -1,1 +1,1 @@
-{"file":{"sort_by":1,"sort_descending":true},"screensaver_timeout":300000,"sys":{"brightness":100,"usb_mode":0}}
+{"duet":{"baud_rate":4098,"communication_type":0,"hostname":"","password":"","poll_interval":250},"file":{"sort_by":1,"sort_descending":true},"info_timeout":5000,"screensaver_timeout":300000,"sys":{"brightness":100,"usb_mode":0},"theme":0}

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Components/Input/Slider.h"
+#include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/List/List.h"
 
@@ -21,6 +22,10 @@ namespace UI
 		ThemePreview(const std::string& name, lv_obj_t* parent);
 
 		void updateSwatches();
+		void setPrimaryHue(size_t hue);
+		void setSecondaryHue(size_t hue);
+		void setChroma(float chroma);
+		void setDarkMode(bool enable);
 
 	  private:
 		void updateThemeColors();
@@ -29,5 +34,6 @@ namespace UI
 		Slider m_primaryHueSlider;
 		Slider m_secondaryHueSlider;
 		Slider m_chromaSlider;
+		LvCheckbox m_darkMode;
 	};
 } // namespace UI

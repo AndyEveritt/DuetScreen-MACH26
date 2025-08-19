@@ -170,6 +170,12 @@ namespace UI::Themes
 		LOG_INFO("Theme {:s} created", name);
 	}
 
+	Theme::~Theme()
+	{
+		LOG_INFO("Destroying theme: {:s}", m_name);
+		themes().erase(std::remove(themes().begin(), themes().end(), this), themes().end());
+	}
+
 	void Theme::init()
 	{
 		UI_LOCK();
@@ -938,12 +944,21 @@ namespace UI::Themes
 
 		lv_theme_apply(lv_screen_active());
 
-		const Theme* theme = getTheme(StorageHelper::getData<int>(ID_THEME, 0));
+		const Theme* theme = getTheme(StorageHelper::getData<int>(ID_THEME, -1));
 		if (theme == nullptr)
 		{
-			LOG_ERROR("Theme not found, defaulting to theme 0");
-			theme = getTheme(0);
-			StorageHelper::setData<int>(ID_THEME, 0);
+			LOG_INFO("Theme not found, using default theme");
+			theme = getDefaultTheme();
+			int theme_id = 0;
+			for (int i = 0; i < themes().size(); ++i)
+			{
+				if (themes()[i] == theme)
+				{
+					theme_id = i;
+					break;
+				}
+			}
+			StorageHelper::setData<int>(ID_THEME, theme_id);
 		}
 		if (theme != nullptr)
 		{
@@ -987,6 +1002,18 @@ namespace UI::Themes
 		}
 		LOG_ERROR("Theme with name {:s} not found", name);
 		return nullptr;
+	}
+
+	const Theme* getDefaultTheme()
+	{
+		const Theme* theme = getThemeByName("theme_dark");
+		if (theme == nullptr)
+		{
+			LOG_ERROR("Default theme not found, using first available theme");
+			theme = getTheme(0);
+		}
+
+		return theme;
 	}
 
 	const size_t getThemeCount()
