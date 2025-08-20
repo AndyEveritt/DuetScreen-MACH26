@@ -25,6 +25,7 @@
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Styles/Styles.h"
 #include "UI/Styles/Themes/DefaultTheme.h"
+#include "UI/Widgets/SideBar/SideBar.h"
 #include "test_utils/UiTestSuite.h"
 #include "utils/StorageHelper.h"
 #include <gtest/gtest.h>
@@ -247,7 +248,12 @@ TEST_F(TestTheme, Widgets)
 
 	/* Numberpad */
 	NumberPad numberpad("numberpad", cont2, layout_t{0, 0, 20, 100});
+	numberpad.setWidth(col_width);
 	numberpad.setHeader("Numberpad");
+
+	/* Sidebar */
+	SideBar sidebar("sidebar", cont2);
+	sidebar.setSize(LV_PCT(10), LV_PCT(100));
 
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{
