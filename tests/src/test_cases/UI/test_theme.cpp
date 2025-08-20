@@ -22,10 +22,13 @@
 #include "UI/Components/LVGL/LvList.h"
 #include "UI/Components/LVGL/LvSlider.h"
 #include "UI/Components/LVGL/LvTextArea.h"
+#include "UI/Components/MessageBox/AlertMessageBox.h"
+#include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Styles/Styles.h"
 #include "UI/Styles/Themes/DefaultTheme.h"
 #include "UI/Widgets/SideBar/SideBar.h"
+#include "UI/Widgets/Temperature/HeaterSlider.h"
 #include "test_utils/UiTestSuite.h"
 #include "utils/StorageHelper.h"
 #include <gtest/gtest.h>
@@ -254,6 +257,28 @@ TEST_F(TestTheme, Widgets)
 	/* Sidebar */
 	SideBar sidebar("sidebar", cont2);
 	sidebar.setSize(LV_PCT(10), LV_PCT(100));
+
+	/* Message Box */
+	MessageBox message_box("message_box", cont2, layout_t(0, 0, 30, 40));
+	message_box.setTitle("Message Box Title");
+	message_box.setText("Message Box Text");
+	message_box.cancelVisible(true);
+	message_box.okVisible(true);
+	message_box.imageVisible(true);
+	message_box.setImage(IMAGE_ASSET("examples/example.bmp"));
+	message_box.progressVisible(true);
+	message_box.setProgress(40);
+
+	/* Heater Slider */
+	HeaterSlider heater_slider("heater_slider", cont2);
+	heater_slider.setSize(LV_PCT(30), LV_SIZE_CONTENT);
+	heater_slider.setHeaterName("Heater name");
+	heater_slider.setHeaterMinTemperature(0);
+	heater_slider.setHeaterMaxTemperature(300);
+	heater_slider.setActiveTemperature(200);
+	heater_slider.setStandbyTemperature(0);
+	heater_slider.setCurrentTemperature(250);
+	heater_slider.setHeaterState(HeaterSliderPresenter::heater_state_t::active, "Active");
 
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{

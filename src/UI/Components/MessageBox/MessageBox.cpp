@@ -66,9 +66,8 @@ namespace UI
 
 		m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_body.setWidth(LV_PCT(100));
-		// m_body.setFlexGrow(1);
-		m_body.setMinHeight(LV_SIZE_CONTENT);
-		m_body.setMaxHeight(LV_PCT(70));
+		m_body.setFlexGrow(1);
+		m_body.setMaxHeight(LV_SIZE_CONTENT);
 		m_footer.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		// Header

@@ -95,6 +95,12 @@ TEST_F(TestHomeView, AppDrawer)
 	EXPECT_EQUAL_SCREENSHOT("home_view_app_drawer.png");
 }
 
+TEST_F(TestHomeView, Response)
+{
+	view.getPresenter()->newResponse("This is a response message from the Duet");
+	EXPECT_EQUAL_SCREENSHOT("home_view_response.png");
+}
+
 class TestHomeViewWithData : public TestHomeView
 {
   protected:
