@@ -27,6 +27,7 @@
 #include "UI/Components/MessageBox/AlertMessageBox.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Theme/ThemePreview.h"
+#include "UI/Screens/File/FileView.h"
 #include "UI/Styles/Styles.h"
 #include "UI/Styles/Themes/DefaultTheme.h"
 #include "UI/Widgets/SideBar/SideBar.h"
@@ -210,11 +211,30 @@ TEST_F(TestTheme, Widgets)
 	card.setSize(LV_PCT(30), LV_SIZE_CONTENT);
 	auto card_label = createLabel("Card", card);
 
-	/* Canvas */
-	Canvas canvas("canvas", cont);
-	canvas.setSize(LV_PCT(30), LV_SIZE_CONTENT);
-	canvas.setTitle("Canvas");
-	canvas.setResolution(200, 50);
+	/* File & Folder */
+	LvContainer file_folder_cont("file_folder_cont", cont);
+	file_folder_cont.setWidth(LV_PCT(30));
+	file_folder_cont.setFlexGrow(1);
+	file_folder_cont.setFlexFlow(LV_FLEX_FLOW_ROW);
+
+	FileView file_view(file_folder_cont);
+	file_view.hide();
+
+	FileView::FileItem file_item(0, file_folder_cont, file_view);
+	file_item.setFlexGrow(1);
+	// file_item.setHeight(LV_PCT(100));
+	file_item.setType(false);
+	file_item.setFileLabel("File name");
+	file_item.setFileDate("2025-08-20 12:37:10");
+	file_item.setFileSize("671 KB");
+
+	FileView::FileItem folder_item(0, file_folder_cont, file_view);
+	folder_item.setFlexGrow(1);
+	// folder_item.setHeight(LV_PCT(100));
+	folder_item.setType(true);
+	folder_item.setFileLabel("Folder name");
+	folder_item.setFileDate("2025-08-20 12:39:59");
+	folder_item.setFileSize("0 B");
 
 	/* Graph */
 	Graph graph("graph", cont);
@@ -232,11 +252,17 @@ TEST_F(TestTheme, Widgets)
 	graph.getSeries(0)->legendObj->setText("Hidden");
 	graph.showSeries(0, false);
 
+	/* Canvas */
+	Canvas canvas("canvas", cont);
+	canvas.setSize(col_width, LV_SIZE_CONTENT);
+	canvas.setTitle("Canvas");
+	canvas.setResolution(100, 50);
+
 	/* lv_table */
 	lv_obj_t* table = lv_table_create(cont);
 	lv_obj_set_size(table, col_width, LV_SIZE_CONTENT);
 	const size_t table_cols = 3;
-	const size_t table_rows = 4;
+	const size_t table_rows = 3;
 	lv_table_set_column_count(table, table_cols);
 	lv_table_set_row_count(table, table_rows);
 	lv_table_set_selected_cell(table, 1, 1);
@@ -358,7 +384,7 @@ TEST_F(TestTheme, Widgets)
 		preview.updateSwatches();
 		canvas.clear();
 		canvas.drawLine({0, 0}, {99, 99}, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
-		canvas.drawLabelPx({175, 20}, "Label", lv_palette_main(LV_PALETTE_BLUE), LV_OPA_COVER);
+		canvas.drawLabelPx({75, 20}, "Label", lv_palette_main(LV_PALETTE_BLUE), LV_OPA_COVER);
 
 		cont.show();
 		cont2.hide();

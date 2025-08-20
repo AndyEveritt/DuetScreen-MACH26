@@ -15,7 +15,7 @@
 			"label": "CMake: build",
 			"command": "build",
 			"targets": [
-				"all"
+				"DuetScreen"
 			],
 			"preset": "${command:cmake.activeBuildPresetName}",
 			"problemMatcher": [],
