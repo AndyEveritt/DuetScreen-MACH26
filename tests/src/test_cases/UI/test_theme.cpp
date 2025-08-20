@@ -6,6 +6,8 @@
  */
 
 #include "Debug.h"
+#include "UI/Components/AxisControl/GenericAxisControl.h"
+#include "UI/Components/AxisControl/XYControl.h"
 #include "UI/Components/Canvas/Canvas.h"
 #include "UI/Components/Graph/Graph.h"
 #include "UI/Components/Input/NumberPad.h"
@@ -177,14 +179,14 @@ TEST_F(TestTheme, Widgets)
 
 	/* LvList */
 	LvList list("list", cont);
-	list.setSize(col_width, LV_SIZE_CONTENT);
+	list.setSize(LV_PCT(30), LV_SIZE_CONTENT);
 	list.addText("List text");
 	list.addButton(nullptr, "List button");
 	list.addButton(nullptr, "List button 2");
 
 	/* Button */
 	LvContainer btn_cont("btn_cont", cont);
-	btn_cont.setSize(col_width, LV_SIZE_CONTENT);
+	btn_cont.setSize(LV_PCT(30), LV_SIZE_CONTENT);
 	btn_cont.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 
 	Button button("button", btn_cont, "Button");
@@ -198,19 +200,20 @@ TEST_F(TestTheme, Widgets)
 	Button action("action", btn_cont, "Action");
 	action.addStyle(Themes::getLvglStyles().actionBtn);
 
-	Button draggable("draggable", btn_cont, "Draggable");
-	draggable.addStyle(Themes::getLvglStyles().draggable);
+	DraggableButton draggable("draggable", btn_cont, "Draggable");
+	DraggableButton dragging("dragging", btn_cont, "Dragging");
+	dragging.setState(LV_STATE_PRESSED, true);
 
 	/* Card */
 	Card card("card", cont);
-	card.setSize(col_width, LV_SIZE_CONTENT);
+	card.setSize(LV_PCT(30), LV_SIZE_CONTENT);
 	auto card_label = createLabel("Card", card);
 
 	/* Canvas */
 	Canvas canvas("canvas", cont);
-	canvas.setSize(col_width, LV_SIZE_CONTENT);
+	canvas.setSize(LV_PCT(30), LV_SIZE_CONTENT);
 	canvas.setTitle("Canvas");
-	canvas.setResolution(100, 100);
+	canvas.setResolution(200, 50);
 
 	/* Graph */
 	Graph graph("graph", cont);
@@ -280,6 +283,18 @@ TEST_F(TestTheme, Widgets)
 	heater_slider.setCurrentTemperature(250);
 	heater_slider.setHeaterState(HeaterSliderPresenter::heater_state_t::active, "Active");
 
+	/* Axis Control */
+	XYControl axis_control("xy_control", cont2);
+	axis_control.setSize(LV_PCT(15), LV_PCT(100));
+	axis_control.setYHomed(false);
+	axis_control.setYDisabled(true);
+
+	GenericAxisControl generic_axis("generic_axis", cont2);
+	generic_axis.setSize(LV_PCT(5), LV_PCT(100));
+	generic_axis.setAxisLetter('Z');
+	generic_axis.setAxisPosition(100.0f);
+	generic_axis.setDisabled(true);
+
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{
 		const Themes::Theme* theme = Themes::getTheme(i);
@@ -292,7 +307,7 @@ TEST_F(TestTheme, Widgets)
 		preview.updateSwatches();
 		canvas.clear();
 		canvas.drawLine({0, 0}, {99, 99}, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
-		canvas.drawLabelPx({75, 20}, "Label", lv_palette_main(LV_PALETTE_BLUE), LV_OPA_COVER);
+		canvas.drawLabelPx({175, 20}, "Label", lv_palette_main(LV_PALETTE_BLUE), LV_OPA_COVER);
 
 		cont.show();
 		cont2.hide();
