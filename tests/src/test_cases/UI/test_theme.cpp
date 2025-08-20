@@ -8,6 +8,7 @@
 #include "Debug.h"
 #include "UI/Components/Canvas/Canvas.h"
 #include "UI/Components/Graph/Graph.h"
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/LVGL/LvArc.h"
 #include "UI/Components/LVGL/LvArcLabel.h"
 #include "UI/Components/LVGL/LvBar.h"
@@ -236,6 +237,18 @@ TEST_F(TestTheme, Widgets)
 		lv_table_set_cell_value(table, i % table_cols, i / table_cols, fmt::format("Cell {}", i).c_str());
 	}
 
+	/* Page 2 */
+
+	LvContainer cont2("container", lv_screen_active());
+	cont2.setWidth(LV_PCT(100));
+	cont2.setFlexGrow(1);
+	cont2.setFlexFlow(LV_FLEX_FLOW_COLUMN_WRAP);
+	cont2.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
+	/* Numberpad */
+	NumberPad numberpad("numberpad", cont2, layout_t{0, 0, 20, 100});
+	numberpad.setHeader("Numberpad");
+
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{
 		const Themes::Theme* theme = Themes::getTheme(i);
@@ -250,6 +263,12 @@ TEST_F(TestTheme, Widgets)
 		canvas.drawLine({0, 0}, {99, 99}, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
 		canvas.drawLabelPx({75, 20}, "Label", lv_palette_main(LV_PALETTE_BLUE), LV_OPA_COVER);
 
+		cont.show();
+		cont2.hide();
 		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme_widgets_{}.png", theme->getName()).c_str());
+
+		cont.hide();
+		cont2.show();
+		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme_widgets_{}_2.png", theme->getName()).c_str());
 	}
 }
