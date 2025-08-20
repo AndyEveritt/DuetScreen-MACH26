@@ -172,7 +172,7 @@ namespace UI
 		, m_headerActive("active", m_header)
 		, m_headerStandby("standby", m_header)
 		, m_list("list", getRoot())
-		, m_numberPad("number_pad", numberPadParent, layout_t(0, 0, 50, 70))
+		, m_numberPad("number_pad", numberPadParent ? numberPadParent : parent, layout_t(0, 0, 50, 70))
 	{
 		init();
 	}

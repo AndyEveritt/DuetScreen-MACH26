@@ -31,6 +31,7 @@
 #include "UI/Styles/Themes/DefaultTheme.h"
 #include "UI/Widgets/SideBar/SideBar.h"
 #include "UI/Widgets/Temperature/HeaterSlider.h"
+#include "UI/Widgets/ToolList/ToolList.h"
 #include "test_utils/UiTestSuite.h"
 #include "utils/StorageHelper.h"
 #include <gtest/gtest.h>
@@ -249,20 +250,27 @@ TEST_F(TestTheme, Widgets)
 	LvContainer cont2("container", lv_screen_active());
 	cont2.setWidth(LV_PCT(100));
 	cont2.setFlexGrow(1);
-	cont2.setFlexFlow(LV_FLEX_FLOW_COLUMN_WRAP);
-	cont2.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+	int32_t cont2_cols[11];
+	for (int i = 0; i < std::size(cont2_cols) - 1; ++i)
+	{
+		cont2_cols[i] = LV_GRID_FR(1);
+	}
+	cont2_cols[std::size(cont2_cols) - 1] = LV_GRID_TEMPLATE_LAST;
+	int32_t cont2_rows[5] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+	cont2.setGridDsc(cont2_cols, cont2_rows);
 
 	/* Numberpad */
 	NumberPad numberpad("numberpad", cont2, layout_t{0, 0, 20, 100});
-	numberpad.setWidth(col_width);
+	cont2.setGridCell(numberpad, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 4);
 	numberpad.setHeader("Numberpad");
 
 	/* Sidebar */
 	SideBar sidebar("sidebar", cont2);
-	sidebar.setSize(LV_PCT(10), LV_PCT(100));
+	cont2.setGridCell(sidebar, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 0, 4);
 
 	/* Message Box */
-	MessageBox message_box("message_box", cont2, layout_t(0, 0, 30, 40));
+	MessageBox message_box("message_box", cont2, layout_t(0, 0, 0, 0));
+	cont2.setGridCell(message_box, LV_GRID_ALIGN_STRETCH, 3, 2, LV_GRID_ALIGN_STRETCH, 0, 2);
 	message_box.setTitle("Message Box Title");
 	message_box.setText("Message Box Text");
 	message_box.cancelVisible(true);
@@ -274,8 +282,8 @@ TEST_F(TestTheme, Widgets)
 
 	/* Heater Slider */
 	HeaterSlider heater_slider("heater_slider", cont2);
-	heater_slider.setSize(LV_PCT(30), LV_SIZE_CONTENT);
-	heater_slider.setHeaterName("Heater name");
+	cont2.setGridCell(heater_slider, LV_GRID_ALIGN_STRETCH, 3, 2, LV_GRID_ALIGN_STRETCH, 2, 1);
+	heater_slider.setHeaterName("Heater");
 	heater_slider.setHeaterMinTemperature(0);
 	heater_slider.setHeaterMaxTemperature(300);
 	heater_slider.setActiveTemperature(200);
@@ -283,17 +291,60 @@ TEST_F(TestTheme, Widgets)
 	heater_slider.setCurrentTemperature(250);
 	heater_slider.setHeaterState(HeaterSliderPresenter::heater_state_t::active, "Active");
 
+	/* Icon */
+	Icon icon("icon", cont2);
+	cont2.setGridCell(icon, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
+	icon.setFlag(LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
+	icon.setSrc(IMAGE_ASSET("examples/example_full_color.png"));
+
 	/* Axis Control */
-	XYControl axis_control("xy_control", cont2);
-	axis_control.setSize(LV_PCT(15), LV_PCT(100));
+	LvContainer axis_cont("axis_cont", cont2);
+	cont2.setGridCell(axis_cont, LV_GRID_ALIGN_STRETCH, 5, 2, LV_GRID_ALIGN_STRETCH, 0, 2);
+	axis_cont.setFlexFlow(LV_FLEX_FLOW_ROW);
+	axis_cont.addStyle(Themes::getLvglStyles().pad_zero);
+
+	XYControl axis_control("xy_control", axis_cont);
+	axis_control.setSize(LV_PCT(75), LV_PCT(100));
 	axis_control.setYHomed(false);
 	axis_control.setYDisabled(true);
 
-	GenericAxisControl generic_axis("generic_axis", cont2);
-	generic_axis.setSize(LV_PCT(5), LV_PCT(100));
+	GenericAxisControl generic_axis("generic_axis", axis_cont);
+	generic_axis.setSize(LV_PCT(25), LV_PCT(100));
 	generic_axis.setAxisLetter('Z');
 	generic_axis.setAxisPosition(100.0f);
 	generic_axis.setDisabled(true);
+
+	/* Tool List */
+	ToolList tool_list("tool_list", cont2);
+	cont2.setGridCell(tool_list, LV_GRID_ALIGN_STRETCH, 5, 5, LV_GRID_ALIGN_STRETCH, 2, 2);
+	tool_list.setItemCnt(2);
+	for (size_t i = 0; i < tool_list.getItemCnt(); ++i)
+	{
+		auto item = tool_list.getToolListItem(i);
+		if (item == nullptr)
+		{
+			continue;
+		}
+		item->setLabel(fmt::format("Tool {}", i));
+		item->setSelected(i == 0);
+		item->setStatus("state");
+		item->setCurrentTemp(100);
+		item->setActiveTemp(200);
+		item->setStandbyTemp(0);
+		item->showTemps(true);
+	}
+
+	/* Text Box */
+	TextBox text_box("text_box", cont2);
+	cont2.setGridCell(text_box, LV_GRID_ALIGN_STRETCH, 7, 3, LV_GRID_ALIGN_STRETCH, 0, 1);
+	text_box.setLabel("Text box label");
+	text_box.setPlaceholderText("Placeholder");
+
+	/* Slider */
+	Slider slider2("slider2", cont2);
+	cont2.setGridCell(slider2, LV_GRID_ALIGN_STRETCH, 7, 3, LV_GRID_ALIGN_STRETCH, 1, 1);
+	slider2.setValue(40);
+	slider2.setLabel("Slider label");
 
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{
