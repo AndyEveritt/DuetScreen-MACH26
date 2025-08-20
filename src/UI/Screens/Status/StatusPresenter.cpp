@@ -210,30 +210,6 @@ namespace UI
 		m_view->updateSpeedMultiplier(100 * OM::Move::GetSpeedFactor());
 	}
 
-	void StatusPresenter::newHeaterData()
-	{
-		auto tool = OM::GetCurrentTool();
-
-		if (tool == nullptr || tool->GetHeaterCount() == 0)
-		{
-			m_view->updateToolTemp(0, 0);
-		}
-		else
-		{
-			m_view->updateToolTemp(tool->GetHeater(0)->heater->current, tool->GetHeater(0)->activeTemp);
-		}
-
-		auto bed = OM::GetBedBySlot(0);
-		if (bed == nullptr)
-		{
-			m_view->updateBedTemp(0, 0);
-		}
-		else
-		{
-			m_view->updateBedTemp(bed->GetCurrentTemp(), bed->GetCurrentTarget());
-		}
-	}
-
 	void StatusPresenter::newFanData()
 	{
 		uint32_t fanSpeed = 0;

@@ -19,14 +19,26 @@ namespace UI
 			DISABLED,
 			HIDDEN
 		};
+		class Header : public LvContainer
+		{
+		  public:
+			Header(const std::string& name, lv_obj_t* parent);
+			void setProgress(uint32_t value);
+			void setFilename(std::string_view name);
+			void setThumbnail(const char* path);
+
+		  private:
+			LvBar m_progress;
+			LvLabel m_progressLabel;
+			LvLabel m_filename;
+			LvImage m_thumbnail;
+		};
 
 		StatusView(lv_obj_t* parent);
 
-		void setFilename(const char* filename);
+		void setFilename(std::string_view filename);
 		void updateProgress(uint32_t percent);
 
-		void updateToolTemp(float temp, int32_t target);
-		void updateBedTemp(float temp, int32_t target);
 		void updateExtrusionRate(float feedrate, float volumetric);
 		void updateSpeed(float topSpeed, float requestedSpeed);
 		void updateFlowMultiplier(uint32_t multiplier);
@@ -58,28 +70,15 @@ namespace UI
 		static void onCancelClicked(lv_event_t* e);
 
 		// Status panels
-		lv_obj_t* m_header;
-		lv_obj_t* m_centerCont;
-		lv_obj_t* m_footer;
-
-		// Header
-		lv_obj_t* m_progress;
-		lv_obj_t* m_progressPercent;
-		lv_obj_t* m_filename;
-
-		// Print information widgets
-		lv_obj_t* m_thumbnail;
+		Header m_headerPanel;
 		PrintInfo m_printInfo;
+		LvContainer m_footer;
 
 		// Control buttons
 		Button m_pauseBtn;
 		Button m_resumeBtn;
 		Button m_printAgainBtn;
 		Button m_cancelBtn;
-		Button m_fineTuneBtn;
 		Modal<MessageBox> m_confirmCancel;
-
-		// Fine tune
-		FineTune m_fineTune;
 	};
 } // namespace UI

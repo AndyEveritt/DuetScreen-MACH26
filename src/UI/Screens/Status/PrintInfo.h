@@ -7,11 +7,12 @@
 
 #pragma once
 
+#include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
 
 namespace UI
 {
-	class PrintInfo : public LvObj
+	class PrintInfo : public LvContainer
 	{
 	  public:
 		PrintInfo(lv_obj_t* parent);
@@ -48,28 +49,26 @@ namespace UI
 			void updateLayerNumber(uint32_t layer);
 
 		  private:
-			lv_obj_t* m_speed;
-			lv_obj_t* m_speedMultiplier;
-			lv_obj_t* m_acceleration;
-			lv_obj_t* m_position;
-			lv_obj_t* m_z_offset;
-			lv_obj_t* m_z_height;
-			lv_obj_t* m_layer;
+			LvLabel m_speed;
+			LvLabel m_speedMultiplier;
+			LvLabel m_acceleration;
+			LvLabel m_position;
+			LvLabel m_z_offset;
+			LvLabel m_z_height;
+			LvLabel m_layer;
 		};
 
 		static void openExtrudeView(lv_event_t* e);
 		static void openSubView(lv_event_t* e);
 
-		lv_obj_t* m_toolTemp;
-		lv_obj_t* m_bedTemp;
-		lv_obj_t* m_speed;
-		lv_obj_t* m_speedMultiplier;
-		lv_obj_t* m_flowRate;
-		lv_obj_t* m_flowMultiplier;
-		lv_obj_t* m_elapsedTime;
-		lv_obj_t* m_remainingTime;
-		lv_obj_t* m_layer;
-		lv_obj_t* m_fanSpeed;
+		LvLabel m_speed;
+		LvLabel m_speedMultiplier;
+		LvLabel m_flowRate;
+		LvLabel m_flowMultiplier;
+		LvLabel m_elapsedTime;
+		LvLabel m_remainingTime;
+		LvLabel m_layer;
+		LvLabel m_fanSpeed;
 
 		SpeedInfo m_speedInfo;
 	};

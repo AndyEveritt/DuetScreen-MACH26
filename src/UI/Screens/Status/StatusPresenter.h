@@ -32,7 +32,6 @@ namespace UI
 		void newAxesData();
 		void newExtruderData();
 		void newSpeedFactor();
-		void newHeaterData();
 		void newFanData();
 		void newStatus(const OM::PrinterStatus status);
 
@@ -57,7 +56,6 @@ namespace UI
 			registerEventListener<EventType::AxesData>(this, &StatusPresenter::newAxesData);
 			registerEventListener<EventType::ExtruderData>(this, &StatusPresenter::newExtruderData);
 			registerEventListener<EventType::SpeedFactor>(this, &StatusPresenter::newSpeedFactor);
-			registerEventListener<EventType::HeaterData>(this, &StatusPresenter::newHeaterData);
 			registerEventListener<EventType::FanData>(this, &StatusPresenter::newFanData);
 			registerEventListener<EventType::Status>(this, &StatusPresenter::newStatus);
 		}
