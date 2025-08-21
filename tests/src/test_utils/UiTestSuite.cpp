@@ -64,6 +64,9 @@ void UiTestSuite::SetUpTestSuite()
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	UI::Themes::init(display);
+
+	std::filesystem::remove_all("/tmp/thumbnails");
+	std::filesystem::create_directories("/tmp/thumbnails");
 }
 
 void UiTestSuite::TearDownTestSuite()

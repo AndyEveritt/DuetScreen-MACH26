@@ -70,7 +70,7 @@ namespace UI
 
 	void StatusPresenter::newJobFileName(const std::string& filename)
 	{
-		m_view->setFilename(filename.c_str());
+		m_view->setFilename(filename);
 		setOrRequestThumbnail(filename);
 	}
 
@@ -82,16 +82,17 @@ namespace UI
 			return;
 		}
 
-		m_view->setThumbnail(GetThumbnailPath(filename.c_str()).c_str());
+		m_view->setThumbnail(GetThumbnailPath(filename).c_str());
 	}
 
 	void StatusPresenter::newJobLastFileName(const std::string& filename)
 	{
+		m_view->setPrintAgain(filename.empty() ? StatusView::HIDDEN : StatusView::ENABLED);
 		if (filename.empty())
 		{
 			return;
 		}
-		m_view->setFilename(utils::format(_("status_printed_header"), filename.c_str()).c_str());
+		m_view->setFilename(fmt::format(fmt::runtime(_("status_printed_header")), filename));
 		setOrRequestThumbnail(filename);
 	}
 
@@ -153,20 +154,22 @@ namespace UI
 
 	void StatusPresenter::newAxesData()
 	{
-		char axisNames[] = {'X', 'Y'};
-		float positions[] = {0, 0, 0};
-		float zOffset = 0;
-
-		for (size_t i = 0; i < ARRAY_SIZE(axisNames); i++)
 		{
-			auto axis = OM::Move::GetAxisByLetter(axisNames[i]);
-			if (axis == nullptr)
+			MODEL_LOCK();
+			size_t axis_count = OM::Move::GetAxisCount();
+			m_view->setAxisCount(axis_count);
+			for (size_t i = 0; i < axis_count; i++)
 			{
-				continue;
+				auto axis = OM::Move::GetAxisBySlot(i);
+				if (axis == nullptr)
+				{
+					continue;
+				}
+				m_view->setPosition(i, axis->letter[0], axis->userPosition);
 			}
-			positions[i] = axis->userPosition;
 		}
 
+		float zOffset = 0;
 		auto axis = OM::Move::GetAxisByLetter('Z');
 		if (axis != nullptr)
 		{
@@ -174,7 +177,6 @@ namespace UI
 		}
 
 		m_view->updateAcceleration(OM::Move::GetPrintingAcceleration());
-		m_view->updatePosition(positions[0], positions[1], positions[2]);
 		m_view->updateZOffset(zOffset);
 	}
 
@@ -235,37 +237,31 @@ namespace UI
 		case OM::PrinterStatus::simulating:
 			m_view->setResume(StatusView::HIDDEN);
 			m_view->setPause(StatusView::ENABLED);
-			m_view->setPrintAgain(StatusView::HIDDEN);
 			m_view->setCancel(StatusView::DISABLED);
 			break;
 		case OM::PrinterStatus::paused:
 			m_view->setResume(StatusView::ENABLED);
 			m_view->setPause(StatusView::HIDDEN);
-			m_view->setPrintAgain(StatusView::HIDDEN);
 			m_view->setCancel(StatusView::ENABLED);
 			break;
 		case OM::PrinterStatus::pausing:
 			m_view->setResume(StatusView::DISABLED);
 			m_view->setPause(StatusView::HIDDEN);
-			m_view->setPrintAgain(StatusView::HIDDEN);
 			m_view->setCancel(StatusView::DISABLED);
 			break;
 		case OM::PrinterStatus::resuming:
 			m_view->setResume(StatusView::HIDDEN);
 			m_view->setPause(StatusView::DISABLED);
-			m_view->setPrintAgain(StatusView::HIDDEN);
 			m_view->setCancel(StatusView::DISABLED);
 			break;
 		case OM::PrinterStatus::cancelling:
 			m_view->setResume(StatusView::HIDDEN);
 			m_view->setPause(StatusView::HIDDEN);
-			m_view->setPrintAgain(StatusView::DISABLED);
 			m_view->setCancel(StatusView::DISABLED);
 			break;
 		default:
 			m_view->setResume(StatusView::HIDDEN);
 			m_view->setPause(StatusView::HIDDEN);
-			m_view->setPrintAgain(StatusView::ENABLED);
 			m_view->setCancel(StatusView::DISABLED);
 			break;
 		}
@@ -278,13 +274,13 @@ namespace UI
 			return;
 		}
 
-		if (IsThumbnailCached(filename.c_str()))
+		if (IsThumbnailCached(filename))
 		{
 			newThumbnailData(filename);
 			return;
 		}
 
-		LOG_DBG("Requesting thumbnail for '{:s}'", filename.c_str());
+		LOG_DBG("Requesting thumbnail for '{:s}'", filename);
 		FILEINFO_CACHE->QueueThumbnailRequest(filename, true);
 	}
 } // namespace UI

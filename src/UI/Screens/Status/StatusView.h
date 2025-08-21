@@ -19,32 +19,22 @@ namespace UI
 			DISABLED,
 			HIDDEN
 		};
-		class Header : public LvContainer
-		{
-		  public:
-			Header(const std::string& name, lv_obj_t* parent);
-			void setProgress(uint32_t value);
-			void setFilename(std::string_view name);
-			void setThumbnail(const char* path);
-
-		  private:
-			LvBar m_progress;
-			LvLabel m_progressLabel;
-			LvLabel m_filename;
-			LvImage m_thumbnail;
-		};
 
 		StatusView(lv_obj_t* parent);
 
 		void setFilename(std::string_view filename);
 		void updateProgress(uint32_t percent);
 
+		void setAxisCount(size_t count) { m_printInfo.setAxisCount(count); }
+		void setPosition(size_t index, char axis_letter, float value)
+		{
+			m_printInfo.setPosition(index, axis_letter, value);
+		}
 		void updateExtrusionRate(float feedrate, float volumetric);
 		void updateSpeed(float topSpeed, float requestedSpeed);
 		void updateFlowMultiplier(uint32_t multiplier);
 		void updateSpeedMultiplier(uint32_t multiplier);
 		void updateAcceleration(uint32_t acceleration);
-		void updatePosition(float x, float y, float z);
 		void updateZOffset(float offset);
 		void updateLayerNumber(uint32_t layer);
 		void updateElapsedTime(uint32_t elapsed);
@@ -70,9 +60,15 @@ namespace UI
 		static void onCancelClicked(lv_event_t* e);
 
 		// Status panels
-		Header m_headerPanel;
+		LvContainer m_header;
 		PrintInfo m_printInfo;
 		LvContainer m_footer;
+
+		// Header
+		LvBar m_progress;
+		LvLabel m_progressLabel;
+		LvLabel m_filename;
+		LvImage m_thumbnail;
 
 		// Control buttons
 		Button m_pauseBtn;

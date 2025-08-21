@@ -110,12 +110,12 @@ class TestHomeViewWithData : public TestHomeView
 		load_model_data_from_file("tests/object_model/test_bench/model_directories_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_fans_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_heat_v.json");
-		load_model_data_from_file("tests/object_model/test_bench/model_job_vn.json");
+		load_model_data_from_file("tests/object_model/job/model_job_printing_layer_2.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_move_vn.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_network_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_sensors_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_spindles_v.json");
-		load_model_data_from_file("tests/object_model/test_bench/model_state_vn.json");
+		load_model_data_from_file("tests/object_model/job/model_state_printing.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_tools_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_volumes_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_all_d99f.json");

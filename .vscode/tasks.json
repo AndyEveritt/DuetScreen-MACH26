@@ -27,6 +27,22 @@
 			"dependsOn": []
 		},
 		{
+			"type": "cmake",
+			"label": "CMake: build tests",
+			"command": "build",
+			"targets": [
+				"DuetScreen.tests"
+			],
+			"preset": "${command:cmake.activeBuildPresetName}",
+			"problemMatcher": [],
+			"detail": "CMake template build task",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": []
+		},
+		{
 			"type": "shell",
 			"label": "Install npm dependencies",
 			"command": "npm install",

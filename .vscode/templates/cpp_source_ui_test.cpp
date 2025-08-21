@@ -9,6 +9,8 @@
 #include "test_utils/UiTestSuite.h"
 #include <gtest/gtest.h>
 
+using namespace UI;
+
 class {{file_name_pascal_case}} : public UiTestSuite
 {
   public:

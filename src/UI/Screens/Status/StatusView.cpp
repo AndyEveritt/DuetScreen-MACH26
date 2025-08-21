@@ -12,9 +12,15 @@ namespace UI
 	StatusView::StatusView(lv_obj_t* parent)
 		: View("print_view", parent, layout_t(0, 0, 100, 100))
 		// Create all panels first
-		, m_headerPanel("header", getRoot())
+		, m_header("header", getRoot())
 		, m_printInfo(getRoot())
 		, m_footer("footer", getRoot())
+
+		// Header
+		, m_progress("progress", m_header)
+		, m_progressLabel("progress_percent", m_progress)
+		, m_filename("filename", m_header)
+		, m_thumbnail("thumbnail", m_header)
 
 		// Create control buttons last
 		, m_pauseBtn("print_pause", m_footer, _("pause"))
@@ -25,25 +31,41 @@ namespace UI
 	{
 		UI_LOCK();
 
+		addStyle(Themes::getLvglStyles().pad_zero);
+		addStyle(Themes::getLvglStyles().pad_gap);
 		addStyle(Themes::getLvglStyles().bg_dark);
-		m_headerPanel.addStyle(Themes::getLvglStyles().card);
+		m_header.addStyle(Themes::getLvglStyles().card);
+		m_printInfo.addStyle(Themes::getLvglStyles().card);
+		m_footer.addStyle(Themes::getLvglStyles().card);
 
 		// Layout
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		m_headerPanel.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_header.setWidth(LV_PCT(100));
+		m_header.setHeight(LV_SIZE_CONTENT);
+		// m_header.setFlexGrow(1);
 		m_printInfo.setWidth(LV_PCT(100));
-		m_printInfo.setFlexGrow(1);
-		m_footer.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_printInfo.setFlexGrow(5);
+		m_footer.setSize(LV_PCT(100), LV_PCT(20));
+
+		// Header
+		static const int32_t header_col_dsc[] = {LV_GRID_FR(5), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static const int32_t header_row_dsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+		m_header.setGridDsc(header_col_dsc, header_row_dsc);
+		m_header.setGridCell(m_filename, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
+		m_header.setGridCell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1);
+		m_header.setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
+
+		m_progress.setRange(0, 100);
 
 		// Footer
-		lv_obj_set_layout(m_footer, LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(m_footer, LV_FLEX_FLOW_ROW);
+		m_footer.setFlexFlow(LV_FLEX_FLOW_ROW);
 
 		for (size_t i = 0; i < m_footer.getChildCnt(); i++)
 		{
 			lv_obj_t* child = m_footer.getChild(i);
-			lv_obj_set_height(child, LV_SIZE_CONTENT);
+			lv_obj_set_height(child, LV_PCT(100));
+			lv_obj_set_style_min_height(child, LV_SIZE_CONTENT, 0);
 			lv_obj_set_flex_grow(child, 1);
 		}
 
@@ -62,45 +84,6 @@ namespace UI
 		m_resumeBtn.addClickedCallback(onResumeClicked, this);
 		m_printAgainBtn.addClickedCallback(onPrintAgainClicked, this);
 		m_cancelBtn.addClickedCallback(onCancelClicked, this);
-	}
-
-	StatusView::Header::Header(const std::string& name, lv_obj_t* parent)
-		: LvContainer(name, parent)
-		, m_progress("progress", getRoot())
-		, m_progressLabel("progress_percent", m_progress)
-		, m_filename("filename", getRoot())
-		, m_thumbnail("thumbnail", getRoot())
-	{
-		UI_LOCK();
-
-		static const int32_t col_dsc[] = {LV_GRID_FR(5), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-		static const int32_t row_dsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-		setGridDsc(col_dsc, row_dsc);
-		setGridCell(m_filename, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-		setGridCell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
-
-		// m_progress.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_progress.setRange(0, 100);
-		// m_progressLabel.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_filename.setFlexGrow(1);
-		// m_thumbnail.setSize(LV_PCT(20), LV_PCT(100));
-	}
-
-	void StatusView::Header::setFilename(std::string_view name)
-	{
-		m_filename.setText(name);
-	}
-
-	void StatusView::Header::setProgress(uint32_t percent)
-	{
-		m_progress.setValue(percent);
-		m_progressLabel.setText(fmt::format("{:d}%", percent));
-	}
-
-	void StatusView::Header::setThumbnail(const char* img)
-	{
-		m_thumbnail.setSrc(img);
 	}
 
 	bool StatusView::back()
@@ -138,7 +121,10 @@ namespace UI
 		view->m_confirmCancel.show();
 	}
 
-	void StatusView::onShow() {}
+	void StatusView::onShow()
+	{
+		m_printInfo.show();
+	}
 
 	void StatusView::onHide()
 	{
@@ -149,7 +135,7 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_DBG("'{:s}'", filename);
-		m_headerPanel.setFilename(filename);
+		m_filename.setText(filename);
 	}
 
 	void StatusView::updateProgress(uint32_t percent)
@@ -157,7 +143,8 @@ namespace UI
 		UI_LOCK();
 		LOG_DBG("{:d}", percent);
 		percent = std::min(percent, 100u);
-		m_headerPanel.setProgress(percent);
+		m_progress.setValue(percent);
+		m_progressLabel.setText(fmt::format("{:d}%", percent));
 	}
 
 	void StatusView::updateExtrusionRate(float feedrate, float volumetric)
@@ -183,11 +170,6 @@ namespace UI
 	void StatusView::updateAcceleration(uint32_t acceleration)
 	{
 		m_printInfo.updateAcceleration(acceleration);
-	}
-
-	void StatusView::updatePosition(float x, float y, float z)
-	{
-		m_printInfo.updatePosition(x, y, z);
 	}
 
 	void StatusView::updateZOffset(float offset)
@@ -224,7 +206,8 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_DBG("'{:s}'", img);
-		m_headerPanel.setThumbnail(img);
+		m_thumbnail.setSrc(img);
+		m_header.updateLayout();
 	}
 
 	void StatusView::setPause(ControlVisibility visibility)

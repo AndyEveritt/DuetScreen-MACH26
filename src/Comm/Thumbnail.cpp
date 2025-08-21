@@ -23,18 +23,22 @@ std::string GetThumbnailPath(std::string_view filepath)
 	{
 		return sanitisedFilename;
 	}
-	return std::string("/tmp/thumbnails/") + sanitisedFilename;
+	return fmt::format("/tmp/thumbnails/{:s}", sanitisedFilename);
 }
 
-static bool CreateThumbnailDirectory(const std::string& thumbnailFilepath)
+bool CreateThumbnailDirectory(std::string_view thumbnailFilepath)
 {
-	std::string directory = thumbnailFilepath.substr(0, thumbnailFilepath.find_last_of('/'));
+	std::string_view directory = thumbnailFilepath.substr(0, thumbnailFilepath.find_last_of('/'));
 	struct stat sb;
-	if (stat(directory.c_str(), &sb) != 0 || !S_ISDIR(sb.st_mode))
+	if (!std::filesystem::exists(directory))
 	{
-		if (mkdir(directory.c_str(), 0755) != 0)
+		try
 		{
-			LOG_ERROR("Failed to create directory {:s}", directory.c_str());
+			std::filesystem::create_directories(directory);
+		}
+		catch (const std::filesystem::filesystem_error& e)
+		{
+			LOG_ERROR("Failed to create directory {:s}: {:s}", directory, e.what());
 			return false;
 		}
 	}

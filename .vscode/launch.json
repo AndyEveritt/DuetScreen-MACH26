@@ -56,7 +56,7 @@
             "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/tests/DuetScreen.tests",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "CMake: build",
+            "preLaunchTask": "CMake: build tests",
             "stopAtEntry": false,
             "linux": {
                 "MIMode": "gdb",

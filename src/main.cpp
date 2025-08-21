@@ -116,6 +116,7 @@ int main(int argc, char** argv)
 
 	UI::HomeView& home = UI::HomeView::instance();
 	home.show();
+	openScreen(&home.getStatusView());
 
 	Model::get().startEventLoop();
 

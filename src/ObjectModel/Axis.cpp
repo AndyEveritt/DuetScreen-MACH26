@@ -23,7 +23,7 @@ namespace OM::Move
 	static AxisList s_axes;
 	static ExtruderAxisList s_extruderAxes;
 	static float s_extrusionRate = 0.0f;
-	static float s_speedFactor = 100.0f;
+	static float s_speedFactor = 1.0f;
 	static float s_currentMoveRequestedSpeed = 0.0f;
 	static float s_currentMoveTopSpeed = 0.0f;
 	static uint8_t s_currentWorkplaceNumber = Workplaces::MaxTotalWorkplaces;

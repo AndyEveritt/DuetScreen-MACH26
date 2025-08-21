@@ -238,6 +238,7 @@ TEST_F(TestTheme, Widgets)
 
 	/* Graph */
 	Graph graph("graph", cont);
+	graph.setFlag(LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
 	graph.setWidth(250);
 	graph.showLegend(true);
 	srand(0);
