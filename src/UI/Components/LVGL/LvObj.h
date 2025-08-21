@@ -9,6 +9,7 @@
 
 #include "LockWrapper.h"
 #include "lvgl/lvgl.h"
+#include "lvgl/src/lv_conf_internal.h"
 #include <functional>
 
 namespace UI
@@ -39,7 +40,7 @@ namespace UI
 		ROW,
 	};
 
-	using lv_create_t = lv_obj_t* (*)(lv_obj_t * parent);
+	using lv_create_t = std::function<lv_obj_t*(lv_obj_t* parent)>;
 
 	class LvObj
 	{
@@ -97,6 +98,9 @@ namespace UI
 		 */
 		inline lv_obj_t* getRoot() const { return m_root; }
 		operator lv_obj_t*() const { return getRoot(); }
+
+		/* XML */
+		static void registerWidgetXml();
 
 		lv_obj_t* getScreen() const;
 		lv_obj_t* getParent() const;

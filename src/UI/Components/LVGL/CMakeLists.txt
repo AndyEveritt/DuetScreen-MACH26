@@ -16,4 +16,5 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/LvList.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvSlider.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvTextArea.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LvXml.cpp
 )
