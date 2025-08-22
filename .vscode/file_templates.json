@@ -5,7 +5,7 @@
             "template_path": ".vscode/templates/cpp_header.h"
         },
         {
-            "label": "C++ Header - LvObj",
+            "label": "C++ Header - LvContainer",
             "template_path": ".vscode/templates/cpp_header_lv_obj.h"
         },
         {
