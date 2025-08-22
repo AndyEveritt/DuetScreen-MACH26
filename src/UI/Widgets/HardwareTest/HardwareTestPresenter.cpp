@@ -49,7 +49,7 @@ namespace UI
 		createLogFile();
 
 		// Proceed to the next test
-		startTouchCalibration();
+		nextTest();
 
 		return true; // Valid serial number
 	}
@@ -75,7 +75,7 @@ namespace UI
 		}
 
 		// Finish the touch calibration process
-		getView()->showTest(&getView()->getDeadPixelTest());
+		nextTest();
 	}
 
 	void HardwareTestPresenter::showNextTouchPoint()
@@ -177,7 +177,7 @@ namespace UI
 
 		if (m_colorIndex >= m_colors.size())
 		{
-			getView()->showTest(&getView()->getSerialInput());
+			nextTest();
 		}
 
 		lv_color_t color = m_colors[m_colorIndex].color;
@@ -202,6 +202,114 @@ namespace UI
 
 		m_colorIndex++;
 		nextColor();
+	}
+
+	void HardwareTestPresenter::testMemory()
+	{
+		m_testState = TestState::MemoryTest;
+		auto& commandTest = getView()->getCommandTest();
+		getView()->showTest(&commandTest);
+		commandTest.setMessage("Running memory test...");
+
+		writeToLogFile("\n----------------------\n");
+		writeToLogFile("Starting memory test...");
+
+		std::thread(
+			[this, &commandTest]()
+			{
+				std::string result;
+				std::string cmd =
+#if SIMULATION
+					"echo 'Memory test simulation output'";
+#else
+					"nandtest /dev/mtd0";
+#endif
+				FILE* pipe = ::popen(cmd.c_str(), "r");
+				if (!pipe)
+					return;
+				char buffer[256];
+				while (fgets(buffer, sizeof(buffer), pipe))
+				{
+					result.append(buffer);
+					commandTest.setOutput(result);
+				}
+				::pclose(pipe);
+
+				writeToLogFile(result);
+
+				std::this_thread::sleep_for(std::chrono::seconds(2));
+				nextTest();
+			})
+			.detach();
+	}
+
+	void HardwareTestPresenter::testWifi()
+	{
+
+		m_testState = TestState::WifiTest;
+		auto& commandTest = getView()->getCommandTest();
+		getView()->showTest(&commandTest);
+		commandTest.setMessage("Running internal WiFi test...");
+
+		writeToLogFile("\n----------------------\n");
+		writeToLogFile("Starting WiFi test...");
+
+		std::thread(
+			[this, &commandTest]()
+			{
+				std::string result;
+				std::string cmd =
+#if SIMULATION
+					"echo 'wifi test simulation output'";
+#else
+					"dmesg | grep mac_addr";
+#endif
+				FILE* pipe = ::popen(cmd.c_str(), "r");
+				if (!pipe)
+					return;
+				char buffer[256];
+				while (fgets(buffer, sizeof(buffer), pipe))
+				{
+					result.append(buffer);
+					commandTest.setOutput(result);
+				}
+				::pclose(pipe);
+
+				writeToLogFile(result);
+
+				std::this_thread::sleep_for(std::chrono::seconds(2));
+				nextTest();
+			})
+			.detach();
+	}
+
+	void HardwareTestPresenter::nextTest()
+	{
+		switch (m_testState)
+		{
+		case TestState::Start:
+			m_testState = TestState::SerialInput;
+			getView()->showTest(&getView()->getSerialInput());
+			break;
+		case TestState::SerialInput:
+			startTouchCalibration();
+			break;
+		case TestState::TouchCalibration:
+			getView()->showTest(&getView()->getDeadPixelTest());
+			break;
+		case TestState::DeadPixelTest:
+			testMemory();
+			break;
+		case TestState::MemoryTest:
+			testWifi();
+			break;
+		case TestState::WifiTest:
+			// All tests completed
+			getView()->hide();
+			break;
+		default:
+			LOG_ERROR("Unknown test state");
+		}
 	}
 
 	void HardwareTestPresenter::getUid()
@@ -312,6 +420,6 @@ namespace UI
 			m_colors[i].result = false;
 		}
 
-		getView()->showTest(&getView()->getSerialInput());
+		nextTest();
 	}
 } // namespace UI

@@ -215,6 +215,33 @@ namespace UI
 		m_messageBox.hide();
 	}
 
+	HardwareTest::CommandTest::CommandTest(HardwareTest& parent)
+		: LvContainer("command_test_container", parent)
+	{
+		setStyleBgColor(lv_color_black());
+		setStyleBgOpa(LV_OPA_COVER);
+
+		setSize(LV_PCT(100), LV_PCT(100));
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		m_output.setWidth(LV_PCT(70));
+		m_output.setHeight(LV_PCT(70));
+		m_output.setFlag(LV_OBJ_FLAG_CLICKABLE, false);
+		m_output.setOneLine(false);
+		m_output.setText("");
+	}
+
+	void HardwareTest::CommandTest::setMessage(std::string_view message)
+	{
+		m_message.setText(message);
+	}
+
+	void HardwareTest::CommandTest::setOutput(std::string_view output)
+	{
+		m_output.setText(output);
+	}
+
 	void HardwareTest::showTest(LvContainer* test)
 	{
 		for (auto* t : m_tests)

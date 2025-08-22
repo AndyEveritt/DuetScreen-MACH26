@@ -78,9 +78,23 @@ namespace UI
 			HardwareTest& m_parent;
 		};
 
+		class CommandTest : public LvContainer
+		{
+		  public:
+			CommandTest(HardwareTest& parent);
+
+			void setMessage(std::string_view message);
+			void setOutput(std::string_view output);
+
+		  private:
+			LvLabel m_message{"message", getRoot()};
+			LvTextArea m_output{"output", getRoot()};
+		};
+
 		SerialInput& getSerialInput() { return m_serialInput; }
 		TouchScreenTest& getTouchScreenTest() { return m_touchScreenTest; }
 		DeadPixelTest& getDeadPixelTest() { return m_deadPixelTest; }
+		CommandTest& getCommandTest() { return m_commandTest; }
 
 		void showTest(LvContainer* test);
 
@@ -90,8 +104,9 @@ namespace UI
 		SerialInput m_serialInput{*this};
 		TouchScreenTest m_touchScreenTest{*this};
 		DeadPixelTest m_deadPixelTest{*this};
+		CommandTest m_commandTest{*this};
 
-		std::vector<LvContainer*> m_tests = {&m_serialInput, &m_touchScreenTest, &m_deadPixelTest};
+		std::vector<LvContainer*> m_tests = {&m_serialInput, &m_touchScreenTest, &m_deadPixelTest, &m_commandTest};
 		size_t m_currentTestIndex = 0;
 	};
 } // namespace UI

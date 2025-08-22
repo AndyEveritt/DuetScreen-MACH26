@@ -32,6 +32,9 @@ namespace UI
 		void nextColor();
 		void deadPixelCheckPassed(bool passed);
 
+		void testMemory();
+		void testWifi();
+
 		// Observers
 
 	  protected:
@@ -41,6 +44,8 @@ namespace UI
 
 		virtual void onConnect() {}
 		virtual void onDisconnect() {}
+
+		void nextTest();
 
 		void getUid();
         void createLogFile();
@@ -71,9 +76,12 @@ namespace UI
 
 		enum class TestState
 		{
+			Start = 0,
 			SerialInput,
 			TouchCalibration,
-			DeadPixelTest
-		} m_testState = TestState::SerialInput;
+			DeadPixelTest,
+			MemoryTest,
+			WifiTest
+		} m_testState = TestState::Start;
 	};
 } // namespace UI
