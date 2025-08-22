@@ -57,6 +57,8 @@ namespace UI
 	void HardwareTestPresenter::startTouchCalibration()
 	{
 		// Start the touch calibration process
+		m_testState = TestState::TouchCalibration;
+
 		auto& touchScreenTest = getView()->getTouchScreenTest();
 		getView()->showTest(&touchScreenTest);
 
@@ -66,50 +68,69 @@ namespace UI
 
 	void HardwareTestPresenter::touchCalibrationFinished()
 	{
+		if (m_testState != TestState::TouchCalibration)
+		{
+			LOG_ERROR("Touch calibration not in progress");
+			return; // Not in calibration mode
+		}
+
 		// Finish the touch calibration process
 		getView()->showTest(&getView()->getDeadPixelTest());
 	}
 
 	void HardwareTestPresenter::showNextTouchPoint()
 	{
+		if (m_testState != TestState::TouchCalibration)
+		{
+			LOG_ERROR("Touch calibration not in progress");
+			return; // Not in calibration mode
+		}
+
 		auto& touchScreenTest = getView()->getTouchScreenTest();
 		if (m_touchPointIndex < m_touchPoints.size())
 		{
 
 			lv_point_t point = m_touchPoints[m_touchPointIndex].first;
 			touchScreenTest.setTouchTargetPosition(point.x, point.y);
-			writeToLogFile(fmt::format("Showing touch target at ({:d}, {:d})", point.x, point.y));
 		}
 		else
 		{
 			bool passed = checkTouchCalibration();
-			std::string result_msg = passed ? "Touch calibration passed." : "Touch calibration failed.\n\n";
-			if (!passed)
+			std::string result_msg = passed ? "Touch calibration passed.\n\n" : "Touch calibration failed.\n\n";
+			writeToLogFile(result_msg);
+
+			for (size_t i = 0; i < m_touchPoints.size(); ++i)
 			{
-				result_msg = "Touch calibration failed.\n\n";
-				for (size_t i = 0; i < m_touchPoints.size(); ++i)
-				{
-					const lv_point_t& target = m_touchPoints[i].first;
-					const lv_point_t& recorded = m_touchPoints[i].second;
-					result_msg += fmt::format(
-						"Target ({:d}, {:d}) - Recorded ({:d}, {:d})\n", target.x, target.y, recorded.x, recorded.y);
-				}
+				const lv_point_t& target = m_touchPoints[i].first;
+				const lv_point_t& recorded = m_touchPoints[i].second;
+				result_msg += fmt::format(
+					"Target ({:d}, {:d}) - Recorded ({:d}, {:d})\n", target.x, target.y, recorded.x, recorded.y);
 			}
+			writeToLogFile("----------------------\n");
 			touchScreenTest.showResults(passed, result_msg);
 		}
 	}
 
 	void HardwareTestPresenter::logTouchEvent(int32_t x, int32_t y)
 	{
+		if (m_testState != TestState::TouchCalibration)
+		{
+			LOG_ERROR("Touch calibration not in progress");
+			return;
+		}
+
 		if (m_touchPointIndex >= m_touchPoints.size())
 		{
 			// Not in calibration mode
 			return;
 		}
+		const lv_point_t& target = m_touchPoints[m_touchPointIndex].first;
 		lv_point_t& recorded = m_touchPoints[m_touchPointIndex].second;
 		recorded = {x, y};
 
-		writeToLogFile(fmt::format("LVGL touch event at ({:d}, {:d})", x, y));
+		writeToLogFile(
+			fmt::format("Target ({:d}, {:d}) - Recorded ({:d}, {:d})", target.x, target.y, recorded.x, recorded.y));
+
 		m_touchPointIndex++;
 
 		showNextTouchPoint();
@@ -117,6 +138,12 @@ namespace UI
 
 	bool HardwareTestPresenter::checkTouchCalibration()
 	{
+		if (m_testState != TestState::TouchCalibration)
+		{
+			LOG_ERROR("Touch calibration not in progress");
+			return false; // Not in calibration mode
+		}
+
 		const int32_t tolerance = 50; // pixels
 		for (size_t i = 0; i < m_touchPoints.size(); ++i)
 		{
@@ -131,34 +158,50 @@ namespace UI
 		return true; // Calibration passed
 	}
 
+	void HardwareTestPresenter::startDeadPixelTest()
+	{
+		m_testState = TestState::DeadPixelTest;
+		m_colorIndex = 0;
+		nextColor();
+	}
+
 	void HardwareTestPresenter::nextColor()
 	{
+		if (m_testState != TestState::DeadPixelTest)
+		{
+			LOG_ERROR("Dead pixel test not in progress");
+			return; // Not in dead pixel test mode
+		}
+
 		auto& deadPixelTest = getView()->getDeadPixelTest();
 
 		if (m_colorIndex >= m_colors.size())
 		{
-			deadPixelTest.confirmWithUser();
+			getView()->showTest(&getView()->getSerialInput());
 		}
 
-		deadPixelTest.setScreenColour(
-			m_colors[m_colorIndex].red, m_colors[m_colorIndex].green, m_colors[m_colorIndex].blue);
-
-		m_colorIndex++;
+		lv_color_t color = m_colors[m_colorIndex].color;
+		deadPixelTest.setScreenColour(color.red, color.green, color.blue);
 	}
 
 	void HardwareTestPresenter::deadPixelCheckPassed(bool passed)
 	{
-		if (passed)
+		if (m_testState != TestState::DeadPixelTest)
 		{
-			writeToLogFile("Dead pixel test passed.");
-		}
-		else
-		{
-			writeToLogFile("Dead pixel test failed.");
+			LOG_ERROR("Dead pixel test not in progress");
+			return; // Not in dead pixel test mode
 		}
 
-		// Test sequence complete, return to serial input for next device
-		getView()->showTest(&getView()->getSerialInput());
+		color_test color_test = m_colors[m_colorIndex];
+		writeToLogFile(fmt::format("Dead pixel check for color '{:s}' (0x{:02x}{:02x}{:02x}) - {:s}",
+								   color_test.name,
+								   color_test.color.red,
+								   color_test.color.green,
+								   color_test.color.blue,
+								   passed ? "Passed" : "Failed"));
+
+		m_colorIndex++;
+		nextColor();
 	}
 
 	void HardwareTestPresenter::getUid()
@@ -211,7 +254,10 @@ namespace UI
 
 		m_logFile = filePath;
 
-		out << "Hardware Test Log" << std::endl;
+		out << "DuetScreen Hardware Test Log - " << m_uid << std::endl;
+
+		writeToLogFile(runCommand("dmesg"));
+		writeToLogFile("----------------------\n");
 	}
 
 	bool HardwareTestPresenter::writeToLogFile(const std::string& message)
@@ -241,17 +287,30 @@ namespace UI
 
 	void HardwareTestPresenter::onActivate()
 	{
+		if (isActive())
+			return;
+
 		m_serialNumber.clear();
 
 		getView()->updateLayout();
 		const int32_t x_res = getView()->getWidth();
 		const int32_t y_res = getView()->getHeight();
 
-		m_touchPoints = {{{x_res / 4, y_res / 4}, {0, 0}},
-						 {{3 * x_res / 4, y_res / 4}, {0, 0}},
-						 {{x_res / 4, 3 * y_res / 4}, {0, 0}},
-						 {{3 * x_res / 4, 3 * y_res / 4}, {0, 0}},
+		const int32_t x_min = 30;
+		const int32_t x_max = x_res - 30;
+		const int32_t y_min = 30;
+		const int32_t y_max = y_res - 30;
+
+		m_touchPoints = {{{x_min, y_min}, {0, 0}},
+						 {{x_max, y_min}, {0, 0}},
+						 {{x_min, y_max}, {0, 0}},
+						 {{x_max, y_max}, {0, 0}},
 						 {{x_res / 2, y_res / 2}, {0, 0}}};
+
+		for (size_t i = 0; i < m_colors.size(); ++i)
+		{
+			m_colors[i].result = false;
+		}
 
 		getView()->showTest(&getView()->getSerialInput());
 	}

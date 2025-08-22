@@ -192,10 +192,7 @@
 		{
 			"label": "Push Assets - SSH",
 			"type": "shell",
-			"options": {
-				"cwd": "${config:buildroot_path}"
-			},
-			"command": "command ssh root@${config:duetscreen_ip} 'mkdir -p /etc/assets'; scp assets/* root@${config:duetscreen_ip}:/etc/assets",
+			"command": "command ssh root@${config:duetscreen_ip} 'rm -rf /etc/assets; mkdir -p /etc/assets'; scp -r assets root@${config:duetscreen_ip}:/etc/",
 			"group": {
 				"kind": "build",
 				"isDefault": false

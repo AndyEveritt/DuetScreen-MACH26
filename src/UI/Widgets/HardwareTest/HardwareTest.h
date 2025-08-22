@@ -18,7 +18,7 @@ namespace UI
 	class HardwareTest : public View<HardwareTestPresenter>
 	{
 	  public:
-		HardwareTest(const std::string& name, lv_obj_t* parent);
+		HardwareTest();
 
 		class SerialInput : public LvContainer
 		{
@@ -69,7 +69,11 @@ namespace UI
             void onShow() override;
 
 			LvLabel m_hint{"hint", getRoot()};
-            MessageBox m_messageBox{"message_box", getRoot(), layout_t(0, 0, 50, 50)};
+			LvObj m_divider{lv_line_create, "divider", getRoot()};
+			LvLabel m_fail{"fail", getRoot()};
+			LvLabel m_pass{"pass", getRoot()};
+			Button m_start{"start", getRoot()};
+			MessageBox m_messageBox{"message_box", getRoot(), layout_t(0, 0, 50, 50)};
 
 			HardwareTest& m_parent;
 		};

@@ -10,15 +10,13 @@
 
 namespace UI
 {
-	HardwareTest::HardwareTest(const std::string& name, lv_obj_t* parent)
-		: View<HardwareTestPresenter>(name, parent)
+	HardwareTest::HardwareTest()
+		: View<HardwareTestPresenter>("hardware_test", lv_screen_active())
 	{
+		setStylePad(0, LV_PART_MAIN, Padding::ALL);
+		setSize(LV_PCT(100), LV_PCT(100));
 		setStyleBgColor(lv_color_black());
 		setStyleBgOpa(LV_OPA_COVER);
-
-		m_serialInput.setSize(LV_PCT(100), LV_PCT(100));
-		m_touchScreenTest.setSize(LV_PCT(100), LV_PCT(100));
-		m_deadPixelTest.setSize(LV_PCT(100), LV_PCT(100));
 	}
 
 	HardwareTest::SerialInput::SerialInput(HardwareTest& parent)
@@ -28,6 +26,7 @@ namespace UI
 		setStyleBgColor(lv_color_black());
 		setStyleBgOpa(LV_OPA_COVER);
 
+		setSize(LV_PCT(100), LV_PCT(100));
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		m_warning.setText("Invalid serial number");
@@ -71,12 +70,15 @@ namespace UI
 		: LvContainer("touch_screen_test_container", parent)
 		, m_parent(parent)
 	{
-		setStyleBgColor(lv_palette_main(LV_PALETTE_BLUE));
 		setStyleBgOpa(LV_OPA_COVER);
+		setStylePad(0, LV_PART_MAIN, Padding::ALL);
+
+		setSize(LV_PCT(100), LV_PCT(100));
 
 		setFlag(LV_OBJ_FLAG_CLICKABLE, true);
 		addEventCallback(onTouchEvent, LV_EVENT_CLICKED, this);
 
+		m_hint.setX(LV_PCT(10));
 		m_hint.setText("Tap the target");
 		m_target.setSize(50, 50);
 		m_target.setSrc(IMAGE_ASSET("touch_target.png"));
@@ -98,15 +100,18 @@ namespace UI
 		// Ensure the target is centered on (x, y)
 		const lv_coord_t target_width = m_target.getWidth();
 		const lv_coord_t target_height = m_target.getHeight();
-		m_target.setPos(x - target_width / 2, y - target_height / 2);
+		const lv_area_t coords = getCoords();
+		m_target.setPos(x - target_width / 2 - coords.x1, y - target_height / 2 - coords.y1);
 	}
 
 	void HardwareTest::TouchScreenTest::showResults(bool pass, std::string_view message)
 	{
 		m_messageBox.setText(message);
 		m_messageBox.okVisible(pass);
-		// m_messageBox.cancelVisible(!pass);
+		m_messageBox.cancelVisible(!pass);
 		m_messageBox.show(true);
+
+		setStyleBgColor(pass ? lv_palette_main(LV_PALETTE_GREEN) : lv_palette_main(LV_PALETTE_RED));
 	}
 
 	void HardwareTest::TouchScreenTest::onTouchEvent(lv_event_t* e)
@@ -123,6 +128,7 @@ namespace UI
 	void HardwareTest::TouchScreenTest::onShow()
 	{
 		m_messageBox.hide();
+		setStyleBgColor(lv_palette_main(LV_PALETTE_BLUE));
 	}
 
 	HardwareTest::DeadPixelTest::DeadPixelTest(HardwareTest& parent)
@@ -132,7 +138,23 @@ namespace UI
 		setStyleBgColor(lv_color_black());
 		setStyleBgOpa(LV_OPA_COVER);
 
+		setSize(LV_PCT(100), LV_PCT(100));
+
 		m_hint.setText("Check for dead pixels");
+
+		m_pass.setText("Pass");
+		m_fail.setText("Fail");
+		m_start.setText("Start");
+		m_start.setAlign(LV_ALIGN_CENTER);
+		m_start.setSize(LV_PCT(20), LV_PCT(20));
+
+		m_start.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<DeadPixelTest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->startDeadPixelTest();
+			},
+			this);
 
 		m_messageBox.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_messageBox.setTitle("Dead pixel check");
@@ -151,6 +173,10 @@ namespace UI
 	{
 		setStyleBgColor(lv_color_make(red, green, blue));
 		m_hint.hide();
+		m_pass.hide();
+		m_fail.hide();
+		m_start.hide();
+		m_divider.hide();
 	}
 
 	void HardwareTest::DeadPixelTest::confirmWithUser()
@@ -161,7 +187,12 @@ namespace UI
 	void HardwareTest::DeadPixelTest::onTouchEvent(lv_event_t* e)
 	{
 		auto* instance = static_cast<DeadPixelTest*>(lv_event_get_user_data(e));
-		instance->m_parent.getPresenter()->nextColor();
+		lv_point_t point;
+		lv_indev_t* indev = lv_event_get_indev(e);
+		lv_indev_get_point(indev, &point);
+		lv_coord_t width = instance->getWidth();
+		bool passed = point.x > width / 2;
+		instance->m_parent.getPresenter()->deadPixelCheckPassed(passed);
 		return;
 	}
 
@@ -169,6 +200,18 @@ namespace UI
 	{
 		setStyleBgColor(lv_color_black());
 		m_hint.show();
+		m_pass.show();
+		m_fail.show();
+		m_start.show();
+		m_divider.show();
+
+		const lv_coord_t width = getWidth();
+		const lv_coord_t height = getHeight();
+		static lv_point_precise_t line_points[] = {{width / 2, 0}, {width / 2, height}};
+		lv_line_set_points(m_divider, line_points, 2);
+		m_pass.setAlign(LV_ALIGN_RIGHT_MID, -width / 4, 0);
+		m_fail.setAlign(LV_ALIGN_LEFT_MID, width / 4, 0);
+
 		m_messageBox.hide();
 	}
 

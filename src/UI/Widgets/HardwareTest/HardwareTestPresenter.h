@@ -28,8 +28,9 @@ namespace UI
         void touchCalibrationFinished();
 		void logTouchEvent(int32_t x, int32_t y);
 
-        void nextColor();
-        void deadPixelCheckPassed(bool passed);
+		void startDeadPixelTest();
+		void nextColor();
+		void deadPixelCheckPassed(bool passed);
 
 		// Observers
 
@@ -57,14 +58,22 @@ namespace UI
 
 
         size_t m_colorIndex = 0;
-        std::vector<lv_color_t> m_colors = {
-            lv_color_hex(0xFF0000), // Red
-            lv_color_hex(0x00FF00), // Green
-            lv_color_hex(0x0000FF), // Blue
-            lv_color_hex(0xFFFF00), // Yellow
-            lv_color_hex(0xFF00FF), // Magenta
-            lv_color_hex(0x00FFFF), // Cyan
-            lv_color_hex(0xFFFFFF)  // White
-        };
+		struct color_test
+		{
+			lv_color_t color;
+			std::string_view name;
+			bool result;
+		};
+		std::vector<color_test> m_colors = {{lv_color_hex(0xFF0000), "Red", false},
+											{lv_color_hex(0x00FF00), "Green", false},
+											{lv_color_hex(0x0000FF), "Blue", false},
+											{lv_color_hex(0xFFFFFF), "White", false}};
+
+		enum class TestState
+		{
+			SerialInput,
+			TouchCalibration,
+			DeadPixelTest
+		} m_testState = TestState::SerialInput;
 	};
 } // namespace UI
