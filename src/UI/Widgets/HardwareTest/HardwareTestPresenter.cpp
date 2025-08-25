@@ -364,14 +364,17 @@ namespace UI
 		}
 
 		writeToLogFile(fmt::format("Writing test file to USB-A drive: {:s}", file));
-		out << "DuetScreen USB-A test file" << std::endl;
+
+		std::string text = fmt::format("DuetScreen USB-A test file\n{:s}\n", m_uid);
+		out << text;
 		out.close();
 		m_currentTest->output["result"]["write_successful"] = true;
+		m_currentTest->output["result"]["written_contents"] = text;
 
 		std::string contents;
 		USB::ReadFileContents(file, contents);
 
-		m_currentTest->output["result"]["contents"] = contents;
+		m_currentTest->output["result"]["read_contents"] = contents;
 
 		testFinished(TestId::UsbATest);
 	}
@@ -622,10 +625,14 @@ namespace UI
 			[this](TestProcedure& test)
 			{
 				bool write_successful = test.output["result"]["write_successful"].get<bool>();
-				std::string contents;
-				if (test.output["result"].contains("contents"))
-					contents = test.output["result"]["contents"].get<std::string>();
-				return write_successful && !contents.empty();
+
+				std::string written_contents;
+				std::string read_contents;
+				if (test.output["result"].contains("written_contents"))
+					written_contents = test.output["result"]["written_contents"].get<std::string>();
+				if (test.output["result"].contains("read_contents"))
+					read_contents = test.output["result"]["read_contents"].get<std::string>();
+				return write_successful && !written_contents.empty() && written_contents == read_contents;
 			});
 	}
 
