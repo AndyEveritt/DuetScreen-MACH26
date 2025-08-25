@@ -8,6 +8,7 @@
 #include "HardwareTestPresenter.h"
 #include "Debug.h"
 #include "HardwareTest.h"
+#include "nameof.hpp"
 #include <filesystem>
 #include <fstream>
 #include <regex>
@@ -33,6 +34,38 @@ namespace UI
 		}
 		::pclose(pipe);
 		return result;
+	}
+
+	void TestProcedure::start()
+	{
+		state = TestState::InProgress;
+		// Call the start callback if it exists
+		if (start_cb)
+		{
+			start_cb(*this);
+		}
+	}
+	bool TestProcedure::finish()
+	{
+		bool success = true;
+		if (finish_cb)
+		{
+			success = finish_cb(*this);
+			state = success ? TestState::Completed : TestState::Failed;
+			failed = !success;
+		}
+		else
+		{
+			state = TestState::Completed;
+		}
+		return success;
+	}
+	void TestProcedure::cleanup()
+	{
+		if (cleanup_cb)
+		{
+			cleanup_cb(*this);
+		}
 	}
 
 	bool HardwareTestPresenter::setSerialNumber(std::string_view serial_number)
@@ -73,29 +106,15 @@ namespace UI
 
 	void HardwareTestPresenter::showNextTouchPoint()
 	{
+		if (m_touchPointIndex >= m_touchPoints.size())
+		{
+			testFinished(TestId::TouchCalibration);
+			return;
+		}
+
 		auto& touchScreenTest = getView()->getTouchScreenTest();
-		if (m_touchPointIndex < m_touchPoints.size())
-		{
-
-			lv_point_t point = m_touchPoints[m_touchPointIndex].first;
-			touchScreenTest.setTouchTargetPosition(point.x, point.y);
-		}
-		else
-		{
-			bool passed = checkTouchCalibration();
-			std::string result_msg = passed ? "Touch calibration passed.\n\n" : "Touch calibration failed.\n\n";
-			writeToLogFile(result_msg);
-
-			for (size_t i = 0; i < m_touchPoints.size(); ++i)
-			{
-				const lv_point_t& target = m_touchPoints[i].first;
-				const lv_point_t& recorded = m_touchPoints[i].second;
-				result_msg += fmt::format(
-					"Target ({:d}, {:d}) - Recorded ({:d}, {:d})\n", target.x, target.y, recorded.x, recorded.y);
-			}
-			writeToLogFile("----------------------\n");
-			touchScreenTest.showResults(passed, result_msg);
-		}
+		lv_point_t point = m_touchPoints[m_touchPointIndex].first;
+		touchScreenTest.setTouchTargetPosition(point.x, point.y);
 	}
 
 	void HardwareTestPresenter::logTouchEvent(int32_t x, int32_t y)
@@ -105,32 +124,46 @@ namespace UI
 			// Not in calibration mode
 			return;
 		}
+
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::TouchCalibration)
+		{
+			// Not in calibration mode
+			return;
+		}
+
 		const lv_point_t& target = m_touchPoints[m_touchPointIndex].first;
+
+		m_currentTest->output["touch_point"][m_touchPointIndex]["target"] = {{"x", target.x}, {"y", target.y}};
+		m_currentTest->output["touch_point"][m_touchPointIndex]["recorded"] = {{"x", x}, {"y", y}};
+
 		lv_point_t& recorded = m_touchPoints[m_touchPointIndex].second;
 		recorded = {x, y};
-
-		writeToLogFile(
-			fmt::format("Target ({:d}, {:d}) - Recorded ({:d}, {:d})", target.x, target.y, recorded.x, recorded.y));
 
 		m_touchPointIndex++;
 
 		showNextTouchPoint();
 	}
 
-	bool HardwareTestPresenter::checkTouchCalibration()
+	bool HardwareTestPresenter::checkTouchCalibration(TestProcedure& test)
 	{
 		const int32_t tolerance = 50; // pixels
+		bool success = true;
 		for (size_t i = 0; i < m_touchPoints.size(); ++i)
 		{
 			const lv_point_t& target = m_touchPoints[i].first;
 			const lv_point_t& recorded = m_touchPoints[i].second;
 
+			test.output["touch_point"][i] = {
+				{"target", {{"x", target.x}, {"y", target.y}}},
+				{"recorded", {{"x", recorded.x}, {"y", recorded.y}}},
+			};
+
 			if (std::abs(target.x - recorded.x) > tolerance || std::abs(target.y - recorded.y) > tolerance)
 			{
-				return false; // Calibration failed
+				success = false;
 			}
 		}
-		return true; // Calibration passed
+		return success;
 	}
 
 	void HardwareTestPresenter::startDeadPixelTest()
@@ -145,7 +178,7 @@ namespace UI
 
 		if (m_colorIndex >= m_colors.size())
 		{
-			nextTest();
+			testFinished(TestId::DeadPixelTest);
 		}
 
 		lv_color_t color = m_colors[m_colorIndex].color;
@@ -154,13 +187,26 @@ namespace UI
 
 	void HardwareTestPresenter::deadPixelCheckPassed(bool passed)
 	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::DeadPixelTest)
+		{
+			// Not in dead pixel test
+			return;
+		}
+
 		color_test color_test = m_colors[m_colorIndex];
-		writeToLogFile(fmt::format("Dead pixel check for color '{:s}' (0x{:02x}{:02x}{:02x}) - {:s}",
-								   color_test.name,
-								   color_test.color.red,
-								   color_test.color.green,
-								   color_test.color.blue,
-								   passed ? "Passed" : "Failed"));
+		LOG_INFO("Dead pixel check for color '{:s}' (0x{:02x}{:02x}{:02x}) - {:s}",
+				 color_test.name,
+				 color_test.color.red,
+				 color_test.color.green,
+				 color_test.color.blue,
+				 passed ? "Passed" : "Failed");
+
+		m_currentTest->output["color_test"][m_colorIndex] = {
+			{"color",
+			 fmt::format("0x{:02x}{:02x}{:02x}", color_test.color.red, color_test.color.green, color_test.color.blue)},
+			{"name", color_test.name},
+			{"result", passed},
+		};
 
 		m_colorIndex++;
 		nextColor();
@@ -171,9 +217,6 @@ namespace UI
 		auto& commandTest = getView()->getCommandTest();
 		getView()->showTest(&commandTest);
 		commandTest.setMessage("Running memory test...");
-
-		writeToLogFile("\n----------------------\n");
-		writeToLogFile("Starting memory test...");
 
 		std::thread(
 			[this, &commandTest]()
@@ -196,12 +239,23 @@ namespace UI
 				}
 				::pclose(pipe);
 
-				writeToLogFile(result);
+				m_currentTest->output["result"] = result;
 
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				nextTest();
+				testFinished(TestId::MemoryTest);
 			})
 			.detach();
+	}
+
+	static std::string extractMacAddress(const std::string& input)
+	{
+		std::regex mac_regex("mac_addr=((?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2}))");
+		std::smatch match;
+		if (std::regex_search(input, match, mac_regex))
+		{
+			return match.str(1);
+		}
+		return "";
 	}
 
 	void HardwareTestPresenter::testWifi()
@@ -209,9 +263,6 @@ namespace UI
 		auto& commandTest = getView()->getCommandTest();
 		getView()->showTest(&commandTest);
 		commandTest.setMessage("Running internal WiFi test...");
-
-		writeToLogFile("\n----------------------\n");
-		writeToLogFile("Starting WiFi test...");
 
 		std::thread(
 			[this, &commandTest]()
@@ -234,15 +285,57 @@ namespace UI
 				}
 				::pclose(pipe);
 
-				writeToLogFile(result);
+				m_currentTest->output["result"] = result;
+				m_currentTest->output["mac_address"] = extractMacAddress(result);
 
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				nextTest();
+				testFinished(TestId::WifiTest);
 			})
 			.detach();
 	}
 
-	void HardwareTestPresenter::nextTest() {}
+	void HardwareTestPresenter::testFinished(TestId id)
+	{
+		if (m_currentTest == nullptr)
+		{
+			LOG_ERROR("Unexpected test finished: no current test");
+			return;
+		}
+
+		if (m_currentTest->getId() != id)
+		{
+			LOG_ERROR("Unexpected test finished: expected {:s}, got {:s}",
+					  nameof::nameof_enum(m_currentTest->getId()),
+					  nameof::nameof_enum(id));
+			return;
+		}
+
+		bool passed = m_currentTest->finish();
+		writeToLogFile(fmt::format("Test '{:s}' {:s}:\n{:s}",
+								   nameof::nameof_enum(id),
+								   passed ? "passed" : "failed",
+								   m_currentTest->getOutput().dump(4)));
+
+		m_currentTest->cleanup();
+
+		m_testIndex++;
+		nextTest();
+	}
+
+	void HardwareTestPresenter::nextTest()
+	{
+		if (m_testIndex >= m_tests.size())
+		{
+			getView()->hide();
+			return;
+		}
+
+		TestProcedure* test = &m_tests[m_testIndex];
+		m_currentTest = test;
+		writeToLogFile("\n----------------------\n");
+		writeToLogFile(fmt::format("Starting test '{:s}'", nameof::nameof_enum(test->getId())));
+		test->start();
+	}
 
 	void HardwareTestPresenter::getUid()
 	{
@@ -297,7 +390,6 @@ namespace UI
 		out << "DuetScreen Hardware Test Log - " << m_uid << std::endl;
 
 		writeToLogFile(runCommand("dmesg"));
-		writeToLogFile("----------------------\n");
 	}
 
 	bool HardwareTestPresenter::writeToLogFile(const std::string& message)
@@ -318,11 +410,62 @@ namespace UI
 		return true;
 	}
 
+	void HardwareTestPresenter::createTestProcedure(TestId id,
+													std::function<void(TestProcedure& test)> start_cb,
+													std::function<bool(TestProcedure& test)> finish_cb,
+													std::function<void(TestProcedure& test)> cleanup_cb)
+	{
+		m_tests.emplace_back(id, start_cb, finish_cb, cleanup_cb);
+	}
+
 	void HardwareTestPresenter::onInit()
 	{
 		getUid();
 		std::srand(static_cast<unsigned int>(std::time(nullptr)));
 		std::filesystem::create_directories(FOLDER);
+
+		/* Create test procedures */
+		createTestProcedure(
+			TestId::TouchCalibration,
+			[this](TestProcedure& test) { startTouchCalibration(); },
+			[this](TestProcedure& test) { return checkTouchCalibration(test); });
+
+		createTestProcedure(
+			TestId::DeadPixelTest,
+			[this](TestProcedure& test) { getView()->showTest(&getView()->getDeadPixelTest()); },
+			[this](TestProcedure& test)
+			{
+				for (size_t i = 0; i < test.output["color_test"].size(); ++i)
+				{
+					if (!test.output["color_test"][i]["result"].get<bool>())
+					{
+						return false;
+					}
+				}
+				return true;
+			});
+
+		createTestProcedure(
+			TestId::MemoryTest,
+			[this](TestProcedure& test) { testMemory(); },
+			[this](TestProcedure& test)
+			{
+				std::string result = test.output["result"].get<std::string>();
+
+				// Check `result` for `Finished pass 1 successfully`
+				return result.find("Finished pass 1 successfully") != std::string::npos;
+			});
+
+		createTestProcedure(
+			TestId::WifiTest,
+			[this](TestProcedure& test) { testWifi(); },
+			[this](TestProcedure& test)
+			{
+				std::string result = test.output["result"].get<std::string>();
+
+				// Check `result` for `Finished pass 1 successfully`
+				return result.find("Finished pass 1 successfully") != std::string::npos;
+			});
 	}
 
 	void HardwareTestPresenter::onActivate()
@@ -352,6 +495,6 @@ namespace UI
 			m_colors[i].result = false;
 		}
 
-		nextTest();
+		getView()->showTest(&getView()->getSerialInput());
 	}
 } // namespace UI

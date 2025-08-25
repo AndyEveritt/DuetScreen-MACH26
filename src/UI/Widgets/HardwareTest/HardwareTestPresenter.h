@@ -33,15 +33,34 @@ namespace UI
 		Failed
 	};
 
-	struct TestProcedure
+	class TestProcedure
 	{
+	  public:
+		TestProcedure(TestId id,
+					  std::function<void(TestProcedure& test)> start_cb,
+					  std::function<bool(TestProcedure& test)> finish_cb,
+					  std::function<void(TestProcedure& test)> cleanup_cb)
+			: id(id)
+			, start_cb(start_cb)
+			, finish_cb(finish_cb)
+			, cleanup_cb(cleanup_cb)
+		{
+		}
+
+		TestId getId() const { return id; }
+		const nlohmann::json& getOutput() const { return output; }
+		void start();
+		bool finish();
+		void cleanup();
+
+		nlohmann::json output; // JSON output for the test
+
+	  private:
 		TestId id;
-		TestId next_id;
 		TestState state = TestState::NotStarted;
-		std::function<void()> start_cb;	  // Called when starting the test
-		std::function<bool()> finish_cb;  // Called to finish the test, returns true if successful
-		std::function<void()> cleanup_cb; // Called before starting the next test
-		nlohmann::json output;			  // JSON output for the test
+		std::function<void(TestProcedure& test)> start_cb;	 // Called when starting the test
+		std::function<bool(TestProcedure& test)> finish_cb;	 // Called to finish the test, returns true if successful
+		std::function<void(TestProcedure& test)> cleanup_cb; // Called before starting the next test
 		bool failed = false;
 	};
 
@@ -56,7 +75,7 @@ namespace UI
 		// Getters
 
 		// Actions
-		void testFinished();
+		void testFinished(TestId id);
 
 		void startTouchCalibration();
 		void touchCalibrationFinished();
@@ -81,18 +100,23 @@ namespace UI
 
 		void nextTest();
 
+		void createTestProcedure(TestId id,
+								 std::function<void(TestProcedure& test)> start_cb,
+								 std::function<bool(TestProcedure& test)> finish_cb,
+								 std::function<void(TestProcedure& test)> cleanup_cb = nullptr);
 		void getUid();
-        void createLogFile();
+		void createLogFile();
 		bool writeToLogFile(const std::string& message);
-        void showNextTouchPoint();
-        bool checkTouchCalibration();
+		void showNextTouchPoint();
+		bool checkTouchCalibration(TestProcedure& test);
 
 	  private:
 		std::string m_uid;
 		std::string m_serialNumber;
 		std::string m_logFile;
 
-		std::vector<std::unique_ptr<TestProcedure>> m_tests;
+		std::vector<TestProcedure> m_tests;
+		TestProcedure* m_currentTest = nullptr;
 		size_t m_testIndex = 0;
 
 		size_t m_touchPointIndex = 0;

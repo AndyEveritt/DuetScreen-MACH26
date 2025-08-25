@@ -93,6 +93,9 @@ include(${LIBRARIES_DIR}/lvgl.cmake)
 # Networking
 include(${LIBRARIES_DIR}/hv.cmake)
 
+# Reflection
+include(${LIBRARIES_DIR}/nameof.cmake)
+
 # Find libusb package
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBUSB REQUIRED libusb-1.0)

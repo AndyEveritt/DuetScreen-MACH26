@@ -187,6 +187,11 @@ namespace UI
 	void HardwareTest::DeadPixelTest::onTouchEvent(lv_event_t* e)
 	{
 		auto* instance = static_cast<DeadPixelTest*>(lv_event_get_user_data(e));
+		if (instance->m_start.isVisible())
+		{
+			return;
+		}
+
 		lv_point_t point;
 		lv_indev_t* indev = lv_event_get_indev(e);
 		lv_indev_get_point(indev, &point);
