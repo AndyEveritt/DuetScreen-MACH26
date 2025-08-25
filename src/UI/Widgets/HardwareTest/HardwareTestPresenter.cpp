@@ -270,7 +270,7 @@ namespace UI
 				std::string result;
 				std::string cmd =
 #if SIMULATION
-					"echo 'wifi test simulation output'";
+					"echo '[    4.582699] RTL871X: rtw_ndev_init(wlan0) if1 mac_addr=00:e0:20:2f:87:9d\n'";
 #else
 					"dmesg | grep mac_addr";
 #endif
@@ -461,10 +461,10 @@ namespace UI
 			[this](TestProcedure& test) { testWifi(); },
 			[this](TestProcedure& test)
 			{
-				std::string result = test.output["result"].get<std::string>();
+				std::string mac_addr = test.output["mac_address"].get<std::string>();
 
 				// Check `result` for `Finished pass 1 successfully`
-				return result.find("Finished pass 1 successfully") != std::string::npos;
+				return !mac_addr.empty();
 			});
 	}
 
