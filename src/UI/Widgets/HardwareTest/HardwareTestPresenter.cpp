@@ -8,7 +8,10 @@
 #include "HardwareTestPresenter.h"
 #include "Debug.h"
 #include "HardwareTest.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "nameof.hpp"
+#include "utils/NetworkHelper.h"
+#include "utils/StorageHelper.h"
 #include <filesystem>
 #include <fstream>
 #include <regex>
@@ -249,7 +252,7 @@ namespace UI
 
 	static std::string extractMacAddress(const std::string& input)
 	{
-		std::regex mac_regex("mac_addr=((?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2}))");
+		std::regex mac_regex("link/ether ((?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2}))");
 		std::smatch match;
 		if (std::regex_search(input, match, mac_regex))
 		{
@@ -264,15 +267,30 @@ namespace UI
 		getView()->showTest(&commandTest);
 		commandTest.setMessage("Running internal WiFi test...");
 
+		commandTest.setOutput("Setting USB-C MUX to use internal WiFi...\n");
+		int usb_mode = StorageHelper::getData(ID_USB_MODE, 0);
+		m_currentTest->output["original_usb_mode"] = usb_mode;
+
+		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::InternalWiFi);
+
+		commandTest.appendOutput("Enabling internal WiFi...\n");
+		NetworkHelper::enable(true);
+
 		std::thread(
 			[this, &commandTest]()
 			{
+				/* Wait for wifi to be enabled */
+				std::this_thread::sleep_for(std::chrono::seconds(5));
+
 				std::string result;
 				std::string cmd =
 #if SIMULATION
-					"echo '[    4.582699] RTL871X: rtw_ndev_init(wlan0) if1 mac_addr=00:e0:20:2f:87:9d\n'";
+					"echo '1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000\n"
+					"    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00\n"
+					"2: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq qlen 1000\n"
+					"    link/ether 00:e0:20:2f:87:9d brd ff:ff:ff:ff:ff:ff'";
 #else
-					"dmesg | grep mac_addr";
+					"ip link";
 #endif
 				FILE* pipe = ::popen(cmd.c_str(), "r");
 				if (!pipe)
@@ -281,7 +299,7 @@ namespace UI
 				while (fgets(buffer, sizeof(buffer), pipe))
 				{
 					result.append(buffer);
-					commandTest.setOutput(result);
+					commandTest.appendOutput(buffer);
 				}
 				::pclose(pipe);
 
@@ -292,6 +310,34 @@ namespace UI
 				testFinished(TestId::WifiTest);
 			})
 			.detach();
+	}
+
+	void HardwareTestPresenter::restartTests()
+	{
+		m_serialNumber.clear();
+		m_testIndex = 0;
+
+		getView()->updateLayout();
+		const int32_t x_res = getView()->getWidth();
+		const int32_t y_res = getView()->getHeight();
+
+		const int32_t x_min = 30;
+		const int32_t x_max = x_res - 30;
+		const int32_t y_min = 30;
+		const int32_t y_max = y_res - 30;
+
+		m_touchPoints = {{{x_min, y_min}, {0, 0}},
+						 {{x_max, y_min}, {0, 0}},
+						 {{x_min, y_max}, {0, 0}},
+						 {{x_max, y_max}, {0, 0}},
+						 {{x_res / 2, y_res / 2}, {0, 0}}};
+
+		for (size_t i = 0; i < m_colors.size(); ++i)
+		{
+			m_colors[i].result = false;
+		}
+
+		getView()->showTest(&getView()->getSerialInput());
 	}
 
 	void HardwareTestPresenter::testFinished(TestId id)
@@ -326,7 +372,15 @@ namespace UI
 	{
 		if (m_testIndex >= m_tests.size())
 		{
-			getView()->hide();
+			auto& testResults = getView()->getTestResults();
+			testResults.clearResults();
+
+			for (size_t i = 0; i < m_tests.size(); ++i)
+			{
+				auto& test = m_tests[i];
+				testResults.addResult(nameof::nameof_enum(test.getId()), test.getOutput().dump(4), !test.getFailed());
+			}
+			getView()->showResults();
 			return;
 		}
 
@@ -465,6 +519,13 @@ namespace UI
 
 				// Check `result` for `Finished pass 1 successfully`
 				return !mac_addr.empty();
+			},
+			[this](TestProcedure& test)
+			{
+				// Restore original USB mode
+				int original_usb_mode = test.output["original_usb_mode"].get<int>();
+				HomeView::instance().getSettingsView().getPresenter()->setUsbMode(
+					static_cast<UsbMode>(original_usb_mode));
 			});
 	}
 
@@ -473,28 +534,6 @@ namespace UI
 		if (isActive())
 			return;
 
-		m_serialNumber.clear();
-
-		getView()->updateLayout();
-		const int32_t x_res = getView()->getWidth();
-		const int32_t y_res = getView()->getHeight();
-
-		const int32_t x_min = 30;
-		const int32_t x_max = x_res - 30;
-		const int32_t y_min = 30;
-		const int32_t y_max = y_res - 30;
-
-		m_touchPoints = {{{x_min, y_min}, {0, 0}},
-						 {{x_max, y_min}, {0, 0}},
-						 {{x_min, y_max}, {0, 0}},
-						 {{x_max, y_max}, {0, 0}},
-						 {{x_res / 2, y_res / 2}, {0, 0}}};
-
-		for (size_t i = 0; i < m_colors.size(); ++i)
-		{
-			m_colors[i].result = false;
-		}
-
-		getView()->showTest(&getView()->getSerialInput());
+		restartTests();
 	}
 } // namespace UI

@@ -8,8 +8,10 @@
 #pragma once
 
 #include "HardwareTestPresenter.h"
+#include "UI/Components/Containers/Row.h"
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
+#include "UI/Components/List/List.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Core/View.h"
 
@@ -61,12 +63,12 @@ namespace UI
 			DeadPixelTest(HardwareTest& parent);
 
 			void setScreenColour(uint8_t red, uint8_t green, uint8_t blue);
-            void confirmWithUser();
+			void confirmWithUser();
 
 		  private:
 			static void onTouchEvent(lv_event_t* e);
-	
-            void onShow() override;
+
+			void onShow() override;
 
 			LvLabel m_hint{"hint", getRoot()};
 			LvObj m_divider{lv_line_create, "divider", getRoot()};
@@ -85,18 +87,57 @@ namespace UI
 
 			void setMessage(std::string_view message);
 			void setOutput(std::string_view output);
+			void appendOutput(std::string_view output);
+
+			std::string_view getOutput() const { return m_output.getText(); }
 
 		  private:
 			LvLabel m_message{"message", getRoot()};
 			LvTextArea m_output{"output", getRoot()};
 		};
 
+		class TestResults : public LvContainer
+		{
+		  public:
+			class TestResult : public ListItem
+			{
+			  public:
+				TestResult(size_t index, lv_obj_t* parent);
+
+				void setName(std::string_view name);
+				void setOutput(std::string_view output);
+				void setPassed(bool passed);
+
+			  private:
+				LvLabel m_name{"name", getRoot()};
+				LvTextArea m_output{"output", getRoot()};
+			};
+
+			TestResults(HardwareTest& parent);
+
+			void addResult(std::string_view name, std::string_view output, bool passed);
+			void clearResults();
+
+		  private:
+			LvLabel m_title{"title", getRoot()};
+			List<TestResult> m_passed{"passed", getRoot()};
+			List<TestResult> m_failed{"failed", getRoot()};
+
+			Row m_buttons{"buttons", getRoot()};
+			Button m_restart{"restart", m_buttons};
+			Button m_exit{"exit", m_buttons};
+
+			HardwareTest& m_parent;
+		};
+
 		SerialInput& getSerialInput() { return m_serialInput; }
 		TouchScreenTest& getTouchScreenTest() { return m_touchScreenTest; }
 		DeadPixelTest& getDeadPixelTest() { return m_deadPixelTest; }
 		CommandTest& getCommandTest() { return m_commandTest; }
+		TestResults& getTestResults() { return m_testResults; }
 
 		void showTest(LvContainer* test);
+		void showResults();
 
 	  private:
 		void onShow() override;
@@ -105,6 +146,7 @@ namespace UI
 		TouchScreenTest m_touchScreenTest{*this};
 		DeadPixelTest m_deadPixelTest{*this};
 		CommandTest m_commandTest{*this};
+		TestResults m_testResults{*this};
 
 		std::vector<LvContainer*> m_tests = {&m_serialInput, &m_touchScreenTest, &m_deadPixelTest, &m_commandTest};
 		size_t m_currentTestIndex = 0;

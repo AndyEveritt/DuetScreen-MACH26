@@ -99,6 +99,12 @@ namespace UI
 		m_view->setIpAddress(NetworkHelper::getIpAddress());
 	}
 
+	void NetworkSettingsPresenter::refresh()
+	{
+		m_view->setEnabled(NetworkHelper::isEnabled());
+		scanWifi();
+	}
+
 	void NetworkSettingsPresenter::onActivate()
 	{
 		m_view->setEnabled(NetworkHelper::isEnabled());

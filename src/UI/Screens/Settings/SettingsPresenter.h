@@ -41,6 +41,7 @@ namespace UI
 		void connectToNetwork(const std::string& ssid);
 		void connectToNetwork(const std::string& ssid, std::string_view password);
 		void forgetNetwork(const std::string& ssid);
+		void refresh();
 
 	  private:
 		void onActivate() override;

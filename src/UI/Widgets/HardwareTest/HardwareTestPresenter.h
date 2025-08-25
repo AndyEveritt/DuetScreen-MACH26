@@ -52,6 +52,7 @@ namespace UI
 		void start();
 		bool finish();
 		void cleanup();
+		bool getFailed() const { return failed; }
 
 		nlohmann::json output; // JSON output for the test
 
@@ -75,6 +76,7 @@ namespace UI
 		// Getters
 
 		// Actions
+		void restartTests();
 		void testFinished(TestId id);
 
 		void startTouchCalibration();

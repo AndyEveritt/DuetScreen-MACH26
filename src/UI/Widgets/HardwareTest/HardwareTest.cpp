@@ -247,12 +247,121 @@ namespace UI
 		m_output.setText(output);
 	}
 
+	void HardwareTest::CommandTest::appendOutput(std::string_view output)
+	{
+		m_output.addText(std::string(output));
+	}
+
+	HardwareTest::TestResults::TestResults(HardwareTest& parent)
+		: LvContainer("test_results_container", parent)
+		, m_parent(parent)
+	{
+		setStyleBgColor(lv_color_black());
+		setStyleBgOpa(LV_OPA_COVER);
+
+		setSize(LV_PCT(100), LV_PCT(100));
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
+		m_title.setText("Test Results");
+		m_title.setAlign(LV_ALIGN_TOP_MID);
+
+		m_passed.setTitle("Passed Tests");
+		m_passed.setWidth(LV_PCT(100));
+		m_passed.setFlexGrow(1);
+		m_passed.setListFlow(LV_FLEX_FLOW_ROW);
+		m_passed.setListGrow(1);
+
+		m_failed.setTitle("Failed Tests");
+		m_failed.setWidth(LV_PCT(100));
+		m_failed.setFlexGrow(1);
+		m_failed.setListFlow(LV_FLEX_FLOW_ROW);
+		m_failed.setListGrow(1);
+
+		m_buttons.setSize(LV_PCT(50), LV_SIZE_CONTENT);
+		m_buttons.setFlexFlow(LV_FLEX_FLOW_ROW);
+
+		m_restart.setText("Restart");
+		m_exit.setText("Exit");
+		m_restart.setFlexGrow(1);
+		m_exit.setFlexGrow(1);
+
+		m_restart.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<TestResults*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->restartTests();
+			},
+			this);
+
+		m_exit.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<TestResults*>(lv_event_get_user_data(e));
+				instance->m_parent.hide();
+			},
+			this);
+	}
+
+	void HardwareTest::TestResults::clearResults()
+	{
+		m_passed.clear();
+		m_failed.clear();
+	}
+
+	void HardwareTest::TestResults::addResult(std::string_view name, std::string_view output, bool passed)
+	{
+		auto& list = passed ? m_passed : m_failed;
+		auto item = list.addItem();
+		item->setName(name);
+		item->setOutput(output);
+		item->setPassed(passed);
+	}
+
+	HardwareTest::TestResults::TestResult::TestResult(size_t index, lv_obj_t* parent)
+		: ListItem(index, parent)
+	{
+		setHeight(LV_PCT(100));
+		setFlexGrow(1);
+		setMinWidth(LV_PCT(20));
+		setStyleBgOpa(LV_OPA_COVER);
+
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+
+		m_output.setWidth(LV_PCT(100));
+		m_output.setFlexGrow(1);
+		m_output.setOneLine(false);
+		// m_output.setFlag(LV_OBJ_FLAG_CLICKABLE, false);
+	}
+
+	void HardwareTest::TestResults::TestResult::setName(std::string_view name)
+	{
+		m_name.setText(name);
+	}
+
+	void HardwareTest::TestResults::TestResult::setOutput(std::string_view output)
+	{
+		m_output.setText(output);
+	}
+
+	void HardwareTest::TestResults::TestResult::setPassed(bool passed)
+	{
+		setStyleBgColor(passed ? lv_palette_main(LV_PALETTE_GREEN) : lv_palette_main(LV_PALETTE_RED));
+	}
+
 	void HardwareTest::showTest(LvContainer* test)
 	{
+		m_testResults.hide();
 		for (auto* t : m_tests)
 		{
 			t->setVisible(t == test, true);
 		}
+	}
+
+	void HardwareTest::showResults()
+	{
+		m_testResults.show(true);
 	}
 
 	void HardwareTest::onShow()
@@ -260,6 +369,7 @@ namespace UI
 		m_serialInput.setVisible(true);
 		m_touchScreenTest.setVisible(false);
 		m_deadPixelTest.setVisible(false);
+		m_testResults.setVisible(false);
 	}
 
 } // namespace UI

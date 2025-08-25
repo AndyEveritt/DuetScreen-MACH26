@@ -163,6 +163,22 @@ namespace UI
 			m_list.clear();
 		}
 
+		TPtr addItem()
+		{
+			UI_LOCK();
+			auto item = std::make_shared<T>(getItemCount(), m_listCont);
+			m_list.push_back(item);
+			return item;
+		}
+
+		TPtr addItem(std::function<TPtr(size_t, lv_obj_t*)> constructor)
+		{
+			UI_LOCK();
+			auto item = constructor(getItemCount(), m_listCont);
+			m_list.push_back(item);
+			return item;
+		}
+
 		void setItemCount(const size_t count, std::function<TPtr(size_t, lv_obj_t*)> constructor)
 		{
 			UI_LOCK();
