@@ -57,8 +57,6 @@ namespace UI
 	void HardwareTestPresenter::startTouchCalibration()
 	{
 		// Start the touch calibration process
-		m_testState = TestState::TouchCalibration;
-
 		auto& touchScreenTest = getView()->getTouchScreenTest();
 		getView()->showTest(&touchScreenTest);
 
@@ -68,11 +66,6 @@ namespace UI
 
 	void HardwareTestPresenter::touchCalibrationFinished()
 	{
-		if (m_testState != TestState::TouchCalibration)
-		{
-			LOG_ERROR("Touch calibration not in progress");
-			return; // Not in calibration mode
-		}
 
 		// Finish the touch calibration process
 		nextTest();
@@ -80,12 +73,6 @@ namespace UI
 
 	void HardwareTestPresenter::showNextTouchPoint()
 	{
-		if (m_testState != TestState::TouchCalibration)
-		{
-			LOG_ERROR("Touch calibration not in progress");
-			return; // Not in calibration mode
-		}
-
 		auto& touchScreenTest = getView()->getTouchScreenTest();
 		if (m_touchPointIndex < m_touchPoints.size())
 		{
@@ -113,12 +100,6 @@ namespace UI
 
 	void HardwareTestPresenter::logTouchEvent(int32_t x, int32_t y)
 	{
-		if (m_testState != TestState::TouchCalibration)
-		{
-			LOG_ERROR("Touch calibration not in progress");
-			return;
-		}
-
 		if (m_touchPointIndex >= m_touchPoints.size())
 		{
 			// Not in calibration mode
@@ -138,12 +119,6 @@ namespace UI
 
 	bool HardwareTestPresenter::checkTouchCalibration()
 	{
-		if (m_testState != TestState::TouchCalibration)
-		{
-			LOG_ERROR("Touch calibration not in progress");
-			return false; // Not in calibration mode
-		}
-
 		const int32_t tolerance = 50; // pixels
 		for (size_t i = 0; i < m_touchPoints.size(); ++i)
 		{
@@ -160,19 +135,12 @@ namespace UI
 
 	void HardwareTestPresenter::startDeadPixelTest()
 	{
-		m_testState = TestState::DeadPixelTest;
 		m_colorIndex = 0;
 		nextColor();
 	}
 
 	void HardwareTestPresenter::nextColor()
 	{
-		if (m_testState != TestState::DeadPixelTest)
-		{
-			LOG_ERROR("Dead pixel test not in progress");
-			return; // Not in dead pixel test mode
-		}
-
 		auto& deadPixelTest = getView()->getDeadPixelTest();
 
 		if (m_colorIndex >= m_colors.size())
@@ -186,12 +154,6 @@ namespace UI
 
 	void HardwareTestPresenter::deadPixelCheckPassed(bool passed)
 	{
-		if (m_testState != TestState::DeadPixelTest)
-		{
-			LOG_ERROR("Dead pixel test not in progress");
-			return; // Not in dead pixel test mode
-		}
-
 		color_test color_test = m_colors[m_colorIndex];
 		writeToLogFile(fmt::format("Dead pixel check for color '{:s}' (0x{:02x}{:02x}{:02x}) - {:s}",
 								   color_test.name,
@@ -206,7 +168,6 @@ namespace UI
 
 	void HardwareTestPresenter::testMemory()
 	{
-		m_testState = TestState::MemoryTest;
 		auto& commandTest = getView()->getCommandTest();
 		getView()->showTest(&commandTest);
 		commandTest.setMessage("Running memory test...");
@@ -245,8 +206,6 @@ namespace UI
 
 	void HardwareTestPresenter::testWifi()
 	{
-
-		m_testState = TestState::WifiTest;
 		auto& commandTest = getView()->getCommandTest();
 		getView()->showTest(&commandTest);
 		commandTest.setMessage("Running internal WiFi test...");
@@ -283,34 +242,7 @@ namespace UI
 			.detach();
 	}
 
-	void HardwareTestPresenter::nextTest()
-	{
-		switch (m_testState)
-		{
-		case TestState::Start:
-			m_testState = TestState::SerialInput;
-			getView()->showTest(&getView()->getSerialInput());
-			break;
-		case TestState::SerialInput:
-			startTouchCalibration();
-			break;
-		case TestState::TouchCalibration:
-			getView()->showTest(&getView()->getDeadPixelTest());
-			break;
-		case TestState::DeadPixelTest:
-			testMemory();
-			break;
-		case TestState::MemoryTest:
-			testWifi();
-			break;
-		case TestState::WifiTest:
-			// All tests completed
-			getView()->hide();
-			break;
-		default:
-			LOG_ERROR("Unknown test state");
-		}
-	}
+	void HardwareTestPresenter::nextTest() {}
 
 	void HardwareTestPresenter::getUid()
 	{
