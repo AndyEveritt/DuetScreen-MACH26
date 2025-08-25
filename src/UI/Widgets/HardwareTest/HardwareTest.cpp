@@ -36,6 +36,7 @@ namespace UI
 		m_serialInput.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_serialInput.setOneLine(true);
 		m_serialInput.setFlexGrow(1);
+		m_serialInput.setCursorClickPos(true);
 		m_kb.setSize(LV_PCT(100), LV_PCT(50));
 		m_kb.setTextArea(&m_serialInput.getTextArea());
 		m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
