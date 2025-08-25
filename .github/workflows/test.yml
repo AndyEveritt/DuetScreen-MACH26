@@ -31,5 +31,31 @@ jobs:
               run: cmake --build --preset Simulation
 
             - name: Run CTest
+              id: run_ctest
               run: ctest --test-dir out/build/Simulation --output-on-failure
+
+            - name: Detect error images
+              id: detect_err_images
+              if: always()
+              run: |
+                ERR_COUNT=$(find tests/ref_imgs -maxdepth 1 -type f -name "*_err.*" | wc -l || true)
+                if [ "$ERR_COUNT" -gt 0 ]; then
+                  echo "has_errors=true" >> "$GITHUB_OUTPUT"
+                  echo "Found $ERR_COUNT error image(s)."
+                  # List them for the log
+                  find tests/ref_imgs -maxdepth 1 -type f -name "*_err.*"
+                else
+                  echo "has_errors=false" >> "$GITHUB_OUTPUT"
+                  echo "No error images found."
+                fi
+
+            - name: Upload error images artifact
+              if: steps.detect_err_images.outputs.has_errors == 'true'
+              uses: actions/upload-artifact@v4
+              with:
+                name: ctest-error-images
+                path: |
+                  tests/ref_imgs/*_err.*
+                if-no-files-found: error
   
+            
