@@ -19,6 +19,11 @@ jobs:
             - name: Install dependencies
               run: sudo apt-get update && ./scripts/install_prerequisites.sh
 
+            - name: Update Version
+              run: |
+                ./scripts/update_version.sh "${{ github.ref_name }}"
+                echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+
             - name: Configure project
               run: cmake --preset Simulation
 
