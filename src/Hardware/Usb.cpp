@@ -16,7 +16,7 @@
 
 namespace USB
 {
-#if 0
+#if 1
 	std::vector<FileInfo> ListEntriesInDirectory(const std::string& directoryPath)
 	{
 		std::vector<FileInfo> files;
@@ -69,13 +69,13 @@ namespace USB
 	bool ReadUsbFileContents(const std::string& filePath, std::string& contents)
 	{
 		std::string fullPath;
-		if (filePath.rfind("/mnt/usb1") == 0)
+		if (filePath.rfind("/mnt/usb") == 0)
 		{
 			fullPath = filePath;
 		}
 		else
 		{
-			fullPath = std::string("/mnt/usb1/") + filePath;
+			fullPath = std::string("/mnt/usb0/") + filePath;
 		}
 
 		return ReadFileContents(fullPath, contents);
@@ -96,7 +96,7 @@ namespace USB
 		file.seekg(0, std::ios::beg);
 		contents.resize(size);
 		LOG_DBG("Reading {:d} bytes", size);
-		if (!file.read(contents.begin(), size))
+		if (!file.read(&contents[0], size))
 		{
 			LOG_ERROR("Failed to read file {:s}", filePath.c_str());
 			return false;
@@ -132,15 +132,23 @@ namespace USB
 		}
 	}
 
-	void UsbMonitor::registerCallback(UsbDriveCallback callback)
+	void UsbMonitor::registerCallback(UsbDriveCallback callback, bool initialNotify)
 	{
 		std::lock_guard<std::mutex> lock(callback_mutex);
 		callbacks.push_back(callback);
+
+		if (running && initialNotify)
+		{
+			const auto mounts = getMountedDrives();
+			for (const auto& mount : mounts)
+			{
+				callback(mount, true);
+			}
+		}
 	}
 
 	std::vector<std::string> UsbMonitor::getMountedDrives() const
 	{
-		std::lock_guard<std::mutex> lock(callback_mutex);
 		return current_mounts;
 	}
 
@@ -198,18 +206,19 @@ namespace USB
 			}
 
 			// Find removed mounts
-			for (const auto& mount : current_mounts)
+			const auto old_mounts = getMountedDrives();
+			{
+				std::lock_guard<std::mutex> lock(callback_mutex);
+				current_mounts = new_mounts;
+			}
+
+			for (const auto& mount : old_mounts)
 			{
 				if (std::find(new_mounts.begin(), new_mounts.end(), mount) == new_mounts.end())
 				{
 					LOG_INFO("USB drive unmounted from: {:s}", mount.c_str());
 					notifyCallbacks(mount, false);
 				}
-			}
-
-			{
-				std::lock_guard<std::mutex> lock(callback_mutex);
-				current_mounts = new_mounts;
 			}
 
 			// Sleep for a bit to avoid excessive CPU usage

@@ -20,7 +20,7 @@
 
 namespace USB
 {
-#if 0
+#if 1
 	typedef struct
 	{
 		unsigned char d_type;	 /* file type */
@@ -61,7 +61,7 @@ namespace USB
 		void stopMonitoring();
 
 		// Register a callback for USB drive notifications
-		void registerCallback(UsbDriveCallback callback);
+		void registerCallback(UsbDriveCallback callback, bool initialNotify = false);
 
 		// Get list of currently mounted USB drives
 		std::vector<std::string> getMountedDrives() const;

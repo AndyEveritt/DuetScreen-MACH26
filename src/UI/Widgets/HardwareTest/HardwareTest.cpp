@@ -223,6 +223,7 @@ namespace UI
 
 	HardwareTest::CommandTest::CommandTest(HardwareTest& parent)
 		: LvContainer("command_test_container", parent)
+		, m_parent(parent)
 	{
 		setStyleBgColor(lv_color_black());
 		setStyleBgOpa(LV_OPA_COVER);
@@ -251,6 +252,22 @@ namespace UI
 	void HardwareTest::CommandTest::appendOutput(std::string_view output)
 	{
 		m_output.addText(std::string(output));
+	}
+
+	HardwareTest::UsbATest::UsbATest(HardwareTest& parent)
+		: CommandTest(parent)
+	{
+		setMessage("Connect a device to the USB-A port and press the button below when ready.");
+		m_button.setText("Device connected");
+		m_button.setSize(LV_PCT(30), LV_SIZE_CONTENT);
+		m_button.setFlexGrow(0);
+		m_button.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<UsbATest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->usbADeviceConnected();
+			},
+			this);
 	}
 
 	HardwareTest::TestResults::TestResults(HardwareTest& parent)

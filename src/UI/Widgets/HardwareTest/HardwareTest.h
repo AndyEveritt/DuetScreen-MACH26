@@ -91,9 +91,22 @@ namespace UI
 
 			std::string_view getOutput() const { return m_output.getText(); }
 
-		  private:
+		  protected:
 			LvLabel m_message{"message", getRoot()};
 			LvTextArea m_output{"output", getRoot()};
+
+			HardwareTest& m_parent;
+		};
+
+		class UsbATest : public CommandTest
+		{
+		  public:
+			UsbATest(HardwareTest& parent);
+
+			void showButton(bool show) { m_button.setVisible(show); }
+
+		  private:
+			Button m_button{"button", getRoot()};
 		};
 
 		class TestResults : public LvContainer
@@ -134,6 +147,8 @@ namespace UI
 		TouchScreenTest& getTouchScreenTest() { return m_touchScreenTest; }
 		DeadPixelTest& getDeadPixelTest() { return m_deadPixelTest; }
 		CommandTest& getCommandTest() { return m_commandTest; }
+		UsbATest& getUsbATest() { return m_usbATest; }
+
 		TestResults& getTestResults() { return m_testResults; }
 
 		void showTest(LvContainer* test);
@@ -146,9 +161,12 @@ namespace UI
 		TouchScreenTest m_touchScreenTest{*this};
 		DeadPixelTest m_deadPixelTest{*this};
 		CommandTest m_commandTest{*this};
+		UsbATest m_usbATest{*this};
+
 		TestResults m_testResults{*this};
 
-		std::vector<LvContainer*> m_tests = {&m_serialInput, &m_touchScreenTest, &m_deadPixelTest, &m_commandTest};
+		std::vector<LvContainer*> m_tests = {
+			&m_serialInput, &m_touchScreenTest, &m_deadPixelTest, &m_commandTest, &m_usbATest};
 		size_t m_currentTestIndex = 0;
 	};
 } // namespace UI

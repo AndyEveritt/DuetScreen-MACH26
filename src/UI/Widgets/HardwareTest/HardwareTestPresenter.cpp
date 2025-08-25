@@ -7,6 +7,7 @@
 
 #include "HardwareTestPresenter.h"
 #include "Debug.h"
+#include "Hardware/Usb.h"
 #include "HardwareTest.h"
 #include "UI/Screens/Home/HomeView.h"
 #include "nameof.hpp"
@@ -312,6 +313,69 @@ namespace UI
 			.detach();
 	}
 
+	void HardwareTestPresenter::testUsbA()
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbATest)
+		{
+			// Not in USB-A test
+			LOG_ERROR("Not in USB-A test");
+			return;
+		}
+
+		getView()->showTest(&getView()->getUsbATest());
+
+		if (!m_usbMountPath.empty())
+		{
+			usbADeviceConnected();
+		}
+	}
+
+	void HardwareTestPresenter::usbADeviceConnected()
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbATest)
+		{
+			// Not in USB-A test
+			return;
+		}
+
+		std::string result = runCommand("lsusb");
+		LOG_INFO("USB-A device connected:\n{:s}", result);
+		m_currentTest->output["result"]["after_device_connection"] = result;
+
+		if (m_usbMountPath.empty())
+		{
+			LOG_ERROR("USB-A mount path is empty");
+			m_currentTest->output["result"]["write_successful"] = false;
+			m_currentTest->output["result"]["error_message"] = "No USB drive detected";
+			testFinished(TestId::UsbATest);
+			return;
+		}
+
+		std::string file = fmt::format("{:s}/test.txt", m_usbMountPath);
+		std::ofstream out(file);
+		if (!out)
+		{
+			LOG_ERROR("Failed to open log file");
+			writeToLogFile("Failed to open log file");
+			m_currentTest->output["result"]["write_successful"] = false;
+			m_currentTest->output["result"]["error_message"] = "Failed to open log file";
+			testFinished(TestId::UsbATest);
+			return;
+		}
+
+		writeToLogFile(fmt::format("Writing test file to USB-A drive: {:s}", file));
+		out << "DuetScreen USB-A test file" << std::endl;
+		out.close();
+		m_currentTest->output["result"]["write_successful"] = true;
+
+		std::string contents;
+		USB::ReadFileContents(file, contents);
+
+		m_currentTest->output["result"]["contents"] = contents;
+
+		testFinished(TestId::UsbATest);
+	}
+
 	void HardwareTestPresenter::restartTests()
 	{
 		m_serialNumber.clear();
@@ -454,6 +518,7 @@ namespace UI
 			return false;
 		}
 
+		LOG_INFO("{:s}", message);
 		std::ofstream out(m_logFile, std::ios::app);
 		if (!out)
 		{
@@ -477,6 +542,29 @@ namespace UI
 		getUid();
 		std::srand(static_cast<unsigned int>(std::time(nullptr)));
 		std::filesystem::create_directories(FOLDER);
+
+		USB::UsbMonitor::getInstance().registerCallback(
+			[this](const std::string& path, bool mounted)
+			{
+				if (mounted)
+				{
+					m_usbMountPath = path;
+				}
+				else
+				{
+					const auto& mounts = USB::UsbMonitor::getInstance().getMountedDrives();
+					if (mounts.empty())
+					{
+						LOG_INFO("USB drive unmounted");
+						m_usbMountPath.clear();
+						return;
+					}
+					m_usbMountPath = mounts.front();
+				}
+				LOG_INFO("USB drive mounted at: {:s}", m_usbMountPath);
+				usbADeviceConnected();
+			},
+			true);
 
 		/* Create test procedures */
 		createTestProcedure(
@@ -526,6 +614,18 @@ namespace UI
 				int original_usb_mode = test.output["original_usb_mode"].get<int>();
 				HomeView::instance().getSettingsView().getPresenter()->setUsbMode(
 					static_cast<UsbMode>(original_usb_mode));
+			});
+
+		createTestProcedure(
+			TestId::UsbATest,
+			[this](TestProcedure& test) { testUsbA(); },
+			[this](TestProcedure& test)
+			{
+				bool write_successful = test.output["result"]["write_successful"].get<bool>();
+				std::string contents;
+				if (test.output["result"].contains("contents"))
+					contents = test.output["result"]["contents"].get<std::string>();
+				return write_successful && !contents.empty();
 			});
 	}
 
