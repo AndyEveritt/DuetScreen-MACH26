@@ -15,8 +15,12 @@ jobs:
             - name: Install dependencies
               run: sudo apt-get update && ./scripts/install_prerequisites.sh
 
+            - name: Configure project
+              run: cmake --preset Simulation
+
             - name: Build project
               run: cmake --build --preset Simulation
 
             - name: Run CTest
               run: ctest --test-dir out/build/Simulation --output-on-failure
+  
