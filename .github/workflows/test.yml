@@ -11,6 +11,10 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                submodules: recursive
+                fetch-depth: 0
+                token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Install dependencies
               run: sudo apt-get update && ./scripts/install_prerequisites.sh
