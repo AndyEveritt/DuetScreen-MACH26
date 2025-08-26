@@ -9,6 +9,7 @@
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/HardwareTest/HardwareTest.h"
 
 namespace UI
 {
@@ -158,6 +159,7 @@ namespace UI
 		Button m_restart;
 		Button m_eraseAndRestart;
 		Button m_reboot;
+		Button m_startHardwareTest;
 	};
 
 	/**
@@ -194,6 +196,8 @@ namespace UI
 		NetworkSettingsView& getNetworkSettingsView() { return m_networkSettingsView; }
 		DeveloperSettingsView& getDeveloperSettingsView() { return m_developerSettingsView; }
 
+		HardwareTest& getHardwareTest() { return m_hardwareTest; }
+
 		virtual bool back() override;
 
 	  protected:
@@ -225,6 +229,8 @@ namespace UI
 		ThemeSettingsView m_themeSettingsView;
 		NetworkSettingsView m_networkSettingsView;
 		DeveloperSettingsView m_developerSettingsView;
+
+		HardwareTest m_hardwareTest;
 
 		SettingsSubView* m_currentSubView;
 	};

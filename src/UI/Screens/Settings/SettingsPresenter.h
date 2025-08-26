@@ -21,6 +21,7 @@ namespace UI
 
 		// Actions
 		void setUsbMode(UsbMode mode);
+		void startHardwareTest();
 
 	  private:
 		virtual void onInit() override;

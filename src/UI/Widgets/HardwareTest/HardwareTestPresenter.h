@@ -68,6 +68,8 @@ namespace UI
 	class HardwareTestPresenter : public Presenter<HardwareTest>
 	{
 	  public:
+		friend class SettingsPresenter;
+
 		PRESENTER_CONSTRUCTOR(HardwareTestPresenter, HardwareTest);
 
 		// Setters

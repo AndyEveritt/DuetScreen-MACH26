@@ -56,6 +56,8 @@ namespace UI
 		lv_obj_add_event_cb(m_networkSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(m_developerSettings, onWindowSelectEvent, LV_EVENT_CLICKED, this);
 
+		m_hardwareTest.hide();
+
 		// Sub window
 		lv_obj_set_style_pad_all(m_subWindow, 0, LV_PART_MAIN);
 	}
@@ -470,6 +472,7 @@ namespace UI
 		lv_obj_set_size(m_enable, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), "").c_str());
 		lv_checkbox_set_text(m_enable, _("settings_network_enable"));
+		lv_obj_set_flag(m_enable, LV_OBJ_FLAG_CLICKABLE, false);
 
 		// Network List
 		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
@@ -645,6 +648,7 @@ namespace UI
 		, m_restart("developer_settings_restart", getRoot(), _("settings_restart"))
 		, m_eraseAndRestart("developer_settings_erase_and_restart", getRoot(), _("settings_erase_and_restart"))
 		, m_reboot("developer_settings_reboot", getRoot(), _("settings_reboot"))
+		, m_startHardwareTest("start_hardware_test", getRoot())
 	{
 		UI_LOCK();
 
@@ -681,6 +685,16 @@ namespace UI
 		m_restart.addClickedCallback(onRestartEvent, this);
 		m_eraseAndRestart.addClickedCallback(onEraseAndRestartEvent, this);
 		m_reboot.addClickedCallback(onRebootEvent, this);
+
+		/* Hardware Test */
+		m_startHardwareTest.setText(_("settings_start_hardware_test"));
+		m_startHardwareTest.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto& view = *static_cast<DeveloperSettingsView*>(lv_event_get_user_data(e));
+				view.getMainSettingsPresenter()->startHardwareTest();
+			},
+			this);
 	}
 
 	void DeveloperSettingsView::onDebugLevelEvent(lv_event_t* e)

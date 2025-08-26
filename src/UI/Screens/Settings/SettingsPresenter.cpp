@@ -50,6 +50,17 @@ namespace UI
 		GpioHelper::setPinValue(GPIO_USB_STATE, state ? 1 : 0);
 	}
 
+	void SettingsPresenter::startHardwareTest()
+	{
+		auto& hardwareTest = m_view->getHardwareTest();
+		hardwareTest.show(true);
+
+		/* Skip the serial number entry screen since the end user won't know this */
+		hardwareTest.getPresenter()->m_serialNumber = "unknown";
+		hardwareTest.getPresenter()->createLogFile();
+		hardwareTest.getPresenter()->nextTest();
+	}
+
 	void SettingsPresenter::onInit()
 	{
 		// Set the USB mode based on the stored value
