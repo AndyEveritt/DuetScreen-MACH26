@@ -117,4 +117,4 @@ The Duet3D screen has two USB ports:
 USB hubs are supported **if they are NOT smart**. A smart hub is one that requires a driver to work. This includes most USB-C hubs. If you are using a USB-C hub, make sure it is a dumb hub. A dumb hub is one that does not require a driver to work. This includes most USB-A hubs. If in doubt, use a USB-A hub.
 
 ## Building the project
-Notes on how to build the project are found in [DEVELOPMENT.md](DEVELOPMENT.md).
+Notes on how to build the project are found in [DEVELOPMENT.md](docs/DEVELOPMENT.md).

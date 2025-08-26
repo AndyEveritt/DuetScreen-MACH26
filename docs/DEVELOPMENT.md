@@ -164,6 +164,32 @@ If Pillow/Tkinter are unavailable, the script falls back to a CLI prompt without
 - If the review window doesn’t appear (headless), set the screen width/height env vars or run with CLI fallback.
 
 
+### Hardware Testing
+
+Hardware testing is used to verify that the PCB hardware is functioning correctly. The following tests are conducted:
+- Touchscreen calibration
+  - Comparison of touch input coordinates with expected values
+- Dead/stuck pixel test
+  - Shows Red, Green, Blue, and White screens to check for dead/stuck pixels
+- Memory test
+  - Validates the internal NAND flash
+- WiFi test
+  - Validates the internal WiFi module is recognised
+- USB-A test
+  - Writes and reads data to a flash drive via USB-A port
+- Speaker test
+  - Plays a sound through the speaker to verify functionality
+
+The hardware tests can be started from the developer settings screen.
+
+#### Building
+
+A version of the UI which boots straight into the hardware tests can be created by setting the cmake cache variable `HARDWARE_TEST` to `ON`.
+
+> [!NOTE]
+> `ccmake <path_to_build_dir>` can be used to change the CMake cache variables.
+> Or `cmake -DHARDWARE_TEST=ON --preset <preset_name>` can be used to set the variable.
+
 ## Logs
 The code generates logs that are output to 3 places:
 1. The console
