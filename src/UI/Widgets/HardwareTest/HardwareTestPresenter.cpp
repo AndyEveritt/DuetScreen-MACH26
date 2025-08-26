@@ -519,11 +519,11 @@ namespace UI
 		std::filesystem::remove(filePath);
 #endif
 
-		size_t attempt = 0;
-		while (std::filesystem::exists(filePath) && attempt < 1000)
+		size_t fileNum = 1;
+		while (std::filesystem::exists(filePath) && fileNum < 10'000)
 		{
-			size_t randNum = 1000 + (std::rand() % 9000);
-			filePath = fmt::format(FOLDER "{:s}_{:s}_{:04d}.log", m_serialNumber, m_uid, randNum);
+			filePath = fmt::format(FOLDER "{:s}_{:s}_{:04d}.log", m_serialNumber, m_uid, fileNum);
+			fileNum++;
 		}
 
 		std::ofstream out(filePath);
