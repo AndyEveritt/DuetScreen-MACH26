@@ -94,7 +94,9 @@ namespace UI
 		void usbADeviceConnected();
 
 		void testUsbC();
-		void testSpeaker();
+
+		void playSound();
+		void speakerCheckPassed(bool passed);
 
 		// Observers
 

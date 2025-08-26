@@ -270,6 +270,58 @@ namespace UI
 			this);
 	}
 
+	HardwareTest::SpeakerTest::SpeakerTest(HardwareTest& parent)
+		: LvContainer("speaker_test_container", parent)
+		, m_parent(parent)
+	{
+		setStyleBgColor(lv_color_black());
+		setStyleBgOpa(LV_OPA_COVER);
+
+		setSize(LV_PCT(100), LV_PCT(100));
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		m_label.setText("Did you hear a sound?");
+
+		m_buttons.setSize(LV_PCT(50), LV_PCT(50));
+
+		m_no.setText("No");
+		m_no.setHeight(LV_PCT(100));
+		m_no.setFlexGrow(1);
+		m_no.setStyleBgColor(lv_palette_main(LV_PALETTE_RED));
+		lv_obj_set_style_bg_grad_dir(m_no, LV_GRAD_DIR_NONE, 0);
+		m_no.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<SpeakerTest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->speakerCheckPassed(false);
+			},
+			this);
+
+		m_yes.setText("Yes");
+		m_yes.setHeight(LV_PCT(100));
+		m_yes.setFlexGrow(1);
+		m_yes.setStyleBgColor(lv_palette_main(LV_PALETTE_GREEN));
+		lv_obj_set_style_bg_grad_dir(m_yes, LV_GRAD_DIR_NONE, 0);
+		m_yes.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<SpeakerTest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->speakerCheckPassed(true);
+			},
+			this);
+
+		m_playAgain.setText("Play Again");
+		m_playAgain.setSize(LV_PCT(30), LV_PCT(20));
+		m_playAgain.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<SpeakerTest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->playSound();
+			},
+			this);
+	}
+
 	HardwareTest::TestResults::TestResults(HardwareTest& parent)
 		: LvContainer("test_results_container", parent)
 		, m_parent(parent)

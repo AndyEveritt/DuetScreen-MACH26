@@ -379,6 +379,32 @@ namespace UI
 		testFinished(TestId::UsbATest);
 	}
 
+	void HardwareTestPresenter::playSound()
+	{
+		if (system("beep 100") != 0)
+		{
+			m_currentTest->output["result"] = false;
+			m_currentTest->output["error_message"] = "Failed to run `beep`";
+			testFinished(TestId::SpeakerTest);
+		}
+	}
+
+	void HardwareTestPresenter::speakerCheckPassed(bool passed)
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::SpeakerTest)
+		{
+			// Not in speaker test
+			return;
+		}
+
+		m_currentTest->output["result"] = passed;
+		if (!passed)
+		{
+			m_currentTest->output["error_message"] = "Sound not heard";
+		}
+		testFinished(TestId::SpeakerTest);
+	}
+
 	void HardwareTestPresenter::restartTests()
 	{
 		m_serialNumber.clear();
@@ -634,6 +660,16 @@ namespace UI
 					read_contents = test.output["result"]["read_contents"].get<std::string>();
 				return write_successful && !written_contents.empty() && written_contents == read_contents;
 			});
+
+		createTestProcedure(
+			TestId::SpeakerTest,
+			[this](TestProcedure& test)
+			{
+				getView()->showTest(&getView()->getSpeakerTest());
+				playSound();
+			},
+			[this](TestProcedure& test)
+			{ return test.output.contains("result") && test.output["result"].get<bool>(); });
 	}
 
 	void HardwareTestPresenter::onActivate()
