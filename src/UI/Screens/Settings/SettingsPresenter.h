@@ -45,6 +45,10 @@ namespace UI
 		void refresh();
 
 	  private:
+		void onInit() override;
 		void onActivate() override;
+		void onDeactivate() override;
+
+		lv_timer_t* m_scanTimer = nullptr;
 	};
 } // namespace UI

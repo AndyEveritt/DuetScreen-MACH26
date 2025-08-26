@@ -27,6 +27,7 @@ namespace UI
 			setUsbHost(true);
 			setUsbMux(false);
 			setUsbState(false);
+			NetworkHelper::enable(true);
 			break;
 		}
 		LOG_INFO("USB mode set to {:d}", static_cast<int>(mode));
@@ -112,13 +113,33 @@ namespace UI
 
 	void NetworkSettingsPresenter::refresh()
 	{
-		m_view->setEnabled(NetworkHelper::isEnabled());
+		setWifiEnabled(true);
 		scanWifi();
+		m_view->setIpAddress(NetworkHelper::getIpAddress());
+	}
+
+	void NetworkSettingsPresenter::onInit()
+	{
+		m_scanTimer = lv_timer_create(
+			[](lv_timer_t* timer)
+			{
+				NetworkSettingsPresenter* presenter =
+					static_cast<NetworkSettingsPresenter*>(lv_timer_get_user_data(timer));
+				presenter->refresh();
+			},
+			3000,
+			this);
+		lv_timer_pause(m_scanTimer);
 	}
 
 	void NetworkSettingsPresenter::onActivate()
 	{
-		m_view->setEnabled(NetworkHelper::isEnabled());
-		m_view->setIpAddress(NetworkHelper::getIpAddress());
+		refresh();
+		lv_timer_resume(m_scanTimer);
+	}
+
+	void NetworkSettingsPresenter::onDeactivate()
+	{
+		lv_timer_pause(m_scanTimer);
 	}
 } // namespace UI

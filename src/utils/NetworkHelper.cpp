@@ -127,6 +127,7 @@ namespace NetworkHelper
 	bool isEnabled()
 	{
 		std::string output = sendCommand("STATUS");
+		LOG_DBG("WiFi status: {:s}", output);
 		return output.find("wpa_state=COMPLETED") != std::string::npos;
 	}
 

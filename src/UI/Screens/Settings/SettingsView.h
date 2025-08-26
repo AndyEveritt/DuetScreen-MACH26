@@ -112,7 +112,6 @@ namespace UI
 		void setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected);
 
 	  private:
-		static void onEnableEvent(lv_event_t* e);
 		static void onNetworkSelectionEvent(lv_event_t* e);
 		static void onPasswordCloseEvent(lv_event_t* e);
 		static void onPasswordConfirmEvent(lv_event_t* e);
@@ -123,7 +122,6 @@ namespace UI
 
 		lv_obj_t* m_topBar;
 		lv_obj_t* m_ipAddress;
-		lv_obj_t* m_enable;
 		Button m_refresh;
 
 		lv_obj_t* m_networkList;

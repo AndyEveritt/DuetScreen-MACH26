@@ -450,7 +450,6 @@ namespace UI
 		: View("network_settings_view", parent, mainSettingsView)
 		, m_topBar(lv_obj_create(getRoot()))
 		, m_ipAddress(lv_label_create(m_topBar))
-		, m_enable(lv_checkbox_create(m_topBar))
 		, m_refresh("network_settings_refresh", m_topBar, _("refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
 		, m_networkList(lv_table_create(getRoot()))
 		, m_passwordWindow(lv_msgbox_create(getRoot()))
@@ -469,10 +468,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_ipAddress, 3);
 		lv_obj_set_flex_grow(m_refresh.getRoot(), 1);
 		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
-		lv_obj_set_size(m_enable, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), "").c_str());
-		lv_checkbox_set_text(m_enable, _("settings_network_enable"));
-		lv_obj_set_flag(m_enable, LV_OBJ_FLAG_CLICKABLE, false);
 
 		// Network List
 		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
@@ -512,7 +508,6 @@ namespace UI
 		m_refresh.addClickedCallback(onRefreshEvent, this);
 
 		// Callbacks
-		lv_obj_add_event_cb(m_enable, onEnableEvent, LV_EVENT_VALUE_CHANGED, this);
 		lv_obj_add_event_cb(m_networkList, onNetworkSelectionEvent, LV_EVENT_VALUE_CHANGED, this);
 		lv_obj_add_event_cb(closeBtn, onPasswordCloseEvent, LV_EVENT_CLICKED, this);
 		lv_obj_add_event_cb(confirmBtn, onPasswordConfirmEvent, LV_EVENT_CLICKED, this);
@@ -528,7 +523,6 @@ namespace UI
 	void NetworkSettingsView::setEnabled(bool enabled)
 	{
 		UI_LOCK();
-		lv_obj_set_state(m_enable, LV_STATE_CHECKED, enabled);
 	}
 
 	void NetworkSettingsView::setNetworkCount(size_t count)
@@ -549,13 +543,6 @@ namespace UI
 		lv_table_set_cell_value(m_networkList, index + 1, 2, known ? LV_SYMBOL_OK : LV_SYMBOL_CLOSE);
 		lv_table_set_cell_value(m_networkList, index + 1, 3, known ? LV_SYMBOL_TRASH : "");
 		lv_table_set_cell_value(m_networkList, index + 1, 4, connected ? LV_SYMBOL_WIFI : "");
-	}
-
-	void NetworkSettingsView::onEnableEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
-		view->getPresenter()->setWifiEnabled(lv_obj_has_state(view->m_enable, LV_STATE_CHECKED));
 	}
 
 	void NetworkSettingsView::onNetworkSelectionEvent(lv_event_t* e)
