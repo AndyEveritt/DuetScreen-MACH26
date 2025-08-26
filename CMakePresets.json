@@ -19,51 +19,60 @@
             }
         },
         {
-            "name": "Simulation",
-            "displayName": "Simulation",
-            "description": "Configure the project to be run locally on the host machine",
+            "name": "Debug",
+            "hidden": true,
             "inherits": "Base",
             "cacheVariables": {
-                "PROCESSOR": "Simulation",
-                "LOG_TIMESTAMPS": "ON",
-                "LOG_THREAD": "ON",
-                "DEBUG_BORDERS": "ON",
-                "ASYNC_RR_MODEL": "OFF"
-            }
-        },
-        {
-            "name": "Simulation-Release",
-            "displayName": "Simulation-Release",
-            "description": "Configure the project to be run locally on the host machine",
-            "inherits": "Base",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "PROCESSOR": "Simulation",
-                "LOG_TIMESTAMPS": "ON",
-                "LOG_THREAD": "ON"
-            }
-        },
-        {
-            "name": "T113-Debug",
-            "displayName": "T113 Debug",
-            "description": "Configure the project to be run on T113 with debug symbols",
-            "inherits": "Base",
-            "cacheVariables": {
-                "PROCESSOR": "T113",
+                "CMAKE_BUILD_TYPE": "Debug",
                 "LOG_TIMESTAMPS": "ON",
                 "LOG_THREAD": "ON",
                 "DEBUG_BORDERS": "ON"
             }
         },
         {
-            "name": "T113",
-            "displayName": "T113 Release",
-            "description": "Configure the project to be run on T113 without debug symbols",
+            "name": "Release",
+            "hidden": true,
             "inherits": "Base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "PROCESSOR": "T113",
-                "LOG_TIMESTAMPS": "ON"
+                "LOG_TIMESTAMPS": "ON",
+                "LOG_THREAD": "OFF"
+            }
+        },
+        {
+            "name": "Simulation",
+            "displayName": "Simulation",
+            "description": "Configure the project to be run locally on the host machine",
+            "inherits": "Debug",
+            "cacheVariables": {
+                "PROCESSOR": "Simulation"
+            }
+        },
+        {
+            "name": "Simulation-Release",
+            "displayName": "Simulation-Release",
+            "description": "Configure the project to be run locally on the host machine",
+            "inherits": "Release",
+            "cacheVariables": {
+                "PROCESSOR": "Simulation"
+            }
+        },
+        {
+            "name": "T113-Debug",
+            "displayName": "T113 Debug",
+            "description": "Configure the project to be run on T113 with debug symbols",
+            "inherits": "Debug",
+            "cacheVariables": {
+                "PROCESSOR": "T113"
+            }
+        },
+        {
+            "name": "T113",
+            "displayName": "T113 Release",
+            "description": "Configure the project to be run on T113 without debug symbols",
+            "inherits": "Release",
+            "cacheVariables": {
+                "PROCESSOR": "T113"
             }
         },
         {

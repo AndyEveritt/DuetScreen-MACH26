@@ -33,6 +33,14 @@ endif()
 
 set(MAIN_SOURCES "")
 
+# Options
+set(PROCESSOR "T113" CACHE STRING "Target processor, 'T113' or 'Simulation'")
+option(DEBUG_BORDERS "Enable debug borders" OFF)
+option(LOG_TIMESTAMPS "Enable timestamps in log messages" ON)
+option(LOG_THREAD "Enable logging thread id in log messages" OFF)
+option(ASYNC_RR_MODEL "Enable asynchronous rr_model requests" OFF)
+option(HARDWARE_TEST "Enable hardware test" OFF)
+
 if(NOT DEFINED PROCESSOR)
   message(
     FATAL_ERROR
@@ -149,6 +157,10 @@ if(ASYNC_RR_MODEL)
   target_compile_definitions(DuetScreen.lib PUBLIC ASYNC_RR_MODEL=1)
 endif()
 
+if(HARDWARE_TEST)
+  target_compile_definitions(DuetScreen.lib PUBLIC HARDWARE_TEST=1)
+endif()
+
 # Helper function to add preprocesor definition of FILE_BASENAME to pass the
 # filename without directory path for debugging use.
 #
@@ -189,6 +201,7 @@ target_link_libraries(
           pthread
           hv_static
           nlohmann_json::nlohmann_json
+          nameof::nameof
           spdlog::spdlog
           fmt::fmt)
 

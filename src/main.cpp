@@ -15,6 +15,7 @@
 #include "Hardware/Usb.h"
 #include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
+#include "UI/Widgets/HardwareTest/HardwareTest.h"
 #include "glob.h"
 #include "hv/requests.h"
 #include "lv_i18n/lv_i18n.h"
@@ -117,6 +118,11 @@ int main(int argc, char** argv)
 	UI::HomeView& home = UI::HomeView::instance();
 	home.show();
 	openScreen(&home.getStatusView());
+
+#if HARDWARE_TEST
+	UI::HardwareTest hw_test;
+	hw_test.show(true);
+#endif
 
 	Model::get().startEventLoop();
 
