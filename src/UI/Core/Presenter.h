@@ -10,12 +10,12 @@
 namespace UI
 {
 #define PRESENTER_CONSTRUCTOR(PresenterType, ViewType)                                                                 \
-	PresenterType(LvContainer* view)                                                                                   \
+	PresenterType(LvObj* view)                                                                                         \
 		: Presenter<ViewType>(view)                                                                                    \
 	{                                                                                                                  \
 	}
 
-	class LvContainer;
+	class LvObj;
 
 	class BasePresenter : public ModelListener
 	{
@@ -46,7 +46,7 @@ namespace UI
 	class Presenter : public BasePresenter
 	{
 	  public:
-		Presenter(LvContainer* view)
+		Presenter(LvObj* view)
 			: m_view(static_cast<V*>(view))
 		{
 		}
@@ -82,15 +82,7 @@ namespace UI
 			return m_view->getName();
 		}
 
-		void setView(LvContainer* view)
-		{
-			if (view == nullptr)
-			{
-				m_view = nullptr;
-				return;
-			}
-			m_view = static_cast<V*>(view);
-		}
+		void setView(V* view) { m_view = view; }
 
 		V* getView() const { return m_view; }
 

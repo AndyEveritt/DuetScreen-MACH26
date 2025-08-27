@@ -12,19 +12,8 @@
 #include <string>
 #include <thread>
 
-using namespace std::string_literals;
-
 namespace UI
 {
-	void SideBarPresenter::eStop()
-	{
-		LOG_WARN("EStop Pressed!");
-		Comm::DUET.SendGcode("M112 M999\n");
-		LOG_WARN("Emergency Stop sent to Duet");
-		Comm::DUET.Disconnect();
-		Model::get().post<EventType::Response>("Emergency Stop, trying to reconnect..."s);
-	}
-
 	void SideBarPresenter::enableBackButton(bool enable)
 	{
 		m_view->enableBackButton(enable);

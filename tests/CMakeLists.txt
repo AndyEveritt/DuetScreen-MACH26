@@ -47,4 +47,5 @@ include(GoogleTest)
 # Ensure tests run from the project root so any relative paths in tests behave as expected
 gtest_discover_tests(DuetScreen.tests
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    PROPERTIES TIMEOUT 30
 )

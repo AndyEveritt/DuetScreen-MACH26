@@ -8,7 +8,7 @@ namespace UI
 	void home();
 
 	void addHomeScreen(LvObj* view);
-	void removeHomeScreen(LvObj* view);
+	void removeHomeScreen(LvObj* view, bool close = true);
 	void clearHomeScreens();
 
 	LvObj* getCurrentScreen();

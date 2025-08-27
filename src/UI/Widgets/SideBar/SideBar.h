@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "EStop.h"
 #include "SideBarPresenter.h"
 #include "UI/Components/AppDrawer/AppDrawer.h"
 #include "UI/Components/Button/Button.h"
@@ -31,7 +32,6 @@ namespace UI
 		static void homeBtnEvent(lv_event_t* e);
 		static void macrosBtnEvent(lv_event_t* e);
 		static void menuBtnEvent(lv_event_t* e);
-		static void eStopDraggedEvent(float pct, void* e);
 
 		void onShow() override;
 
@@ -40,7 +40,7 @@ namespace UI
 		Button m_backBtn;
 		Button m_menuBtn;
 		Button m_macrosBtn;
-		DraggableButton m_eStopBtn;
+		EStop m_eStopBtn;
 		AppDrawer m_appDrawer;
 		LvContainer m_appDrawerModalBg;
 	};

@@ -28,7 +28,7 @@ std::string GetThumbnailPath(std::string_view filepath)
 
 bool CreateThumbnailDirectory(std::string_view thumbnailFilepath)
 {
-	std::string_view directory = thumbnailFilepath.substr(0, thumbnailFilepath.find_last_of('/'));
+	std::filesystem::path directory = thumbnailFilepath.substr(0, thumbnailFilepath.find_last_of('/'));
 	struct stat sb;
 	if (!std::filesystem::exists(directory))
 	{
@@ -38,7 +38,7 @@ bool CreateThumbnailDirectory(std::string_view thumbnailFilepath)
 		}
 		catch (const std::filesystem::filesystem_error& e)
 		{
-			LOG_ERROR("Failed to create directory {:s}: {:s}", directory, e.what());
+			LOG_ERROR("Failed to create directory {}: {:s}", directory.c_str(), e.what());
 			return false;
 		}
 	}

@@ -29,7 +29,7 @@ namespace UI
 		template <typename... Args>
 		View(const std::string& name, lv_obj_t* parent, Args&&... args)
 			: BaseViewType(name, parent, std::forward<Args>(args)...)
-			, m_presenter(std::make_shared<T>(this))
+			, m_presenter(std::make_shared<T>(static_cast<LvObj*>(this)))
 		{
 			m_presenter->init();
 		}

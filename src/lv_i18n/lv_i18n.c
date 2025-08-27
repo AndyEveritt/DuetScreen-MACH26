@@ -39,6 +39,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"disconnected_message", "Disconnected from Duet"},
     {"estop", "\xEF\x81\xB1"},
     {"estop_prompt", "Drag to E-Stop!"},
+    {"estop_message", "Emergency Stop, trying to reconnect..."},
     {"extrude", "Extrude"},
     {"extrude_distance_header", "Set Extrusion Distance (mm)"},
     {"extrude_distance_input", "Extrude Distance: {:.2g} mm"},

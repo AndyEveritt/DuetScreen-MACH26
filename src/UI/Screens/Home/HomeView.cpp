@@ -120,7 +120,7 @@ namespace UI
 
 	HomeView::~HomeView()
 	{
-		removeHomeScreen(this);
+		removeHomeScreen(this, false);
 	}
 
 	HomeView& HomeView::instance()

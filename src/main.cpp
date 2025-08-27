@@ -117,7 +117,6 @@ int main(int argc, char** argv)
 
 	UI::HomeView& home = UI::HomeView::instance();
 	home.show();
-	openScreen(&home.getStatusView());
 
 #if HARDWARE_TEST
 	UI::HardwareTest hw_test;

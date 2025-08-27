@@ -28,7 +28,7 @@ namespace UI
 		, m_backBtn("back", m_btns, _("back"))
 		, m_menuBtn("menu", m_btns, _("menu"))
 		, m_macrosBtn("macros", m_btns, _("macros"))
-		, m_eStopBtn("estop", m_btns, _("estop"))
+		, m_eStopBtn("estop", m_btns)
 		, m_appDrawer("app_drawer", getRoot())
 		, m_appDrawerModalBg("app_drawer_modal_bg", getRoot())
 	{
@@ -63,7 +63,6 @@ namespace UI
 		m_homeBtn.addClickedCallback(homeBtnEvent, this);
 		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
 		m_menuBtn.addClickedCallback(menuBtnEvent, this);
-		m_eStopBtn.setDragCallback(eStopDraggedEvent, this);
 
 		m_appDrawer.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_appDrawer.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
@@ -86,7 +85,6 @@ namespace UI
 		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);
 		addStyle(Themes::getLvglStyles().pad_zero);
 		m_btns.addStyle(Themes::getLvglStyles().bg_dark);
-		m_eStopBtn.addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
 		m_appDrawerModalBg.addStyle(Themes::getLvglStyles().bg_modal);
 	}
 
@@ -125,21 +123,6 @@ namespace UI
 		SideBar& sidebar = *static_cast<SideBar*>(lv_event_get_user_data(e));
 
 		sidebar.showAppDrawer(!sidebar.m_appDrawer.hasState(LV_STATE_USER_1));
-	}
-
-	void SideBar::eStopDraggedEvent(float pct, void* sidebar)
-	{
-		LOG_INFO("E-Stop button dragged");
-		SideBar* sb = static_cast<SideBar*>(sidebar);
-		if (pct < 0.5f)
-		{
-			Model::get().post<EventType::Response>(std::string(_("estop_prompt")));
-		}
-
-		if (pct == 1.0f)
-		{
-			sb->m_presenter->eStop();
-		}
 	}
 
 	void SideBar::showAppDrawer(bool show, bool animate)

@@ -141,7 +141,7 @@ namespace UI
 		notifySideBar();
 	}
 
-	void removeHomeScreen(LvObjPtr view)
+	void removeHomeScreen(LvObjPtr view, bool close)
 	{
 		UI_LOCK();
 		if (removeFromVector(s_homeScreens, view))
@@ -150,6 +150,10 @@ namespace UI
 			{
 				/* Home screen was previously visible so it should remain visible */
 				openScreen(view, false);
+			}
+			else if (close)
+			{
+				closeScreen(view, false);
 			}
 			notifySideBar();
 		}

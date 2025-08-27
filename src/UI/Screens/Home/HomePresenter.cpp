@@ -36,7 +36,7 @@ namespace UI
 					addHomeScreen(&HomeView::instance().getStatusView());
 					break;
 				case OM::PrinterStatus::idle:
-					removeHomeScreen(&HomeView::instance().getStatusView());
+					removeHomeScreen(&HomeView::instance().getStatusView(), true);
 					break;
 				default:
 					break;

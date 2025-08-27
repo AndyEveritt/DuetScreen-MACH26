@@ -18,8 +18,6 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR(SideBarPresenter, SideBar)
 
-		void eStop();
-
 	  protected:
 		void enableBackButton(bool enable);
 		void enableHomeButton(bool enable);
