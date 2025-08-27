@@ -54,22 +54,21 @@ void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 		return;
 	}
 	std::shared_ptr<UI::BasePresenter> sharedPresenter = presenter.lock();
-	m_presenters.remove_if(
-		[&sharedPresenter](const std::weak_ptr<UI::BasePresenter>& p)
-		{
-			bool remove = false;
-			if (p.expired())
-			{
-				LOG_DBG("Unbinding expired presenter");
-				remove = true;
-			}
-			else if (p.lock() == sharedPresenter)
-			{
-				LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter->getName());
-				remove = true;
-			}
-			return remove;
-		});
+	std::erase_if(m_presenters,
+				  [&sharedPresenter](const std::weak_ptr<UI::BasePresenter>& p)
+				  {
+					  if (p.expired())
+					  {
+						  LOG_DBG("Unbinding expired presenter");
+						  return true;
+					  }
+					  else if (p.lock() == sharedPresenter)
+					  {
+						  LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter->getName());
+						  return true;
+					  }
+					  return false;
+				  });
 }
 
 void Model::startEventLoop()
