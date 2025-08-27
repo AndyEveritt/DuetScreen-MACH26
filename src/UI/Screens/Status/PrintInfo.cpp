@@ -13,18 +13,8 @@
 
 namespace UI
 {
-	PrintInfo::PrintInfo(lv_obj_t* parent)
-		: LvContainer("status_print_info", parent, layout_t(0, 0, 100, 100))
-		, m_positions("positions", getRoot())
-		, m_speed("speed", getRoot())
-		, m_speedMultiplier("speed_multiplier", getRoot())
-		, m_flowRate("flow_rate", getRoot())
-		, m_flowMultiplier("flow_multiplier", getRoot())
-		, m_elapsedTime("elapsed_time", getRoot())
-		, m_remainingTime("remaining_time", getRoot())
-		, m_layer("layer", getRoot())
-		, m_fanSpeed("fan_speed", getRoot())
-		, m_speedInfo(getRoot())
+	PrintInfo::PrintInfo(const std::string& name, lv_obj_t* parent)
+		: LvContainer(name, parent, layout_t(0, 0, 100, 100))
 	{
 		UI_LOCK();
 
@@ -205,14 +195,8 @@ namespace UI
 		m_speedInfo.updateLayerNumber(layer);
 	}
 
-	PrintInfo::SpeedInfo::SpeedInfo(lv_obj_t* parent)
-		: LvObj(lv_obj_create, "status_speed_info", parent, layout_t(0, 0, 100, 100))
-		, m_speed("speed", getRoot())
-		, m_speedMultiplier("speed_multiplier", getRoot())
-		, m_acceleration("acceleration", getRoot())
-		, m_z_offset("z_offset", getRoot())
-		, m_z_height("z_height", getRoot())
-		, m_layer("layer", getRoot())
+	PrintInfo::SpeedInfo::SpeedInfo(const std::string& name, lv_obj_t* parent)
+		: LvObj(lv_obj_create, name, parent, layout_t(0, 0, 100, 100))
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);

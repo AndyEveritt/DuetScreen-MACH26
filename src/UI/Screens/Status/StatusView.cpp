@@ -11,23 +11,6 @@ namespace UI
 {
 	StatusView::StatusView(lv_obj_t* parent)
 		: View("print_view", parent, layout_t(0, 0, 100, 100))
-		// Create all panels first
-		, m_header("header", getRoot())
-		, m_printInfo(getRoot())
-		, m_footer("footer", getRoot())
-
-		// Header
-		, m_progress("progress", m_header)
-		, m_progressLabel("progress_percent", m_progress)
-		, m_filename("filename", m_header)
-		, m_thumbnail("thumbnail", m_header)
-
-		// Create control buttons last
-		, m_pauseBtn("print_pause", m_footer, _("pause"))
-		, m_resumeBtn("print_resume", m_footer, _("resume"))
-		, m_printAgainBtn("print_again", m_footer, _("print_again"))
-		, m_cancelBtn("print_cancel", m_footer, _("cancel"))
-		, m_confirmCancel("print_confirm_cancel", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
@@ -60,6 +43,11 @@ namespace UI
 
 		// Footer
 		m_footer.setFlexFlow(LV_FLEX_FLOW_ROW);
+
+		m_pauseBtn.setText(_("pause"));
+		m_resumeBtn.setText(_("resume"));
+		m_printAgainBtn.setText(_("print_again"));
+		m_cancelBtn.setText(_("cancel"));
 
 		for (size_t i = 0; i < m_footer.getChildCnt(); i++)
 		{

@@ -60,21 +60,22 @@ namespace UI
 		static void onCancelClicked(lv_event_t* e);
 
 		// Status panels
-		LvContainer m_header;
-		PrintInfo m_printInfo;
-		LvContainer m_footer;
+		LvContainer m_header{"header", getRoot()};
+		PrintInfo m_printInfo{"print_info", getRoot()};
+		LvContainer m_footer{"footer", getRoot()};
 
 		// Header
-		LvBar m_progress;
-		LvLabel m_progressLabel;
-		LvLabel m_filename;
-		LvImage m_thumbnail;
+		LvBar m_progress{"progress", m_header};
+		LvLabel m_progressLabel{"progress_label", m_progress};
+		LvLabel m_filename{"filename", m_header};
+		LvImage m_thumbnail{"thumbnail", m_header};
 
 		// Control buttons
-		Button m_pauseBtn;
-		Button m_resumeBtn;
-		Button m_printAgainBtn;
-		Button m_cancelBtn;
-		Modal<MessageBox> m_confirmCancel;
+		Button m_pauseBtn{"pause", m_footer};
+		Button m_resumeBtn{"resume", m_footer};
+		Button m_printAgainBtn{"print_again", m_footer};
+		Button m_cancelBtn{"cancel", m_footer};
+
+		Modal<MessageBox> m_confirmCancel{"start_print", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
 	};
 } // namespace UI

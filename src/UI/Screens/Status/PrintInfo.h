@@ -17,7 +17,7 @@ namespace UI
 	class PrintInfo : public LvContainer
 	{
 	  public:
-		PrintInfo(lv_obj_t* parent);
+		PrintInfo(const std::string& name, lv_obj_t* parent);
 
 		void setAxisCount(size_t count);
 		void setPosition(size_t index, char axis_letter, float value);
@@ -40,7 +40,7 @@ namespace UI
 		class SpeedInfo : public LvObj
 		{
 		  public:
-			SpeedInfo(lv_obj_t* parent);
+			SpeedInfo(const std::string& name, lv_obj_t* parent);
 
 			void updateSpeed(float topSpeed, float requestedSpeed);
 			void updateSpeedMultiplier(uint32_t multiplier);
@@ -50,28 +50,28 @@ namespace UI
 			void updateLayerNumber(uint32_t layer);
 
 		  private:
-			LvLabel m_speed;
-			LvLabel m_speedMultiplier;
-			LvLabel m_acceleration;
-			LvLabel m_z_offset;
-			LvLabel m_z_height;
-			LvLabel m_layer;
+			LvLabel m_speed{"speed", getRoot()};
+			LvLabel m_speedMultiplier{"speed_multiplier", getRoot()};
+			LvLabel m_acceleration{"acceleration", getRoot()};
+			LvLabel m_z_offset{"z_offset", getRoot()};
+			LvLabel m_z_height{"z_height", getRoot()};
+			LvLabel m_layer{"layer", getRoot()};
 		};
 
 		static void openSubView(lv_event_t* e);
 		void onShow() override;
 
-		List<Button> m_positions;
-		Button m_speed;
-		Button m_speedMultiplier;
-		LvLabel m_flowRate;
-		Button m_flowMultiplier;
-		LvLabel m_elapsedTime;
-		LvLabel m_remainingTime;
-		LvLabel m_layer;
-		Button m_fanSpeed;
+		List<Button> m_positions{"positions", getRoot()};
+		Button m_speed{"speed", getRoot()};
+		Button m_speedMultiplier{"speed_multiplier", getRoot()};
+		LvLabel m_flowRate{"flow_rate", getRoot()};
+		Button m_flowMultiplier{"flow_multiplier", getRoot()};
+		LvLabel m_elapsedTime{"elapsed_time", getRoot()};
+		LvLabel m_remainingTime{"remaining_time", getRoot()};
+		LvLabel m_layer{"layer", getRoot()};
+		Button m_fanSpeed{"fan_speed", getRoot()};
 
-		SpeedInfo m_speedInfo;
+		SpeedInfo m_speedInfo{"speed_info", getRoot()};
 
 		bool m_initialised = false;
 	};
