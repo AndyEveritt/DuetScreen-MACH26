@@ -35,36 +35,6 @@ namespace UI
 
 enum class EventType;
 
-template <EventType E, typename... Args>
-struct EventTraits
-{
-	using tuple_type = std::tuple<std::decay_t<Args>...>;
-	struct EventData
-	{
-		EventType type = E;
-		EventData() {}
-		EventData(const tuple_type& t)
-			: tup(t)
-		{
-		}
-		EventData(tuple_type&& t)
-			: tup(std::move(t))
-		{
-		}
-		tuple_type tup;
-	} data;
-
-	EventTraits() {}
-	EventTraits(const tuple_type& t)
-		: data(t)
-	{
-	}
-	EventTraits(tuple_type&& t)
-		: data(std::move(t))
-	{
-	}
-};
-
 /*
 To add an Event, add a new line with the format `XX(EventName, EventArgs...)`
 
@@ -132,8 +102,48 @@ enum class EventType
 	Null
 };
 
-#define XX(name, ...) EventTraits<EventType::name __VA_OPT__(, ) __VA_ARGS__>,
-using EventData = std::variant<EVENTS(XX) EventTraits<EventType::Null>>;
+// Primary template (unused, will be specialized by macro below)
+template <EventType E>
+struct EventTraits;
+
+// Specializations generated from EVENTS macro: maps EventType -> argument tuple
+#define XX(name, ...)                                                                                                  \
+	template <>                                                                                                        \
+	struct EventTraits<EventType::name>                                                                                \
+	{                                                                                                                  \
+		using tuple_type = std::tuple<__VA_ARGS__>;                                                                    \
+	};
+
+EVENTS(XX)
+#undef XX
+
+// Provide traits for Null event
+template <>
+struct EventTraits<EventType::Null>
+{
+	using tuple_type = std::tuple<>;
+};
+
+// Wrapper that stores the payload tuple for a given EventType
+template <EventType E>
+struct EventWrapper
+{
+	using tuple_type = typename EventTraits<E>::tuple_type;
+	EventWrapper() = default;
+	explicit EventWrapper(const tuple_type& t)
+		: tup(t)
+	{
+	}
+	explicit EventWrapper(tuple_type&& t)
+		: tup(std::move(t))
+	{
+	}
+	tuple_type tup;
+};
+
+// Variant holding all event payload wrappers
+#define XX(name, ...) EventWrapper<EventType::name>,
+using EventData = std::variant<EVENTS(XX) EventWrapper<EventType::Null>>;
 #undef XX
 
 using EventCallback = std::function<void(const EventData&)>;
@@ -168,10 +178,31 @@ class Model
 	template <EventType E, typename Func>
 	void addEventListener(Func&& func)
 	{
+		// Verify at compile time that the callable can be invoked with the event's argument list
+		using Tuple = typename EventTraits<E>::tuple_type;
+		static_assert(
+			[]()
+			{
+				using wrapper = EventWrapper<E>;
+				// Build an invocability check using an index sequence
+				return true; // deferred below in second static_assert for clearer message
+			}(),
+			"internal");
+		// Expanded check (kept separate for a clean message)
+		[]<typename F, typename T, std::size_t... I>(F&&, T*, std::index_sequence<I...>)
+		{
+			using tuple_t = T;
+			using std::get; // not actually used, just to silence unused warnings in some compilers
+			static_assert(std::is_invocable_v<F&, std::tuple_element_t<I, tuple_t>&...>,
+						  "addEventListener: handler not invocable with event parameter types");
+		}(std::forward<Func>(func),
+		  static_cast<Tuple*>(nullptr),
+		  std::make_index_sequence<std::tuple_size<Tuple>::value>{});
+
 		m_handlers[E].emplace_back(
 			[f = std::forward<Func>(func)](const EventData& data)
 			{
-				auto& tup = std::get<EventTraits<E>>(data).data.tup;
+				auto& tup = std::get<EventWrapper<E>>(data).tup;
 				std::apply(f, tup);
 			});
 	}
@@ -179,22 +210,32 @@ class Model
 	template <EventType E, typename Class, typename... Args>
 	void addEventListener(Class* instance, void (Class::*memberFunc)(Args...))
 	{
+		// Compile-time verification that the member function signature matches the event's argument list
+		using ExpectedTuple = typename EventTraits<E>::tuple_type;
+		using ProvidedTuple = std::tuple<std::decay_t<Args>...>;
+		static_assert(std::is_same_v<ExpectedTuple, ProvidedTuple>,
+					  "addEventListener member function args mismatch for event");
+
 		m_handlers[E].emplace_back(
 			[instance, memberFunc](const EventData& data)
 			{
-				auto& tup = std::get<EventTraits<E, std::decay_t<Args>...>>(data).data.tup;
-				std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
+				auto& tup = std::get<EventWrapper<E>>(data).tup;
+				std::apply([instance, memberFunc](auto const&... a) { (instance->*memberFunc)(a...); }, tup);
 			});
 	}
 
 	template <EventType E, typename... Args>
 	void post(Args&&... args)
 	{
-		using Traits = EventTraits<E, std::decay_t<Args>...>;
-		using decayed_tuple = typename Traits::tuple_type;
+		using Wrapper = EventWrapper<E>;
+		using Tuple = typename Wrapper::tuple_type;
+		using ExpectedTuple = Tuple;
+		using ProvidedTuple = std::tuple<std::decay_t<Args>...>;
+		static_assert(std::is_same_v<ExpectedTuple, ProvidedTuple>,
+					  "post() argument types mismatch for event, expected");
 
 		std::lock_guard<std::mutex> lock(m_mutex);
-		m_eventQueue.emplace(E, Traits(decayed_tuple(std::forward<Args>(args)...)));
+		m_eventQueue.emplace(E, EventData(std::in_place_type<Wrapper>, Tuple(std::forward<Args>(args)...)));
 		m_eventCondition.notify_one();
 	}
 
