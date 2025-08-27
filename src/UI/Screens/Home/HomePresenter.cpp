@@ -21,6 +21,27 @@ namespace UI
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
 		registerEventListener<EventType::MessageBoxData>(this, &HomePresenter::newMessageBoxData);
+		registerEventListener<EventType::Status>(
+			[this](const OM::PrinterStatus& status)
+			{
+				static OM::PrinterStatus lastStatus = OM::PrinterStatus::unknown;
+				switch (status)
+				{
+				case OM::PrinterStatus::cancelling:
+				case OM::PrinterStatus::paused:
+				case OM::PrinterStatus::pausing:
+				case OM::PrinterStatus::printing:
+				case OM::PrinterStatus::resuming:
+				case OM::PrinterStatus::simulating:
+					addHomeScreen(&HomeView::instance().getStatusView());
+					break;
+				case OM::PrinterStatus::idle:
+					removeHomeScreen(&HomeView::instance().getStatusView());
+					break;
+				default:
+					break;
+				}
+			});
 
 		USB::UsbMonitor::getInstance().registerCallback(
 			[this](const std::string& path, bool mounted)

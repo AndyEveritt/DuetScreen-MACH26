@@ -5,25 +5,20 @@
 
 namespace UI
 {
-	using ViewListItem_t = LvObj*;
-	using ViewList_t = std::vector<ViewListItem_t>;
+	using LvObjPtr = LvObj*;
+	using ViewList_t = std::vector<LvObjPtr>;
 
 	static ViewList_t s_homeScreens;
 	static ViewList_t s_openScreens;
 	static ViewList_t s_returnableScreens;
 	static ViewList_t s_openModals;
 
-	static bool inVector(ViewList_t& vec, ViewListItem_t item)
+	static bool inVector(ViewList_t& vec, LvObjPtr item)
 	{
-		auto it = std::find(vec.begin(), vec.end(), item);
-		if (it != vec.end())
-		{
-			return true;
-		}
-		return false;
+		return std::find(vec.begin(), vec.end(), item) != vec.end();
 	}
 
-	static bool removeFromVector(ViewList_t& vec, ViewListItem_t item)
+	static bool removeFromVector(ViewList_t& vec, LvObjPtr item)
 	{
 		auto it = std::find(vec.begin(), vec.end(), item);
 		if (it != vec.end())
@@ -35,7 +30,7 @@ namespace UI
 		return false;
 	}
 
-	static bool addToVector(ViewList_t& vec, ViewListItem_t item)
+	static bool addToVector(ViewList_t& vec, LvObjPtr item)
 	{
 		removeFromVector(vec, item);
 		LOG_DBG("Adding screen {:s} to vector", item->getName());
@@ -74,7 +69,7 @@ namespace UI
 			return;
 		}
 
-		ViewListItem_t currentScreen = getCurrentScreen();
+		LvObjPtr currentScreen = getCurrentScreen();
 		if (currentScreen == nullptr)
 		{
 			LOG_WARN("No current screen");
@@ -86,7 +81,7 @@ namespace UI
 
 			if (!s_returnableScreens.empty())
 			{
-				ViewListItem_t lastReturnable = s_returnableScreens.back();
+				LvObjPtr lastReturnable = s_returnableScreens.back();
 				openScreen(lastReturnable);
 			}
 		}
@@ -125,7 +120,7 @@ namespace UI
 	 *
 	 * @param view The view to be added.
 	 */
-	void addHomeScreen(ViewListItem_t view)
+	void addHomeScreen(LvObjPtr view)
 	{
 		UI_LOCK();
 		if (view == nullptr)
@@ -137,13 +132,27 @@ namespace UI
 			LOG_WARN("Home screen {:s} already exists", view->getName());
 			return;
 		}
+
+		if (inVector(s_openScreens, view))
+		{
+			removeFromVector(s_openScreens, view);
+		}
 		s_homeScreens.push_back(view);
+		notifySideBar();
 	}
 
-	void removeHomeScreen(ViewListItem_t view)
+	void removeHomeScreen(LvObjPtr view)
 	{
 		UI_LOCK();
-		removeFromVector(s_homeScreens, view);
+		if (removeFromVector(s_homeScreens, view))
+		{
+			if (s_openScreens.empty())
+			{
+				/* Home screen was previously visible so it should remain visible */
+				openScreen(view, false);
+			}
+			notifySideBar();
+		}
 	}
 
 	/**
@@ -162,9 +171,9 @@ namespace UI
 	 * is empty, it logs a warning message and returns nullptr. Otherwise, it returns
 	 * the last screen in the list.
 	 *
-	 * @return ViewListItem_t The current screen if available, otherwise nullptr.
+	 * @return LvObjPtr The current screen if available, otherwise nullptr.
 	 */
-	ViewListItem_t getCurrentScreen()
+	LvObjPtr getCurrentScreen()
 	{
 		UI_LOCK();
 		if (s_openScreens.empty())
@@ -189,7 +198,7 @@ namespace UI
 	 * @note The screen will be removed from the list of returnable screens and added to the list of open screens if it
 	 * is not a home screen.
 	 */
-	void openScreen(ViewListItem_t view, bool closePrevious)
+	void openScreen(LvObjPtr view, bool closePrevious)
 	{
 		UI_LOCK();
 		if (view == nullptr)
@@ -253,7 +262,7 @@ namespace UI
 	 * @param view The screen to be closed.
 	 * @param returnable If true, the screen will be added to the list of returnable screens.
 	 */
-	bool closeScreen(ViewListItem_t view, bool returnable)
+	bool closeScreen(LvObjPtr view, bool returnable)
 	{
 		UI_LOCK();
 		LOG_INFO("Closing screen '{:s}'", view->getName());

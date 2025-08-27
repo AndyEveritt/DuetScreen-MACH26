@@ -6,6 +6,7 @@
 #include "ObjectModel/Directories.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "lv_i18n/lv_i18n.h"
 #include "utils/StorageHelper.h"
 
@@ -112,6 +113,8 @@ namespace UI
 	void FilePresenter::startPrint()
 	{
 		OM::FileSystem::StartPrint(m_gcodePath);
+		addHomeScreen(&HomeView::instance().getStatusView());
+		home();
 	}
 
 	void FilePresenter::runMacro()
