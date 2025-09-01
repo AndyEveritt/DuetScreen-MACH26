@@ -154,7 +154,8 @@ def run_tests(build_dir: Path) -> int:
 	log(f"Running tests in: {build_dir}")
 
 	if 1:
-		ctest_cmd = ["ctest", "--test-dir", build_dir / "tests", "--output-on-failure", "-j", str(os.cpu_count() or 2)]
+		# Can't use parallel jobs because of global variables
+		ctest_cmd = ["ctest", "--test-dir", build_dir / "tests", "--output-on-failure", "-j1"]
 		try:
 			result = subprocess.run(ctest_cmd, cwd=str(PROJECT_ROOT), check=False)
 			return result.returncode
