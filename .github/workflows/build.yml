@@ -28,13 +28,44 @@ jobs:
           submodules: recursive
           token: ${{ secrets.PAT }}
 
+      - name: Determine latest Buildroot tag on master
+        id: buildroot_tag
+        run: |
+          cd buildroot-duetscreen
+          git fetch --tags --force
+          # Get newest tag reachable from origin/master (by tag creation date)
+          LATEST_TAG=$(git tag --merged origin/master --sort=-creatordate | head -n1)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No tag found on origin/master; staying on master" >&2
+            echo "BUILDROOT_TAG=master" >> $GITHUB_ENV
+            echo "BUILDROOT_TAG=master" >> $GITHUB_OUTPUT
+          else
+            echo "Using buildroot tag: $LATEST_TAG"
+            git checkout "$LATEST_TAG"
+            echo "BUILDROOT_TAG=$LATEST_TAG" >> $GITHUB_ENV
+            echo "BUILDROOT_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache Buildroot (downloads & output)
+        id: cache_buildroot
+        uses: actions/cache@v4
+        with:
+          path: |
+            buildroot-duetscreen/dl
+            buildroot-duetscreen/output
+          key: buildroot-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}-duetscreen-${{ github.ref_name }}
+          restore-keys: |
+            buildroot-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}-
+
       - name: Generate Changelog
         id: changelog
         working-directory: DuetScreen
         run: |   
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          ./scripts/release_notes.sh >> $GITHUB_ENV
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          ./scripts/release_notes.sh | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Install Linux Dependencies
         run: |
@@ -61,33 +92,23 @@ jobs:
           BRANCH=$($BRANCHES | grep -v "HEAD detached" | head -n1 | tr -d '* ' | sed 's/^  origin\///' | xargs)
           echo "SOURCE_BRANCH=${BRANCH}" >> $GITHUB_ENV
 
-      # - name: Push Version Update
-      #   working-directory: DuetScreen
-      #   run: |
-      #     git config --local user.name "github-actions[bot]"
-      #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      #     git fetch origin ${{ env.SOURCE_BRANCH }}
-      #     git checkout ${{ env.SOURCE_BRANCH }}
-      #     git add .
-      #     git commit -m "Update version to ${{ github.ref_name }}"
-      #     # Delete the tag locally and remotely
-      #     git tag -d ${{ github.ref_name }} || true
-      #     git push origin --delete refs/tags/${{ github.ref_name }} || true
-      #     # Push changes to the branch and recreate the tag
-      #     git push origin HEAD:${{ env.SOURCE_BRANCH }}
-      #     git tag ${{ github.ref_name }}
-      #     git push origin refs/tags/${{ github.ref_name }}
-
       - name: Build DuetScreen
         working-directory: buildroot-duetscreen
         run: |
-          make clean
+          if [ "${{ steps.cache_buildroot.outputs.cache-hit }}" != "true" ]; then
+            echo "Cache miss: performing full configuration"
+            make clean || true
+          else
+            echo "Cache hit: reusing previous build outputs"
+            rm -rf output/build/duetscreen-HEAD; rm -rf dl/duetscreen
+          fi
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make duetscreen-rebuild
 
       - name: Build sdcard.img
         working-directory: buildroot-duetscreen
         run: |
+          # Ensure config is applied (idempotent) & build full image; cached objects accelerate this
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make
 
@@ -118,7 +139,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: artifacts/*
-          body: ${{ env.CHANGELOG }}
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
           prerelease: ${{ steps.check_branch.outputs.IS_MASTER != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

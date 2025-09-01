@@ -1,4 +1,4 @@
-name: Run CTest
+name: C/C++ CI
 
 on:
     push:
@@ -6,6 +6,7 @@ on:
 
 jobs:
     test:
+        name: Run CTest
         runs-on: ubuntu-latest
 
         steps:
