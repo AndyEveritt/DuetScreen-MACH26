@@ -61,6 +61,10 @@ jobs:
               echo "BUILDROOT_TAG=master" >> $GITHUB_OUTPUT
             fi
           fi
+          # Record the commit SHA actually used
+          BUILDROOT_SHA=$(git rev-parse --short HEAD)
+          echo "BUILDROOT_SHA=$BUILDROOT_SHA" >> $GITHUB_ENV
+          echo "BUILDROOT_SHA=$BUILDROOT_SHA" >> $GITHUB_OUTPUT
 
       - name: Cache Buildroot (downloads & output)
         id: cache_buildroot
@@ -80,6 +84,12 @@ jobs:
         run: |   
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          if [ "${BUILDROOT_TAG}" = "master" ]; then
+            echo "Buildroot: master@${BUILDROOT_SHA} (commit: https://github.com/Duet3D/buildroot-duetscreen/commit/${BUILDROOT_SHA})" | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
+          else
+            echo "Buildroot: [${BUILDROOT_TAG}](https://github.com/Duet3D/buildroot-duetscreen/tree/${BUILDROOT_TAG}) (commit: [${BUILDROOT_SHA}](https://github.com/Duet3D/buildroot-duetscreen/commit/${BUILDROOT_SHA}))" | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
+          fi
+          echo "" | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
           ./scripts/release_notes.sh | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_OUTPUT
