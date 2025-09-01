@@ -26,29 +26,46 @@ jobs:
           ref: master
           path: buildroot-duetscreen
           submodules: recursive
+          fetch-depth: 0
           token: ${{ secrets.PAT }}
 
       - name: Determine latest Buildroot tag on master
         id: buildroot_tag
         run: |
           cd buildroot-duetscreen
-          git fetch --tags --force
-          # Get newest tag reachable from origin/master (by tag creation date)
+          # Ensure full history (in case fetch-depth was not 0 for some reason)
+          git fetch --prune --tags --force origin +refs/heads/master:refs/remotes/origin/master
+          if git rev-parse --is-shallow-repository >/dev/null 2>&1 && git rev-parse --is-shallow-repository | grep -q true; then
+            git fetch --unshallow || true
+          fi
+          # Try to get most recent tag reachable from master by tag creation date
           LATEST_TAG=$(git tag --merged origin/master --sort=-creatordate | head -n1)
+          # Fallback: most recent annotated tag overall if above fails
           if [ -z "$LATEST_TAG" ]; then
-            echo "No tag found on origin/master; staying on master" >&2
+            LATEST_TAG=$(git for-each-ref --sort=-creatordate --format '%(refname:short)' refs/tags | head -n1)
+          fi
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No tag found; staying on master" >&2
             echo "BUILDROOT_TAG=master" >> $GITHUB_ENV
             echo "BUILDROOT_TAG=master" >> $GITHUB_OUTPUT
           else
-            echo "Using buildroot tag: $LATEST_TAG"
-            git checkout "$LATEST_TAG"
-            echo "BUILDROOT_TAG=$LATEST_TAG" >> $GITHUB_ENV
-            echo "BUILDROOT_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+            # Verify tag commit is on master; if not, just use master
+            if git merge-base --is-ancestor $(git rev-list -n1 $LATEST_TAG) origin/master; then
+              echo "Using buildroot tag: $LATEST_TAG"
+              git checkout "$LATEST_TAG"
+              echo "BUILDROOT_TAG=$LATEST_TAG" >> $GITHUB_ENV
+              echo "BUILDROOT_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+            else
+              echo "Tag $LATEST_TAG not ancestor of master; staying on master" >&2
+              echo "BUILDROOT_TAG=master" >> $GITHUB_ENV
+              echo "BUILDROOT_TAG=master" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Cache Buildroot (downloads & output)
         id: cache_buildroot
         uses: actions/cache@v4
+        if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' }}
         with:
           path: |
             buildroot-duetscreen/dl
