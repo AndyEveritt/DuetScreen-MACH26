@@ -88,6 +88,15 @@ jobs:
             curl -L -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$URL" -o seed.zip
             rm -rf seed && mkdir seed
             unzip -q seed.zip -d seed
+            # If the artifact now contains compressed seed archives (dl.zip/output.zip), extract them
+            if [ -f seed/dl.zip ]; then
+              echo "Expanding dl.zip"
+              unzip -q seed/dl.zip -d seed
+            fi
+            if [ -f seed/output.zip ]; then
+              echo "Expanding output.zip"
+              unzip -q seed/output.zip -d seed
+            fi
             mkdir -p buildroot-duetscreen/dl buildroot-duetscreen/output
             rsync -a seed/dl/ buildroot-duetscreen/dl/ || true
             rsync -a seed/output/ buildroot-duetscreen/output/ || true
@@ -162,14 +171,27 @@ jobs:
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make
 
+      - name: Prepare Buildroot seed archives
+        if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' }}
+        run: |
+          set -euo pipefail
+          cd buildroot-duetscreen
+          if ! command -v zip >/dev/null 2>&1; then
+            echo "Installing zip utility"; sudo apt-get update && sudo apt-get install -y zip; fi
+          # Create zipped copies of dl and output preserving symlinks (-y)
+          rm -f dl.zip output.zip
+          zip -qry dl.zip dl
+          zip -qry output.zip output
+          ls -lh dl.zip output.zip
+
       - name: Upload Buildroot seed artifact
         if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' }}
         uses: actions/upload-artifact@v4
         with:
           name: buildroot-seed-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}
           path: |
-            buildroot-duetscreen/dl
-            buildroot-duetscreen/output
+            buildroot-duetscreen/dl.zip
+            buildroot-duetscreen/output.zip
 
       - name: Prepare artifacts
         shell: bash
