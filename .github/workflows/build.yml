@@ -66,17 +66,37 @@ jobs:
           echo "BUILDROOT_SHA=$BUILDROOT_SHA" >> $GITHUB_ENV
           echo "BUILDROOT_SHA=$BUILDROOT_SHA" >> $GITHUB_OUTPUT
 
-      - name: Cache Buildroot (downloads & output)
-        id: cache_buildroot
-        uses: actions/cache@v4
+      - name: Restore Buildroot seed (artifact workaround for tag cache isolation)
+        id: restore_buildroot
         if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' }}
-        with:
-          path: |
-            buildroot-duetscreen/dl
-            buildroot-duetscreen/output
-          key: buildroot-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}-duetscreen-${{ github.ref_name }}
-          restore-keys: |
-            buildroot-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}-
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILDROOT_TAG: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}
+        run: |
+          set -euo pipefail
+          ARTIFACT_NAME="buildroot-seed-${BUILDROOT_TAG}"
+          echo "Attempting to restore seed artifact: $ARTIFACT_NAME"
+          # Ensure tools present (jq, unzip, rsync)
+          for pkg in jq unzip rsync; do
+            if ! command -v $pkg >/dev/null 2>&1; then
+              echo "Installing missing package: $pkg"; sudo apt-get update && sudo apt-get install -y jq unzip rsync; break; fi
+          done
+          RESP=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100")
+          URL=$(echo "$RESP" | jq -r --arg NAME "$ARTIFACT_NAME" '.artifacts | sort_by(.created_at) | reverse | .[] | select(.name==$NAME and .expired==false) | .archive_download_url' | head -n1)
+          if [ -n "$URL" ] && [ "$URL" != "null" ]; then
+            echo "Found artifact. Downloading..."
+            curl -L -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$URL" -o seed.zip
+            rm -rf seed && mkdir seed
+            unzip -q seed.zip -d seed
+            mkdir -p buildroot-duetscreen/dl buildroot-duetscreen/output
+            rsync -a seed/dl/ buildroot-duetscreen/dl/ || true
+            rsync -a seed/output/ buildroot-duetscreen/output/ || true
+            echo "SEED_RESTORED=1" >> $GITHUB_OUTPUT
+            echo "Seed restored."
+          else
+            echo "No existing seed artifact found (cold build)."
+            echo "SEED_RESTORED=0" >> $GITHUB_OUTPUT
+          fi
 
       - name: Generate Changelog
         id: changelog
@@ -121,13 +141,16 @@ jobs:
 
       - name: Build DuetScreen
         working-directory: buildroot-duetscreen
+        env:
+          SEED_RESTORED: ${{ steps.restore_buildroot.outputs.SEED_RESTORED }}
         run: |
-          if [ "${{ steps.cache_buildroot.outputs.cache-hit }}" != "true" ]; then
-            echo "Cache miss: performing full configuration"
-            make clean || true
+          if [ "${SEED_RESTORED}" = "1" ]; then
+            echo "Using restored seed (incremental build)"
+            rm -rf output/build/duetscreen-HEAD || true
+            rm -rf dl/duetscreen || true
           else
-            echo "Cache hit: reusing previous build outputs"
-            rm -rf output/build/duetscreen-HEAD; rm -rf dl/duetscreen
+            echo "No seed: performing clean prerequisites"
+            make clean || true
           fi
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make duetscreen-rebuild
@@ -138,6 +161,15 @@ jobs:
           # Ensure config is applied (idempotent) & build full image; cached objects accelerate this
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make
+
+      - name: Upload Buildroot seed artifact
+        if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildroot-seed-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}
+          path: |
+            buildroot-duetscreen/dl
+            buildroot-duetscreen/output
 
       - name: Prepare artifacts
         shell: bash
