@@ -35,17 +35,16 @@ namespace UI
 
 			static void onClick(lv_event_t* e);
 
-			size_t m_index;
 			FileView& m_list;
 
 			int32_t m_layoutColDsc[3];
 			int32_t m_layoutRowDsc[4];
 
-			LvLabel m_label;
-			LvLabel m_date;
-			LvLabel m_size;
-			LvImage m_thumbnail;
-			LvLabel m_type;
+			LvLabel m_label{"label", getRoot()};
+			LvLabel m_size{"size", getRoot()};
+			LvLabel m_date{"date", getRoot()};
+			LvImage m_thumbnail{"thumb", getRoot()};
+			LvLabel m_type{"type", getRoot()};
 
 			bool m_isFolder;
 		};

@@ -119,6 +119,7 @@ class TestHomeViewWithData : public TestHomeView
 		load_model_data_from_file("tests/object_model/test_bench/model_tools_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_volumes_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_all_d99f.json");
+		load_model_data_from_file("tests/object_model/rr_filelist/example1.json");
 
 		view.show();
 	}

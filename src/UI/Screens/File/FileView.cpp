@@ -14,15 +14,9 @@ namespace UI
 {
 	FileView::FileItem::FileItem(const size_t index, lv_obj_t* parent, FileView& view)
 		: ListItem(index, parent)
-		, m_index(index)
 		, m_list(view)
 		, m_layoutColDsc{LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_label("label", getRoot())
-		, m_date("date", getRoot())
-		, m_size("size", getRoot())
-		, m_thumbnail("thumb", getRoot())
-		, m_type("type", getRoot())
 	{
 		UI_LOCK();
 
@@ -31,10 +25,10 @@ namespace UI
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
 		setGridCell(m_label, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
-		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 1, 1);
-		setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
+		setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 1, 1);
+		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
 		setGridCell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-		setGridCell(m_type, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+		setGridCell(m_type, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 
 		m_label.setHeight(LV_SIZE_CONTENT);
 		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
@@ -75,6 +69,7 @@ namespace UI
 		UI_LOCK();
 		m_isFolder = isFolder;
 		m_type.setText(isFolder ? _("folder") : _("file"));
+		m_size.setVisible(!isFolder);
 		setState(LV_STATE_CHECKED, isFolder);
 	}
 
@@ -100,7 +95,7 @@ namespace UI
 	{
 		UI_LOCK();
 		FileItem* item = static_cast<FileItem*>(lv_event_get_user_data(e));
-		item->getList().onItemClicked(item->m_index, item->m_isFolder);
+		item->getList().onItemClicked(item->getIndex(), item->m_isFolder);
 	}
 
 	FileView::FileView(lv_obj_t* parent, lv_obj_t* msgBoxParent)
