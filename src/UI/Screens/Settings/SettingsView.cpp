@@ -361,7 +361,7 @@ namespace UI
 		// Screensaver Timeout
 		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_screensaverTimeout.setLabel(_("settings_screensaver_timeout"));
-		m_screensaverTimeout.setRange(0, 30 * 60); // seconds
+		m_screensaverTimeout.setRange(0, 5 * 60); // seconds
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
 													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
