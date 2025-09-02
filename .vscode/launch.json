@@ -8,6 +8,12 @@
             "id": "log_filters",
             "type": "promptString",
             "description": "Log filters (quote enclosed and space separated e.g. \"filter1\" \"filter2\"), add `-f` to follow the log file"
+        },
+        {
+            "id": "gtest_filter",
+            "type": "promptString",
+            "description": "GoogleTest filter (e.g. SuiteName.TestName or pattern like SuiteName.*)",
+            "default": "*"
         }
     ],
     "configurations": [
@@ -69,6 +75,74 @@
                 "MIMode": "gdb",
                 "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
             },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+            ],
+            "miDebuggerArgs": "-x '${workspaceFolder}/.vscode/gdb.conf'"
+        },
+        {
+            "name": "Debug GTest - CMake Tools",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${cmake.testProgram}",
+            "args": [
+                "${cmake.testArgs}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "CMake: build tests",
+            "stopAtEntry": false,
+            "linux": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+            ],
+            "miDebuggerArgs": "-x '${workspaceFolder}/.vscode/gdb.conf'"
+        },
+        {
+            "name": "Debug GTest (filter prompt)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/tests/DuetScreen.tests",
+            "args": [
+                "--gtest_filter=${input:gtest_filter}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "CMake: build tests",
+            "stopAtEntry": false,
+            "linux": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
+            },
+            "environment": [
+                {
+                    "name": "GTEST_COLOR",
+                    "value": "yes"
+                }
+            ],
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
