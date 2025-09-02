@@ -74,22 +74,22 @@ namespace UI
 
 		void init();
 
-		LvContainer m_header;
-		LvContainer m_body;
-		LvContainer m_footer;
+		LvContainer m_header{"header", getRoot()};
+		LvContainer m_body{"body", getRoot()};
+		LvContainer m_footer{"footer", getRoot()};
 
 		// Header
-		LvLabel m_title;
+		LvLabel m_title{"title", getHeader()};
 
 		// Body
-		LvContainer m_bodyTop;
-		LvLabel m_text;
-		LvImage m_image;
+		LvContainer m_bodyTop{"body_top", getBody()};
+		LvLabel m_text{"text", m_bodyTop};
+		LvImage m_image{"image", m_bodyTop};
 
 		// Footer
-		Button m_cancelBtn;
-		Button m_okBtn;
-		LvBar m_progress;
+		Button m_cancelBtn{"cancel", getFooter()};
+		Button m_okBtn{"ok", getFooter()};
+		LvBar m_progress{"progress", getRoot()};
 
 		std::function<void()> m_okCb;
 		std::function<void()> m_cancelCb;

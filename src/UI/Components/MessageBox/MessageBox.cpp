@@ -18,16 +18,6 @@ namespace UI
 
 	MessageBox::MessageBox(const std::string& name, lv_obj_t* parent, layout_t layout)
 		: LvContainer(name, parent, layout)
-		, m_header("header", getRoot())
-		, m_body("body", getRoot())
-		, m_footer("footer", getRoot())
-		, m_title("title", getHeader())
-		, m_bodyTop("body_top", getBody())
-		, m_text("text", m_bodyTop)
-		, m_image("image", m_bodyTop)
-		, m_cancelBtn("cancel", getFooter(), _("msgbox_cancel"))
-		, m_okBtn("ok", getFooter(), _("msgbox_ok"))
-		, m_progress("progress", getRoot())
 	{
 		UI_LOCK();
 		init();
@@ -89,6 +79,8 @@ namespace UI
 		m_cancelBtn.setFlexGrow(1);
 		m_okBtn.setHeight(LV_SIZE_CONTENT);
 		m_okBtn.setFlexGrow(1);
+		m_cancelBtn.setText(_("msgbox_cancel"));
+		m_okBtn.setText(_("msgbox_ok"));
 
 		m_progress.setSize(LV_PCT(100), 5);
 
