@@ -96,6 +96,7 @@ namespace UI
 		void promptUsbAConnect();
 		void promptUsbCConnect();
 		void promptUsbCConnect2();
+		void promptUsbDeviceConnect();
 
 		void testUsbC();
 
@@ -123,6 +124,7 @@ namespace UI
 		bool writeToLogFile(const std::string& message);
 		void showNextTouchPoint();
 		bool checkTouchCalibration(TestProcedure& test);
+		void updateUsbMounts();
 
 	  private:
 		std::string m_uid;

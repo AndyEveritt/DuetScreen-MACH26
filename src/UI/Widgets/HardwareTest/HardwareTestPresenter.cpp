@@ -323,7 +323,7 @@ namespace UI
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-A test
-			LOG_ERROR("Not in USB-A test");
+			LOG_ERROR("Not in USB test");
 			return;
 		}
 
@@ -358,7 +358,7 @@ namespace UI
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-A test
-			LOG_ERROR("Not in USB-A test");
+			LOG_ERROR("Not in USB test");
 			return;
 		}
 
@@ -389,7 +389,7 @@ namespace UI
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-C test
-			LOG_ERROR("Not in USB-C test");
+			LOG_ERROR("Not in USB test");
 			return;
 		}
 
@@ -420,7 +420,7 @@ namespace UI
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-C test
-			LOG_ERROR("Not in USB-C test");
+			LOG_ERROR("Not in USB test");
 			return;
 		}
 
@@ -429,7 +429,7 @@ namespace UI
 		usbTest.setMessage("Connect a USB flash drive to the REAR USB-C port and press the button below when ready.");
 		usbTest.showButton(true);
 		usbTest.setButtonCallback(
-			[this, &usbTest]
+			[this, &usbTest]()
 			{
 				usbTest.showButton(false);
 				usbTest.setMessage("Please wait...");
@@ -441,6 +441,45 @@ namespace UI
 							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
 						logUsbData("usb_c_rear", true);
 
+						promptUsbDeviceConnect();
+					})
+					.detach();
+			});
+	}
+
+	void HardwareTestPresenter::promptUsbDeviceConnect()
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
+		{
+			LOG_ERROR("Not in USB test");
+			return;
+		}
+
+		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::Device);
+
+		auto& usbTest = getView()->getUsbTest();
+		usbTest.setMessage("Connect USB-A port to either USB-C port");
+		usbTest.showButton(true);
+		usbTest.setButtonCallback(
+			[this, &usbTest]()
+			{
+				usbTest.showButton(false);
+				usbTest.setMessage("Please wait...");
+
+				std::thread(
+					[this]()
+					{
+						std::this_thread::sleep_for(
+							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
+
+						std::string lsusb = runCommand("lsusb");
+						m_currentTest->output["usb_c_device"]["lsusb"] = lsusb;
+						bool result = lsusb.find("1d6b:0105") != std::string::npos;
+						m_currentTest->output["usb_c_device"]["result"] = result;
+						if (!result)
+						{
+							m_currentTest->output["usb_c_device"]["error_message"] = "USB-C device mode not detected";
+						}
 						std::string dmesg = runCommand("dmesg | grep -E 'usb|ehci'");
 						m_currentTest->output["dmesg"] = dmesg;
 						testFinished(TestId::UsbTest);
@@ -511,6 +550,15 @@ namespace UI
 		m_currentTest->output[key]["read_contents"] = contents;
 
 		m_currentTest->output[key]["result"] = contents == text;
+	}
+
+	void HardwareTestPresenter::updateUsbMounts()
+	{
+
+		const auto& mounts = USB::UsbMonitor::getInstance().getMountedDrives();
+		std::string mount_str =
+			fmt::format("Mounted drives:\n  {:s}\nTarget drive: {:s}", fmt::join(mounts, "\n  "), m_usbMountPath);
+		getView()->getUsbTest().setOutput(mount_str);
 	}
 
 	void HardwareTestPresenter::playSound()
@@ -725,11 +773,8 @@ namespace UI
 					m_usbMountPath = mounts.front();
 				}
 				LOG_INFO("USB drive mounted at: {:s}", m_usbMountPath);
-
 			update_view:
-				std::string mount_str = fmt::format(
-					"Mounted drives:\n  {:s}\nTarget drive: {:s}", fmt::join(mounts, "\n  "), m_usbMountPath);
-				getView()->getUsbTest().setOutput(mount_str);
+				updateUsbMounts();
 			},
 			true);
 
@@ -792,7 +837,7 @@ namespace UI
 			{
 				bool passed = true;
 				std::string prev_lsusb;
-				auto keys = {"test_start", "usb_a", "usb_c_side", "usb_c_rear"};
+				auto keys = {"test_start", "usb_a", "usb_c_side", "usb_c_rear", "usb_c_device"};
 				std::vector<std::string> lsusb_outputs;
 				for (const auto& key : keys)
 				{
@@ -819,6 +864,11 @@ namespace UI
 					else
 					{
 						LOG_ERROR("Missing 'lsusb' for {}", key);
+					}
+
+					if (value.contains("error_message"))
+					{
+						test.output["error_message"] = value["error_message"].get<std::string>();
 					}
 				}
 
@@ -868,6 +918,7 @@ namespace UI
 		if (isActive())
 			return;
 
+		updateUsbMounts();
 		restartTests();
 	}
 } // namespace UI
