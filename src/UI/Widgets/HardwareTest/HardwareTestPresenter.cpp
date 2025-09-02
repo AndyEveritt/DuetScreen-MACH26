@@ -49,6 +49,7 @@ namespace UI
 
 	void TestProcedure::start()
 	{
+		output.clear();
 		state = TestState::InProgress;
 		// Call the start callback if it exists
 		if (start_cb)
@@ -276,9 +277,6 @@ namespace UI
 		commandTest.setMessage("Running internal WiFi test...");
 
 		commandTest.setOutput("Setting USB-C MUX to use internal WiFi...\n");
-		int usb_mode = StorageHelper::getData(ID_USB_MODE, 0);
-		m_currentTest->output["original_usb_mode"] = usb_mode;
-
 		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::InternalWiFi);
 
 		commandTest.appendOutput("Enabling internal WiFi...\n");
@@ -331,6 +329,8 @@ namespace UI
 
 		auto& usbTest = getView()->getUsbTest();
 
+		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::Host);
+
 		getView()->showTest(&usbTest);
 		usbTest.setMessage("Please disconnect all USB flash drives");
 		usbTest.setButtonText("Continue");
@@ -377,7 +377,7 @@ namespace UI
 					{
 						std::this_thread::sleep_for(
 							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
-						logUsbData("usb_a_connected", true);
+						logUsbData("usb_a", true);
 						promptUsbCConnect();
 					})
 					.detach();
@@ -408,7 +408,7 @@ namespace UI
 					{
 						std::this_thread::sleep_for(
 							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
-						logUsbData("usb_c_side_connected", true);
+						logUsbData("usb_c_side", true);
 						promptUsbCConnect2();
 					})
 					.detach();
@@ -439,7 +439,7 @@ namespace UI
 					{
 						std::this_thread::sleep_for(
 							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
-						logUsbData("usb_c_rear_connected", true);
+						logUsbData("usb_c_rear", true);
 
 						std::string dmesg = runCommand("dmesg | grep -E 'usb|ehci'");
 						m_currentTest->output["dmesg"] = dmesg;
@@ -781,13 +781,6 @@ namespace UI
 
 				// Check `result` for `Finished pass 1 successfully`
 				return !mac_addr.empty();
-			},
-			[this](TestProcedure& test)
-			{
-				// Restore original USB mode
-				int original_usb_mode = test.output["original_usb_mode"].get<int>();
-				HomeView::instance().getSettingsView().getPresenter()->setUsbMode(
-					static_cast<UsbMode>(original_usb_mode));
 			});
 #endif
 
@@ -798,13 +791,61 @@ namespace UI
 			[this](TestProcedure& test)
 			{
 				bool passed = true;
-				for (const auto& [key, value] : test.output.items())
+				std::string prev_lsusb;
+				auto keys = {"test_start", "usb_a", "usb_c_side", "usb_c_rear"};
+				std::vector<std::string> lsusb_outputs;
+				for (const auto& key : keys)
 				{
+					if (!test.output.contains(key))
+					{
+						continue;
+					}
+
+					auto& value = test.output[key];
 					if (value.contains("result"))
 					{
 						passed &= value["result"].get<bool>();
 					}
+					else
+					{
+						LOG_ERROR("Missing 'result' for {}", key);
+					}
+
+					if (value.contains("lsusb"))
+					{
+						std::string lsusb = value["lsusb"].get<std::string>();
+						lsusb_outputs.push_back(lsusb);
+					}
+					else
+					{
+						LOG_ERROR("Missing 'lsusb' for {}", key);
+					}
 				}
+
+				{
+					/* Ensure all lsusb outputs are unique */
+					bool lsusb_unique = true;
+					for (size_t i = 0; i < lsusb_outputs.size() && lsusb_unique; ++i)
+					{
+						for (size_t j = i + 1; j < lsusb_outputs.size(); ++j)
+						{
+							if (lsusb_outputs[i] == lsusb_outputs[j])
+							{
+								lsusb_unique = false;
+								break;
+							}
+						}
+					}
+					if (!lsusb_unique)
+					{
+						passed = false;
+						LOG_ERROR("Duplicate lsusb output detected");
+						test.output["error_message"] = "Duplicate lsusb output detected";
+					}
+					test.output["lsusb_unique"] = lsusb_unique;
+					test.output["result"] = passed;
+				}
+
 				return passed;
 			});
 #endif
