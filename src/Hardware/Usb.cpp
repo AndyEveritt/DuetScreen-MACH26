@@ -195,10 +195,16 @@ namespace USB
 		{
 			auto new_mounts = getUsbMounts();
 
+			const auto old_mounts = getMountedDrives();
+			{
+				std::lock_guard<std::mutex> lock(callback_mutex);
+				current_mounts = new_mounts;
+			}
+
 			// Find new mounts
 			for (const auto& mount : new_mounts)
 			{
-				if (std::find(current_mounts.begin(), current_mounts.end(), mount) == current_mounts.end())
+				if (std::find(old_mounts.begin(), old_mounts.end(), mount) == old_mounts.end())
 				{
 					LOG_INFO("USB drive mounted at: {:s}", mount.c_str());
 					notifyCallbacks(mount, true);
@@ -206,12 +212,6 @@ namespace USB
 			}
 
 			// Find removed mounts
-			const auto old_mounts = getMountedDrives();
-			{
-				std::lock_guard<std::mutex> lock(callback_mutex);
-				current_mounts = new_mounts;
-			}
-
 			for (const auto& mount : old_mounts)
 			{
 				if (std::find(new_mounts.begin(), new_mounts.end(), mount) == new_mounts.end())

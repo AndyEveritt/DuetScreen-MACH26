@@ -101,12 +101,18 @@ namespace UI
 		class UsbATest : public CommandTest
 		{
 		  public:
+			using btn_cb_t = std::function<void()>;
+
 			UsbATest(HardwareTest& parent);
 
+			void setButtonText(std::string_view text) { m_button.setText(text); }
 			void showButton(bool show) { m_button.setVisible(show); }
+			void setButtonCallback(btn_cb_t callback) { m_callback = callback; }
 
 		  private:
 			Button m_button{"button", getRoot()};
+
+			btn_cb_t m_callback = nullptr;
 		};
 
 		class SpeakerTest : public LvContainer
@@ -162,7 +168,7 @@ namespace UI
 		TouchScreenTest& getTouchScreenTest() { return m_touchScreenTest; }
 		DeadPixelTest& getDeadPixelTest() { return m_deadPixelTest; }
 		CommandTest& getCommandTest() { return m_commandTest; }
-		UsbATest& getUsbATest() { return m_usbATest; }
+		UsbATest& getUsbTest() { return m_usbATest; }
 		SpeakerTest& getSpeakerTest() { return m_speakerTest; }
 
 		TestResults& getTestResults() { return m_testResults; }

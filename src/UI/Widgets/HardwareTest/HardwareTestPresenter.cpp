@@ -25,6 +25,13 @@ namespace UI
 #  define FOLDER "/boot/logs/"
 #endif
 
+#define ENABLE_TOUCH_TEST 1
+#define ENABLE_PIXEL_TEST 1
+#define ENABLE_MEMORY_TEST 1
+#define ENABLE_WIFI_TEST 1
+#define ENABLE_USB_TEST 1
+#define ENABLE_SPEAKER_TEST 1
+
 	static std::string runCommand(const std::string& cmd)
 	{
 		std::string result;
@@ -313,70 +320,197 @@ namespace UI
 			.detach();
 	}
 
-	void HardwareTestPresenter::testUsbA()
+	void HardwareTestPresenter::testUsb()
 	{
-		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbATest)
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-A test
 			LOG_ERROR("Not in USB-A test");
 			return;
 		}
 
-		getView()->showTest(&getView()->getUsbATest());
+		auto& usbTest = getView()->getUsbTest();
 
-		if (!m_usbMountPath.empty())
-		{
-			usbADeviceConnected();
-		}
+		getView()->showTest(&usbTest);
+		usbTest.setMessage("Please disconnect all USB flash drives");
+		usbTest.setButtonText("Continue");
+		usbTest.showButton(true);
+		usbTest.setButtonCallback(
+			[this, &usbTest]()
+			{
+				usbTest.showButton(false);
+				usbTest.setMessage("Please wait...");
+
+				std::thread(
+					[this]()
+					{
+						std::this_thread::sleep_for(
+							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
+						logUsbData("test_start", false);
+						promptUsbAConnect();
+					})
+					.detach();
+			});
 	}
 
-	void HardwareTestPresenter::usbADeviceConnected()
+	void HardwareTestPresenter::promptUsbAConnect()
 	{
-		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbATest)
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
+		{
+			// Not in USB-A test
+			LOG_ERROR("Not in USB-A test");
+			return;
+		}
+
+		auto& usbTest = getView()->getUsbTest();
+
+		usbTest.setMessage("Connect a USB flash drive to the USB-A port and press the button below when ready.");
+		usbTest.showButton(true);
+		usbTest.setButtonCallback(
+			[this, &usbTest]
+			{
+				usbTest.showButton(false);
+				usbTest.setMessage("Please wait...");
+
+				std::thread(
+					[this]()
+					{
+						std::this_thread::sleep_for(
+							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
+						logUsbData("usb_a_connected", true);
+						promptUsbCConnect();
+					})
+					.detach();
+			});
+	}
+
+	void HardwareTestPresenter::promptUsbCConnect()
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
+		{
+			// Not in USB-C test
+			LOG_ERROR("Not in USB-C test");
+			return;
+		}
+
+		auto& usbTest = getView()->getUsbTest();
+
+		usbTest.setMessage("Connect a USB flash drive to the SIDE USB-C port and press the button below when ready.");
+		usbTest.showButton(true);
+		usbTest.setButtonCallback(
+			[this, &usbTest]
+			{
+				usbTest.showButton(false);
+				usbTest.setMessage("Please wait...");
+
+				std::thread(
+					[this]()
+					{
+						std::this_thread::sleep_for(
+							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
+						logUsbData("usb_c_side_connected", true);
+						promptUsbCConnect2();
+					})
+					.detach();
+			});
+	}
+
+	void HardwareTestPresenter::promptUsbCConnect2()
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
+		{
+			// Not in USB-C test
+			LOG_ERROR("Not in USB-C test");
+			return;
+		}
+
+		auto& usbTest = getView()->getUsbTest();
+
+		usbTest.setMessage("Connect a USB flash drive to the REAR USB-C port and press the button below when ready.");
+		usbTest.showButton(true);
+		usbTest.setButtonCallback(
+			[this, &usbTest]
+			{
+				usbTest.showButton(false);
+				usbTest.setMessage("Please wait...");
+
+				std::thread(
+					[this]()
+					{
+						std::this_thread::sleep_for(
+							std::chrono::seconds(2)); // ensure the UsbMonitor thread has run at least once
+						logUsbData("usb_c_rear_connected", true);
+
+						std::string dmesg = runCommand("dmesg | grep -E 'usb|ehci'");
+						m_currentTest->output["dmesg"] = dmesg;
+						testFinished(TestId::UsbTest);
+					})
+					.detach();
+			});
+	}
+
+	void HardwareTestPresenter::logUsbData(std::string_view key, bool device_present)
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-A test
 			return;
 		}
+		LOG_INFO("Logging USB data");
 
-		std::string result = runCommand("lsusb");
-		LOG_INFO("USB-A device connected:\n{:s}", result);
-		m_currentTest->output["result"]["after_device_connection"] = result;
+		std::string lsusb = runCommand("lsusb");
+		auto mounted_drives = USB::UsbMonitor::getInstance().getMountedDrives();
 
-		if (m_usbMountPath.empty())
+		m_currentTest->output[key]["lsusb"] = lsusb;
+		m_currentTest->output[key]["mounted_drives"] = mounted_drives;
+		m_currentTest->output[key]["target_mount"] = m_usbMountPath;
+
+		if (!device_present)
 		{
-			LOG_ERROR("USB-A mount path is empty");
-			m_currentTest->output["result"]["write_successful"] = false;
-			m_currentTest->output["result"]["error_message"] = "No USB drive detected";
-			testFinished(TestId::UsbATest);
+			bool result = mounted_drives.size() == 0;
+			m_currentTest->output[key]["result"] = result;
+			if (!result)
+			{
+				m_currentTest->output[key]["error_message"] = "No USB device should be connected";
+			}
 			return;
 		}
 
-		std::string file = fmt::format("{:s}/test.txt", m_usbMountPath);
+		if (m_usbMountPath.empty())
+		{
+			LOG_INFO("No USB drive mounted");
+			m_currentTest->output[key]["write_successful"] = false;
+			m_currentTest->output[key]["error_message"] = "No USB drive detected";
+			m_currentTest->output[key]["result"] = false;
+			return;
+		}
+
+		std::string file = fmt::format("{:s}/{:s}_{:s}.txt", m_usbMountPath, m_uid, key);
 		std::ofstream out(file);
 		if (!out)
 		{
 			LOG_ERROR("Failed to open log file");
 			writeToLogFile("Failed to open log file");
-			m_currentTest->output["result"]["write_successful"] = false;
-			m_currentTest->output["result"]["error_message"] = "Failed to open log file";
-			testFinished(TestId::UsbATest);
+			m_currentTest->output[key]["write_successful"] = false;
+			m_currentTest->output[key]["error_message"] = "Failed to open log file";
+			m_currentTest->output[key]["result"] = false;
 			return;
 		}
 
-		writeToLogFile(fmt::format("Writing test file to USB-A drive: {:s}", file));
+		writeToLogFile(fmt::format("Writing test file to USB drive: {:s}", file));
 
-		std::string text = fmt::format("DuetScreen USB-A test file\n{:s}\n", m_uid);
+		std::string text = fmt::format("DuetScreen USB test file\n{:s}\n", m_uid);
 		out << text;
 		out.close();
-		m_currentTest->output["result"]["write_successful"] = true;
-		m_currentTest->output["result"]["written_contents"] = text;
+		m_currentTest->output[key]["write_successful"] = true;
+		m_currentTest->output[key]["written_contents"] = text;
 
 		std::string contents;
 		USB::ReadFileContents(file, contents);
 
-		m_currentTest->output["result"]["read_contents"] = contents;
+		m_currentTest->output[key]["read_contents"] = contents;
 
-		testFinished(TestId::UsbATest);
+		m_currentTest->output[key]["result"] = contents == text;
 	}
 
 	void HardwareTestPresenter::playSound()
@@ -575,32 +709,39 @@ namespace UI
 		USB::UsbMonitor::getInstance().registerCallback(
 			[this](const std::string& path, bool mounted)
 			{
+				const auto& mounts = USB::UsbMonitor::getInstance().getMountedDrives();
 				if (mounted)
 				{
 					m_usbMountPath = path;
 				}
 				else
 				{
-					const auto& mounts = USB::UsbMonitor::getInstance().getMountedDrives();
 					if (mounts.empty())
 					{
 						LOG_INFO("USB drive unmounted");
 						m_usbMountPath.clear();
-						return;
+						goto update_view;
 					}
 					m_usbMountPath = mounts.front();
 				}
 				LOG_INFO("USB drive mounted at: {:s}", m_usbMountPath);
-				usbADeviceConnected();
+
+			update_view:
+				std::string mount_str = fmt::format(
+					"Mounted drives:\n  {:s}\nTarget drive: {:s}", fmt::join(mounts, "\n  "), m_usbMountPath);
+				getView()->getUsbTest().setOutput(mount_str);
 			},
 			true);
 
-		/* Create test procedures */
+/* Create test procedures */
+#if ENABLE_TOUCH_TEST
 		createTestProcedure(
 			TestId::TouchCalibration,
 			[this](TestProcedure& test) { startTouchCalibration(); },
 			[this](TestProcedure& test) { return checkTouchCalibration(test); });
+#endif
 
+#if ENABLE_PIXEL_TEST
 		createTestProcedure(
 			TestId::DeadPixelTest,
 			[this](TestProcedure& test) { getView()->showTest(&getView()->getDeadPixelTest()); },
@@ -615,7 +756,9 @@ namespace UI
 				}
 				return true;
 			});
+#endif
 
+#if ENABLE_MEMORY_TEST
 		createTestProcedure(
 			TestId::MemoryTest,
 			[this](TestProcedure& test) { testMemory(); },
@@ -626,7 +769,9 @@ namespace UI
 				// Check `result` for `Finished pass 1 successfully`
 				return result.find("Finished pass 1 successfully") != std::string::npos;
 			});
+#endif
 
+#if ENABLE_WIFI_TEST
 		createTestProcedure(
 			TestId::WifiTest,
 			[this](TestProcedure& test) { testWifi(); },
@@ -644,23 +789,27 @@ namespace UI
 				HomeView::instance().getSettingsView().getPresenter()->setUsbMode(
 					static_cast<UsbMode>(original_usb_mode));
 			});
+#endif
 
+#if ENABLE_USB_TEST
 		createTestProcedure(
-			TestId::UsbATest,
-			[this](TestProcedure& test) { testUsbA(); },
+			TestId::UsbTest,
+			[this](TestProcedure& test) { testUsb(); },
 			[this](TestProcedure& test)
 			{
-				bool write_successful = test.output["result"]["write_successful"].get<bool>();
-
-				std::string written_contents;
-				std::string read_contents;
-				if (test.output["result"].contains("written_contents"))
-					written_contents = test.output["result"]["written_contents"].get<std::string>();
-				if (test.output["result"].contains("read_contents"))
-					read_contents = test.output["result"]["read_contents"].get<std::string>();
-				return write_successful && !written_contents.empty() && written_contents == read_contents;
+				bool passed = true;
+				for (const auto& [key, value] : test.output.items())
+				{
+					if (value.contains("result"))
+					{
+						passed &= value["result"].get<bool>();
+					}
+				}
+				return passed;
 			});
+#endif
 
+#if ENABLE_SPEAKER_TEST
 		createTestProcedure(
 			TestId::SpeakerTest,
 			[this](TestProcedure& test)
@@ -670,6 +819,7 @@ namespace UI
 			},
 			[this](TestProcedure& test)
 			{ return test.output.contains("result") && test.output["result"].get<bool>(); });
+#endif
 	}
 
 	void HardwareTestPresenter::onActivate()

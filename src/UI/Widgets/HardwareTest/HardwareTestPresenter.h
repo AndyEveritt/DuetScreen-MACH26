@@ -20,8 +20,7 @@ namespace UI
 		DeadPixelTest,
 		MemoryTest,
 		WifiTest,
-		UsbATest,
-		UsbCTest,
+		UsbTest,
 		SpeakerTest,
 	};
 
@@ -92,8 +91,11 @@ namespace UI
 		void testMemory();
 		void testWifi();
 
-		void testUsbA();
-		void usbADeviceConnected();
+		void testUsb();
+		void logUsbData(std::string_view key, bool device_present);
+		void promptUsbAConnect();
+		void promptUsbCConnect();
+		void promptUsbCConnect2();
 
 		void testUsbC();
 

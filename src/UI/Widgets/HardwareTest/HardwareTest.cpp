@@ -265,7 +265,10 @@ namespace UI
 			[](lv_event_t* e)
 			{
 				auto* instance = static_cast<UsbATest*>(lv_event_get_user_data(e));
-				instance->m_parent.getPresenter()->usbADeviceConnected();
+				if (instance->m_callback)
+				{
+					instance->m_callback();
+				}
 			},
 			this);
 	}
