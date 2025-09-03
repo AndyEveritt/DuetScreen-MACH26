@@ -93,7 +93,7 @@
                 "${cmake.testArgs}"
             ],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "CMake: build tests",
+            // "preLaunchTask": "CMake: build tests",
             "stopAtEntry": false,
             "linux": {
                 "MIMode": "gdb",

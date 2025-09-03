@@ -23,6 +23,7 @@ from __future__ import annotations
 import os
 import sys
 import subprocess
+import argparse
 from pathlib import Path
 from typing import List, Optional, Tuple, Any
 
@@ -149,24 +150,28 @@ def find_build_dir() -> Optional[Path]:
 	return None
 
 
-def run_tests(build_dir: Path) -> int:
+def run_tests(build_dir: Path, test_filter: Optional[str] = None) -> int:
 	# Prefer running `ctest` in the build dir. If not available, try the test binary.
 	log(f"Running tests in: {build_dir}")
 
-	if 1:
-		# Can't use parallel jobs because of global variables
-		ctest_cmd = ["ctest", "--test-dir", build_dir / "tests", "--output-on-failure", "-j1"]
-		try:
-			result = subprocess.run(ctest_cmd, cwd=str(PROJECT_ROOT), check=False)
-			return result.returncode
-		except FileNotFoundError:
-			log("ctest not found, trying to run test binary directly…")
+	# Normal path: use ctest if available
+	ctest_cmd = ["ctest", "--test-dir", build_dir / "tests", "--output-on-failure", "-j1"]
+	if test_filter:
+		ctest_cmd.extend(["-R", test_filter])
 
-	if 1:
-		test_bin = build_dir / "tests" / "DuetScreen.tests"
-		if test_bin.exists() and os.access(test_bin, os.X_OK):
-			result = subprocess.run([str(test_bin)], cwd=str(PROJECT_ROOT), check=False)
-			return result.returncode
+	try:
+		result = subprocess.run(ctest_cmd, cwd=str(PROJECT_ROOT), check=False)
+		return result.returncode
+	except FileNotFoundError:
+		log("ctest not found, trying to run test binary directly…")
+
+	test_bin = build_dir / "tests" / "DuetScreen.tests"
+	if test_filter:
+		test_bin = f"{test_bin} --gtest_filter={test_filter}"
+
+	if test_bin.exists() and os.access(test_bin, os.X_OK):
+		result = subprocess.run([str(test_bin)], cwd=str(PROJECT_ROOT), check=False)
+		return result.returncode
 
 	log("Error: Neither ctest nor the test binary was found/executable.")
 	return 127
@@ -803,7 +808,14 @@ def update_reference(ref_path: Path, err_path: Path) -> None:
 		pass
 
 
+def parse_args(argv: List[str]):
+	parser = argparse.ArgumentParser(description="Run DuetScreen tests & review image diffs")
+	parser.add_argument("--test_filter", "-f", help="Test filter expression (passed to ctest or test binary)")
+	return parser.parse_args(argv)
+
+
 def main(argv: List[str]) -> int:
+	args = parse_args(argv)
 	log("Step 1/4: Cleaning existing *_err images…")
 	removed = clean_err_images(REF_IMGS_DIR)
 	if removed:
@@ -833,7 +845,7 @@ def main(argv: List[str]) -> int:
 	before_snapshot = snapshot_existing_refs(REF_IMGS_DIR)
 
 	log("Step 4/5: Running tests…")
-	rc = run_tests(build_dir)
+	rc = run_tests(build_dir, test_filter=args.test_filter)
 	if rc != 0:
 		log(f"Tests finished with return code {rc} (there may be failures).")
 	else:

@@ -1,5 +1,12 @@
 {
 	"version": "2.0.0",
+	"inputs": [
+		{
+			"id": "test_filters",
+			"type": "promptString",
+			"description": "Test filters"
+		},
+	],
 	"tasks": [
 		{
 			"type": "cmake",
@@ -265,7 +272,7 @@
 		{
 			"label": "Run Tests",
 			"type": "shell",
-			"command": "source env/bin/activate;python3 scripts/run_tests.py",
+			"command": "env/bin/python scripts/run_tests.py --test_filter='${input:test_filters}'",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
