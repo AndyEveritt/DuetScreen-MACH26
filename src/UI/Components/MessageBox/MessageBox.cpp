@@ -56,8 +56,9 @@ namespace UI
 
 		m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_body.setWidth(LV_PCT(100));
-		m_body.setFlexGrow(1);
-		m_body.setMaxHeight(LV_SIZE_CONTENT);
+		m_body.setHeight(LV_SIZE_CONTENT);
+		m_pad.setWidth(LV_PCT(100));
+		m_pad.setFlexGrow(1);
 		m_footer.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		// Header
@@ -89,6 +90,20 @@ namespace UI
 		m_cancelBtn.addClickedCallback(onCancelEvent, this);
 
 		m_timers.progress = lv_timer_create(onProgressTimer, 50, this);
+
+		// addEventCallback(
+		// 	[](lv_event_t* e)
+		// 	{
+		// 		auto& msgBox = *static_cast<MessageBox*>(lv_event_get_user_data(e));
+		// 		lv_coord_t height = msgBox.getHeight();
+		// 		lv_coord_t header_height = msgBox.m_header.getHeight();
+		// 		lv_coord_t footer_height = msgBox.m_footer.getHeight();
+
+		// 		msgBox.m_body.setHeight(height - header_height - footer_height);
+		// 		return;
+		// 	},
+		// 	LV_EVENT_SIZE_CHANGED,
+		// 	this);
 
 		clear();
 	}

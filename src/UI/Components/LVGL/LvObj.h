@@ -119,12 +119,14 @@ namespace UI
 		lv_coord_t getContentHeight() const;
 		lv_coord_t getSelfWidth() const;
 		lv_coord_t getSelfHeight() const;
+		lv_style_value_t getStyleProp(lv_style_prop_t prop, lv_part_t part = LV_PART_MAIN) const;
 
 		void setUserData(void* user_data);
 		void* getUserData() const;
 
 		bool hasFlag(lv_obj_flag_t flag) const;
 		bool hasState(lv_state_t state) const;
+		bool hasStyleProp(lv_style_prop_t prop, lv_style_selector_t selector = LV_PART_MAIN) const;
 
 		void setParent(lv_obj_t* parent);
 		void setLayoutStyle(lv_layout_t style);
@@ -153,6 +155,9 @@ namespace UI
 		void setFlag(lv_obj_flag_t flag, bool enable, bool recursive = false);
 		void setState(lv_state_t state, bool enable, bool recursive = false);
 		void setAlign(lv_align_t align, lv_coord_t x = 0, lv_coord_t y = 0);
+		void setLocalStyleProp(lv_style_prop_t prop,
+							   lv_style_value_t value,
+							   lv_style_selector_t selector = LV_PART_MAIN);
 
 		void updateLayout();
 		bool refreshSelfSize();

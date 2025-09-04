@@ -196,6 +196,12 @@ namespace UI
 		return lv_obj_get_self_height(getRoot());
 	}
 
+	lv_style_value_t LvObj::getStyleProp(lv_style_prop_t prop, lv_part_t part) const
+	{
+		UI_LOCK();
+		return lv_obj_get_style_prop(getRoot(), part, prop);
+	}
+
 	void LvObj::setUserData(void* user_data)
 	{
 		UI_LOCK();
@@ -278,7 +284,8 @@ namespace UI
 	void LvObj::setSize(lv_coord_t width, lv_coord_t height)
 	{
 		UI_LOCK();
-		lv_obj_set_size(getRoot(), width, height);
+		setWidth(width);
+		setHeight(height);
 	}
 
 	void LvObj::setMinWidth(lv_coord_t width, lv_style_selector_t selector)
@@ -381,10 +388,22 @@ namespace UI
 		return lv_obj_has_state(getRoot(), state);
 	}
 
+	bool LvObj::hasStyleProp(lv_style_prop_t prop, lv_style_selector_t selector) const
+	{
+		UI_LOCK();
+		return lv_obj_has_style_prop(getRoot(), selector, prop);
+	}
+
 	void LvObj::setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y)
 	{
 		UI_LOCK();
 		lv_obj_align(getRoot(), align, x, y);
+	}
+
+	void LvObj::setLocalStyleProp(lv_style_prop_t prop, lv_style_value_t value, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_local_style_prop(getRoot(), prop, value, selector);
 	}
 
 	void LvObj::updateLayout()

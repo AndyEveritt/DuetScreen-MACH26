@@ -459,5 +459,5 @@ version.h
 *Zone.Identifier
 
 # Tests
-tests/ref_imgs/*_err.png
+tests/ref_imgs/**/*_err.png
 !tests/config*.json

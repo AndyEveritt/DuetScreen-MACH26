@@ -105,6 +105,7 @@ namespace UI
 		m_updatePrompt.setCancelBtnText(_("update_cancel"));
 		m_updatePrompt.setOkCallback([this]() { m_presenter->update(); });
 		m_updatePrompt.okVisible(true);
+		m_updatePrompt.cancelVisible(true);
 		m_updatePrompt.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_updatePrompt.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_updatePrompt.setMaxHeight(LV_PCT(70));
@@ -170,9 +171,9 @@ namespace UI
 		m_messageBoxList.emplace_back(
 			std::make_shared<MessageBox>("home_message_box", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
 		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.back();
-		lv_obj_add_flag(msgBox->getRoot(), LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(msgBox->getRoot(), LV_ALIGN_TOP_MID, 0, 2);
-		lv_obj_set_style_max_height(msgBox->getRoot(), LV_PCT(70), LV_PART_MAIN);
+		msgBox->setFlag(LV_OBJ_FLAG_FLOATING, true);
+		msgBox->setAlign(LV_ALIGN_TOP_MID, 0, 2);
+		msgBox->setMaxHeight(LV_PCT(70));
 		msgBox->hide();
 		return msgBox;
 	}

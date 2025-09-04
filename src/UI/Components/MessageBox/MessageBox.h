@@ -76,6 +76,7 @@ namespace UI
 
 		LvContainer m_header{"header", getRoot()};
 		LvContainer m_body{"body", getRoot()};
+		LvContainer m_pad{"pad", getRoot()};
 		LvContainer m_footer{"footer", getRoot()};
 
 		// Header

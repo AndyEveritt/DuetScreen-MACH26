@@ -72,10 +72,16 @@ def maximize_window(win: "Any") -> None:
 
 
 def clean_err_images(ref_dir: Path) -> List[Path]:
+	"""Remove any *_err.* images recursively under ref_dir.
+
+	Returns list of removed paths.
+	"""
 	removed: List[Path] = []
 	if not ref_dir.exists():
 		return removed
-	for p in sorted(ref_dir.glob("*_err.*")):
+	for p in sorted(ref_dir.rglob("*_err.*")):
+		if not p.is_file():
+			continue
 		try:
 			p.unlink()
 			removed.append(p)
@@ -85,35 +91,43 @@ def clean_err_images(ref_dir: Path) -> List[Path]:
 
 
 def snapshot_existing_refs(ref_dir: Path) -> set[str]:
-	"""Return a snapshot of existing reference image basenames before tests run.
+	"""Return a snapshot of existing reference image relative paths before tests run.
 
-	This excludes any *_err.* files; only baselines are tracked.
+	Uses paths relative to ref_dir (POSIX style) to avoid collisions between
+	files with identical basenames in different subdirectories. Excludes any
+	*_err.* files; only baseline references are tracked.
 	"""
 	existing: set[str] = set()
 	if not ref_dir.exists():
 		return existing
-	for p in ref_dir.iterdir():
+	for p in ref_dir.rglob("*"):
 		if not p.is_file():
 			continue
-		name = p.name
-		if "_err." in name:
+		if "_err." in p.name:
 			continue
-		existing.add(name)
+		try:
+			rel = p.relative_to(ref_dir).as_posix()
+		except Exception:
+			rel = p.name
+		existing.add(rel)
 	return existing
 
 
 def list_new_refs(ref_dir: Path, before: set[str]) -> List[Path]:
-	"""List files that exist now but did not exist in the 'before' snapshot."""
+	"""List reference images (recursively) that did not exist in the snapshot."""
 	created: List[Path] = []
 	if not ref_dir.exists():
 		return created
-	for p in sorted(ref_dir.iterdir()):
+	for p in sorted(ref_dir.rglob("*")):
 		if not p.is_file():
 			continue
-		name = p.name
-		if "_err." in name:
+		if "_err." in p.name:
 			continue
-		if name not in before:
+		try:
+			rel = p.relative_to(ref_dir).as_posix()
+		except Exception:
+			rel = p.name
+		if rel not in before:
 			created.append(p)
 	return created
 
@@ -221,7 +235,10 @@ def build_tests(build_dir: Path) -> int:
 
 
 def list_err_images(ref_dir: Path) -> List[Path]:
-	return sorted(ref_dir.glob("*_err.*"))
+	"""Return list of *_err.* images found recursively under ref_dir."""
+	if not ref_dir.exists():
+		return []
+	return sorted(p for p in ref_dir.rglob("*_err.*") if p.is_file())
 
 
 def load_images_for_compare(ref_path: Path, err_path: Path):
