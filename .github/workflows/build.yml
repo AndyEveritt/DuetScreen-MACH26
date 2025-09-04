@@ -179,28 +179,6 @@ jobs:
           make duet3d_duetscreen_sd_defconfig
           DUETSCREEN_SRC="../DuetScreen" make
 
-      - name: Prepare Buildroot seed archives
-        if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' }}
-        run: |
-          set -euo pipefail
-          cd buildroot-duetscreen
-          if ! command -v zip >/dev/null 2>&1; then
-            echo "Installing zip utility"; sudo apt-get update && sudo apt-get install -y zip; fi
-          # Create zipped copies of dl and output preserving symlinks (-y)
-          rm -f dl.zip output.zip
-          zip -qry dl.zip dl
-          zip -qry output.zip output
-          ls -lh dl.zip output.zip
-
-      - name: Upload Buildroot seed artifact
-        if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: buildroot-seed-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}
-          path: |
-            buildroot-duetscreen/dl.zip
-            buildroot-duetscreen/output.zip
-
       - name: Prepare artifacts
         shell: bash
         run: |
@@ -232,3 +210,25 @@ jobs:
           prerelease: ${{ steps.check_branch.outputs.IS_MASTER != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Prepare Buildroot seed archives
+        if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' && steps.restore_buildroot.outputs.SEED_RESTORED != '1' }}
+        run: |
+          set -euo pipefail
+          cd buildroot-duetscreen
+          if ! command -v zip >/dev/null 2>&1; then
+            echo "Installing zip utility"; sudo apt-get update && sudo apt-get install -y zip; fi
+          # Create zipped copies of dl and output preserving symlinks (-y)
+          rm -f dl.zip output.zip
+          zip -qry dl.zip dl
+          zip -qry output.zip output
+          ls -lh dl.zip output.zip
+
+      - name: Upload Buildroot seed artifact
+        if: ${{ steps.buildroot_tag.outputs.BUILDROOT_TAG != 'master' && steps.restore_buildroot.outputs.SEED_RESTORED != '1' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildroot-seed-${{ steps.buildroot_tag.outputs.BUILDROOT_TAG }}
+          path: |
+            buildroot-duetscreen/dl.zip
+            buildroot-duetscreen/output.zip
