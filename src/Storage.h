@@ -59,4 +59,6 @@ constexpr const char* ID_DEBUG_BORDERS = "debug:borders";
 
 constexpr const char* ID_SSH_ENABLED = "developer:ssh_enabled";
 
+constexpr const char* ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED = "ui:console_command_list_collapsed";
+
 #endif /* JNI_STORAGE_H_ */

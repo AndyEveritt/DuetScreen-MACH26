@@ -89,6 +89,8 @@ namespace UI
 				view.showCommandList(show, true);
 			},
 			this);
+
+		showCommandList(!StorageHelper::getData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, true), false);
 	}
 
 	void ConsoleView::clear()
@@ -130,6 +132,7 @@ namespace UI
 			return;
 		}
 
+		StorageHelper::setData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, !show);
 		m_commandVisibility.setChecked(show);
 
 		int32_t start = show ? 1 : 20;
