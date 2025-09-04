@@ -9,12 +9,28 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 	size_t len = strlen(data);
 	LOG_INFO("resp length={:d}", len);
 	LOG_DBG("resp: {:s}", data);
-	if (data == nullptr || (len == 1 && (data[0] == '\n')))
+	if (data == nullptr)
 	{
 		return false;
 	}
 
-	Model::get().post<EventType::Response>(std::string(data));
+	std::string trimmed;
+	if (len > 0 && (data[len - 1] == '\n' || data[len - 1] == '\r'))
+	{
+		size_t end = len;
+		while (end > 0 && (data[end - 1] == '\n' || data[end - 1] == '\r'))
+		{
+			--end;
+		}
+		trimmed.assign(data, end);
+	}
+
+	if (trimmed.empty())
+	{
+		return false;
+	}
+
+	Model::get().post<EventType::Response>(trimmed);
 	return true;
 }
 
