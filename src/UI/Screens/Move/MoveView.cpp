@@ -238,7 +238,10 @@ namespace UI
 		view->m_distances.getItem(s_currentDistanceIndex)->setChecked(true);
 	}
 
-	void MoveView::onShow() {}
+	void MoveView::onShow()
+	{
+		m_extruderControl.show();
+	}
 
 	void MoveView::onHide() {}
 

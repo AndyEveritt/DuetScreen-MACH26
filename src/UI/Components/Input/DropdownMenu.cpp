@@ -60,6 +60,11 @@ namespace UI
 		return m_dropdown.getText();
 	}
 
+	void DropdownMenu::clearText()
+	{
+		m_dropdown.clearText();
+	}
+
 	void DropdownMenu::setOptions(const std::string& options)
 	{
 		m_dropdown.setOptions(options);

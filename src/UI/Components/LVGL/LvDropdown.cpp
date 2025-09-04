@@ -28,6 +28,13 @@ namespace UI
 		return m_text;
 	}
 
+	void LvDropdown::clearText()
+	{
+		UI_LOCK();
+		m_text.clear();
+		lv_dropdown_set_text(getRoot(), NULL);
+	}
+
 	void LvDropdown::setOptions(const std::string& options)
 	{
 		UI_LOCK();

@@ -51,6 +51,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"fans", "Fans"},
     {"fault", "Fault"},
     {"filament_management_header", "Currently Loaded Filament"},
+    {"filament_change", "Change"},
     {"filament_select", "Select Filament"},
     {"filament_select_tool", "Select Filament for {:s}"},
     {"file", "File"},

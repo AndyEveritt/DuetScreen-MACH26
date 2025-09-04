@@ -19,15 +19,6 @@ namespace UI
 
 	ExtruderControl::ExtruderControl(const std::string& name, lv_obj_t* parent)
 		: LvContainer(name, parent)
-		, m_toolSelect("tool_select", getRoot())
-		, m_filamentContainer("filament", getRoot())
-		, m_filamentSelect("filament_select", m_filamentContainer)
-		, m_filamentUnloadBtn("filament_load_unload", m_filamentContainer, _("unload"))
-		, m_controlsContainer("controls", getRoot())
-		, m_retractBtn("retract", m_controlsContainer, LV_SYMBOL_UP)
-		, m_extrudeBtn("extrude", m_controlsContainer, LV_SYMBOL_DOWN)
-		, m_distanceInput("distance_input", m_controlsContainer)
-		, m_feedrateInput("feedrate_input", m_controlsContainer)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -42,10 +33,14 @@ namespace UI
 
 		m_filamentContainer.setFlexFlow(LV_FLEX_FLOW_ROW);
 
-		m_filamentSelect.setSize(LV_PCT(80), LV_SIZE_CONTENT);
-		m_filamentUnloadBtn.setHeight(LV_PCT(100));
-		m_filamentUnloadBtn.setFlexGrow(1);
+		m_filamentSelect.setHeight(LV_SIZE_CONTENT);
+		m_filamentSelect.setFlexGrow(1);
+		m_filamentChangeBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_filamentUnloadBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+
 		m_filamentSelect.setLabel(_("filament_select"));
+		m_filamentChangeBtn.setText(_("filament_change"));
+		m_filamentUnloadBtn.setText(_("unload"));
 
 		static int32_t col_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -77,6 +72,7 @@ namespace UI
 		m_toolSelect.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		m_filamentSelect.addEventCallback(onFilamentSelectEvent, LV_EVENT_VALUE_CHANGED, this);
+		m_filamentChangeBtn.addClickedCallback(onFilamentChangeEvent, this);
 		m_filamentUnloadBtn.addClickedCallback(onFilamentUnloadEvent, this);
 		m_retractBtn.addClickedCallback(onRetractEvent, this);
 		m_extrudeBtn.addClickedCallback(onExtrudeEvent, this);
@@ -87,8 +83,8 @@ namespace UI
 		m_controlsContainer.addStyle(Themes::getLvglStyles().no_border);
 		m_retractBtn.addStyle(Themes::getLvglStyles().actionBtn);
 		m_extrudeBtn.addStyle(Themes::getLvglStyles().actionBtn);
+		m_filamentChangeBtn.addStyle(Themes::getLvglStyles().actionBtn);
 		m_filamentUnloadBtn.addStyle(Themes::getLvglStyles().actionBtn);
-		m_filamentSelect.getDropdownMenu().addStyle(Themes::getLvglStyles().actionBtn);
 		m_distanceInput.addStyle(Themes::getLvglStyles().no_border);
 		m_feedrateInput.addStyle(Themes::getLvglStyles().no_border);
 	}
@@ -143,6 +139,13 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_DBG("Setting current tool to {} for {}", index, getName());
+		if (index == m_currentToolIndex)
+		{
+			return;
+		}
+
+		m_currentToolIndex = index;
+
 		for (size_t i = 0; i < m_toolSelect.getItemCount(); ++i)
 		{
 			auto btn = m_toolSelect.getItem(i);
@@ -154,18 +157,21 @@ namespace UI
 			btn->setChecked(static_cast<int32_t>(index) == i);
 		}
 		setFilamentDisabled(index < 0);
+		m_loadedFilament = "some_placeholder"; // This is a hack
 		m_retractBtn.setState(LV_STATE_DISABLED, index < 0, true);
 		m_extrudeBtn.setState(LV_STATE_DISABLED, index < 0, true);
 	}
 
 	void ExtruderControl::setFilamentDisabled(bool disabled)
 	{
+		if (disabled == m_filamentContainer.hasState(LV_STATE_DISABLED))
+		{
+			return;
+		}
+
 		m_filamentContainer.setState(LV_STATE_DISABLED, disabled, true);
 		m_filamentSelect.setOptions(disabled ? std::vector<std::string>() : m_filamentOptions);
-		if (disabled)
-		{
-			setFilamentSelected("");
-		}
+		// m_filamentSelect.setText(disabled ? "" : m_loadedFilament);
 	}
 
 	void ExtruderControl::setFilamentOptions(const std::vector<std::string>& options)
@@ -173,14 +179,23 @@ namespace UI
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
 		m_filamentOptions = options;
+		m_filamentSelect.setOptions(options);
 	}
 
 	void ExtruderControl::setFilamentSelected(const std::string& filament)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting selected filament to '{}' for {}", filament, getName());
-		m_filamentSelect.setText(filament);
+
+		if (filament == m_loadedFilament)
+		{
+			return;
+		}
+
 		m_filamentSelect.setSelected(filament);
+		m_filamentSelect.setText(filament);
+		m_loadedFilament = filament;
+		m_filamentChangeBtn.hide();
 	}
 
 	void ExtruderControl::setFilamentCallback(filament_cb_t cb)
@@ -307,6 +322,23 @@ namespace UI
 		UI_LOCK();
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
 
+		std::string selected_filament = control->m_filamentSelect.getSelectedString();
+		control->m_filamentSelect.setText(selected_filament);
+
+		if (selected_filament == control->m_loadedFilament)
+		{
+			control->m_filamentChangeBtn.hide();
+			return;
+		}
+
+		control->m_filamentChangeBtn.show();
+	}
+
+	void ExtruderControl::onFilamentChangeEvent(lv_event_t* event)
+	{
+		UI_LOCK();
+		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
+
 		if (control && control->m_filamentCb)
 		{
 			std::string selected = control->m_filamentSelect.getSelectedString();
@@ -421,6 +453,13 @@ namespace UI
 		{
 			control->m_extrudeCb(dist, rate);
 		}
+	}
+
+	void ExtruderControl::onShow()
+	{
+		std::string filament = m_loadedFilament;
+		m_loadedFilament = "some_placeholder";
+		setFilamentSelected(filament);
 	}
 
 	std::shared_ptr<Button> ExtruderControl::createBaseListButton(size_t index, lv_obj_t* parent)

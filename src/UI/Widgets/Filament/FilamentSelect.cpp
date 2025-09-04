@@ -74,7 +74,7 @@ namespace UI
 		m_cont.setFlexGrow(1);
 		m_cont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 		m_toolList.setSize(LV_PCT(100), LV_PCT(100));
-		m_filamentOptions.setSize(LV_PCT(100), LV_PCT(100));
+		m_filamentOptions.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_filamentOptions.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		// m_filamentOptions.setAlign(LV_ALIGN_OUT_BOTTOM_MID, 0, 0); // Position outside the visible area initially
 
@@ -88,6 +88,8 @@ namespace UI
 		m_confirmation.setMaxHeight(LV_PCT(70));
 		m_confirmation.cancelVisible(true);
 		m_confirmation.setOkBtnText(_("confirm_filament_change"));
+		m_confirmation.getOkBtn().addStyle(Themes::getLvglStyles().actionBtn);
+		m_unload.addStyle(Themes::getLvglStyles().actionBtn);
 		m_confirmation.setOkCallback(
 			[this]()
 			{

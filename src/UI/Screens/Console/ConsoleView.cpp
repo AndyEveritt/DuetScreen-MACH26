@@ -90,7 +90,7 @@ namespace UI
 			},
 			this);
 
-		showCommandList(!StorageHelper::getData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, true), false);
+		showCommandList(!StorageHelper::getData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, false), false);
 	}
 
 	void ConsoleView::clear()

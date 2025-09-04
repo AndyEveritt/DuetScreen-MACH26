@@ -59,6 +59,7 @@ void UiTestSuite::SetUpTestSuite()
 	lv_i18n_init(lv_i18n_language_pack);
 	lv_i18n_set_locale(DEFAULT_LANGUAGE_CODE);
 
+	std::filesystem::remove("tests/config.json");
 	StorageHelper::setConfigFile("tests/config.json");
 
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);

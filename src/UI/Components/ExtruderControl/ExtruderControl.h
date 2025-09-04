@@ -52,28 +52,32 @@ namespace UI
 	  private:
 		static void onToolSelectEvent(lv_event_t* event);
 		static void onFilamentSelectEvent(lv_event_t* event);
+		static void onFilamentChangeEvent(lv_event_t* event);
 		static void onFilamentUnloadEvent(lv_event_t* event);
 		static void onDistanceEvent(lv_event_t* event);
 		static void onFeedrateEvent(lv_event_t* event);
 		static void onRetractEvent(lv_event_t* event);
 		static void onExtrudeEvent(lv_event_t* event);
 
+		void onShow() override;
+
 		std::shared_ptr<Button> createBaseListButton(size_t index, lv_obj_t* parent);
 		std::shared_ptr<Button> createToolButton(size_t index, lv_obj_t* parent);
 		std::shared_ptr<Button> createDistanceButton(size_t index, lv_obj_t* parent);
 		std::shared_ptr<Button> createFeedrateButton(size_t index, lv_obj_t* parent);
 
-		List<Button> m_toolSelect;
+		List<Button> m_toolSelect{"tool_select", getRoot()};
 
-		LvContainer m_filamentContainer;
-		DropdownMenu m_filamentSelect;
-		Button m_filamentUnloadBtn;
+		LvContainer m_filamentContainer{"filament", getRoot()};
+		DropdownMenu m_filamentSelect{"filament_select", m_filamentContainer};
+		Button m_filamentChangeBtn{"filament_change", m_filamentContainer};
+		Button m_filamentUnloadBtn{"filament_load_unload", m_filamentContainer};
 
-		LvContainer m_controlsContainer;
-		Button m_retractBtn;
-		Button m_extrudeBtn;
-		List<Button> m_distanceInput;
-		List<Button> m_feedrateInput;
+		LvContainer m_controlsContainer{"controls", getRoot()};
+		Button m_retractBtn{"retract", m_controlsContainer, LV_SYMBOL_UP};
+		Button m_extrudeBtn{"extrude", m_controlsContainer, LV_SYMBOL_DOWN};
+		List<Button> m_distanceInput{"distance_input", m_controlsContainer};
+		List<Button> m_feedrateInput{"feedrate_input", m_controlsContainer};
 
 		std::vector<float> m_distanceValues;
 		std::vector<float> m_feedrateValues;
@@ -86,6 +90,8 @@ namespace UI
 		distance_cb_t m_distanceCb;		 // Callback for when distance input is clicked
 		feedrate_cb_t m_feedrateCb;		 // Callback for when feedrate input is clicked
 
+		int32_t m_currentToolIndex = -1;
 		std::vector<std::string> m_filamentOptions;
+		std::string m_loadedFilament;
 	};
 } // namespace UI
