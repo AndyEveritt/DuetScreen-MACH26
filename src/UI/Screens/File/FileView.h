@@ -77,16 +77,17 @@ namespace UI
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		LvContainer m_sideBar;
-		List<FileItem> m_fileList; // manages header (breadcrumbs) + items container
-		Button m_refresh;
-		Button m_sortName;
-		Button m_sortDate;
-		Button m_sortSize;
-		LvLabel m_footer;
+		LvContainer m_sideBar{"sidebar", getRoot()};
+		List<FileItem> m_fileList{"list", getRoot()}; // manages header (breadcrumbs) + items container
+		Button m_sortName{"sort_name", m_sideBar};
+		Button m_sortDate{"sort_date", m_sideBar};
+		Button m_sortSize{"sort_size", m_sideBar};
+		LvContainer m_pad{"pad", m_sideBar};
+		Button m_refresh{"refresh", m_sideBar};
+		LvLabel m_footer{"footer", getRoot()};
 
-		LvLabel m_breadcrumbPrefix;
-		LvContainer m_breadcrumbCont;
+		LvLabel m_breadcrumbPrefix{"breadcrumb_prefix", m_fileList.getHeader()};
+		LvContainer m_breadcrumbCont{"breadcrumb_container", m_fileList.getHeader()};
 		std::vector<std::string> m_breadcrumbPaths; // relative paths for each breadcrumb index
 		std::vector<std::unique_ptr<Button>> m_breadcrumbButtons;
 		std::vector<std::unique_ptr<LvLabel>> m_breadcrumbLabels;

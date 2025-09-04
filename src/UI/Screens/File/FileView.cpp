@@ -100,15 +100,6 @@ namespace UI
 
 	FileView::FileView(lv_obj_t* parent, lv_obj_t* msgBoxParent)
 		: View("file_view", parent, layout_t(0, 0, 100, 100))
-		, m_sideBar("sidebar", getRoot())
-		, m_fileList("list", getRoot())
-		, m_refresh("refresh", m_sideBar, _("refresh"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
-		, m_sortName("sort_name", m_sideBar, _("sort_by_name"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
-		, m_sortDate("sort_date", m_sideBar, _("sort_by_date"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
-		, m_sortSize("sort_size", m_sideBar, _("sort_by_size"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
-		, m_footer("footer", getRoot())
-		, m_breadcrumbPrefix("breadcrumb_prefix", m_fileList.getHeader())
-		, m_breadcrumbCont("breadcrumb_container", m_fileList.getHeader())
 		, m_startPrint("messageBox", msgBoxParent ? msgBoxParent : getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
@@ -117,6 +108,19 @@ namespace UI
 
 		// Layout
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+
+		// Sidebar
+		m_sortDate.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_sortName.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_sortSize.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_pad.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_pad.setFlexGrow(1);
+		m_refresh.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_sortDate.setText(_("sort_by_name"));
+		m_sortName.setText(_("sort_by_date"));
+		m_sortSize.setText(_("sort_by_size"));
+		m_refresh.setText(_("refresh"));
 
 		// Header (from List) becomes breadcrumb container
 		m_fileList.getHeader().setFlexFlow(LV_FLEX_FLOW_ROW);
