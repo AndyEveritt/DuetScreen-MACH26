@@ -98,10 +98,18 @@ jobs:
               unzip -q seed/output.zip -d seed
             fi
             mkdir -p buildroot-duetscreen/dl buildroot-duetscreen/output
-            rsync -a seed/dl/ buildroot-duetscreen/dl/ || true
-            rsync -a seed/output/ buildroot-duetscreen/output/ || true
+            # Move (not copy) the restored directories into place to save time and disk space.
+            # Remove any existing directories first to avoid mv nesting.
+            rm -rf buildroot-duetscreen/dl buildroot-duetscreen/output || true
+            if [ -d seed/dl ]; then
+              mv seed/dl buildroot-duetscreen/
+            fi
+            if [ -d seed/output ]; then
+              mv seed/output buildroot-duetscreen/
+            fi
+            # Clean up any remaining seed artifacts
+            rm -rf seed seed.zip || true
             echo "SEED_RESTORED=1" >> $GITHUB_OUTPUT
-            echo "Seed restored."
           else
             echo "No existing seed artifact found (cold build)."
             echo "SEED_RESTORED=0" >> $GITHUB_OUTPUT
