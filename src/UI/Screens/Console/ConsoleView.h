@@ -20,6 +20,8 @@ namespace UI
 		void clear();
 		void addCommand(const char* resp);
 		void addResponse(const char* resp);
+		void showCommandList(bool show, bool animate = LV_ANIM_ON);
+		void showKeyboard(bool show);
 
 		bool back() override;
 
@@ -34,14 +36,14 @@ namespace UI
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		LvContainer m_topCont;
-		LvObj m_commandList;
-		Button m_commandVisibility;
-		LvTextArea m_output;
-		LvContainer m_inputCont;
-		LvTextArea m_input;
-		Button m_clear;
-		Button m_enter;
-		LvKeyboard m_kb;
+		LvContainer m_topCont{"top_cont", getRoot()};
+		LvObj m_commandList{lv_table_create, "command_list", m_topCont};
+		Button m_commandVisibility{"command_visibility", m_topCont, LV_SYMBOL_LIST};
+		LvTextArea m_output{"output", m_topCont};
+		LvContainer m_inputCont{"input_cont", getRoot()};
+		LvTextArea m_input{"input", m_inputCont};
+		Button m_clear{"clear", m_input, LV_SYMBOL_TRASH};
+		Button m_enter{"enter", m_inputCont, LV_SYMBOL_NEW_LINE};
+		LvKeyboard m_kb{"keyboard", getRoot()};
 	};
 } // namespace UI

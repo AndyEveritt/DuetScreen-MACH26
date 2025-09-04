@@ -1,9 +1,4 @@
-if(LVGL_DEV)
-  target_sources(DuetScreen
-                 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/main_lvgl_dev.cpp)
-else()
-  target_sources(DuetScreen PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
-endif()
+target_sources(DuetScreen PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
 target_sources(
   DuetScreen.lib

@@ -15,15 +15,6 @@ namespace UI
 
 	ConsoleView::ConsoleView(lv_obj_t* parent)
 		: View("console_view", parent, layout_t(0, 0, 100, 100))
-		, m_topCont("top_cont", getRoot())
-		, m_commandList(lv_table_create, "command_list", m_topCont)
-		, m_commandVisibility("command_visibility", m_topCont, LV_SYMBOL_LIST)
-		, m_output("output", m_topCont)
-		, m_inputCont("input_cont", getRoot())
-		, m_input("input", m_inputCont)
-		, m_clear("clear", m_input, LV_SYMBOL_TRASH)
-		, m_enter("enter", m_inputCont, LV_SYMBOL_NEW_LINE)
-		, m_kb("keyboard", getRoot())
 	{
 		UI_LOCK();
 
@@ -38,11 +29,10 @@ namespace UI
 
 		// Top Container
 		m_topCont.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_commandVisibility.setCheckable(true);
-		m_commandVisibility.setChecked(true);
+		m_commandVisibility.setCheckable(false);
 		m_commandVisibility.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		m_commandVisibility.updateLayout();
-		m_commandList.setFlexGrow(20);
+		m_commandList.setFlexGrow(1);
 		m_commandList.setMinWidth(TABLE_GCODE_WIDTH);
 		m_output.setFlexGrow(30);
 		m_commandList.setHeight(LV_PCT(100));
@@ -95,30 +85,8 @@ namespace UI
 			[](lv_event_t* e)
 			{
 				ConsoleView& view = *static_cast<ConsoleView*>(lv_event_get_user_data(e));
-				LvAnim anim;
-				anim.setDuration(300);
-				anim.setVar(&view);
-				bool isVisible = !view.m_commandVisibility.hasState(LV_STATE_CHECKED);
-				anim.setValues(isVisible ? 20 : 1, isVisible ? 1 : 20);
-				anim.setExecCb(
-					[](void* var, int32_t value)
-					{
-						ConsoleView& view = *static_cast<ConsoleView*>(var);
-						view.m_commandList.setFlexGrow(value);
-						view.updateBtnPos();
-					});
-				anim.setDeletedCb(
-					[](lv_anim_t* anim)
-					{
-						ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
-						view.m_commandList.setScrollDir(
-							view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL : LV_DIR_VER);
-						view.m_output.updateLayout();
-						view.m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
-					}
-
-				);
-				anim.start();
+				bool show = !view.m_commandVisibility.hasState(LV_STATE_CHECKED);
+				view.showCommandList(show, true);
 			},
 			this);
 	}
@@ -153,6 +121,62 @@ namespace UI
 			currentText = currentText.substr(pos);
 			m_output.setText(currentText.data());
 		}
+	}
+
+	void ConsoleView::showCommandList(bool show, bool animate)
+	{
+		if (show == m_commandVisibility.hasState(LV_STATE_CHECKED))
+		{
+			return;
+		}
+
+		m_commandVisibility.setChecked(show);
+
+		int32_t start = show ? 1 : 20;
+		int32_t end = show ? 20 : 1;
+
+		if (animate)
+		{
+			LvAnim anim;
+			anim.setDuration(animate ? 300 : 0);
+			anim.setVar(this);
+			anim.setValues(start, end);
+			anim.setExecCb(
+				[](void* var, int32_t value)
+				{
+					ConsoleView& view = *static_cast<ConsoleView*>(var);
+					view.m_commandList.setFlexGrow(value);
+					view.updateBtnPos();
+				});
+			anim.setDeletedCb(
+				[](lv_anim_t* anim)
+				{
+					ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
+					view.m_commandList.setScrollDir(view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL
+																										: LV_DIR_VER);
+					view.m_commandList.setFlexGrow(anim->end_value);
+					view.updateBtnPos();
+					view.m_output.updateLayout();
+					view.m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
+				}
+
+			);
+			anim.start();
+		}
+		else
+		{
+			m_commandList.setFlexGrow(end);
+			updateBtnPos();
+			m_output.updateLayout();
+			m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
+		}
+	}
+
+	void ConsoleView::showKeyboard(bool show)
+	{
+		m_kb.setTextArea(show ? &m_input : nullptr);
+		m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
+		m_kb.setVisible(show, true);
 	}
 
 	void ConsoleView::onSendEvent(lv_event_t* e)
@@ -199,15 +223,12 @@ namespace UI
 		{
 		case LV_EVENT_FOCUSED:
 		{
-			view->m_kb.setTextArea(&view->m_input);
-			view->m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
-			view->m_kb.show(true);
+			view->showKeyboard(true);
 			break;
 		}
 		case LV_EVENT_DEFOCUSED:
 		{
-			view->m_kb.setTextArea(nullptr);
-			view->m_kb.hide();
+			view->showKeyboard(false);
 			break;
 		}
 		case LV_EVENT_VALUE_CHANGED:

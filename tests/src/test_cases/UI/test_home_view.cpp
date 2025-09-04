@@ -158,6 +158,12 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 	presenter->newLogMessage(Log::DebugLevel::Info, Log::log_time_t{}, "Testing log message");
 
 	EXPECT_EQUAL_SCREENSHOT("home_console_view.png")
+
+	view.getConsoleView().showCommandList(true, false);
+	EXPECT_EQUAL_SCREENSHOT("home_console_view_command_list.png");
+
+	view.getConsoleView().showKeyboard(true);
+	EXPECT_EQUAL_SCREENSHOT("home_console_view_keyboard.png");
 }
 
 TEST_F(TestHomeViewWithData, MoveView)
