@@ -29,6 +29,7 @@ TEST_F(TestLvgl, FlexSizeContentGrow)
 	lv_obj_t* header = lv_label_create(cont);
 	lv_obj_set_name(header, "header");
 	lv_label_set_text(header, "header");
+	lv_obj_set_height(header, 30);
 
 	lv_obj_t* item = lv_obj_create(cont);
 	lv_obj_set_name(item, "item");
@@ -40,6 +41,7 @@ TEST_F(TestLvgl, FlexSizeContentGrow)
 	lv_obj_t* footer = lv_label_create(cont);
 	lv_obj_set_name(footer, "footer");
 	lv_label_set_text(footer, "footer");
+	lv_obj_set_height(footer, 30);
 
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content.png");
 
@@ -73,6 +75,35 @@ TEST_F(TestLvgl, FlexSizeContentGrow)
 
 	lv_obj_set_style_max_height(cont, LV_PCT(70), LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content_max_size_cont4.png");
+}
+
+TEST_F(TestLvgl, FlexFixedSize)
+{
+	lv_obj_t* cont = lv_obj_create(lv_screen_active());
+	lv_obj_set_name(cont, "cont");
+	lv_obj_set_size(cont, LV_PCT(100), 200);
+	lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
+	lv_obj_set_style_bg_color(cont, lv_color_hex(0xff0000), 0);
+	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
+
+	lv_obj_t* header = lv_label_create(cont);
+	lv_obj_set_name(header, "header");
+	lv_label_set_text(header, "header");
+	lv_obj_set_height(header, 30);
+
+	lv_obj_t* item = lv_obj_create(cont);
+	lv_obj_set_name(item, "item");
+	lv_obj_set_width(item, LV_PCT(100));
+	lv_obj_set_flex_grow(item, 1);
+	lv_obj_set_style_bg_color(item, lv_color_hex(0x00ff00), 0);
+	lv_obj_set_style_bg_opa(item, LV_OPA_COVER, 0);
+
+	lv_obj_t* footer = lv_label_create(cont);
+	lv_obj_set_name(footer, "footer");
+	lv_label_set_text(footer, "footer");
+	lv_obj_set_height(footer, 30);
+
+	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_fixed_size_cont.png");
 }
 
 TEST_F(TestLvgl, FlexSizeContentGrow2)
@@ -123,4 +154,110 @@ TEST_F(TestLvgl, FlexSizeContentGrow2)
 	lv_obj_update_layout(sub_cont);
 	lv_obj_set_style_max_width(sub_cont, LV_SIZE_CONTENT, LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_grow_size_content_max_size_content_wrap2.png");
+}
+
+static lv_obj_t* create_cont(
+	std::string_view name, lv_obj_t* parent, lv_flex_flow_t flow, lv_coord_t width, lv_coord_t height)
+{
+	lv_obj_t* cont = lv_obj_create(parent);
+	lv_obj_set_flex_flow(cont, flow);
+	lv_obj_set_size(cont, width, height);
+	lv_obj_set_name(cont, name.data());
+	lv_obj_set_style_bg_color(cont, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
+	return cont;
+}
+
+static lv_obj_t* create_item(std::string_view name, lv_obj_t* parent)
+{
+	lv_obj_t* item = lv_obj_create(parent);
+	lv_obj_set_name(item, name.data());
+	lv_obj_set_style_bg_color(item, lv_palette_main(LV_PALETTE_GREEN), 0);
+	lv_obj_set_style_bg_opa(item, LV_OPA_COVER, 0);
+	lv_obj_set_width(item, LV_PCT(100));
+	return item;
+}
+
+TEST_F(TestLvgl, FlexPadding)
+{
+	lv_obj_t* parent = lv_obj_create(lv_screen_active());
+	lv_obj_set_size(parent, LV_PCT(100), LV_PCT(100));
+	lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_COLUMN_WRAP);
+	lv_obj_set_style_pad_all(parent, 10, 0);
+
+	const lv_coord_t col_width = 100;
+
+	/* Empty container */
+	{
+		lv_label_set_text(lv_label_create(parent), "cont_empty");
+		lv_obj_t* cont = create_cont("cont_empty", parent, LV_FLEX_FLOW_COLUMN, col_width, LV_SIZE_CONTENT);
+	}
+
+	/* Container with single fixed size obj */
+	{
+		lv_label_set_text(lv_label_create(parent), "cont_fixed_single");
+		lv_obj_t* cont = create_cont("cont_fixed_single", parent, LV_FLEX_FLOW_COLUMN, col_width, LV_SIZE_CONTENT);
+
+		lv_obj_t* item = create_item("item_fixed", cont);
+		lv_obj_set_height(item, 30);
+	}
+
+	/* Container with single grow obj */
+	{
+		lv_label_set_text(lv_label_create(parent), "cont_grow_single");
+		lv_obj_t* cont = create_cont("cont_grow_single", parent, LV_FLEX_FLOW_COLUMN, col_width, LV_SIZE_CONTENT);
+
+		lv_obj_t* item = create_item("item_grow", cont);
+		lv_obj_set_flex_grow(item, 1);
+	}
+
+	/* Container with multiple fixed size */
+	{
+		lv_label_set_text(lv_label_create(parent), "cont_fixed_multi");
+		lv_obj_t* cont = create_cont("cont_fixed_multi", parent, LV_FLEX_FLOW_COLUMN, col_width, LV_SIZE_CONTENT);
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			lv_obj_t* item = create_item(fmt::format("item_fixed_{}", i), cont);
+			lv_obj_set_height(item, 30);
+		}
+	}
+
+	/* Container with multiple grow */
+	{
+		lv_label_set_text(lv_label_create(parent), "cont_grow_multi");
+		lv_obj_t* cont = create_cont("cont_grow_multi", parent, LV_FLEX_FLOW_COLUMN, col_width, LV_SIZE_CONTENT);
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			lv_obj_t* item = create_item("item_grow", cont);
+			lv_obj_set_flex_grow(item, 1);
+		}
+	}
+
+	/* Container with grow then fixed */
+	{
+		lv_label_set_text(lv_label_create(parent), "cont_grow_fixed");
+		lv_obj_t* cont = create_cont("cont_grow_fixed", parent, LV_FLEX_FLOW_COLUMN, col_width, LV_SIZE_CONTENT);
+
+		lv_obj_t* item_grow = create_item("item_grow", cont);
+		lv_obj_set_flex_grow(item_grow, 1);
+
+		lv_obj_t* item_fixed = create_item("item_fixed", cont);
+		lv_obj_set_height(item_fixed, 30);
+	}
+
+	/* Container with fixed then grow */
+	{
+		lv_label_set_text(lv_label_create(parent), "cont_fixed_grow");
+		lv_obj_t* cont = create_cont("cont_fixed_grow", parent, LV_FLEX_FLOW_COLUMN, col_width, LV_SIZE_CONTENT);
+
+		lv_obj_t* item_fixed = create_item("item_fixed", cont);
+		lv_obj_set_height(item_fixed, 30);
+
+		lv_obj_t* item_grow = create_item("item_grow", cont);
+		lv_obj_set_flex_grow(item_grow, 1);
+	}
+
+	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_padding.png");
 }

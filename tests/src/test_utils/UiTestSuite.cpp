@@ -21,6 +21,7 @@ UiTestSuite::UiTestSuite()
 {
 	/* Run at start of each test */
 	OM::RemoveAll();
+	std::filesystem::create_directories("/tmp/thumbnails");
 
 	lv_obj_set_flex_flow(lv_screen_active(), LV_FLEX_FLOW_COLUMN_WRAP);
 }
@@ -29,6 +30,7 @@ UiTestSuite::~UiTestSuite()
 {
 	/* Run at end of each test */
 	OM::RemoveAll();
+	std::filesystem::remove_all("/tmp/thumbnails");
 }
 
 void UiTestSuite::SetUpTestSuite()
@@ -65,9 +67,6 @@ void UiTestSuite::SetUpTestSuite()
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	UI::Themes::init(display);
-
-	std::filesystem::remove_all("/tmp/thumbnails");
-	std::filesystem::create_directories("/tmp/thumbnails");
 }
 
 void UiTestSuite::TearDownTestSuite()
