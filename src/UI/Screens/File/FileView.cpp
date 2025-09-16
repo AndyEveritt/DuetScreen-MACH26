@@ -21,6 +21,7 @@ namespace UI
 		UI_LOCK();
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		setMaxWidth(400);
 
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);

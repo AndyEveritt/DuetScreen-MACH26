@@ -26,10 +26,17 @@ TEST_F(TestLvgl, FlexSizeContentGrow)
 	lv_obj_set_style_bg_color(cont, lv_color_hex(0xff0000), 0);
 	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
 
+	const int32_t pad_all = lv_obj_get_style_pad_top(cont, LV_PART_MAIN);
+	const int32_t pad_gap = lv_obj_get_style_pad_row(cont, LV_PART_MAIN);
+	const int32_t space_top = lv_obj_get_style_space_top(cont, LV_PART_MAIN);
+	const int32_t space_bottom = lv_obj_get_style_space_bottom(cont, LV_PART_MAIN);
+
+	lv_obj_set_style_pad_all(cont, pad_all, 0);
+	lv_obj_set_style_pad_gap(cont, pad_gap, 0);
+
 	lv_obj_t* header = lv_label_create(cont);
 	lv_obj_set_name(header, "header");
 	lv_label_set_text(header, "header");
-	lv_obj_set_height(header, 30);
 
 	lv_obj_t* item = lv_obj_create(cont);
 	lv_obj_set_name(item, "item");
@@ -41,19 +48,27 @@ TEST_F(TestLvgl, FlexSizeContentGrow)
 	lv_obj_t* footer = lv_label_create(cont);
 	lv_obj_set_name(footer, "footer");
 	lv_label_set_text(footer, "footer");
-	lv_obj_set_height(footer, 30);
+
+	lv_obj_update_layout(cont);
+	const int32_t header_height = lv_obj_get_height(header);
+	const int32_t footer_height = lv_obj_get_height(footer);
+
+	EXPECT_EQ(header_height + footer_height + space_top + space_bottom + 2 * pad_gap, lv_obj_get_height(cont));
+	EXPECT_EQ(0, lv_obj_get_height(item));
 
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content.png");
 
 	lv_obj_set_style_min_height(item, 200, LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content_min_size.png");
 
-	/* The min size of the cont should override the `LV_SIZE_CONTENT` height so item should be visible */
+	/* The min size of the cont should "override" the `LV_SIZE_CONTENT` height so item should be visible and grow to
+	 * fill space */
 	lv_obj_set_style_min_height(item, 0, LV_PART_MAIN);
 	lv_obj_set_style_min_height(cont, 500, LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content_min_size_cont.png");
 
-	/* item should grow because min size of cont is set but be capped at max size of item */
+	/* The min size of the cont should "override" the `LV_SIZE_CONTENT` height so item should be visible and grow to
+	 * fill space up to the max size */
 	lv_obj_set_style_max_height(item, 200, LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content_max_size.png");
 
@@ -70,9 +85,11 @@ TEST_F(TestLvgl, FlexSizeContentGrow)
 	lv_obj_set_style_max_height(cont, 40, LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content_max_size_cont2.png");
 
+	/* item should be min height (50) and cont will be max height (40) so cont should be scrollable */
 	lv_obj_set_style_min_height(item, 50, LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content_max_size_cont3.png");
 
+	/* max cont height should be ignored here */
 	lv_obj_set_style_max_height(cont, LV_PCT(70), LV_PART_MAIN);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_col_grow_size_content_max_size_cont4.png");
 }
@@ -230,7 +247,7 @@ TEST_F(TestLvgl, FlexPadding)
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			lv_obj_t* item = create_item("item_grow", cont);
+			lv_obj_t* item = create_item(fmt::format("item_grow_{}", i), cont);
 			lv_obj_set_flex_grow(item, 1);
 		}
 	}
