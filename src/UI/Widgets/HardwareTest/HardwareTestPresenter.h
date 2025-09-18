@@ -21,6 +21,7 @@ namespace UI
 		MemoryTest,
 		WifiTest,
 		UsbTest,
+		BuzzerTest,
 		SpeakerTest,
 	};
 
@@ -98,9 +99,11 @@ namespace UI
 		void promptUsbCConnect2();
 		void promptUsbDeviceConnect();
 
-		void testUsbC();
+		void playBuzzer();
+		void buzzerCheckPassed(bool passed);
 
-		void playSound();
+		void testSpeaker();
+		void playSpeaker();
 		void speakerCheckPassed(bool passed);
 
 		// Observers

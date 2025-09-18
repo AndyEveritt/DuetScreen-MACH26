@@ -17,6 +17,11 @@ if [ ! -f $VERSION_FILE ]; then
     echo "" >> $VERSION_FILE
     echo "#define FIRMWARE_VERSION \"$VERSION\"" >> $VERSION_FILE
 else
+    ORIGINAL_VERSION=$(grep '#define FIRMWARE_VERSION' $VERSION_FILE | awk '{print $3}' | tr -d '"')
+    if [ "$ORIGINAL_VERSION" == "$VERSION" ]; then
+        echo "Version is already up to date: $VERSION"
+        exit 0
+    fi
     sed -i "s/\".*\"/\"$VERSION\"/" $VERSION_FILE
 fi
 

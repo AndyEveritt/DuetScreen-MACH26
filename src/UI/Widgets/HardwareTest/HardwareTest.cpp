@@ -233,7 +233,8 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		m_output.setWidth(LV_PCT(70));
-		m_output.setHeight(LV_PCT(70));
+		m_output.setFlexGrow(1);
+		m_output.setMaxHeight(LV_PCT(70));
 		m_output.setFlag(LV_OBJ_FLAG_CLICKABLE, false);
 		m_output.setOneLine(false);
 		m_output.setText("");
@@ -273,8 +274,8 @@ namespace UI
 			this);
 	}
 
-	HardwareTest::SpeakerTest::SpeakerTest(HardwareTest& parent)
-		: LvContainer("speaker_test_container", parent)
+	HardwareTest::BuzzerTest::BuzzerTest(HardwareTest& parent)
+		: LvContainer("buzzer_test_container", parent)
 		, m_parent(parent)
 	{
 		setStyleBgColor(lv_color_black());
@@ -287,6 +288,58 @@ namespace UI
 		m_label.setText("Did you hear a sound?");
 
 		m_buttons.setSize(LV_PCT(50), LV_PCT(50));
+
+		m_no.setText("No");
+		m_no.setHeight(LV_PCT(100));
+		m_no.setFlexGrow(1);
+		m_no.setStyleBgColor(lv_palette_main(LV_PALETTE_RED));
+		lv_obj_set_style_bg_grad_dir(m_no, LV_GRAD_DIR_NONE, 0);
+		m_no.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<BuzzerTest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->buzzerCheckPassed(false);
+			},
+			this);
+
+		m_yes.setText("Yes");
+		m_yes.setHeight(LV_PCT(100));
+		m_yes.setFlexGrow(1);
+		m_yes.setStyleBgColor(lv_palette_main(LV_PALETTE_GREEN));
+		lv_obj_set_style_bg_grad_dir(m_yes, LV_GRAD_DIR_NONE, 0);
+		m_yes.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<BuzzerTest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->buzzerCheckPassed(true);
+			},
+			this);
+
+		m_playAgain.setText("Play Again");
+		m_playAgain.setSize(LV_PCT(30), LV_PCT(20));
+		m_playAgain.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto* instance = static_cast<BuzzerTest*>(lv_event_get_user_data(e));
+				instance->m_parent.getPresenter()->playBuzzer();
+			},
+			this);
+	}
+
+	HardwareTest::SpeakerTest::SpeakerTest(HardwareTest& parent)
+		: CommandTest(parent)
+	{
+		setStyleBgColor(lv_color_black());
+		setStyleBgOpa(LV_OPA_COVER);
+
+		setSize(LV_PCT(100), LV_PCT(100));
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		m_output.setFlexGrow(3);
+		m_buttons.setFlexGrow(1);
+		m_buttons.setWidth(LV_PCT(50));
+		m_buttons.setState(LV_STATE_DISABLED, true, true);
 
 		m_no.setText("No");
 		m_no.setHeight(LV_PCT(100));
@@ -314,13 +367,14 @@ namespace UI
 			},
 			this);
 
-		m_playAgain.setText("Play Again");
-		m_playAgain.setSize(LV_PCT(30), LV_PCT(20));
-		m_playAgain.addClickedCallback(
+		m_playSound.setText("Play Sound");
+		m_playSound.setSize(LV_PCT(30), LV_PCT(20));
+		m_playSound.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				auto* instance = static_cast<SpeakerTest*>(lv_event_get_user_data(e));
-				instance->m_parent.getPresenter()->playSound();
+				instance->m_parent.getPresenter()->playSpeaker();
+				instance->m_buttons.setState(LV_STATE_DISABLED, false, true);
 			},
 			this);
 	}

@@ -115,10 +115,10 @@ namespace UI
 			btn_cb_t m_callback = nullptr;
 		};
 
-		class SpeakerTest : public LvContainer
+		class BuzzerTest : public LvContainer
 		{
 		  public:
-			SpeakerTest(HardwareTest& parent);
+			BuzzerTest(HardwareTest& parent);
 
 		  private:
 			LvLabel m_label{"label", getRoot()};
@@ -128,6 +128,18 @@ namespace UI
 			Button m_playAgain{"play_again", getRoot()};
 
 			HardwareTest& m_parent;
+		};
+
+		class SpeakerTest : public CommandTest
+		{
+		  public:
+			SpeakerTest(HardwareTest& parent);
+
+		  private:
+			Row m_buttons{"buttons", getRoot()};
+			Button m_no{"no", m_buttons};
+			Button m_yes{"yes", m_buttons};
+			Button m_playSound{"play_sound", getRoot()};
 		};
 
 		class TestResults : public LvContainer
@@ -169,6 +181,7 @@ namespace UI
 		DeadPixelTest& getDeadPixelTest() { return m_deadPixelTest; }
 		CommandTest& getCommandTest() { return m_commandTest; }
 		UsbATest& getUsbTest() { return m_usbATest; }
+		BuzzerTest& getBuzzerTest() { return m_buzzerTest; }
 		SpeakerTest& getSpeakerTest() { return m_speakerTest; }
 
 		TestResults& getTestResults() { return m_testResults; }
@@ -184,12 +197,18 @@ namespace UI
 		DeadPixelTest m_deadPixelTest{*this};
 		CommandTest m_commandTest{*this};
 		UsbATest m_usbATest{*this};
+		BuzzerTest m_buzzerTest{*this};
 		SpeakerTest m_speakerTest{*this};
 
 		TestResults m_testResults{*this};
 
-		std::vector<LvContainer*> m_tests = {
-			&m_serialInput, &m_touchScreenTest, &m_deadPixelTest, &m_commandTest, &m_usbATest, &m_speakerTest};
+		std::vector<LvContainer*> m_tests = {&m_serialInput,
+											 &m_touchScreenTest,
+											 &m_deadPixelTest,
+											 &m_commandTest,
+											 &m_usbATest,
+											 &m_buzzerTest,
+											 &m_speakerTest};
 		size_t m_currentTestIndex = 0;
 	};
 } // namespace UI

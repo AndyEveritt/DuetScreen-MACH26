@@ -30,6 +30,7 @@ namespace UI
 #define ENABLE_MEMORY_TEST 1
 #define ENABLE_WIFI_TEST 1
 #define ENABLE_USB_TEST 1
+#define ENABLE_BUZZER_TEST 1
 #define ENABLE_SPEAKER_TEST 1
 
 	static std::string runCommand(const std::string& cmd)
@@ -561,12 +562,66 @@ namespace UI
 		getView()->getUsbTest().setOutput(mount_str);
 	}
 
-	void HardwareTestPresenter::playSound()
+	void HardwareTestPresenter::playBuzzer()
 	{
 		if (system("beep 100") != 0)
 		{
 			m_currentTest->output["result"] = false;
 			m_currentTest->output["error_message"] = "Failed to run `beep`";
+			testFinished(TestId::BuzzerTest);
+		}
+	}
+
+	void HardwareTestPresenter::buzzerCheckPassed(bool passed)
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::BuzzerTest)
+		{
+			// Not in speaker test
+			return;
+		}
+
+		m_currentTest->output["result"] = passed;
+		if (!passed)
+		{
+			m_currentTest->output["error_message"] = "Sound not heard";
+		}
+		testFinished(TestId::BuzzerTest);
+	}
+
+	void HardwareTestPresenter::testSpeaker()
+	{
+		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::SpeakerTest)
+		{
+			LOG_ERROR("Not in Speaker test");
+			return;
+		}
+
+		auto& speakerTest = getView()->getSpeakerTest();
+
+		getView()->showTest(&speakerTest);
+
+		speakerTest.setMessage("Please connect a speaker to the screen.");
+
+		speakerTest.setOutput("Configuring audio output...\n");
+		speakerTest.appendOutput("> amixer sset 'Headphone' on\n");
+		speakerTest.appendOutput(runCommand("amixer sset 'Headphone' on\n"));
+
+		speakerTest.appendOutput("> amixer sset 'Headphone volume' 6\n");
+		speakerTest.appendOutput(runCommand("amixer sset 'Headphone volume' 6\n"));
+
+		speakerTest.appendOutput("> amixer sset 'DAC volume' 170,170\n");
+		speakerTest.appendOutput(runCommand("amixer sset 'DAC volume' 170,170\n"));
+
+		speakerTest.appendOutput("> amixer sset 'digital volume' 100\n");
+		speakerTest.appendOutput(runCommand("amixer sset 'digital volume' 100\n"));
+	}
+
+	void HardwareTestPresenter::playSpeaker()
+	{
+		if (system("speaker-test -c 1 -t sine -f 500 -l 1") != 0)
+		{
+			m_currentTest->output["result"] = false;
+			m_currentTest->output["error_message"] = "Failed to run `speaker-test`";
 			testFinished(TestId::SpeakerTest);
 		}
 	}
@@ -900,14 +955,22 @@ namespace UI
 			});
 #endif
 
+#if ENABLE_BUZZER_TEST
+		createTestProcedure(
+			TestId::BuzzerTest,
+			[this](TestProcedure& test)
+			{
+				getView()->showTest(&getView()->getBuzzerTest());
+				playBuzzer();
+			},
+			[this](TestProcedure& test)
+			{ return test.output.contains("result") && test.output["result"].get<bool>(); });
+#endif
+
 #if ENABLE_SPEAKER_TEST
 		createTestProcedure(
 			TestId::SpeakerTest,
-			[this](TestProcedure& test)
-			{
-				getView()->showTest(&getView()->getSpeakerTest());
-				playSound();
-			},
+			[this](TestProcedure& test) { testSpeaker(); },
 			[this](TestProcedure& test)
 			{ return test.output.contains("result") && test.output["result"].get<bool>(); });
 #endif
