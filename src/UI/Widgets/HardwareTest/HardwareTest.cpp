@@ -413,6 +413,10 @@ namespace UI
 		m_restart.setFlexGrow(1);
 		m_exit.setFlexGrow(1);
 
+#if HARDWARE_TEST
+		m_exit.hide();
+#endif
+
 		m_restart.addClickedCallback(
 			[](lv_event_t* e)
 			{

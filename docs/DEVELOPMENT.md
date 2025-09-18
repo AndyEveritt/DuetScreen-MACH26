@@ -177,6 +177,8 @@ Hardware testing is used to verify that the PCB hardware is functioning correctl
   - Validates the internal WiFi module is recognised
 - USB-A test
   - Writes and reads data to a flash drive via USB-A port
+- Buzzer test
+  - Plays a sound through the buzzer to verify functionality
 - Speaker test
   - Plays a sound through the speaker to verify functionality
 
