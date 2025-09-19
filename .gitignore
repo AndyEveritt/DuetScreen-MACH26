@@ -455,6 +455,7 @@ config.json
 !.vscode/file_templates.json
 !.vscode/gdb.conf
 version.h
+wpa_supplicant.conf
 
 *Zone.Identifier
 
