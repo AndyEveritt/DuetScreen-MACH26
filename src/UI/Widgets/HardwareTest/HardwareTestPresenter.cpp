@@ -328,6 +328,8 @@ namespace UI
 			return;
 		}
 
+		updateUsbMounts();
+
 		auto& usbTest = getView()->getUsbTest();
 
 		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::Host);
