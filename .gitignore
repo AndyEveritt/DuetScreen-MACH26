@@ -458,6 +458,17 @@ version.h
 
 *Zone.Identifier
 
+# rsync
+.files-list-host.txt
+.files-list-images.txt
+.files-list-staging.txt
+.files-list.txt
+.stamp_built
+.stamp_configured
+.stamp_installed
+.stamp_rsynced
+.stamp_target_installed
+
 # Tests
 tests/ref_imgs/**/*_err.png
 # !tests/config*.json
