@@ -278,3 +278,44 @@ TEST_F(TestLvgl, FlexPadding)
 
 	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_padding.png");
 }
+
+TEST_F(TestLvgl, GridSizeContent)
+{
+	lv_obj_t* cont = lv_obj_create(lv_screen_active());
+	lv_obj_set_name(cont, "cont");
+
+	int32_t col_dsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+	int32_t row_dsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+
+	lv_obj_set_grid_dsc_array(cont, col_dsc, row_dsc);
+	lv_obj_set_size(cont, LV_PCT(100), LV_PCT(100));
+	lv_obj_set_style_bg_color(cont, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
+
+	lv_obj_t* item1 = lv_obj_create(cont);
+	lv_obj_set_name(item1, "item1");
+	lv_obj_set_style_bg_color(item1, lv_palette_main(LV_PALETTE_GREEN), 0);
+	lv_obj_set_style_bg_opa(item1, LV_OPA_COVER, 0);
+	lv_obj_set_size(item1, LV_PCT(10), LV_PCT(100));
+	lv_obj_set_grid_cell(item1, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+
+	lv_obj_t* item2 = lv_obj_create(cont);
+	lv_obj_set_name(item2, "item2");
+	lv_obj_set_style_bg_color(item2, lv_palette_main(LV_PALETTE_BLUE), 0);
+	lv_obj_set_style_bg_opa(item2, LV_OPA_COVER, 0);
+	lv_obj_set_height(item2, LV_SIZE_CONTENT);
+	lv_obj_set_grid_cell(item2, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 0, 1);
+
+	lv_obj_t* label = lv_label_create(item2);
+	lv_obj_set_name(label, "label");
+	lv_label_set_text(label, "This is a label");
+
+	lv_obj_t* item3 = lv_obj_create(cont);
+	lv_obj_set_name(item3, "item3");
+	lv_obj_set_style_bg_color(item3, lv_palette_main(LV_PALETTE_YELLOW), 0);
+	lv_obj_set_style_bg_opa(item3, LV_OPA_COVER, 0);
+	lv_obj_set_grid_cell(item3, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+
+	lv_obj_update_layout(cont);
+	EXPECT_EQUAL_SCREENSHOT("lvgl/grid_size_content.png");
+}

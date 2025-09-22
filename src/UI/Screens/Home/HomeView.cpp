@@ -11,10 +11,7 @@ namespace UI
 {
 	HomeView* HomeView::s_overrideInstance = nullptr;
 
-	static constexpr lv_coord_t s_windowSelectorItemWidth = 30;	 // %
-	static constexpr lv_coord_t s_windowSelectorItemHeight = 25; // %
-
-	static constexpr int32_t s_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+	static constexpr int32_t s_layoutColDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(9), LV_GRID_TEMPLATE_LAST};
 	static constexpr int32_t s_layoutRowDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
 	static constexpr int32_t s_mainWindowLayoutColDsc[3] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
@@ -57,10 +54,11 @@ namespace UI
 
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(s_layoutColDsc, s_layoutRowDsc);
-		setGridCell(m_statusBar, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_statusBar, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 0, 1);
 		setGridCell(m_sideBar, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		setGridCell(m_mainWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
+		m_statusBar.setHeight(LV_SIZE_CONTENT);
 		m_mainWindow.setFlexGrow(1);
 		m_mainWindow.setHeight(LV_PCT(100));
 		m_fileView.addStyle(Themes::getLvglStyles().card);

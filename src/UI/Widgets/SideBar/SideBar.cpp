@@ -18,11 +18,8 @@
 
 namespace UI
 {
-	static constexpr lv_coord_t width = 10;	  // %
-	static constexpr lv_coord_t height = 100; // %
-
 	SideBar::SideBar(const std::string& name, lv_obj_t* parent)
-		: View(name, parent, layout_t{0, 0, width, height})
+		: View(name, parent)
 		, m_btns("buttons", getRoot())
 		, m_homeBtn("home", m_btns, _("home"))
 		, m_backBtn("back", m_btns, _("back"))
