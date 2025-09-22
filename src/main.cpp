@@ -115,6 +115,8 @@ int main(int argc, char** argv)
 	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u));
 	UI::Themes::init(display);
 
+	// lv_display_set_rotation(display, LV_DISP_ROTATION_180);
+
 	UI::HomeView& home = UI::HomeView::instance();
 	home.show();
 
