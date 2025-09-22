@@ -137,12 +137,6 @@ jobs:
           ./scripts/install_prerequisites.sh
           cd ../buildroot-duetscreen
           ./scripts/install_prerequisites.sh
-
-      - name: Update Version
-        working-directory: DuetScreen
-        run: |
-          ./scripts/update_version.sh "${{ github.ref_name }}"
-          echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
       
       - name: Get Source Branch
         id: branch
