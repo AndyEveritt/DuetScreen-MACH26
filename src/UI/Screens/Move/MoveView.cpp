@@ -47,7 +47,7 @@ namespace UI
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
 		setGridCell(m_topBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		setGridCell(m_axisControlCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		setGridCell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
+		setGridCell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
 
 		// Top Bar
 		constexpr lv_coord_t pad = 10;
