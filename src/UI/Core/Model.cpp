@@ -9,6 +9,7 @@
 #include "View.h"
 #include "lv_i18n/lv_i18n.h"
 #include "lvgl/src/osal/lv_os.h"
+#include "nameof.hpp"
 #include "utils/StorageHelper.h"
 
 Model::Model()
@@ -150,7 +151,9 @@ void Model::runEventLoop()
 				if (handler)
 				{
 					found = true;
-					LOG_DBG("Notifying presenter {:s} for event {:d}", presenter->getName(), (int)event.first);
+					LOG_DBG("Notifying presenter '{:s}' for event '{:s}'",
+							presenter->getName(),
+							nameof::nameof_enum(event.first));
 
 					handler(event.second);
 				}
