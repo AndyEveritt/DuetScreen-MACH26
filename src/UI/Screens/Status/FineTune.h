@@ -9,12 +9,12 @@
 
 #include "FineTunePresenter.h"
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/Button/VerticalButtonPanel.h"
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/BabyStep/BabyStep.h"
 
 namespace UI
 {
@@ -22,8 +22,6 @@ namespace UI
 	{
 	  public:
 		FineTune(lv_obj_t* parent, lv_obj_t* numberpad_parent = nullptr);
-
-		void setBabyStepValue(float value);
 
 		void setSpeedValue(uint32_t value);
 
@@ -41,12 +39,9 @@ namespace UI
 		void showKeyboard(bool show);
 
 	  protected:
-		static void onBabyStepIncrementClicked(lv_event_t* e);
-		static void onBabyStepDecrementClicked(lv_event_t* e);
-		static void onBabyStepResetClicked(lv_event_t* e);
-		static void onBabyStepValueClicked(lv_event_t* e);
+		void onShow() override;
 
-		VerticalButtonPanel m_babystep;
+		BabyStep m_babystep;
 		LvContainer m_sliderCont;
 
 		// Speed Factor

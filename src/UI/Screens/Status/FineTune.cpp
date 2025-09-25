@@ -15,7 +15,7 @@ namespace UI
 {
 	FineTune::FineTune(lv_obj_t* parent, lv_obj_t* numberpad_parent)
 		: View("fine_tune", parent, layout_t(0, 0, 100, 100))
-		, m_babystep("fine_tune_babystep", getRoot(), layout_t(0, 0, 100, 100))
+		, m_babystep("babystep", getRoot())
 		, m_sliderCont("sliders", getRoot())
 		, m_speed("speed", m_sliderCont)
 		, m_extruders("extruders", m_sliderCont)
@@ -69,14 +69,6 @@ namespace UI
 
 		m_numberPad.hide();
 
-		m_babystep.setIncrementLabel(_("fine_tune_babystep_increment"));
-		m_babystep.setDecrementLabel(_("fine_tune_babystep_decrement"));
-		m_babystep.setResetLabel(utils::format(_("fine_tune_babystep_reset"), 0).c_str());
-		m_babystep.setValueLabelFmt("%.2fmm");
-		m_babystep.setIncrementValues({0.01f, 0.05f});
-		m_babystep.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
-		m_babystep.setResetCallback([this]() { m_presenter->resetBabystep(); });
-
 		m_speed.setLabel(_("fine_tune_speed_factor"));
 		m_speed.setKeyboard(m_keyboard);
 		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
@@ -93,11 +85,6 @@ namespace UI
 			},
 			LV_EVENT_SCROLL,
 			this);
-	}
-
-	void FineTune::setBabyStepValue(float value)
-	{
-		m_babystep.setResetLabel(utils::format(_("fine_tune_babystep_reset"), value).c_str());
 	}
 
 	void FineTune::setSpeedValue(uint32_t value)
@@ -193,4 +180,8 @@ namespace UI
 		lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !show);
 	}
 
+	void FineTune::onShow()
+	{
+		m_babystep.activate();
+	}
 } // namespace UI

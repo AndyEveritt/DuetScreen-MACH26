@@ -18,7 +18,6 @@
 
 namespace UI
 {
-	static float s_babyStepValues[] = {0.01f, 0.05f};
 	static float s_speedValues[] = {5.0f, 25.0f};
 	static float s_flowValues[] = {1.0f, 2.0f};
 
@@ -34,7 +33,7 @@ namespace UI
 		OM::Move::IterateExtruderAxesWhile(
 			[this](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
-				m_view->setExtruderLabel(index, utils::format(_("fine_tune_extruder"), extruder->index).c_str());
+				m_view->setExtruderLabel(index, fmt::format(fmt::runtime(_("fine_tune_extruder")), extruder->index));
 				m_view->setExtruderValue(index, std::round(100 * extruder->factor));
 				return true;
 			});
@@ -47,21 +46,10 @@ namespace UI
 		OM::IterateFansWhile(
 			[this](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
-				m_view->setFanLabel(index, utils::format(_("fine_tune_fan"), fan->index).c_str());
+				m_view->setFanLabel(index, fmt::format(fmt::runtime(_("fine_tune_fan")), fan->index));
 				m_view->setFanValue(index, std::round(100 * fan->requestedValue));
 				return true;
 			});
-	}
-
-	void FineTunePresenter::newAxesData()
-	{
-		auto axis = OM::Move::GetAxisByLetter('Z');
-		if (axis == nullptr)
-		{
-			return;
-		}
-
-		m_view->setBabyStepValue(axis->babystep);
 	}
 
 	void FineTunePresenter::onActivate()
@@ -69,16 +57,6 @@ namespace UI
 		newSpeedFactor();
 		newExtruderData();
 		newFanData();
-	}
-
-	void FineTunePresenter::babystep(float change)
-	{
-		Comm::DUET.SendGcodef("M290 S{:g}\n", change);
-	}
-
-	void FineTunePresenter::resetBabystep()
-	{
-		Comm::DUET.SendGcode("M290 R0 S0\n");
 	}
 
 	void FineTunePresenter::setSpeedFactor(uint32_t value)

@@ -11,8 +11,8 @@
 
 namespace UI
 {
-	VerticalButtonPanel::VerticalButtonPanel(const std::string& name, lv_obj_t* parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
+	VerticalButtonPanel::VerticalButtonPanel(const std::string& name, lv_obj_t* parent)
+		: LvObj(lv_obj_create, name, parent)
 		, m_reset("reset", getRoot(), "")
 		, m_increment("increment", getRoot(), "")
 		, m_decrement("decrement", getRoot(), "")
@@ -95,27 +95,27 @@ namespace UI
 			this);
 	}
 
-	void VerticalButtonPanel::setIncrementLabel(const char* label)
+	void VerticalButtonPanel::setIncrementLabel(std::string_view label)
 	{
 		m_increment.setText(label);
 	}
 
-	void VerticalButtonPanel::setDecrementLabel(const char* label)
+	void VerticalButtonPanel::setDecrementLabel(std::string_view label)
 	{
 		m_decrement.setText(label);
 	}
 
-	void VerticalButtonPanel::setResetLabel(const char* label)
+	void VerticalButtonPanel::setResetLabel(std::string_view label)
 	{
 		m_reset.setText(label);
 	}
 
-	void VerticalButtonPanel::setValueLabelFmt(const std::string& fmt)
+	void VerticalButtonPanel::setValueLabelFmt(std::string_view fmt)
 	{
 		UI_LOCK();
 		m_fmt = fmt;
-		m_values[0].setText(utils::format(m_fmt.c_str(), m_incrementValues[0]).c_str());
-		m_values[1].setText(utils::format(m_fmt.c_str(), m_incrementValues[1]).c_str());
+
+		updateValueLabels();
 	}
 
 	void VerticalButtonPanel::setIncrementValues(const std::array<float, 2>& values)
@@ -124,8 +124,13 @@ namespace UI
 		m_incrementValues[0] = values[0];
 		m_incrementValues[1] = values[1];
 
-		m_values[0].setText(utils::format(m_fmt.c_str(), m_incrementValues[0]).c_str());
-		m_values[1].setText(utils::format(m_fmt.c_str(), m_incrementValues[1]).c_str());
+		updateValueLabels();
+	}
+
+	void VerticalButtonPanel::updateValueLabels()
+	{
+		m_values[0].setText(fmt::format(fmt::runtime(m_fmt), m_incrementValues[0]).c_str());
+		m_values[1].setText(fmt::format(fmt::runtime(m_fmt), m_incrementValues[1]).c_str());
 	}
 
 	float VerticalButtonPanel::getSelectedValue() const

@@ -15,12 +15,12 @@ namespace UI
 	class VerticalButtonPanel : public LvObj
 	{
       public:
-		VerticalButtonPanel(const std::string& name, lv_obj_t* parent, layout_t layout);
-		void setIncrementLabel(const char* label);
-		void setDecrementLabel(const char* label);
-		void setResetLabel(const char* label);
-		void setValueLabelFmt(const std::string& fmt);
-        void setIncrementValues(const std::array<float, 2>& values);
+		VerticalButtonPanel(const std::string& name, lv_obj_t* parent);
+		void setIncrementLabel(std::string_view label);
+		void setDecrementLabel(std::string_view label);
+		void setResetLabel(std::string_view label);
+		void setValueLabelFmt(std::string_view fmt);
+		void setIncrementValues(const std::array<float, 2>& values);
         
         float getSelectedValue() const;
         void setSelectedValueIndex(uint8_t index);
@@ -29,6 +29,8 @@ namespace UI
         void setResetCallback(std::function<void()> callback);
 
 	  private:
+		void updateValueLabels();
+
 		Button m_reset;
 		Button m_increment;
 		Button m_decrement;
