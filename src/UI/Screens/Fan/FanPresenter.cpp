@@ -25,7 +25,7 @@ namespace UI
 		OM::IterateFansWhile(
 			[&](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
-				m_view->setFanLabel(index, utils::format(_("fine_tune_fan"), fan->index).c_str());
+				m_view->setFanLabel(index, fmt::format(fmt::runtime(_("fine_tune_fan")), fan->index));
 				m_view->setFanValue(index, std::round(100 * fan->requestedValue));
 				return true;
 			});
