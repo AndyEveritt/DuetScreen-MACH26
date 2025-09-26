@@ -34,13 +34,12 @@ namespace UI
 	};
 
 	template <typename T>
+	// requires(std::is_base_of_v<LvObj, T>)
 	class List : public LvObj
 	{
 		using TPtr = std::shared_ptr<T>;
 
 	  public:
-		// static_assert(std::is_base_of<ListItem, T>::value, "T must inherit from ListItem");
-
 		List(const std::string& name, lv_obj_t* parent)
 			: LvObj(lv_obj_create, name, parent)
 			, m_header("header", getRoot())

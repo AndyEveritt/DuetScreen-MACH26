@@ -20,11 +20,9 @@ namespace UI
 	 * @note All views in the application must be a subclass of this type.
 	 */
 	template <class T, class BaseViewType = LvContainer>
+		requires(std::is_base_of_v<BasePresenter, T> && std::is_base_of_v<LvObj, BaseViewType>)
 	class View : public BaseViewType
 	{
-		static_assert(std::is_base_of<LvObj, BaseViewType>::value, "BaseViewType must derive from BaseView");
-		static_assert(std::is_base_of<BasePresenter, T>::value, "T must derive from Presenter");
-
 	  public:
 		template <typename... Args>
 		View(const std::string& name, lv_obj_t* parent, Args&&... args)

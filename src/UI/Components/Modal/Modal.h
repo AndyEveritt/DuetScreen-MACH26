@@ -14,10 +14,9 @@
 namespace UI
 {
 	template <typename T>
+		requires(std::is_base_of_v<LvObj, T>)
 	class Modal : public T
 	{
-		static_assert(std::is_base_of<LvObj, T>::value, "T must be derived from LvObj");
-
 	  public:
 		Modal(const std::string& name, lv_obj_t* parent, layout_t layout)
 			: T(name, parent, layout)
