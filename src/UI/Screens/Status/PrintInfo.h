@@ -11,6 +11,7 @@
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/BabyStep/BabyStep.h"
 
 namespace UI
 {
@@ -60,16 +61,27 @@ namespace UI
 
 		static void openSubView(lv_event_t* e);
 		void onShow() override;
+		void onHide() override;
 
 		List<Button> m_positions{"positions", getRoot()};
-		Button m_speed{"speed", getRoot()};
-		Button m_speedMultiplier{"speed_multiplier", getRoot()};
-		LvLabel m_flowRate{"flow_rate", getRoot()};
-		Button m_flowMultiplier{"flow_multiplier", getRoot()};
-		LvLabel m_elapsedTime{"elapsed_time", getRoot()};
-		LvLabel m_remainingTime{"remaining_time", getRoot()};
-		LvLabel m_layer{"layer", getRoot()};
-		Button m_fanSpeed{"fan_speed", getRoot()};
+
+		LvContainer m_speedCont{"speed_cont", getRoot()};
+		LvLabel m_speedHeader{"speed_header", m_speedCont};
+		LvLabel m_currentSpeed{"current_speed", m_speedCont};
+		LvLabel m_requestedSpeed{"top_speed", m_speedCont};
+		Button m_speedMultiplier{"speed_multiplier", m_speedCont};
+
+		LvContainer m_flowCont{"flow_cont", getRoot()};
+		LvLabel m_flowHeader{"flow_header", m_flowCont};
+		LvLabel m_extruderFeedrate{"extruder_feedrate", m_flowCont};
+		LvLabel m_flowRate{"flow_rate", m_flowCont};
+		Button m_flowMultiplier{"flow_multiplier", m_flowCont};
+
+		LvContainer m_timeCont{"time_cont", getRoot()};
+		LvLabel m_elapsedTime{"elapsed_time", m_timeCont};
+		LvLabel m_remainingTime{"remaining_time", m_timeCont};
+
+		BabyStep m_babyStep{"baby_step", getRoot()};
 
 		SpeedInfo m_speedInfo{"speed_info", getRoot()};
 

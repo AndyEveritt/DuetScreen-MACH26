@@ -18,40 +18,39 @@ namespace UI
 	{
 		UI_LOCK();
 
-		static int32_t printInfoColDsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-		static int32_t printInfoRowDsc[] = {LV_GRID_CONTENT,
-											LV_GRID_CONTENT,
-											LV_GRID_CONTENT,
-											LV_GRID_CONTENT,
-											LV_GRID_FR(1),
-											LV_GRID_CONTENT,
-											LV_GRID_CONTENT,
-											LV_GRID_TEMPLATE_LAST};
+		static int32_t printInfoColDsc[] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static int32_t printInfoRowDsc[] = {
+			LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		setGridDsc(printInfoColDsc, printInfoRowDsc);
-		// lv_obj_set_grid_align(getRoot(), LV_GRID_ALIGN_SPACE_EVENLY, LV_GRID_ALIGN_SPACE_EVENLY);
+		setGridCell(m_positions, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
+		setGridCell(m_speedCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_flowCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
+		setGridCell(m_timeCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 3, 1);
+		setGridCell(m_babyStep, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 3);
 
+		/* Positions */
 		m_positions.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_positions.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
 		// m_positions.setListGrow(1);
 		m_positions.setTitle(_("status_positions"));
 
-		setGridCell(m_positions, LV_GRID_ALIGN_STRETCH, 0, 3, LV_GRID_ALIGN_CENTER, 0, 1);
-		setGridCell(m_layer, LV_GRID_ALIGN_CENTER, 0, 3, LV_GRID_ALIGN_CENTER, 1, 1);
-		setGridCell(m_speedMultiplier, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_CENTER, 2, 1);
-		setGridCell(m_speed, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_CENTER, 2, 1);
-		setGridCell(m_fanSpeed, LV_GRID_ALIGN_START, 2, 1, LV_GRID_ALIGN_CENTER, 2, 1);
-		setGridCell(m_flowMultiplier, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
-		setGridCell(m_flowRate, LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_CENTER, 3, 1);
-		setGridCell(m_elapsedTime, LV_GRID_ALIGN_STRETCH, 0, 3, LV_GRID_ALIGN_CENTER, 5, 1);
-		setGridCell(m_remainingTime, LV_GRID_ALIGN_STRETCH, 0, 3, LV_GRID_ALIGN_CENTER, 6, 1);
+		/* Speed */
+		m_speedCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_speedHeader.setText(_("status_speed_header"));
+		updateSpeed(0, 0);
+		updateSpeedMultiplier(100);
+
+		/* Flow */
+		m_flowCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		updateFlowMultiplier(100);
+
+		/* Time */
+		m_timeCont.setHeight(LV_SIZE_CONTENT);
+		m_timeCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		m_speedInfo.setSize(LV_PCT(100), LV_PCT(100));
 		m_speedInfo.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		m_speedInfo.hide();
-
-		m_layer.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
-
-		m_speed.addEventCallback(openSubView, LV_EVENT_CLICKED, &m_speedInfo);
 
 		m_speedInfo.addStyle(Themes::getLvglStyles().card, 0);
 		m_speedInfo.addStyle(Themes::getLvglStyles().no_border, 0);
@@ -85,9 +84,15 @@ namespace UI
 			// Can't put this in the constructor as it would cause `HomeView::instance()` to be called within itself
 			m_speedMultiplier.addEventCallback(openSubView, LV_EVENT_CLICKED, &HomeView::instance().getFineTuneView());
 			m_flowMultiplier.addEventCallback(openSubView, LV_EVENT_CLICKED, &HomeView::instance().getFineTuneView());
-			m_fanSpeed.addEventCallback(openSubView, LV_EVENT_CLICKED, &HomeView::instance().getFineTuneView());
 			m_initialised = true;
 		}
+
+		m_babyStep.activate();
+	}
+
+	void PrintInfo::onHide()
+	{
+		m_babyStep.deactivate();
 	}
 
 	void PrintInfo::setAxisCount(size_t count)
@@ -133,7 +138,8 @@ namespace UI
 
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
-		m_speed.setText(fmt::format(fmt::runtime(_("status_speed")), topSpeed, requestedSpeed));
+		m_currentSpeed.setText(fmt::format(fmt::runtime(_("status_current_speed")), topSpeed));
+		m_requestedSpeed.setText(fmt::format(fmt::runtime(_("status_top_speed")), requestedSpeed));
 		m_speedInfo.updateSpeed(topSpeed, requestedSpeed);
 	}
 
@@ -170,14 +176,13 @@ namespace UI
 	void PrintInfo::updateLayer(float height, float maxHeight)
 	{
 		UI_LOCK();
-		m_layer.setText(fmt::format(fmt::runtime(_("status_layer")), height, maxHeight));
 		m_speedInfo.updatePrintHeight(maxHeight);
 		m_speedInfo.updatePrintHeight(height);
 	}
 
 	void PrintInfo::updateFanSpeed(uint32_t speed)
 	{
-		m_fanSpeed.setText(fmt::format(fmt::runtime(_("status_fan_speed")), speed));
+		// m_fanSpeed.setText(fmt::format(fmt::runtime(_("status_fan_speed")), speed));
 	}
 
 	void PrintInfo::updateAcceleration(uint32_t acceleration)
