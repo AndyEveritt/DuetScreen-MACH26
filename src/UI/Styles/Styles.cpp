@@ -47,9 +47,9 @@ namespace UI::Themes
 	static Style s_debugBorders("debugBorders",
 								[](lv_style_t* style)
 								{
-									lv_style_set_border_color(style, lv_color_black());
-									lv_style_set_border_width(style, 2);
-									lv_style_set_border_opa(style, LV_OPA_100);
+									lv_style_set_outline_color(style, lv_color_black());
+									lv_style_set_outline_width(style, 2);
+									lv_style_set_outline_opa(style, LV_OPA_100);
 								});
 #endif
 
