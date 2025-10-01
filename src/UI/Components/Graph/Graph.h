@@ -32,8 +32,8 @@ namespace UI
 			int32_t max;
 		};
 
-		Graph(const std::string& name, lv_obj_t* parent);
-		Graph(const std::string& name, lv_obj_t* parent, layout_t layout);
+		Graph(const std::string& name, LvObj& parent);
+		Graph(const std::string& name, LvObj& parent, layout_t layout);
 
 		void showLegend(const bool show);
 
@@ -64,7 +64,7 @@ namespace UI
 		lv_obj_t* m_chart;
 		lv_obj_t* m_vScale;
 		lv_obj_t* m_hScale;
-		lv_obj_t* m_legend;
+		LvContainer m_legend;
 
 		int32_t m_columnDsc[4];
 		int32_t m_rowDsc[3];

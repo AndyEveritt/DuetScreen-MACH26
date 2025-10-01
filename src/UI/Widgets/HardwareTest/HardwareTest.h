@@ -13,11 +13,12 @@
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/List/List.h"
 #include "UI/Components/MessageBox/MessageBox.h"
+#include "UI/Components/Screen/Screen.h"
 #include "UI/Core/View.h"
 
 namespace UI
 {
-	class HardwareTest : public View<HardwareTestPresenter>
+	class HardwareTest : public View<HardwareTestPresenter, Screen>
 	{
 	  public:
 		HardwareTest();
@@ -148,7 +149,7 @@ namespace UI
 			class TestResult : public ListItem
 			{
 			  public:
-				TestResult(size_t index, lv_obj_t* parent);
+				TestResult(size_t index, LvObj& parent);
 
 				void setName(std::string_view name);
 				void setOutput(std::string_view output);

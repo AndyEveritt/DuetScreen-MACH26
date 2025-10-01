@@ -7,6 +7,7 @@
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/Input/TextBox.h"
+#include "UI/Components/Modal/Modal.h"
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Core/View.h"
 #include "UI/Widgets/HardwareTest/HardwareTest.h"
@@ -18,7 +19,7 @@ namespace UI
 	class SettingsSubView : public Card
 	{
 	  public:
-		SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView);
+		SettingsSubView(const std::string& name, LvObj& parent, SettingsView& mainSettingsView);
 
 		SettingsView& getMainSettingsView() const { return m_mainSettingsView; }
 		std::shared_ptr<SettingsPresenter> getMainSettingsPresenter() const;
@@ -31,7 +32,7 @@ namespace UI
 	class DuetSettingsView : public SettingsSubView
 	{
 	  public:
-		DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+		DuetSettingsView(LvObj& parent, SettingsView& mainSettingsView);
 
 		class UsbSettings : public LvContainer
 		{
@@ -76,7 +77,7 @@ namespace UI
 	class ScreenSettingsView : public SettingsSubView
 	{
 	  public:
-		ScreenSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+		ScreenSettingsView(LvObj& parent, SettingsView& mainSettingsView);
 
 	  private:
 		void onShow() override;
@@ -94,7 +95,7 @@ namespace UI
 	class ThemeSettingsView : public SettingsSubView
 	{
 	  public:
-		ThemeSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+		ThemeSettingsView(LvObj& parent, SettingsView& mainSettingsView);
 
 	  private:
 		DropdownMenu m_theme;
@@ -104,7 +105,7 @@ namespace UI
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>
 	{
 	  public:
-		NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+		NetworkSettingsView(LvObj& parent, SettingsView& mainSettingsView);
 
 		void setIpAddress(const std::string& ipAddress);
 		void setEnabled(bool enabled);
@@ -113,27 +114,26 @@ namespace UI
 
 	  private:
 		static void onNetworkSelectionEvent(lv_event_t* e);
-		static void onPasswordCloseEvent(lv_event_t* e);
-		static void onPasswordConfirmEvent(lv_event_t* e);
 		static void onRefreshEvent(lv_event_t* e);
+		void onPasswordCloseEvent();
+		void onPasswordConfirmEvent();
 
 		void onShow() override;
 		void onHide() override;
 
-		lv_obj_t* m_topBar;
-		lv_obj_t* m_ipAddress;
+		LvContainer m_topBar;
+		LvLabel m_ipAddress;
 		Button m_refresh;
 
 		lv_obj_t* m_networkList;
-		lv_obj_t* m_passwordWindow;
+		Modal<MessageBox> m_passwordWindow;
 		TextBox m_passwordInput;
-		lv_obj_t* m_passwordSsid;
 	};
 
 	class DeveloperSettingsView : public SettingsSubView
 	{
 	  public:
-		DeveloperSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView);
+		DeveloperSettingsView(LvObj& parent, SettingsView& mainSettingsView);
 
 	  private:
 		static void onDebugLevelEvent(lv_event_t* e);
@@ -183,7 +183,7 @@ namespace UI
 		friend class ThemeSettingsView;
 
 	  public:
-		SettingsView(lv_obj_t* parent);
+		SettingsView(LvObj& parent);
 
 		void showKeyboard(bool show,
 						  lv_keyboard_mode_t mode = LV_KEYBOARD_MODE_TEXT_LOWER,
@@ -210,8 +210,8 @@ namespace UI
 		int32_t m_layoutRowDsc[3] = {LV_GRID_FR(2), 0, LV_GRID_TEMPLATE_LAST};
 
 		lv_obj_t* m_settingsList;
-		lv_obj_t* m_subWindow;
-		lv_obj_t* m_keyboard;
+		LvContainer m_subWindow;
+		LvKeyboard m_keyboard;
 
 		lv_obj_t* m_screenHeader;
 		lv_obj_t* m_screenSettings;

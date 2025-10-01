@@ -1,7 +1,7 @@
 /*
- * Row.h
+ * Screen.h
  *
- *  Created on: 2025-08-21
+ *  Created on: 2025-09-30
  *      Author: Andy Everitt
  */
 
@@ -11,11 +11,10 @@
 
 namespace UI
 {
-    class Row : public LvContainer
+    class Screen : public LvObj
     {
       public:
-		Row(const std::string& name, LvObj& parent);
-
-	  private:
+        Screen(const std::string& name);
+      private:
     };
 } // namespace UI

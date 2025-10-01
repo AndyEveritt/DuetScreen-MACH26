@@ -8,13 +8,13 @@
 
 namespace UI
 {
-	TemperatureView::TemperatureView(lv_obj_t* parent)
+	TemperatureView::TemperatureView(LvObj& parent)
 		: View("temperature_view", parent, layout_t(0, 0, 100, 100))
 		, m_temperatureCont("temperature_cont", getRoot())
 		, m_tools("tools", m_temperatureCont)
 		, m_beds("beds", m_temperatureCont)
 		, m_chambers("chambers", m_temperatureCont)
-		, m_filamentSelect("filament_select", getRoot(), getRoot())
+		, m_filamentSelect("filament_select", getRoot(), &getRoot())
 		, m_numberPad("number_pad", getRoot(), layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();

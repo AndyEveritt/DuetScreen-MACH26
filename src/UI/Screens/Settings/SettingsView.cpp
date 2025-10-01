@@ -12,11 +12,11 @@
 
 namespace UI
 {
-	SettingsView::SettingsView(lv_obj_t* parent)
+	SettingsView::SettingsView(LvObj& parent)
 		: View("settings_view", parent, layout_t(0, 0, 100, 100))
 		, m_settingsList(lv_list_create(getRoot()))
-		, m_subWindow(lv_obj_create(getRoot()))
-		, m_keyboard(lv_keyboard_create(getRoot()))
+		, m_subWindow("sub_window", getRoot())
+		, m_keyboard("keyboard", getRoot())
 		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings_screen_header")))
 		, m_screenSettings(lv_list_add_button(m_settingsList, NULL, _("settings_screen")))
 		, m_themeSettings(lv_list_add_button(m_settingsList, NULL, _("settings_theme")))
@@ -131,7 +131,7 @@ namespace UI
 		m_currentSubView->show(true);
 	}
 
-	SettingsSubView::SettingsSubView(const std::string& name, lv_obj_t* parent, SettingsView& mainSettingsView)
+	SettingsSubView::SettingsSubView(const std::string& name, LvObj& parent, SettingsView& mainSettingsView)
 		: Card(name, parent, layout_t(0, 0, 100, 100))
 		, m_mainSettingsView(mainSettingsView)
 	{
@@ -171,7 +171,7 @@ namespace UI
 		}
 	}
 
-	DuetSettingsView::DuetSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+	DuetSettingsView::DuetSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("duet_settings_view", parent, mainSettingsView)
 		, m_connectionMethod("duet_settings_connection_method", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_usbSettings(*this)
@@ -311,7 +311,7 @@ namespace UI
 		showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
 	}
 
-	ScreenSettingsView::ScreenSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+	ScreenSettingsView::ScreenSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("screen", parent, mainSettingsView)
 		, m_firmwareVersion(lv_label_create(getRoot()))
 		, m_buildTime(lv_label_create(getRoot()))
@@ -411,7 +411,7 @@ namespace UI
 		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
 	}
 
-	ThemeSettingsView::ThemeSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+	ThemeSettingsView::ThemeSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("screen", parent, mainSettingsView)
 		, m_theme("theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_themePreview("theme_demo", getRoot())
@@ -446,15 +446,14 @@ namespace UI
 		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 	}
 
-	NetworkSettingsView::NetworkSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+	NetworkSettingsView::NetworkSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: View("network_settings_view", parent, mainSettingsView)
-		, m_topBar(lv_obj_create(getRoot()))
-		, m_ipAddress(lv_label_create(m_topBar))
-		, m_refresh("network_settings_refresh", m_topBar, _("refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
+		, m_topBar("top_bar", getRoot())
+		, m_ipAddress("ip_address", m_topBar)
+		, m_refresh("refresh", m_topBar, _("refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
 		, m_networkList(lv_table_create(getRoot()))
-		, m_passwordWindow(lv_msgbox_create(getRoot()))
-		, m_passwordInput("settings_network_password_input", m_passwordWindow, layout_t(0, 0, 80, LV_SIZE_CONTENT))
-		, m_passwordSsid(nullptr)
+		, m_passwordWindow("password_msgbox", getRoot(), layout_t{0, 0, 80, LV_SIZE_CONTENT})
+		, m_passwordInput("password_input", m_passwordWindow.getBody(), layout_t(0, 0, 80, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
@@ -496,10 +495,12 @@ namespace UI
 		lv_obj_set_flex_flow(m_passwordWindow, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(m_passwordWindow, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		lv_msgbox_add_title(m_passwordWindow, _("settings_network_password_title"));
-		m_passwordSsid = lv_msgbox_add_text(m_passwordWindow, "");
-		lv_obj_t* closeBtn = lv_msgbox_add_header_button(m_passwordWindow, LV_SYMBOL_CLOSE);
-		lv_obj_t* confirmBtn = lv_msgbox_add_footer_button(m_passwordWindow, LV_SYMBOL_OK);
+		m_passwordWindow.setTitle(_("settings_network_password_title"));
+		m_passwordWindow.setText("");
+		m_passwordWindow.okVisible(true);
+		m_passwordWindow.cancelVisible(true);
+		m_passwordWindow.setOkCallback([this]() { onPasswordConfirmEvent(); });
+		m_passwordWindow.setCloseCallback([this]() { onPasswordCloseEvent(); });
 		m_passwordInput.setPlaceholderText(_("settings_network_enter_password"));
 		m_passwordInput.setPasswordMode(true);
 		m_passwordInput.setOneLine(true);
@@ -509,9 +510,6 @@ namespace UI
 
 		// Callbacks
 		lv_obj_add_event_cb(m_networkList, onNetworkSelectionEvent, LV_EVENT_VALUE_CHANGED, this);
-		lv_obj_add_event_cb(closeBtn, onPasswordCloseEvent, LV_EVENT_CLICKED, this);
-		lv_obj_add_event_cb(confirmBtn, onPasswordConfirmEvent, LV_EVENT_CLICKED, this);
-		lv_obj_add_event_cb(m_passwordWindow, onPasswordCloseEvent, LV_EVENT_DEFOCUSED, this);
 	}
 
 	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
@@ -574,7 +572,7 @@ namespace UI
 		{
 			view->m_passwordInput.setText("");
 			view->m_passwordInput.showPassword(false);
-			lv_label_set_text(view->m_passwordSsid, ssid);
+			view->m_passwordWindow.setText(ssid);
 			view->getMainSettingsView().showKeyboard(
 				true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput.getTextArea());
 			lv_obj_remove_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
@@ -584,22 +582,17 @@ namespace UI
 		view->getPresenter()->connectToNetwork(ssid);
 	}
 
-	void NetworkSettingsView::onPasswordCloseEvent(lv_event_t* e)
+	void NetworkSettingsView::onPasswordCloseEvent()
 	{
 		UI_LOCK();
-		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
-		view->getMainSettingsView().showKeyboard(false);
-		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+		getMainSettingsView().showKeyboard(false);
+		m_passwordWindow.setFlag(LV_OBJ_FLAG_HIDDEN, true);
 	}
 
-	void NetworkSettingsView::onPasswordConfirmEvent(lv_event_t* e)
+	void NetworkSettingsView::onPasswordConfirmEvent()
 	{
 		UI_LOCK();
-		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
-		view->getMainSettingsView().showKeyboard(false);
-		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
-		view->getPresenter()->connectToNetwork(lv_label_get_text(view->m_passwordSsid),
-											   view->m_passwordInput.getText());
+		getPresenter()->connectToNetwork(m_passwordWindow.getText().getText(), m_passwordInput.getText());
 	}
 
 	void NetworkSettingsView::onRefreshEvent(lv_event_t* e)
@@ -623,7 +616,7 @@ namespace UI
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 	}
 
-	DeveloperSettingsView::DeveloperSettingsView(lv_obj_t* parent, SettingsView& mainSettingsView)
+	DeveloperSettingsView::DeveloperSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("developer_settings_view", parent, mainSettingsView)
 		, m_debugLevelCont(lv_obj_create(getRoot()))
 		, m_debugLevelLabel(lv_label_create(m_debugLevelCont))

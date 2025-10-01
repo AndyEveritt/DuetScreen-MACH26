@@ -15,22 +15,22 @@ namespace UI
 	static constexpr lv_coord_t s_legendSize = 100;
 	static lv_color_t s_hiddenColor = lv_color_darken(lv_color_white(), 50);
 
-	Graph::Graph(const std::string& name, lv_obj_t* parent)
+	Graph::Graph(const std::string& name, LvObj& parent)
 		: LvObj(lv_obj_create, name, parent)
 		, m_chart(lv_chart_create(getRoot()))
 		, m_vScale(lv_scale_create(getRoot()))
 		, m_hScale(lv_scale_create(getRoot()))
-		, m_legend(lv_obj_create(getRoot()))
+		, m_legend("legend", getRoot())
 	{
 		init();
 	}
 
-	Graph::Graph(const std::string& name, lv_obj_t* parent, layout_t layout)
+	Graph::Graph(const std::string& name, LvObj& parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
 		, m_chart(lv_chart_create(getRoot()))
 		, m_vScale(lv_scale_create(getRoot()))
 		, m_hScale(lv_scale_create(getRoot()))
-		, m_legend(lv_obj_create(getRoot()))
+		, m_legend("legend", getRoot())
 	{
 		init();
 	}
@@ -283,7 +283,7 @@ namespace UI
 		lv_chart_set_series_color(m_chart, series.series, color);
 		series.color = color;
 
-		auto legendObj = series.legendObj->getRoot();
+		auto legendObj = series.legendObj->getRootPtr();
 		lv_obj_set_style_bg_color(legendObj, color, LV_STATE_CHECKED);
 		lv_obj_set_style_bg_color(legendObj, s_hiddenColor, LV_STATE_DEFAULT);
 	}
