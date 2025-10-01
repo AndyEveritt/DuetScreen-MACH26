@@ -39,12 +39,12 @@ jobs:
               id: detect_err_images
               if: always()
               run: |
-                ERR_COUNT=$(find tests/ref_imgs -maxdepth 1 -type f -name "*_err.*" | wc -l || true)
+                ERR_COUNT=$(find tests/ref_imgs -type f -name "*_err.*" | wc -l || true)
                 if [ "$ERR_COUNT" -gt 0 ]; then
                   echo "has_errors=true" >> "$GITHUB_OUTPUT"
                   echo "Found $ERR_COUNT error image(s)."
                   # List them for the log
-                  find tests/ref_imgs -maxdepth 1 -type f -name "*_err.*"
+                  find tests/ref_imgs -type f -name "*_err.*"
                 else
                   echo "has_errors=false" >> "$GITHUB_OUTPUT"
                   echo "No error images found."
