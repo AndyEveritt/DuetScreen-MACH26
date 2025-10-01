@@ -421,23 +421,6 @@ namespace OM
 		return true;
 	}
 
-	std::string_view GetHeightmapNameAt(int index)
-	{
-		std::vector<std::shared_ptr<FileSystem::FileSystemItem>> filenames = GetHeightmapFiles();
-		if (index < 0 || index >= (int)filenames.size())
-		{
-			LOG_ERROR("Invalid heightmap index {:d}", index);
-			return "";
-		}
-		std::shared_ptr<FileSystem::FileSystemItem> item = filenames[index];
-		if (item == nullptr)
-		{
-			LOG_ERROR("Filesystem item at index {:d} is null", index);
-			return "";
-		}
-		return item->GetName();
-	}
-
 	void SetCurrentHeightmap(std::string_view filename)
 	{
 		size_t pos = filename.find_last_of('/');
@@ -510,17 +493,16 @@ namespace OM
 		return count;
 	}
 
-	void RequestHeightmapFiles(std::function<void()> callback)
+	void RequestHeightmapFiles(FileSystem::request_files_cb_t callback)
 	{
 		LOG_DBG("Requesting heightmap files from Duet");
 		FileSystem::RequestFiles(Directories::DirectoryType::SYSTEM, "", callback);
 		ClearHeightmapCache();
 	}
 
-	std::vector<std::shared_ptr<FileSystem::FileSystemItem>> GetHeightmapFiles()
+	FileSystem::ItemList GetHeightmapFiles(const FileSystem::ItemList& files)
 	{
-		const std::vector<std::shared_ptr<FileSystem::FileSystemItem>>& files = FileSystem::GetItems();
-		std::vector<std::shared_ptr<FileSystem::FileSystemItem>> csvFiles;
+		FileSystem::ItemList csvFiles;
 
 		for (const auto& item : files)
 		{

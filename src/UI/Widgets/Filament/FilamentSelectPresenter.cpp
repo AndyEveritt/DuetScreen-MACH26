@@ -108,15 +108,14 @@ namespace UI
 	{
 		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
 									 "",
-									 [this]()
+									 [this](const OM::FileSystem::ItemList& files)
 									 {
 										 {
 											 MODEL_LOCK();
 											 this->m_filamentOptions.clear();
-											 for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
+											 for (size_t i = 0; i < files.size(); i++)
 											 {
-												 std::shared_ptr<OM::FileSystem::FileSystemItem> item =
-													 OM::FileSystem::GetItem(i);
+												 OM::FileSystem::ItemPtr item = files[i];
 												 if (item == nullptr)
 												 {
 													 continue;

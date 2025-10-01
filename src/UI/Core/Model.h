@@ -52,7 +52,6 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(Disconnected)                                                                                                   \
 	XX(UpdateAvailable, std::string)                                                                                   \
 	XX(FanData)                                                                                                        \
-	XX(FileData)                                                                                                       \
 	XX(BedHeaterData)                                                                                                  \
 	XX(ChamberHeaterData)                                                                                              \
 	XX(HeaterData)                                                                                                     \

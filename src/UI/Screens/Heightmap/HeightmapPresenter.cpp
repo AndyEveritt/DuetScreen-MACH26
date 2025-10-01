@@ -144,13 +144,23 @@ namespace UI
 	{
 		LOG_INFO("New compensation file");
 		updateHeightmapList();
-		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
+		OM::RequestHeightmapFiles(
+			[this](const OM::FileSystem::ItemList& files)
+			{
+				m_heightmapFiles = OM::GetHeightmapFiles(files);
+				updateHeightmapList();
+			});
 	}
 
 	void HeightmapPresenter::newDirectories()
 	{
 		LOG_DBG("New directories");
-		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
+		OM::RequestHeightmapFiles(
+			[this](const OM::FileSystem::ItemList& files)
+			{
+				m_heightmapFiles = OM::GetHeightmapFiles(files);
+				updateHeightmapList();
+			});
 	}
 
 	void HeightmapPresenter::newAxesData()
@@ -186,8 +196,6 @@ namespace UI
 
 	void HeightmapPresenter::updateHeightmapList()
 	{
-		// UI_LOCK();
-		m_heightmapFiles = OM::GetHeightmapFiles();
 		OM::FileSystem::SortFilesBy(m_heightmapFiles, OM::FileSystem::SortBy::NAME, false);
 		m_view->setHeightmapCount(m_heightmapFiles.size());
 
@@ -231,7 +239,12 @@ namespace UI
 	void HeightmapPresenter::onActivate()
 	{
 		LOG_DBG("activate");
-		OM::RequestHeightmapFiles([this]() { updateHeightmapList(); });
+		OM::RequestHeightmapFiles(
+			[this](const OM::FileSystem::ItemList& files)
+			{
+				m_heightmapFiles = OM::GetHeightmapFiles(files);
+				updateHeightmapList();
+			});
 		std::string_view currentHeightmap = OM::GetCurrentHeightmap();
 		std::shared_ptr<OM::Heightmap> map =
 			currentHeightmap.empty() ? nullptr : OM::GetHeightmapData(currentHeightmap);

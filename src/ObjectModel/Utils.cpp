@@ -44,6 +44,7 @@ namespace OM
 		ClearCurrentHeightmap();
 		ClearHeightmapCache();
 		Directories::Reset();
+		FileSystem::ClearFileSystem();
 	}
 
 	static Debug::DebugCommand s_logOM(
@@ -111,16 +112,6 @@ namespace OM
 							 fan->actualValue,
 							 fan->requestedValue,
 							 fan->rpm);
-				}
-			}
-			LOG_INFO("  Files:");
-			for (size_t i = 0; i < FileSystem::GetItemCount(); ++i)
-			{
-				auto item = FileSystem::GetItem(i);
-				if (item)
-				{
-					LOG_INFO("    [{:d}]: path({:s})", i, item->GetPath().c_str());
-					LOG_INFO("          date({:s}), size({:d})", item->GetDate().c_str(), item->GetSize());
 				}
 			}
 			LOG_INFO("  Heaters:");

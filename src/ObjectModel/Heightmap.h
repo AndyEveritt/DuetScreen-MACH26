@@ -110,7 +110,6 @@ namespace OM
 		std::vector<Point> m_heightmap;
 	};
 
-	std::string_view GetHeightmapNameAt(int index);
 	void SetCurrentHeightmap(std::string_view filename);
 	void ClearCurrentHeightmap();
 	std::string_view GetCurrentHeightmap();
@@ -122,8 +121,8 @@ namespace OM
 	HeightmapPtr GetHeightmapData(std::string_view filename);
 	size_t ClearHeightmapCache();
 
-	void RequestHeightmapFiles(std::function<void()> callback = nullptr);
-	std::vector<std::shared_ptr<FileSystem::FileSystemItem>> GetHeightmapFiles();
+	void RequestHeightmapFiles(FileSystem::request_files_cb_t callback = nullptr);
+	FileSystem::ItemList GetHeightmapFiles(const FileSystem::ItemList& files);
 } // namespace OM
 
 #endif /* JNI_OBJECTMODEL_HEIGHTMAP_H_ */

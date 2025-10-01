@@ -35,20 +35,6 @@ namespace Comm
 			thumbnail,
 		};
 
-		struct FileListData
-		{
-			std::string dir = "";
-			uint32_t first = 0;
-
-			FileListData(const std::string& dir)
-				: dir(dir)
-				, first(0)
-			{
-			}
-		};
-
-		using FileListDataPtr = std::shared_ptr<FileListData>;
-
 		// Enumeration to represent the json parsing state.
 		// We don't allow nested objects or nested arrays, so we don't need a state stack.
 		// An additional variable elementCount is 0 if we are not in an array, else the number of elements we have found
@@ -84,10 +70,10 @@ namespace Comm
 		// These variables are used for the
 		ResponseType responseType = ResponseType::unknown;
 		std::variant<void*,
-					 FileListDataPtr,
+					 OM::FileSystem::FileListRequestWeakPtr,
+					 OM::FileSystem::FileContentsPtr,
 					 FileInfoCache::FileInfoRequestPtr,
-					 FileInfoCache::ThumbnailRequestPtr,
-					 OM::FileSystem::FileContentsPtr>
+					 FileInfoCache::ThumbnailRequestPtr>
 			responseData = nullptr;
 
 	  private:

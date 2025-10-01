@@ -20,38 +20,70 @@
 
 bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	OM::FileSystem::SetCurrentDir(data);
-	LOG_DBG("Files: current dir = {:s}", OM::FileSystem::GetCurrentDirPath().c_str());
+	OM::FileSystem::FileListRequestWeakPtr request = OM::FileSystem::GetFileListRequest(data);
+	if (!request.lock())
+	{
+		LOG_WARN("Not expecting to receive file list data for \"{:s}\", ignoring", data);
+		return false;
+	}
+
+	LOG_DBG("Receiving file list for directory = {:s}", data);
 	decoder->responseType = Comm::JsonDecoder::ResponseType::filelist;
-	auto fileData = std::make_shared<Comm::JsonDecoder::FileListData>(OM::FileSystem::GetCurrentDirPath());
-	decoder->responseData = fileData;
+	decoder->responseData = request;
 	return true;
 }
 
 bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first = data;
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
+	{
+		return false;
+	}
+
+	auto request = std::get<OM::FileSystem::FileListRequestWeakPtr>(decoder->responseData).lock();
+	if (!request)
+	{
+		return false;
+	}
+
+	if (data != request->GetNext())
+	{
+		LOG_WARN("First index {:d} does not match expected next index {:d}, ignoring", data, request->GetNext());
+		decoder->responseType = Comm::JsonDecoder::ResponseType::unknown;
+		decoder->responseData = nullptr;
+		return false;
+	}
+
+	LOG_DBG("First index = {:d}", data);
 	if (data == 0)
 	{
-		OM::FileSystem::ClearFileSystem();
-		Model::get().post<EventType::FileData>();
+		request->ClearItems();
 	}
+	request->SetFirst(data);
 	return true;
 }
 
 bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	LOG_DBG("Files: type check val={:s}", data);
-	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
+	{
+		return false;
+	}
+
+	auto request = std::get<OM::FileSystem::FileListRequestWeakPtr>(decoder->responseData).lock();
+	if (!request)
+	{
+		return false;
+	}
+
+	LOG_DBG("type check val={:s}", data);
 	switch (*data)
 	{
 	case 'd':
-		OM::FileSystem::AddFolderAt(index);
-		LOG_DBG("Files: folder at index {:d}", index);
+		request->AddFolder();
 		break;
 	case 'f':
-		OM::FileSystem::AddFileAt(index);
-		LOG_DBG("Files: file at index {:d}", index);
+		request->AddFile();
 		break;
 	}
 	return true;
@@ -59,36 +91,67 @@ bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	auto responseData = std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData);
-	uint32_t index = indices[0] + responseData->first;
-	LOG_DBG("Files: item[{:d}] name={:s}", index, data);
-	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
+	{
+		return false;
+	}
+
+	auto request = std::get<OM::FileSystem::FileListRequestWeakPtr>(decoder->responseData).lock();
+	if (!request)
+	{
+		return false;
+	}
+
+	OM::FileSystem::ItemPtr item = request->GetLastItem();
 	if (item == nullptr)
 		return false;
 
+	LOG_DBG("name = {:s}", data);
 	item->SetName(data);
-	item->SetPath(responseData->dir);
+	item->SetPath(request->GetDir());
 	return true;
 }
 
 bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
-	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
-	LOG_DBG("Files: item[{:d}] size={:d}", index, data);
-	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
+	{
+		return false;
+	}
+
+	auto request = std::get<OM::FileSystem::FileListRequestWeakPtr>(decoder->responseData).lock();
+	if (!request)
+	{
+		return false;
+	}
+
+	OM::FileSystem::ItemPtr item = request->GetLastItem();
 	if (item == nullptr)
 		return false;
+
+	LOG_DBG("size = {:d}", data);
 	item->SetSize(data);
 	return true;
 }
 
 bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	uint32_t index = indices[0] + std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->first;
-	LOG_DBG("Files: item[{:d}] date={:s}", index, data);
-	std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(index);
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
+	{
+		return false;
+	}
+
+	auto request = std::get<OM::FileSystem::FileListRequestWeakPtr>(decoder->responseData).lock();
+	if (!request)
+	{
+		return false;
+	}
+
+	OM::FileSystem::ItemPtr item = request->GetLastItem();
 	if (item == nullptr)
 		return false;
+
+	LOG_DBG("date = {:s}", data);
 	item->SetDate(data);
 	return true;
 }
@@ -100,15 +163,27 @@ bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& d
 		// There is a key collision with `M409 K"boards" F"v"`, so we need to check if the key is part of an OM request
 		return true;
 	}
-	LOG_DBG("Files: next index = {:d}", data);
 
-	OM::FileSystem::RunCallback(data);
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
+	{
+		return false;
+	}
+
+	auto request = std::get<OM::FileSystem::FileListRequestWeakPtr>(decoder->responseData).lock();
+	if (!request)
+	{
+		return false;
+	}
+
+	LOG_DBG("next index = {:d}", data);
+	request->SetNext(data);
+	request->RunCallback();
 
 	if (data == 0)
 	{
 		return true;
 	}
-	Comm::DUET.RequestFileList(std::get<Comm::JsonDecoder::FileListDataPtr>(decoder->responseData)->dir.c_str(), data);
+	Comm::DUET.RequestFileList(request->GetDir(), data);
 	return true;
 }
 
@@ -234,15 +309,28 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 {
 	{
 		MODEL_LOCK();
-		OM::FileSystem::SortFileSystem(OM::FileSystem::SortBy::DATE, true);
-		for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
+		if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 		{
-			std::shared_ptr<OM::FileSystem::FileSystemItem> item = OM::FileSystem::GetItem(i);
+			return false;
+		}
+
+		auto request = std::get<OM::FileSystem::FileListRequestWeakPtr>(decoder->responseData).lock();
+		if (!request)
+		{
+			return false;
+		}
+
+		request->SortItems(OM::FileSystem::SortBy::DATE, true);
+
+		if (request->GetDir().find(OM::Directories::GetGcodesDirectory()) == std::string::npos)
+		{
+			return true;
+		}
+
+		for (size_t i = 0; i < request->GetItemCount(); i++)
+		{
+			std::shared_ptr<OM::FileSystem::FileSystemItem> item = request->GetItem(i);
 			if (item == nullptr || item->GetType() == OM::FileSystem::FileSystemItemType::folder)
-			{
-				continue;
-			}
-			if (item->GetPath().find("gcodes") == std::string::npos)
 			{
 				continue;
 			}
@@ -253,6 +341,5 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 			}
 		}
 	}
-	Model::get().post<EventType::FileData>();
 	return true;
 }

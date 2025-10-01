@@ -170,11 +170,11 @@ namespace UI
 		OM::FileSystem::RequestFiles(
 			getBaseFolderType(m_baseFolder),
 			m_currentFolder,
-			[this]()
+			[this](const OM::FileSystem::ItemList& files)
 			{
 				{
 					MODEL_LOCK();
-					m_items = OM::FileSystem::GetItems();
+					m_items = files;
 				}
 				this->m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), this->m_currentFolder));
 				this->sortFiles();

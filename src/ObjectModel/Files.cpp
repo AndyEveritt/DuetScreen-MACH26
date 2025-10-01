@@ -18,15 +18,7 @@
 
 namespace OM::FileSystem
 {
-	static std::string s_currentDirPath;
-	static std::vector<ItemPtr> s_items;
-	static struct
-	{
-		request_files_cb_t cb;
-		bool runEveryTime;
-	} s_callback;
-	static bool s_inMacroFolder = false;
-	static bool s_usbFolder = false;
+	static std::map<std::string, FileListRequestPtr> s_fileListRequests;
 
 	static FileContentsPtr s_fileContents;
 
@@ -78,6 +70,61 @@ namespace OM::FileSystem
 	FileSystemItem::~FileSystemItem()
 	{
 		LOG_DBG("Files: destructing item {:s}", GetPath().c_str());
+	}
+
+	FileListRequest::FileListRequest(request_files_cb_t callback, bool run_every_time)
+		: m_callback(callback)
+		, m_runEveryTime(run_every_time)
+	{
+	}
+
+	FolderPtr FileListRequest::AddFolder()
+	{
+		auto folder = std::make_shared<Folder>();
+		m_items.push_back(folder);
+		return folder;
+	}
+
+	FilePtr FileListRequest::AddFile()
+	{
+		auto file = std::make_shared<File>();
+		m_items.push_back(file);
+		return file;
+	}
+
+	void FileListRequest::SortItems(const SortBy by, const bool descending)
+	{
+		SortFilesBy(m_items, by, descending);
+	}
+
+	ItemPtr FileListRequest::GetLastItem() const
+	{
+		if (m_items.empty())
+		{
+			return nullptr;
+		}
+		return m_items.back();
+	}
+
+	ItemPtr FileListRequest::GetItem(const size_t index) const
+	{
+		if (index >= m_items.size())
+		{
+			return nullptr;
+		}
+		return m_items[index];
+	}
+
+	void FileListRequest::RunCallback()
+	{
+		if (m_next > 0 && !m_runEveryTime)
+		{
+			return;
+		}
+		if (m_callback)
+		{
+			m_callback(m_items);
+		}
 	}
 
 	static std::string GetLocalFilePath(std::string_view filename)
@@ -177,91 +224,17 @@ namespace OM::FileSystem
 		}
 	}
 
-	FilePtr AddFileAt(const size_t index)
+	FileListRequestPtr GetFileListRequest(const std::string& path)
 	{
-		if (index < s_items.size())
+		auto it = s_fileListRequests.find(path);
+		if (it != s_fileListRequests.end())
 		{
-			LOG_DBG("Deleting item[{:d}]", index);
-			s_items[index].reset();
-		}
-		FilePtr file = std::make_shared<File>();
-		s_items.insert(s_items.begin() + index, file);
-		return file;
-	}
-
-	FolderPtr AddFolderAt(const size_t index)
-	{
-		if (index < s_items.size())
-		{
-			LOG_DBG("Deleting item[{:d}]", index);
-			s_items[index].reset();
-		}
-		FolderPtr folder = std::make_shared<Folder>();
-		s_items.insert(s_items.begin() + index, folder);
-		return folder;
-	}
-
-	const size_t GetItemCount()
-	{
-		return s_items.size();
-	}
-
-	const std::vector<ItemPtr>& GetItems()
-	{
-		return s_items;
-	}
-
-	ItemPtr GetItem(const size_t index)
-	{
-		if (index >= GetItemCount())
-			return nullptr;
-		return s_items[index];
-	}
-
-	FilePtr GetFile(const std::string& name)
-	{
-		for (const auto& item : s_items)
-		{
-			if (!item)
-				continue;
-			if (item->GetName() != name)
-				continue;
-			if (item->GetType() != FileSystemItemType::file)
-				continue;
-			return std::static_pointer_cast<File>(item);
+			return it->second;
 		}
 		return nullptr;
 	}
 
-	FolderPtr GetSubFolder(const std::string& name)
-	{
-		for (const auto& item : s_items)
-		{
-			if (!item)
-				continue;
-			if (item->GetName() != name)
-				continue;
-			if (item->GetType() != FileSystemItemType::folder)
-				continue;
-			return std::static_pointer_cast<Folder>(item);
-		}
-		return nullptr;
-	}
-
-	void SetCurrentDir(const std::string& path)
-	{
-		s_currentDirPath = path;
-		LOG_INFO("Files: current directory = {:s}", s_currentDirPath.c_str());
-	}
-
-	void SortFileSystem(const SortBy by, const bool descending)
-	{
-		if (s_items.empty())
-			return;
-		SortFilesBy(s_items, by, descending);
-	}
-
-	void SortFilesBy(std::vector<ItemPtr>& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc)
+	void SortFilesBy(ItemList& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc)
 	{
 		auto first = items.begin();
 		auto last = items.end();
@@ -287,7 +260,7 @@ namespace OM::FileSystem
 		}
 	}
 
-	void SortFilesBy(std::vector<ItemPtr>& items, const SortBy by, const bool descending)
+	void SortFilesBy(ItemList& items, const SortBy by, const bool descending)
 	{
 		switch (by)
 		{
@@ -323,79 +296,31 @@ namespace OM::FileSystem
 		}
 	}
 
-	std::string GetParentDirPath()
-	{
-		if (!IsInSubFolder())
-			return s_currentDirPath;
-
-		std::string path;
-		size_t i = s_currentDirPath.find_last_of('/');
-
-		if (i == std::string::npos)
-			return "";
-		return s_currentDirPath.substr(0, i);
-	}
-
-	std::string GetCurrentDirName()
-	{
-		std::string path;
-		size_t i = s_currentDirPath.find_last_of('/');
-
-		if (i == std::string::npos)
-			return s_currentDirPath;
-		return s_currentDirPath.substr(i, s_currentDirPath.size() - i);
-	}
-
-	std::string& GetCurrentDirPath()
-	{
-		return s_currentDirPath;
-	}
-
-	bool IsInSubFolder()
-	{
-		if (IsUsbFolder())
-		{
-			return s_currentDirPath.empty() ? false : true;
-		}
-
-		size_t count = 0;
-		for (auto c : s_currentDirPath)
-		{
-			if (c == '/')
-				count++;
-		}
-		LOG_DBG("Files: {:d}", count);
-
-		return count > 1;
-	}
-
 	void RequestFiles(OM::Directories::DirectoryType baseFolder,
 					  const std::string& path,
 					  request_files_cb_t callback,
 					  bool runEveryTime)
 	{
-		s_usbFolder = false;
-		s_inMacroFolder = baseFolder == OM::Directories::DirectoryType::MACROS;
-		s_callback.cb = callback;
-		s_callback.runEveryTime = runEveryTime;
-		LOG_INFO("Files: requesting files in {:s}", path.c_str());
-		Comm::DUET.RequestFileList(fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path));
-	}
+		std::string full_path = fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path);
 
-	void RunCallback(const size_t next)
-	{
-		if (next > 0 && !s_callback.runEveryTime)
+		FileListRequestPtr reqPtr;
+		auto it = s_fileListRequests.find(full_path);
+		if (it == s_fileListRequests.end())
 		{
-			return;
+			reqPtr = std::make_shared<FileListRequest>(callback, runEveryTime);
+			s_fileListRequests[full_path] = reqPtr;
 		}
-		if (s_callback.cb)
+		else
 		{
-			s_callback.cb();
-			if (next == 0)
-			{
-				s_callback.cb = nullptr;
-			}
+			reqPtr = it->second;
 		}
+
+		reqPtr->SetFirst(0);
+		reqPtr->SetNext(0);
+		reqPtr->ClearItems();
+
+		LOG_INFO("Files: requesting files in {:s}", full_path);
+		Comm::DUET.RequestFileList(full_path, reqPtr->GetFirst());
 	}
 
 	void RequestUsbFiles(const std::string& path)
@@ -425,19 +350,10 @@ namespace OM::FileSystem
 #endif
 	}
 
-	bool IsMacroFolder()
-	{
-		return s_inMacroFolder;
-	}
-
-	bool IsUsbFolder()
-	{
-		return s_usbFolder;
-	}
-
 	void RunFile(const File* file)
 	{
-		if (s_inMacroFolder)
+		std::string path = file->GetPath();
+		if (path.find(OM::Directories::GetGcodesDirectory()) == std::string::npos)
 			RunMacro(file->GetPath());
 		else
 			StartPrint(file->GetPath());
@@ -486,8 +402,19 @@ namespace OM::FileSystem
 
 	void ClearFileSystem()
 	{
-		LOG_INFO("Files: clearing items");
-		s_items.clear();
+		LOG_INFO("Clearing all file list requests");
+
+		s_fileListRequests.clear();
+	}
+
+	void ClearFileList(const std::string& path)
+	{
+		auto it = s_fileListRequests.find(path);
+		if (it != s_fileListRequests.end())
+		{
+			FileListRequestPtr req = it->second;
+			req->ClearItems();
+		}
 	}
 
 	void RequestFileContents(const OM::Directories::DirectoryType baseFolder,

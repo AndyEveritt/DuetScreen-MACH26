@@ -89,9 +89,53 @@ namespace OM::FileSystem
 	using ItemPtr = std::shared_ptr<FileSystemItem>;
 	using FilePtr = std::shared_ptr<File>;
 	using FolderPtr = std::shared_ptr<Folder>;
+	using ItemList = std::vector<ItemPtr>;
 
-	using request_files_cb_t = std::function<void()>;
+	using request_files_cb_t = std::function<void(const ItemList& items)>;
 	using request_file_contents_cb_t = std::function<void(std::string_view contents)>;
+
+	enum class SortBy
+	{
+		NAME,
+		DATE,
+		SIZE
+	};
+
+	class FileListRequest
+	{
+	  public:
+		FileListRequest(request_files_cb_t callback, bool run_every_time);
+
+		void SetFirst(const size_t first) { m_first = first; }
+		void SetNext(const size_t next) { m_next = next; }
+
+		FolderPtr AddFolder();
+		FilePtr AddFile();
+		void ClearItems() { m_items.clear(); }
+		void SortItems(const SortBy by, const bool descending);
+
+		const std::string& GetDir() const { return m_path; }
+		const ItemList& GetItems() const { return m_items; }
+		const size_t GetItemCount() const { return m_items.size(); }
+		ItemPtr GetLastItem() const;
+		ItemPtr GetItem(const size_t index) const;
+		size_t GetFirst() const { return m_first; }
+		size_t GetNext() const { return m_next; }
+		bool RunEveryTime() const { return m_runEveryTime; }
+
+		void RunCallback();
+
+	  private:
+		std::string m_path;
+		request_files_cb_t m_callback;
+		bool m_runEveryTime;
+		ItemList m_items;
+		size_t m_first = 0;
+		size_t m_next = 0;
+	};
+
+	using FileListRequestPtr = std::shared_ptr<FileListRequest>;
+	using FileListRequestWeakPtr = std::weak_ptr<FileListRequest>;
 
 	class FileContents
 	{
@@ -127,36 +171,17 @@ namespace OM::FileSystem
 
 	using FileContentsPtr = std::shared_ptr<FileContents>;
 
-	enum class SortBy
-	{
-		NAME,
-		DATE,
-		SIZE
-	};
+	/* File List */
 
-	FilePtr AddFileAt(const size_t index);
-	FolderPtr AddFolderAt(const size_t index);
-	const size_t GetItemCount();
-	const std::vector<ItemPtr>& GetItems();
-	ItemPtr GetItem(const size_t index);
-	FilePtr GetFile(const std::string& name);
-	FolderPtr GetSubFolder(const std::string& name);
-	void SetCurrentDir(const std::string& path);
-	void SortFileSystem(const SortBy by, const bool descending);
-	void SortFilesBy(std::vector<ItemPtr>& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc);
-	void SortFilesBy(std::vector<ItemPtr>& items, const SortBy sortBy, const bool descending);
-	std::string GetParentDirPath();
-	std::string GetCurrentDirName();
-	std::string& GetCurrentDirPath();
-	bool IsInSubFolder();
+	FileListRequestPtr GetFileListRequest(const std::string& path);
+
+	void SortFilesBy(ItemList& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc);
+	void SortFilesBy(ItemList& items, const SortBy sortBy, const bool descending);
 	void RequestFiles(const OM::Directories::DirectoryType baseFolder,
 					  const std::string& path,
 					  request_files_cb_t callback,
 					  bool runEveryTime = false);
-	void RunCallback(const size_t next);
 	void RequestUsbFiles(const std::string& path);
-	bool IsMacroFolder();
-	bool IsUsbFolder();
 	void RunFile(const File* file);
 	void RunMacro(const std::string& path);
 	void UploadFile(const File* file);
@@ -166,12 +191,17 @@ namespace OM::FileSystem
 	void StopPrint();
 	void PrintAgain();
 	void ClearFileSystem();
+	void ClearFileList(const std::string& path);
+
+	/* File Contents */
 
 	void RequestFileContents(const OM::Directories::DirectoryType baseFolder,
 							 std::string_view path,
 							 request_file_contents_cb_t callback,
 							 bool runEveryTime = false);
 	FileContentsPtr GetCurrentFileRequestContents();
+
+	/* Misc */
 
 	std::string_view GetFileExtension(std::string_view fileName);
 } // namespace OM::FileSystem

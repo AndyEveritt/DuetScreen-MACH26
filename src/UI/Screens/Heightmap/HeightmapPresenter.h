@@ -54,7 +54,7 @@ namespace UI
 		bool checkMode();
 
 		std::shared_ptr<OM::Heightmap> m_heightmap;
-		std::vector<OM::FileSystem::ItemPtr> m_heightmapFiles;
+		OM::FileSystem::ItemList m_heightmapFiles;
 		HeightmapRenderMode m_mode = HeightmapRenderMode::Fixed;
 		AxisRange m_axis0Range;
 		AxisRange m_axis1Range;

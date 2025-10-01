@@ -178,13 +178,13 @@ namespace UI
 			return item;
 		}
 
-		void setItemCount(const size_t count, std::function<TPtr(size_t, LvObj&)> constructor)
+		size_t setItemCount(const size_t count, std::function<TPtr(size_t, LvObj&)> constructor)
 		{
 			UI_LOCK();
 			const size_t currentCount = getItemCount();
 			if (count == currentCount)
 			{
-				return;
+				return 0;
 			}
 
 			if (count < currentCount)
@@ -197,26 +197,28 @@ namespace UI
 			{
 				m_list.emplace_back(constructor(i, m_listCont));
 			}
+
+			return count > currentCount ? count - currentCount : 0;
 		}
 
 		template <typename F, typename = std::enable_if_t<std::is_invocable_r_v<TPtr, F, size_t, LvObj&>>>
 			requires std::is_constructible_v<std::function<TPtr(size_t, LvObj&)>, F>
-		void setItemCount(const size_t count, F&& constructor)
+		size_t setItemCount(const size_t count, F&& constructor)
 		{
-			setItemCount(count, std::function<TPtr(size_t, LvObj&)>(std::forward<F>(constructor)));
+			return setItemCount(count, std::function<TPtr(size_t, LvObj&)>(std::forward<F>(constructor)));
 		}
 
 		template <typename Class, typename... Args>
-		void setItemCount(size_t count,
-						  Class* instance,
-						  TPtr (Class::*constructor)(const size_t index, LvObj& parent, Args...),
-						  Args&&... args)
+		size_t setItemCount(size_t count,
+							Class* instance,
+							TPtr (Class::*constructor)(const size_t index, LvObj& parent, Args...),
+							Args&&... args)
 		{
 			UI_LOCK();
 			const size_t currentCount = getItemCount();
 			if (count == currentCount)
 			{
-				return;
+				return 0;
 			}
 
 			if (count < currentCount)
@@ -229,19 +231,21 @@ namespace UI
 			{
 				m_list.emplace_back((instance->*constructor)(i, m_listCont, std::forward<Args>(args)...));
 			}
+
+			return count > currentCount ? count - currentCount : 0;
 		}
 
 		template <typename... Args,
 				  typename = std::enable_if_t<sizeof...(Args) != 1 ||
 											  !std::is_invocable_r_v<TPtr, std::decay_t<Args>..., size_t, LvObj&>>>
 			requires std::is_constructible_v<T, size_t, LvObj&, Args...>
-		void setItemCount(const size_t count, Args&&... args)
+		size_t setItemCount(const size_t count, Args&&... args)
 		{
 			UI_LOCK();
 			const size_t currentCount = getItemCount();
 			if (count == currentCount)
 			{
-				return;
+				return 0;
 			}
 
 			if (count < currentCount)
@@ -254,6 +258,8 @@ namespace UI
 			{
 				m_list.emplace_back(std::make_shared<T>(i, m_listCont, std::forward<Args>(args)...));
 			}
+
+			return count > currentCount ? count - currentCount : 0;
 		}
 
 		const size_t getItemCount() const { return m_list.size(); }
