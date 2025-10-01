@@ -213,9 +213,16 @@ namespace UI
 		m_numberPad.hide();
 	}
 
-	void ToolList::setItemCnt(size_t cnt)
+	size_t ToolList::setItemCnt(size_t cnt)
 	{
-		m_list.setItemCount(cnt, *this);
+		return m_list.setItemCount(cnt,
+								   [this](size_t index, LvObj& parent)
+								   {
+									   auto item = std::make_shared<ToolListItem>(index, parent, *this);
+									   item->setSlotIndex((uint8_t)index);
+									   item->activate();
+									   return item;
+								   });
 	}
 
 	void ToolList::showNumberPad()

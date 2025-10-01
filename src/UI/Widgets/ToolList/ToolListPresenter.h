@@ -88,5 +88,6 @@ namespace UI
 			registerEventListener<EventType::HeaterData>(this, &ToolListPresenter::update);
 		}
 		void onActivate() override;
+		void onDeactivate() override;
 	};
 } // namespace UI

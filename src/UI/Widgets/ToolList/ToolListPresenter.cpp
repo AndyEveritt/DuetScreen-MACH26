@@ -438,15 +438,6 @@ namespace UI
 		{
 			UI_LOCK();
 			m_view->setItemCnt(toolCount);
-			for (size_t i = 0; i < m_view->getItemCnt(); ++i)
-			{
-				auto item = m_view->getToolListItem(i);
-				if (item != nullptr)
-				{
-					item->setSlotIndex(i);
-					item->getPresenter()->update();
-				}
-			}
 		}
 	}
 
@@ -494,6 +485,29 @@ namespace UI
 
 	void ToolListPresenter::onActivate()
 	{
+		/* Activate all item presenters */
+		for (size_t i = 0; i < m_view->getItemCnt(); i++)
+		{
+			auto item = m_view->getToolListItem(i);
+			if (item)
+			{
+				item->activate();
+			}
+		}
+
 		update();
+	}
+
+	void ToolListPresenter::onDeactivate()
+	{
+		/* Deactivate all item presenters */
+		for (size_t i = 0; i < m_view->getItemCnt(); i++)
+		{
+			auto item = m_view->getToolListItem(i);
+			if (item)
+			{
+				item->deactivate();
+			}
+		}
 	}
 } // namespace UI

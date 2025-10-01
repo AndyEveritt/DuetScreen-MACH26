@@ -110,6 +110,10 @@ namespace UI
 	void Button::setText(std::string_view text)
 	{
 		UI_LOCK();
+		if (text == m_label.getText())
+		{
+			return;
+		}
 		m_label.setText(text);
 		m_label.setVisible(!text.empty());
 	}

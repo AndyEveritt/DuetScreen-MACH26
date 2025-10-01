@@ -6,8 +6,10 @@
 
 bool ToolSubscribers::nullTool(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	OM::RemoveTool(indices[0], false);
-	Model::get().post<EventType::ToolData>();
+	if (OM::RemoveTool(indices[0], false) > 0)
+	{
+		Model::get().post<EventType::ToolData>();
+	}
 	return true;
 }
 

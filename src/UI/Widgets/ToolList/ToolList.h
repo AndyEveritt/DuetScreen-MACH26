@@ -62,7 +62,7 @@ namespace UI
 
 		ToolList(const std::string& name, LvObj& parent, LvObj* numberPadParent = nullptr);
 
-		void setItemCnt(size_t cnt);
+		size_t setItemCnt(size_t cnt);
 		size_t getItemCnt() const { return m_list.getItemCount(); }
 		std::shared_ptr<ToolListItem> getToolListItem(size_t index) const { return m_list.getItem(index); }
 

@@ -16,8 +16,10 @@
 
 bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
-	OM::Heat::RemoveHeater(indices[0], false);
-	Model::get().post<EventType::HeaterData>();
+	if (OM::Heat::RemoveHeater(indices[0], false) > 0)
+	{
+		Model::get().post<EventType::HeaterData>();
+	}
 	return true;
 }
 

@@ -33,6 +33,10 @@ namespace UI
 	void LvLabel::setText(const std::string_view text)
 	{
 		UI_LOCK();
+		if (text == getText())
+		{
+			return;
+		}
 		if (text.data() == nullptr)
 		{
 			lv_label_set_text(getRoot(), nullptr);
