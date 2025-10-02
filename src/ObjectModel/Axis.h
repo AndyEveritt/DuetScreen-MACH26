@@ -107,6 +107,8 @@ namespace OM::Move
 	const uint8_t GetCurrentWorkplaceNumber();
 	void SetPrintingAcceleration(uint32_t printingAcceleration);
 	const uint32_t& GetPrintingAcceleration();
+	bool GetNoMovesBeforeHoming();
+	void SetNoMovesBeforeHoming(bool val);
 
 	ExtruderAxisPtr GetExtruderAxis(const size_t index);
 	ExtruderAxisPtr GetExtruderAxisBySlot(const size_t slot);

@@ -29,6 +29,7 @@ namespace OM::Move
 	static uint8_t s_currentWorkplaceNumber = Workplaces::MaxTotalWorkplaces;
 	static uint32_t s_printingAcceleration = 0;
 	static Kinematics s_kinematics;
+	static bool s_noMovesBeforeHoming;
 
 	void Axis::Reset()
 	{
@@ -230,6 +231,16 @@ namespace OM::Move
 	const uint32_t& GetPrintingAcceleration()
 	{
 		return s_printingAcceleration;
+	}
+
+	bool GetNoMovesBeforeHoming()
+	{
+		return s_noMovesBeforeHoming;
+	}
+
+	void SetNoMovesBeforeHoming(bool val)
+	{
+		s_noMovesBeforeHoming = val;
 	}
 
 	void ExtruderAxis::Reset()

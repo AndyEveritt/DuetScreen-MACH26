@@ -190,6 +190,13 @@ bool MoveSubscribers::workplaceNumber(Comm::JsonDecoder* decoder, const uint32_t
 	return true;
 }
 
+bool MoveSubscribers::noMovesBeforeHoming(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
+{
+	OM::Move::SetNoMovesBeforeHoming(data);
+	Model::get().post<EventType::NoMoveBeforeHoming>();
+	return true;
+}
+
 bool MoveSubscribers::printingAcceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	OM::Move::SetPrintingAcceleration(data);

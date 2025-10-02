@@ -11,12 +11,33 @@
 
 namespace UI
 {
+	static bool canHome()
+	{
+		switch (OM::GetStatus())
+		{
+		case OM::PrinterStatus::connecting:
+		case OM::PrinterStatus::pausing:
+		case OM::PrinterStatus::resuming:
+		case OM::PrinterStatus::processing:
+		case OM::PrinterStatus::off:
+			return false;
+		default:
+			return true;
+		}
+	}
+
+	static bool canMove(const OM::Move::AxisPtr& axis)
+	{
+		return (axis->homed || !OM::Move::GetNoMovesBeforeHoming()) && canHome();
+	}
+
 	void MovePresenter::onInit()
 	{
 		MODEL_LOCK();
 
 		registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
 		registerEventListener<EventType::ToolData>(this, &MovePresenter::newToolData);
+		registerEventListener<EventType::Status>(this, &MovePresenter::newStatus);
 	}
 
 	void MovePresenter::onActivate()
@@ -185,11 +206,14 @@ namespace UI
 			m_axisData.resize(axes.size());
 			for (size_t i = 0; i < axes.size(); i++)
 			{
-				m_axisData[i] = {.letter = axes[i]->letter[0],
-								 .homed = axes[i]->homed != 0,
-								 .position = axes[i]->userPosition,
-								 .min = axes[i]->minPosition,
-								 .max = axes[i]->maxPosition};
+				auto& axis = axes[i];
+				m_axisData[i] = {.letter = axis->letter[0],
+								 .homed = axis->homed != 0,
+								 .position = axis->userPosition,
+								 .min = axis->minPosition,
+								 .max = axis->maxPosition,
+								 .home_disabled = !canHome(),
+								 .jog_disabled = !canMove(axis)};
 			}
 
 			m_view->setAxisData(m_axisData);
@@ -221,6 +245,11 @@ namespace UI
 				m_view->setLoadedFilament(tool->GetFilament().c_str());
 			}
 		}
+	}
+
+	void MovePresenter::newStatus(const OM::PrinterStatus& status)
+	{
+		newAxesData();
 	}
 
 	void MovePresenter::onDisconnect()

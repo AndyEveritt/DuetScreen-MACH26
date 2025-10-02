@@ -71,6 +71,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(KinematicsName, std::string)                                                                                    \
 	XX(SpeedFactor)                                                                                                    \
 	XX(WorkplaceNumber)                                                                                                \
+	XX(NoMoveBeforeHoming)                                                                                             \
 	XX(PrintingAcceleration, uint32_t)                                                                                 \
 	XX(CurrentMoveRequestedSpeed)                                                                                      \
 	XX(CurrentMoveTopSpeed)                                                                                            \
@@ -85,7 +86,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(IpAddress, std::string)                                                                                         \
 	XX(Status, OM::PrinterStatus)                                                                                      \
 	XX(CurrentTool)                                                                                                    \
-	XX(Alert, OM::Alert)                                                                                      \
+	XX(Alert, OM::Alert)                                                                                               \
 	XX(Time)                                                                                                           \
 	XX(ToolData)                                                                                                       \
 	XX(ToolHeaterData, size_t)                                                                                         \

@@ -19,18 +19,18 @@ namespace OM
 		unknown = -1,
 		busy,
 		cancelling,
-		toolChange,
+		changingTool,
 		connecting,
 		halted,
 		idle,
 		off,
 		paused,
 		pausing,
-		printing,
+		processing,
 		resuming,
 		simulating,
-		configuring,
-		flashing,
+		starting,
+		updating,
 		NumTypes
 	};
 
@@ -44,19 +44,21 @@ namespace OM
 	const PrinterStatusMapEntry printerStatusMap[] = {
 		{"busy", PrinterStatus::busy},
 		{"cancelling", PrinterStatus::cancelling},
-		{"changingTool", PrinterStatus::toolChange},
+		{"changingTool", PrinterStatus::changingTool},
 		{"connecting", PrinterStatus::connecting},
 		{"halted", PrinterStatus::halted},
 		{"idle", PrinterStatus::idle},
 		{"off", PrinterStatus::off},
 		{"paused", PrinterStatus::paused},
 		{"pausing", PrinterStatus::pausing},
-		{"processing", PrinterStatus::printing},
+		{"processing", PrinterStatus::processing},
 		{"resuming", PrinterStatus::resuming},
 		{"simulating", PrinterStatus::simulating},
-		{"starting", PrinterStatus::configuring},
-		{"updating", PrinterStatus::flashing},
+		{"starting", PrinterStatus::starting},
+		{"updating", PrinterStatus::updating},
 	};
+
+	static_assert(std::size(printerStatusMap) == (size_t)PrinterStatus::NumTypes);
 
 	bool IsPrintingStatus(PrinterStatus status);
 	bool PrintInProgress();

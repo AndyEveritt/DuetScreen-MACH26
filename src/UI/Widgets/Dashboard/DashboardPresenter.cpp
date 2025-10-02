@@ -19,7 +19,7 @@ namespace UI
 		case OM::PrinterStatus::cancelling:
 		case OM::PrinterStatus::paused:
 		case OM::PrinterStatus::pausing:
-		case OM::PrinterStatus::printing:
+		case OM::PrinterStatus::processing:
 		case OM::PrinterStatus::resuming:
 		case OM::PrinterStatus::simulating:
 			addHomeScreen(&getView()->getStatusView());

@@ -18,6 +18,8 @@ namespace UI
 			float position = 0.0f;
 			float min = std::numeric_limits<float>::min();
 			float max = std::numeric_limits<float>::max();
+			bool home_disabled = true;
+			bool jog_disabled = true;
 		};
 
 		using AxisDataList = std::vector<AxisData>;
@@ -52,8 +54,9 @@ namespace UI
 		// Observers
 		void newAxesData();
 		void newToolData();
-		
-		protected:
+		void newStatus(const OM::PrinterStatus& status);
+
+	  protected:
 		virtual void onActivate() override;
 		virtual void onInit() override;
 		void onDisconnect() override;

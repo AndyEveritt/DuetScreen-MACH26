@@ -26,6 +26,7 @@ class MoveSubscribers : public SubscriberMap
 		addSubscriber("move:kinematics:name", kinematicsName);
 		addSubscriber("move:speedFactor", speedFactor);
 		addSubscriber("move:workplaceNumber", workplaceNumber);
+		addSubscriber("move:noMovesBeforeHoming", noMovesBeforeHoming);
 		addSubscriber("move:printingAcceleration", printingAcceleration);
 		addSubscriber("move:currentMove:requestedSpeed", currentMoveRequestedSpeed);
 		addSubscriber("move:currentMove:topSpeed", currentMoveTopSpeed);
@@ -56,6 +57,7 @@ class MoveSubscribers : public SubscriberMap
 	static bool kinematicsName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool speedFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool workplaceNumber(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
+	static bool noMovesBeforeHoming(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[]);
 	static bool printingAcceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool currentMoveRequestedSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool currentMoveTopSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);

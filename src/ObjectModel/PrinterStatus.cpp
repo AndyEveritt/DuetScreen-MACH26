@@ -19,7 +19,7 @@ namespace OM
 
 	bool IsPrintingStatus(OM::PrinterStatus status)
 	{
-		return status == OM::PrinterStatus::printing || status == OM::PrinterStatus::paused ||
+		return status == OM::PrinterStatus::processing || status == OM::PrinterStatus::paused ||
 			   status == OM::PrinterStatus::pausing || status == OM::PrinterStatus::resuming ||
 			   status == OM::PrinterStatus::simulating;
 	}
@@ -34,7 +34,7 @@ namespace OM
 	// status requests.
 	bool OkToSend()
 	{
-		return s_status == OM::PrinterStatus::idle || s_status == OM::PrinterStatus::printing ||
+		return s_status == OM::PrinterStatus::idle || s_status == OM::PrinterStatus::processing ||
 			   s_status == OM::PrinterStatus::paused || s_status == OM::PrinterStatus::off;
 	}
 

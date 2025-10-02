@@ -271,18 +271,24 @@ namespace UI
 				has_x = true;
 				m_xyControl.setXPosition(axis.position);
 				m_xyControl.setXHomed(axis.homed);
+				m_xyControl.setXHomeDisabled(axis.home_disabled);
+				m_xyControl.setXJogDisabled(axis.jog_disabled);
 			}
 			else if (axis.letter == 'Y')
 			{
 				has_y = true;
 				m_xyControl.setYPosition(axis.position);
 				m_xyControl.setYHomed(axis.homed);
+				m_xyControl.setYHomeDisabled(axis.home_disabled);
+				m_xyControl.setYJogDisabled(axis.jog_disabled);
 			}
 			else if (axis.letter == 'Z')
 			{
 				has_z = true;
 				m_zControl.setAxisPosition(axis.position);
 				m_zControl.setAxisHomed(axis.homed);
+				m_zControl.setHomeDisabled(axis.home_disabled);
+				m_zControl.setJogDisabled(axis.jog_disabled);
 			}
 			else
 			{
@@ -290,9 +296,14 @@ namespace UI
 			}
 		}
 
-		setAxisDisabled('X', !has_x);
-		setAxisDisabled('Y', !has_y);
-		setAxisDisabled('Z', !has_z);
+		if (!has_x)
+			setAxisDisabled('X', true);
+
+		if (!has_y)
+			setAxisDisabled('Y', true);
+
+		if (!has_z)
+			setAxisDisabled('Z', true);
 
 #if DEBUG
 		size_t remaining_axis_count = axis_data.size() - (has_x ? 1 : 0) - (has_y ? 1 : 0) - (has_z ? 1 : 0);
@@ -335,6 +346,8 @@ namespace UI
 			control->setAxisLetter(data.letter);
 			control->setAxisPosition(data.position);
 			control->setAxisHomed(data.homed);
+			control->setHomeDisabled(data.home_disabled);
+			control->setJogDisabled(data.jog_disabled);
 		}
 
 		m_axisDataListPtr = &axis_data;

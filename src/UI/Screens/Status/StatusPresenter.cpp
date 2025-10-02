@@ -230,7 +230,7 @@ namespace UI
 		UI_LOCK();
 		switch (status)
 		{
-		case OM::PrinterStatus::printing:
+		case OM::PrinterStatus::processing:
 		case OM::PrinterStatus::simulating:
 			m_view->setResume(StatusView::HIDDEN);
 			m_view->setPause(StatusView::ENABLED);
