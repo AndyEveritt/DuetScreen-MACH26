@@ -291,7 +291,7 @@ namespace UI
 			addToVector(s_returnableScreens, view);
 		}
 
-		if (s_openScreens.empty())
+		if (s_openScreens.empty() && removed)
 		{
 			for (auto& home : s_homeScreens)
 			{

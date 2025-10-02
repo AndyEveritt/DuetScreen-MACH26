@@ -703,7 +703,7 @@ namespace UI
 			moveToFront();
 		}
 
-#if NESTED_SHOW_HIDE
+#if LV_NESTED_SHOW_HIDE
 		for (auto child : m_children)
 		{
 			if (child && child->isVisible())
@@ -741,7 +741,7 @@ namespace UI
 			moveToBack();
 		}
 
-#if NESTED_SHOW_HIDE
+#if LV_NESTED_SHOW_HIDE
 		for (auto child : m_children)
 		{
 			if (child && child->isVisible())

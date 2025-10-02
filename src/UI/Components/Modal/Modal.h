@@ -56,8 +56,16 @@ namespace UI
 			}
 		}
 
-		virtual void onShow() override { m_modalBg.show(true); }
-		virtual void onHide() override { m_modalBg.hide(); }
+		virtual void onShow() override
+		{
+			m_modalBg.show(true);
+			T::onShow();
+		}
+		virtual void onHide() override
+		{
+			T::onHide();
+			m_modalBg.hide();
+		}
 
 		LvContainer m_modalBg;
 	};

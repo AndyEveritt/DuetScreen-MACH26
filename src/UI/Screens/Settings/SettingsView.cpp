@@ -488,7 +488,7 @@ namespace UI
 		lv_table_set_cell_value(m_networkList, 0, 4, _("settings_network_connected"));
 
 		// Password Window
-		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+		m_passwordWindow.hide();
 		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_FLOATING);
 		lv_obj_align(m_passwordWindow, LV_ALIGN_CENTER, 0, 0);
 		lv_obj_set_size(m_passwordWindow, LV_PCT(80), LV_SIZE_CONTENT);
@@ -575,7 +575,7 @@ namespace UI
 			view->m_passwordWindow.setText(ssid);
 			view->getMainSettingsView().showKeyboard(
 				true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput.getTextArea());
-			lv_obj_remove_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+			openModal(&view->m_passwordWindow);
 			return;
 		}
 
@@ -586,7 +586,6 @@ namespace UI
 	{
 		UI_LOCK();
 		getMainSettingsView().showKeyboard(false);
-		m_passwordWindow.setFlag(LV_OBJ_FLAG_HIDDEN, true);
 	}
 
 	void NetworkSettingsView::onPasswordConfirmEvent()
@@ -597,23 +596,19 @@ namespace UI
 
 	void NetworkSettingsView::onRefreshEvent(lv_event_t* e)
 	{
-		UI_LOCK();
 		NetworkSettingsView* view = (NetworkSettingsView*)lv_event_get_user_data(e);
-		lv_obj_add_flag(view->m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		view->getPresenter()->scanWifi();
 	}
 
 	void NetworkSettingsView::onShow()
 	{
-		UI_LOCK();
-		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
 		getPresenter()->scanWifi();
+		m_passwordWindow.close();
 	}
 
 	void NetworkSettingsView::onHide()
 	{
-		UI_LOCK();
-		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_HIDDEN);
+		m_passwordWindow.close();
 	}
 
 	DeveloperSettingsView::DeveloperSettingsView(LvObj& parent, SettingsView& mainSettingsView)

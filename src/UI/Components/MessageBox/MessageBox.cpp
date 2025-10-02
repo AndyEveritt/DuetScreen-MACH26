@@ -40,6 +40,11 @@ namespace UI
 		}
 	}
 
+	void MessageBox::onHide()
+	{
+		close();
+	}
+
 	void MessageBox::init()
 	{
 		UI_LOCK();
@@ -135,7 +140,7 @@ namespace UI
 		UI_LOCK();
 		if (getRoot()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
 		{
-			closeScreen(this, false);
+			hide();
 		}
 		if (m_closeCb)
 		{
