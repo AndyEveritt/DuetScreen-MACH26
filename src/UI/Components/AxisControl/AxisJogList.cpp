@@ -155,8 +155,8 @@ namespace UI
 	{
 		UI_LOCK();
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
-		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
-		uintptr_t index = (uintptr_t)lv_obj_get_user_data(btn);
+		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
+		uintptr_t index = (uintptr_t)btn->getUserData();
 
 		if (item->m_jogCallback)
 		{

@@ -72,8 +72,9 @@ namespace OM::FileSystem
 		LOG_DBG("Files: destructing item {:s}", GetPath().c_str());
 	}
 
-	FileListRequest::FileListRequest(request_files_cb_t callback, bool run_every_time)
-		: m_callback(callback)
+	FileListRequest::FileListRequest(const std::string& path, request_files_cb_t callback, bool run_every_time)
+		: m_path(path)
+		, m_callback(callback)
 		, m_runEveryTime(run_every_time)
 	{
 	}
@@ -307,7 +308,7 @@ namespace OM::FileSystem
 		auto it = s_fileListRequests.find(full_path);
 		if (it == s_fileListRequests.end())
 		{
-			reqPtr = std::make_shared<FileListRequest>(callback, runEveryTime);
+			reqPtr = std::make_shared<FileListRequest>(full_path, callback, runEveryTime);
 			s_fileListRequests[full_path] = reqPtr;
 		}
 		else

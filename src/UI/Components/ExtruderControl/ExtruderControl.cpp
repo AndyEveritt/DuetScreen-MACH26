@@ -299,7 +299,7 @@ namespace UI
 	void ExtruderControl::onToolSelectEvent(lv_event_t* event)
 	{
 		UI_LOCK();
-		auto btn = static_cast<lv_obj_t*>(lv_event_get_target(event));
+		auto btn = LvObj::fromPtr(lv_event_get_target_obj(event));
 		if (!btn)
 		{
 			LOG_ERROR("Failed to get button from event");
@@ -307,7 +307,7 @@ namespace UI
 		}
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
 
-		size_t index = static_cast<size_t>(reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn)));
+		size_t index = static_cast<size_t>(reinterpret_cast<uintptr_t>(btn->getUserData()));
 		LOG_DBG("Tool button clicked for index {} in {}", index, control->getName());
 
 		if (control && control->m_toolSelectCb)
@@ -365,7 +365,7 @@ namespace UI
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
 
 		size_t index = static_cast<size_t>(
-			reinterpret_cast<uintptr_t>(lv_obj_get_user_data(static_cast<lv_obj_t*>(lv_event_get_target(event)))));
+			reinterpret_cast<uintptr_t>(LvObj::fromPtr(lv_event_get_target_obj(event))->getUserData()));
 
 		lv_event_code_t code = lv_event_get_code(event);
 
@@ -399,7 +399,7 @@ namespace UI
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
 
 		size_t index = static_cast<size_t>(
-			reinterpret_cast<uintptr_t>(lv_obj_get_user_data(static_cast<lv_obj_t*>(lv_event_get_target(event)))));
+			reinterpret_cast<uintptr_t>(LvObj::fromPtr(lv_event_get_target_obj(event))->getUserData()));
 
 		lv_event_code_t code = lv_event_get_code(event);
 

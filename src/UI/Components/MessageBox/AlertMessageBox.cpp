@@ -369,8 +369,8 @@ namespace UI
 	{
 		UI_LOCK();
 		AlertMessageBox* msgBox = static_cast<AlertMessageBox*>(lv_event_get_user_data(e));
-		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target(e);
-		uintptr_t index = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
+		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
+		uintptr_t index = reinterpret_cast<uintptr_t>(btn->getUserData());
 		if (msgBox->m_choiceCb)
 		{
 			msgBox->m_choiceCb(index);
@@ -488,7 +488,7 @@ namespace UI
 		UI_LOCK();
 		Button* btn = static_cast<Button*>(lv_event_get_user_data(e));
 		AlertMessageBox::AxisJog* axisJog =
-			static_cast<AlertMessageBox::AxisJog*>(lv_obj_get_user_data(btn->getParent()));
+			static_cast<AlertMessageBox::AxisJog*>(LvObj::fromPtr(btn->getParentPtr())->getUserData());
 		float amount = *reinterpret_cast<float*>(btn->getUserData());
 
 		// TODO: I am breaking the rule of no logic in the view but I'm being lazy. I should create a presenter for

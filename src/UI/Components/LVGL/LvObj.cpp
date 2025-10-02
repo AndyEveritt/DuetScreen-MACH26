@@ -9,6 +9,8 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 
+#define LV_NESTED_SHOW_HIDE 1
+
 namespace UI
 {
 	void lv_timer_delete_safe(lv_timer_t* timer)
@@ -27,8 +29,6 @@ namespace UI
 	LvObj::LvObj(lv_create_t initFunc, const std::string& name, LvObj& parent)
 		: LvObj(initFunc, name, parent.getRootPtr())
 	{
-		m_parent = &parent;
-		parent.addChild(this);
 	}
 
 	LvObj::LvObj(lv_create_t initFunc, const std::string& name, lv_obj_t* parent)
@@ -38,6 +38,7 @@ namespace UI
 		m_root = initFunc(parent);
 
 		lv_obj_set_name(m_root, name.c_str());
+		lv_obj_set_user_data(m_root, this);
 #if DEBUG
 		std::string fullName = name;
 		while (parent != nullptr)
@@ -69,28 +70,22 @@ namespace UI
 				layout.h == LV_SIZE_CONTENT ? LV_SIZE_CONTENT : LV_PCT(layout.h));
 	}
 
+	LvObj* LvObj::fromPtr(lv_obj_t* obj)
+	{
+		assert(obj != nullptr && "LvObj::fromPtr: obj is null");
+
+		void* user_data = lv_obj_get_user_data(obj);
+		return static_cast<LvObj*>(user_data);
+	}
+
 	LvObj::~LvObj()
 	{
 		UI_LOCK();
 		LOG_VERBOSE("Deleting obj '{}' ({})", getName(), static_cast<const void*>(m_root));
 		if (getRoot() != nullptr)
 		{
-			if (m_parent)
-			{
-				m_parent->removeChild(this);
-			}
 			lv_obj_delete(getRoot());
 		}
-	}
-
-	void LvObj::addChild(LvObj* child)
-	{
-		m_children.push_back(child);
-	}
-
-	void LvObj::removeChild(LvObj* child)
-	{
-		m_children.remove(child);
 	}
 
 	std::string_view LvObj::getName() const
@@ -98,25 +93,37 @@ namespace UI
 		return m_name;
 	}
 
-	lv_obj_t* LvObj::getScreen() const
+	lv_obj_t* LvObj::getScreenPtr() const
 	{
 		UI_LOCK();
 		return lv_obj_get_screen(getRoot());
 	}
 
-	lv_obj_t* LvObj::getParent() const
+	LvObj* LvObj::getParent() const
+	{
+		return LvObj::fromPtr(getParentPtr());
+	}
+
+	lv_obj_t* LvObj::getParentPtr() const
 	{
 		UI_LOCK();
 		return lv_obj_get_parent(getRoot());
 	}
 
-	lv_obj_t* LvObj::getChild(int32_t id) const
+	LvObj* LvObj::getChild(int32_t id) const
+	{
+		UI_LOCK();
+		lv_obj_t* child = getChildPtr(id);
+		return LvObj::fromPtr(child);
+	}
+
+	lv_obj_t* LvObj::getChildPtr(int32_t id) const
 	{
 		UI_LOCK();
 		return lv_obj_get_child(getRoot(), id);
 	}
 
-	uint32_t LvObj::getChildCnt() const
+	uint32_t LvObj::getChildCount() const
 	{
 		UI_LOCK();
 		return lv_obj_get_child_count(getRoot());
@@ -138,8 +145,8 @@ namespace UI
 	{
 		UI_LOCK();
 		layout_t layout = getLayout();
-		lv_coord_t wParent = lv_obj_get_width(getParent());
-		lv_coord_t hParent = lv_obj_get_height(getParent());
+		lv_coord_t wParent = lv_obj_get_width(getParentPtr());
+		lv_coord_t hParent = lv_obj_get_height(getParentPtr());
 
 		layout.x = getPct(layout.x, wParent);
 		layout.y = getPct(layout.y, hParent);
@@ -226,25 +233,19 @@ namespace UI
 	void LvObj::setUserData(void* user_data)
 	{
 		UI_LOCK();
-		lv_obj_set_user_data(getRoot(), user_data);
+		m_userData = user_data;
 	}
 
 	void* LvObj::getUserData() const
 	{
 		UI_LOCK();
-		return lv_obj_get_user_data(getRoot());
+		return m_userData;
 	}
 
 	void LvObj::setParent(LvObj& parent)
 	{
 		UI_LOCK();
-		if (m_parent)
-		{
-			m_parent->removeChild(this);
-		}
-		m_parent = &parent;
-		parent.addChild(this);
-		lv_obj_set_parent(getRoot(), parent);
+		lv_obj_set_parent(getRoot(), parent.getRootPtr());
 	}
 
 	void LvObj::setLayoutStyle(lv_layout_t style)
@@ -676,7 +677,6 @@ namespace UI
 			lv_obj_t* child = lv_obj_get_child(getRoot(), 0);
 			lv_obj_delete(child);
 		}
-		m_children.clear();
 	}
 
 	/**
@@ -687,7 +687,7 @@ namespace UI
 	void LvObj::show(bool move_to_front)
 	{
 		UI_LOCK();
-		if (getRoot() == nullptr)
+		if (getRoot() == nullptr || m_showing)
 		{
 			return;
 		}
@@ -698,23 +698,26 @@ namespace UI
 		}
 
 		LOG_DBG("Showing '{:s}'", getName());
+		m_showing = 1;
 		if (move_to_front)
 		{
 			moveToFront();
 		}
 
 #if LV_NESTED_SHOW_HIDE
-		for (auto child : m_children)
+		for (size_t i = 0; i < getChildCount(); i++)
 		{
-			if (child && child->isVisible())
+			if (auto child = getChild(i))
 			{
-				child->show();
+				if (child && child->isVisible())
+					child->show(false);
 			}
 		}
 #endif
 
 		setFlag(LV_OBJ_FLAG_HIDDEN, false);
 		onShow();
+		m_showing = 0;
 	}
 
 	/**
@@ -725,7 +728,7 @@ namespace UI
 	void LvObj::hide(bool move_to_back)
 	{
 		UI_LOCK();
-		if (getRoot() == nullptr)
+		if (getRoot() == nullptr || m_hidding)
 		{
 			return;
 		}
@@ -736,14 +739,16 @@ namespace UI
 		}
 
 		LOG_DBG("Hiding '{:s}'", getName());
+		m_hidding = 1;
 		if (move_to_back)
 		{
 			moveToBack();
 		}
 
 #if LV_NESTED_SHOW_HIDE
-		for (auto child : m_children)
+		for (size_t i = 0; i < getChildCount(); i++)
 		{
+			auto child = getChild(i);
 			if (child && child->isVisible())
 			{
 				/* want to run `deactivate` on any children with presenters, and onHide(), but also want the child to be
@@ -756,6 +761,7 @@ namespace UI
 
 		setFlag(LV_OBJ_FLAG_HIDDEN, true);
 		onHide();
+		m_hidding = 0;
 	}
 
 	bool LvObj::isVisible()

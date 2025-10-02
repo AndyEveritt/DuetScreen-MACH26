@@ -32,9 +32,9 @@ namespace UI
 		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < m_sliderCont.getChildCnt(); i++)
+		for (size_t i = 0; i < m_sliderCont.getChildCount(); i++)
 		{
-			lv_obj_t* child = m_sliderCont.getChild(i);
+			lv_obj_t* child = m_sliderCont.getChildPtr(i);
 			lv_obj_set_height(child, LV_SIZE_CONTENT);
 			lv_obj_set_style_pad_all(child, 2, 0);
 		}

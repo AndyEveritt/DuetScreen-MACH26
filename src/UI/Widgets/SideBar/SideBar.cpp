@@ -44,7 +44,7 @@ namespace UI
 		m_macrosBtn.setWidth(LV_PCT(100));
 		m_menuBtn.setWidth(LV_PCT(100));
 
-		setExtDrawSize(lv_obj_get_width(getScreen()));
+		setExtDrawSize(lv_obj_get_width(getScreenPtr()));
 		m_btns.setExtDrawSize(400);
 
 		m_backBtn.setFlexGrow(1);
@@ -65,7 +65,7 @@ namespace UI
 		m_appDrawer.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_appDrawer.hide(true);
 
-		m_appDrawerModalBg.setSize(lv_obj_get_width(getScreen()), LV_PCT(100));
+		m_appDrawerModalBg.setSize(lv_obj_get_width(getScreenPtr()), LV_PCT(100));
 		m_appDrawerModalBg.hide(true);
 		m_appDrawerModalBg.addEventCallback(
 			[](lv_event_t* e)

@@ -215,9 +215,9 @@ namespace UI
 	void NumberPad::btnmEventHandler(lv_event_t* e)
 	{
 		UI_LOCK();
-		lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
+		lv_obj_t* obj = lv_event_get_target_obj(e);
 		TextBox& ta = *(TextBox*)lv_event_get_user_data(e);
-		NumberPad& np = *(NumberPad*)lv_obj_get_user_data(ta);
+		NumberPad& np = *(NumberPad*)ta.getUserData();
 
 		uint32_t btn_id = lv_buttonmatrix_get_selected_button(obj);
 		if (btn_id == LV_BUTTONMATRIX_BUTTON_NONE)

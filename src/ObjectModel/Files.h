@@ -104,7 +104,7 @@ namespace OM::FileSystem
 	class FileListRequest
 	{
 	  public:
-		FileListRequest(request_files_cb_t callback, bool run_every_time);
+		FileListRequest(const std::string& path, request_files_cb_t callback, bool run_every_time);
 
 		void SetFirst(const size_t first) { m_first = first; }
 		void SetNext(const size_t next) { m_next = next; }

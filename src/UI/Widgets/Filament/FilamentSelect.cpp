@@ -45,7 +45,7 @@ namespace UI
 		static void onToolSelectEvent(lv_event_t* e)
 		{
 			auto& control = *static_cast<ToolItem*>(lv_event_get_user_data(e));
-			auto& btn = *static_cast<Button*>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
+			auto& btn = *static_cast<Button*>(LvObj::fromPtr(lv_event_get_target_obj(e))->getUserData());
 
 			auto presenter = control.m_widget.getPresenter();
 			presenter->setSelectedToolBySlot(control.getIndex());
@@ -213,8 +213,8 @@ namespace UI
 	void FilamentSelect::onFilamentOptionClicked(lv_event_t* e)
 	{
 		auto& control = *static_cast<FilamentSelect*>(lv_event_get_user_data(e));
-		lv_obj_t* obj = lv_event_get_target_obj(e);
-		size_t index = reinterpret_cast<size_t>(lv_obj_get_user_data(obj));
+		LvObj* obj = LvObj::fromPtr(lv_event_get_target_obj(e));
+		size_t index = reinterpret_cast<size_t>(obj->getUserData());
 		auto presenter = control.getPresenter();
 
 		auto btn = control.m_filamentOptions.getItem(index);

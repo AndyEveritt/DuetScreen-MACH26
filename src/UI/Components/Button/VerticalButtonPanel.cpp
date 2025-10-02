@@ -50,9 +50,8 @@ namespace UI
 				{
 					UI_LOCK();
 					VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
-					lv_obj_t* btn = static_cast<lv_obj_t*>(lv_event_get_target(e));
-					panel->setSelectedValueIndex(
-						static_cast<uint8_t>(reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn))));
+					LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
+					panel->setSelectedValueIndex(static_cast<uint8_t>(reinterpret_cast<uintptr_t>(btn->getUserData())));
 				},
 				this);
 		}

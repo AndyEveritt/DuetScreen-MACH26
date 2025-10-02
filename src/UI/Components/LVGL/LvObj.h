@@ -91,6 +91,8 @@ namespace UI
 		LvObj(const LvObj&) = delete;
 		LvObj& operator=(const LvObj&) = delete;
 
+		static LvObj* fromPtr(lv_obj_t* obj);
+
 		virtual ~LvObj();
 
 		std::string_view getName() const;
@@ -107,10 +109,12 @@ namespace UI
 		/* XML */
 		static void registerWidgetXml();
 
-		lv_obj_t* getScreen() const;
-		lv_obj_t* getParent() const;
-		lv_obj_t* getChild(int32_t id) const;
-		uint32_t getChildCnt() const;
+		lv_obj_t* getScreenPtr() const;
+		LvObj* getParent() const;
+		lv_obj_t* getParentPtr() const;
+		LvObj* getChild(int32_t id) const;
+		lv_obj_t* getChildPtr(int32_t id) const;
+		uint32_t getChildCount() const;
 		layout_t getLayout() const;
 		layout_t getLayoutPct() const;
 		lv_area_t getCoords() const;
@@ -221,9 +225,6 @@ namespace UI
 	  protected:
 		LvObj(lv_create_t initFunc, const std::string& name, lv_obj_t* parent);
 
-		void addChild(LvObj* child);
-		void removeChild(LvObj* child);
-
 		virtual void onShow() {}
 		virtual void onHide() {}
 		virtual void refresh() {}
@@ -232,8 +233,9 @@ namespace UI
 		lv_obj_t* m_root;
 		std::string m_name;
 
-		LvObj* m_parent = nullptr;
-		std::list<LvObj*> m_children;
+		uint8_t m_showing : 1 = 0; // 1 = showing, 0 = hidden
+		uint8_t m_hidding : 1 = 0; // 1 = hiding, 0 = not hiding
+		void* m_userData = nullptr;
 	};
 } // namespace UI
 

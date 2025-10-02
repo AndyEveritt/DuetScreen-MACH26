@@ -86,14 +86,9 @@ namespace UI
 			m_flowMultiplier.addEventCallback(openSubView, LV_EVENT_CLICKED, &HomeView::instance().getFineTuneView());
 			m_initialised = true;
 		}
-
-		m_babyStep.activate();
 	}
 
-	void PrintInfo::onHide()
-	{
-		m_babyStep.deactivate();
-	}
+	void PrintInfo::onHide() {}
 
 	void PrintInfo::setAxisCount(size_t count)
 	{

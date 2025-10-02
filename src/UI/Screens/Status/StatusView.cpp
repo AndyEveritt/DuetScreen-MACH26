@@ -49,12 +49,12 @@ namespace UI
 		m_printAgainBtn.setText(_("print_again"));
 		m_cancelBtn.setText(_("cancel"));
 
-		for (size_t i = 0; i < m_footer.getChildCnt(); i++)
+		for (size_t i = 0; i < m_footer.getChildCount(); i++)
 		{
-			lv_obj_t* child = m_footer.getChild(i);
-			lv_obj_set_height(child, LV_PCT(100));
-			lv_obj_set_style_min_height(child, LV_SIZE_CONTENT, 0);
-			lv_obj_set_flex_grow(child, 1);
+			LvObj* child = m_footer.getChild(i);
+			child->setHeight(LV_PCT(100));
+			child->setMinHeight(LV_SIZE_CONTENT, 0);
+			child->setFlexGrow(1);
 		}
 
 		// Hide resume button initially

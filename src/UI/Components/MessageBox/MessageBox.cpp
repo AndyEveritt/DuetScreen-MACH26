@@ -243,10 +243,10 @@ namespace UI
 	{
 		UI_LOCK();
 		bool visible = false;
-		for (size_t i = 0; i < m_body.getChildCnt(); i++)
+		for (size_t i = 0; i < m_body.getChildCount(); i++)
 		{
-			lv_obj_t* child = m_body.getChild(i);
-			if (!lv_obj_has_flag(child, LV_OBJ_FLAG_HIDDEN))
+			LvObj* child = m_body.getChild(i);
+			if (!child->hasFlag(LV_OBJ_FLAG_HIDDEN))
 			{
 				visible = true;
 				break;
@@ -255,10 +255,10 @@ namespace UI
 		m_body.setVisible(visible);
 
 		visible = false;
-		for (size_t i = 0; i < m_footer.getChildCnt(); i++)
+		for (size_t i = 0; i < m_footer.getChildCount(); i++)
 		{
-			lv_obj_t* child = m_footer.getChild(i);
-			if (!lv_obj_has_flag(child, LV_OBJ_FLAG_HIDDEN))
+			LvObj* child = m_footer.getChild(i);
+			if (!child->hasFlag(LV_OBJ_FLAG_HIDDEN))
 			{
 				visible = true;
 				break;

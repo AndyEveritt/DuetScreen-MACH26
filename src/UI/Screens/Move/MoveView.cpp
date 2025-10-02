@@ -232,9 +232,9 @@ namespace UI
 	{
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		lv_obj_t* btn = (lv_obj_t*)lv_event_get_target_obj(e);
+		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
 		view->m_distances.getItem(s_currentDistanceIndex)->setChecked(false);
-		s_currentDistanceIndex = reinterpret_cast<uintptr_t>(lv_obj_get_user_data(btn));
+		s_currentDistanceIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
 		view->m_distances.getItem(s_currentDistanceIndex)->setChecked(true);
 	}
 

@@ -251,16 +251,16 @@ namespace UI
 	void TextBox::addConfirmEventCallback(lv_event_cb_t cb, void* userData)
 	{
 		UI_LOCK();
-		lv_obj_set_user_data(m_textArea, reinterpret_cast<void*>(cb));
+		m_textArea.setUserData(reinterpret_cast<void*>(cb));
 		m_textArea.addEventCallback(
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
-				auto callback =
-					reinterpret_cast<lv_event_cb_t>(lv_obj_get_user_data((lv_obj_t*)lv_event_get_target(e)));
 				lv_event_code_t code = lv_event_get_code(e);
 				if (code == LV_EVENT_READY || code == LV_EVENT_DEFOCUSED)
 				{
+					auto callback =
+						reinterpret_cast<lv_event_cb_t>(LvObj::fromPtr(lv_event_get_target_obj(e))->getUserData());
 					callback(e);
 				}
 			},

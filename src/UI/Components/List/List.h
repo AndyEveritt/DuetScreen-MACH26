@@ -88,7 +88,7 @@ namespace UI
 			{
 				showHeader(true);
 			}
-			else if (m_header.getChildCnt() <= 1) // Only the title is present
+			else if (m_header.getChildCount() <= 1) // Only the title is present
 			{
 				showHeader(false);
 			}
