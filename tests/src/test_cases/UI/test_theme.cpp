@@ -387,12 +387,12 @@ TEST_F(TestTheme, Widgets)
 		canvas.drawLine({0, 0}, {99, 99}, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
 		canvas.drawLabelPx({75, 20}, "Label", lv_palette_main(LV_PALETTE_BLUE), LV_OPA_COVER);
 
-		cont.show();
-		cont2.hide();
+		cont.setFlag(LV_OBJ_FLAG_HIDDEN, false);
+		cont2.setFlag(LV_OBJ_FLAG_HIDDEN, true);
 		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme_widgets_{}.png", theme->getName()).c_str());
 
-		cont.hide();
-		cont2.show();
+		cont.setFlag(LV_OBJ_FLAG_HIDDEN, true);
+		cont2.setFlag(LV_OBJ_FLAG_HIDDEN, false);
 		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme_widgets_{}_2.png", theme->getName()).c_str());
 	}
 }
