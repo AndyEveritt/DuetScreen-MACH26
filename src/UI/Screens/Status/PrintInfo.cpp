@@ -18,7 +18,7 @@ namespace UI
 	{
 		UI_LOCK();
 
-		static int32_t printInfoColDsc[] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static int32_t printInfoColDsc[] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
 		static int32_t printInfoRowDsc[] = {
 			LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		setGridDsc(printInfoColDsc, printInfoRowDsc);
@@ -36,12 +36,16 @@ namespace UI
 
 		/* Speed */
 		m_speedCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_speedCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 		m_speedHeader.setText(_("status_speed_header"));
+		m_speedHeader.hide();
 		updateSpeed(0, 0);
 		updateSpeedMultiplier(100);
 
 		/* Flow */
 		m_flowCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_flowHeader.setText(_("status_flow_header"));
+		m_flowHeader.hide();
 		updateFlowMultiplier(100);
 
 		/* Time */
@@ -127,14 +131,14 @@ namespace UI
 	void PrintInfo::updateExtrusionRate(float feedrate, float volumetric)
 	{
 		UI_LOCK();
-		m_flowRate.setText(fmt::format(fmt::runtime(_("status_extrusion_speed")), feedrate));
+		m_extruderFeedrate.setText(fmt::format(fmt::runtime(_("status_extrusion_speed")), feedrate));
 		m_flowRate.setText(fmt::format(fmt::runtime(_("status_flow_rate")), volumetric));
 	}
 
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
 		m_currentSpeed.setText(fmt::format(fmt::runtime(_("status_current_speed")), topSpeed));
-		m_requestedSpeed.setText(fmt::format(fmt::runtime(_("status_top_speed")), requestedSpeed));
+		m_requestedSpeed.setText(fmt::format(fmt::runtime(_("status_requested_speed")), requestedSpeed));
 		m_speedInfo.updateSpeed(topSpeed, requestedSpeed);
 	}
 
