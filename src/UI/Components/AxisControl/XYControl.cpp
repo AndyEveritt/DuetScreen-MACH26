@@ -124,6 +124,7 @@ namespace UI
 	void XYControl::setXJogDisabled(bool disabled)
 	{
 		UI_LOCK();
+		m_xLabel.setState(LV_STATE_DISABLED, disabled);
 		m_xIncrementButton.setDisabled(disabled);
 		m_xDecrementButton.setDisabled(disabled);
 	}
@@ -131,6 +132,7 @@ namespace UI
 	void XYControl::setYJogDisabled(bool disabled)
 	{
 		UI_LOCK();
+		m_yLabel.setState(LV_STATE_DISABLED, disabled);
 		m_yIncrementButton.setDisabled(disabled);
 		m_yDecrementButton.setDisabled(disabled);
 	}

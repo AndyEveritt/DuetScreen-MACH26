@@ -79,6 +79,7 @@ namespace UI
 	void GenericAxisControl::setJogDisabled(bool disabled)
 	{
 		UI_LOCK();
+		m_label.setState(LV_STATE_DISABLED, disabled);
 		m_incrementButton.setDisabled(disabled);
 		m_decrementButton.setDisabled(disabled);
 	}
