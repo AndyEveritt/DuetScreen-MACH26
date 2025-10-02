@@ -138,6 +138,12 @@ namespace UI
 			removeFromVector(s_openScreens, view);
 		}
 		s_homeScreens.push_back(view);
+
+		if (s_openScreens.empty() && s_openModals.empty())
+		{
+			/* Home screen was previously visible so it should remain visible */
+			home();
+		}
 		notifySideBar();
 	}
 

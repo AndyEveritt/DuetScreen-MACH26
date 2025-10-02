@@ -48,7 +48,7 @@ namespace UI
 			// {_("macros"), &HomeView::instance().getMacroView()},
 			{_("heightmap"), &HomeView::instance().getHeightmapView()},
 			{_("settings"), &HomeView::instance().getSettingsView()},
-			{_("status"), &HomeView::instance().getStatusView()},
+			{_("status"), &HomeView::instance().getDashboard().getStatusView()},
 		};
 
 		m_apps.setItemCount(std::size(apps),

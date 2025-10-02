@@ -85,7 +85,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(IpAddress, std::string)                                                                                         \
 	XX(Status, OM::PrinterStatus)                                                                                      \
 	XX(CurrentTool)                                                                                                    \
-	XX(MessageBoxData, OM::Alert)                                                                                      \
+	XX(Alert, OM::Alert)                                                                                      \
 	XX(Time)                                                                                                           \
 	XX(ToolData)                                                                                                       \
 	XX(ToolHeaterData, size_t)                                                                                         \

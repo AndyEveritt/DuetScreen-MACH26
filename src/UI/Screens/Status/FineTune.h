@@ -39,8 +39,6 @@ namespace UI
 		void showKeyboard(bool show);
 
 	  protected:
-		void onShow() override;
-
 		BabyStep m_babystep;
 		LvContainer m_sliderCont;
 

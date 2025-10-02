@@ -46,7 +46,7 @@ bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* da
 		return true;
 	OM::g_currentAlert.Reset();
 
-	Model::get().post<EventType::MessageBoxData>(OM::g_currentAlert);
+	Model::get().post<EventType::Alert>(OM::g_currentAlert);
 	return true;
 }
 
@@ -94,7 +94,7 @@ bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* d
 	{
 		LOG_DBG("New message box alert: '{}', seq={}", OM::g_currentAlert.title.c_str(), OM::g_currentAlert.seq);
 		OM::g_lastAlertSeq = OM::g_currentAlert.seq;
-		Model::get().post<EventType::MessageBoxData>(OM::g_currentAlert);
+		Model::get().post<EventType::Alert>(OM::g_currentAlert);
 	}
 	return true;
 }

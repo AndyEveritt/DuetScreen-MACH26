@@ -84,7 +84,7 @@ TEST_F(TestHomeView, BlankSettingsView)
 
 TEST_F(TestHomeView, BlankStatusView)
 {
-	openScreen(&view.getStatusView(), false);
+	openScreen(&view.getDashboard().getStatusView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_status_view_blank.png")
 }
 
@@ -135,14 +135,14 @@ TEST_F(TestHomeViewWithData, HomeView)
 	sensor->lastReading = 25.0f;
 	for (size_t i = 0; i < 1000; i++)
 	{
-		view.getPresenter()->tick();
+		view.getDashboard().getGraph().getPresenter()->tick();
 		sensor->lastReading = (int32_t)(sensor->lastReading + 1) % 300;
 	}
 	EXPECT_EQUAL_SCREENSHOT("home_view.png");
 
 	/* Open the tool list numberpad */
-	view.getToolList().getToolListItem(0)->getPresenter()->configureNumberPad(true);
-	view.getToolList().showNumberPad();
+	view.getDashboard().getToolList().getToolListItem(0)->getPresenter()->configureNumberPad(true);
+	view.getDashboard().getToolList().showNumberPad();
 	EXPECT_EQUAL_SCREENSHOT("home_view_tool_list_numberpad.png");
 }
 
@@ -209,7 +209,7 @@ TEST_F(TestHomeViewWithData, SettingsView)
 
 TEST_F(TestHomeViewWithData, StatusView)
 {
-	openScreen(&view.getStatusView());
+	openScreen(&view.getDashboard().getStatusView());
 	EXPECT_EQUAL_SCREENSHOT("home_status_view.png")
 }
 

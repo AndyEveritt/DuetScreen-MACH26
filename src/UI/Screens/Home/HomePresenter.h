@@ -14,7 +14,6 @@ namespace UI
 		// using Presenter::Presenter;
 		PRESENTER_CONSTRUCTOR(HomePresenter, HomeView)
 
-		void tick();
 		void clear();
 
 		void update();
@@ -22,7 +21,7 @@ namespace UI
 		void newUpdateAvailable(const std::string& file);
 		void newAxesData();
 		void newResponse(const std::string& response);
-		void newMessageBoxData(const OM::Alert& alert);
+		void newAlertData(const OM::Alert& alert);
 
 	  protected:
 		virtual void onInit() override;

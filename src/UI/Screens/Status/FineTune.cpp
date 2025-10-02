@@ -179,9 +179,4 @@ namespace UI
 		UI_LOCK();
 		lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !show);
 	}
-
-	void FineTune::onShow()
-	{
-		m_babystep.activate();
-	}
 } // namespace UI

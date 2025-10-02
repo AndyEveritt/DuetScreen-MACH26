@@ -315,7 +315,7 @@ namespace UI
 			[this]()
 			{
 				m_presenter->startPrint();
-				openScreen(&HomeView::instance().getStatusView());
+				openScreen(&HomeView::instance().getDashboard().getStatusView());
 			});
 		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail.data() : nullptr);
 		openModal(&m_startPrint);

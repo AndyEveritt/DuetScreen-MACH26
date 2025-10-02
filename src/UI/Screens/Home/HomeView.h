@@ -2,7 +2,6 @@
 
 #include "HomePresenter.h"
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/Graph/Graph.h"
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
@@ -12,16 +11,14 @@
 #include "UI/Core/View.h"
 #include "UI/Screens/Console/ConsoleView.h"
 #include "UI/Screens/Fan/FanView.h"
-#include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Heightmap/HeightmapView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Screens/Status/FineTune.h"
-#include "UI/Screens/Status/StatusView.h"
 #include "UI/Screens/Temperature/TemperatureView.h"
+#include "UI/Widgets/Dashboard/Dashboard.h"
 #include "UI/Widgets/SideBar/SideBar.h"
 #include "UI/Widgets/StatusBar/StatusBar.h"
-#include "UI/Widgets/ToolList/ToolList.h"
 #include "lvgl/lvgl.h"
 #include <list>
 #include <memory>
@@ -50,21 +47,18 @@ namespace UI
 		LvKeyboard& getKeyboard() { return m_kb; }
 
 		// Sub-views
+		Dashboard& getDashboard() { return m_dashboard; }
 		StatusBar& getStatusBar() { return m_statusBar; }
 		SideBar& getSideBar() { return m_sideBar; }
-		ToolList& getToolList() { return m_toolList; }
-		Graph& getGraph() { return m_graph; }
 		LvContainer& getMainWindow() { return m_mainWindow; }
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		MoveView& getMoveView() { return m_moveView; }
 		TemperatureView& getTemperatureView() { return m_temperatureView; }
 		FanView& getFanView() { return m_fanView; }
-		FileView& getFileView() { return m_fileView; }
 		FileView& getMacroView() { return m_macroView; }
 		FineTune& getFineTuneView() { return m_fineTuneView; }
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
 		SettingsView& getSettingsView() { return m_settingsView; }
-		StatusView& getStatusView() { return m_statusView; }
 
 		void showUpdatePrompt(bool show);
 
@@ -81,20 +75,17 @@ namespace UI
 		StatusBar m_statusBar;
 		SideBar m_sideBar;
 		LvContainer m_mainWindow;
-		ToolList m_toolList;
-		Graph m_graph;
 
 		// Windows
+		Dashboard m_dashboard;
 		ConsoleView m_consoleView;
 		MoveView m_moveView;
 		TemperatureView m_temperatureView;
 		FanView m_fanView;
-		FileView m_fileView;
 		FileView m_macroView;
 		FineTune m_fineTuneView;
 		HeightmapView m_heightmapView;
 		SettingsView m_settingsView;
-		StatusView m_statusView;
 
 		// Message box
 		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;

@@ -65,6 +65,7 @@ namespace UI
 		m_confirmCancel.setText(_("print_cancel_message"));
 		m_confirmCancel.okVisible(true);
 		m_confirmCancel.cancelVisible(true);
+		m_confirmCancel.setOkCallback([this]() { m_presenter->cancelPrint(); });
 		m_confirmCancel.hide();
 
 		// Callbacks
@@ -105,7 +106,6 @@ namespace UI
 	{
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
-		view->m_confirmCancel.setOkCallback([view]() { view->m_presenter->cancelPrint(); });
 		view->m_confirmCancel.show();
 	}
 

@@ -14,26 +14,20 @@ namespace UI
 	static constexpr int32_t s_layoutColDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(9), LV_GRID_TEMPLATE_LAST};
 	static constexpr int32_t s_layoutRowDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
-	static constexpr int32_t s_mainWindowLayoutColDsc[3] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
-	static constexpr int32_t s_mainWindowLayoutRowDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-
 	HomeView::HomeView()
 		: View("HomeView")
 		, m_statusBar(getRoot())
 		, m_sideBar("sidebar", getRoot())
 		, m_mainWindow("main_window", getRoot())
-		, m_toolList("tool_list", m_mainWindow, &m_mainWindow)
-		, m_graph("graph", m_mainWindow)
+		, m_dashboard("dashboard", m_mainWindow)
 		, m_consoleView(m_mainWindow)
 		, m_moveView(m_mainWindow)
 		, m_temperatureView(m_mainWindow)
 		, m_fanView(m_mainWindow)
-		, m_fileView(m_mainWindow, &m_mainWindow)
 		, m_macroView(m_mainWindow)
 		, m_fineTuneView(m_mainWindow)
 		, m_heightmapView(m_mainWindow)
 		, m_settingsView(m_mainWindow)
-		, m_statusView(m_mainWindow)
 		, m_alert("alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_updatePrompt("update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_numberpad("numberpad", m_mainWindow, layout_t(0, 0, LV_SIZE_CONTENT, 100))
@@ -46,11 +40,9 @@ namespace UI
 
 		addStyle(Themes::getLvglStyles().bg_dark);
 		addStyle(Themes::getLvglStyles().pad_zero);
-		m_toolList.addStyle(Themes::getLvglStyles().card);
-		m_graph.addStyle(Themes::getLvglStyles().card);
 		m_macroView.addStyle(Themes::getLvglStyles().card);
 
-		addHomeScreen(this);
+		addHomeScreen(&m_dashboard);
 
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(s_layoutColDsc, s_layoutRowDsc);
@@ -61,22 +53,8 @@ namespace UI
 		m_statusBar.setHeight(LV_SIZE_CONTENT);
 		m_mainWindow.setFlexGrow(1);
 		m_mainWindow.setHeight(LV_PCT(100));
-		m_fileView.addStyle(Themes::getLvglStyles().card);
 
 		// Main Window Layout
-		m_mainWindow.setLayoutStyle(LV_LAYOUT_GRID);
-		m_mainWindow.setGridDsc(s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
-		m_mainWindow.setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		m_mainWindow.setGridCell(m_graph, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		m_mainWindow.setGridCell(m_fileView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-		m_mainWindow.setGridCell(m_statusView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-		m_mainWindow.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
-
-		// Graph
-		m_graph.setXRange({.min = -60, .max = 0});
-		m_graph.setYRange({.min = 0, .max = 300});
-		m_graph.setXCount(-m_graph.getXRange().min * MODEL_TICK_HZ * 2);
-
 		m_consoleView.hide();
 		m_moveView.hide();
 		m_temperatureView.hide();
@@ -84,7 +62,6 @@ namespace UI
 		m_macroView.hide();
 		m_fineTuneView.hide();
 		m_heightmapView.hide();
-		m_statusView.hide();
 		m_settingsView.hide();
 
 		m_macroView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
@@ -140,28 +117,17 @@ namespace UI
 
 	void HomeView::clear()
 	{
-		m_graph.clear();
-		m_toolList.setItemCnt(0);
+		m_dashboard.clear();
 		clearMessageBoxes();
-		m_toolList.hideNumberPad();
 	}
 
 	void HomeView::onShow()
 	{
-		m_fileView.show();
-		m_toolList.activate();
-		m_statusBar.activate();
+		m_dashboard.show();
 		m_sideBar.show(true);
 	}
 
-	void HomeView::onHide()
-	{
-		// Clear the tool list
-		m_graph.clear();
-		m_toolList.deactivate();
-		m_toolList.setItemCnt(0);
-		m_toolList.hideNumberPad();
-	}
+	void HomeView::onHide() {}
 
 	std::shared_ptr<MessageBox> HomeView::createMessageBox()
 	{

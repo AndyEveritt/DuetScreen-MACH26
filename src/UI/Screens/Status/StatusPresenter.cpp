@@ -32,7 +32,6 @@ namespace UI
 	void StatusPresenter::cancelPrint()
 	{
 		OM::FileSystem::StopPrint(); // Stop print and turn off heaters
-		closeScreen(m_view);
 	}
 
 	void StatusPresenter::onActivate()
@@ -65,8 +64,6 @@ namespace UI
 
 		setOrRequestThumbnail(filename);
 	}
-
-	void StatusPresenter::onDeactivate() {}
 
 	void StatusPresenter::newJobFileName(const std::string& filename)
 	{

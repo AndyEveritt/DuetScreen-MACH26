@@ -37,7 +37,6 @@ namespace UI
 
 	  private:
 		void onActivate() override;
-		void onDeactivate() override;
 
 		virtual void onInit() override
 		{

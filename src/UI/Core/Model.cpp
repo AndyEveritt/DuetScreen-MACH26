@@ -163,7 +163,7 @@ void Model::runEventLoop()
 
 		if (!found)
 		{
-			LOG_DBG("No handler for event type {:s}", nameof::nameof_enum(event.first));
+			LOG_VERBOSE("No handler for event type {:s}", nameof::nameof_enum(event.first));
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));

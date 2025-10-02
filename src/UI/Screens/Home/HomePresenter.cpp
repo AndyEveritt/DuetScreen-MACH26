@@ -16,32 +16,10 @@ namespace UI
 {
 	void HomePresenter::onInit()
 	{
-		registerEventListener<EventType::Tick>(this, &HomePresenter::tick);
 		registerEventListener<EventType::UpdateAvailable>(this, &HomePresenter::newUpdateAvailable);
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
-		registerEventListener<EventType::MessageBoxData>(this, &HomePresenter::newMessageBoxData);
-		registerEventListener<EventType::Status>(
-			[this](const OM::PrinterStatus& status)
-			{
-				static OM::PrinterStatus lastStatus = OM::PrinterStatus::unknown;
-				switch (status)
-				{
-				case OM::PrinterStatus::cancelling:
-				case OM::PrinterStatus::paused:
-				case OM::PrinterStatus::pausing:
-				case OM::PrinterStatus::printing:
-				case OM::PrinterStatus::resuming:
-				case OM::PrinterStatus::simulating:
-					addHomeScreen(&HomeView::instance().getStatusView());
-					break;
-				case OM::PrinterStatus::idle:
-					removeHomeScreen(&HomeView::instance().getStatusView(), true);
-					break;
-				default:
-					break;
-				}
-			});
+		registerEventListener<EventType::Alert>(this, &HomePresenter::newAlertData);
 
 		USB::UsbMonitor::getInstance().registerCallback(
 			[this](const std::string& path, bool mounted)
@@ -58,40 +36,6 @@ namespace UI
 				m_updateFile.clear();
 				m_view->showUpdatePrompt(false);
 			});
-	}
-
-	void HomePresenter::tick()
-	{
-		UI_LOCK();
-		const size_t sensorCount = OM::GetAnalogSensorCount();
-		m_view->m_graph.setSeriesCount(sensorCount);
-		for (size_t i = 0; i < sensorCount; i++)
-		{
-			auto sensor = OM::GetAnalogSensorBySlot(i);
-			if (!m_view->m_graph.getSeries(i))
-			{
-				m_view->m_graph.createSeries(lv_palette_main((lv_palette_t)m_view->m_graph.getSeriesCount()),
-											 sensor->name.c_str());
-			}
-			m_view->m_graph.updateSeriesName(i, sensor->name.c_str());
-			m_view->m_graph.addData(i, sensor->lastReading);
-		}
-
-		size_t heaterCount = OM::Heat::GetHeaterCount();
-		if (heaterCount > 0)
-		{
-			int32_t maxTemperature = 300; // Default max temperature
-			for (size_t i = 0; i < heaterCount; i++)
-			{
-				auto heater = OM::Heat::GetHeaterBySlot(i);
-				if (heater == nullptr)
-				{
-					continue;
-				}
-				maxTemperature = std::max(maxTemperature, (int32_t)heater->max);
-			}
-			m_view->m_graph.setYRange({0, maxTemperature});
-		}
 	}
 
 	void HomePresenter::clear()
@@ -178,7 +122,7 @@ namespace UI
 		}
 	}
 
-	void HomePresenter::newMessageBoxData(const OM::Alert& alert)
+	void HomePresenter::newAlertData(const OM::Alert& alert)
 	{
 		AlertMessageBox& msgBox = m_view->m_alert;
 

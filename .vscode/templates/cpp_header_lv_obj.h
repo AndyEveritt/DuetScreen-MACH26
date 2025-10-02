@@ -14,7 +14,7 @@ namespace UI
     class {{file_name}} : public LvContainer
     {
       public:
-        {{file_name}}(const std::string& name, lv_obj_t* parent);
+        {{file_name}}(const std::string& name, LvObj& parent);
       private:
     };
 } // namespace UI
