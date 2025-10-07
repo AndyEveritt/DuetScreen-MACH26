@@ -1,6 +1,6 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,node,cmake,c++,c,valgrind
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,python,node,cmake,c++,c,valgrind
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,valgrind,python,node,cmake,c++,c,gcov
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,valgrind,python,node,cmake,c++,c,gcov
 
 ### C ###
 # Prerequisites
@@ -93,6 +93,13 @@ CMakeUserPresets.json
 
 # External projects
 *-prefix/
+
+### Gcov ###
+# gcc coverage testing tool files
+
+*.gcno
+*.gcda
+*.gcov
 
 ### Node ###
 # Logs
@@ -440,7 +447,7 @@ bb.out.*
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,node,cmake,c++,c,valgrind
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,valgrind,python,node,cmake,c++,c,gcov
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
@@ -472,4 +479,5 @@ wpa_supplicant.conf
 
 # Tests
 tests/ref_imgs/**/*_err.png
+tests/report
 # !tests/config*.json

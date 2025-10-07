@@ -24,12 +24,17 @@ import os
 import sys
 import subprocess
 import argparse
+import shutil
 from pathlib import Path
 from typing import List, Optional, Tuple, Any
 
 REF_IMGS_DIR = Path(__file__).resolve().parents[1] / "tests" / "ref_imgs"
 BUILD_ROOT = Path(__file__).resolve().parents[1] / "out" / "build"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+CMAKE_PRESET = "Test"
+SRC_DIR = PROJECT_ROOT / "src"
+COVERAGE_REPORT_DIR = PROJECT_ROOT / "tests" / "report"
+COVERAGE_HTML = COVERAGE_REPORT_DIR / "index.html"
 
 
 def log(msg: str) -> None:
@@ -141,25 +146,9 @@ def find_build_dir() -> Optional[Path]:
 			return d
 
 	# 2) Prefer an existing Simulation build (most common for local UI testing)
-	sim_dir = BUILD_ROOT / "Simulation"
-	if (sim_dir / "CTestTestfile.cmake").exists() or (sim_dir / "tests" / "DuetScreen.tests").exists():
-		return sim_dir
-
-	# 3) Fallback: pick the most recently modified directory under out/build that looks like a CMake build
-	candidates: List[Tuple[float, Path]] = []
-	if BUILD_ROOT.exists():
-		for child in BUILD_ROOT.iterdir():
-			if not child.is_dir():
-				continue
-			if (child / "CTestTestfile.cmake").exists() or (child / "tests" / "DuetScreen.tests").exists():
-				try:
-					mtime = child.stat().st_mtime
-				except Exception:
-					mtime = 0
-				candidates.append((mtime, child))
-	if candidates:
-		candidates.sort(reverse=True)
-		return candidates[0][1]
+	build_dir = BUILD_ROOT / get_cmake_preset()
+	if (build_dir / "CTestTestfile.cmake").exists() or (build_dir / "tests" / "DuetScreen.tests").exists():
+		return build_dir
 
 	return None
 
@@ -192,7 +181,7 @@ def run_tests(build_dir: Path, test_filter: Optional[str] = None) -> int:
 
 
 def get_cmake_preset() -> str:
-	return os.environ.get("DUETSCREEN_CMAKE_PRESET", "Simulation")
+	return os.environ.get("DUETSCREEN_CMAKE_PRESET", CMAKE_PRESET)
 
 
 def configure_cmake(preset: Optional[str] = None) -> bool:
@@ -827,13 +816,73 @@ def update_reference(ref_path: Path, err_path: Path) -> None:
 
 def parse_args(argv: List[str]):
 	parser = argparse.ArgumentParser(description="Run DuetScreen tests & review image diffs")
-	parser.add_argument("--test_filter", "-f", help="Test filter expression (passed to ctest or test binary)")
+	parser.add_argument("--test_filter", "-f", default="", help="Test filter expression (passed to ctest or test binary)")
+	parser.add_argument("--coverage", "-c", action="store_true",
+	                    help="Generate gcovr HTML coverage report (tests/report/index.html)")
 	return parser.parse_args(argv)
+
+
+def should_run_coverage(args) -> bool:
+	if getattr(args, "coverage", False):
+		return True
+	env = os.environ.get("DUETSCREEN_COVERAGE", "").lower()
+	return env in {"1", "true", "yes", "on"}
+
+
+def run_coverage(build_dir: Path) -> int:
+	"""Generate an HTML coverage report using gcovr.
+
+	Assumes the build was configured with coverage flags (e.g. -g -O0 -fprofile-arcs -ftest-coverage or LLVM equivalents).
+	Skips gracefully if gcovr is not installed.
+	"""
+	if shutil.which("gcovr") is None:
+		log("Coverage: gcovr not found in PATH, skipping coverage generation.")
+		return 0
+
+	try:
+		COVERAGE_REPORT_DIR.mkdir(parents=True, exist_ok=True)
+	except Exception as e:
+		log(f"Coverage: failed to create report directory '{COVERAGE_REPORT_DIR}': {e}")
+		return 1
+
+	build_dir = find_build_dir()
+	if (not build_dir):
+		log("Coverage: could not determine build directory, skipping coverage generation.")
+		return 1
+
+	cmd = [
+		"gcovr",
+		build_dir.as_posix(),
+		"--root",
+		str(PROJECT_ROOT),
+		"--filter",
+		str(SRC_DIR),
+		"--html-details",
+		"--output",
+		str(COVERAGE_HTML),
+		# "--verbose"
+	]
+
+	log("Coverage: running gcovr to produce HTML report…")
+	log("Coverage: " + " ".join(cmd))
+	try:
+		res = subprocess.run(cmd, cwd=str(build_dir), check=False)
+		if res.returncode == 0:
+			if COVERAGE_HTML.exists():
+				log(f"Coverage: report written to {COVERAGE_HTML}")
+			else:
+				log("Coverage: gcovr completed but report file not found.")
+		else:
+			log(f"Coverage: gcovr failed with exit code {res.returncode}")
+		return res.returncode
+	except Exception as e:
+		log(f"Coverage: unexpected error invoking gcovr: {e}")
+		return 1
 
 
 def main(argv: List[str]) -> int:
 	args = parse_args(argv)
-	log("Step 1/4: Cleaning existing *_err images…")
+	log("Step 1/5: Cleaning existing *_err images…")
 	removed = clean_err_images(REF_IMGS_DIR)
 	if removed:
 		log(f"  Removed {len(removed)} file(s) from {REF_IMGS_DIR}")
@@ -912,58 +961,61 @@ def main(argv: List[str]) -> int:
 	err_images = list_err_images(REF_IMGS_DIR)
 	if not err_images:
 		log("No *_err images were produced. Visual checks passed.")
-		return rc
+	else:
+		# Build list of items for the reviewer UI
+		items: List[Tuple[Path, Path, object]] = []
+		pil_ok = True
+		try:
+			for err_path in err_images:
+				ref_path = Path(str(err_path).replace("_err", ""))
+				comp = load_images_for_compare(ref_path, err_path)
+				if comp is None:
+					pil_ok = False
+					break
+				items.append((ref_path, err_path, comp))
+		except Exception as e:
+			pil_ok = False
 
-	# Build list of items for the reviewer UI
-	items: List[Tuple[Path, Path, object]] = []
-	pil_ok = True
-	try:
-		for err_path in err_images:
-			ref_path = Path(str(err_path).replace("_err", ""))
-			comp = load_images_for_compare(ref_path, err_path)
-			if comp is None:
-				pil_ok = False
-				break
-			items.append((ref_path, err_path, comp))
-	except Exception as e:
-		pil_ok = False
-
-	if not pil_ok:
-		log("Pillow not available or failed to process images. Falling back to CLI prompts.")
-		apply_all = False
-		for err_path in err_images:
-			ref_path = Path(str(err_path).replace("_err", ""))
-			log("")
-			log(f"Reviewing: {err_path.name}")
-			log(f"  Reference: {ref_path}")
-			log(f"  New (_err): {err_path}")
-			if apply_all:
-				choice = "y"
-			else:
-				choice = ask_yes_no("Update reference with new image?", default="n")
-				if choice == "a":
-					apply_all = True
+		if not pil_ok:
+			log("Pillow not available or failed to process images. Falling back to CLI prompts.")
+			apply_all = False
+			for err_path in err_images:
+				ref_path = Path(str(err_path).replace("_err", ""))
+				log("")
+				log(f"Reviewing: {err_path.name}")
+				log(f"  Reference: {ref_path}")
+				log(f"  New (_err): {err_path}")
+				if apply_all:
 					choice = "y"
-				if choice == "q":
-					log("Aborting by user request.")
-					return 130
-			if choice == "y":
-				update_reference(ref_path, err_path)
-				log(f"  Updated: {ref_path.name}")
-			else:
-				log("  Skipped update.")
+				else:
+					choice = ask_yes_no("Update reference with new image?", default="n")
+					if choice == "a":
+						apply_all = True
+						choice = "y"
+					if choice == "q":
+						log("Aborting by user request.")
+						return 130
+				if choice == "y":
+					update_reference(ref_path, err_path)
+					log(f"  Updated: {ref_path.name}")
+				else:
+					log("  Skipped update.")
+
+		# Start Tkinter review UI
+		try:
+			reviewer = UIDiffReviewer(items)
+			reviewer.run()
+		except Exception as e:
+			log(f"Failed to open Tk UI: {e}")
+			return 1
+
 		log("Done. Review complete.")
-		return rc
 
-	# Start Tkinter review UI
-	try:
-		reviewer = UIDiffReviewer(items)
-		reviewer.run()
-	except Exception as e:
-		log(f"Failed to open Tk UI: {e}")
-		return 1
+	# Optional coverage generation (run after diff review so UX not blocked by gcovr)
+	if should_run_coverage(args):
+		log("\nCoverage step: generating report (requested)…")
+		run_coverage(build_dir)
 
-	log("Done. Review complete.")
 	return rc
 
 

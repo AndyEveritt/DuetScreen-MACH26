@@ -17,6 +17,7 @@ sudo apt-get install -y \
     libgtest-dev \
     imagemagick \
     python3-tk \
+    gcovr \
 
 python3 -m venv env
 source env/bin/activate
