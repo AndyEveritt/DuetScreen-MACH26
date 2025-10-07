@@ -584,7 +584,6 @@ class UINewRefReviewer:
 		self.root.mainloop()
 
 
-
 class UIDiffReviewer:
 	"""Single-window Tkinter UI to review and update reference images."""
 
@@ -786,7 +785,7 @@ class UIDiffReviewer:
 		self.header_var.set("All updates applied. Done.")
 		self.image_label.configure(image="")
 		self.root.after(600, self.root.destroy)
-        
+
 	def run(self):
 		self.root.mainloop()
 
@@ -816,9 +815,10 @@ def update_reference(ref_path: Path, err_path: Path) -> None:
 
 def parse_args(argv: List[str]):
 	parser = argparse.ArgumentParser(description="Run DuetScreen tests & review image diffs")
-	parser.add_argument("--test_filter", "-f", default="", help="Test filter expression (passed to ctest or test binary)")
+	parser.add_argument("--test_filter", "-f", default="",
+                     help="Test filter expression (passed to ctest or test binary)")
 	parser.add_argument("--coverage", "-c", action="store_true",
-	                    help="Generate gcovr HTML coverage report (tests/report/index.html)")
+                     help="Generate gcovr HTML coverage report (tests/report/index.html)")
 	return parser.parse_args(argv)
 
 
@@ -853,14 +853,13 @@ def run_coverage(build_dir: Path) -> int:
 	cmd = [
 		"gcovr",
 		build_dir.as_posix(),
-		"--root",
-		str(PROJECT_ROOT),
-		"--filter",
-		str(SRC_DIR),
+		"--root", str(PROJECT_ROOT),
+		"--filter", str(SRC_DIR),
 		"--html-details",
-		"--output",
-		str(COVERAGE_HTML),
-		# "--verbose"
+		"--output", str(COVERAGE_HTML),
+		'-j', str(os.cpu_count()),
+		'--print-summary',
+		'--html-title', 'DuetScreen Test Coverage',
 	]
 
 	log("Coverage: running gcovr to produce HTML report…")
@@ -1025,4 +1024,3 @@ if __name__ == "__main__":
 	except KeyboardInterrupt:
 		log("Interrupted.")
 		sys.exit(130)
-

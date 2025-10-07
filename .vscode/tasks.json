@@ -281,6 +281,19 @@
 				"isDefault": false
 			},
 			"problemMatcher": []
+		},
+		{
+			"label": "Run Test Coverage",
+			"type": "shell",
+			"command": "env/bin/python scripts/run_tests.py --test_filter='${input:test_filters}' --coverage",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": []
 		}
 	]
 }
