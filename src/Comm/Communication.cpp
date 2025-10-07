@@ -28,6 +28,7 @@
 #include "ObjectModel/Tool.h"
 #include "ObjectModel/Utils.h"
 #include "utils/TimeHelper.h"
+#include <filesystem>
 
 // These defines control which detailed M409 requests will be sent
 // If one of the fields in the disabled ones need to be fetched the
@@ -385,9 +386,9 @@ namespace Comm
 	void init()
 	{
 		// Sort the fieldTable prior searching using binary search
-		system("mkdir /tmp/thumbnails");
-		system("mkdir /tmp/heightmaps");
-		system("mkdir /tmp/files");
+		std::filesystem::create_directories("/tmp/thumbnails");
+		std::filesystem::create_directories("/tmp/heightmaps");
+		std::filesystem::create_directories("/tmp/files");
 		SortFieldTable();
 		usbInit();
 		ResetSeqs();

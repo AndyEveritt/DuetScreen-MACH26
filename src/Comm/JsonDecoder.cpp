@@ -19,6 +19,7 @@
 #include "ObjectModel/Job.h"
 #include "ObjectModel/Utils.h"
 #include "UI/Core/Model.h"
+#include "nameof.hpp"
 #include "utils/utils.h"
 #include <string>
 
@@ -247,7 +248,7 @@ namespace Comm
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		LOG_VERBOSE("event: {:s}({:d}) data '{:s}'", searchResult->key, (int)searchResult->val, data);
+		LOG_VERBOSE("event: {:s}({:s}) data '{:s}'", searchResult->key, nameof::nameof_enum(searchResult->val), data);
 		switch (rde)
 		{
 		// M409 section

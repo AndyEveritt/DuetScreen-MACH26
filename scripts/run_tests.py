@@ -28,11 +28,11 @@ import shutil
 from pathlib import Path
 from typing import List, Optional, Tuple, Any
 
-REF_IMGS_DIR = Path(__file__).resolve().parents[1] / "tests" / "ref_imgs"
-BUILD_ROOT = Path(__file__).resolve().parents[1] / "out" / "build"
+DEFAULT_CMAKE_PRESET = "Test"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CMAKE_PRESET = "Test"
+BUILD_ROOT = PROJECT_ROOT / "out" / "build"
 SRC_DIR = PROJECT_ROOT / "src"
+REF_IMGS_DIR = PROJECT_ROOT / "tests" / "ref_imgs"
 COVERAGE_REPORT_DIR = PROJECT_ROOT / "tests" / "report"
 COVERAGE_HTML = COVERAGE_REPORT_DIR / "index.html"
 
@@ -181,7 +181,7 @@ def run_tests(build_dir: Path, test_filter: Optional[str] = None) -> int:
 
 
 def get_cmake_preset() -> str:
-	return os.environ.get("DUETSCREEN_CMAKE_PRESET", CMAKE_PRESET)
+	return os.environ.get("DUETSCREEN_CMAKE_PRESET", DEFAULT_CMAKE_PRESET)
 
 
 def configure_cmake(preset: Optional[str] = None) -> bool:
@@ -860,6 +860,7 @@ def run_coverage(build_dir: Path) -> int:
 		'-j', str(os.cpu_count()),
 		'--print-summary',
 		'--html-title', 'DuetScreen Test Coverage',
+		'--html-theme', 'github.dark-green'
 	]
 
 	log("Coverage: running gcovr to produce HTML report…")
@@ -889,16 +890,14 @@ def main(argv: List[str]) -> int:
 		log("  Nothing to remove.")
 
 	log("Step 2/5: Ensure build is configured…")
+	# Try to configure automatically using a preset
+	if not configure_cmake():
+		log("Failed to configure the project. Aborting.")
+		return 2
 	build_dir = find_build_dir()
 	if build_dir is None:
-		# Try to configure automatically using a preset
-		if not configure_cmake():
-			log("Failed to configure the project. Aborting.")
-			return 2
-		build_dir = find_build_dir()
-		if build_dir is None:
-			log("Error: Could not locate a CTest build directory after configure.")
-			return 2
+		log("Error: Could not locate a CTest build directory after configure.")
+		return 2
 
 	log("Step 3/5: Building tests…")
 	brc = build_tests(build_dir)
