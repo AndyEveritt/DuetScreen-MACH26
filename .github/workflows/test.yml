@@ -37,6 +37,7 @@ jobs:
             
             - name: Run Coverage
               run: |
+                mkdir -p tests/report
                 gcovr out/build/Test --root . --filter src --xml tests/report/coverage.xml -j $(nproc) --print-summary
 
             - name: Code Coverage Report
