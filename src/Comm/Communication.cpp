@@ -259,21 +259,32 @@ namespace Comm
 	// by the RRFLibraries because of the uClibc++ library not providing the things we need for that.
 	bool GetInteger(const char s[], int32_t& rslt)
 	{
-		if (s[0] == 0)
+		if (!s || s[0] == 0)
 			return false; // empty string
 
+		if (strlen(s) > 11) // this is guaranteed to be out of int32_t range
+			return false;
+
 		char* endptr;
-		rslt = (int)strtol(s, &endptr, 10);
-		if (*endptr == 0)
-			return true; // we parsed an integer
+		errno = 0;
+		auto tmp = strtol(s, &endptr, 10);
 
-		if (strlen(s) > 10)
-			return false; // avoid strtod buggy behaviour on long input strings
-
-		float d = strtof(s, &endptr); // try parsing a floating point number
-		if (*endptr == 0)
+		if (errno == ERANGE || tmp < INT32_MIN || tmp > INT32_MAX)
 		{
-			rslt = (int)((d < 0.0) ? d - 0.5 : d + 0.5);
+			return false; // truncated or out of range
+		}
+
+		if (errno == 0 && *endptr == 0)
+		{
+			rslt = static_cast<int32_t>(tmp);
+			return true; // we parsed an integer
+		}
+
+		errno = 0;
+		float d = strtof(s, &endptr); // try parsing a floating point number
+		if (errno == 0 && *endptr == 0)
+		{
+			rslt = static_cast<int32_t>(((d < 0.0) ? d - 0.5 : d + 0.5));
 			return true;
 		}
 		return false;
@@ -282,12 +293,39 @@ namespace Comm
 	// Try to get an unsigned integer value from a string
 	// NB: We are using the old fashioned way (using strtol/strtof) instead of the safe functions provided
 	// by the RRFLibraries because of the uClibc++ library not providing the things we need for that.
-	bool GetUnsignedInteger(const char s[], unsigned int& rslt)
+	bool GetUnsignedInteger(const char s[], uint32_t& rslt)
 	{
-		if (s[0] == 0)
+		if (!s || s[0] == 0)
 			return false; // empty string
+
+		if (strlen(s) > 10) // this is guaranteed to be out of uint32_t range
+			return false;
+
 		char* endptr;
-		rslt = (int)strtoul(s, &endptr, 10);
+		errno = 0;
+		auto tmp = strtoul(s, &endptr, 10);
+		if (errno == ERANGE || tmp > UINT32_MAX)
+		{
+			return false; // truncated or out of range
+		}
+
+		if (errno == 0 && *endptr == 0)
+		{
+			rslt = static_cast<uint32_t>(tmp);
+			return true; // we parsed an integer
+		}
+
+		errno = 0;
+		float d = strtof(s, &endptr); // try parsing a floating point number
+		if (errno == 0 && *endptr == 0)
+		{
+			if (d < 0.0)
+			{
+				return false; // negative number
+			}
+			rslt = static_cast<uint32_t>(d + 0.5);
+			return true;
+		}
 		return *endptr == 0;
 	}
 
@@ -296,7 +334,7 @@ namespace Comm
 	// by the RRFLibraries because of the uClibc++ library not providing the things we need for that.
 	bool GetFloat(const char s[], float& rslt)
 	{
-		if (s[0] == 0)
+		if (!s || s[0] == 0)
 			return false; // empty string
 
 		// GNU strtod is buggy, it's very slow for some long inputs, and some versions have a buffer overflow bug.
@@ -306,14 +344,26 @@ namespace Comm
 			return false;
 
 		char* endptr;
-		rslt = strtof(s, &endptr);
+		errno = 0;
+		auto tmp = strtof(s, &endptr);
+		if (errno == ERANGE)
+		{
+			return false; // truncated or out of range
+		}
+
+		if (*endptr != 0)
+		{
+			return false; // not a valid float
+		}
+
+		rslt = tmp;
 		return *endptr == 0; // we parsed a float
 	}
 
 	// Try to get a bool value from a string.
 	bool GetBool(const char s[], bool& rslt)
 	{
-		if (s[0] == 0)
+		if (!s || s[0] == 0)
 			return false; // empty string
 
 		rslt = (strcasecmp(s, "true") == 0);

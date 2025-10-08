@@ -41,7 +41,7 @@ namespace Comm
 	extern Seq* g_currentReqSeq;
 
 	bool GetInteger(const char s[], int32_t& rslt);
-	bool GetUnsignedInteger(const char s[], unsigned int& rslt);
+	bool GetUnsignedInteger(const char s[], uint32_t& rslt);
 	bool GetFloat(const char s[], float& rslt);
 	bool GetBool(const char s[], bool& rslt);
 	void Reconnect();
