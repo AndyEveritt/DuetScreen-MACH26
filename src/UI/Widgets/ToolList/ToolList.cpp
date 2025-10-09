@@ -14,37 +14,74 @@
 
 namespace UI
 {
-	ToolListItem::ToolListItem(size_t index, LvObj& parent, ToolList& toolList)
-		: View(fmt::format("{:d}", index), parent)
-		, m_toolList(toolList)
-		, m_toolName("name", getRoot())
-		, m_status("status", getRoot())
-		, m_currentTemp("current_temp", getRoot())
-		, m_activeTemp("active_temp", getRoot())
-		, m_standbyTemp("standby_temp", getRoot())
+	ToolList::ToolList(const std::string& name, LvObj& parent, LvObj* numberPadParent)
+		: View(name, parent)
+		, m_numberPad("number_pad", numberPadParent ? *numberPadParent : parent, layout_t(0, 0, 50, 70))
 	{
+		init();
+	}
+
+	void ToolList::init()
+	{
+		UI_LOCK();
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+
+		addStyle(Themes::getLvglStyles().pad_zero);
+
+		m_tools.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_beds.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_chambers.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+
+		/* Number Pad */
+		m_numberPad.hide();
+	}
+
+	size_t ToolList::setToolCount(size_t count)
+	{
+		m_tools.setTitle(count > 1 ? _("tools") : "");
+		return m_tools.setItemCount(count,
+									[this](size_t index, LvObj& parent)
+									{
+										auto item = std::make_shared<ToolListTool>(index, parent, *this);
+										item->activate();
+										return item;
+									});
+	}
+
+	size_t ToolList::setBedCount(size_t count)
+	{
+		m_beds.setTitle(count > 1 ? _("beds") : "");
+		return m_beds.setItemCount(count);
+	}
+
+	size_t ToolList::setChamberCount(size_t count)
+	{
+		m_chambers.setTitle(count > 1 ? _("chambers") : "");
+		return m_chambers.setItemCount(count);
+	}
+
+	void ToolList::showNumberPad()
+	{
+		UI_LOCK();
+		m_numberPad.clear();
+		openModal(&m_numberPad);
+	}
+
+	ToolListTool::ToolListTool(size_t index, LvObj& parent, ToolList& toolList)
+		: View(index, parent)
+	{
+		getPresenter()->setToolListPresenter(toolList.getPresenter());
+
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		UI_LOCK();
 		setStylePad(5, LV_PART_MAIN, Padding::ALL);
-		setFlexFlow(LV_FLEX_FLOW_ROW);
-		setFlexAlign(LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		m_toolName.setFlexGrow(4);
-		m_status.setFlexGrow(3);
-		m_currentTemp.setFlexGrow(2);
-		m_activeTemp.setFlexGrow(2);
-		m_standbyTemp.setFlexGrow(2);
-
-		m_activeTemp.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
-		m_standbyTemp.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
-		m_activeTemp.setExtClickArea(20);
-		m_standbyTemp.setExtClickArea(20);
+		m_toolName.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_heaters.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		m_toolName.addClickedCallback(onNameEvent, this);
-		m_status.addClickedCallback(onStatusEvent, this);
-		m_activeTemp.addEventCallback(onActiveStandbyEvent, LV_EVENT_CLICKED, this);
-		m_standbyTemp.addEventCallback(onActiveStandbyEvent, LV_EVENT_CLICKED, this);
 
 		// Styles
 		addStyle(Themes::getLvglStyles().bg_color_list_item);
@@ -53,37 +90,46 @@ namespace UI
 
 		m_toolName.addStyle(Themes::getLvglStyles().actionBtn);
 		m_toolName.addStyle(Themes::getLvglStyles().border_color_card, LV_STATE_CHECKED);
-		m_status.addStyle(Themes::getLvglStyles().border_color_card, LV_STATE_CHECKED);
-		m_status.addStyle(Themes::getLvglStyles().actionBtn);
-		m_activeTemp.addStyle(Themes::getLvglStyles().input);
-		m_standbyTemp.addStyle(Themes::getLvglStyles().input);
 
 		m_toolName.getLabel().setAlign(LV_ALIGN_LEFT_MID, 0, 0);
 	}
 
-	uint8_t ToolListItem::getSlotIndex() const
+	ToolListHeater::ToolListHeater(size_t index, LvObj& parent)
+		: ListItem(index, parent)
 	{
-		UI_LOCK();
-		return (uint8_t)m_presenter->getSlotIndex();
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		setFlexAlign(LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+
+		m_label.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
+
+		m_label.setFlexGrow(3);
+		m_status.setFlexGrow(3);
+		m_currentTemp.setFlexGrow(2);
+		m_activeTemp.setFlexGrow(2);
+		m_standbyTemp.setFlexGrow(2);
+
+		// m_activeTemp.setExtClickArea(20);
+		// m_standbyTemp.setExtClickArea(20);
+
+		m_status.addClickedCallback(onStatusEvent, this);
+		m_activeTemp.addEventCallback(onActiveStandbyEvent, LV_EVENT_CLICKED, this);
+		m_standbyTemp.addEventCallback(onActiveStandbyEvent, LV_EVENT_CLICKED, this);
+
+		m_status.addStyle(Themes::getLvglStyles().border_color_card, LV_STATE_CHECKED);
+		m_status.addStyle(Themes::getLvglStyles().actionBtn);
+		m_activeTemp.addStyle(Themes::getLvglStyles().input);
+		m_standbyTemp.addStyle(Themes::getLvglStyles().input);
 	}
 
-	void ToolListItem::setSlotIndex(uint8_t index)
-	{
-		UI_LOCK();
-		m_presenter->setSlotIndex(index);
-	}
-
-	void ToolListItem::setLabel(std::string_view text)
+	void ToolListTool::setLabel(std::string_view text)
 	{
 		m_toolName.setText(text);
 	}
 
-	void ToolListItem::setIcon(lv_img_dsc_t* icon)
-	{
-		return;
-	}
-
-	void ToolListItem::setSelected(const bool selected)
+	void ToolListTool::setSelected(const bool selected)
 	{
 		if (m_selected == selected)
 		{
@@ -95,142 +141,59 @@ namespace UI
 		m_selected = selected;
 	}
 
-	void ToolListItem::setStatus(std::string_view text)
+	size_t ToolListTool::setHeaterCount(size_t count)
 	{
-		m_status.setText(text);
+		m_heaters.setFlag(LV_OBJ_FLAG_HIDDEN, count == 0);
+		return m_heaters.setItemCount(count);
 	}
 
-	void ToolListItem::setCurrentTemp(float value)
+	void ToolListTool::onNameEvent(lv_event_t* e)
+	{
+		UI_LOCK();
+		auto view = static_cast<ToolListTool*>(lv_event_get_user_data(e));
+		view->m_presenter->toggleState();
+	}
+
+	void ToolListHeater::setLabel(std::string_view text)
+	{
+		m_label.setText(text);
+	}
+
+	void ToolListHeater::setStatus(std::string_view status)
+	{
+		m_status.setText(status);
+	}
+
+	void ToolListHeater::setCurrentTemp(float value)
 	{
 		m_currentTemp.setText(fmt::format("{:.1f}", value));
 	}
 
-	void ToolListItem::setActiveTemp(int32_t value)
+	void ToolListHeater::setActiveTemp(int32_t value)
 	{
 		m_activeTemp.setText(fmt::format("{:d}", value));
 	}
 
-	void ToolListItem::setActiveTempText(std::string_view text)
-	{
-		m_activeTemp.setText(text);
-	}
-
-	void ToolListItem::setStandbyTemp(int32_t value)
+	void ToolListHeater::setStandbyTemp(int32_t value)
 	{
 		m_standbyTemp.setText(fmt::format("{:d}", value));
 	}
 
-	void ToolListItem::setStandbyTempText(std::string_view text)
-	{
-		m_standbyTemp.setText(text);
-	}
-
-	void ToolListItem::showTemps(bool show)
+	void ToolListHeater::onStatusEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		m_currentTemp.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
-		m_activeTemp.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
-		m_standbyTemp.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
-		m_status.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
+		auto view = static_cast<ToolListHeater*>(lv_event_get_user_data(e));
+		if (view->m_statusCb)
+			view->m_statusCb();
 	}
 
-	void ToolListItem::onNameEvent(lv_event_t* e)
+	void ToolListHeater::onActiveStandbyEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
-		view->m_presenter->toggleState();
+		auto view = static_cast<ToolListHeater*>(lv_event_get_user_data(e));
+		LvObj* obj = LvObj::fromPtr(lv_event_get_target_obj(e));
+
+		if (view->m_temperatureCb)
+			view->m_temperatureCb(obj == &view->m_activeTemp);
 	}
-
-	void ToolListItem::onStatusEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
-		view->m_presenter->toggleSubState();
-	}
-
-	void ToolListItem::onActiveStandbyEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		ToolListItem* view = static_cast<ToolListItem*>(lv_event_get_user_data(e));
-		lv_obj_t* obj = lv_event_get_target_obj(e);
-
-		if (!view->m_presenter->configureNumberPad(obj == view->m_activeTemp))
-		{
-			LOG_WARN("Failed to configure number pad");
-			view->getToolList().hideNumberPad();
-			return;
-		}
-		view->getToolList().showNumberPad();
-	}
-
-	ToolList::ToolList(const std::string& name, LvObj& parent, LvObj* numberPadParent)
-		: View(name, parent)
-		, m_header("header", getRoot())
-		, m_headerTool("tool", m_header)
-		, m_headerStatus("status", m_header)
-		, m_headerCurrent("current", m_header)
-		, m_headerActive("active", m_header)
-		, m_headerStandby("standby", m_header)
-		, m_list("list", getRoot())
-		, m_numberPad("number_pad", numberPadParent ? *numberPadParent : parent, layout_t(0, 0, 50, 70))
-	{
-		init();
-	}
-
-	void ToolList::init()
-	{
-		UI_LOCK();
-		setFlexFlow(LV_FLEX_FLOW_COLUMN);
-
-		m_header.addStyle(Themes::getLvglStyles().bg_color_header);
-
-		m_header.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
-		m_list.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
-		addStyle(Themes::getLvglStyles().pad_zero);
-		m_header.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
-
-		m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_list.setWidth(LV_PCT(100));
-		m_list.setFlexGrow(1);
-		m_list.setListGrow(1);
-		m_header.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_headerTool.setFlexGrow(4);
-		m_headerStatus.setFlexGrow(3);
-		m_headerCurrent.setFlexGrow(2);
-		m_headerActive.setFlexGrow(2);
-		m_headerStandby.setFlexGrow(2);
-
-		m_headerTool.setText(_("toollist_tool"));
-		m_headerStatus.setText(_("toollist_status"));
-		m_headerCurrent.setText(_("toollist_current"));
-		m_headerActive.setText(_("toollist_active"));
-		m_headerStandby.setText(_("toollist_standby"));
-
-		m_headerTool.setStyleTextAlign(LV_TEXT_ALIGN_LEFT, 0);
-
-		// Number Pad
-
-		m_numberPad.hide();
-	}
-
-	size_t ToolList::setItemCnt(size_t cnt)
-	{
-		return m_list.setItemCount(cnt,
-								   [this](size_t index, LvObj& parent)
-								   {
-									   auto item = std::make_shared<ToolListItem>(index, parent, *this);
-									   item->setSlotIndex((uint8_t)index);
-									   item->activate();
-									   return item;
-								   });
-	}
-
-	void ToolList::showNumberPad()
-	{
-		UI_LOCK();
-		m_numberPad.clear();
-		openModal(&m_numberPad);
-		// m_numberPad.show();
-	}
-
 } // namespace UI

@@ -141,8 +141,8 @@ TEST_F(TestHomeViewWithData, HomeView)
 	EXPECT_EQUAL_SCREENSHOT("home_view.png");
 
 	/* Open the tool list numberpad */
-	view.getDashboard().getToolList().getToolListItem(0)->getPresenter()->configureNumberPad(true);
-	view.getDashboard().getToolList().showNumberPad();
+	view.getDashboard().getToolList().getTool(0)->getHeater(0)->getChildByName("active")->sendEvent(LV_EVENT_CLICKED,
+																									nullptr);
 	EXPECT_EQUAL_SCREENSHOT("home_view_tool_list_numberpad.png");
 }
 

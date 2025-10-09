@@ -66,7 +66,7 @@ namespace OM
 			std::shared_ptr<AnalogSensor> sensor;
 
 			void Reset();
-			const char* GetName() const;
+			std::string_view GetName() const;
 			const char* GetHeaterStatusStr() const;
 			void UpdateTarget(const int32_t temp, const bool active);
 			void UpdateTemp(const float temp) { current = temp; }

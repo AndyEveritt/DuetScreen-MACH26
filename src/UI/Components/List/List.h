@@ -9,18 +9,17 @@
 
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
-#include "UI/Components/LVGL/LvObj.h"
 #include "UI/Styles/Styles.h"
 #include <memory>
 #include <vector>
 
 namespace UI
 {
-	class ListItem : public LvObj
+	class ListItem : public LvContainer
 	{
 	  public:
 		ListItem(size_t index, LvObj& parent)
-			: LvObj(lv_obj_create, fmt::format("{}", index), parent)
+			: LvContainer(fmt::format("{}", index), parent)
 			, m_index(index)
 		{
 			// addStyle(Themes::getLvglStyles().bg_color_list_item, 0);
@@ -67,7 +66,7 @@ namespace UI
 		LvLabel& getTitle() { return m_title; }
 		LvContainer& getListContainer() { return m_listCont; }
 
-		void setTitle(const std::string& title)
+		void setTitle(std::string_view title)
 		{
 			UI_LOCK();
 			m_title.setText(title);

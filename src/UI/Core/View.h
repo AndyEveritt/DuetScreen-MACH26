@@ -12,30 +12,24 @@ namespace UI
 	class BasePresenter;
 
 	/**
-	 * This is the base View, each screen should inherit from this class. It provides a link
-	 * to the Presenter class.
+	 * This is the base View. It is used to create a dynamic component that has its own `Presenter`.
 	 *
-	 * @tparam T The type of Presenter associated with this view.
+	 * The `Presenter` is responsible for providing data and logic for the component. It is created automatically when
+	 * the `View` is constructed and destroyed when the `View` is destroyed.
 	 *
-	 * @note All views in the application must be a subclass of this type.
+	 * @tparam Presenter The type of Presenter associated with this view, must be inherited from `BasePresenter`.
+	 * @tparam BaseViewType The type of BaseView associated with this view, must be inherited from `LvObj`.
 	 */
-	template <class T, class BaseViewType = LvContainer>
-		requires(std::is_base_of_v<BasePresenter, T> && std::is_base_of_v<LvObj, BaseViewType>)
+	template <class Presenter, class BaseViewType = LvContainer>
+		requires(std::is_base_of_v<BasePresenter, Presenter> && std::is_base_of_v<LvObj, BaseViewType>)
 	class View : public BaseViewType
 	{
 	  public:
 		template <typename... Args>
-		View(const std::string& name, LvObj& parent, Args&&... args)
-			: BaseViewType(name, parent, std::forward<Args>(args)...)
-			, m_presenter(std::make_shared<T>(static_cast<LvObj*>(this)))
-		{
-			m_presenter->init();
-		}
-
-		template <typename... Args>
-		View(const std::string& name, Args&&... args)
-			: BaseViewType(name, std::forward<Args>(args)...)
-			, m_presenter(std::make_shared<T>(static_cast<LvObj*>(this)))
+			requires(std::is_constructible_v<BaseViewType, Args...>)
+		View(Args&&... args)
+			: BaseViewType(std::forward<Args>(args)...)
+			, m_presenter(std::make_shared<Presenter>(static_cast<LvObj*>(this)))
 		{
 			m_presenter->init();
 		}
@@ -57,7 +51,7 @@ namespace UI
 		 */
 		Model& getModel() const { return m_presenter->getModel(); }
 
-		std::shared_ptr<T> getPresenter() { return m_presenter; }
+		std::shared_ptr<Presenter> getPresenter() { return m_presenter; }
 
 		void activate() { m_presenter->activate(); }
 		void deactivate() { m_presenter->deactivate(); }
@@ -85,7 +79,7 @@ namespace UI
 		}
 
 	  protected:
-		std::shared_ptr<T> m_presenter;
+		std::shared_ptr<Presenter> m_presenter;
 	};
 
 } // namespace UI

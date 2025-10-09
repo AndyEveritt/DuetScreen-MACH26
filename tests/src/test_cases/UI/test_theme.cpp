@@ -344,21 +344,30 @@ TEST_F(TestTheme, Widgets)
 	/* Tool List */
 	ToolList tool_list("tool_list", cont2);
 	cont2.setGridCell(tool_list, LV_GRID_ALIGN_STRETCH, 5, 5, LV_GRID_ALIGN_STRETCH, 2, 2);
-	tool_list.setItemCnt(2);
-	for (size_t i = 0; i < tool_list.getItemCnt(); ++i)
+	tool_list.setToolCount(2);
+	for (size_t i = 0; i < tool_list.getToolCount(); ++i)
 	{
-		auto item = tool_list.getToolListItem(i);
+		auto item = tool_list.getTool(i);
 		if (item == nullptr)
 		{
 			continue;
 		}
 		item->setLabel(fmt::format("Tool {}", i));
 		item->setSelected(i == 0);
-		item->setStatus("state");
-		item->setCurrentTemp(100);
-		item->setActiveTemp(200);
-		item->setStandbyTemp(0);
-		item->showTemps(true);
+		item->setHeaterCount(i);
+		for (size_t j = 0; j < item->getHeaterCount(); ++j)
+		{
+			auto heater = item->getHeater(j);
+			if (heater == nullptr)
+			{
+				continue;
+			}
+			heater->setLabel(fmt::format("Heater {}", j));
+			heater->setStatus("standby");
+			heater->setCurrentTemp(100 + j * 10);
+			heater->setActiveTemp(200 + j * 10);
+			heater->setStandbyTemp(0);
+		}
 	}
 
 	/* Text Box */

@@ -28,6 +28,7 @@ namespace UI
 		setGridDsc(s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
+		// m_toolList.setMaxHeight(LV_PCT(50));
 		setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		setGridCell(m_graph, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		setGridCell(m_fileView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
@@ -44,7 +45,7 @@ namespace UI
 
 	void Dashboard::clear()
 	{
-		m_toolList.setItemCnt(0);
+		m_toolList.setToolCount(0);
 		m_toolList.hideNumberPad();
 		m_graph.clear();
 	}

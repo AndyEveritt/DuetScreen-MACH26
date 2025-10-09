@@ -174,6 +174,24 @@ namespace OM
 		return true;
 	}
 
+	Heat::HeaterStatus BedOrChamber::GetHeaterStatus()
+	{
+		auto pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return Heat::HeaterStatus::unknown;
+
+		return pheater->status;
+	}
+
+	const char* BedOrChamber::GetHeaterStatusStr()
+	{
+		auto pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return "unknown";
+
+		return pheater->GetHeaterStatusStr();
+	}
+
 	BedPtr GetBedBySlot(const size_t index)
 	{
 		if (index >= s_beds.Size())

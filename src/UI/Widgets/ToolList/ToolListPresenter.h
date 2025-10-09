@@ -11,67 +11,20 @@
 #include "ObjectModel/Heat.h"
 #include "ObjectModel/Spindle.h"
 #include "ObjectModel/Tool.h"
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Core/Presenter.h"
 #include "lvgl/lvgl.h"
 
 namespace UI
 {
-	class ToolListItem;
 	class ToolList;
-
-	class ToolListItemPresenter : public Presenter<ToolListItem>
-	{
-	  public:
-		PRESENTER_CONSTRUCTOR(ToolListItemPresenter, ToolListItem)
-
-		int8_t getSlotIndex() const;
-		void setSlotIndex(int8_t index);
-
-		void update();
-
-		void setTemp(int32_t value);
-		bool configureNumberPad(const bool active);
-		void toggleState();
-		void toggleSubState();
-
-	  private:
-		virtual void onInit() override
-		{
-			registerEventListener<EventType::ToolData>(this, &ToolListItemPresenter::update);
-			registerEventListener<EventType::HeaterData>(this, &ToolListItemPresenter::update);
-		}
-		void onActivate() override;
-
-		void numberPadConfirmCallback(float value);
-
-		bool updateView(const std::shared_ptr<OM::Tool> tool,
-						const std::shared_ptr<OM::ToolHeater> tHeater,
-						const uint8_t tHeaterIndex,
-						const std::shared_ptr<OM::Spindle> spindle);
-		bool updateView(const std::shared_ptr<OM::BedOrChamber> bedOrChamber,
-						const std::shared_ptr<OM::Heat::Heater> heater,
-						const bool bed);
-
-		int8_t m_slotIndex = -1;
-
-		enum class SlotType
-		{
-			Tool,
-			Bed,
-			Chamber,
-			Unknown
-		} m_slotType = SlotType::Unknown;
-
-		std::shared_ptr<OM::Tool> m_tool;
-		std::shared_ptr<OM::ToolHeater> m_tHeater;
-		std::shared_ptr<OM::Spindle> m_spindle;
-		std::shared_ptr<OM::BedOrChamber> m_bedOrChamber;
-
-		bool m_setActiveTemp = true;
-	};
+	class ToolListTool;
+	class ToolListToolPresenter;
 
 	class ToolListPresenter : public Presenter<ToolList>
 	{
+		friend ToolListToolPresenter;
+
 	  public:
 		PRESENTER_CONSTRUCTOR(ToolListPresenter, ToolList)
 
@@ -89,5 +42,43 @@ namespace UI
 		}
 		void onActivate() override;
 		void onDeactivate() override;
+
+		struct NumberPadConfig
+		{
+			std::string header;
+			int32_t initialValue = 0;
+			float min = 0.0f;
+			float max = 0.0f;
+			NumberPad::confirm_cb_t confirmCb = nullptr;
+		};
+
+		void configureNumberPad(const NumberPadConfig& config);
+	};
+
+	class ToolListToolPresenter : public Presenter<ToolListTool>
+	{
+	  public:
+		PRESENTER_CONSTRUCTOR(ToolListToolPresenter, ToolListTool)
+
+		void setToolListPresenter(std::weak_ptr<ToolListPresenter> presenter) { m_toolListPresenter = presenter; }
+
+		size_t getSlotIndex() const;
+
+		void update();
+
+		void toggleState();
+
+	  private:
+		virtual void onInit() override
+		{
+			registerEventListener<EventType::ToolData>(this, &ToolListToolPresenter::update);
+			registerEventListener<EventType::HeaterData>(this, &ToolListToolPresenter::update);
+		}
+		void onActivate() override;
+
+		std::weak_ptr<ToolListPresenter> m_toolListPresenter;
+		OM::ToolPtr m_tool;
+
+		bool m_setActiveTemp = true;
 	};
 } // namespace UI

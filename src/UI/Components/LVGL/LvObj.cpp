@@ -123,6 +123,42 @@ namespace UI
 		return lv_obj_get_child(getRoot(), id);
 	}
 
+	/**
+	 * @brief Recursively search children for a child with the given name. The input `name` will be split by the
+	 * character `.` to allow searching through nested children.
+	 * @param name Name of the child to search for, or a path of names separated by `.`.
+	 * @return Pointer to the found LvObj, or nullptr if not found.
+	 */
+	LvObj* LvObj::getChildByName(std::string_view name) const
+	{
+		UI_LOCK();
+
+		const LvObj* obj = this;
+		bool found = true;
+
+		while (!name.empty() && found)
+		{
+			std::string_view part = name.substr(0, name.find('.'));
+			name.remove_prefix(std::min(name.size(), part.size() + (name.size() > part.size() ? 1 : 0)));
+
+			found = false;
+			for (size_t i = 0; i < obj->getChildCount(); i++)
+			{
+				const LvObj* child = obj->getChild(i);
+				char name_buf[64];
+				lv_obj_get_name_resolved(child->getRootPtr(), name_buf, sizeof(name_buf));
+				if (child != nullptr && part == name_buf)
+				{
+					obj = child;
+					found = true;
+					break;
+				}
+			}
+		}
+
+		return found ? const_cast<LvObj*>(obj) : nullptr;
+	}
+
 	uint32_t LvObj::getChildCount() const
 	{
 		UI_LOCK();

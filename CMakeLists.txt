@@ -215,14 +215,15 @@ if(PROCESSOR STREQUAL "T113")
 endif()
 
 if (ENABLE_COVERAGE)
-    target_compile_options(DuetScreen.lib PUBLIC --coverage)
-    target_link_options(DuetScreen.lib PUBLIC --coverage)
+  target_compile_options(DuetScreen.lib PUBLIC --coverage)
+  target_link_options(DuetScreen.lib PUBLIC --coverage)
 
   find_program(FIND_CMD find REQUIRED)
 
   add_custom_target(coverage_clean
     COMMAND ${CMAKE_COMMAND} -E echo "Removing existing .gcda files"
     COMMAND ${FIND_CMD} ${CMAKE_BINARY_DIR} -name "*.gcda" -type f -delete
+    COMMAND ${FIND_CMD} ${CMAKE_BINARY_DIR} -wholename "*/src/main.cpp.gcno" -type f -delete
     COMMENT "Cleaning coverage data (*.gcda) from ${CMAKE_BINARY_DIR}"
     VERBATIM
   )

@@ -8,6 +8,7 @@
 #ifndef SRC_OBJECTMODEL_BEDORCHAMBER_HPP_
 #define SRC_OBJECTMODEL_BEDORCHAMBER_HPP_
 
+#include "ObjectModel/Heat.h"
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/function_ref.h>
 #include <cstdint>
@@ -16,32 +17,6 @@
 
 namespace OM
 {
-	enum class BedOrChamberStatus
-	{
-		off = 0,
-		standby,
-		active,
-		fault,
-		tuning,
-		offline
-	};
-
-	struct BedOrChamberStatusMapEntry
-	{
-		const char* key;
-		const BedOrChamberStatus val;
-	};
-
-	// This table has to be kept in alphabetical order of the keys
-	const BedOrChamberStatusMapEntry bedOrChamberStatusMap[] = {
-		{"active", BedOrChamberStatus::active},
-		{"fault", BedOrChamberStatus::fault},
-		{"off", BedOrChamberStatus::off},
-		{"offline", BedOrChamberStatus::offline},
-		{"standby", BedOrChamberStatus::standby},
-		{"tuning", BedOrChamberStatus::tuning},
-	};
-
 	struct BedOrChamber
 	{
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<BedOrChamber>(); }
@@ -65,6 +40,8 @@ namespace OM
 		bool SetChamberTemp(const int32_t temp, const bool active);
 		bool ToggleBedState();
 		bool ToggleChamberState();
+		Heat::HeaterStatus GetHeaterStatus();
+		const char* GetHeaterStatusStr();
 	};
 
 	using Bed = BedOrChamber;

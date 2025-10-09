@@ -114,6 +114,7 @@ namespace UI
 		lv_obj_t* getParentPtr() const;
 		LvObj* getChild(int32_t id) const;
 		lv_obj_t* getChildPtr(int32_t id) const;
+		LvObj* getChildByName(std::string_view name) const;
 		uint32_t getChildCount() const;
 		layout_t getLayout() const;
 		layout_t getLayoutPct() const;

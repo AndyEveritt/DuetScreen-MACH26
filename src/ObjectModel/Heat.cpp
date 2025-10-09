@@ -32,7 +32,7 @@ namespace OM
 			sensor = nullptr;
 		}
 
-		const char* Heater::GetName() const
+		std::string_view Heater::GetName() const
 		{
 			if (sensor == nullptr)
 			{
