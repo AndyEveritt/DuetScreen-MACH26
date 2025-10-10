@@ -518,7 +518,7 @@ namespace UI
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)
 	{
 		openModal(&m_numberpad);
-		m_numberpad.setHeader(utils::format(_("move_set_position"), axis_letter));
+		m_numberpad.setHeader(fmt::format(fmt::runtime(_("move_set_position")), axis_letter));
 		m_numberpad.setValue(position);
 		if (m_axisDataListPtr)
 		{

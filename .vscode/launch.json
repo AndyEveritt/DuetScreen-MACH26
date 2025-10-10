@@ -264,6 +264,18 @@
                 "--ip",
                 "${config:duetscreen_ip}"
             ]
+        },
+        {
+            "name": "Python: Run Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "scripts/run_tests.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--test_filter",
+                "${input:gtest_filter}",
+                "--skip_configure"
+            ]
         }
     ],
 }

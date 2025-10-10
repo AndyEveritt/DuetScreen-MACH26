@@ -35,6 +35,8 @@ en-GB:
   fault: Fault
   filament_management_header: Currently Loaded Filament
   filament_change: Change
+  filament_load: Load
+  filament_unload: Unload
   filament_select: Select Filament
   filament_select_tool: 'Select Filament for {:s}'
   file: File
@@ -363,7 +365,7 @@ en-GB:
   move_axis_home: Home %s
   move_distance: Move Distance (mm)
   move_machine_position: Machine Pos (mm)
-  move_set_position: 'Set absolute position for axis {}'
+  move_set_position: 'Set absolute position for axis {:c}'
   move_tool_position: Tool Pos (mm)
   msgbox_cancel: Cancel
   msgbox_close: Close

@@ -40,7 +40,7 @@ namespace UI
 
 		m_filamentSelect.setLabel(_("filament_select"));
 		m_filamentChangeBtn.setText(_("filament_change"));
-		m_filamentUnloadBtn.setText(_("unload"));
+		m_filamentUnloadBtn.setText(_("filament_unload"));
 
 		static int32_t col_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -196,6 +196,8 @@ namespace UI
 		m_filamentSelect.setText(filament);
 		m_loadedFilament = filament;
 		m_filamentChangeBtn.hide();
+		m_filamentUnloadBtn.setDisabled(filament.empty());
+		m_filamentChangeBtn.setText(filament.empty() ? _("filament_load") : _("filament_change"));
 	}
 
 	void ExtruderControl::setFilamentCallback(filament_cb_t cb)
@@ -324,14 +326,9 @@ namespace UI
 
 		std::string selected_filament = control->m_filamentSelect.getSelectedString();
 		control->m_filamentSelect.setText(selected_filament);
+		control->m_filamentSelect.invalidate(); // lvgl bug? This shouldn't be necessary
 
-		if (selected_filament == control->m_loadedFilament)
-		{
-			control->m_filamentChangeBtn.hide();
-			return;
-		}
-
-		control->m_filamentChangeBtn.show();
+		control->m_filamentChangeBtn.setVisible(selected_filament != control->m_loadedFilament);
 	}
 
 	void ExtruderControl::onFilamentChangeEvent(lv_event_t* event)
@@ -362,68 +359,74 @@ namespace UI
 	void ExtruderControl::onDistanceEvent(lv_event_t* event)
 	{
 		UI_LOCK();
-		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-
-		size_t index = static_cast<size_t>(
-			reinterpret_cast<uintptr_t>(LvObj::fromPtr(lv_event_get_target_obj(event))->getUserData()));
-
 		lv_event_code_t code = lv_event_get_code(event);
 
-		switch (code)
+		if (code == LV_EVENT_CLICKED || code == LV_EVENT_LONG_PRESSED)
 		{
-		case LV_EVENT_CLICKED:
-		{
-			control->m_distanceInput.getItem(control->m_selectedDistanceIndex)->setChecked(false);
-			control->m_selectedDistanceIndex = index;
-			control->m_distanceInput.getItem(index)->setChecked(true);
-			StorageHelper::setData(ID_EXTRUSION_SELECTED_DISTANCE, index);
-			break;
-		}
-		case LV_EVENT_LONG_PRESSED:
-		{
-			if (control && control->m_distanceCb)
+			auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
+
+			size_t index = static_cast<size_t>(
+				reinterpret_cast<uintptr_t>(LvObj::fromPtr(lv_event_get_target_obj(event))->getUserData()));
+
+			switch (code)
 			{
-				LOG_DBG("Calling distance callback with value {} in {}",
-						control->getDistanceValue(index),
-						control->getName());
-				control->m_distanceCb(index, control->getDistanceValue(index));
+			case LV_EVENT_CLICKED:
+			{
+				control->m_distanceInput.getItem(control->m_selectedDistanceIndex)->setChecked(false);
+				control->m_selectedDistanceIndex = index;
+				control->m_distanceInput.getItem(index)->setChecked(true);
+				StorageHelper::setData(ID_EXTRUSION_SELECTED_DISTANCE, index);
+				break;
 			}
-			break;
-		}
+			case LV_EVENT_LONG_PRESSED:
+			{
+				if (control && control->m_distanceCb)
+				{
+					LOG_DBG("Calling distance callback with value {} in {}",
+							control->getDistanceValue(index),
+							control->getName());
+					control->m_distanceCb(index, control->getDistanceValue(index));
+				}
+				break;
+			}
+			}
 		}
 	}
 
 	void ExtruderControl::onFeedrateEvent(lv_event_t* event)
 	{
 		UI_LOCK();
-		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-
-		size_t index = static_cast<size_t>(
-			reinterpret_cast<uintptr_t>(LvObj::fromPtr(lv_event_get_target_obj(event))->getUserData()));
-
 		lv_event_code_t code = lv_event_get_code(event);
 
-		switch (code)
+		if (code == LV_EVENT_CLICKED || code == LV_EVENT_LONG_PRESSED)
 		{
-		case LV_EVENT_CLICKED:
-		{
-			control->m_feedrateInput.getItem(control->m_selectedFeedrateIndex)->setChecked(false);
-			control->m_selectedFeedrateIndex = index;
-			control->m_feedrateInput.getItem(index)->setChecked(true);
-			StorageHelper::setData(ID_EXTRUSION_SELECTED_FEEDRATE, index);
-			break;
-		}
-		case LV_EVENT_LONG_PRESSED:
-		{
-			if (control && control->m_feedrateCb)
+			auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
+
+			size_t index = static_cast<size_t>(
+				reinterpret_cast<uintptr_t>(LvObj::fromPtr(lv_event_get_target_obj(event))->getUserData()));
+
+			switch (code)
 			{
-				LOG_DBG("Calling feedrate callback with value {} in {}",
-						control->getFeedrateValue(index),
-						control->getName());
-				control->m_feedrateCb(index, control->getFeedrateValue(index));
+			case LV_EVENT_CLICKED:
+			{
+				control->m_feedrateInput.getItem(control->m_selectedFeedrateIndex)->setChecked(false);
+				control->m_selectedFeedrateIndex = index;
+				control->m_feedrateInput.getItem(index)->setChecked(true);
+				StorageHelper::setData(ID_EXTRUSION_SELECTED_FEEDRATE, index);
+				break;
 			}
-			break;
-		}
+			case LV_EVENT_LONG_PRESSED:
+			{
+				if (control && control->m_feedrateCb)
+				{
+					LOG_DBG("Calling feedrate callback with value {} in {}",
+							control->getFeedrateValue(index),
+							control->getName());
+					control->m_feedrateCb(index, control->getFeedrateValue(index));
+				}
+				break;
+			}
+			}
 		}
 	}
 

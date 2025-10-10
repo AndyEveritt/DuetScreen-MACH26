@@ -472,7 +472,7 @@ class UINewRefReviewer:
 
 	def _set_header(self):
 		p = self._current_path()
-		self.header_var.set(f"{self.index + 1}/{len(self.items)}  —  {p.name}")
+		self.header_var.set(f"{self.index + 1}/{len(self.items)}  —  {p.relative_to(REF_IMGS_DIR).as_posix()}")
 
 	def _on_resize(self, event=None):
 		self._render_image_to_label()
@@ -682,7 +682,8 @@ class UIDiffReviewer:
 
 	def _set_header(self):
 		ref, err = self._current_paths()
-		self.header_var.set(f"{self.index + 1}/{len(self.items)}  —  {err.name}  (ref: {ref.name})")
+		self.header_var.set(
+			f"{self.index + 1}/{len(self.items)}  —  {err.name}  (ref: {ref.relative_to(REF_IMGS_DIR).as_posix()})")
 
 	def _on_resize(self, event=None):
 		# Re-render scaled image to fit the available area
@@ -819,6 +820,8 @@ def parse_args(argv: List[str]):
                      help="Test filter expression (passed to ctest or test binary)")
 	parser.add_argument("--coverage", "-c", action="store_true",
                      help="Generate gcovr HTML coverage report (tests/report/index.html)")
+	parser.add_argument("--skip_configure", action="store_true", help="Skip CMake configure step")
+	parser.add_argument("--skip_build", action="store_true", help="Skip CMake build step")
 	return parser.parse_args(argv)
 
 
@@ -891,19 +894,26 @@ def main(argv: List[str]) -> int:
 
 	log("Step 2/5: Ensure build is configured…")
 	# Try to configure automatically using a preset
-	if not configure_cmake():
-		log("Failed to configure the project. Aborting.")
-		return 2
+	if args.skip_configure:
+		log("  Skipping configure step as requested.")
+	else:
+		if not configure_cmake():
+			log("Failed to configure the project. Aborting.")
+			return 2
+
 	build_dir = find_build_dir()
 	if build_dir is None:
 		log("Error: Could not locate a CTest build directory after configure.")
 		return 2
 
 	log("Step 3/5: Building tests…")
-	brc = build_tests(build_dir)
-	if brc != 0:
-		log(f"Build failed with return code {brc}.")
-		return brc
+	if args.skip_build:
+		log("  Skipping build step as requested.")
+	else:
+		brc = build_tests(build_dir)
+		if brc != 0:
+			log(f"Build failed with return code {brc}.")
+			return brc
 
 	# Snapshot existing references before running tests so we can detect newly created ones
 	before_snapshot = snapshot_existing_refs(REF_IMGS_DIR)
