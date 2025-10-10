@@ -44,11 +44,8 @@ namespace UI
 		m_xLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_yLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
-		m_xLabel.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
-		m_yLabel.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
-
-		m_xLabel.addEventCallback(onLabelEvent, LV_EVENT_CLICKED, this);
-		m_yLabel.addEventCallback(onLabelEvent, LV_EVENT_CLICKED, this);
+		m_xLabel.addClickedCallback(onLabelEvent, this);
+		m_yLabel.addClickedCallback(onLabelEvent, this);
 		m_xIncrementButton.addClickedCallback(onJogBtn, this);
 		m_xDecrementButton.addClickedCallback(onJogBtn, this);
 		m_yIncrementButton.addClickedCallback(onJogBtn, this);
@@ -297,7 +294,7 @@ namespace UI
 		updateLabel(m_yLabel, sm_yAxisLetter, m_yPosition);
 	}
 
-	void XYControl::updateLabel(LvLabel& label, const char axisLetter, const float position)
+	void XYControl::updateLabel(Button& label, const char axisLetter, const float position)
 	{
 		UI_LOCK();
 		std::string labelText = fmt::format("{}: {:g}", axisLetter, position);

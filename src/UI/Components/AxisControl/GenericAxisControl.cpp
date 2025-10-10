@@ -26,8 +26,7 @@ namespace UI
 		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_label.setMinWidth(LV_SIZE_CONTENT);
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
-		m_label.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
-		m_label.addEventCallback(onLabelClick, LV_EVENT_CLICKED, this);
+		m_label.addClickedCallback(onLabelClick, this);
 
 		m_incrementButton.setWidth(LV_PCT(100));
 		m_homeButton.setWidth(LV_PCT(100));
@@ -146,6 +145,5 @@ namespace UI
 		UI_LOCK();
 		std::string labelText = fmt::format("{}: {:g}", m_axisLetter, m_axisPosition);
 		m_label.setText(labelText);
-		lv_obj_set_style_text_align(m_label, LV_TEXT_ALIGN_CENTER, 0);
 	}
 } // namespace UI

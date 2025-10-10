@@ -42,7 +42,7 @@ namespace UI
 
 		void updateLabel();
 
-		LvLabel m_label;
+		Button m_label;
 		Button m_incrementButton;
 		Button m_homeButton;
 		Button m_decrementButton;

@@ -49,13 +49,13 @@ namespace UI
 
 		void updateXLabel();
 		void updateYLabel();
-		void updateLabel(LvLabel& label, const char axisLetter, const float position);
+		void updateLabel(Button& label, const char axisLetter, const float position);
 
 		int32_t m_colDsc[5] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
 		int32_t m_rowDsc[5] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
-		LvLabel m_xLabel;
-		LvLabel m_yLabel;
+		Button m_xLabel;
+		Button m_yLabel;
 		Button m_xIncrementButton;
 		Button m_xDecrementButton;
 		Button m_yIncrementButton;
