@@ -324,8 +324,10 @@ namespace UI
 	{
 		UI_LOCK();
 
-		lv_label_set_text(m_firmwareVersion, utils::format(_("settings_firmware_version"), FIRMWARE_VERSION).c_str());
-		lv_label_set_text(m_buildTime, utils::format(_("settings_build_time"), BuildDateText, BuildTimeSuffix).c_str());
+		lv_label_set_text(m_firmwareVersion,
+						  fmt::format(fmt::runtime(_("settings_firmware_version")), FIRMWARE_VERSION).c_str());
+		lv_label_set_text(m_buildTime,
+						  fmt::format(fmt::runtime(_("settings_build_time")), BuildDateText, BuildTimeSuffix).c_str());
 
 		m_language.setLabel(_("settings_language"));
 		m_language.setOptions(_("settings_language_en"));
@@ -467,7 +469,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_ipAddress, 3);
 		lv_obj_set_flex_grow(m_refresh.getRoot(), 1);
 		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
-		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), "").c_str());
+		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings_network_ip_address")), "").c_str());
 
 		// Network List
 		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
@@ -515,7 +517,7 @@ namespace UI
 	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_ipAddress, utils::format(_("settings_network_ip_address"), ipAddress.c_str()).c_str());
+		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings_network_ip_address")), ipAddress).c_str());
 	}
 
 	void NetworkSettingsView::setEnabled(bool enabled)
@@ -537,7 +539,7 @@ namespace UI
 		*(bool*)knownPtr = known;
 		lv_table_set_cell_user_data(m_networkList, index + 1, 2, knownPtr);
 		lv_table_set_cell_value(m_networkList, index + 1, 0, ssid.c_str());
-		lv_table_set_cell_value(m_networkList, index + 1, 1, utils::format("%d dBm", signalLevel).c_str());
+		lv_table_set_cell_value(m_networkList, index + 1, 1, fmt::format("{:d} dBm", signalLevel).c_str());
 		lv_table_set_cell_value(m_networkList, index + 1, 2, known ? LV_SYMBOL_OK : LV_SYMBOL_CLOSE);
 		lv_table_set_cell_value(m_networkList, index + 1, 3, known ? LV_SYMBOL_TRASH : "");
 		lv_table_set_cell_value(m_networkList, index + 1, 4, connected ? LV_SYMBOL_WIFI : "");

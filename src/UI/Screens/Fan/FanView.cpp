@@ -53,9 +53,9 @@ namespace UI
 	FanView::FanItem::FanItem(size_t index, LvObj& parent, FanView& view)
 		: ListItem(index, parent)
 		, m_view(view)
-		, m_off(utils::format("fan_off_%d", index).c_str(), getRoot(), _("off"))
-		, m_slider(utils::format("fan_slider_%d", index).c_str(), getRoot())
-		, m_max(utils::format("fan_max_%d", index).c_str(), getRoot(), _("max"))
+		, m_off(fmt::format("fan_off_{:d}", index), getRoot(), _("off"))
+		, m_slider(fmt::format("fan_slider_{:d}", index), getRoot())
+		, m_max(fmt::format("fan_max_{:d}", index), getRoot(), _("max"))
 	{
 		UI_LOCK();
 

@@ -421,16 +421,16 @@ namespace UI
 	}
 
 	AlertMessageBox::AxisJog::AxisJog(const size_t index, LvObj& parent, AlertMessageBox& msgBox)
-		: LvObj(lv_obj_create, utils::format("msgbox_axis_jog_%u", index), parent)
+		: LvObj(lv_obj_create, fmt::format("axis_jog_{:d}", index), parent)
 		, m_index(index)
 		, m_msgBox(msgBox)
 		, m_label("label", getRoot())
-		, m_relMove{Button(utils::format("msgbox_axis_%u_rel_move_1", index), getRoot(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_2", index), getRoot(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_3", index), getRoot(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_4", index), getRoot(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_5", index), getRoot(), "", layout_t(0, 0, 0, 100)),
-					Button(utils::format("msgbox_axis_%u_rel_move_6", index), getRoot(), "", layout_t(0, 0, 0, 100))}
+		, m_relMove{Button("rel_move_1", getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button("rel_move_2", getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button("rel_move_3", getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button("rel_move_4", getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button("rel_move_5", getRoot(), "", layout_t(0, 0, 0, 100)),
+					Button("rel_move_6", getRoot(), "", layout_t(0, 0, 0, 100))}
 
 	{
 		UI_LOCK();
@@ -446,7 +446,7 @@ namespace UI
 		for (size_t i = 0; i < ARRAY_SIZE(m_relMove); i++)
 		{
 			Button& btn = m_relMove[i];
-			btn.setText(utils::format("%.2f", s_jogAmounts[i]).c_str());
+			btn.setText(fmt::format("{:g}", s_jogAmounts[i]));
 			btn.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 			btn.setFlexGrow(1);
 			btn.setHeight(LV_SIZE_CONTENT);

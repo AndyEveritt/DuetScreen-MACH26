@@ -391,8 +391,8 @@ namespace OM
 			return;
 		}
 
-		std::string command = utils::format(
-			"T%u\n%sM701 S\"%s\"\nM703\n", index, extruder->filamentName.IsEmpty() ? "" : "M702\n", filament);
+		std::string command = fmt::format(
+			"T{:d}\n{:s}M701 S\"{:s}\"\nM703\n", index, extruder->filamentName.IsEmpty() ? "" : "M702\n", filament);
 
 		Comm::DUET.SendGcode(command.c_str());
 	}

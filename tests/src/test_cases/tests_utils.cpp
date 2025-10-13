@@ -11,12 +11,6 @@ TEST(Utils, BoundInt)
 	EXPECT_EQ(utils::bound(42, 0, 10), 10);
 }
 
-TEST(Utils, FormatBasic)
-{
-	std::string s = utils::format("Hello %s %d", "World", 7);
-	EXPECT_NE(s.find("Hello World 7"), std::string::npos);
-}
-
 TEST(Utils, ReplaceSubstring)
 {
 	std::string s = "foo_bar_bar";

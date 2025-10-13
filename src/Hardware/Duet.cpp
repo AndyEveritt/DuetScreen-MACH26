@@ -181,7 +181,7 @@ namespace Comm
 		if (m_sessionKey != sm_noSessionKey)
 		{
 			// TODO: Determine why session key isn't working
-			// req.headers["X-Session-Key"] = utils::format("%u", m_sessionKey).c_str();
+			// req.headers["X-Session-Key"] = fmt::format("{:d}", m_sessionKey).c_str();
 		}
 		req.query_params = queryParameters;
 		req.timeout = HTTP_TIMEOUT;
@@ -600,7 +600,7 @@ namespace Comm
 			HttpResponse r;
 			hv::QueryParams query;
 			query["dir"] = dir;
-			query["first"] = utils::format("%d", first);
+			query["first"] = fmt::format("{:d}", first);
 			ret = AsyncGet(
 				"/rr_filelist",
 				query,
@@ -736,7 +736,7 @@ namespace Comm
 						while (context.next != 0)
 						{
 							// Request thumbnail data
-							query["offset"] = utils::format("%d", context.next);
+							query["offset"] = fmt::format("{:d}", context.next);
 							LOG_INFO("Requesting thumbnail data for {:s} at offset {:d}\n", filename, context.next);
 							if (!Get("/rr_thumbnail", r, query))
 							{
@@ -800,7 +800,7 @@ namespace Comm
 #if 1
 			hv::QueryParams query;
 			query["name"] = filename;
-			query["offset"] = utils::format("%d", offset);
+			query["offset"] = fmt::format("{:d}", offset);
 			ret = AsyncGet(
 				"/rr_thumbnail",
 				query,

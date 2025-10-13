@@ -220,7 +220,7 @@ namespace Comm
 		// set headers
 		if (sessionKey > 0)
 		{
-			conn.AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
+			conn.AppendHeader("X-Session-Key", fmt::format("{:d}", sessionKey));
 			LOG_DBG("Get: \"{:s}\", sessionKey={:d}", url.c_str(), sessionKey);
 		}
 		else
@@ -268,7 +268,7 @@ namespace Comm
 		conn.FollowRedirects(true, 3);
 
 		// set headers
-		conn.AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
+		conn.AppendHeader("X-Session-Key", fmt::format("{:d}", sessionKey));
 
 		conn.AppendHeader("Content-Type", "text/plain");
 		// if using a non-standard Certificate Authority (CA) trust file

@@ -62,26 +62,6 @@ namespace SerialIo
 		return s_uart->send(data);
 	}
 
-	ssize_t Sendf(const char* fmt, ...)
-	{
-		va_list vargs;
-		va_start(vargs, fmt);
-
-		std::string buf = utils::vformat(fmt, vargs);
-		LOG_INFO("Sending {:s}", buf.c_str());
-
-		if (!s_uart)
-		{
-			LOG_ERROR("UART not initialized");
-			return -1;
-		}
-
-		ssize_t ret = s_uart->send(buf);
-
-		va_end(vargs);
-		return ret;
-	}
-
 	bool SetBaudRate(speed_t baudRate)
 	{
 		return s_uart && s_uart->setBaudRate(baudRate);

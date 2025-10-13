@@ -16,6 +16,7 @@ endif()
 
 add_subdirectory(Comm)
 add_subdirectory(Hardware)
+add_subdirectory(i18n)
 add_subdirectory(image)
 add_subdirectory(ObjectModel)
 add_subdirectory(Subscribers)

@@ -263,8 +263,8 @@ namespace Comm
 					if (GetFileSize(currentJobThumbnailFilePath) <
 						GetFileSize(m_currentThumbnail->GetThumbnailPath().c_str()))
 					{
-						system(utils::format("cp %s %s",
-											 m_currentThumbnail->GetThumbnailPath().c_str(),
+						system(fmt::format("cp {:s} {:s}",
+											 m_currentThumbnail->GetThumbnailPath(),
 											 currentJobThumbnailFilePath)
 								   .c_str());
 #  if 0
@@ -899,7 +899,7 @@ namespace Comm
 	{
 		MODEL_LOCK();
 		struct stat sb;
-		if (system(utils::format("test -f \"%s\"", filepath).c_str()) == 0)
+		if (system(fmt::format("test -f \"{:s}\"", filepath).c_str()) == 0)
 		{
 			if (stat(filepath, &sb) == -1)
 			{

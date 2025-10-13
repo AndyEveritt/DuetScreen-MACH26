@@ -226,7 +226,7 @@ namespace OM
 						auto ea = tool->GetExtruder(j);
 						if (ea != nullptr)
 						{
-							extruders += utils::format("%s%u", first ? "" : ", ", ea->index);
+							extruders += fmt::format("{:s}{:d}", first ? "" : ", ", ea->index);
 							first = false;
 						}
 					}
@@ -240,7 +240,7 @@ namespace OM
 						auto fan = tool->GetFan(j);
 						if (fan != nullptr)
 						{
-							fans += utils::format("%s%u", first ? "" : ", ", fan->index);
+							fans += fmt::format("{:s}{:d}", first ? "" : ", ", fan->index);
 							first = false;
 						}
 					}

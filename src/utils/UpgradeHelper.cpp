@@ -50,7 +50,7 @@ namespace UpgradeHelper
 		}
 
 		removeTmpFile(); // Remove any previous upgrade file
-		int ret = system(utils::format("cp \"%s\" " TMP_FILEPATH, filePath.c_str()).c_str());
+		int ret = system(fmt::format("cp \"{:s}\" " TMP_FILEPATH, filePath).c_str());
 		if (ret != 0)
 		{
 			LOG_ERROR("Failed to copy file \"{:s}\" to /tmp, code={:d}", filePath.c_str(), ret);

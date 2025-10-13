@@ -101,7 +101,7 @@ namespace UI
 
 	void ConsoleView::addCommand(const char* resp)
 	{
-		addResponse(utils::format("> %s", resp).c_str());
+		addResponse(fmt::format("> {:s}", resp).c_str());
 	}
 
 	void ConsoleView::addResponse(const char* resp)

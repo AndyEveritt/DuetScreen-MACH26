@@ -287,7 +287,7 @@ bool IsThumbnailCached(std::string_view filepath, bool includeBlank)
 {
 	std::string thumbnailPath = GetThumbnailPath(filepath);
 	struct stat sb;
-	if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0)
+	if (system(fmt::format("test -f \"{:s}\"", thumbnailPath).c_str()) == 0)
 	{
 		if (stat(thumbnailPath.c_str(), &sb) == -1)
 		{
@@ -307,19 +307,19 @@ bool IsThumbnailCached(std::string_view filepath, bool includeBlank)
 bool ClearAllCachedThumbnails()
 {
 	LOG_INFO("Clearing all cached thumbnails");
-	return system("rm -rf /tmp/thumbnails/*") == 0;
+	return std::filesystem::remove_all("/tmp/thumbnails") != static_cast<std::uintmax_t>(-1);
 }
 
 bool DeleteCachedThumbnail(std::string_view filepath)
 {
 	LOG_INFO("Deleting thumbnail for {:s}", filepath);
 	std::string thumbnailPath = GetThumbnailPath(filepath);
-	return system(utils::format("rm -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
+	return std::filesystem::remove(thumbnailPath);
 }
 
 bool CreateBlankThumbnailCache(std::string_view filepath)
 {
 	LOG_INFO("Creating blank thumbnail for {:s}", filepath);
 	std::string thumbnailPath = GetThumbnailPath(filepath);
-	return system(utils::format("echo \"\" > \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
+	return system(fmt::format("echo \"\" > \"{:s}\"", thumbnailPath).c_str()) == 0;
 }

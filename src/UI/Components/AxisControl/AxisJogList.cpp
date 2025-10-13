@@ -57,7 +57,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_axisLetter = letter;
-		m_home.setText(utils::format(_("move_axis_home"), letter).c_str());
+		m_home.setText(fmt::format(fmt::runtime(_("move_axis_home")), letter).c_str());
 	}
 
 	void AxisItem::setJogAmounts(const float* distances, const size_t count)
@@ -105,21 +105,20 @@ namespace UI
 	void AxisItem::setToolPosition(const float& position)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_toolPosition, utils::format("%.2f", position).c_str());
+		m_toolPosition.setText(fmt::format("{:.2f}", position));
 	}
 
 	void AxisItem::setMachinePosition(const float& position)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_machinePosition, utils::format("(%.2f)", position).c_str());
+		m_machinePosition.setText(fmt::format("({:.2f})", position));
 	}
 
 	void AxisItem::disableHome(const bool disabled)
 	{
 		UI_LOCK();
 		m_home.setDisabled(disabled);
-		m_home.setText(disabled ? m_axisLetter.c_str()
-								: utils::format(_("move_axis_home"), m_axisLetter.c_str()).c_str());
+		m_home.setText(disabled ? m_axisLetter : fmt::format(fmt::runtime(_("move_axis_home")), m_axisLetter));
 	}
 
 	void AxisItem::setJogCallback(jog_cb_t cb, void* user_data)

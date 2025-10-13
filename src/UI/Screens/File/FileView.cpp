@@ -345,18 +345,18 @@ namespace UI
 		{
 		case FilePresenter::SortBy::NAME:
 			m_sortName.setChecked(true);
-			m_sortName.setText(descending ? utils::format(LV_SYMBOL_DOWN " %s", _("sort_by_name")).c_str()
-										  : utils::format(LV_SYMBOL_UP " %s", _("sort_by_name")).c_str());
+			m_sortName.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("sort_by_name")).c_str()
+										  : fmt::format(LV_SYMBOL_UP " {:s}", _("sort_by_name")).c_str());
 			break;
 		case FilePresenter::SortBy::DATE:
 			m_sortDate.setChecked(true);
-			m_sortDate.setText(descending ? utils::format(LV_SYMBOL_DOWN " %s", _("sort_by_date")).c_str()
-										  : utils::format(LV_SYMBOL_UP " %s", _("sort_by_date")).c_str());
+			m_sortDate.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("sort_by_date")).c_str()
+										  : fmt::format(LV_SYMBOL_UP " {:s}", _("sort_by_date")).c_str());
 			break;
 		case FilePresenter::SortBy::SIZE:
 			m_sortSize.setChecked(true);
-			m_sortSize.setText(descending ? utils::format(LV_SYMBOL_DOWN " %s", _("sort_by_size")).c_str()
-										  : utils::format(LV_SYMBOL_UP " %s", _("sort_by_size")).c_str());
+			m_sortSize.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("sort_by_size")).c_str()
+										  : fmt::format(LV_SYMBOL_UP " {:s}", _("sort_by_size")).c_str());
 			break;
 		}
 	}

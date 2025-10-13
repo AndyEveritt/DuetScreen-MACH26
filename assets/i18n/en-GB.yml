@@ -362,7 +362,7 @@ en-GB:
   max: Max
   mesh_bed_level: Mesh Bed Level
   move: Move
-  move_axis_home: Home %s
+  move_axis_home: Home {:s}
   move_distance: Move Distance (mm)
   move_machine_position: Machine Pos (mm)
   move_set_position: 'Set absolute position for axis {:c}'
@@ -396,7 +396,7 @@ en-GB:
   set_temperature_numpad_header: 'Set {} Temperature for {}'
   settings: Settings
   settings_brightness: Brightness
-  settings_build_time: 'Firmware built on: %s %s'
+  settings_build_time: 'Firmware built on: {:s} {:s}'
   settings_connectivity_header: Connectivity
   settings_debug_borders: Enable Debug Borders
   settings_debug_level: Debug Level
@@ -413,7 +413,7 @@ en-GB:
   settings_duet_poll_interval: Poll Interval (ms)
   settings_enable_ssh: Enable SSH
   settings_erase_and_restart: Erase and Restart
-  settings_firmware_version: 'Firmware Version: %s'
+  settings_firmware_version: 'Firmware Version: {:s}'
   settings_language: Language
   settings_language_en: English
   settings_network: Network
@@ -421,7 +421,7 @@ en-GB:
   settings_network_enable: Enable WiFi
   settings_network_enter_password: Enter Password
   settings_network_forget: Forget
-  settings_network_ip_address: 'IP Address: %s'
+  settings_network_ip_address: 'IP Address: {:s}'
   settings_network_known: Known
   settings_network_password_title: Password
   settings_network_signal: Signal

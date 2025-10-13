@@ -169,7 +169,7 @@ namespace UI
 		float step = (range.max - range.min) / (float)(ticks - 1);
 		for (uint32_t i = 0; i < ticks; ++i)
 		{
-			vec.emplace_back(utils::format("%.2f", range.min + step * (float)i));
+			vec.emplace_back(fmt::format("{:g}", range.min + step * (float)i));
 		}
 
 		// Delete existing labels if any

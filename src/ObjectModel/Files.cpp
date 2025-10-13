@@ -50,7 +50,7 @@ namespace OM::FileSystem
 			len /= 1024;
 		}
 
-		return utils::format("%.2f %s", len, sizes[order]);
+		return fmt::format("{:g} {:s}", len, sizes[order]);
 	}
 
 	void FileSystemItem::SetName(const std::string name)
@@ -344,7 +344,7 @@ namespace OM::FileSystem
 				File* file = AddFileAt(index);
 				file->SetName(fileInfo.d_name);
 				file->SetSize(fileInfo.st_size);
-				file->SetDate(utils::format("%d", fileInfo.st_mtim));
+				file->SetDate(fmt::format("{:d}", fileInfo.st_mtim));
 			}
 			index++;
 		}
@@ -372,7 +372,7 @@ namespace OM::FileSystem
 		std::string contents;
 		if (!USB::ReadUsbFileContents(file->GetPath(), contents))
 			return;
-		Comm::DUET.UploadFile(utils::format("/gcodes/%s", file->GetName().c_str()).c_str(), contents);
+		Comm::DUET.UploadFile(fmt::format("/gcodes/{:s}", file->GetName()).c_str(), contents);
 #endif
 	}
 

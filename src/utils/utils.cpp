@@ -1,5 +1,5 @@
 /*
- * format.cpp
+ * utils.cpp
  *
  *  Created on: 26 Jan 2024
  *      Author: Andy Everitt
@@ -38,42 +38,9 @@ namespace utils
 		int status = pclose(pipe);
 		if (status != 0)
 		{
-			errorText = format("Command failed with status: %d", status);
+			errorText = fmt::format("Command failed with status: {:d}", status);
 		}
 		return result + "\n" + errorText;
-	}
-
-	std::string format(const char* format, ...)
-	{
-		va_list args;
-		va_start(args, format);
-		std::string result = vformat(format, args);
-		va_end(args);
-		return result;
-	}
-
-	std::string vformat(const char* format, va_list args)
-	{
-		std::vector<char> buffer(256); // Start with reasonable buffer
-		va_list args_copy;
-		va_copy(args_copy, args);
-
-		int result = vsnprintf(buffer.data(), buffer.size(), format, args_copy);
-
-		if (result < 0)
-		{
-			va_end(args_copy);
-			return std::string();
-		}
-
-		if (static_cast<size_t>(result) >= buffer.size())
-		{
-			buffer.resize(static_cast<size_t>(result) + 1);
-			result = vsnprintf(buffer.data(), buffer.size(), format, args);
-		}
-
-		va_end(args_copy);
-		return std::string(buffer.data(), static_cast<size_t>(result));
 	}
 
 	size_t removeCharFromString(std::string& nString, char c)
