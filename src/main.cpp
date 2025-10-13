@@ -99,8 +99,10 @@ int main(int argc, char** argv)
 	// deadlocks can occur
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
-	/*Initialize LVGL*/
+/*Initialize LVGL*/
+#if LV_USE_LOG
 	lv_log_register_print_cb(lvgl_log_cb);
+#endif
 	lv_i18n_init(lv_i18n_language_pack);
 	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());
 

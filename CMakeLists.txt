@@ -133,12 +133,18 @@ endif()
 target_compile_definitions(DuetScreen.lib PUBLIC MULTITHREADED)
 
 if(PROCESSOR STREQUAL "T113")
-  target_compile_definitions(lvgl PUBLIC LV_USE_LINUX_FBDEV=1)
-  target_compile_definitions(lvgl PUBLIC LV_USE_EVDEV=1)
+  target_compile_definitions(lvgl PUBLIC 
+                                  LV_USE_LINUX_FBDEV=1
+                                  LV_USE_EVDEV=1
+                                  LV_LINUX_FBDEV_RENDER_MODE=LV_DISPLAY_RENDER_MODE_DIRECT
+                                  LV_LINUX_FBDEV_BUFFER_COUNT=2)
   target_compile_definitions(DuetScreen.lib PUBLIC T113=1)
   # add_compile_definitions(T113=1)
 elseif(PROCESSOR STREQUAL "Simulation")
-  target_compile_definitions(lvgl PUBLIC LV_USE_SDL=1)
+  target_compile_definitions(lvgl PUBLIC 
+                                  LV_USE_SDL=1
+                                  LV_SDL_BUF_COUNT=2
+                                  LV_SDL_RENDER_MODE=LV_DISPLAY_RENDER_MODE_DIRECT)
   target_compile_definitions(DuetScreen.lib PUBLIC SIMULATION=1)
 endif()
 
@@ -283,36 +289,6 @@ endif()
 # Apply additional compile options if the build type is Debug
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   message(STATUS "Debug mode enabled")
-
-  # add_compile_definitions(LV_USE_SYSMON=1)
-  target_compile_definitions(lvgl PUBLIC LV_USE_SYSMON=1)
-
-  target_compile_options(
-    lvgl
-    PRIVATE -pedantic-errors
-            -Wall
-            -Wclobbered
-            -Wdeprecated
-            -Wdouble-promotion
-            -Wempty-body
-            -Wextra
-            -Wformat-security
-            -Wmaybe-uninitialized
-            # -Wmissing-prototypes
-            -Wpointer-arith
-            -Wmultichar
-            -Wno-pedantic # ignored for now, we convert functions to pointers
-                          # for properties table.
-            -Wreturn-type
-            -Wshadow
-            -Wshift-negative-value
-            -Wsizeof-pointer-memaccess
-            -Wtype-limits
-            -Wundef
-            -Wuninitialized
-            -Wunreachable-code
-            -Wfloat-conversion
-            -Wstrict-aliasing)
 
   if(ASAN)
     message(STATUS "AddressSanitizer enabled")
