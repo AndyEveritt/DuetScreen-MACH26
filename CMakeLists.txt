@@ -66,7 +66,7 @@ find_program(CLANG_FORMAT_19 clang-format-19 REQUIRED)
 # Add clang-format custom target
 add_custom_target(
   clang-format
-  COMMAND find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
+  COMMAND find src/ -iname '*.h' -o -iname '*.cpp'
   -print | xargs ${CLANG_FORMAT_19} -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Running clang-format-19")

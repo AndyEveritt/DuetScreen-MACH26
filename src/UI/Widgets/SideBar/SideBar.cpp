@@ -12,7 +12,7 @@
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 
 #define ESTOP_SIZE 80
 

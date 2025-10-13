@@ -18,7 +18,7 @@
 #include "UI/Widgets/HardwareTest/HardwareTest.h"
 #include "glob.h"
 #include "hv/requests.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/core/lv_global.h"
 #include "utils/DisplayHelper.h"
@@ -103,8 +103,7 @@ int main(int argc, char** argv)
 #if LV_USE_LOG
 	lv_log_register_print_cb(lvgl_log_cb);
 #endif
-	lv_i18n_init(lv_i18n_language_pack);
-	lv_i18n_set_locale(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE).c_str());
+	i18n::init();
 
 	Model::get(); // Initialize the model instance, this creates the subscribers
 

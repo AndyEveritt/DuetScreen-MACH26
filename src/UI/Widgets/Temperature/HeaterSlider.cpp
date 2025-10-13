@@ -2,7 +2,7 @@
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include <math.h>
 
 namespace UI

@@ -1,7 +1,7 @@
 #include "HeightmapView.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 
 #include "ObjectModel/Heightmap.h"
 #include <cmath>

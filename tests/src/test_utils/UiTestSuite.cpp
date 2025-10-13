@@ -9,7 +9,7 @@
 #include "Configuration.h"
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "test_utils/utils.h"
 
 UiTestSuite::UiTestSuite()
@@ -51,8 +51,8 @@ void UiTestSuite::SetUpTestSuite()
 #  endif
 #endif
 
-	lv_i18n_init(lv_i18n_language_pack);
-	lv_i18n_set_locale(DEFAULT_LANGUAGE_CODE);
+	i18n::init();
+	i18n::setLanguage(DEFAULT_LANGUAGE_CODE);
 
 	TestSuite::SetUpTestSuite();
 

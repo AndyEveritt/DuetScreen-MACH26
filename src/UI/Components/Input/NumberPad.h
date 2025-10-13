@@ -34,7 +34,7 @@ namespace UI
 		void clear();
 		void close();
 		void confirm();
-		void setHeader(const std::string& text);
+		void setHeader(std::string_view text);
 		void setMinValue(float value);
 		void setMaxValue(float value);
 		void setRange(float minValue, float maxValue);

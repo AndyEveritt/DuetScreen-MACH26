@@ -12,7 +12,7 @@
 #include "ListHelpers.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Utils.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.h>
 

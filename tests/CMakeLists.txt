@@ -10,7 +10,7 @@ add_executable(DuetScreen.tests)
 # Add clang-format custom target
 add_custom_target(
   clang-format-tests
-  COMMAND find tests/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp'
+  COMMAND find tests/ -iname '*.h' -o -iname '*.cpp'
   -print | xargs ${CLANG_FORMAT_19} -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Running clang-format-19-tests")

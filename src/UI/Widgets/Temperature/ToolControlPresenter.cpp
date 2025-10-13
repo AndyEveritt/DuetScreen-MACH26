@@ -8,7 +8,7 @@
 #include "ToolControlPresenter.h"
 #include "Debug.h"
 #include "ToolControl.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {

@@ -7,7 +7,7 @@
 
 #include "Gcodes.h"
 #include "Debug.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 
 // Descriptions in i18n files
 Gcodes::Gcodes()

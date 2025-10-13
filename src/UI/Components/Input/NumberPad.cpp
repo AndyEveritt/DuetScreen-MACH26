@@ -9,7 +9,7 @@
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include <string>
 
 namespace UI
@@ -125,7 +125,7 @@ namespace UI
 		}
 	}
 
-	void NumberPad::setHeader(const std::string& text)
+	void NumberPad::setHeader(std::string_view text)
 	{
 		m_header.setFlag(LV_OBJ_FLAG_HIDDEN, text.empty());
 		m_header.setText(text);

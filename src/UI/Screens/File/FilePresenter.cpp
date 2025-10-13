@@ -7,7 +7,7 @@
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "UI/Screens/Home/HomeView.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "utils/StorageHelper.h"
 
 namespace UI

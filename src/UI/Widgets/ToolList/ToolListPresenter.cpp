@@ -12,7 +12,7 @@
 #include "ObjectModel/Tool.h"
 #include "ToolList.h"
 #include "UI/Core/Model.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {

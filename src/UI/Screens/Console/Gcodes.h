@@ -8,12 +8,13 @@
 #pragma once
 
 #include <cstddef>
+#include <string_view>
 #include <vector>
 
 struct gcode
 {
-	const char* gcode;
-	const char* helpText;
+	std::string_view gcode;
+	std::string_view helpText;
 };
 
 class Gcodes

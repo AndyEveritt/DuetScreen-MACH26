@@ -51,47 +51,8 @@
 		},
 		{
 			"type": "shell",
-			"label": "Install npm dependencies",
-			"command": "npm install",
-			"problemMatcher": [],
-			"group": {
-				"kind": "none",
-				"isDefault": false
-			}
-		},
-		{
-			"type": "shell",
-			"label": "Extract i18n phrases",
-			"command": "./node_modules/.bin/lv_i18n extract -s 'src/**/*.+(c|cpp|h|hpp)' -t 'i18n/*.yml'",
-			"problemMatcher": [],
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			},
-			"runOptions": {
-				"instanceLimit": 1
-			}
-		},
-		{
-			"type": "shell",
-			"label": "Compile i18n phrases",
-			"command": "./node_modules/.bin/lv_i18n compile -t 'i18n/*.yml' -o 'src/lv_i18n'",
-			"problemMatcher": [],
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			},
-			"runOptions": {
-				"instanceLimit": 1
-			},
-			"dependsOn": [
-				"Extract i18n phrases"
-			]
-		},
-		{
-			"type": "shell",
 			"label": "Clang Format",
-			"command": "find src/ -path 'src/lv_i18n' -prune -o -iname '*.h' -o -iname '*.cpp' -print | xargs clang-format -i",
+			"command": "find src/ -iname '*.h' -o -iname '*.cpp' -print | xargs clang-format -i",
 			"problemMatcher": [],
 			"group": {
 				"kind": "none",
@@ -232,7 +193,7 @@
 		{
 			"label": "Start DuetScreen on remote",
 			"type": "shell",
-			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S20DuetScreen start'",
+			"command": "command ssh root@${config:duetscreen_ip} 'start-stop-daemon -K -n DuetScreen;/etc/init.d/S20DuetScreen start'",
 			"problemMatcher": [],
 			"isBackground": true
 		},

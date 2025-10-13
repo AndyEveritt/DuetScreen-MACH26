@@ -9,7 +9,7 @@
 #include "Debug.h"
 #include "FilamentSelect.h"
 #include "ObjectModel/Files.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {

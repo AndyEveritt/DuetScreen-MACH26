@@ -9,7 +9,7 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 #include "UI/Styles/Themes/DefaultTheme.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {

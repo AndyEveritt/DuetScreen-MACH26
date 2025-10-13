@@ -4,7 +4,7 @@
 #include "UI/Core/Navigation.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Styles/Styles.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "utils/utils.h"
 
 namespace UI

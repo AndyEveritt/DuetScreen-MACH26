@@ -5,7 +5,7 @@
 #include "UI/Components/LVGL/LvAnim.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "utils/StorageHelper.h"
 
 namespace UI
@@ -47,8 +47,8 @@ namespace UI
 		for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
 		{
 			const gcode* g = Gcodes::getGcode(i);
-			lv_table_set_cell_value(m_commandList, i, 0, g->gcode);
-			lv_table_set_cell_value(m_commandList, i, 1, g->helpText);
+			lv_table_set_cell_value(m_commandList, i, 0, g->gcode.data());
+			lv_table_set_cell_value(m_commandList, i, 1, g->helpText.data());
 		}
 
 		// Input Area
@@ -252,8 +252,8 @@ namespace UI
 					const gcode* g = Gcodes::getGcode(i);
 					if (std::string(g->gcode).rfind(upper_cmd, 0) == 0)
 					{
-						lv_table_set_cell_value(view->m_commandList, index, 0, g->gcode);
-						lv_table_set_cell_value(view->m_commandList, index, 1, g->helpText);
+						lv_table_set_cell_value(view->m_commandList, index, 0, g->gcode.data());
+						lv_table_set_cell_value(view->m_commandList, index, 1, g->helpText.data());
 						index++;
 					}
 				}

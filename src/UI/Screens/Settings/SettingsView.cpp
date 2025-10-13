@@ -5,7 +5,7 @@
 #include "Hardware/Reset.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
 #include "version.h"
@@ -17,14 +17,14 @@ namespace UI
 		, m_settingsList(lv_list_create(getRoot()))
 		, m_subWindow("sub_window", getRoot())
 		, m_keyboard("keyboard", getRoot())
-		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings_screen_header")))
-		, m_screenSettings(lv_list_add_button(m_settingsList, NULL, _("settings_screen")))
-		, m_themeSettings(lv_list_add_button(m_settingsList, NULL, _("settings_theme")))
-		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header")))
-		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet")))
-		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network")))
-		, m_devHeader(lv_list_add_text(m_settingsList, _("settings_dev_header")))
-		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer")))
+		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings_screen_header").c_str()))
+		, m_screenSettings(lv_list_add_button(m_settingsList, NULL, _("settings_screen").c_str()))
+		, m_themeSettings(lv_list_add_button(m_settingsList, NULL, _("settings_theme").c_str()))
+		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header").c_str()))
+		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet").c_str()))
+		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network").c_str()))
+		, m_devHeader(lv_list_add_text(m_settingsList, _("settings_dev_header").c_str()))
+		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer").c_str()))
 		, m_duetSettingsView(m_subWindow, *this)
 		, m_deviceSettingsView(m_subWindow, *this)
 		, m_themeSettingsView(m_subWindow, *this)
@@ -373,7 +373,7 @@ namespace UI
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_screensaverTimeout.getInput()); });
 
 		// System Logging
-		lv_checkbox_set_text(m_systemLogging, _("settings_system_logging"));
+		lv_checkbox_set_text(m_systemLogging, _("settings_system_logging").c_str());
 		lv_obj_set_state(m_systemLogging, LV_STATE_CHECKED, StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
 		lv_obj_add_event_cb(
 			m_systemLogging,
@@ -389,7 +389,7 @@ namespace UI
 			this);
 
 		// Display Connected Message
-		lv_checkbox_set_text(m_displayConnectedMessage, _("settings_display_connected_message"));
+		lv_checkbox_set_text(m_displayConnectedMessage, _("settings_display_connected_message").c_str());
 		lv_obj_set_state(
 			m_displayConnectedMessage, LV_STATE_CHECKED, StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true));
 		lv_obj_add_event_cb(
@@ -483,11 +483,11 @@ namespace UI
 		lv_obj_set_flex_grow(m_networkList, 1);
 		lv_obj_set_width(m_networkList, LV_PCT(100));
 		lv_table_set_column_count(m_networkList, 5);
-		lv_table_set_cell_value(m_networkList, 0, 0, _("settings_network_ssid"));
-		lv_table_set_cell_value(m_networkList, 0, 1, _("settings_network_signal"));
-		lv_table_set_cell_value(m_networkList, 0, 2, _("settings_network_known"));
-		lv_table_set_cell_value(m_networkList, 0, 3, _("settings_network_forget"));
-		lv_table_set_cell_value(m_networkList, 0, 4, _("settings_network_connected"));
+		lv_table_set_cell_value(m_networkList, 0, 0, _("settings_network_ssid").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 1, _("settings_network_signal").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 2, _("settings_network_known").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 3, _("settings_network_forget").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 4, _("settings_network_connected").c_str());
 
 		// Password Window
 		m_passwordWindow.hide();
@@ -633,7 +633,7 @@ namespace UI
 		lv_obj_set_flex_flow(m_debugLevelCont, LV_FLEX_FLOW_ROW);
 		lv_obj_set_size(m_debugLevelCont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_column(m_debugLevelCont, 5, 0);
-		lv_label_set_text(m_debugLevelLabel, _("settings_debug_level"));
+		lv_label_set_text(m_debugLevelLabel, _("settings_debug_level").c_str());
 		std::string options;
 		for (const auto& level : Log::DebugLevelStrings)
 		{
@@ -646,12 +646,12 @@ namespace UI
 		lv_obj_add_event_cb(m_debugLevel, onDebugLevelEvent, LV_EVENT_VALUE_CHANGED, NULL);
 
 #if DEBUG_BORDERS
-		lv_checkbox_set_text(m_debugBorders, _("settings_debug_borders"));
+		lv_checkbox_set_text(m_debugBorders, _("settings_debug_borders").c_str());
 		lv_obj_set_state(m_debugBorders, LV_STATE_CHECKED, Themes::isdebugBorderVisible(lv_screen_active()));
 		lv_obj_add_event_cb(m_debugBorders, onDebugBordersEvent, LV_EVENT_VALUE_CHANGED, this);
 #endif
 
-		lv_checkbox_set_text(m_enableSSH, _("settings_enable_ssh"));
+		lv_checkbox_set_text(m_enableSSH, _("settings_enable_ssh").c_str());
 		lv_obj_set_state(m_enableSSH, LV_STATE_CHECKED, StorageHelper::getData<bool>(ID_SSH_ENABLED, false));
 		lv_obj_add_event_cb(m_enableSSH, onEnableSSHEvent, LV_EVENT_VALUE_CHANGED, this);
 

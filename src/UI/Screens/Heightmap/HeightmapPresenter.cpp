@@ -2,7 +2,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "HeightmapView.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include <cmath>
 
 #define RENDER_MEASUREMENT_POINTS 0

@@ -63,6 +63,25 @@ cmake --build --preset Simulation
 5. The code will not automatically start running on the Duet3D screen. You can run the `Start DuetScreen on remote` task to start the code.
 6. Alternatively, you can start a remote debug session using the `Remote Debug DuetScreen` configuration. This will start the code and attach gdb to it.
 
+## Adding a new language (i18n)
+- Language files are located in the `assets/i18n/` directory.
+- Each language file is a JSON file with the following structure:
+```json
+{
+  "readable": "English (UK)",
+  "translations": {
+    "key": "translation",
+    ...
+}
+```
+- The `readable` field is the name of the language as it will appear in the language selection dropdown in the GUI.
+- The `translations` field is a dictionary of key-value pairs where the key is the identifier used in the code and the value is the translation.
+- The language file must be named using the [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag) format. For example, `en-GB.json` for English (UK) or `fr-FR.json` for French (France).
+- To add a new language, create a new JSON file in the `assets/i18n/` directory with the appropriate structure and name.
+
+> [!NOTE]
+> The language files are loaded at runtime without need to be compiled into the binary. When simulating on PC, the language files are loaded from the `assets/i18n/` directory in the project. When running on the Duet3D screen, the language files are loaded from the `/etc/assets/i18n/` directory.
+
 ## Debugging
 The program can be debugged using gdb when running as a simulation or on the physical hardware.
 

@@ -2,7 +2,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "StatusBar.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "utils/StorageHelper.h"
 
 namespace UI

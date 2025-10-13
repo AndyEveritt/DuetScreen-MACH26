@@ -8,7 +8,7 @@
 #include "AlertMessageBox.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "lvgl/src/lvgl_private.h"
 
 namespace UI

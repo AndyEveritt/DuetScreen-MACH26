@@ -7,7 +7,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "Presenter.h"
 #include "View.h"
-#include "lv_i18n/lv_i18n.h"
+#include "i18n/i18n.h"
 #include "lvgl/src/osal/lv_os.h"
 #include "nameof.hpp"
 #include "utils/StorageHelper.h"
