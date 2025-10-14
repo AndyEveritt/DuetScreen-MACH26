@@ -22,5 +22,5 @@ class TestFileView : public UiTestSuite
 
 TEST_F(TestFileView, Basic)
 {
-	EXPECT_EQUAL_SCREENSHOT("file_view_basic.png");
+	EXPECT_EQUAL_SCREENSHOT("file_view/basic.png");
 }

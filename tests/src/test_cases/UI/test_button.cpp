@@ -18,14 +18,14 @@ class TestButton : public UiTestSuite
 TEST_F(TestButton, Basic)
 {
 	UI::Button btn("btn", screen);
-	EXPECT_EQUAL_SCREENSHOT("button_basic.png");
+	EXPECT_EQUAL_SCREENSHOT("button/basic.png");
 }
 
 TEST_F(TestButton, WithText)
 {
 	UI::Button btn("btn", screen);
 	btn.setText("Click Me");
-	EXPECT_EQUAL_SCREENSHOT("button_with_text.png");
+	EXPECT_EQUAL_SCREENSHOT("button/with_text.png");
 }
 
 TEST_F(TestButton, LongText)
@@ -103,7 +103,7 @@ TEST_F(TestButton, LongText)
 			return btn;
 		});
 
-	EXPECT_EQUAL_SCREENSHOT("button_long_text.png");
+	EXPECT_EQUAL_SCREENSHOT("button/long_text.png");
 }
 
 TEST_F(TestButton, SetIconBmp)
@@ -111,14 +111,14 @@ TEST_F(TestButton, SetIconBmp)
 	UI::Button btn("btn", screen);
 	btn.setIcon(IMAGE_ASSET("examples/example.bmp"));
 	btn.getIcon().enableRecolor(false);
-	EXPECT_EQUAL_SCREENSHOT("button_with_bmp.png");
+	EXPECT_EQUAL_SCREENSHOT("button/with_bmp.png");
 }
 
 TEST_F(TestButton, SetIconPng)
 {
 	UI::Button btn("btn", screen);
 	btn.setIcon(IMAGE_ASSET("examples/example.png"));
-	EXPECT_EQUAL_SCREENSHOT("button_with_png.png");
+	EXPECT_EQUAL_SCREENSHOT("button/with_png.png");
 }
 
 TEST_F(TestButton, IconScaling)
@@ -158,12 +158,12 @@ TEST_F(TestButton, IconScaling)
 	btn8.setIcon(IMAGE_ASSET("examples/example.png"));
 	btn8.setSize(200, 200);
 
-	EXPECT_EQUAL_SCREENSHOT("button_icon_scaling.png");
+	EXPECT_EQUAL_SCREENSHOT("button/icon_scaling.png");
 }
 
 TEST_F(TestButton, SetIconBadPath)
 {
 	UI::Button btn("btn", screen);
 	btn.setIcon(IMAGE_ASSET("bad_path.bmp"));
-	EXPECT_EQUAL_SCREENSHOT("button_with_bad_path_icon.png");
+	EXPECT_EQUAL_SCREENSHOT("button/with_bad_path_icon.png");
 }

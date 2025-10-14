@@ -27,7 +27,7 @@ TEST_F(TestMessagebox, Basic)
 {
 	message_box.setTitle("title");
 	message_box.setText(body_text);
-	EXPECT_EQUAL_SCREENSHOT("message_box_basic.png");
+	EXPECT_EQUAL_SCREENSHOT("message_box/basic.png");
 }
 
 TEST_F(TestMessagebox, WithImage)
@@ -40,7 +40,7 @@ TEST_F(TestMessagebox, HeightSizeContent)
 	message_box.setTitle("title");
 	message_box.setText(body_text);
 	message_box.setHeight(LV_SIZE_CONTENT);
-	EXPECT_EQUAL_SCREENSHOT("message_box_height_size_content.png");
+	EXPECT_EQUAL_SCREENSHOT("message_box/height_size_content.png");
 }
 
 TEST_F(TestMessagebox, WidthSizeContent)
@@ -48,5 +48,5 @@ TEST_F(TestMessagebox, WidthSizeContent)
 	message_box.setTitle("title");
 	message_box.setText(body_text);
 	message_box.setWidth(LV_SIZE_CONTENT);
-	EXPECT_EQUAL_SCREENSHOT("message_box_width_size_content.png");
+	EXPECT_EQUAL_SCREENSHOT("message_box/width_size_content.png");
 }

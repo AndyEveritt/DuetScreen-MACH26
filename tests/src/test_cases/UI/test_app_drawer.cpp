@@ -32,12 +32,12 @@ TEST_F(TestAppDrawer, SizeContent)
 {
 	app_drawer.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 
-	EXPECT_EQUAL_SCREENSHOT("app_drawer_content.png");
+	EXPECT_EQUAL_SCREENSHOT("app_drawer/content.png");
 }
 
 TEST_F(TestAppDrawer, FixedSize)
 {
 	app_drawer.setSize(500, 400);
 
-	EXPECT_EQUAL_SCREENSHOT("app_drawer_fixed.png");
+	EXPECT_EQUAL_SCREENSHOT("app_drawer/fixed.png");
 }

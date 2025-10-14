@@ -50,7 +50,7 @@ TEST_F(TestStatus, Blank)
 {
 	view.show();
 
-	EXPECT_EQUAL_SCREENSHOT("status_view_blank.png")
+	EXPECT_EQUAL_SCREENSHOT("status_view/blank.png")
 }
 
 TEST_F(TestStatus, Header)
@@ -62,7 +62,7 @@ TEST_F(TestStatus, Header)
 	view.setThumbnail(IMAGE_ASSET("example/example.bmp"));
 	view.updateLayout();
 
-	EXPECT_EQUAL_SCREENSHOT("status_view_header.png")
+	EXPECT_EQUAL_SCREENSHOT("status_view/header.png")
 }
 
 TEST_F(TestStatus, PowerOn)
@@ -72,7 +72,7 @@ TEST_F(TestStatus, PowerOn)
 
 	view.show();
 	view.updateLayout();
-	EXPECT_EQUAL_SCREENSHOT("status_view_power_on.png")
+	EXPECT_EQUAL_SCREENSHOT("status_view/power_on.png")
 }
 
 TEST_F(TestStatus, Layer2)
@@ -82,7 +82,7 @@ TEST_F(TestStatus, Layer2)
 
 	view.show();
 	view.updateLayout();
-	EXPECT_EQUAL_SCREENSHOT("status_view_layer_2.png")
+	EXPECT_EQUAL_SCREENSHOT("status_view/layer_2.png")
 }
 
 TEST_F(TestStatus, Paused)
@@ -92,7 +92,7 @@ TEST_F(TestStatus, Paused)
 
 	view.show();
 	view.updateLayout();
-	EXPECT_EQUAL_SCREENSHOT("status_view_paused.png")
+	EXPECT_EQUAL_SCREENSHOT("status_view/paused.png")
 }
 
 TEST_F(TestStatus, Cancelling)
@@ -102,7 +102,7 @@ TEST_F(TestStatus, Cancelling)
 
 	view.show();
 	view.updateLayout();
-	EXPECT_EQUAL_SCREENSHOT("status_view_cancelling.png")
+	EXPECT_EQUAL_SCREENSHOT("status_view/cancelling.png")
 }
 
 TEST_F(TestStatus, Cancelled)
@@ -112,5 +112,5 @@ TEST_F(TestStatus, Cancelled)
 
 	view.show();
 	view.updateLayout();
-	EXPECT_EQUAL_SCREENSHOT("status_view_cancelled.png")
+	EXPECT_EQUAL_SCREENSHOT("status_view/cancelled.png")
 }

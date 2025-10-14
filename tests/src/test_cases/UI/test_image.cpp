@@ -28,14 +28,14 @@ TEST_F(TestImage, Bmp)
 {
 	img.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 	img.setSrc(IMAGE_ASSET("examples/example.bmp"));
-	EXPECT_EQUAL_SCREENSHOT("image_bmp.png");
+	EXPECT_EQUAL_SCREENSHOT("image/bmp.png");
 }
 
 TEST_F(TestImage, Png)
 {
 	img.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 	img.setSrc(IMAGE_ASSET("examples/example_full_color.png"));
-	EXPECT_EQUAL_SCREENSHOT("image_png.png");
+	EXPECT_EQUAL_SCREENSHOT("image/png.png");
 }
 
 TEST_F(TestImage, PngRecolor)
@@ -56,7 +56,7 @@ TEST_F(TestImage, PngRecolor)
 	img_blue.setStyleRecolor(lv_palette_main(LV_PALETTE_BLUE), 0);
 	img_blue.setStyleRecolorOpa(LV_OPA_COVER, 0);
 
-	EXPECT_EQUAL_SCREENSHOT("image_png_recolor.png");
+	EXPECT_EQUAL_SCREENSHOT("image/png_recolor.png");
 }
 
 #if LV_USE_SVG
@@ -70,6 +70,6 @@ TEST_F(TestImage, Svg)
 	// lv_obj_set_style_image_opa(img, LV_OPA_COVER, 0);
 	// lv_obj_set_style_recolor(img, lv_color_white(), 0);
 	// lv_obj_set_style_recolor_opa(img, LV_OPA_COVER, 0);
-	EXPECT_EQUAL_SCREENSHOT("image_svg.png");
+	EXPECT_EQUAL_SCREENSHOT("image/svg.png");
 }
 #endif

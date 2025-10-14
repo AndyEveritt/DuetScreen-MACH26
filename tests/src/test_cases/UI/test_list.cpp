@@ -36,5 +36,5 @@ TEST_F(TestList, VerticalWrap)
 						  return item;
 					  });
 
-	EXPECT_EQUAL_SCREENSHOT("list_vertical_wrap.png");
+	EXPECT_EQUAL_SCREENSHOT("list/vertical_wrap.png");
 }
