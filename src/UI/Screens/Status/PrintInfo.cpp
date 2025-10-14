@@ -32,19 +32,19 @@ namespace UI
 		m_positions.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_positions.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
 		// m_positions.setListGrow(1);
-		m_positions.setTitle(_("status_positions"));
+		m_positions.setTitle(_("status.positions"));
 
 		/* Speed */
 		m_speedCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_speedCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-		m_speedHeader.setText(_("status_speed_header"));
+		m_speedHeader.setText(_("status.speed_header"));
 		m_speedHeader.hide();
 		updateSpeed(0, 0);
 		updateSpeedMultiplier(100);
 
 		/* Flow */
 		m_flowCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		m_flowHeader.setText(_("status_flow_header"));
+		m_flowHeader.setText(_("status.flow_header"));
 		m_flowHeader.hide();
 		updateFlowMultiplier(100);
 
@@ -131,25 +131,25 @@ namespace UI
 	void PrintInfo::updateExtrusionRate(float feedrate, float volumetric)
 	{
 		UI_LOCK();
-		m_extruderFeedrate.setText(fmt::format(fmt::runtime(_("status_extrusion_speed")), feedrate));
-		m_flowRate.setText(fmt::format(fmt::runtime(_("status_flow_rate")), volumetric));
+		m_extruderFeedrate.setText(fmt::format(fmt::runtime(_("status.extrusion_speed")), feedrate));
+		m_flowRate.setText(fmt::format(fmt::runtime(_("status.flow_rate")), volumetric));
 	}
 
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
-		m_currentSpeed.setText(fmt::format(fmt::runtime(_("status_current_speed")), topSpeed));
-		m_requestedSpeed.setText(fmt::format(fmt::runtime(_("status_requested_speed")), requestedSpeed));
+		m_currentSpeed.setText(fmt::format(fmt::runtime(_("status.current_speed")), topSpeed));
+		m_requestedSpeed.setText(fmt::format(fmt::runtime(_("status.requested_speed")), requestedSpeed));
 		m_speedInfo.updateSpeed(topSpeed, requestedSpeed);
 	}
 
 	void PrintInfo::updateFlowMultiplier(uint32_t multiplier)
 	{
-		m_flowMultiplier.setText(fmt::format(fmt::runtime(_("status_flow_multiplier")), multiplier));
+		m_flowMultiplier.setText(fmt::format(fmt::runtime(_("status.flow_multiplier")), multiplier));
 	}
 
 	void PrintInfo::updateSpeedMultiplier(uint32_t multiplier)
 	{
-		m_speedMultiplier.setText(fmt::format(fmt::runtime(_("status_speed_multiplier")), multiplier));
+		m_speedMultiplier.setText(fmt::format(fmt::runtime(_("status.speed_multiplier")), multiplier));
 		m_speedInfo.updateSpeedMultiplier(multiplier);
 	}
 
@@ -159,7 +159,7 @@ namespace UI
 		int32_t minutes = (elapsed % 3600) / 60;
 		int32_t seconds = elapsed % 60;
 		std::string elapsedStr = fmt::format("{:02d}:{:02d}:{:02d}", hours, minutes, seconds);
-		m_elapsedTime.setText(fmt::format(fmt::runtime(_("status_elapsed_time")), elapsedStr));
+		m_elapsedTime.setText(fmt::format(fmt::runtime(_("status.elapsed_time")), elapsedStr));
 	}
 
 	void PrintInfo::updateRemainingTime(uint32_t remaining)
@@ -169,7 +169,7 @@ namespace UI
 		int32_t minutes = (remaining % 3600) / 60;
 		int32_t seconds = remaining % 60;
 		std::string remainingStr = fmt::format("{:02d}:{:02d}:{:02d}", hours, minutes, seconds);
-		m_remainingTime.setText(fmt::format(fmt::runtime(_("status_remaining_time")), remainingStr));
+		m_remainingTime.setText(fmt::format(fmt::runtime(_("status.remaining_time")), remainingStr));
 	}
 
 	void PrintInfo::updateLayer(float height, float maxHeight)
@@ -181,7 +181,7 @@ namespace UI
 
 	void PrintInfo::updateFanSpeed(uint32_t speed)
 	{
-		// m_fanSpeed.setText(fmt::format(fmt::runtime(_("status_fan_speed")), speed));
+		// m_fanSpeed.setText(fmt::format(fmt::runtime(_("status.fan_speed")), speed));
 	}
 
 	void PrintInfo::updateAcceleration(uint32_t acceleration)
@@ -223,32 +223,32 @@ namespace UI
 
 	void PrintInfo::SpeedInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
-		m_speed.setText(fmt::format(fmt::runtime(_("status_speed_detailed")), topSpeed, requestedSpeed));
+		m_speed.setText(fmt::format(fmt::runtime(_("status.speed_detailed")), topSpeed, requestedSpeed));
 	}
 
 	void PrintInfo::SpeedInfo::updateSpeedMultiplier(uint32_t multiplier)
 	{
-		m_speedMultiplier.setText(fmt::format(fmt::runtime(_("status_speed_multiplier")), multiplier));
+		m_speedMultiplier.setText(fmt::format(fmt::runtime(_("status.speed_multiplier")), multiplier));
 	}
 
 	void PrintInfo::SpeedInfo::updateAcceleration(uint32_t acceleration)
 	{
-		m_acceleration.setText(fmt::format(fmt::runtime(_("status_acceleration")), acceleration));
+		m_acceleration.setText(fmt::format(fmt::runtime(_("status.acceleration")), acceleration));
 	}
 
 	void PrintInfo::SpeedInfo::updateZOffset(float offset)
 	{
-		m_z_offset.setText(fmt::format(fmt::runtime(_("status_z_offset")), offset));
+		m_z_offset.setText(fmt::format(fmt::runtime(_("status.z_offset")), offset));
 	}
 
 	void PrintInfo::SpeedInfo::updatePrintHeight(float height)
 	{
-		m_z_height.setText(fmt::format(fmt::runtime(_("status_print_height")), height));
+		m_z_height.setText(fmt::format(fmt::runtime(_("status.print_height")), height));
 	}
 
 	void PrintInfo::SpeedInfo::updateLayerNumber(uint32_t layer)
 	{
-		m_layer.setText(fmt::format(fmt::runtime(_("status_layer_number")), layer));
+		m_layer.setText(fmt::format(fmt::runtime(_("status.layer_number")), layer));
 	}
 
 } // namespace UI

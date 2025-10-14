@@ -69,7 +69,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_isFolder = isFolder;
-		m_type.setText(isFolder ? _("folder") : _("file"));
+		m_type.setText(isFolder ? _("file.folder") : _("file.file"));
 		m_size.setVisible(!isFolder);
 		setState(LV_STATE_CHECKED, isFolder);
 	}
@@ -118,16 +118,16 @@ namespace UI
 		m_pad.setFlexGrow(1);
 		m_refresh.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
-		m_sortDate.setText(_("sort_by_name"));
-		m_sortName.setText(_("sort_by_date"));
-		m_sortSize.setText(_("sort_by_size"));
-		m_refresh.setText(_("refresh"));
+		m_sortDate.setText(_("file.sort_by_name"));
+		m_sortName.setText(_("file.sort_by_date"));
+		m_sortSize.setText(_("file.sort_by_size"));
+		m_refresh.setText(_("file.refresh"));
 
 		// Header (from List) becomes breadcrumb container
 		m_fileList.getHeader().setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_fileList.getHeader().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_fileList.showHeader(true);
-		m_breadcrumbPrefix.setText(_("file_header_prefix"));
+		m_breadcrumbPrefix.setText(_("file.header_prefix"));
 		m_breadcrumbPrefix.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_breadcrumbCont.setHeight(LV_SIZE_CONTENT);
 		m_breadcrumbCont.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
@@ -247,7 +247,7 @@ namespace UI
 			if (i > 0)
 			{
 				auto sep = std::make_unique<LvLabel>(fmt::format("crumb_sep_{}", i), m_breadcrumbCont);
-				sep->setText(_("file_crumb_separator"));
+				sep->setText(_("file.crumb_separator"));
 				m_breadcrumbLabels.push_back(std::move(sep));
 			}
 #endif // ENABLE_BREADCRUMB_SEPARATOR
@@ -309,8 +309,8 @@ namespace UI
 									 std::string_view thumbnail)
 	{
 		UI_LOCK();
-		m_startPrint.setTitle(_("file_start_print_title"));
-		m_startPrint.setText(fmt::format(fmt::runtime(_("file_start_print_message")), filename, date, size));
+		m_startPrint.setTitle(_("file.start_print_title"));
+		m_startPrint.setText(fmt::format(fmt::runtime(_("file.start_print_message")), filename, date, size));
 		m_startPrint.setOkCallback(
 			[this]()
 			{
@@ -324,8 +324,8 @@ namespace UI
 	void FileView::confirmRunMacro(std::string_view filename)
 	{
 		UI_LOCK();
-		m_startPrint.setTitle(_("file_run_macro_title"));
-		m_startPrint.setText(fmt::format(fmt::runtime(_("file_run_macro_message")), filename));
+		m_startPrint.setTitle(_("file.run_macro_title"));
+		m_startPrint.setText(fmt::format(fmt::runtime(_("file.run_macro_message")), filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });
 		m_startPrint.setImage(nullptr);
 		openModal(&m_startPrint);
@@ -337,26 +337,26 @@ namespace UI
 		m_sortDate.setChecked(false);
 		m_sortSize.setChecked(false);
 
-		m_sortName.setText(_("sort_by_name"));
-		m_sortDate.setText(_("sort_by_date"));
-		m_sortSize.setText(_("sort_by_size"));
+		m_sortName.setText(_("file.sort_by_name"));
+		m_sortDate.setText(_("file.sort_by_date"));
+		m_sortSize.setText(_("file.sort_by_size"));
 
 		switch (by)
 		{
 		case FilePresenter::SortBy::NAME:
 			m_sortName.setChecked(true);
-			m_sortName.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("sort_by_name")).c_str()
-										  : fmt::format(LV_SYMBOL_UP " {:s}", _("sort_by_name")).c_str());
+			m_sortName.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("file.sort_by_name"))
+										  : fmt::format(LV_SYMBOL_UP " {:s}", _("file.sort_by_name")));
 			break;
 		case FilePresenter::SortBy::DATE:
 			m_sortDate.setChecked(true);
-			m_sortDate.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("sort_by_date")).c_str()
-										  : fmt::format(LV_SYMBOL_UP " {:s}", _("sort_by_date")).c_str());
+			m_sortDate.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("file.sort_by_date"))
+										  : fmt::format(LV_SYMBOL_UP " {:s}", _("file.sort_by_date")));
 			break;
 		case FilePresenter::SortBy::SIZE:
 			m_sortSize.setChecked(true);
-			m_sortSize.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("sort_by_size")).c_str()
-										  : fmt::format(LV_SYMBOL_UP " {:s}", _("sort_by_size")).c_str());
+			m_sortSize.setText(descending ? fmt::format(LV_SYMBOL_DOWN " {:s}", _("file.sort_by_size"))
+										  : fmt::format(LV_SYMBOL_UP " {:s}", _("file.sort_by_size")));
 			break;
 		}
 	}

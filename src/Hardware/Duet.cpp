@@ -121,7 +121,7 @@ namespace Comm
 		CommunicationType type = m_config.communicationType;
 		if (type >= CommunicationType::COUNT || type <= CommunicationType::none)
 		{
-			return "unknown";
+			return "connection_method.unknown";
 		}
 		return duetCommunicationTypeNames[(int)type];
 	}

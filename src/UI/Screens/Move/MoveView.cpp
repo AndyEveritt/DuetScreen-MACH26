@@ -20,11 +20,11 @@ namespace UI
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_topBarCont("topbar", getRoot())
 		, m_bottomBarCont("bottombar", getRoot())
-		, m_homeAll("home_all", m_topBarCont, _("home_all"))
-		, m_trueBedLevel("true_bed_level", m_topBarCont, _("true_bed_level"))
-		, m_meshBedLevel("mesh_bed_level", m_topBarCont, _("mesh_bed_level"))
-		, m_heightmap("heightmap", m_topBarCont, _("heightmap"))
-		, m_disableMotors("disable_motors", m_topBarCont, _("disable_motors"))
+		, m_homeAll("home_all", m_topBarCont, _("move.home_all"))
+		, m_trueBedLevel("true_bed_level", m_topBarCont, _("move.true_bed_level"))
+		, m_meshBedLevel("mesh_bed_level", m_topBarCont, _("move.mesh_bed_level"))
+		, m_heightmap("heightmap", m_topBarCont, _("app_drawer.heightmap"))
+		, m_disableMotors("disable_motors", m_topBarCont, _("move.disable_motors"))
 		, m_axisControlCont("axis_control", getRoot())
 		, m_xyControl("xy_control", m_axisControlCont)
 		, m_zControl("z_control", m_axisControlCont)
@@ -132,7 +132,7 @@ namespace UI
 			[this](size_t index, float distance)
 			{
 				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude_distance_header"));
+				m_numberpad.setHeader(_("extrude.distance_header"));
 				m_numberpad.setValue(distance);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(1000);
@@ -143,7 +143,7 @@ namespace UI
 			[this](size_t index, float feedrate)
 			{
 				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude_feedrate_header"));
+				m_numberpad.setHeader(_("extrude.feedrate_header"));
 				m_numberpad.setValue(feedrate);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(100); // mm/s
@@ -169,7 +169,7 @@ namespace UI
 		assert(s_currentDistanceIndex < ARRAY_SIZE(s_distances));
 
 		m_distances.addStyle(Themes::getLvglStyles().no_border);
-		m_distances.setTitle(_("move_distance"));
+		m_distances.setTitle(_("move.distance"));
 		m_distances.setHeight(LV_SIZE_CONTENT);
 		m_distances.setFlexGrow(1);
 		m_distances.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -189,7 +189,6 @@ namespace UI
 								 });
 		m_distances.getItem(s_currentDistanceIndex)->setChecked(true);
 
-		m_numberpad.setHeader("Numberpad Header");
 		m_numberpad.hide();
 	}
 
@@ -518,7 +517,7 @@ namespace UI
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)
 	{
 		openModal(&m_numberpad);
-		m_numberpad.setHeader(fmt::format(fmt::runtime(_("move_set_position")), axis_letter));
+		m_numberpad.setHeader(fmt::format(fmt::runtime(_("move.set_position")), axis_letter));
 		m_numberpad.setValue(position);
 		if (m_axisDataListPtr)
 		{

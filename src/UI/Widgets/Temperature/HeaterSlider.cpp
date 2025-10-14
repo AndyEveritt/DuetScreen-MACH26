@@ -295,9 +295,10 @@ namespace UI
 				control.m_numberPad->setValue(temperature);
 				control.m_numberPad->setMinValue(control.m_minTempValue);
 				control.m_numberPad->setMaxValue(control.m_maxTempValue);
-				control.m_numberPad->setHeader(fmt::format(fmt::runtime(_("set_temperature_numpad_header")),
-														   activeTemperature ? _("active") : _("standby"),
-														   control.m_heaterName.getLabel().getText()));
+				control.m_numberPad->setHeader(
+					fmt::format(fmt::runtime(_("temperature.set_temperature_numpad_header")),
+								activeTemperature ? _("temperature.status.active") : _("temperature.status.standby"),
+								control.m_heaterName.getLabel().getText()));
 				control.m_numberPad->setConfirmCallback(
 					[&control, activeTemperature](float value)
 					{ control.getPresenter()->sendTemperature(value, activeTemperature); }

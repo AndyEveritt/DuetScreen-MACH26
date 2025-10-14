@@ -38,7 +38,7 @@ namespace UI
 
 	size_t ToolList::setToolCount(size_t count)
 	{
-		m_tools.setTitle(count > 1 ? _("tools") : "");
+		m_tools.setTitle(count > 1 ? _("temperature.tools") : "");
 		return m_tools.setItemCount(count,
 									[this](size_t index, LvObj& parent)
 									{
@@ -50,13 +50,13 @@ namespace UI
 
 	size_t ToolList::setBedCount(size_t count)
 	{
-		m_beds.setTitle(count > 1 ? _("beds") : "");
+		m_beds.setTitle(count > 1 ? _("temperature.beds") : "");
 		return m_beds.setItemCount(count);
 	}
 
 	size_t ToolList::setChamberCount(size_t count)
 	{
-		m_chambers.setTitle(count > 1 ? _("chambers") : "");
+		m_chambers.setTitle(count > 1 ? _("temperature.chambers") : "");
 		return m_chambers.setItemCount(count);
 	}
 

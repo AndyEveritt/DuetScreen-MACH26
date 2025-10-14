@@ -27,7 +27,7 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_apps.setWidth(LV_SIZE_CONTENT);
 		m_apps.setFlexGrow(1);
-		m_apps.setTitle(_("select_view"));
+		m_apps.setTitle(_("app_drawer.select_view"));
 
 		auto& list_cont = m_apps.getListContainer();
 		list_cont.setWidth(LV_SIZE_CONTENT);
@@ -40,15 +40,15 @@ namespace UI
 	void AppDrawer::init()
 	{
 		static const AppInfo apps[] = {
-			{_("console"), &HomeView::instance().getConsoleView()},
-			{_("move"), &HomeView::instance().getMoveView()},
-			{_("temperature"), &HomeView::instance().getTemperatureView()},
-			// {_("fan"), &HomeView::instance().getFanView()},
-			{_("fine_tune"), &HomeView::instance().getFineTuneView()},
-			// {_("macros"), &HomeView::instance().getMacroView()},
-			{_("heightmap"), &HomeView::instance().getHeightmapView()},
-			{_("settings"), &HomeView::instance().getSettingsView()},
-			{_("status"), &HomeView::instance().getDashboard().getStatusView()},
+			{_("app_drawer.console"), &HomeView::instance().getConsoleView()},
+			{_("app_drawer.move"), &HomeView::instance().getMoveView()},
+			{_("app_drawer.temperature"), &HomeView::instance().getTemperatureView()},
+			// {_("app_drawer.fan"), &HomeView::instance().getFanView()},
+			{_("app_drawer.fine_tune"), &HomeView::instance().getFineTuneView()},
+			// {_("app_drawer.macros"), &HomeView::instance().getMacroView()},
+			{_("app_drawer.heightmap"), &HomeView::instance().getHeightmapView()},
+			{_("app_drawer.settings"), &HomeView::instance().getSettingsView()},
+			{_("app_drawer.status"), &HomeView::instance().getDashboard().getStatusView()},
 		};
 
 		m_apps.setItemCount(std::size(apps),

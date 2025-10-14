@@ -79,7 +79,7 @@ namespace UI
 
 		LOG_VERBOSE("Updating tool control for tool index {:d}", m_tool->index);
 		m_view->setToolName(m_tool->GetName());
-		m_view->setToolState(m_tool->status, _(m_tool->GetStatusStr()));
+		m_view->setToolState(m_tool->status, _(fmt::format("temperature.status.{:s}", m_tool->GetStatusStr())));
 
 		auto& heaters = m_view->getHeaters();
 

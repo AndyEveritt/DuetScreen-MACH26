@@ -36,9 +36,9 @@ namespace UI
 		m_beds.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_chambers.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		m_tools.setTitle(_("tools"));
-		m_beds.setTitle(_("beds"));
-		m_chambers.setTitle(_("chambers"));
+		m_tools.setTitle(_("temperature.tools"));
+		m_beds.setTitle(_("temperature.beds"));
+		m_chambers.setTitle(_("temperature.chambers"));
 	}
 
 	void TemperatureView::onShow()

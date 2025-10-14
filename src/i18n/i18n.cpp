@@ -27,9 +27,19 @@ namespace i18n
 	static language_code_t s_currentLanguage;
 	static language_table_t s_languages;
 
+	struct string_hash
+	{
+		using is_transparent = void; // Enable heterogeneous lookup
+
+		size_t operator()(const std::string& str) const noexcept { return std::hash<std::string_view>{}(str); }
+		size_t operator()(std::string_view str) const noexcept { return std::hash<std::string_view>{}(str); }
+		size_t operator()(const char* str) const noexcept { return std::hash<std::string_view>{}(str); }
+	};
+
 	using translation_key_t = std::string;
 	using translation_value_t = std::string;
-	using translation_table_t = std::unordered_map<translation_key_t, translation_value_t>;
+	using translation_table_t =
+		std::unordered_map<translation_key_t, translation_value_t, string_hash, std::equal_to<>>;
 	static translation_table_t s_translationTable;
 
 	static bool loadLanguageFile(const std::filesystem::path& filepath);
@@ -89,13 +99,27 @@ namespace i18n
 		return true;
 	}
 
-	const std::string& translate(const std::string& tag)
+	const std::string& translate(std::string_view tag)
 	{
-		if (s_translationTable.find(tag) != s_translationTable.end())
+		/* Find the translation if it exists */
 		{
-			return s_translationTable[tag];
+			auto it = s_translationTable.find(tag);
+			if (it != s_translationTable.end())
+			{
+				return it->second;
+			}
 		}
-		return tag;
+
+		/* Add the missing translation key to the table */
+		{
+			LOG_WARN("Missing translation for key '{:s}'", tag);
+			auto [it, inserted] = s_translationTable.emplace(std::string(tag), std::string(tag));
+			if (!inserted)
+			{
+				LOG_FATAL_THROW("Failed to insert missing translation key '{:s}'", tag);
+			}
+			return it->second;
+		}
 	}
 
 	static bool loadLanguageFile(const std::filesystem::path& filepath)
@@ -132,7 +156,7 @@ namespace i18n
 			LOG_ERROR("Language file missing 'translations' field or it is not an object: {:s}", filepath.string());
 			return false;
 		}
-		auto translations = data["translations"].get<std::map<std::string, std::string>>();
+		auto translations = data["translations"].get<std::map<std::string, nlohmann::json>>();
 
 		// Extract language code from filename
 		std::string lang_code = filepath.filename().stem().string();
@@ -141,10 +165,31 @@ namespace i18n
 		s_languages[lang_code] = readable;
 
 		// Add to translation table
-		for (const auto& [key, value] : translations)
+		std::string full_key;
+		// Flatten arbitrarily nested translation objects into dot-separated keys
+		s_translationTable.clear();
+
+		auto flatten = [&](const auto& self, const nlohmann::json& node, const std::string& prefix) -> void
 		{
-			s_translationTable[std::move(key)] = std::move(value);
-		}
+			if (node.is_object())
+			{
+				for (const auto& [k, v] : node.items())
+				{
+					std::string next = prefix.empty() ? k : (prefix + "." + k);
+					self(self, v, next);
+				}
+			}
+			else if (node.is_string())
+			{
+				s_translationTable[prefix] = node.get<std::string>();
+			}
+			else
+			{
+				LOG_WARN("Translation value for key '{}' is not a string, skipping", prefix);
+			}
+		};
+
+		flatten(flatten, data["translations"], "");
 
 		return true;
 	}
@@ -163,7 +208,10 @@ namespace i18n
 		try
 		{
 			/* Parse json and ignore comments */
-			j = nlohmann::json::parse(file, nullptr, true, true);
+			j = nlohmann::json::parse(file,
+									  /* callback */ nullptr,
+									  /* allow_exceptions */ true,
+									  /* ignore_comments */ true);
 		}
 		catch (const std::exception& e)
 		{

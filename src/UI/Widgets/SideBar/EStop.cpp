@@ -13,7 +13,7 @@
 namespace UI
 {
 	EStop::EStop(const std::string& name, LvObj& parent)
-		: View(name, parent, _("estop"))
+		: View(name, parent, _("estop.label"))
 	{
 		UI_LOCK();
 
@@ -22,7 +22,7 @@ namespace UI
 
 		m_label.setSize(LV_PCT(100), LV_PCT(100));
 		m_label.setRadius(LV_PCT(70));
-		m_label.setText(_("estop_prompt"));
+		m_label.setText(_("estop.prompt"));
 		m_label.setAngleStart(200);
 		m_label.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		m_label.setAlign(LV_ALIGN_CENTER);
@@ -54,7 +54,7 @@ namespace UI
 		EStop* estop = static_cast<EStop*>(user_data);
 		if (pct < 0.5f)
 		{
-			Model::get().post<EventType::Response>(std::string(_("estop_prompt")));
+			Model::get().post<EventType::Response>(_("estop.prompt"));
 		}
 
 		if (pct == 1.0f)

@@ -89,7 +89,7 @@ namespace UI
 		{
 			return;
 		}
-		m_view->setFilename(fmt::format(fmt::runtime(_("status_printed_header")), filename));
+		m_view->setFilename(fmt::format(fmt::runtime(_("status.printed_header")), filename));
 		setOrRequestThumbnail(filename);
 	}
 

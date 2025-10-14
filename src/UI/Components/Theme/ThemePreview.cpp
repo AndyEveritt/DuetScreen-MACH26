@@ -70,23 +70,23 @@ namespace UI
 		m_primaryHueSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_primaryHueSlider.setRange(0, 360);
 		m_primaryHueSlider.setValue(0);
-		m_primaryHueSlider.setLabel(_("primary_hue"));
+		m_primaryHueSlider.setLabel(_("theme.primary_hue"));
 		m_primaryHueSlider.setValueChangedCallback([this](int32_t) { updateThemeColors(); });
 
 		m_secondaryHueSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_secondaryHueSlider.setRange(0, 360);
 		m_secondaryHueSlider.setValue(0);
-		m_secondaryHueSlider.setLabel(_("secondary_hue"));
+		m_secondaryHueSlider.setLabel(_("theme.secondary_hue"));
 		m_secondaryHueSlider.setValueChangedCallback([this](int32_t) { updateThemeColors(); });
 
 		m_chromaSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_chromaSlider.setRange(0, 0.4);
 		m_chromaSlider.setIncrementValue(0.01f);
 		m_chromaSlider.setValue(0.2);
-		m_chromaSlider.setLabel(_("chroma"));
+		m_chromaSlider.setLabel(_("theme.chroma"));
 		m_chromaSlider.setValueChangedCallback([this](int32_t) { updateThemeColors(); });
 
-		m_darkMode.setText(_("dark_mode"));
+		m_darkMode.setText(_("theme.dark_mode"));
 		m_darkMode.setChecked(true);
 		m_darkMode.setCheckedCallback([this](bool checked) { updateThemeColors(); });
 

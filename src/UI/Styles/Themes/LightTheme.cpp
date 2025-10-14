@@ -19,5 +19,5 @@ namespace UI::Themes
 
 	static ThemeColors s_colors = createThemeColors(s_primaryHue, s_secondaryHue, s_chroma, s_darkMode);
 
-	static DefaultTheme s_lightTheme("theme_light", s_colors, s_font, s_darkMode, [](Theme* theme) {});
+	static DefaultTheme s_lightTheme("light", s_colors, s_font, s_darkMode, [](Theme* theme) {});
 } // namespace UI::Themes

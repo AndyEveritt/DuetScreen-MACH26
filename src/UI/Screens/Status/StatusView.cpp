@@ -44,10 +44,10 @@ namespace UI
 		// Footer
 		m_footer.setFlexFlow(LV_FLEX_FLOW_ROW);
 
-		m_pauseBtn.setText(_("pause"));
-		m_resumeBtn.setText(_("resume"));
-		m_printAgainBtn.setText(_("print_again"));
-		m_cancelBtn.setText(_("cancel"));
+		m_pauseBtn.setText(_("status.pause"));
+		m_resumeBtn.setText(_("status.resume"));
+		m_printAgainBtn.setText(_("status.print_again"));
+		m_cancelBtn.setText(_("status.cancel"));
 
 		for (size_t i = 0; i < m_footer.getChildCount(); i++)
 		{
@@ -61,8 +61,8 @@ namespace UI
 		m_resumeBtn.hide();
 
 		// Cancel confirmation setup
-		m_confirmCancel.setTitle(_("print_cancel_title"));
-		m_confirmCancel.setText(_("print_cancel_message"));
+		m_confirmCancel.setTitle(_("status.print_cancel_title"));
+		m_confirmCancel.setText(_("status.print_cancel_message"));
 		m_confirmCancel.okVisible(true);
 		m_confirmCancel.cancelVisible(true);
 		m_confirmCancel.setOkCallback([this]() { m_presenter->cancelPrint(); });

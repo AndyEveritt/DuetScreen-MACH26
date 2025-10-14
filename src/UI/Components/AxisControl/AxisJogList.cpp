@@ -57,7 +57,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_axisLetter = letter;
-		m_home.setText(fmt::format(fmt::runtime(_("move_axis_home")), letter).c_str());
+		m_home.setText(fmt::format(fmt::runtime(_("move.axis_home")), letter).c_str());
 	}
 
 	void AxisItem::setJogAmounts(const float* distances, const size_t count)
@@ -118,7 +118,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_home.setDisabled(disabled);
-		m_home.setText(disabled ? m_axisLetter : fmt::format(fmt::runtime(_("move_axis_home")), m_axisLetter));
+		m_home.setText(disabled ? m_axisLetter : fmt::format(fmt::runtime(_("move.axis_home")), m_axisLetter));
 	}
 
 	void AxisItem::setJogCallback(jog_cb_t cb, void* user_data)
@@ -188,8 +188,8 @@ namespace UI
 		m_toolPositionLabel.setFlexGrow(5);
 		m_machinePositionLabel.setFlexGrow(5);
 
-		m_toolPositionLabel.setText(_("move_tool_position"));
-		m_machinePositionLabel.setText(_("move_machine_position"));
+		m_toolPositionLabel.setText(_("move.tool_position"));
+		m_machinePositionLabel.setText(_("move.machine_position"));
 
 		m_toolPositionLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_machinePositionLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);

@@ -98,8 +98,8 @@ namespace UI
 				}
 			});
 
-		msgBox->setCancelBtnText(_("msgbox_close"));
-		msgBox->setOkBtnText(_("open_console"));
+		msgBox->setCancelBtnText(_("msgbox.close"));
+		msgBox->setOkBtnText(_("msgbox.open_console"));
 		msgBox->setOkCallback(
 			[this]()
 			{
@@ -177,7 +177,7 @@ namespace UI
 		case OM::Alert::Mode::InfoClose:
 		case OM::Alert::Mode::InfoConfirm:
 		case OM::Alert::Mode::ConfirmCancel:
-			msgBox.setOkBtnText(alert.mode == OM::Alert::Mode::InfoClose ? _("msgbox_close") : _("msgbox_ok"));
+			msgBox.setOkBtnText(alert.mode == OM::Alert::Mode::InfoClose ? _("msgbox.close") : _("msgbox.ok"));
 			msgBox.okVisible(true);
 			msgBox.setOkCallback(
 				[seq]()
@@ -236,7 +236,7 @@ namespace UI
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox_warning_int_range")), min, max));
+						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox.warning_int_range")), min, max));
 					}
 					return valid;
 				});
@@ -286,7 +286,7 @@ namespace UI
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox_warning_float_range")),
+						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox.warning_float_range")),
 														  alert.limits.numberFloat.min,
 														  alert.limits.numberFloat.max));
 					}
@@ -315,7 +315,7 @@ namespace UI
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox_warning_text_length")),
+						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox.warning_text_length")),
 														  alert.limits.text.min,
 														  alert.limits.text.max));
 					}

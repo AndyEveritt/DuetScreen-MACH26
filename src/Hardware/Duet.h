@@ -19,7 +19,8 @@
 
 namespace Comm
 {
-	constexpr std::string_view const duetCommunicationTypeNames[] = {"usb", "network", "uart"};
+	constexpr std::string_view const duetCommunicationTypeNames[] = {
+		"connection_method.usb", "connection_method.network", "connection_method.uart"};
 
 	typedef struct
 	{

@@ -20,15 +20,15 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		m_header.setText(_("babystep_header"));
+		m_header.setText(_("babystep.header"));
 
 		m_buttonPanel.setFlexGrow(1);
 		m_buttonPanel.setWidth(LV_PCT(100));
 		// m_buttonPanel.setMinWidth(LV_SIZE_CONTENT);
 
 		setBabyStepValue(0);
-		m_buttonPanel.setIncrementLabel(_("babystep_increment"));
-		m_buttonPanel.setDecrementLabel(_("babystep_decrement"));
+		m_buttonPanel.setIncrementLabel(_("babystep.increment"));
+		m_buttonPanel.setDecrementLabel(_("babystep.decrement"));
 		m_buttonPanel.setValueLabelFmt("{:g}mm");
 		m_buttonPanel.setIncrementValues({0.01f, 0.05f});
 		m_buttonPanel.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
@@ -37,6 +37,6 @@ namespace UI
 
 	void BabyStep::setBabyStepValue(float value)
 	{
-		m_buttonPanel.setResetLabel(fmt::format(fmt::runtime(_("babystep_reset")), value));
+		m_buttonPanel.setResetLabel(fmt::format(fmt::runtime(_("babystep.reset")), value));
 	}
 } // namespace UI

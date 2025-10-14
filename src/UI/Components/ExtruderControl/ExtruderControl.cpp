@@ -29,7 +29,7 @@ namespace UI
 		m_controlsContainer.setWidth(LV_PCT(100));
 		m_controlsContainer.setFlexGrow(1);
 
-		m_toolSelect.setTitle(_("tool_select"));
+		m_toolSelect.setTitle(_("extrude.tool_select"));
 
 		m_filamentContainer.setFlexFlow(LV_FLEX_FLOW_ROW);
 
@@ -38,9 +38,9 @@ namespace UI
 		m_filamentChangeBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_filamentUnloadBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 
-		m_filamentSelect.setLabel(_("filament_select"));
-		m_filamentChangeBtn.setText(_("filament_change"));
-		m_filamentUnloadBtn.setText(_("filament_unload"));
+		m_filamentSelect.setLabel(_("filament.select"));
+		m_filamentChangeBtn.setText(_("filament.change"));
+		m_filamentUnloadBtn.setText(_("filament.unload"));
 
 		static int32_t col_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -50,8 +50,8 @@ namespace UI
 		m_controlsContainer.setGridCell(m_retractBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		m_controlsContainer.setGridCell(m_extrudeBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		m_distanceInput.setTitle(_("extrude_feed_dist"));
-		m_feedrateInput.setTitle(_("extrude_feed_rate"));
+		m_distanceInput.setTitle(_("extrude.feed_dist"));
+		m_feedrateInput.setTitle(_("extrude.feed_rate"));
 
 		m_distanceInput.setListFlow(LV_FLEX_FLOW_ROW);
 		m_distanceInput.setListGrow(1);
@@ -197,7 +197,7 @@ namespace UI
 		m_loadedFilament = filament;
 		m_filamentChangeBtn.hide();
 		m_filamentUnloadBtn.setDisabled(filament.empty());
-		m_filamentChangeBtn.setText(filament.empty() ? _("filament_load") : _("filament_change"));
+		m_filamentChangeBtn.setText(filament.empty() ? _("filament.load") : _("filament.change"));
 	}
 
 	void ExtruderControl::setFilamentCallback(filament_cb_t cb)

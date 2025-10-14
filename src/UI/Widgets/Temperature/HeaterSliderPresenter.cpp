@@ -255,7 +255,7 @@ namespace UI
 
 		name = heater->GetName();
 		state = heater->status;
-		state_str = _(heater->GetHeaterStatusStr());
+		state_str = _(fmt::format("temperature.status.{:s}", heater->GetHeaterStatusStr()));
 		currentTemp = heater->current;
 		minTemp = heater->min;
 		maxTemp = heater->max;

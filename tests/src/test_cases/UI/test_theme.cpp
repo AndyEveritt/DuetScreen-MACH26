@@ -76,19 +76,19 @@ TEST_F(TestTheme, DefaultTheme)
 	themePreview.setSecondaryHue(secondaryHue);
 	themePreview.setChroma(chroma);
 	themePreview.setDarkMode(darkMode);
-	EXPECT_EQUAL_SCREENSHOT("theme_1.png");
+	EXPECT_EQUAL_SCREENSHOT("theme/example_1.png");
 
 	themePreview.setPrimaryHue(25);
 	themePreview.setSecondaryHue(150);
 	themePreview.setChroma(0.5f);
 	themePreview.setDarkMode(false);
-	EXPECT_EQUAL_SCREENSHOT("theme_2.png");
+	EXPECT_EQUAL_SCREENSHOT("theme/example_2.png");
 
 	themePreview.setPrimaryHue(300);
 	themePreview.setSecondaryHue(50);
 	themePreview.setChroma(0.5f);
 	themePreview.setDarkMode(true);
-	EXPECT_EQUAL_SCREENSHOT("theme_3.png");
+	EXPECT_EQUAL_SCREENSHOT("theme/example_3.png");
 }
 
 static std::unique_ptr<LvLabel> createLabel(const std::string& text, LvObj& parent)
@@ -398,10 +398,10 @@ TEST_F(TestTheme, Widgets)
 
 		cont.setFlag(LV_OBJ_FLAG_HIDDEN, false);
 		cont2.setFlag(LV_OBJ_FLAG_HIDDEN, true);
-		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme_widgets_{}.png", theme->getName()).c_str());
+		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme/widgets_{}.png", theme->getName()).c_str());
 
 		cont.setFlag(LV_OBJ_FLAG_HIDDEN, true);
 		cont2.setFlag(LV_OBJ_FLAG_HIDDEN, false);
-		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme_widgets_{}_2.png", theme->getName()).c_str());
+		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme/widgets_{}_2.png", theme->getName()).c_str());
 	}
 }

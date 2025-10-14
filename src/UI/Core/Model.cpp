@@ -213,7 +213,7 @@ void Model::connected()
 	LOG_DBG("Connected event");
 	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
 	{
-		post<EventType::Response>(std::string(_("connected_message")));
+		post<EventType::Response>(_("message.connected"));
 	}
 }
 
@@ -222,6 +222,6 @@ void Model::disconnected()
 	LOG_DBG("Disconnected event");
 	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
 	{
-		post<EventType::Response>(std::string(_("disconnected_message")));
+		post<EventType::Response>(_("message.disconnected"));
 	}
 }

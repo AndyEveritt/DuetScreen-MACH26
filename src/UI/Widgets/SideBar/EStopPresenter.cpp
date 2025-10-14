@@ -19,7 +19,7 @@ namespace UI
 		Comm::DUET.SendGcode("M112 M999\n");
 		LOG_WARN("Emergency Stop sent to Duet");
 		Comm::DUET.Disconnect();
-		Model::get().post<EventType::Response>(std::string(_("estop_message")));
+		Model::get().post<EventType::Response>(_("estop.message"));
 	}
 
 } // namespace UI

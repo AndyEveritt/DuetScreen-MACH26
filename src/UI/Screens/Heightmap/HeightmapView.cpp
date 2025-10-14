@@ -72,7 +72,7 @@ namespace UI
 		{
 			UI_LOCK();
 			lv_obj_set_state(getRoot(), LV_STATE_CHECKED, selected);
-			m_load.setText(selected ? _("heightmap_unload") : _("heightmap_load"));
+			m_load.setText(selected ? _("heightmap.unload") : _("heightmap.load"));
 			m_load.setChecked(selected);
 		}
 
@@ -88,12 +88,12 @@ namespace UI
 		, m_presenter(presenter)
 		, m_title("label", getRoot())
 		, m_btns("btns", getRoot())
-		, m_fixed("heightmap_fixed", m_btns, _("heightmap_fixed"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
-		, m_auto("heightmap_auto", m_btns, _("heightmap_auto"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		, m_fixed("heightmap_fixed", m_btns, _("heightmap.fixed"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		, m_auto("heightmap_auto", m_btns, _("heightmap.auto"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		m_title.setText(_("heightmap_render_mode"));
+		m_title.setText(_("heightmap.render_mode"));
 
 		m_btns.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_btns.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
@@ -180,12 +180,12 @@ namespace UI
 		size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev)
 	{
 		UI_LOCK();
-		m_numPoints.setText(fmt::format(fmt::runtime(_("heightmap_num_points")), numPoints));
-		m_area.setText(fmt::format(fmt::runtime(_("heightmap_area")), area));
-		m_minError.setText(fmt::format(fmt::runtime(_("heightmap_min_error")), minError));
-		m_maxError.setText(fmt::format(fmt::runtime(_("heightmap_max_error")), maxError));
-		m_meanError.setText(fmt::format(fmt::runtime(_("heightmap_mean_error")), meanError));
-		m_stdDev.setText(fmt::format(fmt::runtime(_("heightmap_std_dev")), stdDev));
+		m_numPoints.setText(fmt::format(fmt::runtime(_("heightmap.num_points")), numPoints));
+		m_area.setText(fmt::format(fmt::runtime(_("heightmap.area")), area));
+		m_minError.setText(fmt::format(fmt::runtime(_("heightmap.min_error")), minError));
+		m_maxError.setText(fmt::format(fmt::runtime(_("heightmap.max_error")), maxError));
+		m_meanError.setText(fmt::format(fmt::runtime(_("heightmap.mean_error")), meanError));
+		m_stdDev.setText(fmt::format(fmt::runtime(_("heightmap.std_dev")), stdDev));
 	}
 
 	HeightmapView::HeightmapView(LvObj& parent)
@@ -216,7 +216,7 @@ namespace UI
 		m_heightmap.setResolution(200, 200);
 
 		// List
-		m_heightmapList.setTitle(_("heightmap_list_header"));
+		m_heightmapList.setTitle(_("heightmap.list_header"));
 		m_heightmapList.setListGrow(1);
 
 		clear();
@@ -265,7 +265,7 @@ namespace UI
 	void HeightmapView::setShownHeightmapName(std::string_view name)
 	{
 		UI_LOCK();
-		m_heightmap.setTitle(fmt::format(fmt::runtime(_("heightmap_title")), name));
+		m_heightmap.setTitle(fmt::format(fmt::runtime(_("heightmap.title")), name));
 	}
 
 	void HeightmapView::addMeasurementPoint(float x, float y)

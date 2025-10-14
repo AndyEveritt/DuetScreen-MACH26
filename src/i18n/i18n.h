@@ -25,7 +25,15 @@ namespace i18n
     bool setLanguage(const std::string_view lang);
     bool setLanguageByIndex(size_t index);
 
-    const std::string& translate(const std::string& tag);
+	const std::string& translate(std::string_view tag);
 } // namespace i18n
 
-static inline const std::string& _(const std::string& text) { return i18n::translate(text); }
+/**
+ * @brief Get the translated string in the current language for a given key
+ * @param tag The translation key, separated by `.` for nested keys
+ * @return The translated string
+ */
+static inline const std::string& _(std::string_view tag)
+{
+	return i18n::translate(tag);
+}

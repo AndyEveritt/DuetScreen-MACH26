@@ -52,8 +52,8 @@ namespace UI
 		m_extruders.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_fans.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		m_extruders.setTitle(_("fine_tune_extruder_header"));
-		m_fans.setTitle(_("fine_tune_fan_header"));
+		m_extruders.setTitle(_("fine_tune.extruder_header"));
+		m_fans.setTitle(_("fine_tune.fan_header"));
 
 		m_keyboard.setMode(LV_KEYBOARD_MODE_NUMBER);
 		m_keyboard.hide();
@@ -69,7 +69,7 @@ namespace UI
 
 		m_numberPad.hide();
 
-		m_speed.setLabel(_("fine_tune_speed_factor"));
+		m_speed.setLabel(_("fine_tune.speed_factor"));
 		m_speed.setKeyboard(m_keyboard);
 		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);

@@ -58,7 +58,7 @@ namespace UI
 
 		m_input.setFlexGrow(1);
 		m_input.setOneLine(true);
-		m_input.setPlaceholderText(_("console_input_placeholder"));
+		m_input.setPlaceholderText(_("console.input_placeholder"));
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT, 0);
 		m_clear.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_input.setHeight(LV_SIZE_CONTENT);

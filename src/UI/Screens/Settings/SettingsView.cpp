@@ -17,14 +17,14 @@ namespace UI
 		, m_settingsList(lv_list_create(getRoot()))
 		, m_subWindow("sub_window", getRoot())
 		, m_keyboard("keyboard", getRoot())
-		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings_screen_header").c_str()))
-		, m_screenSettings(lv_list_add_button(m_settingsList, NULL, _("settings_screen").c_str()))
-		, m_themeSettings(lv_list_add_button(m_settingsList, NULL, _("settings_theme").c_str()))
-		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings_connectivity_header").c_str()))
-		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings_duet").c_str()))
-		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings_network").c_str()))
-		, m_devHeader(lv_list_add_text(m_settingsList, _("settings_dev_header").c_str()))
-		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings_developer").c_str()))
+		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings.screen_header").c_str()))
+		, m_screenSettings(lv_list_add_button(m_settingsList, NULL, _("settings.screen").c_str()))
+		, m_themeSettings(lv_list_add_button(m_settingsList, NULL, _("settings.theme").c_str()))
+		, m_connectivityHeader(lv_list_add_text(m_settingsList, _("settings.connectivity_header").c_str()))
+		, m_duetSettings(lv_list_add_button(m_settingsList, NULL, _("settings.duet").c_str()))
+		, m_networkSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_WIFI, _("settings.network").c_str()))
+		, m_devHeader(lv_list_add_text(m_settingsList, _("settings.dev_header").c_str()))
+		, m_developerSettings(lv_list_add_button(m_settingsList, LV_SYMBOL_SETTINGS, _("settings.developer").c_str()))
 		, m_duetSettingsView(m_subWindow, *this)
 		, m_deviceSettingsView(m_subWindow, *this)
 		, m_themeSettingsView(m_subWindow, *this)
@@ -188,14 +188,14 @@ namespace UI
 		{
 			options.push_back(_(method.data()));
 		}
-		m_connectionMethod.setLabel(_("settings_duet_connection_method"));
+		m_connectionMethod.setLabel(_("settings.duet_connection_method"));
 		m_connectionMethod.setOptions(options);
 		m_connectionMethod.addEventCallback(onConnectionMethodEvent, LV_EVENT_VALUE_CHANGED, this);
 		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType());
 
 		// Poll Interval
 		m_pollInterval.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_pollInterval.setLabel(_("settings_duet_poll_interval"));
+		m_pollInterval.setLabel(_("settings.duet_poll_interval"));
 		m_pollInterval.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL.count(), 2000);
 		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
@@ -208,7 +208,7 @@ namespace UI
 
 		// Info Timeout
 		m_infoTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_infoTimeout.setLabel(_("settings_duet_info_timeout"));
+		m_infoTimeout.setLabel(_("settings.duet_info_timeout"));
 		m_infoTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_infoTimeout.setRange(0, 5000);
 		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
@@ -236,8 +236,8 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		m_hostname.setOneLine(true);
-		m_hostname.setLabel(_("settings_duet_hostname"));
-		m_hostname.setPlaceholderText(_("settings_duet_hostname_prompt"));
+		m_hostname.setLabel(_("settings.duet_hostname"));
+		m_hostname.setPlaceholderText(_("settings.duet_hostname_prompt"));
 		m_hostname.setAcceptedChars("0123456789.");
 		m_hostname.setText(Comm::DUET.GetHostname());
 		m_hostname.getTextArea().addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
@@ -251,8 +251,8 @@ namespace UI
 			nullptr);
 
 		m_password.setOneLine(true);
-		m_password.setLabel(_("settings_duet_password"));
-		m_password.setPlaceholderText(_("settings_duet_password_prompt"));
+		m_password.setLabel(_("settings.duet_password"));
+		m_password.setPlaceholderText(_("settings.duet_password_prompt"));
 		m_password.setPasswordMode(true);
 		m_password.setText(Comm::DUET.GetPassword());
 		m_password.getTextArea().addEventCallback(onTextAreaEvent, LV_EVENT_ALL, &parent);
@@ -325,16 +325,16 @@ namespace UI
 		UI_LOCK();
 
 		lv_label_set_text(m_firmwareVersion,
-						  fmt::format(fmt::runtime(_("settings_firmware_version")), FIRMWARE_VERSION).c_str());
+						  fmt::format(fmt::runtime(_("settings.firmware_version")), FIRMWARE_VERSION).c_str());
 		lv_label_set_text(m_buildTime,
-						  fmt::format(fmt::runtime(_("settings_build_time")), BuildDateText, BuildTimeSuffix).c_str());
+						  fmt::format(fmt::runtime(_("settings.build_time")), BuildDateText, BuildTimeSuffix).c_str());
 
-		m_language.setLabel(_("settings_language"));
-		m_language.setOptions(_("settings_language_en"));
+		m_language.setLabel(_("settings.language"));
+		m_language.setOptions(_("settings.language_en"));
 
-		m_usbMode.setLabel(_("settings_usb_mode"));
+		m_usbMode.setLabel(_("settings.usb_mode"));
 		m_usbMode.setOptions(
-			{_("settings_usb_mode_host"), _("settings_usb_mode_device"), _("settings_usb_mode_internal_wifi")});
+			{_("settings.usb_mode_host"), _("settings.usb_mode_device"), _("settings.usb_mode_internal_wifi")});
 		m_usbMode.addEventCallback(
 			[](lv_event_t* e)
 			{
@@ -351,7 +351,7 @@ namespace UI
 		// Brightness
 		m_brightness.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_brightness.setRange(0, 100);
-		m_brightness.setLabel(_("settings_brightness"));
+		m_brightness.setLabel(_("settings.brightness"));
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_brightness.setValueChangedCallback([](uint32_t value) { DisplayHelper::setBrightness(value); });
 		m_brightness.setSendMode(Slider::SendMode::VALUE_CHANGED);
@@ -362,7 +362,7 @@ namespace UI
 
 		// Screensaver Timeout
 		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_screensaverTimeout.setLabel(_("settings_screensaver_timeout"));
+		m_screensaverTimeout.setLabel(_("settings.screensaver_timeout"));
 		m_screensaverTimeout.setRange(0, 5 * 60); // seconds
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
 													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
@@ -373,7 +373,7 @@ namespace UI
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_screensaverTimeout.getInput()); });
 
 		// System Logging
-		lv_checkbox_set_text(m_systemLogging, _("settings_system_logging").c_str());
+		lv_checkbox_set_text(m_systemLogging, _("settings.system_logging").c_str());
 		lv_obj_set_state(m_systemLogging, LV_STATE_CHECKED, StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
 		lv_obj_add_event_cb(
 			m_systemLogging,
@@ -389,7 +389,7 @@ namespace UI
 			this);
 
 		// Display Connected Message
-		lv_checkbox_set_text(m_displayConnectedMessage, _("settings_display_connected_message").c_str());
+		lv_checkbox_set_text(m_displayConnectedMessage, _("settings.display_connected_message").c_str());
 		lv_obj_set_state(
 			m_displayConnectedMessage, LV_STATE_CHECKED, StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true));
 		lv_obj_add_event_cb(
@@ -420,10 +420,10 @@ namespace UI
 	{
 		UI_LOCK();
 
-		m_theme.setLabel(_("settings_theme"));
+		m_theme.setLabel(_("settings.theme"));
 		for (auto& theme : Themes::getThemes())
 		{
-			m_theme.addOption(_(theme->getName().data()));
+			m_theme.addOption(_(fmt::format("theme.id.{:s}", theme->getName())));
 		}
 		m_theme.addEventCallback(
 			[](lv_event_t* e)
@@ -452,7 +452,7 @@ namespace UI
 		: View("network_settings_view", parent, mainSettingsView)
 		, m_topBar("top_bar", getRoot())
 		, m_ipAddress("ip_address", m_topBar)
-		, m_refresh("refresh", m_topBar, _("refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
+		, m_refresh("refresh", m_topBar, _("settings.refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
 		, m_networkList(lv_table_create(getRoot()))
 		, m_passwordWindow("password_msgbox", getRoot(), layout_t{0, 0, 80, LV_SIZE_CONTENT})
 		, m_passwordInput("password_input", m_passwordWindow.getBody(), layout_t(0, 0, 80, LV_SIZE_CONTENT))
@@ -469,7 +469,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_ipAddress, 3);
 		lv_obj_set_flex_grow(m_refresh.getRoot(), 1);
 		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
-		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings_network_ip_address")), "").c_str());
+		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings.network_ip_address")), "").c_str());
 
 		// Network List
 		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
@@ -483,11 +483,11 @@ namespace UI
 		lv_obj_set_flex_grow(m_networkList, 1);
 		lv_obj_set_width(m_networkList, LV_PCT(100));
 		lv_table_set_column_count(m_networkList, 5);
-		lv_table_set_cell_value(m_networkList, 0, 0, _("settings_network_ssid").c_str());
-		lv_table_set_cell_value(m_networkList, 0, 1, _("settings_network_signal").c_str());
-		lv_table_set_cell_value(m_networkList, 0, 2, _("settings_network_known").c_str());
-		lv_table_set_cell_value(m_networkList, 0, 3, _("settings_network_forget").c_str());
-		lv_table_set_cell_value(m_networkList, 0, 4, _("settings_network_connected").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 0, _("settings.network_ssid").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 1, _("settings.network_signal").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 2, _("settings.network_known").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 3, _("settings.network_forget").c_str());
+		lv_table_set_cell_value(m_networkList, 0, 4, _("settings.network_connected").c_str());
 
 		// Password Window
 		m_passwordWindow.hide();
@@ -497,13 +497,13 @@ namespace UI
 		lv_obj_set_flex_flow(m_passwordWindow, LV_FLEX_FLOW_COLUMN);
 		lv_obj_set_flex_align(m_passwordWindow, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		m_passwordWindow.setTitle(_("settings_network_password_title"));
+		m_passwordWindow.setTitle(_("settings.network_password_title"));
 		m_passwordWindow.setText("");
 		m_passwordWindow.okVisible(true);
 		m_passwordWindow.cancelVisible(true);
 		m_passwordWindow.setOkCallback([this]() { onPasswordConfirmEvent(); });
 		m_passwordWindow.setCloseCallback([this]() { onPasswordCloseEvent(); });
-		m_passwordInput.setPlaceholderText(_("settings_network_enter_password"));
+		m_passwordInput.setPlaceholderText(_("settings.network_enter_password"));
 		m_passwordInput.setPasswordMode(true);
 		m_passwordInput.setOneLine(true);
 
@@ -517,7 +517,7 @@ namespace UI
 	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings_network_ip_address")), ipAddress).c_str());
+		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings.network_ip_address")), ipAddress).c_str());
 	}
 
 	void NetworkSettingsView::setEnabled(bool enabled)
@@ -622,9 +622,9 @@ namespace UI
 		, m_debugBorders(lv_checkbox_create(getRoot()))
 #endif
 		, m_enableSSH(lv_checkbox_create(getRoot()))
-		, m_restart("developer_settings_restart", getRoot(), _("settings_restart"))
-		, m_eraseAndRestart("developer_settings_erase_and_restart", getRoot(), _("settings_erase_and_restart"))
-		, m_reboot("developer_settings_reboot", getRoot(), _("settings_reboot"))
+		, m_restart("developer_settings_restart", getRoot(), _("settings.restart"))
+		, m_eraseAndRestart("developer_settings_erase_and_restart", getRoot(), _("settings.erase_and_restart"))
+		, m_reboot("developer_settings_reboot", getRoot(), _("settings.reboot"))
 		, m_startHardwareTest("start_hardware_test", getRoot())
 	{
 		UI_LOCK();
@@ -633,7 +633,7 @@ namespace UI
 		lv_obj_set_flex_flow(m_debugLevelCont, LV_FLEX_FLOW_ROW);
 		lv_obj_set_size(m_debugLevelCont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		lv_obj_set_style_pad_column(m_debugLevelCont, 5, 0);
-		lv_label_set_text(m_debugLevelLabel, _("settings_debug_level").c_str());
+		lv_label_set_text(m_debugLevelLabel, _("settings.debug_level").c_str());
 		std::string options;
 		for (const auto& level : Log::DebugLevelStrings)
 		{
@@ -646,12 +646,12 @@ namespace UI
 		lv_obj_add_event_cb(m_debugLevel, onDebugLevelEvent, LV_EVENT_VALUE_CHANGED, NULL);
 
 #if DEBUG_BORDERS
-		lv_checkbox_set_text(m_debugBorders, _("settings_debug_borders").c_str());
+		lv_checkbox_set_text(m_debugBorders, _("settings.debug_borders").c_str());
 		lv_obj_set_state(m_debugBorders, LV_STATE_CHECKED, Themes::isdebugBorderVisible(lv_screen_active()));
 		lv_obj_add_event_cb(m_debugBorders, onDebugBordersEvent, LV_EVENT_VALUE_CHANGED, this);
 #endif
 
-		lv_checkbox_set_text(m_enableSSH, _("settings_enable_ssh").c_str());
+		lv_checkbox_set_text(m_enableSSH, _("settings.enable_ssh").c_str());
 		lv_obj_set_state(m_enableSSH, LV_STATE_CHECKED, StorageHelper::getData<bool>(ID_SSH_ENABLED, false));
 		lv_obj_add_event_cb(m_enableSSH, onEnableSSHEvent, LV_EVENT_VALUE_CHANGED, this);
 
@@ -664,7 +664,7 @@ namespace UI
 		m_reboot.addClickedCallback(onRebootEvent, this);
 
 		/* Hardware Test */
-		m_startHardwareTest.setText(_("settings_start_hardware_test"));
+		m_startHardwareTest.setText(_("settings.start_hardware_test"));
 		m_startHardwareTest.addClickedCallback(
 			[](lv_event_t* e)
 			{

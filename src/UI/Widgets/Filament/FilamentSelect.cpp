@@ -64,7 +64,7 @@ namespace UI
 		, m_confirmation(
 			  "confirmation", messageBoxParent ? *messageBoxParent : getRoot(), layout_t(0, 0, 50, LV_SIZE_CONTENT))
 		, m_filamentOptions("filament_options", m_confirmation.getBody())
-		, m_unload("unload", m_confirmation.getFooter(), _("unload"))
+		, m_unload("unload", m_confirmation.getFooter(), _("filament.unload"))
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -82,12 +82,12 @@ namespace UI
 		m_toolList.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_toolList.setListGrow(1);
 
-		m_header.setText(_("filament_management_header"));
-		m_toolList.setTitle(_("filament_select_tool_list_header"));
+		m_header.setText(_("filament.management_header"));
+		m_toolList.setTitle(_("filament.select_tool_list_header"));
 
 		m_confirmation.setMaxHeight(LV_PCT(70));
 		m_confirmation.cancelVisible(true);
-		m_confirmation.setOkBtnText(_("confirm_filament_change"));
+		m_confirmation.setOkBtnText(_("filament.confirm_filament_change"));
 		m_confirmation.getOkBtn().addStyle(Themes::getLvglStyles().actionBtn);
 		m_unload.addStyle(Themes::getLvglStyles().actionBtn);
 		m_confirmation.setOkCallback(
@@ -168,7 +168,7 @@ namespace UI
 	void FilamentSelect::showSelection(std::string_view toolName, std::string_view filamentName)
 	{
 		UI_LOCK();
-		m_confirmation.setTitle(fmt::format(fmt::runtime(_("filament_select_tool")), toolName));
+		m_confirmation.setTitle(fmt::format(fmt::runtime(_("filament.select_tool")), toolName));
 		for (size_t i = 0; i < m_filamentOptions.getItemCount(); i++)
 		{
 			auto item = m_filamentOptions.getItem(i);

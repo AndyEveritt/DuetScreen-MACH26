@@ -74,10 +74,10 @@ namespace UI
 
 		// Update Prompt
 		m_updatePrompt.hide();
-		m_updatePrompt.setTitle(_("update_available"));
-		m_updatePrompt.setText(_("update_available_text"));
-		m_updatePrompt.setOkBtnText(_("update_confirm"));
-		m_updatePrompt.setCancelBtnText(_("update_cancel"));
+		m_updatePrompt.setTitle(_("message.update_available"));
+		m_updatePrompt.setText(_("message.update_available_text"));
+		m_updatePrompt.setOkBtnText(_("message.update_confirm"));
+		m_updatePrompt.setCancelBtnText(_("message.update_cancel"));
 		m_updatePrompt.setOkCallback([this]() { m_presenter->update(); });
 		m_updatePrompt.okVisible(true);
 		m_updatePrompt.cancelVisible(true);

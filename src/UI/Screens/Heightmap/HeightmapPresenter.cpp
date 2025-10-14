@@ -226,7 +226,7 @@ namespace UI
 			m_view->clear();
 			m_view->drawLabel(width / 2,
 							  height / 2,
-							  fmt::format(fmt::runtime(_("heightmap_not_supported")), _(Comm::DUET.GetCommunicationTypeName())),
+							  fmt::format(fmt::runtime(_("heightmap.not_supported")), _(Comm::DUET.GetCommunicationTypeName())),
 							  lv_palette_main(LV_PALETTE_RED),
 							  LV_OPA_100);
 			return false;

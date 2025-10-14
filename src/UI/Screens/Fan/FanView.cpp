@@ -17,7 +17,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
-		m_fans.setTitle(_("fan_header"));
+		m_fans.setTitle(_("fan.title"));
 		m_fans.setSize(LV_PCT(100), LV_PCT(100));
 		m_fans.setListGrow(1);
 	}
@@ -53,9 +53,9 @@ namespace UI
 	FanView::FanItem::FanItem(size_t index, LvObj& parent, FanView& view)
 		: ListItem(index, parent)
 		, m_view(view)
-		, m_off(fmt::format("fan_off_{:d}", index), getRoot(), _("off"))
-		, m_slider(fmt::format("fan_slider_{:d}", index), getRoot())
-		, m_max(fmt::format("fan_max_{:d}", index), getRoot(), _("max"))
+		, m_off("off", getRoot(), _("fan.off"))
+		, m_slider("slider", getRoot())
+		, m_max("max", getRoot(), _("fan.max"))
 	{
 		UI_LOCK();
 
@@ -66,7 +66,7 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_slider.setFlexGrow(1);
 
-		m_slider.setLabel(_("fan"));
+		m_slider.setLabel(_("fan.header"));
 		m_slider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_slider.setRange(0, 100);
 		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter->setFanSpeed(getIndex(), value); });
