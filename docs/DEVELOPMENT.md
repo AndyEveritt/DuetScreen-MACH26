@@ -78,6 +78,14 @@ cmake --build --preset Simulation
 - The `translations` field is a dictionary of key-value pairs where the key is the identifier used in the code and the value is the translation.
 - The language file must be named using the [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag) format. For example, `en-GB.json` for English (UK) or `fr-FR.json` for French (France).
 - To add a new language, create a new JSON file in the `assets/i18n/` directory with the appropriate structure and name.
+- Some translations may include formatting placeholders. The [fmt](https://github.com/fmtlib/fmt) library is used for string formatting. A good reference for the formatting syntax can be found [here](https://hackingcpp.com/cpp/libs/fmt.html).
+  - The [en-GB.json](../assets/i18n/en-GB.json) file contains the reference implementation for all formatting placeholders. If the order of the placeholders needs to be changed for a specific language, this can be done by changing the order of the placeholders in the translation string and adding the appropriate index to the placeholder.
+  ```json
+  {
+    "example": "This is an example of a placeholder: {:s}, and another one: {:d}",
+    "example_reordered": "This is an example of a placeholder: {1:d}, and another one: {0:s}"
+  }
+  ```
 
 > [!NOTE]
 > The language files are loaded at runtime without need to be compiled into the binary. When simulating on PC, the language files are loaded from the `assets/i18n/` directory in the project. When running on the Duet3D screen, the language files are loaded from the `/etc/assets/i18n/` directory.
