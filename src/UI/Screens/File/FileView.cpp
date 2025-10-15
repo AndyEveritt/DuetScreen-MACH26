@@ -310,7 +310,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_startPrint.setTitle(_("file.start_print_title"));
-		m_startPrint.setText(fmt::format(fmt::runtime(_("file.start_print_message")), filename, date, size));
+		m_startPrint.setText(_("file.start_print_message", filename, date, size));
 		m_startPrint.setOkCallback(
 			[this]()
 			{
@@ -325,7 +325,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_startPrint.setTitle(_("file.run_macro_title"));
-		m_startPrint.setText(fmt::format(fmt::runtime(_("file.run_macro_message")), filename));
+		m_startPrint.setText(_("file.run_macro_message", filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });
 		m_startPrint.setImage(nullptr);
 		openModal(&m_startPrint);

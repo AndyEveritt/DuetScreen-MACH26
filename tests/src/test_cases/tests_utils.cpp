@@ -33,3 +33,19 @@ TEST(Utils, FindInstance)
 	// The second instance should begin at index 4 (0-based): "abc abc ..."
 	EXPECT_EQ(pos, 5u); // function returns pos+1 after counting
 }
+
+TEST(Utils, Format)
+{
+	EXPECT_EQ(fmt::format("Hello, {:s}", "World"), "Hello, World");
+	EXPECT_EQ(fmt::format("The answer is {:d}", 42), "The answer is 42");
+	EXPECT_EQ(fmt::format("Pi is approximately {:.2f}", 3.14159), "Pi is approximately 3.14");
+	EXPECT_EQ(fmt::format("Float: {:g}", 3.14000), "Float: 3.14");
+	EXPECT_EQ(fmt::format("Float: {:g}", 3.00000), "Float: 3");
+	EXPECT_EQ(fmt::format("Float: {:g}", 3.00012), "Float: 3.00012");
+	EXPECT_EQ(fmt::format("Float: {:.2g}", 3.0123), "Float: 3");
+	EXPECT_EQ(fmt::format("Float: {:.3g}", 3.0123), "Float: 3.01");
+	EXPECT_EQ(fmt::format("Reorder: {2:s}, {0:d}, {1:.1f}", 42, 3.14, "Hello"), "Reorder: Hello, 42, 3.1");
+	EXPECT_EQ(fmt::format("Multiple: {0:s}, {0:s}, {0:s}", "Echo"), "Multiple: Echo, Echo, Echo");
+	EXPECT_EQ(fmt::format("Named arg: {name:s}, {value:d}", fmt::arg("name", "Count"), fmt::arg("value", 5)),
+			  "Named arg: Count, 5");
+}

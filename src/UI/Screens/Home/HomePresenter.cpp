@@ -236,7 +236,7 @@ namespace UI
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox.warning_int_range")), min, max));
+						msgBox.setWarningText(_("msgbox.warning_int_range", min, max));
 					}
 					return valid;
 				});
@@ -286,9 +286,8 @@ namespace UI
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox.warning_float_range")),
-														  alert.limits.numberFloat.min,
-														  alert.limits.numberFloat.max));
+						msgBox.setWarningText(_(
+							"msgbox.warning_float_range", alert.limits.numberFloat.min, alert.limits.numberFloat.max));
 					}
 					return valid;
 				});
@@ -315,9 +314,8 @@ namespace UI
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(fmt::format(fmt::runtime(_("msgbox.warning_text_length")),
-														  alert.limits.text.min,
-														  alert.limits.text.max));
+						msgBox.setWarningText(
+							_("msgbox.warning_text_length", alert.limits.text.min, alert.limits.text.max));
 					}
 					return valid;
 				});

@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
+#include "utils/Format.h"
 #include "utils/StorageHelper.h"
 #include <algorithm>
 
@@ -50,8 +51,8 @@ namespace UI
 		m_controlsContainer.setGridCell(m_retractBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		m_controlsContainer.setGridCell(m_extrudeBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		m_distanceInput.setTitle(_("extrude.feed_dist"));
-		m_feedrateInput.setTitle(_("extrude.feed_rate"));
+		m_distanceInput.setTitle(_("extrude.feed_dist", Format::getDistanceUnit()));
+		m_feedrateInput.setTitle(_("extrude.feed_rate", Format::getSpeedUnit()));
 
 		m_distanceInput.setListFlow(LV_FLEX_FLOW_ROW);
 		m_distanceInput.setListGrow(1);

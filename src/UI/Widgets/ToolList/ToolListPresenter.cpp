@@ -50,11 +50,10 @@ namespace UI
 						return;
 
 					NumberPadConfig config = {
-						.header =
-							fmt::format(fmt::runtime(_("temperature.numpad_header_bed_chamber")),
-										_("temperature.bed"),
-										i,
-										isActive ? _("temperature.status.active") : _("temperature.status.standby")),
+						.header = _("temperature.numpad_header_bed_chamber",
+									_("temperature.bed"),
+									i,
+									isActive ? _("temperature.status.active") : _("temperature.status.standby")),
 						.initialValue = isActive ? bed->GetActiveTemp() : bed->GetStandbyTemp(),
 						.min = bed->GetMin(),
 						.max = bed->GetMax(),
@@ -98,11 +97,10 @@ namespace UI
 						return;
 
 					NumberPadConfig config = {
-						.header =
-							fmt::format(fmt::runtime(_("temperature.numpad_header_bed_chamber")),
-										_("temperature.chamber"),
-										i,
-										isActive ? _("temperature.status.active") : _("temperature.status.standby")),
+						.header = _("temperature.numpad_header_bed_chamber",
+									_("temperature.chamber"),
+									i,
+									isActive ? _("temperature.status.active") : _("temperature.status.standby")),
 						.initialValue = isActive ? chamber->GetActiveTemp() : chamber->GetStandbyTemp(),
 						.min = chamber->GetMin(),
 						.max = chamber->GetMax(),
@@ -222,11 +220,10 @@ namespace UI
 						return;
 
 					ToolListPresenter::NumberPadConfig config = {
-						.header =
-							fmt::format(fmt::runtime(_("temperature.numpad_header_tool_heater")),
-										m_tool->index,
-										i,
-										isActive ? _("temperature.status.active") : _("temperature.status.standby")),
+						.header = _("temperature.numpad_header_tool_heater",
+									m_tool->index,
+									i,
+									isActive ? _("temperature.status.active") : _("temperature.status.standby")),
 						.initialValue = isActive ? tHeater->activeTemp : tHeater->standbyTemp,
 						.min = tHeater->heater->min,
 						.max = tHeater->heater->max,
@@ -255,9 +252,8 @@ namespace UI
 				continue;
 			}
 
-			item->setLabel(tHeater->heater->GetName().length() == 0
-							   ? fmt::format(fmt::runtime(_("temperature.heater")), i)
-							   : tHeater->heater->GetName());
+			item->setLabel(tHeater->heater->GetName().length() == 0 ? _("temperature.heater", i)
+																	: tHeater->heater->GetName());
 
 			item->setStatus(_(fmt::format("temperature.status.{:s}", tHeater->heater->GetHeaterStatusStr())));
 			item->setCurrentTemp(tHeater->heater->current);

@@ -38,6 +38,8 @@ constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "ui:extrusion:selected_fe
 constexpr const char* ID_FILE_SORT_BY = "ui:file:sort_by";
 constexpr const char* ID_FILE_SORT_DESCENDING = "ui:file:sort_descending";
 
+constexpr const char* ID_UNITS_METRIC = "ui:units_metric";
+
 /* System */
 constexpr const char* ID_BUZZER_ENABLED = "sys:buzzer_enabled";
 constexpr const char* ID_UPGRADE_FILE_LAST_MODIFIED = "sys:upgrade_file_last_modified";

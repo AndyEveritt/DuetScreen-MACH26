@@ -37,6 +37,6 @@ namespace UI
 
 	void BabyStep::setBabyStepValue(float value)
 	{
-		m_buttonPanel.setResetLabel(fmt::format(fmt::runtime(_("babystep.reset")), value));
+		m_buttonPanel.setResetLabel(_("babystep.reset", value));
 	}
 } // namespace UI

@@ -1,5 +1,7 @@
 {
-    "files.associations": {},
+    "files.associations": {
+        "**/assets/i18n/*.json": "jsonc"
+    },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.clang_format_fallbackStyle": "",
     "cmake.ctest.parallelJobs": 1,

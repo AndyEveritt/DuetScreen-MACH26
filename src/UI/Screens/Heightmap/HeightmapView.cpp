@@ -180,12 +180,12 @@ namespace UI
 		size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev)
 	{
 		UI_LOCK();
-		m_numPoints.setText(fmt::format(fmt::runtime(_("heightmap.num_points")), numPoints));
-		m_area.setText(fmt::format(fmt::runtime(_("heightmap.area")), area));
-		m_minError.setText(fmt::format(fmt::runtime(_("heightmap.min_error")), minError));
-		m_maxError.setText(fmt::format(fmt::runtime(_("heightmap.max_error")), maxError));
-		m_meanError.setText(fmt::format(fmt::runtime(_("heightmap.mean_error")), meanError));
-		m_stdDev.setText(fmt::format(fmt::runtime(_("heightmap.std_dev")), stdDev));
+		m_numPoints.setText(_("heightmap.num_points", numPoints));
+		m_area.setText(_("heightmap.area", area));
+		m_minError.setText(_("heightmap.min_error", minError));
+		m_maxError.setText(_("heightmap.max_error", maxError));
+		m_meanError.setText(_("heightmap.mean_error", meanError));
+		m_stdDev.setText(_("heightmap.std_dev", stdDev));
 	}
 
 	HeightmapView::HeightmapView(LvObj& parent)
@@ -265,7 +265,7 @@ namespace UI
 	void HeightmapView::setShownHeightmapName(std::string_view name)
 	{
 		UI_LOCK();
-		m_heightmap.setTitle(fmt::format(fmt::runtime(_("heightmap.title")), name));
+		m_heightmap.setTitle(_("heightmap.title", name));
 	}
 
 	void HeightmapView::addMeasurementPoint(float x, float y)

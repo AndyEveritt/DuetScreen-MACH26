@@ -27,6 +27,12 @@
       "uart": "UART",
       "unknown": "Unknown"
     },
+    "units": {
+      "mm": "mm",
+      "inches": "in",
+      "mm_speed": "mm/s",
+      "inches_speed": "ipm"
+    },
     "app_drawer": { /* Screen labels */
       "select_view": "Select View",
       "console": "Console",
@@ -56,10 +62,10 @@
     },
     "extrude": { /* Extrude control widget */
       "tool_select": "Select Tool",
-      "distance_header": "Set Extrusion Distance (mm)",
-      "feed_dist": "Feed Distance (mm)",
-      "feed_rate": "Feed Rate (mm/s)",
-      "feedrate_header": "Set Extrusion Feedrate (mm/s)"
+      "distance_header": "Set Extrusion Distance ({:s})",
+      "feed_dist": "Feed Distance ({:s})",
+      "feed_rate": "Feed Rate ({:s})",
+      "feedrate_header": "Set Extrusion Feedrate ({:s})"
     },
     "fan": { /* Fan screen */
       "title": "Fans",

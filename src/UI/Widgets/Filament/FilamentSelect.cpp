@@ -168,7 +168,7 @@ namespace UI
 	void FilamentSelect::showSelection(std::string_view toolName, std::string_view filamentName)
 	{
 		UI_LOCK();
-		m_confirmation.setTitle(fmt::format(fmt::runtime(_("filament.select_tool")), toolName));
+		m_confirmation.setTitle(_("filament.select_tool", toolName));
 		for (size_t i = 0; i < m_filamentOptions.getItemCount(); i++)
 		{
 			auto item = m_filamentOptions.getItem(i);

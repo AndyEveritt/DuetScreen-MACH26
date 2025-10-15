@@ -5,9 +5,10 @@
  *      Author: Andy Everitt
  */
 
-#include "i18n.h"
-#include "Configuration.h"
 #include "Debug.h"
+
+#include "Configuration.h"
+#include "i18n.h"
 #include "utils/StorageHelper.h"
 #include <fstream>
 #include <nlohmann/json.hpp>

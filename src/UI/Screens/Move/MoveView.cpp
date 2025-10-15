@@ -4,6 +4,7 @@
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
+#include "utils/Format.h"
 #include "utils/StorageHelper.h"
 
 namespace UI
@@ -132,7 +133,7 @@ namespace UI
 			[this](size_t index, float distance)
 			{
 				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude.distance_header"));
+				m_numberpad.setHeader(_("extrude.distance_header", Format::getDistanceUnit()));
 				m_numberpad.setValue(distance);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(1000);
@@ -143,7 +144,7 @@ namespace UI
 			[this](size_t index, float feedrate)
 			{
 				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude.feedrate_header"));
+				m_numberpad.setHeader(_("extrude.feedrate_header", Format::getSpeedUnit()));
 				m_numberpad.setValue(feedrate);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(100); // mm/s
@@ -517,7 +518,7 @@ namespace UI
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)
 	{
 		openModal(&m_numberpad);
-		m_numberpad.setHeader(fmt::format(fmt::runtime(_("move.set_position")), axis_letter));
+		m_numberpad.setHeader(_("move.set_position", axis_letter));
 		m_numberpad.setValue(position);
 		if (m_axisDataListPtr)
 		{

@@ -57,7 +57,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_axisLetter = letter;
-		m_home.setText(fmt::format(fmt::runtime(_("move.axis_home")), letter).c_str());
+		m_home.setText(_("move.axis_home", letter));
 	}
 
 	void AxisItem::setJogAmounts(const float* distances, const size_t count)
@@ -118,7 +118,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_home.setDisabled(disabled);
-		m_home.setText(disabled ? m_axisLetter : fmt::format(fmt::runtime(_("move.axis_home")), m_axisLetter));
+		m_home.setText(disabled ? m_axisLetter : _("move.axis_home", m_axisLetter));
 	}
 
 	void AxisItem::setJogCallback(jog_cb_t cb, void* user_data)

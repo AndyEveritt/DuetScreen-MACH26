@@ -324,10 +324,8 @@ namespace UI
 	{
 		UI_LOCK();
 
-		lv_label_set_text(m_firmwareVersion,
-						  fmt::format(fmt::runtime(_("settings.firmware_version")), FIRMWARE_VERSION).c_str());
-		lv_label_set_text(m_buildTime,
-						  fmt::format(fmt::runtime(_("settings.build_time")), BuildDateText, BuildTimeSuffix).c_str());
+		lv_label_set_text(m_firmwareVersion, _("settings.firmware_version", FIRMWARE_VERSION).c_str());
+		lv_label_set_text(m_buildTime, _("settings.build_time", BuildDateText, BuildTimeSuffix).c_str());
 
 		m_language.setLabel(_("settings.language"));
 		m_language.setOptions(_("settings.language_en"));
@@ -469,7 +467,7 @@ namespace UI
 		lv_obj_set_flex_grow(m_ipAddress, 3);
 		lv_obj_set_flex_grow(m_refresh.getRoot(), 1);
 		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
-		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings.network_ip_address")), "").c_str());
+		lv_label_set_text(m_ipAddress, _("settings.network_ip_address", "").c_str());
 
 		// Network List
 		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
@@ -517,7 +515,7 @@ namespace UI
 	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_ipAddress, fmt::format(fmt::runtime(_("settings.network_ip_address")), ipAddress).c_str());
+		lv_label_set_text(m_ipAddress, _("settings.network_ip_address", ipAddress).c_str());
 	}
 
 	void NetworkSettingsView::setEnabled(bool enabled)

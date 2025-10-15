@@ -33,7 +33,7 @@ namespace UI
 		OM::Move::IterateExtruderAxesWhile(
 			[this](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
-				m_view->setExtruderLabel(index, fmt::format(fmt::runtime(_("fine_tune.extruder")), extruder->index));
+				m_view->setExtruderLabel(index, _("fine_tune.extruder", extruder->index));
 				m_view->setExtruderValue(index, std::round(100 * extruder->factor));
 				return true;
 			});
@@ -46,7 +46,7 @@ namespace UI
 		OM::IterateFansWhile(
 			[this](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
-				m_view->setFanLabel(index, fmt::format(fmt::runtime(_("fine_tune.fan")), fan->index));
+				m_view->setFanLabel(index, _("fine_tune.fan", fan->index));
 				m_view->setFanValue(index, std::round(100 * fan->requestedValue));
 				return true;
 			});

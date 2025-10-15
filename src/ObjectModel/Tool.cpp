@@ -42,7 +42,7 @@ namespace OM
 	{
 		if (name.IsEmpty())
 		{
-			return fmt::format(fmt::runtime(_("temperature.default_tool_name")), index);
+			return _("temperature.default_tool_name", index);
 		}
 		return name.c_str();
 	}
