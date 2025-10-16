@@ -9,6 +9,7 @@
 
 // #include <cstdint>
 #include "Configuration.h"
+#include "utils/UnitSystem.h"
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/function_ref.h>
@@ -137,4 +138,9 @@ namespace OM::Move
 
 	void SetKinematicsName(const std::string& name);
 	const Kinematics& GetKinematics();
+
+	void Extrude(float distance, float feedrate);
+
+	void SetDistanceUnit(size_t index, Units::UnitSystem unit);
+	Units::UnitSystem GetCurrentDistanceUnit();
 } // namespace OM::Move

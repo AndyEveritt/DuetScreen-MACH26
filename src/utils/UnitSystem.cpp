@@ -1,0 +1,171 @@
+/*
+ * UnitSystem.cpp
+ *
+ *  Created on: 2025-10-14
+ *      Author: Andy Everitt
+ */
+
+#include "UnitSystem.h"
+#include "Debug.h"
+#include "ObjectModel/Axis.h"
+#include "i18n/i18n.h"
+#include "utils/StorageHelper.h"
+
+namespace Units
+{
+	/**
+	 * @brief Get the current unit system used by the Duet as set with `G20` or `G21`
+	 * @return the current unit system used by the Duet
+	 */
+	UnitSystem getCurrentDuetUnitSystem()
+	{
+		return OM::Move::GetCurrentDistanceUnit();
+	}
+
+	/**
+	 * @brief Get the current displayed unit system
+	 * @return the current displayed unit system
+	 */
+	UnitSystem getCurrentDisplayedUnitSystem()
+	{
+		auto id = StorageHelper::getData<int>(ID_UNIT_SYSTEM, static_cast<int>(UnitSystem::Metric));
+		return id > static_cast<int>(UnitSystem::Imperial) ? UnitSystem::Metric : static_cast<UnitSystem>(id);
+	}
+
+	/**
+	 * @brief Get the translated distance unit string for the currently displayed unit system
+	 * @return the translated distance unit string
+	 */
+	const std::string& getDisplayedDistanceUnit()
+	{
+		switch (getCurrentDisplayedUnitSystem())
+		{
+		case UnitSystem::Metric:
+			return _("units.mm");
+		case UnitSystem::Imperial:
+			return _("units.inches");
+		default:
+			LOG_FATAL_THROW("Unsupported unit system");
+		}
+	}
+
+	/**
+	 * @brief Get the translated speed unit string for the currently displayed unit system
+	 * @return the translated speed unit string
+	 */
+	const std::string& getDisplayedSpeedUnit()
+	{
+		switch (getCurrentDisplayedUnitSystem())
+		{
+		case UnitSystem::Metric:
+			return _("units.mm_speed");
+		case UnitSystem::Imperial:
+			return _("units.inches_speed");
+		default:
+			LOG_FATAL_THROW("Unsupported unit system");
+		}
+	}
+
+	/**
+	 * @brief Convert a metric position (mm) to the currently displayed units
+	 * @param distance_mm distance/position in mm
+	 * @return the distance/position in the currently displayed units
+	 */
+	float convertDistanceToCurrentDisplayedUnit(float distance_mm)
+	{
+		switch (getCurrentDisplayedUnitSystem())
+		{
+		case UnitSystem::Metric:
+			return distance_mm;
+		case UnitSystem::Imperial:
+			return mmToInches(distance_mm);
+		default:
+			LOG_FATAL_THROW("Unsupported unit system");
+		}
+	}
+
+	/**
+	 * @brief Convert a metric speed (mm/s) to the currently displayed units
+	 * @param speed_mm_s speed in mm/s
+	 * @return the speed in the currently displayed units
+	 */
+	float convertSpeedToCurrentDisplayedUnit(float speed_mm_s)
+	{
+		switch (getCurrentDisplayedUnitSystem())
+		{
+		case UnitSystem::Metric:
+			return speed_mm_s;
+		case UnitSystem::Imperial:
+			return 60 * mmToInches(speed_mm_s);
+		default:
+			LOG_FATAL_THROW("Unsupported unit system");
+		}
+	}
+
+	/**
+	 * @brief Convert a distance in the currently displayed units to the units used by the Duet
+	 * @param distance value displayed in the UI, as calculated by `convertDistanceToCurrentDisplayedUnit()`
+	 * @return the distance in `units` used by the Duet
+	 */
+	float convertDisplayedDistanceToDuetUnits(float distance)
+	{
+		UnitSystem display_units = getCurrentDisplayedUnitSystem();
+		UnitSystem duet_units = getCurrentDuetUnitSystem();
+
+		if (display_units == duet_units)
+		{
+			return distance;
+		}
+
+		switch (duet_units)
+		{
+		case UnitSystem::Metric:
+			return inchesToMm(distance);
+		case UnitSystem::Imperial:
+			return mmToInches(distance);
+		default:
+			LOG_FATAL_THROW("Unsupported unit system");
+		}
+	}
+
+	/**
+	 * @brief Convert a speed in the currently displayed units to the units used by the Duet
+	 * @param speed value displayed in the UI, as calculated by `convertSpeedToCurrentDisplayedUnit()`
+	 * @return the speed in `units/min` used by the Duet
+	 */
+	float convertDisplayedSpeedToDuetUnits(float speed)
+	{
+		UnitSystem display_units = getCurrentDisplayedUnitSystem();
+		UnitSystem duet_units = getCurrentDuetUnitSystem();
+
+		if (display_units == UnitSystem::Metric)
+		{
+			/* metric is mm/s which needs to be converted to mm/min */
+			speed *= 60;
+		}
+
+		if (display_units == duet_units)
+		{
+			return speed;
+		}
+		switch (duet_units)
+		{
+		case UnitSystem::Metric:
+			return inchesToMm(speed); // convert inches/min to mm/min
+		case UnitSystem::Imperial:
+			return mmToInches(speed); // convert mm/min to inches/min
+		default:
+			LOG_FATAL_THROW("Unsupported unit system");
+		}
+	}
+
+	float inchesToMm(float inches)
+	{
+		return inches * 25.4f;
+	}
+
+	float mmToInches(float mm)
+	{
+		return mm / 25.4f;
+	}
+} // namespace Units

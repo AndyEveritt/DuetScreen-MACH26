@@ -232,6 +232,25 @@ bool MoveSubscribers::compensationFile(Comm::JsonDecoder* decoder, const char* d
 	return true;
 }
 
+bool MoveSubscribers::distanceUnit(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	LOG_DBG("New distance unit: {:s}, channel: {:d}", data, indices[0]);
+	if (strcmp(data, "mm") == 0)
+	{
+		OM::Move::SetDistanceUnit(indices[0], Units::UnitSystem::Metric);
+	}
+	else if (strcmp(data, "in") == 0)
+	{
+		OM::Move::SetDistanceUnit(indices[0], Units::UnitSystem::Imperial);
+	}
+	else
+	{
+		LOG_ERROR("Unknown distance unit: {:s}", data);
+		return false;
+	}
+	return true;
+}
+
 bool MoveSubscribers::axesArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	OM::Move::RemoveAxis(indices[0], true);

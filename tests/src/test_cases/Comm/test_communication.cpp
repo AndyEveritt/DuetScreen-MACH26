@@ -55,6 +55,9 @@ TEST_F(TestCommunication, SendNext)
 	EXPECT_STREQ(Comm::g_currentReqSeq->key, "fans");
 
 	EXPECT_TRUE(Comm::sendNext());
+	EXPECT_STREQ(Comm::g_currentReqSeq->key, "inputs");
+
+	EXPECT_TRUE(Comm::sendNext());
 	EXPECT_STREQ(Comm::g_currentReqSeq->key, "job");
 
 	EXPECT_TRUE(Comm::sendNext());

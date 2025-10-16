@@ -12,8 +12,6 @@ namespace UI
 		PRESENTER_CONSTRUCTOR(TemperaturePresenter, TemperatureView)
 
 		// Actions
-		void retract(uint32_t distance, uint32_t feedrate);
-		void extrude(uint32_t distance, uint32_t feedrate);
 		void updateFilamentList();
 
 		void toggleToolState(size_t index);

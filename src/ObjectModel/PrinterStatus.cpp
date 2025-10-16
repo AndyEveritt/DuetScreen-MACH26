@@ -16,6 +16,7 @@ namespace OM
 {
 	static std::string s_printerName;
 	static PrinterStatus s_status = PrinterStatus::connecting;
+	static uint32_t s_channelIndex = 0;
 
 	bool IsPrintingStatus(OM::PrinterStatus status)
 	{
@@ -90,5 +91,16 @@ namespace OM
 	void SetPrinterName(const char* name)
 	{
 		s_printerName = name;
+	}
+
+	uint32_t GetChannelIndex()
+	{
+		return s_channelIndex;
+	}
+
+	void SetChannelIndex(uint32_t index)
+	{
+		LOG_DBG("Setting input channel index to {:d}", index);
+		s_channelIndex = index;
 	}
 } // namespace OM

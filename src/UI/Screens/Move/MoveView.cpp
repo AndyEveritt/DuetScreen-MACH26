@@ -4,8 +4,8 @@
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
-#include "utils/Format.h"
 #include "utils/StorageHelper.h"
+#include "utils/UnitSystem.h"
 
 namespace UI
 {
@@ -133,7 +133,7 @@ namespace UI
 			[this](size_t index, float distance)
 			{
 				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude.distance_header", Format::getDistanceUnit()));
+				m_numberpad.setHeader(_("extrude.distance_header", Units::getDisplayedDistanceUnit()));
 				m_numberpad.setValue(distance);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(1000);
@@ -144,7 +144,7 @@ namespace UI
 			[this](size_t index, float feedrate)
 			{
 				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude.feedrate_header", Format::getSpeedUnit()));
+				m_numberpad.setHeader(_("extrude.feedrate_header", Units::getDisplayedSpeedUnit()));
 				m_numberpad.setValue(feedrate);
 				m_numberpad.setMinValue(0);
 				m_numberpad.setMaxValue(100); // mm/s
@@ -170,7 +170,7 @@ namespace UI
 		assert(s_currentDistanceIndex < ARRAY_SIZE(s_distances));
 
 		m_distances.addStyle(Themes::getLvglStyles().no_border);
-		m_distances.setTitle(_("move.distance"));
+		m_distances.setTitle(_("move.distance", Units::getDisplayedDistanceUnit()));
 		m_distances.setHeight(LV_SIZE_CONTENT);
 		m_distances.setFlexGrow(1);
 		m_distances.setListSize(LV_PCT(100), LV_SIZE_CONTENT);

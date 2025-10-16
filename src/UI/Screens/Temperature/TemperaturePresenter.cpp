@@ -5,19 +5,10 @@
 #include "ObjectModel/Tool.h"
 #include "TemperatureView.h"
 #include "i18n/i18n.h"
+#include "utils/UnitSystem.h"
 
 namespace UI
 {
-	void TemperaturePresenter::retract(uint32_t distance, uint32_t feedrate)
-	{
-		Comm::DUET.SendGcodef("G1 E-{:d} F{:d}\n", distance, feedrate * 60);
-	}
-
-	void TemperaturePresenter::extrude(uint32_t distance, uint32_t feedrate)
-	{
-		Comm::DUET.SendGcodef("G1 E{:d} F{:d}\n", distance, feedrate * 60);
-	}
-
 	void TemperaturePresenter::newToolData()
 	{
 		MODEL_LOCK();

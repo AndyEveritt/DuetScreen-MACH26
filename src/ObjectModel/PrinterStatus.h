@@ -8,6 +8,7 @@
 #ifndef SRC_OBJECTMODEL_PRINTERSTATUS_HPP_
 #define SRC_OBJECTMODEL_PRINTERSTATUS_HPP_
 
+#include <cstdint>
 #include <string>
 
 namespace OM
@@ -69,6 +70,9 @@ namespace OM
 	void SetStatus(const PrinterStatus status);
 	const std::string& GetPrinterName();
 	void SetPrinterName(const char* name);
+
+	uint32_t GetChannelIndex();
+	void SetChannelIndex(uint32_t index);
 } // namespace OM
 
 #endif /* SRC_OBJECTMODEL_PRINTERSTATUS_HPP_ */

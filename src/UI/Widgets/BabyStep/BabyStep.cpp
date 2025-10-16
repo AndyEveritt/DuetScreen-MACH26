@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
+#include "utils/UnitSystem.h"
 
 namespace UI
 {
@@ -37,6 +38,6 @@ namespace UI
 
 	void BabyStep::setBabyStepValue(float value)
 	{
-		m_buttonPanel.setResetLabel(_("babystep.reset", value));
+		m_buttonPanel.setResetLabel(_("babystep.reset", value, Units::getDisplayedDistanceUnit()));
 	}
 } // namespace UI

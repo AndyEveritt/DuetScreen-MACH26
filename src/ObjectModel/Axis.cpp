@@ -9,7 +9,9 @@
 
 #include "Configuration.h"
 #include "Hardware/Duet.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Tool.h"
+#include "utils/UnitSystem.h"
 #include <Duet3D/General/Vector.h>
 #include <math.h>
 
@@ -30,6 +32,7 @@ namespace OM::Move
 	static uint32_t s_printingAcceleration = 0;
 	static Kinematics s_kinematics;
 	static bool s_noMovesBeforeHoming;
+	static std::vector<Units::UnitSystem> s_distanceUnit(14, {Units::UnitSystem::Metric});
 
 	void Axis::Reset()
 	{
@@ -50,16 +53,34 @@ namespace OM::Move
 		Comm::DUET.SendGcodef("G28 {:s}\n", letter);
 	}
 
+	/**
+	 * @brief Send a G1 command to move this axis to an absolute position
+	 * @param position position to move to in currently displayed units
+	 * @param feedrate value in currently displayed units
+	 *
+	 * @note M120 and M121 are used to ensure the movement state is restored after this command
+	 */
 	void Axis::MoveAbsolute(float position, uint32_t feedrate)
 	{
-		feedrate = feedrate * 60;
-		Comm::DUET.SendGcodef("M120\nG90\nG1 {:s}{:g} F{:d}\nM121\n", letter, position, feedrate);
+		Comm::DUET.SendGcodef("M120\nG90\nG1 {:s}{:g} F{:g}\nM121\n",
+							  letter,
+							  Units::convertDisplayedDistanceToDuetUnits(position),
+							  Units::convertDisplayedSpeedToDuetUnits(feedrate));
 	}
 
+	/**
+	 * @brief Send a G1 command to move this axis a relative amount
+	 * @param distance distance to move in currently displayed units
+	 * @param feedrate value in currently displayed units
+	 *
+	 * @note M120 and M121 are used to ensure the movement state is restored after this command
+	 */
 	void Axis::MoveRelative(float distance, uint32_t feedrate)
 	{
-		feedrate = feedrate * 60;
-		Comm::DUET.SendGcodef("M120\nG91\nG1 {:s}{:g} F{:d}\nM121\n", letter, distance, feedrate);
+		Comm::DUET.SendGcodef("M120\nG91\nG1 {:s}{:g} F{:g}\nM121\n",
+							  letter,
+							  Units::convertDisplayedDistanceToDuetUnits(distance),
+							  Units::convertDisplayedSpeedToDuetUnits(feedrate));
 	}
 
 	std::vector<AxisPtr> GetAxes(const bool includeHidden)
@@ -415,5 +436,35 @@ namespace OM::Move
 	const Kinematics& GetKinematics()
 	{
 		return s_kinematics;
+	}
+
+	/**
+	 * @brief Send a G1 command to extrude a relative amount
+	 * @param distance distance to extrude in currently displayed units
+	 * @param feedrate value in currently displayed units
+	 *
+	 * @note M120 and M121 are used to ensure the movement state is restored after this command
+	 */
+	void Extrude(float distance, float feedrate)
+	{
+		Comm::DUET.SendGcodef("M120\nM83\nG1 E{:g} F{:g}\nM121\n",
+							  Units::convertDisplayedDistanceToDuetUnits(distance),
+							  Units::convertDisplayedSpeedToDuetUnits(feedrate));
+	}
+
+	Units::UnitSystem GetCurrentDistanceUnit()
+	{
+		auto index = OM::GetChannelIndex();
+		if (index >= s_distanceUnit.size())
+			return Units::UnitSystem::Metric;
+		return s_distanceUnit[index];
+	}
+
+	void SetDistanceUnit(size_t index, Units::UnitSystem unit)
+	{
+		if (index >= s_distanceUnit.size())
+			s_distanceUnit.resize(index + 1, Units::UnitSystem::Metric);
+
+		s_distanceUnit[index] = unit;
 	}
 } // namespace OM::Move

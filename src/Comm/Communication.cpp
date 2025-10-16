@@ -37,7 +37,7 @@
 #define FETCH_DIRECTORIES (1)
 #define FETCH_FANS (1)
 #define FETCH_HEAT (1)
-#define FETCH_INPUTS (0)
+#define FETCH_INPUTS (1)
 #define FETCH_JOB (1)
 #define FETCH_MOVE (1)
 #define FETCH_NETWORK (1)

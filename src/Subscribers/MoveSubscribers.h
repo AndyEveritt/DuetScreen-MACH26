@@ -32,6 +32,7 @@ class MoveSubscribers : public SubscriberMap
 		addSubscriber("move:currentMove:topSpeed", currentMoveTopSpeed);
 		addSubscriber("move:currentMove:extrusionRate", currentMoveExtrusionRate);
 		addSubscriber("move:compensation:file", compensationFile);
+		addSubscriber("inputs^:distanceUnit", distanceUnit);
 
 		addArrayEndSubscriber("move:axes^", axesArrayEnd);
 		addArrayEndSubscriber("move:extruders^", extrudersArrayEnd);
@@ -63,6 +64,7 @@ class MoveSubscribers : public SubscriberMap
 	static bool currentMoveTopSpeed(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool currentMoveExtrusionRate(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool compensationFile(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
+	static bool distanceUnit(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 
 	static bool axesArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]);
 	static bool extrudersArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]);

@@ -948,6 +948,7 @@ namespace Comm
 				LOG_INFO("Connected to Duet in SBC mode");
 			}
 			LOG_INFO("rr_connect succeeded");
+			OM::SetChannelIndex(0);	// state.thisInput is not returned by `rr_model` so manually set here
 			ret = true;
 			break;
 		}

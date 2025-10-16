@@ -8,6 +8,7 @@
 #include "AxisJogList.h"
 #include "Debug.h"
 #include "i18n/i18n.h"
+#include "utils/UnitSystem.h"
 
 namespace UI
 {
@@ -188,8 +189,8 @@ namespace UI
 		m_toolPositionLabel.setFlexGrow(5);
 		m_machinePositionLabel.setFlexGrow(5);
 
-		m_toolPositionLabel.setText(_("move.tool_position"));
-		m_machinePositionLabel.setText(_("move.machine_position"));
+		m_toolPositionLabel.setText(_("move.tool_position", Units::getDisplayedDistanceUnit()));
+		m_machinePositionLabel.setText(_("move.machine_position", Units::getDisplayedDistanceUnit()));
 
 		m_toolPositionLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_machinePositionLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);

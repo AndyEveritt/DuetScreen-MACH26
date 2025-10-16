@@ -41,7 +41,7 @@ static inline const std::string& _(std::string_view tag)
 
 template <typename... Args>
 	requires(sizeof...(Args) > 0)
-static inline std::string _(std::string_view tag, Args&&... args)
+std::string _(std::string_view tag, Args&&... args)
 {
 	/* Requires `#include "Debug.h"` before `#include "i18n/i18n.h"` */
 	LOG_DBG("Formatting translation tag '{:s}' with {} arguments", tag, sizeof...(Args));

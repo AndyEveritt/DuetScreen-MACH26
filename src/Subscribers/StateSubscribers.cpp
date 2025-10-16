@@ -179,3 +179,11 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 	Model::get().post<EventType::Time>();
 	return true;
 }
+
+bool StateSubscribers::inputChannel(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	/* This will not be triggered by a `rr_model` HTTP request,
+	 * it needs to be requested explicitly with `M409 K"state" F"vn"` */
+	OM::SetChannelIndex(data);
+	return true;
+}

@@ -24,6 +24,7 @@ class StateSubscribers : public SubscriberMap
 		addSubscriber("state:messageBox:cancelButton", messageBoxCancelButton);
 		addSubscriber("state:messageBox:choices^", messageBoxChoices);
 		addSubscriber("state:time", time);
+		addSubscriber("state:thisInput", inputChannel);
 	}
 
   private:
@@ -44,4 +45,5 @@ class StateSubscribers : public SubscriberMap
 	static bool messageBoxCancelButton(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[]);
 	static bool messageBoxChoices(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool time(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
+	static bool inputChannel(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 };

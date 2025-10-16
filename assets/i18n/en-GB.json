@@ -50,7 +50,7 @@
       "header": "Baby Stepping",
       "decrement": "-",
       "increment": "+",
-      "reset": "Reset {:g}mm"
+      "reset": "Reset {:g} {:s}"
     },
     "console": { /* Console screen */
       "input_placeholder": "Enter G-code command"
@@ -142,11 +142,11 @@
       "mesh_bed_level": "Mesh Bed Level",
       "true_bed_level": "True Bed Level",
       "axis_home": "Home {:s}",
-      "distance": "Move Distance (mm)",
+      "distance": "Move Distance ({:s})",
       "disable_motors": "Disable Motors",
-      "machine_position": "Machine Pos (mm)",
+      "machine_position": "Machine Pos ({:s})",
       "set_position": "Set absolute position for axis {:c}",
-      "tool_position": "Tool Pos (mm)"
+      "tool_position": "Tool Pos ({:s})"
     },
     "settings": { /* Settings screen */
       "brightness": "Brightness",
