@@ -269,7 +269,7 @@ namespace UI
 			if (axis.letter == 'X')
 			{
 				has_x = true;
-				m_xyControl.setXPosition(axis.position);
+				m_xyControl.setXPosition(Units::convertDistanceToCurrentDisplayedUnit(axis.position));
 				m_xyControl.setXHomed(axis.homed);
 				m_xyControl.setXHomeDisabled(axis.home_disabled);
 				m_xyControl.setXJogDisabled(axis.jog_disabled);
@@ -277,7 +277,7 @@ namespace UI
 			else if (axis.letter == 'Y')
 			{
 				has_y = true;
-				m_xyControl.setYPosition(axis.position);
+				m_xyControl.setYPosition(Units::convertDistanceToCurrentDisplayedUnit(axis.position));
 				m_xyControl.setYHomed(axis.homed);
 				m_xyControl.setYHomeDisabled(axis.home_disabled);
 				m_xyControl.setYJogDisabled(axis.jog_disabled);
@@ -285,7 +285,7 @@ namespace UI
 			else if (axis.letter == 'Z')
 			{
 				has_z = true;
-				m_zControl.setAxisPosition(axis.position);
+				m_zControl.setAxisPosition(Units::convertDistanceToCurrentDisplayedUnit(axis.position));
 				m_zControl.setAxisHomed(axis.homed);
 				m_zControl.setHomeDisabled(axis.home_disabled);
 				m_zControl.setJogDisabled(axis.jog_disabled);
@@ -344,7 +344,7 @@ namespace UI
 			const MovePresenter::AxisData& data = axis_data_excluding_xyz[i];
 			auto control = m_genericAxisControls.getItem(i);
 			control->setAxisLetter(data.letter);
-			control->setAxisPosition(data.position);
+			control->setAxisPosition(Units::convertDistanceToCurrentDisplayedUnit(data.position));
 			control->setAxisHomed(data.homed);
 			control->setHomeDisabled(data.home_disabled);
 			control->setJogDisabled(data.jog_disabled);

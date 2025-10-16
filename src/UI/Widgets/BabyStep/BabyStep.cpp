@@ -30,7 +30,7 @@ namespace UI
 		setBabyStepValue(0);
 		m_buttonPanel.setIncrementLabel(_("babystep.increment"));
 		m_buttonPanel.setDecrementLabel(_("babystep.decrement"));
-		m_buttonPanel.setValueLabelFmt("{:g}mm");
+		m_buttonPanel.setValueLabelFmt("{:g} mm");
 		m_buttonPanel.setIncrementValues({0.01f, 0.05f});
 		m_buttonPanel.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
 		m_buttonPanel.setResetCallback([this]() { m_presenter->resetBabystep(); });
@@ -38,6 +38,6 @@ namespace UI
 
 	void BabyStep::setBabyStepValue(float value)
 	{
-		m_buttonPanel.setResetLabel(_("babystep.reset", value, Units::getDisplayedDistanceUnit()));
+		m_buttonPanel.setResetLabel(_("babystep.reset", value));
 	}
 } // namespace UI

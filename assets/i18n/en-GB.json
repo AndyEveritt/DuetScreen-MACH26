@@ -50,7 +50,7 @@
       "header": "Baby Stepping",
       "decrement": "-",
       "increment": "+",
-      "reset": "Reset {:g} {:s}"
+      "reset": "Reset {:g} mm"
     },
     "console": { /* Console screen */
       "input_placeholder": "Enter G-code command"

@@ -10,6 +10,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/Axis.h"
+#include "utils/UnitSystem.h"
 
 namespace UI
 {
