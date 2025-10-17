@@ -18,6 +18,8 @@ sudo apt-get install -y \
     imagemagick \
     python3-tk \
     gcovr \
+    libfreetype6 \
+    libfreetype-dev
 
 python3 -m venv env
 source env/bin/activate
