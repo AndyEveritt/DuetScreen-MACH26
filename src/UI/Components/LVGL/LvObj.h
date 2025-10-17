@@ -91,6 +91,10 @@ namespace UI
 		LvObj(const LvObj&) = delete;
 		LvObj& operator=(const LvObj&) = delete;
 
+		/* Move constructor and assignment operator */
+		LvObj(LvObj&&) noexcept = default;
+		LvObj& operator=(LvObj&&) noexcept = default;
+
 		static LvObj* fromPtr(lv_obj_t* obj);
 
 		virtual ~LvObj();
@@ -200,6 +204,9 @@ namespace UI
 		void setStyleRecolor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleRecolorOpa(lv_opa_t opa, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector = LV_PART_MAIN);
+		void setStyleFont(lv_font_t* font, lv_style_selector_t selector = LV_PART_MAIN);
+
+		/* Events */
 
 		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
 		bool removeEvent(size_t index);

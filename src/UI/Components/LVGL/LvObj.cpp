@@ -81,10 +81,10 @@ namespace UI
 	LvObj::~LvObj()
 	{
 		UI_LOCK();
-		LOG_VERBOSE("Deleting obj '{}' ({})", getName(), static_cast<const void*>(m_root));
-		if (getRoot() != nullptr)
+		if (getRootPtr() != nullptr)
 		{
-			lv_obj_delete(getRoot());
+			LOG_VERBOSE("Deleting obj '{}' ({})", getName(), static_cast<const void*>(getRootPtr()));
+			lv_obj_delete(getRootPtr());
 		}
 	}
 
@@ -96,7 +96,7 @@ namespace UI
 	lv_obj_t* LvObj::getScreenPtr() const
 	{
 		UI_LOCK();
-		return lv_obj_get_screen(getRoot());
+		return lv_obj_get_screen(getRootPtr());
 	}
 
 	LvObj* LvObj::getParent() const
@@ -107,7 +107,7 @@ namespace UI
 	lv_obj_t* LvObj::getParentPtr() const
 	{
 		UI_LOCK();
-		return lv_obj_get_parent(getRoot());
+		return lv_obj_get_parent(getRootPtr());
 	}
 
 	LvObj* LvObj::getChild(int32_t id) const
@@ -120,7 +120,7 @@ namespace UI
 	lv_obj_t* LvObj::getChildPtr(int32_t id) const
 	{
 		UI_LOCK();
-		return lv_obj_get_child(getRoot(), id);
+		return lv_obj_get_child(getRootPtr(), id);
 	}
 
 	/**
@@ -162,17 +162,17 @@ namespace UI
 	uint32_t LvObj::getChildCount() const
 	{
 		UI_LOCK();
-		return lv_obj_get_child_count(getRoot());
+		return lv_obj_get_child_count(getRootPtr());
 	}
 
 	layout_t LvObj::getLayout() const
 	{
 		UI_LOCK();
 		layout_t layout;
-		layout.x = lv_obj_get_x(getRoot());
-		layout.y = lv_obj_get_y(getRoot());
-		layout.w = lv_obj_get_width(getRoot());
-		layout.h = lv_obj_get_height(getRoot());
+		layout.x = lv_obj_get_x(getRootPtr());
+		layout.y = lv_obj_get_y(getRootPtr());
+		layout.w = lv_obj_get_width(getRootPtr());
+		layout.h = lv_obj_get_height(getRootPtr());
 
 		return layout;
 	}
@@ -196,74 +196,74 @@ namespace UI
 	{
 		UI_LOCK();
 		lv_area_t area;
-		lv_obj_get_coords(getRoot(), &area);
+		lv_obj_get_coords(getRootPtr(), &area);
 		return area;
 	}
 
 	lv_coord_t LvObj::getX() const
 	{
 		UI_LOCK();
-		return lv_obj_get_x(getRoot());
+		return lv_obj_get_x(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getY() const
 	{
 		UI_LOCK();
-		return lv_obj_get_y(getRoot());
+		return lv_obj_get_y(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getX2() const
 	{
 		UI_LOCK();
-		return lv_obj_get_x2(getRoot());
+		return lv_obj_get_x2(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getY2() const
 	{
 		UI_LOCK();
-		return lv_obj_get_y2(getRoot());
+		return lv_obj_get_y2(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getWidth() const
 	{
 		UI_LOCK();
-		return lv_obj_get_width(getRoot());
+		return lv_obj_get_width(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getHeight() const
 	{
 		UI_LOCK();
-		return lv_obj_get_height(getRoot());
+		return lv_obj_get_height(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getContentWidth() const
 	{
 		UI_LOCK();
-		return lv_obj_get_content_width(getRoot());
+		return lv_obj_get_content_width(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getContentHeight() const
 	{
 		UI_LOCK();
-		return lv_obj_get_content_height(getRoot());
+		return lv_obj_get_content_height(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getSelfWidth() const
 	{
 		UI_LOCK();
-		return lv_obj_get_self_width(getRoot());
+		return lv_obj_get_self_width(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getSelfHeight() const
 	{
 		UI_LOCK();
-		return lv_obj_get_self_height(getRoot());
+		return lv_obj_get_self_height(getRootPtr());
 	}
 
 	lv_style_value_t LvObj::getStyleProp(lv_style_prop_t prop, lv_part_t part) const
 	{
 		UI_LOCK();
-		return lv_obj_get_style_prop(getRoot(), part, prop);
+		return lv_obj_get_style_prop(getRootPtr(), part, prop);
 	}
 
 	void LvObj::setUserData(void* user_data)
@@ -281,37 +281,37 @@ namespace UI
 	void LvObj::setParent(LvObj& parent)
 	{
 		UI_LOCK();
-		lv_obj_set_parent(getRoot(), parent.getRootPtr());
+		lv_obj_set_parent(getRootPtr(), parent.getRootPtr());
 	}
 
 	void LvObj::setLayoutStyle(lv_layout_t style)
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getRoot(), style);
+		lv_obj_set_layout(getRootPtr(), style);
 	}
 
 	void LvObj::setFlexGrow(uint8_t grow)
 	{
 		UI_LOCK();
-		lv_obj_set_flex_grow(getRoot(), grow);
+		lv_obj_set_flex_grow(getRootPtr(), grow);
 	}
 
 	void LvObj::setFlexFlow(lv_flex_flow_t flow)
 	{
 		UI_LOCK();
-		lv_obj_set_flex_flow(getRoot(), flow);
+		lv_obj_set_flex_flow(getRootPtr(), flow);
 	}
 
 	void LvObj::setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid)
 	{
 		UI_LOCK();
-		lv_obj_set_flex_align(getRoot(), main, cross, mid);
+		lv_obj_set_flex_align(getRootPtr(), main, cross, mid);
 	}
 
 	void LvObj::setGridDsc(const int32_t col_dsc[], const int32_t row_dsc[])
 	{
 		UI_LOCK();
-		lv_obj_set_grid_dsc_array(getRoot(), col_dsc, row_dsc);
+		lv_obj_set_grid_dsc_array(getRootPtr(), col_dsc, row_dsc);
 	}
 
 	void LvObj::setGridCell(lv_obj_t* obj,
@@ -329,20 +329,20 @@ namespace UI
 	void LvObj::setLayout(layout_t layout)
 	{
 		UI_LOCK();
-		lv_obj_set_pos(getRoot(), lv_pct(layout.x), lv_pct(layout.y));
-		lv_obj_set_size(getRoot(), lv_pct(layout.w), lv_pct(layout.h));
+		lv_obj_set_pos(getRootPtr(), lv_pct(layout.x), lv_pct(layout.y));
+		lv_obj_set_size(getRootPtr(), lv_pct(layout.w), lv_pct(layout.h));
 	}
 
 	void LvObj::setWidth(lv_coord_t width)
 	{
 		UI_LOCK();
-		lv_obj_set_width(getRoot(), width);
+		lv_obj_set_width(getRootPtr(), width);
 	}
 
 	void LvObj::setHeight(lv_coord_t height)
 	{
 		UI_LOCK();
-		lv_obj_set_height(getRoot(), height);
+		lv_obj_set_height(getRootPtr(), height);
 	}
 
 	void LvObj::setSize(lv_coord_t width, lv_coord_t height)
@@ -355,43 +355,43 @@ namespace UI
 	void LvObj::setMinWidth(lv_coord_t width, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_min_width(getRoot(), width, selector);
+		lv_obj_set_style_min_width(getRootPtr(), width, selector);
 	}
 
 	void LvObj::setMinHeight(lv_coord_t height, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_min_height(getRoot(), height, selector);
+		lv_obj_set_style_min_height(getRootPtr(), height, selector);
 	}
 
 	void LvObj::setMaxWidth(lv_coord_t width, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_max_width(getRoot(), width, selector);
+		lv_obj_set_style_max_width(getRootPtr(), width, selector);
 	}
 
 	void LvObj::setMaxHeight(lv_coord_t height, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_max_height(getRoot(), height, selector);
+		lv_obj_set_style_max_height(getRootPtr(), height, selector);
 	}
 
 	void LvObj::setX(lv_coord_t x)
 	{
 		UI_LOCK();
-		lv_obj_set_x(getRoot(), x);
+		lv_obj_set_x(getRootPtr(), x);
 	}
 
 	void LvObj::setY(lv_coord_t y)
 	{
 		UI_LOCK();
-		lv_obj_set_y(getRoot(), y);
+		lv_obj_set_y(getRootPtr(), y);
 	}
 
 	void LvObj::setPos(lv_coord_t x, lv_coord_t y)
 	{
 		UI_LOCK();
-		lv_obj_set_pos(getRoot(), x, y);
+		lv_obj_set_pos(getRootPtr(), x, y);
 	}
 
 	static void lv_obj_set_flag(lv_obj_t* obj, lv_obj_flag_t flag, bool enable, bool recursive)
@@ -414,13 +414,13 @@ namespace UI
 	void LvObj::setFlag(lv_obj_flag_t flag, bool enable, bool recursive)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(getRoot(), flag, enable, recursive);
+		lv_obj_set_flag(getRootPtr(), flag, enable, recursive);
 	}
 
 	bool LvObj::hasFlag(lv_obj_flag_t flag) const
 	{
 		UI_LOCK();
-		return lv_obj_has_flag(getRoot(), flag);
+		return lv_obj_has_flag(getRootPtr(), flag);
 	}
 
 	static void lv_obj_set_state(lv_obj_t* obj, lv_state_t state, bool enable, bool recursive)
@@ -443,49 +443,49 @@ namespace UI
 	void LvObj::setState(lv_state_t state, bool enable, bool recursive)
 	{
 		UI_LOCK();
-		lv_obj_set_state(getRoot(), state, enable, recursive);
+		lv_obj_set_state(getRootPtr(), state, enable, recursive);
 	}
 
 	bool LvObj::hasState(lv_state_t state) const
 	{
 		UI_LOCK();
-		return lv_obj_has_state(getRoot(), state);
+		return lv_obj_has_state(getRootPtr(), state);
 	}
 
 	bool LvObj::hasStyleProp(lv_style_prop_t prop, lv_style_selector_t selector) const
 	{
 		UI_LOCK();
-		return lv_obj_has_style_prop(getRoot(), selector, prop);
+		return lv_obj_has_style_prop(getRootPtr(), selector, prop);
 	}
 
 	void LvObj::setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y)
 	{
 		UI_LOCK();
-		lv_obj_align(getRoot(), align, x, y);
+		lv_obj_align(getRootPtr(), align, x, y);
 	}
 
 	void LvObj::setLocalStyleProp(lv_style_prop_t prop, lv_style_value_t value, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_local_style_prop(getRoot(), prop, value, selector);
+		lv_obj_set_local_style_prop(getRootPtr(), prop, value, selector);
 	}
 
 	void LvObj::updateLayout()
 	{
 		UI_LOCK();
-		lv_obj_update_layout(getRoot());
+		lv_obj_update_layout(getRootPtr());
 	}
 
 	bool LvObj::refreshSelfSize()
 	{
 		UI_LOCK();
-		return lv_obj_refresh_self_size(getRoot());
+		return lv_obj_refresh_self_size(getRootPtr());
 	}
 
 	void LvObj::invalidate()
 	{
 		UI_LOCK();
-		lv_obj_invalidate(getRoot());
+		lv_obj_invalidate(getRootPtr());
 	}
 
 	static void __obj_set_ext_draw_size_cb(lv_event_t* e)
@@ -514,73 +514,73 @@ namespace UI
 	void LvObj::setExtClickArea(int32_t size)
 	{
 		UI_LOCK();
-		lv_obj_set_ext_click_area(getRoot(), size);
+		lv_obj_set_ext_click_area(getRootPtr(), size);
 	}
 
 	void LvObj::getClickArea(lv_area_t* area) const
 	{
 		UI_LOCK();
-		lv_obj_get_click_area(getRoot(), area);
+		lv_obj_get_click_area(getRootPtr(), area);
 	}
 
 	void LvObj::scrollBy(int32_t dx, int32_t dy, lv_anim_enable_t anim)
 	{
 		UI_LOCK();
-		lv_obj_scroll_by(getRoot(), dx, dy, anim);
+		lv_obj_scroll_by(getRootPtr(), dx, dy, anim);
 	}
 
 	void LvObj::scrollToX(lv_coord_t x, lv_anim_enable_t anim)
 	{
 		UI_LOCK();
-		lv_obj_scroll_to_x(getRoot(), x, anim);
+		lv_obj_scroll_to_x(getRootPtr(), x, anim);
 	}
 
 	void LvObj::scrollToY(lv_coord_t y, lv_anim_enable_t anim)
 	{
 		UI_LOCK();
-		lv_obj_scroll_to_y(getRoot(), y, anim);
+		lv_obj_scroll_to_y(getRootPtr(), y, anim);
 	}
 
 	void LvObj::setScrollDir(lv_dir_t dir)
 	{
 		UI_LOCK();
-		lv_obj_set_scroll_dir(getRoot(), dir);
+		lv_obj_set_scroll_dir(getRootPtr(), dir);
 	}
 
 	lv_coord_t LvObj::getScrollLeft() const
 	{
 		UI_LOCK();
-		return lv_obj_get_scroll_left(getRoot());
+		return lv_obj_get_scroll_left(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getScrollRight() const
 	{
 		UI_LOCK();
-		return lv_obj_get_scroll_right(getRoot());
+		return lv_obj_get_scroll_right(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getScrollTop() const
 	{
 		UI_LOCK();
-		return lv_obj_get_scroll_top(getRoot());
+		return lv_obj_get_scroll_top(getRootPtr());
 	}
 
 	lv_coord_t LvObj::getScrollBottom() const
 	{
 		UI_LOCK();
-		return lv_obj_get_scroll_bottom(getRoot());
+		return lv_obj_get_scroll_bottom(getRootPtr());
 	}
 
 	void LvObj::addStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
 	{
 		UI_LOCK();
-		lv_obj_add_style(getRoot(), style, selector, recursive);
+		lv_obj_add_style(getRootPtr(), style, selector, recursive);
 	}
 
 	void LvObj::removeStyle(const lv_style_t* style, const lv_style_selector_t selector, bool recursive)
 	{
 		UI_LOCK();
-		lv_obj_remove_style(getRoot(), style, selector, recursive);
+		lv_obj_remove_style(getRootPtr(), style, selector, recursive);
 	}
 
 	void LvObj::setStylePad(lv_coord_t pad, lv_style_selector_t selector, Padding type)
@@ -589,31 +589,31 @@ namespace UI
 		switch (type)
 		{
 		case Padding::ALL:
-			lv_obj_set_style_pad_all(m_root, pad, selector);
+			lv_obj_set_style_pad_all(getRootPtr(), pad, selector);
 			break;
 		case Padding::LEFT:
-			lv_obj_set_style_pad_left(m_root, pad, selector);
+			lv_obj_set_style_pad_left(getRootPtr(), pad, selector);
 			break;
 		case Padding::RIGHT:
-			lv_obj_set_style_pad_right(m_root, pad, selector);
+			lv_obj_set_style_pad_right(getRootPtr(), pad, selector);
 			break;
 		case Padding::TOP:
-			lv_obj_set_style_pad_top(m_root, pad, selector);
+			lv_obj_set_style_pad_top(getRootPtr(), pad, selector);
 			break;
 		case Padding::BOTTOM:
-			lv_obj_set_style_pad_bottom(m_root, pad, selector);
+			lv_obj_set_style_pad_bottom(getRootPtr(), pad, selector);
 			break;
 		case Padding::COLUMN:
-			lv_obj_set_style_pad_column(m_root, pad, selector);
+			lv_obj_set_style_pad_column(getRootPtr(), pad, selector);
 			break;
 		case Padding::ROW:
-			lv_obj_set_style_pad_row(m_root, pad, selector);
+			lv_obj_set_style_pad_row(getRootPtr(), pad, selector);
 			break;
 		case Padding::HORIZONTAL:
-			lv_obj_set_style_pad_hor(m_root, pad, selector);
+			lv_obj_set_style_pad_hor(getRootPtr(), pad, selector);
 			break;
 		case Padding::VERTICAL:
-			lv_obj_set_style_pad_ver(m_root, pad, selector);
+			lv_obj_set_style_pad_ver(getRootPtr(), pad, selector);
 			break;
 		default:
 			LOG_WARN("Unknown padding type");
@@ -624,93 +624,99 @@ namespace UI
 	void LvObj::setStyleBgColor(lv_color_t color, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_bg_color(getRoot(), color, selector);
+		lv_obj_set_style_bg_color(getRootPtr(), color, selector);
 	}
 
 	void LvObj::setStyleBgOpa(lv_opa_t opa, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_bg_opa(getRoot(), opa, selector);
+		lv_obj_set_style_bg_opa(getRootPtr(), opa, selector);
 	}
 
 	void LvObj::setStyleRecolor(lv_color_t color, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_recolor(getRoot(), color, selector);
+		lv_obj_set_style_recolor(getRootPtr(), color, selector);
 	}
 
 	void LvObj::setStyleRecolorOpa(lv_opa_t opa, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_recolor_opa(getRoot(), opa, selector);
+		lv_obj_set_style_recolor_opa(getRootPtr(), opa, selector);
 	}
 
 	void LvObj::setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector)
 	{
 		UI_LOCK();
-		lv_obj_set_style_text_align(getRoot(), align, selector);
+		lv_obj_set_style_text_align(getRootPtr(), align, selector);
+	}
+
+	void LvObj::setStyleFont(lv_font_t* font, lv_style_selector_t selector)
+	{
+		UI_LOCK();
+		lv_obj_set_style_text_font(getRootPtr(), font, selector);
 	}
 
 	lv_event_dsc_t* LvObj::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)
 	{
 		UI_LOCK();
-		return lv_obj_add_event_cb(getRoot(), cb, code, userData);
+		return lv_obj_add_event_cb(getRootPtr(), cb, code, userData);
 	}
 
 	bool LvObj::removeEvent(size_t index)
 	{
 		UI_LOCK();
-		return lv_obj_remove_event(getRoot(), index);
+		return lv_obj_remove_event(getRootPtr(), index);
 	}
 
 	uint32_t LvObj::removeEventCallback(lv_event_cb_t cb)
 	{
 		UI_LOCK();
-		return lv_obj_remove_event_cb(getRoot(), cb);
+		return lv_obj_remove_event_cb(getRootPtr(), cb);
 	}
 
 	uint32_t LvObj::removeEventCallbackWithUserData(lv_event_cb_t cb, void* userData)
 	{
 		UI_LOCK();
-		return lv_obj_remove_event_cb_with_user_data(getRoot(), cb, userData);
+		return lv_obj_remove_event_cb_with_user_data(getRootPtr(), cb, userData);
 	}
 
 	uint32_t LvObj::getEventCount()
 	{
 		UI_LOCK();
-		return lv_obj_get_event_count(getRoot());
+		return lv_obj_get_event_count(getRootPtr());
 	}
 
 	lv_result_t LvObj::sendEvent(lv_event_code_t code, void* param)
 	{
 		UI_LOCK();
-		return lv_obj_send_event(getRoot(), code, param);
+		return lv_obj_send_event(getRootPtr(), code, param);
 	}
 
 	void LvObj::moveToFront()
 	{
 		UI_LOCK();
-		lv_obj_move_foreground(getRoot());
+		lv_obj_move_foreground(getRootPtr());
 	}
 
 	void LvObj::moveToBack()
 	{
 		UI_LOCK();
-		lv_obj_move_background(getRoot());
+		lv_obj_move_background(getRootPtr());
 	}
 
 	void LvObj::moveToIndex(size_t index)
 	{
 		UI_LOCK();
-		lv_obj_move_to_index(getRoot(), index);
+		lv_obj_move_to_index(getRootPtr(), index);
 	}
 
 	void UI::LvObj::clearChildren()
 	{
 		UI_LOCK();
-		while (lv_obj_get_child_cnt(getRoot()) > 0)
+		while (lv_obj_get_child_cnt(getRootPtr()) > 0)
 		{
-			lv_obj_t* child = lv_obj_get_child(getRoot(), 0);
+			lv_obj_t* child = lv_obj_get_child(getRootPtr(), 0);
 			lv_obj_delete(child);
 		}
 	}
@@ -723,7 +729,7 @@ namespace UI
 	void LvObj::show(bool move_to_front)
 	{
 		UI_LOCK();
-		if (getRoot() == nullptr || m_showing)
+		if (getRootPtr() == nullptr || m_showing)
 		{
 			return;
 		}
@@ -764,7 +770,7 @@ namespace UI
 	void LvObj::hide(bool move_to_back)
 	{
 		UI_LOCK();
-		if (getRoot() == nullptr || m_hidding)
+		if (getRootPtr() == nullptr || m_hidding)
 		{
 			return;
 		}
