@@ -278,7 +278,7 @@ namespace OM::Move
 		RemoveExtruderAxis(0, true);
 		s_currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
 		s_kinematics.Reset();
-		SetSpeedFactor(100.0f);
+		SetSpeedFactor(1.0f);
 		SetCurrentMoveRequestedSpeed(0.0f);
 		SetCurrentMoveTopSpeed(0.0f);
 		SetExtrusionRate(0.0f);
