@@ -31,7 +31,7 @@ namespace UI
 	void LvArcLabel::setText(std::string_view text)
 	{
 		UI_LOCK();
-		lv_arclabel_set_text_fmt(getRoot(), "%.*s", (int)text.length(), text.data());
+		lv_arclabel_set_text_fmt(getRootPtr(), "%.*s", (int)text.length(), text.data());
 	}
 
 	/**
@@ -42,7 +42,7 @@ namespace UI
 	void LvArcLabel::setTextStatic(std::string_view text)
 	{
 		UI_LOCK();
-		lv_arclabel_set_text_static(getRoot(), text.data());
+		lv_arclabel_set_text_static(getRootPtr(), text.data());
 	}
 
 	/**
@@ -52,7 +52,7 @@ namespace UI
 	void LvArcLabel::setAngleStart(lv_value_precise_t start)
 	{
 		UI_LOCK();
-		lv_arclabel_set_angle_start(getRoot(), start);
+		lv_arclabel_set_angle_start(getRootPtr(), start);
 	}
 
 	/**
@@ -62,7 +62,7 @@ namespace UI
 	void LvArcLabel::setAngleSize(lv_value_precise_t size)
 	{
 		UI_LOCK();
-		lv_arclabel_set_angle_size(getRoot(), size);
+		lv_arclabel_set_angle_size(getRootPtr(), size);
 	}
 
 	/**
@@ -72,7 +72,7 @@ namespace UI
 	void LvArcLabel::setOffset(int32_t offset)
 	{
 		UI_LOCK();
-		lv_arclabel_set_offset(getRoot(), offset);
+		lv_arclabel_set_offset(getRootPtr(), offset);
 	}
 
 	/**
@@ -82,7 +82,7 @@ namespace UI
 	void LvArcLabel::setDir(lv_arclabel_dir_t dir)
 	{
 		UI_LOCK();
-		lv_arclabel_set_dir(getRoot(), dir);
+		lv_arclabel_set_dir(getRootPtr(), dir);
 	}
 
 	/**
@@ -93,7 +93,7 @@ namespace UI
 	void LvArcLabel::setRecolor(bool enable)
 	{
 		UI_LOCK();
-		lv_arclabel_set_recolor(getRoot(), enable);
+		lv_arclabel_set_recolor(getRootPtr(), enable);
 	}
 
 	/**
@@ -103,7 +103,7 @@ namespace UI
 	void LvArcLabel::setRadius(uint32_t radius)
 	{
 		UI_LOCK();
-		lv_arclabel_set_radius(getRoot(), radius);
+		lv_arclabel_set_radius(getRootPtr(), radius);
 	}
 
 	/**
@@ -113,7 +113,7 @@ namespace UI
 	void LvArcLabel::setCenterOffsetX(uint32_t x)
 	{
 		UI_LOCK();
-		lv_arclabel_set_center_offset_x(getRoot(), x);
+		lv_arclabel_set_center_offset_x(getRootPtr(), x);
 	}
 
 	/**
@@ -123,7 +123,7 @@ namespace UI
 	void LvArcLabel::setCenterOffsetY(uint32_t y)
 	{
 		UI_LOCK();
-		lv_arclabel_set_center_offset_y(getRoot(), y);
+		lv_arclabel_set_center_offset_y(getRootPtr(), y);
 	}
 
 	/**
@@ -133,7 +133,7 @@ namespace UI
 	void LvArcLabel::setTextVerticalAlign(lv_arclabel_text_align_t align)
 	{
 		UI_LOCK();
-		lv_arclabel_set_text_vertical_align(getRoot(), align);
+		lv_arclabel_set_text_vertical_align(getRootPtr(), align);
 	}
 
 	/**
@@ -143,7 +143,7 @@ namespace UI
 	void LvArcLabel::setTextHorizontalAlign(lv_arclabel_text_align_t align)
 	{
 		UI_LOCK();
-		lv_arclabel_set_text_horizontal_align(getRoot(), align);
+		lv_arclabel_set_text_horizontal_align(getRootPtr(), align);
 	}
 
 	/**
@@ -153,7 +153,7 @@ namespace UI
 	lv_value_precise_t LvArcLabel::getAngleStart() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_angle_start(getRoot());
+		return lv_arclabel_get_angle_start(getRootPtr());
 	}
 
 	/**
@@ -163,7 +163,7 @@ namespace UI
 	lv_value_precise_t LvArcLabel::getAngleSize() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_angle_size(getRoot());
+		return lv_arclabel_get_angle_size(getRootPtr());
 	}
 
 	/**
@@ -173,7 +173,7 @@ namespace UI
 	lv_arclabel_dir_t LvArcLabel::getDir() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_dir(getRoot());
+		return lv_arclabel_get_dir(getRootPtr());
 	}
 
 	/**
@@ -183,41 +183,41 @@ namespace UI
 	bool LvArcLabel::getRecolor() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_recolor(getRoot());
+		return lv_arclabel_get_recolor(getRootPtr());
 	}
 
 	/** Get the radius of the arc label. */
 	uint32_t LvArcLabel::getRadius() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_radius(getRoot());
+		return lv_arclabel_get_radius(getRootPtr());
 	}
 
 	/** Get the center offset x for an arc label object. */
 	uint32_t LvArcLabel::getCenterOffsetX() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_center_offset_x(getRoot());
+		return lv_arclabel_get_center_offset_x(getRootPtr());
 	}
 
 	/** Get the center offset y for an arc label object. */
 	uint32_t LvArcLabel::getCenterOffsetY() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_center_offset_y(getRoot());
+		return lv_arclabel_get_center_offset_y(getRootPtr());
 	}
 
 	/** Get the text vertical alignment for an arc label object. */
 	lv_arclabel_text_align_t LvArcLabel::getTextVerticalAlign() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_text_vertical_align(getRoot());
+		return lv_arclabel_get_text_vertical_align(getRootPtr());
 	}
 
 	/** Get the text horizontal alignment for an arc label object. */
 	lv_arclabel_text_align_t LvArcLabel::getTextHorizontalAlign() const
 	{
 		UI_LOCK();
-		return lv_arclabel_get_text_horizontal_align(getRoot());
+		return lv_arclabel_get_text_horizontal_align(getRootPtr());
 	}
 } // namespace UI

@@ -40,15 +40,15 @@ namespace UI
 		m_output.setCursorClickPos(false);
 
 		// Command List
-		lv_table_set_column_count(m_commandList, 2);
-		lv_table_set_column_width(m_commandList, 0, TABLE_GCODE_WIDTH);
-		lv_table_set_column_width(m_commandList, 1, TABLE_DESCRIPTION_WIDTH);
-		lv_table_set_row_count(m_commandList, Gcodes::getGcodeCount());
+		lv_table_set_column_count(m_commandList.getRootPtr(), 2);
+		lv_table_set_column_width(m_commandList.getRootPtr(), 0, TABLE_GCODE_WIDTH);
+		lv_table_set_column_width(m_commandList.getRootPtr(), 1, TABLE_DESCRIPTION_WIDTH);
+		lv_table_set_row_count(m_commandList.getRootPtr(), Gcodes::getGcodeCount());
 		for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
 		{
 			const gcode* g = Gcodes::getGcode(i);
-			lv_table_set_cell_value(m_commandList, i, 0, g->gcode.data());
-			lv_table_set_cell_value(m_commandList, i, 1, g->helpText.data());
+			lv_table_set_cell_value(m_commandList.getRootPtr(), i, 0, g->gcode.data());
+			lv_table_set_cell_value(m_commandList.getRootPtr(), i, 1, g->helpText.data());
 		}
 
 		// Input Area
@@ -96,15 +96,15 @@ namespace UI
 	void ConsoleView::clear()
 	{
 		UI_LOCK();
-		lv_textarea_set_text(m_input, "");
+		m_input.setText("");
 	}
 
-	void ConsoleView::addCommand(const char* resp)
+	void ConsoleView::addCommand(std::string_view resp)
 	{
-		addResponse(fmt::format("> {:s}", resp).c_str());
+		addResponse(fmt::format("> {:s}", resp));
 	}
 
-	void ConsoleView::addResponse(const char* resp)
+	void ConsoleView::addResponse(const std::string& resp)
 	{
 		m_output.addText(resp);
 		m_output.addChar('\n');
@@ -186,7 +186,7 @@ namespace UI
 	{
 		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
-		lv_obj_send_event(view->m_input, LV_EVENT_READY, view);
+		view->m_input.sendEvent(LV_EVENT_READY, view);
 	}
 
 	void ConsoleView::onClearEvent(lv_event_t* e)
@@ -205,15 +205,15 @@ namespace UI
 		{
 			uint32_t row;
 			uint32_t col;
-			lv_table_get_selected_cell(view->m_commandList, &row, &col);
+			lv_table_get_selected_cell(view->m_commandList.getRootPtr(), &row, &col);
 
-			const char* gcode = lv_table_get_cell_value(view->m_commandList, row, 0);
+			const char* gcode = lv_table_get_cell_value(view->m_commandList.getRootPtr(), row, 0);
 
 			if (gcode[0] == '\0')
 			{
 				return;
 			}
-			lv_textarea_set_text(view->m_input, gcode);
+			view->m_input.setText(gcode);
 		}
 	}
 
@@ -236,8 +236,8 @@ namespace UI
 		}
 		case LV_EVENT_VALUE_CHANGED:
 		{
-			lv_obj_scroll_to_y(view->m_commandList, 0, LV_ANIM_OFF);
-			std::string cmd = lv_textarea_get_text(view->m_input);
+			view->m_commandList.scrollToY(0, LV_ANIM_OFF);
+			std::string_view cmd = view->m_input.getText();
 			if (cmd.find_first_of(' ') == std::string::npos)
 			{
 				std::string upper_cmd;
@@ -252,21 +252,21 @@ namespace UI
 					const gcode* g = Gcodes::getGcode(i);
 					if (std::string(g->gcode).rfind(upper_cmd, 0) == 0)
 					{
-						lv_table_set_cell_value(view->m_commandList, index, 0, g->gcode.data());
-						lv_table_set_cell_value(view->m_commandList, index, 1, g->helpText.data());
+						lv_table_set_cell_value(view->m_commandList.getRootPtr(), index, 0, g->gcode.data());
+						lv_table_set_cell_value(view->m_commandList.getRootPtr(), index, 1, g->helpText.data());
 						index++;
 					}
 				}
 
-				lv_table_set_row_count(view->m_commandList, index);
+				lv_table_set_row_count(view->m_commandList.getRootPtr(), index);
 			}
 
 			break;
 		}
 		case LV_EVENT_READY:
 		{
-			const char* text = lv_textarea_get_text(view->m_input);
-			if (strlen(text) > 0)
+			std::string_view text = view->m_input.getText();
+			if (!text.empty())
 			{
 				view->m_presenter->sendGcode(text);
 			}
@@ -279,7 +279,7 @@ namespace UI
 
 		if (code == LV_EVENT_CANCEL)
 		{
-			lv_obj_add_flag(view->m_kb, LV_OBJ_FLAG_HIDDEN);
+			view->m_kb.hide();
 		}
 	}
 

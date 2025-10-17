@@ -469,7 +469,7 @@ namespace UI
 	std::shared_ptr<Button> ExtruderControl::createBaseListButton(size_t index, LvObj& parent)
 	{
 		UI_LOCK();
-		LOG_DBG("Creating base list button {} for {}", index, lv_obj_get_name(parent));
+		LOG_DBG("Creating base list button {:d} for {:s}", index, parent.getName());
 		auto btn = std::make_shared<Button>(fmt::format("{}", index), parent);
 		btn->setFlexGrow(1);
 		btn->setHeight(LV_SIZE_CONTENT);

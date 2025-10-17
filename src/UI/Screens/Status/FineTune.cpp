@@ -34,11 +34,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
-		{
-			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
-			lv_obj_set_height(child, LV_PCT(100));
-		}
+		iterateChildren([](size_t i, LvObj& child) { child.setHeight(LV_PCT(100)); });
 		m_babystep.setFlexGrow(2);
 		m_sliderCont.setFlexGrow(5);
 		m_keyboard.setFlexGrow(6);
@@ -70,7 +66,7 @@ namespace UI
 		m_numberPad.hide();
 
 		m_speed.setLabel(_("fine_tune.speed_factor"));
-		m_speed.setKeyboard(m_keyboard);
+		m_speed.setKeyboard(&m_keyboard);
 		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_speed.setRange(1, 200);
@@ -103,7 +99,7 @@ namespace UI
 								 {
 									 auto slider = std::make_shared<Slider>(fmt::format("{:d}", index), parent);
 									 slider->setSize(LV_PCT(100), LV_SIZE_CONTENT);
-									 slider->setKeyboard(m_keyboard);
+									 slider->setKeyboard(&m_keyboard);
 									 slider->setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 									 slider->setRange(0, 200);
 									 slider->setOutOfRangeMode(Slider::OutOfRange::UPPER);
@@ -121,7 +117,7 @@ namespace UI
 								auto slider = std::make_shared<Slider>(fmt::format("{:d}", index), parent);
 
 								slider->setSize(LV_PCT(100), LV_SIZE_CONTENT);
-								slider->setKeyboard(m_keyboard);
+								slider->setKeyboard(&m_keyboard);
 								slider->setFocusedCallback([this](bool focused) { showKeyboard(focused); });
 								slider->setValueChangedCallback([this, index](int32_t value)
 																{ m_presenter->setFanValue(index, value); });
@@ -176,7 +172,6 @@ namespace UI
 
 	void FineTune::showKeyboard(bool show)
 	{
-		UI_LOCK();
-		lv_obj_set_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN, !show);
+		m_keyboard.setVisible(show);
 	}
 } // namespace UI

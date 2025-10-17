@@ -19,84 +19,84 @@ namespace UI
 	void LvBar::setValue(int32_t value, lv_anim_enable_t anim)
 	{
 		UI_LOCK();
-		lv_bar_set_value(getRoot(), value, anim);
+		lv_bar_set_value(getRootPtr(), value, anim);
 	}
 
 	void LvBar::setStartValue(int32_t value, lv_anim_enable_t anim)
 	{
 		UI_LOCK();
-		lv_bar_set_start_value(getRoot(), value, anim);
+		lv_bar_set_start_value(getRootPtr(), value, anim);
 	}
 
 	void LvBar::setRange(int32_t min, int32_t max)
 	{
 		UI_LOCK();
-		lv_bar_set_range(getRoot(), min, max);
+		lv_bar_set_range(getRootPtr(), min, max);
 	}
 
 	void LvBar::setMinValue(int32_t min)
 	{
 		UI_LOCK();
-		lv_bar_set_min_value(getRoot(), min);
+		lv_bar_set_min_value(getRootPtr(), min);
 	}
 
 	void LvBar::setMaxValue(int32_t max)
 	{
 		UI_LOCK();
-		lv_bar_set_max_value(getRoot(), max);
+		lv_bar_set_max_value(getRootPtr(), max);
 	}
 
 	void LvBar::setMode(lv_bar_mode_t mode)
 	{
 		UI_LOCK();
-		lv_bar_set_mode(getRoot(), mode);
+		lv_bar_set_mode(getRootPtr(), mode);
 	}
 
 	void LvBar::setOrientation(lv_bar_orientation_t orientation)
 	{
 		UI_LOCK();
-		lv_bar_set_orientation(getRoot(), orientation);
+		lv_bar_set_orientation(getRootPtr(), orientation);
 	}
 
 	int32_t LvBar::getValue() const
 	{
 		UI_LOCK();
-		return lv_bar_get_value(getRoot());
+		return lv_bar_get_value(getRootPtr());
 	}
 
 	int32_t LvBar::getStartValue() const
 	{
 		UI_LOCK();
-		return lv_bar_get_start_value(getRoot());
+		return lv_bar_get_start_value(getRootPtr());
 	}
 
 	int32_t LvBar::getMinValue() const
 	{
 		UI_LOCK();
-		return lv_bar_get_min_value(getRoot());
+		return lv_bar_get_min_value(getRootPtr());
 	}
 
 	int32_t LvBar::getMaxValue() const
 	{
 		UI_LOCK();
-		return lv_bar_get_max_value(getRoot());
+		return lv_bar_get_max_value(getRootPtr());
 	}
 
 	lv_bar_mode_t LvBar::getMode() const
 	{
 		UI_LOCK();
-		return lv_bar_get_mode(getRoot());
+		return lv_bar_get_mode(getRootPtr());
 	}
 
 	lv_bar_orientation_t LvBar::getOrientation() const
 	{
 		UI_LOCK();
-		return lv_bar_get_orientation(getRoot());
+		return lv_bar_get_orientation(getRootPtr());
 	}
 
 	bool LvBar::isSymmetrical() const
 	{
 		UI_LOCK();
-		return lv_bar_is_symmetrical(getRoot());
+		return lv_bar_is_symmetrical(getRootPtr());
 	}
 } // namespace UI

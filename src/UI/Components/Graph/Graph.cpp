@@ -17,9 +17,9 @@ namespace UI
 
 	Graph::Graph(const std::string& name, LvObj& parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_chart(lv_chart_create(getRoot()))
-		, m_vScale(lv_scale_create(getRoot()))
-		, m_hScale(lv_scale_create(getRoot()))
+		, m_chart(lv_chart_create(getRootPtr()))
+		, m_vScale(lv_scale_create(getRootPtr()))
+		, m_hScale(lv_scale_create(getRootPtr()))
 		, m_legend("legend", getRoot())
 	{
 		init();
@@ -27,9 +27,9 @@ namespace UI
 
 	Graph::Graph(const std::string& name, LvObj& parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_chart(lv_chart_create(getRoot()))
-		, m_vScale(lv_scale_create(getRoot()))
-		, m_hScale(lv_scale_create(getRoot()))
+		, m_chart(lv_chart_create(getRootPtr()))
+		, m_vScale(lv_scale_create(getRootPtr()))
+		, m_hScale(lv_scale_create(getRootPtr()))
 		, m_legend("legend", getRoot())
 	{
 		init();
@@ -40,7 +40,6 @@ namespace UI
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 		m_columnDsc[0] = s_scaleSize;
 		m_columnDsc[1] = LV_GRID_FR(1);
 		m_columnDsc[2] = s_legendSize;
@@ -49,16 +48,16 @@ namespace UI
 		m_rowDsc[0] = LV_GRID_FR(1);
 		m_rowDsc[1] = s_scaleSize;
 		m_rowDsc[2] = LV_GRID_TEMPLATE_LAST;
-		lv_obj_set_grid_dsc_array(getRoot(), m_columnDsc, m_rowDsc);
+		setGridDsc(m_columnDsc, m_rowDsc);
 		lv_obj_set_grid_cell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_chart, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_legend, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_legend, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 
-		lv_obj_set_style_pad_top(getRoot(), 20, LV_PART_MAIN);
-		lv_obj_set_style_pad_right(getRoot(), 20, LV_PART_MAIN);
-		lv_obj_set_style_pad_left(getRoot(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_bottom(getRoot(), 5, LV_PART_MAIN);
+		lv_obj_set_style_pad_top(getRootPtr(), 20, LV_PART_MAIN);
+		lv_obj_set_style_pad_right(getRootPtr(), 20, LV_PART_MAIN);
+		lv_obj_set_style_pad_left(getRootPtr(), 10, LV_PART_MAIN);
+		lv_obj_set_style_pad_bottom(getRootPtr(), 5, LV_PART_MAIN);
 
 		// Chart
 		// Horizontal scale
@@ -76,7 +75,7 @@ namespace UI
 		lv_chart_set_update_mode(m_chart, LV_CHART_UPDATE_MODE_SHIFT);
 
 		// Legend
-		lv_obj_set_flex_flow(m_legend, LV_FLEX_FLOW_COLUMN);
+		m_legend.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		showLegend(true);
 	}
@@ -85,15 +84,8 @@ namespace UI
 	{
 		UI_LOCK();
 		m_columnDsc[2] = show ? s_legendSize : 0;
-		if (show)
-		{
-			lv_obj_remove_flag(m_legend, LV_OBJ_FLAG_HIDDEN);
-		}
-		else
-		{
-			lv_obj_add_flag(m_legend, LV_OBJ_FLAG_HIDDEN);
-		}
-		lv_obj_set_grid_dsc_array(getRoot(), m_columnDsc, m_rowDsc);
+		m_legend.setVisible(show);
+		setGridDsc(m_columnDsc, m_rowDsc);
 	}
 
 	Graph::range_t Graph::getXRange() const

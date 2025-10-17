@@ -108,11 +108,16 @@ namespace UI
 		 * @return Get the base container for the view
 		 */
 		inline lv_obj_t* getRootPtr() const { return m_root; }
-		operator lv_obj_t*() const { return getRootPtr(); }
+		explicit operator lv_obj_t*() const { return getRootPtr(); }
+
+		bool operator==(const LvObj& obj) const { return getRootPtr() == obj.getRootPtr(); }
+
+		bool isValid() const { return getRootPtr() != nullptr; }
 
 		/* XML */
 		static void registerWidgetXml();
 
+		lv_display_t* getDisplayPtr() const;
 		lv_obj_t* getScreenPtr() const;
 		LvObj* getParent() const;
 		lv_obj_t* getParentPtr() const;
@@ -135,6 +140,8 @@ namespace UI
 		lv_coord_t getSelfHeight() const;
 		lv_style_value_t getStyleProp(lv_style_prop_t prop, lv_part_t part = LV_PART_MAIN) const;
 
+		void iterateChildren(const std::function<void(size_t i, LvObj&)>& func);
+
 		void setUserData(void* user_data);
 		void* getUserData() const;
 
@@ -148,7 +155,7 @@ namespace UI
 		void setFlexFlow(lv_flex_flow_t flow);
 		void setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid);
 		void setGridDsc(const int32_t col_dsc[], const int32_t row_dsc[]);
-		void setGridCell(lv_obj_t* obj,
+		void setGridCell(LvObj& obj,
 						 lv_grid_align_t x_align,
 						 int32_t col_pos,
 						 int32_t col_span,

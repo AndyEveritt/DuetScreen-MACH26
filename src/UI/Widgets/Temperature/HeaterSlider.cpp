@@ -49,8 +49,8 @@ namespace UI
 		m_standbyTemperature.setFlag(LV_OBJ_FLAG_CLICKABLE, true);
 		m_activeTemperature.setExtClickArea(20);
 		m_standbyTemperature.setExtClickArea(20);
-		lv_obj_move_foreground(m_activeTemperature);
-		lv_obj_move_foreground(m_standbyTemperature);
+		m_activeTemperature.moveToFront();
+		m_standbyTemperature.moveToFront();
 
 		m_heaterName.addClickedCallback(onToggleStateEvent, this);
 
@@ -181,8 +181,7 @@ namespace UI
 		txt_area.y1 = 0;
 		txt_area.y2 = txt_size.y - 1;
 
-		lv_area_t indic_area;
-		lv_obj_get_coords(slider.m_currentTemperature, &indic_area);
+		lv_area_t indic_area = slider.m_currentTemperature.getCoords();
 		lv_area_set_width(&indic_area,
 						  lv_area_get_width(&indic_area) * slider.m_currentTempValue /
 							  (slider.m_maxTempValue - slider.m_minTempValue));
@@ -241,7 +240,8 @@ namespace UI
 		case LV_EVENT_PRESSED:
 		{
 			lv_indev_get_point(lv_indev_active(), &control.m_pressedPoint);
-			lv_obj_transform_point(label, &control.m_pressedPoint, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
+			lv_obj_transform_point(
+				label.getRootPtr(), &control.m_pressedPoint, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
 			float pct =
 				(float)(temperature - control.m_minTempValue) / (control.m_maxTempValue - control.m_minTempValue);
 
@@ -259,7 +259,7 @@ namespace UI
 
 			lv_point_t p;
 			lv_indev_get_point(indev, &p);
-			lv_obj_transform_point(label, &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
+			lv_obj_transform_point(label.getRootPtr(), &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
 
 			const int32_t range = control.m_maxTempValue - control.m_minTempValue;
 			const int32_t w = control.m_currentTemperature.getWidth();
@@ -283,7 +283,7 @@ namespace UI
 			// Set new target temperature
 			lv_point_t p;
 			lv_indev_get_point(lv_indev_active(), &p);
-			lv_obj_transform_point(label, &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
+			lv_obj_transform_point(label.getRootPtr(), &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
 
 			if (abs(p.x - control.m_pressedPoint.x) < 2)
 			{
@@ -332,8 +332,8 @@ namespace UI
 			lv_draw_triangle_dsc_t marker_dsc;
 			lv_draw_triangle_dsc_init(&marker_dsc);
 			marker_dsc.base.layer = layer;
-			marker_dsc.color = lv_obj_get_style_bg_color(label, LV_PART_INDICATOR);
-			marker_dsc.opa = lv_obj_get_style_bg_opa(label, LV_PART_INDICATOR);
+			marker_dsc.color = lv_obj_get_style_bg_color(label.getRootPtr(), LV_PART_INDICATOR);
+			marker_dsc.opa = lv_obj_get_style_bg_opa(label.getRootPtr(), LV_PART_INDICATOR);
 
 			lv_area_t label_area = label.getCoords();
 			lv_coord_t label_width = label.getWidth();
@@ -347,7 +347,7 @@ namespace UI
 			marker_area.x2 = marker_area.x1 + marker_width - 1;
 			const lv_coord_t marker_pos_x = label_area.x1 + label_width * pct / 100;
 			const lv_area_t bar_area = control.m_currentTemperature.getCoords();
-			const int32_t label_radius = lv_obj_get_style_radius(label, LV_PART_MAIN);
+			const int32_t label_radius = lv_obj_get_style_radius(label.getRootPtr(), LV_PART_MAIN);
 
 			marker_dsc.p[0].x = marker_pos_x;
 			marker_dsc.p[1].x = marker_pos_x + marker_width / 2;

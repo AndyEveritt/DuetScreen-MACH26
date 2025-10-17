@@ -199,7 +199,7 @@ namespace UI
 		case OM::Alert::Mode::NumberInt:
 		{
 			UI_LOCK();
-			lv_keyboard_set_mode(m_view->m_kb, LV_KEYBOARD_MODE_NUMBER);
+			m_view->m_kb.setMode(LV_KEYBOARD_MODE_NUMBER);
 			msgBox.setKeyboard(&m_view->m_kb);
 
 			if (alert.limits.numberInt.min > INT32_MIN)

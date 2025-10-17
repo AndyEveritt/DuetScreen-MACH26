@@ -14,7 +14,7 @@ namespace UI
 {
 	SettingsView::SettingsView(LvObj& parent)
 		: View("settings_view", parent, layout_t(0, 0, 100, 100))
-		, m_settingsList(lv_list_create(getRoot()))
+		, m_settingsList(lv_list_create(getRootPtr()))
 		, m_subWindow("sub_window", getRoot())
 		, m_keyboard("keyboard", getRoot())
 		, m_screenHeader(lv_list_add_text(m_settingsList, _("settings.screen_header").c_str()))
@@ -37,11 +37,10 @@ namespace UI
 		addStyle(Themes::getLvglStyles().bg_dark);
 
 		// Layout
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getRoot(), m_layoutColDsc, m_layoutRowDsc);
+		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_settingsList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_subWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_subWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
 
 		// List
 		lv_obj_set_user_data(m_duetSettings, &m_duetSettingsView);
@@ -59,7 +58,7 @@ namespace UI
 		m_hardwareTest.hide();
 
 		// Sub window
-		lv_obj_set_style_pad_all(m_subWindow, 0, LV_PART_MAIN);
+		m_subWindow.setStylePad(0);
 	}
 
 	void SettingsView::onWindowSelectEvent(lv_event_t* e)
@@ -84,34 +83,33 @@ namespace UI
 		view->m_currentSubView = subView;
 	}
 
-	void SettingsView::showKeyboard(bool show, lv_keyboard_mode_t mode, lv_obj_t* textArea)
+	void SettingsView::showKeyboard(bool show, lv_keyboard_mode_t mode, LvTextArea* textArea)
 	{
 		UI_LOCK();
 		if (show)
 		{
 			m_layoutRowDsc[1] = LV_GRID_FR(1);
-			lv_keyboard_set_mode(m_keyboard, mode);
-			lv_obj_remove_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
+			m_keyboard.setMode(mode);
 			setKeyboardTextArea(textArea);
 		}
 		else
 		{
 			m_layoutRowDsc[1] = 0;
 			setKeyboardTextArea(NULL);
-			lv_obj_add_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN);
 		}
+		m_keyboard.setVisible(show);
 	}
 
-	void SettingsView::setKeyboardTextArea(lv_obj_t* textArea)
+	void SettingsView::setKeyboardTextArea(LvTextArea* textArea)
 	{
 		UI_LOCK();
-		lv_keyboard_set_textarea(m_keyboard, textArea);
+		m_keyboard.setTextArea(textArea);
 	}
 
 	bool SettingsView::back()
 	{
 		UI_LOCK();
-		if (!lv_obj_has_flag(m_keyboard, LV_OBJ_FLAG_HIDDEN))
+		if (!m_keyboard.hasFlag(LV_OBJ_FLAG_HIDDEN))
 		{
 			showKeyboard(false);
 			return true;
@@ -154,9 +152,9 @@ namespace UI
 			return;
 		}
 
-		lv_obj_t* ta = (lv_obj_t*)lv_event_get_target(e);
+		LvTextArea* ta = static_cast<LvTextArea*>(LvObj::fromPtr(lv_event_get_target_obj(e)));
 		SettingsSubView* view = (SettingsSubView*)lv_event_get_user_data(e);
-		const char* acceptedChars = lv_textarea_get_accepted_chars(ta);
+		const char* acceptedChars = ta->getAcceptedChars();
 		lv_keyboard_mode_t mode = (!acceptedChars || strpbrk(acceptedChars, "abcdefghijklmnopqrstuvwxyz") != nullptr)
 									  ? LV_KEYBOARD_MODE_TEXT_LOWER
 									  : LV_KEYBOARD_MODE_NUMBER;
@@ -201,10 +199,10 @@ namespace UI
 		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
 		m_pollInterval.setValueChangedCallback([](int32_t value)
 											   { Comm::DUET.SetPollInterval(std::chrono::milliseconds(value)); });
-		m_pollInterval.setKeyboard(getMainSettingsView().getKeyboard());
+		m_pollInterval.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_pollInterval.setFocusedCallback(
 			[this](bool focused)
-			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_pollInterval.getInput()); });
+			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_pollInterval.getInput()); });
 
 		// Info Timeout
 		m_infoTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -214,10 +212,10 @@ namespace UI
 		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 		m_infoTimeout.setValueChangedCallback([](int32_t value)
 											  { StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)value); });
-		m_infoTimeout.setKeyboard(getMainSettingsView().getKeyboard());
+		m_infoTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_infoTimeout.setFocusedCallback(
 			[this](bool focused)
-			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_infoTimeout.getInput()); });
+			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_infoTimeout.getInput()); });
 	}
 
 	DuetSettingsView::UsbSettings::UsbSettings(DuetSettingsView& parent)
@@ -313,14 +311,14 @@ namespace UI
 
 	ScreenSettingsView::ScreenSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("screen", parent, mainSettingsView)
-		, m_firmwareVersion(lv_label_create(getRoot()))
-		, m_buildTime(lv_label_create(getRoot()))
+		, m_firmwareVersion(lv_label_create(getRootPtr()))
+		, m_buildTime(lv_label_create(getRootPtr()))
 		, m_language("language", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_usbMode("usb_mode", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_brightness("brightness", getRoot())
 		, m_screensaverTimeout("screensaver_timeout", getRoot())
-		, m_systemLogging(lv_checkbox_create(getRoot()))
-		, m_displayConnectedMessage(lv_checkbox_create(getRoot()))
+		, m_systemLogging(lv_checkbox_create(getRootPtr()))
+		, m_displayConnectedMessage(lv_checkbox_create(getRootPtr()))
 	{
 		UI_LOCK();
 
@@ -353,10 +351,10 @@ namespace UI
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_brightness.setValueChangedCallback([](uint32_t value) { DisplayHelper::setBrightness(value); });
 		m_brightness.setSendMode(Slider::SendMode::VALUE_CHANGED);
-		m_brightness.setKeyboard(getMainSettingsView().getKeyboard());
+		m_brightness.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_brightness.setFocusedCallback(
 			[this](bool focused)
-			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_brightness.getInput()); });
+			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_brightness.getInput()); });
 
 		// Screensaver Timeout
 		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -365,10 +363,12 @@ namespace UI
 		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
 													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-		m_screensaverTimeout.setKeyboard(getMainSettingsView().getKeyboard());
+		m_screensaverTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_screensaverTimeout.setFocusedCallback(
 			[this](bool focused)
-			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, m_screensaverTimeout.getInput()); });
+			{
+				getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_screensaverTimeout.getInput());
+			});
 
 		// System Logging
 		lv_checkbox_set_text(m_systemLogging, _("settings.system_logging").c_str());
@@ -451,23 +451,23 @@ namespace UI
 		, m_topBar("top_bar", getRoot())
 		, m_ipAddress("ip_address", m_topBar)
 		, m_refresh("refresh", m_topBar, _("settings.refresh"), layout_t{0, 0, 0, LV_SIZE_CONTENT})
-		, m_networkList(lv_table_create(getRoot()))
+		, m_networkList(lv_table_create(getRootPtr()))
 		, m_passwordWindow("password_msgbox", getRoot(), layout_t{0, 0, 80, LV_SIZE_CONTENT})
 		, m_passwordInput("password_input", m_passwordWindow.getBody(), layout_t(0, 0, 80, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		lv_obj_set_flex_flow(getRootPtr(), LV_FLEX_FLOW_COLUMN);
+		lv_obj_set_flex_align(getRootPtr(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
-		lv_obj_set_style_pad_all(m_topBar, 2, 0);
-		lv_obj_set_flex_flow(m_topBar, LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(m_topBar, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-		lv_obj_set_size(m_topBar, LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_flex_grow(m_ipAddress, 3);
-		lv_obj_set_flex_grow(m_refresh.getRoot(), 1);
-		lv_obj_set_height(m_ipAddress, LV_SIZE_CONTENT);
-		lv_label_set_text(m_ipAddress, _("settings.network_ip_address", "").c_str());
+		m_topBar.setStylePad(2);
+		m_topBar.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_topBar.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		m_topBar.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_ipAddress.setFlexGrow(3);
+		m_refresh.setFlexGrow(1);
+		m_ipAddress.setHeight(LV_SIZE_CONTENT);
+		m_ipAddress.setText(_("settings.network_ip_address", ""));
 
 		// Network List
 		lv_obj_set_flex_flow(m_networkList, LV_FLEX_FLOW_COLUMN);
@@ -489,11 +489,11 @@ namespace UI
 
 		// Password Window
 		m_passwordWindow.hide();
-		lv_obj_add_flag(m_passwordWindow, LV_OBJ_FLAG_FLOATING);
-		lv_obj_align(m_passwordWindow, LV_ALIGN_CENTER, 0, 0);
-		lv_obj_set_size(m_passwordWindow, LV_PCT(80), LV_SIZE_CONTENT);
-		lv_obj_set_flex_flow(m_passwordWindow, LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(m_passwordWindow, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_passwordWindow.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_passwordWindow.setAlign(LV_ALIGN_CENTER, 0, 0);
+		m_passwordWindow.setSize(LV_PCT(80), LV_SIZE_CONTENT);
+		m_passwordWindow.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_passwordWindow.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		m_passwordWindow.setTitle(_("settings.network_password_title"));
 		m_passwordWindow.setText("");
@@ -515,7 +515,7 @@ namespace UI
 	void NetworkSettingsView::setIpAddress(const std::string& ipAddress)
 	{
 		UI_LOCK();
-		lv_label_set_text(m_ipAddress, _("settings.network_ip_address", ipAddress).c_str());
+		m_ipAddress.setText(_("settings.network_ip_address", ipAddress));
 	}
 
 	void NetworkSettingsView::setEnabled(bool enabled)
@@ -574,7 +574,7 @@ namespace UI
 			view->m_passwordInput.showPassword(false);
 			view->m_passwordWindow.setText(ssid);
 			view->getMainSettingsView().showKeyboard(
-				true, LV_KEYBOARD_MODE_TEXT_LOWER, view->m_passwordInput.getTextArea());
+				true, LV_KEYBOARD_MODE_TEXT_LOWER, &view->m_passwordInput.getTextArea());
 			openModal(&view->m_passwordWindow);
 			return;
 		}
@@ -613,13 +613,13 @@ namespace UI
 
 	DeveloperSettingsView::DeveloperSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("developer_settings_view", parent, mainSettingsView)
-		, m_debugLevelCont(lv_obj_create(getRoot()))
+		, m_debugLevelCont(lv_obj_create(getRootPtr()))
 		, m_debugLevelLabel(lv_label_create(m_debugLevelCont))
 		, m_debugLevel(lv_dropdown_create(m_debugLevelCont))
 #if DEBUG_BORDERS
-		, m_debugBorders(lv_checkbox_create(getRoot()))
+		, m_debugBorders(lv_checkbox_create(getRootPtr()))
 #endif
-		, m_enableSSH(lv_checkbox_create(getRoot()))
+		, m_enableSSH(lv_checkbox_create(getRootPtr()))
 		, m_restart("developer_settings_restart", getRoot(), _("settings.restart"))
 		, m_eraseAndRestart("developer_settings_erase_and_restart", getRoot(), _("settings.erase_and_restart"))
 		, m_reboot("developer_settings_reboot", getRoot(), _("settings.reboot"))
@@ -654,9 +654,9 @@ namespace UI
 		lv_obj_add_event_cb(m_enableSSH, onEnableSSHEvent, LV_EVENT_VALUE_CHANGED, this);
 
 		// Power
-		lv_obj_set_height(m_restart.getRoot(), LV_SIZE_CONTENT);
-		lv_obj_set_height(m_eraseAndRestart.getRoot(), LV_SIZE_CONTENT);
-		lv_obj_set_height(m_reboot.getRoot(), LV_SIZE_CONTENT);
+		m_restart.setHeight(LV_SIZE_CONTENT);
+		m_eraseAndRestart.setHeight(LV_SIZE_CONTENT);
+		m_reboot.setHeight(LV_SIZE_CONTENT);
 		m_restart.addClickedCallback(onRestartEvent, this);
 		m_eraseAndRestart.addClickedCallback(onEraseAndRestartEvent, this);
 		m_reboot.addClickedCallback(onRebootEvent, this);

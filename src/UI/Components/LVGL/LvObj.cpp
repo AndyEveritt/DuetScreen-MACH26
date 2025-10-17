@@ -93,6 +93,12 @@ namespace UI
 		return m_name;
 	}
 
+	lv_display_t* LvObj::getDisplayPtr() const
+	{
+		UI_LOCK();
+		return lv_obj_get_display(getRootPtr());
+	}
+
 	lv_obj_t* LvObj::getScreenPtr() const
 	{
 		UI_LOCK();
@@ -266,6 +272,21 @@ namespace UI
 		return lv_obj_get_style_prop(getRootPtr(), part, prop);
 	}
 
+	void LvObj::iterateChildren(const std::function<void(size_t, LvObj&)>& func)
+	{
+		UI_LOCK();
+		uint32_t count = getChildCount();
+		for (uint32_t i = 0; i < count; i++)
+		{
+			LvObj* child = getChild(i);
+			if (child == nullptr)
+			{
+				continue;
+			}
+			func(i, *child);
+		}
+	}
+
 	void LvObj::setUserData(void* user_data)
 	{
 		UI_LOCK();
@@ -314,7 +335,7 @@ namespace UI
 		lv_obj_set_grid_dsc_array(getRootPtr(), col_dsc, row_dsc);
 	}
 
-	void LvObj::setGridCell(lv_obj_t* obj,
+	void LvObj::setGridCell(LvObj& obj,
 							lv_grid_align_t x_align,
 							int32_t col_pos,
 							int32_t col_span,
@@ -323,7 +344,7 @@ namespace UI
 							int32_t row_span)
 	{
 		UI_LOCK();
-		lv_obj_set_grid_cell(obj, x_align, col_pos, col_span, y_align, row_pos, row_span);
+		lv_obj_set_grid_cell(obj.getRootPtr(), x_align, col_pos, col_span, y_align, row_pos, row_span);
 	}
 
 	void LvObj::setLayout(layout_t layout)

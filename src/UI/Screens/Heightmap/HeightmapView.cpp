@@ -71,7 +71,7 @@ namespace UI
 		void setSelected(bool selected)
 		{
 			UI_LOCK();
-			lv_obj_set_state(getRoot(), LV_STATE_CHECKED, selected);
+			setState(LV_STATE_CHECKED, selected);
 			m_load.setText(selected ? _("heightmap.unload") : _("heightmap.load"));
 			m_load.setChecked(selected);
 		}
@@ -166,13 +166,15 @@ namespace UI
 		, m_meanError("mean_error", getRoot())
 		, m_stdDev("std_dev", getRoot())
 	{
-		lv_obj_set_size(getRoot(), LV_PCT(100), LV_SIZE_CONTENT);
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_ROW_WRAP);
-		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
+		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		for (size_t i = 0; i < getChildCount(); i++)
 		{
-			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
-			lv_obj_set_size(child, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+			auto child = getChild(i);
+			if (!child)
+				continue;
+			child->setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		}
 	}
 
@@ -204,8 +206,6 @@ namespace UI
 		m_heightmapList.addStyle(Themes::getLvglStyles().card);
 		m_statistics.addStyle(Themes::getLvglStyles().card);
 		m_renderMode.addStyle(Themes::getLvglStyles().card);
-
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
 
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
 		setGridCell(m_heightmap, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);

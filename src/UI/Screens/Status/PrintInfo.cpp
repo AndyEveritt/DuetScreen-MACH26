@@ -205,13 +205,13 @@ namespace UI
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
-		{
-			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
-			lv_obj_set_align(child, LV_ALIGN_LEFT_MID);
-			lv_obj_set_width(child, LV_PCT(100));
-			lv_obj_set_height(child, LV_SIZE_CONTENT);
-		}
+		iterateChildren(
+			[](size_t i, LvObj& child)
+			{
+				child.setAlign(LV_ALIGN_LEFT_MID);
+				child.setWidth(LV_PCT(100));
+				child.setHeight(LV_SIZE_CONTENT);
+			});
 
 		updateSpeed(0, 0);
 		updateSpeedMultiplier(0);

@@ -177,17 +177,17 @@ namespace UI
 			selectionVisible(true);
 			break;
 		case OM::Alert::Mode::NumberInt:
-			lv_textarea_set_accepted_chars(m_input, "+-0123456789");
+			m_input.setAcceptedChars("+-0123456789");
 			inputVisible(true);
 			okVisible(true);
 			break;
 		case OM::Alert::Mode::NumberFloat:
-			lv_textarea_set_accepted_chars(m_input, "+-0123456789.");
+			m_input.setAcceptedChars("+-0123456789.");
 			inputVisible(true);
 			okVisible(true);
 			break;
 		case OM::Alert::Mode::Text:
-			lv_textarea_set_accepted_chars(m_input, NULL);
+			m_input.setAcceptedChars(NULL);
 			inputVisible(true);
 			okVisible(true);
 			break;

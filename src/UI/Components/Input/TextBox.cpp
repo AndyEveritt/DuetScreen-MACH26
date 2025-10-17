@@ -34,7 +34,7 @@ namespace UI
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_ROW);
-		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		// Label
 		m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
@@ -56,9 +56,9 @@ namespace UI
 			[](lv_event_t* e)
 			{
 				UI_LOCK();
-				TextBox* tb = (TextBox*)lv_event_get_user_data(e);
+				TextBox* tb = static_cast<TextBox*>(lv_event_get_user_data(e));
 
-				bool passwordMode = lv_textarea_get_password_mode(tb->m_textArea);
+				bool passwordMode = tb->m_textArea.getPasswordModeEnabled();
 				tb->showPassword(passwordMode);
 				// lv_group_focus_obj(tb->m_textArea);
 			},

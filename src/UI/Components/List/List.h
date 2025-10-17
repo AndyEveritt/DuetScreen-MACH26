@@ -95,71 +95,21 @@ namespace UI
 
 		void setListPad(lv_coord_t pad, lv_style_selector_t selector = LV_PART_MAIN, Padding type = Padding::ALL)
 		{
-			UI_LOCK();
-			switch (type)
-			{
-			case Padding::ALL:
-				lv_obj_set_style_pad_all(m_listCont, pad, selector);
-				break;
-			case Padding::LEFT:
-				lv_obj_set_style_pad_left(m_listCont, pad, selector);
-				break;
-			case Padding::RIGHT:
-				lv_obj_set_style_pad_right(m_listCont, pad, selector);
-				break;
-			case Padding::TOP:
-				lv_obj_set_style_pad_top(m_listCont, pad, selector);
-				break;
-			case Padding::BOTTOM:
-				lv_obj_set_style_pad_bottom(m_listCont, pad, selector);
-				break;
-			case Padding::COLUMN:
-				lv_obj_set_style_pad_column(m_listCont, pad, selector);
-				break;
-			case Padding::ROW:
-				lv_obj_set_style_pad_row(m_listCont, pad, selector);
-				break;
-			case Padding::HORIZONTAL:
-				lv_obj_set_style_pad_hor(m_listCont, pad, selector);
-				break;
-			case Padding::VERTICAL:
-				lv_obj_set_style_pad_ver(m_listCont, pad, selector);
-				break;
-			default:
-				LOG_WARN("Unknown padding type");
-				break;
-			}
+			m_listCont.setStylePad(pad, selector, type);
 		}
 
-		void setListFlow(lv_flex_flow_t flow)
-		{
-			UI_LOCK();
-			m_listCont.setFlexFlow(flow);
-		}
+		void setListFlow(lv_flex_flow_t flow) { m_listCont.setFlexFlow(flow); }
 
-		void setListGrow(const uint8_t grow)
-		{
-			UI_LOCK();
-			m_listCont.setFlexGrow(grow);
-		}
+		void setListGrow(const uint8_t grow) { m_listCont.setFlexGrow(grow); }
 
 		void addListStyle(const lv_style_t* style, lv_style_selector_t selector = LV_PART_MAIN)
 		{
-			UI_LOCK();
 			m_listCont.addStyle(style, selector);
 		}
 
-		void setListSize(const lv_coord_t w, const lv_coord_t h)
-		{
-			UI_LOCK();
-			m_listCont.setSize(w, h);
-		}
+		void setListSize(const lv_coord_t w, const lv_coord_t h) { m_listCont.setSize(w, h); }
 
-		void clear()
-		{
-			UI_LOCK();
-			m_list.clear();
-		}
+		void clear() { m_list.clear(); }
 
 		TPtr addItem()
 		{

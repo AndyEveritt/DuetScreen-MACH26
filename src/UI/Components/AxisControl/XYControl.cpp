@@ -259,16 +259,16 @@ namespace UI
 		UI_LOCK();
 		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
 
-		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+		auto* target = LvObj::fromPtr(lv_event_get_target_obj(event));
 
-		if (target == control->m_xLabel)
+		if (target == &control->m_xLabel)
 		{
 			if (control->m_xLabelCallback)
 			{
 				control->m_xLabelCallback(control->m_xPosition);
 			}
 		}
-		else if (target == control->m_yLabel)
+		else if (target == &control->m_yLabel)
 		{
 			if (control->m_yLabelCallback)
 			{

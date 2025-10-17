@@ -77,11 +77,11 @@ namespace UI
 				int32_t parent_min_width = lv_obj_get_style_min_width(parent, LV_PART_MAIN);
 				int32_t parent_min_height = lv_obj_get_style_min_height(parent, LV_PART_MAIN);
 
-				uint8_t flex_grow = lv_obj_get_style_flex_grow(btn, LV_PART_MAIN);
-				int32_t width = lv_obj_get_style_width(btn, LV_PART_MAIN);
-				int32_t height = lv_obj_get_style_height(btn, LV_PART_MAIN);
-				int32_t min_width = lv_obj_get_style_min_width(btn, LV_PART_MAIN);
-				int32_t min_height = lv_obj_get_style_min_height(btn, LV_PART_MAIN);
+				uint8_t flex_grow = lv_obj_get_style_flex_grow(btn.getRootPtr(), LV_PART_MAIN);
+				int32_t width = lv_obj_get_style_width(btn.getRootPtr(), LV_PART_MAIN);
+				int32_t height = lv_obj_get_style_height(btn.getRootPtr(), LV_PART_MAIN);
+				int32_t min_width = lv_obj_get_style_min_width(btn.getRootPtr(), LV_PART_MAIN);
+				int32_t min_height = lv_obj_get_style_min_height(btn.getRootPtr(), LV_PART_MAIN);
 
 				if ((width != LV_SIZE_CONTENT && min_width != LV_SIZE_CONTENT) ||
 					(parent_layout == LV_LAYOUT_FLEX && parent_flex_flow == LV_FLEX_FLOW_ROW && flex_grow > 0))
@@ -120,8 +120,7 @@ namespace UI
 
 	void Button::addClickedCallback(lv_event_cb_t event_cb, void* user_data)
 	{
-		UI_LOCK();
-		lv_obj_add_event_cb(getRoot(), event_cb, LV_EVENT_CLICKED, user_data);
+		addEventCallback(event_cb, LV_EVENT_CLICKED, user_data);
 	}
 
 	void Button::setIcon(const char* icon_path)

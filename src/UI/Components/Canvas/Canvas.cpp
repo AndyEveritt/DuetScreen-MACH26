@@ -21,9 +21,9 @@ namespace UI
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
 		, m_title("title", getRoot())
-		, m_canvas(lv_canvas_create(getRoot()))
-		, m_vScale(lv_scale_create(getRoot()))
-		, m_hScale(lv_scale_create(getRoot()))
+		, m_canvas(lv_canvas_create(getRootPtr()))
+		, m_vScale(lv_scale_create(getRootPtr()))
+		, m_hScale(lv_scale_create(getRootPtr()))
 	{
 		init();
 	}
@@ -33,9 +33,9 @@ namespace UI
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
 		, m_title("title", getRoot())
-		, m_canvas(lv_canvas_create(getRoot()))
-		, m_vScale(lv_scale_create(getRoot()))
-		, m_hScale(lv_scale_create(getRoot()))
+		, m_canvas(lv_canvas_create(getRootPtr()))
+		, m_vScale(lv_scale_create(getRootPtr()))
+		, m_hScale(lv_scale_create(getRootPtr()))
 	{
 		init();
 	}
@@ -55,20 +55,19 @@ namespace UI
 		UI_LOCK();
 
 		// Layout
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_GRID);
-		lv_obj_set_grid_dsc_array(getRoot(), m_columnDsc, m_rowDsc);
-		lv_obj_set_grid_cell(m_title, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridDsc(m_columnDsc, m_rowDsc);
+		setGridCell(m_title, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 1);
 		lv_obj_set_grid_cell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		lv_obj_set_grid_cell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
 		lv_obj_set_grid_cell(m_canvas, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		lv_obj_set_style_pad_top(getRoot(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_right(getRoot(), 20, LV_PART_MAIN);
-		lv_obj_set_style_pad_left(getRoot(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_bottom(getRoot(), 5, LV_PART_MAIN);
+		lv_obj_set_style_pad_top(getRootPtr(), 10, LV_PART_MAIN);
+		lv_obj_set_style_pad_right(getRootPtr(), 20, LV_PART_MAIN);
+		lv_obj_set_style_pad_left(getRootPtr(), 10, LV_PART_MAIN);
+		lv_obj_set_style_pad_bottom(getRootPtr(), 5, LV_PART_MAIN);
 
 		// Title
-		lv_obj_set_size(m_title, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 		// Horizontal scale
 		lv_obj_set_height(m_hScale, LV_SIZE_CONTENT);
@@ -96,7 +95,7 @@ namespace UI
 	void Canvas::showTitle(const bool show)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(m_title, LV_OBJ_FLAG_HIDDEN, !show);
+		m_title.setVisible(show);
 		m_rowDsc[0] = show ? LV_GRID_CONTENT : 0;
 	}
 
@@ -301,7 +300,7 @@ namespace UI
 		}
 		width = std::max(width, 1u);
 		height = std::max(height, 1u);
-		m_buf = lv_draw_buf_create(width, height, lv_display_get_color_format(lv_obj_get_display(getRoot())), 0);
+		m_buf = lv_draw_buf_create(width, height, lv_display_get_color_format(getDisplayPtr()), 0);
 		lv_canvas_set_draw_buf(m_canvas, m_buf);
 		clear();
 	}

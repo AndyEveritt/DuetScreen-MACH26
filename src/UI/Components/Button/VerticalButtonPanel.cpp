@@ -20,15 +20,10 @@ namespace UI
 		, m_values{Button("value1", m_valueCont, ""), Button("value2", m_valueCont, "")}
 	{
 		UI_LOCK();
-		lv_obj_set_layout(getRoot(), LV_LAYOUT_FLEX);
-		lv_obj_set_flex_flow(getRoot(), LV_FLEX_FLOW_COLUMN);
-		lv_obj_set_flex_align(getRoot(), LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < lv_obj_get_child_cnt(getRoot()); i++)
-		{
-			lv_obj_t* child = lv_obj_get_child(getRoot(), i);
-			lv_obj_set_width(child, LV_PCT(100));
-		}
+		iterateChildren([](size_t i, LvObj& child) { child.setWidth(LV_PCT(100)); });
 
 		m_reset.setFlexGrow(1);
 		m_increment.setFlexGrow(3);

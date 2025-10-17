@@ -50,60 +50,60 @@ namespace UI
 	void LvKeyboard::setTextArea(LvTextArea* textArea)
 	{
 		UI_LOCK();
-		lv_keyboard_set_textarea(getRoot(), textArea ? textArea->getTextArea() : nullptr);
+		lv_keyboard_set_textarea(getRootPtr(), textArea ? textArea->getRootPtr() : nullptr);
 	}
 
 	void LvKeyboard::setMode(lv_keyboard_mode_t mode)
 	{
 		UI_LOCK();
-		lv_keyboard_set_mode(getRoot(), mode);
+		lv_keyboard_set_mode(getRootPtr(), mode);
 	}
 
 	void LvKeyboard::setPopovers(bool enable)
 	{
 		UI_LOCK();
-		lv_keyboard_set_popovers(getRoot(), enable);
+		lv_keyboard_set_popovers(getRootPtr(), enable);
 	}
 
 	void LvKeyboard::setMap(lv_keyboard_mode_t mode, const char* map[], const lv_buttonmatrix_ctrl_t ctrl_map[])
 	{
 		UI_LOCK();
-		lv_keyboard_set_map(getRoot(), mode, map, ctrl_map);
+		lv_keyboard_set_map(getRootPtr(), mode, map, ctrl_map);
 	}
 
 	lv_obj_t* LvKeyboard::getTextArea() const
 	{
 		UI_LOCK();
-		return lv_keyboard_get_textarea(getRoot());
+		return lv_keyboard_get_textarea(getRootPtr());
 	}
 
 	lv_keyboard_mode_t LvKeyboard::getMode() const
 	{
 		UI_LOCK();
-		return lv_keyboard_get_mode(getRoot());
+		return lv_keyboard_get_mode(getRootPtr());
 	}
 
 	bool LvKeyboard::getPopovers() const
 	{
 		UI_LOCK();
-		return lv_keyboard_get_popovers(getRoot());
+		return lv_keyboard_get_popovers(getRootPtr());
 	}
 
 	const char* const* LvKeyboard::getMapArray() const
 	{
 		UI_LOCK();
-		return lv_keyboard_get_map_array(getRoot());
+		return lv_keyboard_get_map_array(getRootPtr());
 	}
 
 	uint32_t LvKeyboard::getSelectedButton() const
 	{
 		UI_LOCK();
-		return lv_buttonmatrix_get_selected_button(getRoot());
+		return lv_buttonmatrix_get_selected_button(getRootPtr());
 	}
 
 	const char* LvKeyboard::getButtonText(uint32_t index) const
 	{
 		UI_LOCK();
-		return lv_buttonmatrix_get_button_text(getRoot(), index);
+		return lv_buttonmatrix_get_button_text(getRootPtr(), index);
 	}
 } // namespace UI

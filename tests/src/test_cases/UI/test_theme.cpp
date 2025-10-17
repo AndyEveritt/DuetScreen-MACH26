@@ -103,7 +103,7 @@ static std::unique_ptr<LvLabel> createLabel(const std::string& text, LvObj& pare
 
 TEST_F(TestTheme, Widgets)
 {
-	lv_obj_set_flex_flow(screen, LV_FLEX_FLOW_COLUMN);
+	screen.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 	ThemePreview preview("theme_preview", screen);
 	preview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -260,7 +260,7 @@ TEST_F(TestTheme, Widgets)
 	canvas.setResolution(100, 50);
 
 	/* lv_table */
-	lv_obj_t* table = lv_table_create(cont);
+	lv_obj_t* table = lv_table_create(cont.getRootPtr());
 	lv_obj_set_size(table, col_width, LV_SIZE_CONTENT);
 	const size_t table_cols = 3;
 	const size_t table_rows = 3;

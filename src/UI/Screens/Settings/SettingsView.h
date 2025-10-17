@@ -187,8 +187,8 @@ namespace UI
 
 		void showKeyboard(bool show,
 						  lv_keyboard_mode_t mode = LV_KEYBOARD_MODE_TEXT_LOWER,
-						  lv_obj_t* textArea = nullptr);
-		void setKeyboardTextArea(lv_obj_t* textArea);
+						  LvTextArea* textArea = nullptr);
+		void setKeyboardTextArea(LvTextArea* textArea);
 
 		DuetSettingsView& getDuetSettingsView() { return m_duetSettingsView; }
 		NetworkSettingsView& getNetworkSettingsView() { return m_networkSettingsView; }
@@ -201,7 +201,7 @@ namespace UI
 	  protected:
 		static void onWindowSelectEvent(lv_event_t* e);
 
-		lv_obj_t* getKeyboard() const { return m_keyboard; }
+		LvKeyboard& getKeyboard() { return m_keyboard; }
 
 		virtual void onShow() override;
 		virtual void onHide() override;

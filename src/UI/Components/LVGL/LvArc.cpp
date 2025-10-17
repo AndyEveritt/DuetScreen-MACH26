@@ -29,7 +29,7 @@ namespace UI
 	void LvArc::setStartAngle(lv_value_precise_t start)
 	{
 		UI_LOCK();
-		lv_arc_set_start_angle(getRoot(), start);
+		lv_arc_set_start_angle(getRootPtr(), start);
 	}
 
 	/**
@@ -39,7 +39,7 @@ namespace UI
 	void LvArc::setEndAngle(lv_value_precise_t end)
 	{
 		UI_LOCK();
-		lv_arc_set_end_angle(getRoot(), end);
+		lv_arc_set_end_angle(getRootPtr(), end);
 	}
 
 	/**
@@ -50,7 +50,7 @@ namespace UI
 	void LvArc::setAngles(lv_value_precise_t start, lv_value_precise_t end)
 	{
 		UI_LOCK();
-		lv_arc_set_angles(getRoot(), start, end);
+		lv_arc_set_angles(getRootPtr(), start, end);
 	}
 
 	/**
@@ -60,7 +60,7 @@ namespace UI
 	void LvArc::setBgStartAngle(lv_value_precise_t start)
 	{
 		UI_LOCK();
-		lv_arc_set_bg_start_angle(getRoot(), start);
+		lv_arc_set_bg_start_angle(getRootPtr(), start);
 	}
 
 	/**
@@ -70,7 +70,7 @@ namespace UI
 	void LvArc::setBgEndAngle(lv_value_precise_t end)
 	{
 		UI_LOCK();
-		lv_arc_set_bg_end_angle(getRoot(), end);
+		lv_arc_set_bg_end_angle(getRootPtr(), end);
 	}
 
 	/**
@@ -81,7 +81,7 @@ namespace UI
 	void LvArc::setBgAngles(lv_value_precise_t start, lv_value_precise_t end)
 	{
 		UI_LOCK();
-		lv_arc_set_bg_angles(getRoot(), start, end);
+		lv_arc_set_bg_angles(getRootPtr(), start, end);
 	}
 
 	/**
@@ -91,7 +91,7 @@ namespace UI
 	void LvArc::setRotation(int32_t rotation)
 	{
 		UI_LOCK();
-		lv_arc_set_rotation(getRoot(), rotation);
+		lv_arc_set_rotation(getRootPtr(), rotation);
 	}
 
 	/**
@@ -101,7 +101,7 @@ namespace UI
 	void LvArc::setMode(lv_arc_mode_t mode)
 	{
 		UI_LOCK();
-		lv_arc_set_mode(getRoot(), mode);
+		lv_arc_set_mode(getRootPtr(), mode);
 	}
 
 	/**
@@ -111,7 +111,7 @@ namespace UI
 	void LvArc::setValue(int32_t value)
 	{
 		UI_LOCK();
-		lv_arc_set_value(getRoot(), value);
+		lv_arc_set_value(getRootPtr(), value);
 	}
 
 	/**
@@ -122,7 +122,7 @@ namespace UI
 	void LvArc::setRange(int32_t min, int32_t max)
 	{
 		UI_LOCK();
-		lv_arc_set_range(getRoot(), min, max);
+		lv_arc_set_range(getRootPtr(), min, max);
 	}
 
 	/**
@@ -132,7 +132,7 @@ namespace UI
 	void LvArc::setMinValue(int32_t min)
 	{
 		UI_LOCK();
-		lv_arc_set_min_value(getRoot(), min);
+		lv_arc_set_min_value(getRootPtr(), min);
 	}
 
 	/**
@@ -142,7 +142,7 @@ namespace UI
 	void LvArc::setMaxValue(int32_t max)
 	{
 		UI_LOCK();
-		lv_arc_set_max_value(getRoot(), max);
+		lv_arc_set_max_value(getRootPtr(), max);
 	}
 
 	/**
@@ -152,7 +152,7 @@ namespace UI
 	void LvArc::setChangeRate(uint32_t rate)
 	{
 		UI_LOCK();
-		lv_arc_set_change_rate(getRoot(), rate);
+		lv_arc_set_change_rate(getRootPtr(), rate);
 	}
 
 	/**
@@ -162,7 +162,7 @@ namespace UI
 	void LvArc::setKnobOffset(int32_t offset)
 	{
 		UI_LOCK();
-		lv_arc_set_knob_offset(getRoot(), offset);
+		lv_arc_set_knob_offset(getRootPtr(), offset);
 	}
 
 	/**
@@ -172,7 +172,7 @@ namespace UI
 	lv_value_precise_t LvArc::getStartAngle() const
 	{
 		UI_LOCK();
-		return lv_arc_get_angle_start(getRoot());
+		return lv_arc_get_angle_start(getRootPtr());
 	}
 
 	/**
@@ -182,7 +182,7 @@ namespace UI
 	lv_value_precise_t LvArc::getEndAngle() const
 	{
 		UI_LOCK();
-		return lv_arc_get_angle_end(getRoot());
+		return lv_arc_get_angle_end(getRootPtr());
 	}
 
 	/**
@@ -192,7 +192,7 @@ namespace UI
 	lv_value_precise_t LvArc::getBgStartAngle() const
 	{
 		UI_LOCK();
-		return lv_arc_get_bg_angle_start(getRoot());
+		return lv_arc_get_bg_angle_start(getRootPtr());
 	}
 
 	/**
@@ -202,28 +202,28 @@ namespace UI
 	lv_value_precise_t LvArc::getBgEndAngle() const
 	{
 		UI_LOCK();
-		return lv_arc_get_bg_angle_end(getRoot());
+		return lv_arc_get_bg_angle_end(getRootPtr());
 	}
 
 	/** Get the value of an arc. */
 	int32_t LvArc::getValue() const
 	{
 		UI_LOCK();
-		return lv_arc_get_value(getRoot());
+		return lv_arc_get_value(getRootPtr());
 	}
 
 	/** Get the minimum value of an arc. */
 	int32_t LvArc::getMinValue() const
 	{
 		UI_LOCK();
-		return lv_arc_get_min_value(getRoot());
+		return lv_arc_get_min_value(getRootPtr());
 	}
 
 	/** Get the maximum value of an arc. */
 	int32_t LvArc::getMaxValue() const
 	{
 		UI_LOCK();
-		return lv_arc_get_max_value(getRoot());
+		return lv_arc_get_max_value(getRootPtr());
 	}
 
 	/**
@@ -233,21 +233,21 @@ namespace UI
 	lv_arc_mode_t LvArc::getMode() const
 	{
 		UI_LOCK();
-		return lv_arc_get_mode(getRoot());
+		return lv_arc_get_mode(getRootPtr());
 	}
 
 	/** Get the rotation for the whole arc. */
 	int32_t LvArc::getRotation() const
 	{
 		UI_LOCK();
-		return lv_arc_get_rotation(getRoot());
+		return lv_arc_get_rotation(getRootPtr());
 	}
 
 	/** Get the current knob angle offset. */
 	int32_t LvArc::getKnobOffset() const
 	{
 		UI_LOCK();
-		return lv_arc_get_knob_offset(getRoot());
+		return lv_arc_get_knob_offset(getRootPtr());
 	}
 
 	/**
@@ -258,7 +258,7 @@ namespace UI
 	void LvArc::alignObjToAngle(lv_obj_t* obj_to_align, int32_t r_offset)
 	{
 		UI_LOCK();
-		lv_arc_align_obj_to_angle(getRoot(), obj_to_align, r_offset);
+		lv_arc_align_obj_to_angle(getRootPtr(), obj_to_align, r_offset);
 	}
 
 	/**
@@ -269,6 +269,6 @@ namespace UI
 	void LvArc::rotateObjToAngle(lv_obj_t* obj_to_rotate, int32_t r_offset)
 	{
 		UI_LOCK();
-		lv_arc_rotate_obj_to_angle(getRoot(), obj_to_rotate, r_offset);
+		lv_arc_rotate_obj_to_angle(getRootPtr(), obj_to_rotate, r_offset);
 	}
 } // namespace UI

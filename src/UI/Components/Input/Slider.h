@@ -9,6 +9,7 @@
 
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvSlider.h"
 #include "UI/Components/LVGL/LvTextArea.h"
@@ -39,7 +40,7 @@ namespace UI
 		float getValue() const { return m_value; }
 		float getMin() const { return m_min; }
 		float getMax() const { return m_max; }
-		lv_obj_t* getInput() const { return m_input; }
+		LvTextArea& getInput() { return m_input; }
 
 		bool isFocused() const { return m_focused; }
 
@@ -50,7 +51,7 @@ namespace UI
 		void setValue(float value);
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
-		void setKeyboard(lv_obj_t* keyboard) { m_keyboard = keyboard; }
+		void setKeyboard(LvKeyboard* keyboard) { m_keyboard = keyboard; }
 		void setValueChangedCallback(std::function<void(int32_t)> callback) { m_valueChangedCallback = callback; }
 		void setFocusedCallback(std::function<void(bool)> callback) { m_focusedCallback = callback; }
 
@@ -71,7 +72,7 @@ namespace UI
 		LvTextArea m_input;
 
 		float m_incrementValue;
-		lv_obj_t* m_keyboard;
+		LvKeyboard* m_keyboard;
 
 		float m_min;
 		float m_max;

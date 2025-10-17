@@ -36,13 +36,13 @@ namespace UI
 		m_relMove.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_relMove.setListSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
-		lv_obj_set_flex_grow(m_toolPosition, 5);
-		lv_obj_set_flex_grow(m_machinePosition, 5);
-		lv_obj_set_style_text_align(m_toolPosition, LV_TEXT_ALIGN_CENTER, 0);
-		lv_obj_set_style_text_align(m_machinePosition, LV_TEXT_ALIGN_CENTER, 0);
+		m_toolPosition.setFlexGrow(5);
+		m_machinePosition.setFlexGrow(5);
+		m_toolPosition.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_machinePosition.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
-		lv_label_set_text(m_toolPosition, "");
-		lv_label_set_text(m_machinePosition, "");
+		m_toolPosition.setText("");
+		m_machinePosition.setText("");
 
 		m_home.addClickedCallback(onHomeEvent, this);
 		m_home.addStyle(Themes::getLvglStyles().actionBtn, 0);

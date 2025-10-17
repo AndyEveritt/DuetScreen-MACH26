@@ -40,8 +40,8 @@ TEST_F(TestImage, Png)
 
 TEST_F(TestImage, PngRecolor)
 {
-	lv_obj_set_style_bg_color(screen, lv_palette_main(LV_PALETTE_GREY), 0);
-	lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
+	screen.setStyleBgColor(lv_palette_main(LV_PALETTE_GREY), 0);
+	screen.setStyleBgOpa(LV_OPA_COVER, 0);
 
 	img.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 	img.setSrc(IMAGE_ASSET("examples/example.png"));

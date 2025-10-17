@@ -18,8 +18,8 @@ namespace UI
 		ConsoleView(LvObj& parent);
 
 		void clear();
-		void addCommand(const char* resp);
-		void addResponse(const char* resp);
+		void addCommand(std::string_view resp);
+		void addResponse(const std::string& resp);
 		void showCommandList(bool show, bool animate = LV_ANIM_ON);
 		void showKeyboard(bool show);
 

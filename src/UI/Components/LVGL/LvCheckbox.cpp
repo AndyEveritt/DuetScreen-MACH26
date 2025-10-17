@@ -41,7 +41,7 @@ namespace UI
 	void LvCheckbox::setText(std::string_view txt)
 	{
 		UI_LOCK();
-		lv_checkbox_set_text(getRoot(), txt.data());
+		lv_checkbox_set_text(getRootPtr(), txt.data());
 	}
 
 	/**
@@ -52,7 +52,7 @@ namespace UI
 	void LvCheckbox::setTextStatic(const char* txt)
 	{
 		UI_LOCK();
-		lv_checkbox_set_text_static(getRoot(), txt);
+		lv_checkbox_set_text_static(getRootPtr(), txt);
 	}
 
 	void LvCheckbox::setChecked(bool checked)
@@ -74,7 +74,7 @@ namespace UI
 	std::string_view LvCheckbox::getText() const
 	{
 		UI_LOCK();
-		return lv_checkbox_get_text(getRoot());
+		return lv_checkbox_get_text(getRootPtr());
 	}
 
 	bool LvCheckbox::getChecked() const

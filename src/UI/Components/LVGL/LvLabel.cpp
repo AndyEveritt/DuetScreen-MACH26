@@ -39,10 +39,10 @@ namespace UI
 		}
 		if (text.data() == nullptr)
 		{
-			lv_label_set_text(getRoot(), nullptr);
+			lv_label_set_text(getRootPtr(), nullptr);
 			return;
 		}
-		lv_label_set_text_fmt(getRoot(), "%.*s", (int)text.length(), text.data());
+		lv_label_set_text_fmt(getRootPtr(), "%.*s", (int)text.length(), text.data());
 	}
 
 	void LvLabel::setTextF(const char* fmt, ...)
@@ -50,99 +50,99 @@ namespace UI
 		UI_LOCK();
 		va_list args;
 		va_start(args, fmt);
-		lv_label_set_text_fmt(getRoot(), fmt, args);
+		lv_label_set_text_fmt(getRootPtr(), fmt, args);
 		va_end(args);
 	}
 
 	void LvLabel::setTextStatic(const char* text)
 	{
 		UI_LOCK();
-		lv_label_set_text_static(getRoot(), text);
+		lv_label_set_text_static(getRootPtr(), text);
 	}
 
 	void LvLabel::setLongMode(lv_label_long_mode_t mode)
 	{
 		UI_LOCK();
-		lv_label_set_long_mode(getRoot(), mode);
+		lv_label_set_long_mode(getRootPtr(), mode);
 	}
 
 	void LvLabel::setTextSelectionStart(uint32_t index)
 	{
 		UI_LOCK();
-		lv_label_set_text_selection_start(getRoot(), index);
+		lv_label_set_text_selection_start(getRootPtr(), index);
 	}
 
 	void LvLabel::setTextSelectionEnd(uint32_t index)
 	{
 		UI_LOCK();
-		lv_label_set_text_selection_end(getRoot(), index);
+		lv_label_set_text_selection_end(getRootPtr(), index);
 	}
 
 	void LvLabel::setRecolor(bool enable)
 	{
 		UI_LOCK();
-		lv_label_set_recolor(getRoot(), enable);
+		lv_label_set_recolor(getRootPtr(), enable);
 	}
 
 	std::string_view LvLabel::getText() const
 	{
 		UI_LOCK();
-		return lv_label_get_text(getRoot());
+		return lv_label_get_text(getRootPtr());
 	}
 
 	lv_label_long_mode_t LvLabel::getLongMode() const
 	{
 		UI_LOCK();
-		return lv_label_get_long_mode(getRoot());
+		return lv_label_get_long_mode(getRootPtr());
 	}
 
 	void LvLabel::getLetterPos(uint32_t char_id, lv_point_t* pos) const
 	{
 		UI_LOCK();
-		lv_label_get_letter_pos(getRoot(), char_id, pos);
+		lv_label_get_letter_pos(getRootPtr(), char_id, pos);
 	}
 
 	uint32_t LvLabel::getLetterOn(lv_point_t* pos_in, bool bidi) const
 	{
 		UI_LOCK();
-		return lv_label_get_letter_on(getRoot(), pos_in, bidi);
+		return lv_label_get_letter_on(getRootPtr(), pos_in, bidi);
 	}
 
 	bool LvLabel::isCharUnderPos(lv_point_t* pos) const
 	{
 		UI_LOCK();
-		return lv_label_is_char_under_pos(getRoot(), pos);
+		return lv_label_is_char_under_pos(getRootPtr(), pos);
 	}
 
 	uint32_t LvLabel::getTextSelectionStart() const
 	{
 		UI_LOCK();
 
-		return lv_label_get_text_selection_start(getRoot());
+		return lv_label_get_text_selection_start(getRootPtr());
 	}
 
 	uint32_t LvLabel::getTextSelectionEnd() const
 	{
 		UI_LOCK();
-		return lv_label_get_text_selection_end(getRoot());
+		return lv_label_get_text_selection_end(getRootPtr());
 	}
 
 	bool LvLabel::isRecolorEnabled() const
 	{
 		UI_LOCK();
-		return lv_label_get_recolor(getRoot());
+		return lv_label_get_recolor(getRootPtr());
 	}
 
 	void LvLabel::insertText(uint32_t pos, const std::string& text)
 	{
 		UI_LOCK();
-		lv_label_ins_text(getRoot(), pos, text.c_str());
+		lv_label_ins_text(getRootPtr(), pos, text.c_str());
 	}
 
 	void LvLabel::cutText(uint32_t pos, uint32_t len)
 	{
 		UI_LOCK();
-		lv_label_cut_text(getRoot(), pos, len);
+		lv_label_cut_text(getRootPtr(), pos, len);
 	}
 
 } // namespace UI

@@ -214,7 +214,7 @@ namespace UI
 		const lv_coord_t width = getWidth();
 		const lv_coord_t height = getHeight();
 		static lv_point_precise_t line_points[] = {{width / 2, 0}, {width / 2, height}};
-		lv_line_set_points(m_divider, line_points, 2);
+		lv_line_set_points(m_divider.getRootPtr(), line_points, 2);
 		m_pass.setAlign(LV_ALIGN_RIGHT_MID, -width / 4, 0);
 		m_fail.setAlign(LV_ALIGN_LEFT_MID, width / 4, 0);
 
@@ -293,7 +293,7 @@ namespace UI
 		m_no.setHeight(LV_PCT(100));
 		m_no.setFlexGrow(1);
 		m_no.setStyleBgColor(lv_palette_main(LV_PALETTE_RED));
-		lv_obj_set_style_bg_grad_dir(m_no, LV_GRAD_DIR_NONE, 0);
+		lv_obj_set_style_bg_grad_dir(m_no.getRootPtr(), LV_GRAD_DIR_NONE, 0);
 		m_no.addClickedCallback(
 			[](lv_event_t* e)
 			{
@@ -306,7 +306,7 @@ namespace UI
 		m_yes.setHeight(LV_PCT(100));
 		m_yes.setFlexGrow(1);
 		m_yes.setStyleBgColor(lv_palette_main(LV_PALETTE_GREEN));
-		lv_obj_set_style_bg_grad_dir(m_yes, LV_GRAD_DIR_NONE, 0);
+		lv_obj_set_style_bg_grad_dir(m_yes.getRootPtr(), LV_GRAD_DIR_NONE, 0);
 		m_yes.addClickedCallback(
 			[](lv_event_t* e)
 			{
@@ -345,7 +345,7 @@ namespace UI
 		m_no.setHeight(LV_PCT(100));
 		m_no.setFlexGrow(1);
 		m_no.setStyleBgColor(lv_palette_main(LV_PALETTE_RED));
-		lv_obj_set_style_bg_grad_dir(m_no, LV_GRAD_DIR_NONE, 0);
+		lv_obj_set_style_bg_grad_dir(m_no.getRootPtr(), LV_GRAD_DIR_NONE, 0);
 		m_no.addClickedCallback(
 			[](lv_event_t* e)
 			{
@@ -358,7 +358,7 @@ namespace UI
 		m_yes.setHeight(LV_PCT(100));
 		m_yes.setFlexGrow(1);
 		m_yes.setStyleBgColor(lv_palette_main(LV_PALETTE_GREEN));
-		lv_obj_set_style_bg_grad_dir(m_yes, LV_GRAD_DIR_NONE, 0);
+		lv_obj_set_style_bg_grad_dir(m_yes.getRootPtr(), LV_GRAD_DIR_NONE, 0);
 		m_yes.addClickedCallback(
 			[](lv_event_t* e)
 			{

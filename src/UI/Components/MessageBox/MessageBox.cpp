@@ -138,7 +138,7 @@ namespace UI
 	void MessageBox::close()
 	{
 		UI_LOCK();
-		if (getRoot()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
+		if (getRootPtr()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
 		{
 			hide();
 		}
@@ -167,8 +167,7 @@ namespace UI
 		m_image.setSrc(imagePath);
 		if (m_autoSizeImage)
 		{
-			m_image.setWidth(m_image.getSrcWidth());
-			m_image.setHeight(m_image.getSrcHeight());
+			m_image.setSize(m_image.getSrcWidth(), m_image.getSrcHeight());
 		}
 		imageVisible(imagePath != nullptr);
 	}
@@ -177,8 +176,7 @@ namespace UI
 	{
 		UI_LOCK();
 		autoSizeImage(false);
-		lv_obj_set_width(m_image, width);
-		lv_obj_set_height(m_image, height);
+		m_image.setSize(width, height);
 	}
 
 	void MessageBox::setOkBtnText(std::string_view text)
@@ -270,7 +268,7 @@ namespace UI
 	void MessageBox::setProgress(int percent)
 	{
 		UI_LOCK();
-		lv_bar_set_value(m_progress, percent, LV_ANIM_ON);
+		m_progress.setValue(percent, LV_ANIM_ON);
 	}
 
 	void MessageBox::cancelTimeout()
@@ -302,7 +300,7 @@ namespace UI
 			{
 				UI_LOCK();
 				MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
-				if (msgBox->getRoot())
+				if (msgBox->isValid())
 				{
 					msgBox->cancel();
 				}

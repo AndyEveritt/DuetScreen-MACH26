@@ -13,17 +13,17 @@ namespace UI
 
 	void ConsolePresenter::newResponse(const std::string& resp)
 	{
-		m_view->addResponse(resp.c_str());
+		m_view->addResponse(resp);
 	}
 
 	void ConsolePresenter::newLogMessage(const Log::DebugLevel& level,
 										 const Log::log_time_t& time,
 										 const std::string& message)
 	{
-		m_view->addResponse(message.c_str());
+		m_view->addResponse(message);
 	}
 
-	void ConsolePresenter::sendGcode(const char* gcode)
+	void ConsolePresenter::sendGcode(std::string_view gcode)
 	{
 		m_view->addCommand(gcode);
 		Comm::DUET.SendGcode(gcode);

@@ -203,7 +203,7 @@ namespace UI
 			slider->m_focused = true;
 			if (slider->m_keyboard)
 			{
-				lv_keyboard_set_textarea(slider->m_keyboard, slider->m_input);
+				slider->m_keyboard->setTextArea(&slider->m_input);
 				if (slider->m_focusedCallback)
 				{
 					slider->m_focusedCallback(true);
@@ -216,7 +216,7 @@ namespace UI
 			slider->m_focused = false;
 			if (slider->m_keyboard)
 			{
-				lv_keyboard_set_textarea(slider->m_keyboard, nullptr);
+				slider->m_keyboard->setTextArea(nullptr);
 				if (slider->m_focusedCallback)
 				{
 					slider->m_focusedCallback(false);

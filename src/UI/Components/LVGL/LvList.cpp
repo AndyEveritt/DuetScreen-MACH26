@@ -29,7 +29,7 @@ namespace UI
 	lv_obj_t* LvList::addText(std::string_view txt)
 	{
 		UI_LOCK();
-		return lv_list_add_text(getRoot(), txt.data());
+		return lv_list_add_text(getRootPtr(), txt.data());
 	}
 
 	/**
@@ -41,7 +41,7 @@ namespace UI
 	lv_obj_t* LvList::addButton(const void* icon, std::string_view txt)
 	{
 		UI_LOCK();
-		return lv_list_add_button(getRoot(), icon, txt.data());
+		return lv_list_add_button(getRootPtr(), icon, txt.data());
 	}
 
 	/**
@@ -52,7 +52,7 @@ namespace UI
 	std::string_view LvList::getButtonText(lv_obj_t* btn) const
 	{
 		UI_LOCK();
-		return lv_list_get_button_text(getRoot(), btn);
+		return lv_list_get_button_text(getRootPtr(), btn);
 	}
 
 	/**
@@ -63,6 +63,6 @@ namespace UI
 	void LvList::setButtonText(lv_obj_t* btn, std::string_view txt)
 	{
 		UI_LOCK();
-		lv_list_set_button_text(getRoot(), btn, txt.data());
+		lv_list_set_button_text(getRootPtr(), btn, txt.data());
 	}
 } // namespace UI

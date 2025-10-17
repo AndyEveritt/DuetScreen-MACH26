@@ -136,7 +136,6 @@ namespace UI
 			return;
 		}
 		UI_LOCK();
-		lv_color_t color = lv_obj_get_style_bg_color(getRoot(), LV_PART_MAIN);
 		setState(LV_STATE_CHECKED, selected);
 		m_selected = selected;
 	}

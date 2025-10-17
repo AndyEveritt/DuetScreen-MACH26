@@ -13,7 +13,7 @@ namespace UI
 
 		// Actions
 		bool back();
-		void sendGcode(const char* gcode);
+		void sendGcode(std::string_view gcode);
 
 		// Observers
 		void newResponse(const std::string& resp);

@@ -80,8 +80,8 @@ namespace UI
 		{
 			// lv_obj_add_flag(button->getButton(), LV_OBJ_FLAG_OVERFLOW_VISIBLE);
 			// lv_obj_refresh_ext_draw_size(button->getButton());
-			lv_obj_refresh_ext_draw_size(button->getRoot());
-			lv_obj_invalidate(button->getRoot());
+			lv_obj_refresh_ext_draw_size(button->getRootPtr());
+			button->invalidate();
 			lv_indev_get_point(lv_indev_get_act(), &start_pos);
 		}
 		else if (code == LV_EVENT_PRESSING)
