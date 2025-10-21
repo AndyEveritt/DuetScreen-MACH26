@@ -44,7 +44,6 @@
             "name": "Simulation-Base",
             "hidden": true,
             "description": "Configure the project to be run locally on the host machine",
-            "inherits": "Debug",
             "cacheVariables": {
                 "PROCESSOR": "Simulation"
             }
@@ -80,7 +79,6 @@
             "name": "T113-Base",
             "hidden": true,
             "description": "Configure the project to be run on T113 with debug symbols",
-            "inherits": "Debug",
             "cacheVariables": {
                 "PROCESSOR": "T113"
             }
