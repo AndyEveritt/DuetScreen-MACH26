@@ -105,6 +105,8 @@
 				"cwd": "${config:buildroot_path}",
 				"env": {
 					"DUETSCREEN_SRC": "${workspaceFolder}",
+					// "DUETSCREEN_BURNIN_TEST": "1",
+					// "DUETSCREEN_HARDWARE_TEST": "1",
 					"PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 				}
 			},

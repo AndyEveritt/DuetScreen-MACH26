@@ -40,6 +40,7 @@ option(LOG_TIMESTAMPS "Enable timestamps in log messages" ON)
 option(LOG_THREAD "Enable logging thread id in log messages" OFF)
 option(ASYNC_RR_MODEL "Enable asynchronous rr_model requests" OFF)
 option(HARDWARE_TEST "Enable hardware test" OFF)
+option(BURNIN_TEST "Enable burnin test" OFF)
 option(LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" OFF)
 
 if(NOT DEFINED PROCESSOR)
@@ -166,6 +167,10 @@ endif()
 
 if(HARDWARE_TEST)
   target_compile_definitions(DuetScreen.lib PUBLIC HARDWARE_TEST=1)
+endif()
+
+if (BURNIN_TEST)
+  target_compile_definitions(DuetScreen.lib PUBLIC BURNIN_TEST=1)
 endif()
 
 if (LV_NESTED_SHOW_HIDE)

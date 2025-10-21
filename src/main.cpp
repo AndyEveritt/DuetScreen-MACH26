@@ -196,28 +196,73 @@ int main(int argc, char** argv)
 
 	// Screensaver task
 	DisplayHelper::setScreenSaverBrightness(0);
-	lv_timer_t* screensaverTimer = lv_timer_create(
+	lv_timer_t* screensaver_timer = lv_timer_create(
 		[](lv_timer_t* timer)
 		{
-			static bool screensaverEnabled = false;
-			uint32_t inactiveTime = lv_display_get_inactive_time(NULL);
-			uint32_t timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT);
-			if (timeout > 0 && inactiveTime > timeout)
+			static bool screensaver_enabled = false;
+#ifdef BURNIN_TEST
+			static bool first_run = true;
+			static lv_timer_t* burnin_timer = lv_timer_create(
+				[](lv_timer_t* timer)
+				{
+					static size_t screen_index = 0;
+					auto& home = UI::HomeView::instance();
+					static const std::vector<UI::LvObj*> screens{nullptr,
+																 &home.getDashboard().getStatusView(),
+																 &home.getConsoleView(),
+																 &home.getMoveView(),
+																 &home.getTemperatureView(),
+																 &home.getMacroView(),
+																 &home.getFineTuneView(),
+																 &home.getHeightmapView(),
+																 &home.getSettingsView()};
+
+					auto screen = screens[screen_index];
+					if (screen == nullptr)
+					{
+						UI::home();
+					}
+					else
+					{
+						UI::openScreen(screen, true);
+					}
+
+					screen_index = (screen_index + 1) % std::size(screens);
+				},
+				StorageHelper::getData(ID_BURNIN_FREQUENCY, 2000),
+				NULL);
+			if (first_run)
 			{
-				if (!screensaverEnabled)
+				lv_timer_pause(burnin_timer);
+				first_run = false;
+			}
+#endif
+			uint32_t inactive_time = lv_display_get_inactive_time(NULL);
+			uint32_t timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT);
+			if (timeout > 0 && inactive_time > timeout)
+			{
+				if (!screensaver_enabled)
 				{
 					LOG_INFO("Screensaver timeout reached");
+#ifdef BURNIN_TEST
+					lv_timer_resume(burnin_timer);
+#else
 					DisplayHelper::enableScreenSaver(true);
-					screensaverEnabled = true;
+#endif
+					screensaver_enabled = true;
 				}
 			}
 			else
 			{
-				if (screensaverEnabled)
+				if (screensaver_enabled)
 				{
 					LOG_INFO("Screensaver timeout cancelled");
+#ifdef BURNIN_TEST
+					lv_timer_pause(burnin_timer);
+#else
 					DisplayHelper::enableScreenSaver(false);
-					screensaverEnabled = false;
+#endif
+					screensaver_enabled = false;
 				}
 			}
 		},

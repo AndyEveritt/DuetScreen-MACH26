@@ -65,7 +65,7 @@ namespace UI
 			m_currentFolder += '/';
 		}
 
-		LOG_DBG("set folder to {:s}", m_currentFolder);
+		LOG_DBG("set folder to '{:s}'", m_currentFolder);
 		m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), m_currentFolder));
 		requestFiles();
 	}
@@ -165,17 +165,19 @@ namespace UI
 
 	void FilePresenter::requestFiles()
 	{
+		LOG_DBG("Requesting files for folder {:s}{:s}", getBaseFolderPath(), m_currentFolder);
 		m_items.clear();
 		m_view->setFileCount(0);
 		OM::FileSystem::RequestFiles(
 			getBaseFolderType(m_baseFolder),
 			m_currentFolder,
-			[this](const OM::FileSystem::ItemList& files)
+			[this](OM::FileSystem::ItemList files)
 			{
-				{
-					MODEL_LOCK();
-					m_items = files;
-				}
+				LOG_DBG("Received {:d} files for folder {:s}{:s}",
+						files.size(),
+						getBaseFolderPath(),
+						this->m_currentFolder);
+				m_items = files; // using std::move here caused a rare segfault???
 				this->m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), this->m_currentFolder));
 				this->sortFiles();
 				this->displayFiles();
@@ -274,6 +276,7 @@ namespace UI
 
 	void FilePresenter::onDisconnect()
 	{
+		LOG_DBG("Clearing files");
 		m_items.clear();
 		m_view->setFileCount(0);
 	}

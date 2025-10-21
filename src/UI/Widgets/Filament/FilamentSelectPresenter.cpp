@@ -108,19 +108,19 @@ namespace UI
 	{
 		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
 									 "",
-									 [this](const OM::FileSystem::ItemList& files)
+									 [this](OM::FileSystem::ItemList files)
 									 {
 										 {
 											 MODEL_LOCK();
 											 this->m_filamentOptions.clear();
-											 for (size_t i = 0; i < files.size(); i++)
+											 this->m_filamentOptions.reserve(files.size());
+											 for (const auto& item : files)
 											 {
-												 OM::FileSystem::ItemPtr item = files[i];
-												 if (item == nullptr)
+												 if (!item)
 												 {
 													 continue;
 												 }
-												 this->m_filamentOptions.push_back(item->GetName());
+												 this->m_filamentOptions.emplace_back(item->GetName());
 											 }
 										 }
 										 this->updateFilamentList();

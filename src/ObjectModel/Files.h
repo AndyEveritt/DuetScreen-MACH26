@@ -9,8 +9,11 @@
 #define JNI_OBJECTMODEL_FILES_HPP_
 
 #include "ObjectModel/Directories.h"
+#include "utils/TimeHelper.h"
+#include <atomic>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -25,9 +28,6 @@ namespace OM::FileSystem
 	class FileSystemItem
 	{
 	  public:
-		virtual ~FileSystemItem();						// Makes the class polymorphic
-		virtual FileSystemItemType GetType() const = 0; // Pure virtual function
-
 		FileSystemItem(const FileSystemItemType type)
 			: m_type(type)
 			, m_size(0)
@@ -40,7 +40,10 @@ namespace OM::FileSystem
 		{
 		}
 
+		~FileSystemItem();
+
 		const std::string& GetName() const { return m_name; }
+		FileSystemItemType GetType() const { return m_type; }
 		void SetName(const std::string name);
 		std::string GetPath() const;
 		void SetPath(const std::string& path) { m_path = path; }
@@ -69,7 +72,6 @@ namespace OM::FileSystem
 			: FileSystemItem(FileSystemItemType::file, name)
 		{
 		}
-		FileSystemItemType GetType() const override { return FileSystemItemType::file; }
 	};
 
 	class Folder : public FileSystemItem
@@ -83,15 +85,13 @@ namespace OM::FileSystem
 			: FileSystemItem(FileSystemItemType::folder, name)
 		{
 		}
-		FileSystemItemType GetType() const override { return FileSystemItemType::folder; }
 	};
 
+	// Elements are shared_ptrs; access to the owning container is synchronized in FileListRequest
 	using ItemPtr = std::shared_ptr<FileSystemItem>;
-	using FilePtr = std::shared_ptr<File>;
-	using FolderPtr = std::shared_ptr<Folder>;
 	using ItemList = std::vector<ItemPtr>;
 
-	using request_files_cb_t = std::function<void(const ItemList& items)>;
+	using request_files_cb_t = std::function<void(ItemList items)>; // passing by ref caused rare issues
 	using request_file_contents_cb_t = std::function<void(std::string_view contents)>;
 
 	enum class SortBy
@@ -105,18 +105,24 @@ namespace OM::FileSystem
 	{
 	  public:
 		FileListRequest(const std::string& path, request_files_cb_t callback, bool run_every_time);
+		~FileListRequest();
 
 		void SetFirst(const size_t first) { m_first = first; }
 		void SetNext(const size_t next) { m_next = next; }
 
-		FolderPtr AddFolder();
-		FilePtr AddFile();
-		void ClearItems() { m_items.clear(); }
+		ItemPtr AddFolder();
+		ItemPtr AddFile();
+		void ClearItems()
+		{
+			std::lock_guard<std::mutex> lk(m_mutex);
+			m_items.clear();
+		}
 		void SortItems(const SortBy by, const bool descending);
 
 		const std::string& GetDir() const { return m_path; }
-		const ItemList& GetItems() const { return m_items; }
-		const size_t GetItemCount() const { return m_items.size(); }
+		// Returns a snapshot copy of the items to avoid races
+		ItemList GetItemsCopy() const;
+		const size_t GetItemCount() const;
 		ItemPtr GetLastItem() const;
 		ItemPtr GetItem(const size_t index) const;
 		size_t GetFirst() const { return m_first; }
@@ -125,13 +131,17 @@ namespace OM::FileSystem
 
 		void RunCallback();
 
+		bool IsRequestExpired() const;
+
 	  private:
 		std::string m_path;
 		request_files_cb_t m_callback;
 		bool m_runEveryTime;
+		mutable std::mutex m_mutex;
 		ItemList m_items;
 		size_t m_first = 0;
 		size_t m_next = 0;
+		std::chrono::milliseconds m_requestTime;
 	};
 
 	using FileListRequestPtr = std::shared_ptr<FileListRequest>;
@@ -175,16 +185,16 @@ namespace OM::FileSystem
 
 	FileListRequestPtr GetFileListRequest(const std::string& path);
 
-	void SortFilesBy(ItemList& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc);
+	void SortFilesBy(ItemList& items, std::function<bool(const ItemPtr&, const ItemPtr&)> sortFunc);
 	void SortFilesBy(ItemList& items, const SortBy sortBy, const bool descending);
 	void RequestFiles(const OM::Directories::DirectoryType baseFolder,
 					  const std::string& path,
 					  request_files_cb_t callback,
 					  bool runEveryTime = false);
 	void RequestUsbFiles(const std::string& path);
-	void RunFile(const File* file);
+	void RunFile(const ItemPtr& file);
 	void RunMacro(const std::string& path);
-	void UploadFile(const File* file);
+	void UploadFile(const ItemPtr& file);
 	void StartPrint(const std::string& path);
 	void ResumePrint();
 	void PausePrint();

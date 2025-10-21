@@ -145,7 +145,7 @@ namespace UI
 		LOG_INFO("New compensation file");
 		updateHeightmapList();
 		OM::RequestHeightmapFiles(
-			[this](const OM::FileSystem::ItemList& files)
+			[this](OM::FileSystem::ItemList files)
 			{
 				m_heightmapFiles = OM::GetHeightmapFiles(files);
 				updateHeightmapList();
@@ -156,7 +156,7 @@ namespace UI
 	{
 		LOG_DBG("New directories");
 		OM::RequestHeightmapFiles(
-			[this](const OM::FileSystem::ItemList& files)
+			[this](OM::FileSystem::ItemList files)
 			{
 				m_heightmapFiles = OM::GetHeightmapFiles(files);
 				updateHeightmapList();

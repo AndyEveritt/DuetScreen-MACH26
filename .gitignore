@@ -463,6 +463,7 @@ config.json
 !.vscode/gdb.conf
 version.h
 wpa_supplicant.conf
+authorized_keys
 
 *Zone.Identifier
 

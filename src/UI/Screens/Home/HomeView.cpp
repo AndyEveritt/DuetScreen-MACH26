@@ -55,6 +55,7 @@ namespace UI
 		m_mainWindow.setHeight(LV_PCT(100));
 
 		// Main Window Layout
+		m_sideBar.moveToFront();
 		m_consoleView.hide();
 		m_moveView.hide();
 		m_temperatureView.hide();
@@ -121,11 +122,7 @@ namespace UI
 		clearMessageBoxes();
 	}
 
-	void HomeView::onShow()
-	{
-		m_dashboard.show();
-		m_sideBar.show(true);
-	}
+	void HomeView::onShow() {}
 
 	void HomeView::onHide() {}
 

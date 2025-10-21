@@ -13,6 +13,7 @@
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
 #include "ObjectModel/Job.h"
+#include "UI/Core/Model.h"
 #include <algorithm>
 #include <fstream>
 
@@ -76,30 +77,51 @@ namespace OM::FileSystem
 		: m_path(path)
 		, m_callback(callback)
 		, m_runEveryTime(run_every_time)
+		, m_requestTime(TimeHelper::getCurrentTime())
 	{
 	}
 
-	FolderPtr FileListRequest::AddFolder()
+	FileListRequest::~FileListRequest()
 	{
-		auto folder = std::make_shared<Folder>();
+		LOG_DBG("Files: destructing file list request for '{:s}'", m_path);
+	}
+
+	ItemPtr FileListRequest::AddFolder()
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		auto folder = std::make_shared<FileSystemItem>(FileSystemItemType::folder);
 		m_items.push_back(folder);
 		return folder;
 	}
 
-	FilePtr FileListRequest::AddFile()
+	ItemPtr FileListRequest::AddFile()
 	{
-		auto file = std::make_shared<File>();
+		std::lock_guard<std::mutex> lock(m_mutex);
+		auto file = std::make_shared<FileSystemItem>(FileSystemItemType::file);
 		m_items.push_back(file);
 		return file;
 	}
 
 	void FileListRequest::SortItems(const SortBy by, const bool descending)
 	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 		SortFilesBy(m_items, by, descending);
+	}
+
+	ItemList FileListRequest::GetItemsCopy() const
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		return m_items;
+	}
+	const size_t FileListRequest::GetItemCount() const
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		return m_items.size();
 	}
 
 	ItemPtr FileListRequest::GetLastItem() const
 	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 		if (m_items.empty())
 		{
 			return nullptr;
@@ -109,11 +131,12 @@ namespace OM::FileSystem
 
 	ItemPtr FileListRequest::GetItem(const size_t index) const
 	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 		if (index >= m_items.size())
 		{
 			return nullptr;
 		}
-		return m_items[index];
+		return m_items.at(index);
 	}
 
 	void FileListRequest::RunCallback()
@@ -124,8 +147,15 @@ namespace OM::FileSystem
 		}
 		if (m_callback)
 		{
+			LOG_DBG("Running callback for file list request {:s} with {:d} items", m_path, m_items.size());
 			m_callback(m_items);
 		}
+	}
+
+	bool FileListRequest::IsRequestExpired() const
+	{
+		const auto elapsed = TimeHelper::getTimeSince(m_requestTime);
+		return elapsed > PRINTER_REQUEST_TIMEOUT;
 	}
 
 	static std::string GetLocalFilePath(std::string_view filename)
@@ -235,7 +265,7 @@ namespace OM::FileSystem
 		return nullptr;
 	}
 
-	void SortFilesBy(ItemList& items, std::function<bool(ItemPtr, ItemPtr)> sortFunc)
+	void SortFilesBy(ItemList& items, std::function<bool(const ItemPtr&, const ItemPtr&)> sortFunc)
 	{
 		auto first = items.begin();
 		auto last = items.end();
@@ -267,7 +297,7 @@ namespace OM::FileSystem
 		{
 		case SortBy::NAME:
 			SortFilesBy(items,
-						[descending](ItemPtr L, ItemPtr R)
+						[descending](const ItemPtr& L, const ItemPtr& R)
 						{
 							if (L->GetType() == R->GetType())
 								return descending == L->GetName() > R->GetName();
@@ -276,7 +306,7 @@ namespace OM::FileSystem
 			break;
 		case SortBy::DATE:
 			SortFilesBy(items,
-						[descending](ItemPtr L, ItemPtr R)
+						[descending](const ItemPtr& L, const ItemPtr& R)
 						{
 							if (L->GetType() == R->GetType())
 								return descending == L->GetDate() > R->GetDate();
@@ -285,7 +315,7 @@ namespace OM::FileSystem
 			break;
 		case SortBy::SIZE:
 			SortFilesBy(items,
-						[descending](ItemPtr L, ItemPtr R)
+						[descending](const ItemPtr& L, const ItemPtr& R)
 						{
 							if (L->GetType() == R->GetType())
 								return descending == L->GetSize() > R->GetSize();
@@ -304,21 +334,19 @@ namespace OM::FileSystem
 	{
 		std::string full_path = fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path);
 
-		FileListRequestPtr reqPtr;
 		auto it = s_fileListRequests.find(full_path);
-		if (it == s_fileListRequests.end())
+		if (it != s_fileListRequests.end())
 		{
-			reqPtr = std::make_shared<FileListRequest>(full_path, callback, runEveryTime);
-			s_fileListRequests[full_path] = reqPtr;
-		}
-		else
-		{
-			reqPtr = it->second;
+			FileListRequestPtr cached = it->second;
+			if (callback)
+			{
+				LOG_DBG("Running callback with cached {:d} file items for '{:s}'", cached->GetItemCount(), full_path);
+				callback(cached->GetItemsCopy());
+			}
 		}
 
-		reqPtr->SetFirst(0);
-		reqPtr->SetNext(0);
-		reqPtr->ClearItems();
+		FileListRequestPtr reqPtr = std::make_shared<FileListRequest>(full_path, callback, runEveryTime);
+		s_fileListRequests[full_path] = reqPtr;
 
 		LOG_INFO("Files: requesting files in {:s}", full_path);
 		Comm::DUET.RequestFileList(full_path, reqPtr->GetFirst());
@@ -351,8 +379,14 @@ namespace OM::FileSystem
 #endif
 	}
 
-	void RunFile(const File* file)
+	void RunFile(const ItemPtr& file)
 	{
+		if (file == nullptr || file->GetType() != FileSystemItemType::file)
+		{
+			LOG_ERROR("Invalid file to run");
+			return;
+		}
+
 		std::string path = file->GetPath();
 		if (path.find(OM::Directories::GetGcodesDirectory()) == std::string::npos)
 			RunMacro(file->GetPath());
@@ -365,10 +399,16 @@ namespace OM::FileSystem
 		Comm::DUET.SendGcodef("M98 P\"{:s}\"\n", path);
 	}
 
-	void UploadFile(const File* file)
+	void UploadFile(const ItemPtr& file)
 	{
 		// TODO upload file
 #if 0
+		if (file == nullptr || file->GetType() != FileSystemItemType::file)
+		{
+			LOG_ERROR("Invalid file to upload");
+			return;
+		}
+
 		std::string contents;
 		if (!USB::ReadUsbFileContents(file->GetPath(), contents))
 			return;
@@ -404,8 +444,9 @@ namespace OM::FileSystem
 	void ClearFileSystem()
 	{
 		LOG_INFO("Clearing all file list requests");
-
+		MODEL_LOCK();
 		s_fileListRequests.clear();
+		s_fileContents.reset();
 	}
 
 	void ClearFileList(const std::string& path)
@@ -413,6 +454,7 @@ namespace OM::FileSystem
 		auto it = s_fileListRequests.find(path);
 		if (it != s_fileListRequests.end())
 		{
+			MODEL_LOCK();
 			FileListRequestPtr req = it->second;
 			req->ClearItems();
 		}
