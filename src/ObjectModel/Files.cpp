@@ -257,6 +257,7 @@ namespace OM::FileSystem
 
 	FileListRequestPtr GetFileListRequest(const std::string& path)
 	{
+		MODEL_LOCK();
 		auto it = s_fileListRequests.find(path);
 		if (it != s_fileListRequests.end())
 		{
@@ -334,20 +335,25 @@ namespace OM::FileSystem
 	{
 		std::string full_path = fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path);
 
-		auto it = s_fileListRequests.find(full_path);
-		if (it != s_fileListRequests.end())
+		FileListRequestPtr cached;
+		FileListRequestPtr reqPtr;
 		{
-			FileListRequestPtr cached = it->second;
-			if (callback)
+			MODEL_LOCK();
+			auto it = s_fileListRequests.find(full_path);
+			if (it != s_fileListRequests.end())
 			{
-				LOG_DBG("Running callback with cached {:d} file items for '{:s}'", cached->GetItemCount(), full_path);
-				callback(cached->GetItemsCopy());
+				cached = it->second;
 			}
+
+			reqPtr = std::make_shared<FileListRequest>(full_path, callback, runEveryTime);
+			s_fileListRequests[full_path] = reqPtr;
 		}
 
-		FileListRequestPtr reqPtr = std::make_shared<FileListRequest>(full_path, callback, runEveryTime);
-		s_fileListRequests[full_path] = reqPtr;
-
+		if (cached && callback)
+		{
+			LOG_DBG("Running callback with cached {:d} file items for '{:s}'", cached->GetItemCount(), full_path);
+			callback(cached->GetItemsCopy());
+		}
 		LOG_INFO("Files: requesting files in {:s}", full_path);
 		Comm::DUET.RequestFileList(full_path, reqPtr->GetFirst());
 	}
@@ -451,10 +457,10 @@ namespace OM::FileSystem
 
 	void ClearFileList(const std::string& path)
 	{
+		MODEL_LOCK();
 		auto it = s_fileListRequests.find(path);
 		if (it != s_fileListRequests.end())
 		{
-			MODEL_LOCK();
 			FileListRequestPtr req = it->second;
 			req->ClearItems();
 		}

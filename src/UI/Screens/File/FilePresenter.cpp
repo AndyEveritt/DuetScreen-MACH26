@@ -166,6 +166,7 @@ namespace UI
 	void FilePresenter::requestFiles()
 	{
 		LOG_DBG("Requesting files for folder {:s}{:s}", getBaseFolderPath(), m_currentFolder);
+		UI_LOCK();
 		m_items.clear();
 		m_view->setFileCount(0);
 		OM::FileSystem::RequestFiles(
@@ -177,6 +178,7 @@ namespace UI
 						files.size(),
 						getBaseFolderPath(),
 						this->m_currentFolder);
+				UI_LOCK();
 				m_items = files; // using std::move here caused a rare segfault???
 				this->m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), this->m_currentFolder));
 				this->sortFiles();
@@ -193,6 +195,7 @@ namespace UI
 
 	void FilePresenter::sortFiles()
 	{
+		UI_LOCK();
 		OM::FileSystem::SortFilesBy(m_items, m_sortBy, m_sortOrder);
 	}
 
@@ -238,6 +241,7 @@ namespace UI
 
 	void FilePresenter::newThumbnailData(const std::string& filename)
 	{
+		UI_LOCK();
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
 		{
 			if (i >= m_items.size())
@@ -277,6 +281,7 @@ namespace UI
 	void FilePresenter::onDisconnect()
 	{
 		LOG_DBG("Clearing files");
+		UI_LOCK();
 		m_items.clear();
 		m_view->setFileCount(0);
 	}
