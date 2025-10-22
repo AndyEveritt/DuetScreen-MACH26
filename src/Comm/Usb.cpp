@@ -352,9 +352,14 @@ namespace Comm
 
 	void UsbDevice::eventLoop()
 	{
+		timeval tv = {0, 50'000}; // 50 ms
 		while (m_eventThreadRunning)
 		{
-			libusb_handle_events(s_context);
+			int r = libusb_handle_events_timeout(s_context, &tv); // blocking call
+			if (r == LIBUSB_ERROR_INTERRUPTED)
+			{
+				continue;
+			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Prevent busy-waiting
 		}
 	}
