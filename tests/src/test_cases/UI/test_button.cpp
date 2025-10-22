@@ -28,6 +28,14 @@ TEST_F(TestButton, WithText)
 	EXPECT_EQUAL_SCREENSHOT("button/with_text.png");
 }
 
+TEST_F(TestButton, Symbol)
+{
+	UI::Button btn("btn", screen);
+	btn.setText(LV_SYMBOL_PLUS);
+	btn.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+	EXPECT_EQUAL_SCREENSHOT("button/with_symbol.png");
+}
+
 TEST_F(TestButton, LongText)
 {
 	UI::LvContainer cont("cont", screen);

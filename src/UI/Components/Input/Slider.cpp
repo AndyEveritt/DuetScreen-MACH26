@@ -32,17 +32,13 @@ namespace UI
 		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (size_t i = 0; i < m_sliderCont.getChildCount(); i++)
-		{
-			lv_obj_t* child = m_sliderCont.getChildPtr(i);
-			lv_obj_set_height(child, LV_SIZE_CONTENT);
-			lv_obj_set_style_pad_all(child, 2, 0);
-		}
-
-		m_decrement.setWidth(LV_SIZE_CONTENT);
-		m_increment.setWidth(LV_SIZE_CONTENT);
-		m_input.setWidth(50);
+		m_decrement.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_increment.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_increment.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_input.setSize(50, LV_SIZE_CONTENT);
+		m_slider.setHeight(LV_SIZE_CONTENT);
 		m_slider.setFlexGrow(1);
+		m_slider.setStylePad(2);
 
 		m_decrement.addEventCallback(
 			[](lv_event_t* e)
@@ -76,6 +72,7 @@ namespace UI
 
 		setRange(0, 100);
 
+		m_input.setStylePad(2);
 		m_input.setOneLine(true);
 		m_input.setAcceptedChars("0123456789-.");
 		m_input.setMaxLength(4);
