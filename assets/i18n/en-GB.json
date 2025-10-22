@@ -185,7 +185,7 @@
       "restart": "Restart",
       "screen": "Screen",
       "screen_header": "Screen Settings",
-      "screensaver_timeout": "Screensaver Timeout",
+      "screensaver_timeout": "Screensaver Timeout (s)",
       "system_logging": "Log system messages to console",
       "theme": "Theme",
       "usb_mode": "USB-C Mode",
