@@ -74,17 +74,17 @@ namespace UI
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		UI_LOCK();
-		setStylePad(5, LV_PART_MAIN, Padding::ALL);
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		m_toolName.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_heaters.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
+		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::RIGHT);
+		m_heaters.getListContainer().setStylePad(0, LV_PART_MAIN, Padding::RIGHT);
+
 		m_toolName.addClickedCallback(onNameEvent, this);
 
 		// Styles
-		addStyle(Themes::getLvglStyles().bg_color_list_item);
 		// addStyle(Themes::getLvglStyles().border_color_secondary, LV_STATE_CHECKED);
 		addStyle(Themes::getComponentStyles().tool_selected, LV_STATE_CHECKED);
 
@@ -102,6 +102,7 @@ namespace UI
 		setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		setStylePad(0, LV_PART_MAIN, Padding::RIGHT);
 
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 
