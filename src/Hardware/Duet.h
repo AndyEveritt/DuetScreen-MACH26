@@ -16,6 +16,7 @@
 #include <fmt/format.h>
 #include <hv/requests.h>
 #include <nlohmann/json.hpp>
+#include <thread>
 
 namespace Comm
 {
@@ -86,7 +87,7 @@ namespace Comm
 		const std::chrono::milliseconds GetScaledPollInterval() const;
 		const uint32_t GetNextLineNumber() { return m_nextLineNumber++; }
 
-		void SendGcode(std::string_view gcode);
+		void SendGcode(std::string_view gcode, bool force = false);
 
 		template <typename... Args>
 		void SendGcodef(fmt::format_string<Args...> fmt, Args&&... args)
@@ -115,7 +116,9 @@ namespace Comm
 		// Network methods
 		const bool Connect(bool useSessionKey = true);
 		const bool Disconnect();
-		const bool IsConnected() const { return m_connected; }
+		const bool IsDisconnected() const { return m_connectionState == ConnectionState::DISCONNECTED; }
+		const bool IsConnected() const { return m_connectionState == ConnectionState::CONNECTED; }
+		const bool IsConnecting() const { return m_connectionState == ConnectionState::CONNECTING; }
 		const bool IsSbcMode() const { return m_sbcMode; }
 
 		const std::string_view GetBaseUrl() const;
@@ -138,10 +141,7 @@ namespace Comm
 		Duet();
 
 		void PrepareRequest(HttpRequest& req, std::string_view subUrl, hv::QueryParams& queryParameters);
-		bool AsyncGet(std::string_view subUrl,
-					  hv::QueryParams& queryParameters,
-					  HttpResponseCallback callback,
-					  bool queue);
+		bool AsyncGet(std::string_view subUrl, hv::QueryParams& queryParameters, HttpResponseCallback callback);
 		void AsyncGetInner(const HttpRequestPtr& req, HttpResponseCallback callback);
 		bool AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback);
 		bool Get(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
@@ -161,7 +161,15 @@ namespace Comm
 		uint32_t m_sessionKey;
 		std::chrono::milliseconds m_sessionTimeout;
 		bool m_sbcMode;
-		bool m_connected = false;
+		enum class ConnectionState
+		{
+			DISCONNECTED,
+			CONNECTING,
+			CONNECTED
+		} m_connectionState = ConnectionState::DISCONNECTED;
+
+		// UART
+		std::thread m_uartConnectionThread;
 
 		static constexpr uint32_t sm_noSessionKey = 0;
 	};

@@ -210,12 +210,8 @@ namespace Comm
 		return true;
 	}
 
-	bool Duet::AsyncGet(std::string_view path,
-						hv::QueryParams& queryParameters,
-						HttpResponseCallback callback,
-						bool queue = false)
+	bool Duet::AsyncGet(std::string_view path, hv::QueryParams& queryParameters, HttpResponseCallback callback)
 	{
-#if 1
 		if (!IsConnected() && path != "/rr_connect")
 		{
 			LOG_DBG("Not connected to Duet, cannot send get request {:s}", path);
@@ -226,11 +222,9 @@ namespace Comm
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
 			(path != "/rr_connect" && path != "/rr_disconnect"))
 		{
-			if (!Connect())
-			{
-				LOG_WARN("Failed to connect to Duet, cannot send get request {:s}", path);
-				return false;
-			}
+			LOG_DBG("Session expired, reconnecting. Request '{:s}' will not be sent", path);
+			Reconnect();
+			return false;
 		}
 
 		auto req = std::make_shared<HttpRequest>();
@@ -241,7 +235,6 @@ namespace Comm
 		// client
 
 		AsyncGetInner(req, callback);
-#endif
 		return true;
 	}
 
@@ -261,12 +254,9 @@ namespace Comm
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
 			(path != "/rr_connect" && path != "/rr_disconnect"))
 		{
-			if (!Connect())
-			{
-				LOG_WARN("Failed to connect to Duet, cannot send get request {:s}", path);
-				r.status_code = HTTP_STATUS_NOT_FOUND;
-				return false;
-			}
+			LOG_DBG("Session expired, reconnecting. Request '{:s}' will not be sent", path);
+			Reconnect();
+			return false;
 		}
 
 		HttpRequest req;
@@ -319,9 +309,9 @@ namespace Comm
 		return true;
 	}
 
-	void Duet::SendGcode(std::string_view gcode)
+	void Duet::SendGcode(std::string_view gcode, bool force)
 	{
-		if (!IsConnected())
+		if (!IsConnected() && !force)
 		{
 			LOG_DBG("Not connected to Duet, cannot send gcode: {:s}", gcode);
 			return;
@@ -377,19 +367,17 @@ namespace Comm
 			HttpResponse r;
 			hv::QueryParams query;
 			query["gcode"] = gcode;
-			AsyncGet(
-				"/rr_gcode",
-				query,
-				[this, gcode](const HttpResponsePtr& r)
-				{
-					if (r->status_code != HTTP_STATUS_OK)
-					{
-						LOG_ERROR("HTTP error {:d}: Failed to send gcode: {:s}", (int)r->status_code, gcode);
-						return false;
-					}
-					return true;
-				},
-				true);
+			AsyncGet("/rr_gcode",
+					 query,
+					 [this, gcode](const HttpResponsePtr& r)
+					 {
+						 if (r->status_code != HTTP_STATUS_OK)
+						 {
+							 LOG_ERROR("HTTP error {:d}: Failed to send gcode: {:s}", (int)r->status_code, gcode);
+							 return false;
+						 }
+						 return true;
+					 });
 			break;
 		}
 		default:
@@ -488,6 +476,12 @@ namespace Comm
 
 	void Duet::RequestModel(std::string_view flags)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot request model with flags: {:s}", flags);
+			return;
+		}
+
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
@@ -534,6 +528,12 @@ namespace Comm
 
 	void Duet::RequestModel(std::string_view key, std::string_view flags)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot request model with key: {:s}, flags: {:s}", key, flags);
+			return;
+		}
+
 		switch (m_config.communicationType)
 		{
 		case CommunicationType::uart:
@@ -586,6 +586,12 @@ namespace Comm
 
 	bool Duet::RequestFileList(std::string_view dir, const size_t first)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot request file list for dir: {:s}", dir);
+			return false;
+		}
+
 		bool ret = true;
 		LOG_DBG("dir = {:s}, first = {:d}", dir, first);
 		switch (m_config.communicationType)
@@ -601,24 +607,22 @@ namespace Comm
 			hv::QueryParams query;
 			query["dir"] = dir;
 			query["first"] = fmt::format("{:d}", first);
-			ret = AsyncGet(
-				"/rr_filelist",
-				query,
-				[this, dir](const HttpResponsePtr& r) -> bool
-				{
-					JsonDecoder decoder;
-					if (r->status_code != 200)
-					{
-						LOG_ERROR("HTTP error {:d} ({:s}): Failed to get file list for {:s}",
-								  (int)r->status_code,
-								  r->status_message(),
-								  dir);
-						return false;
-					}
-					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
-					return true;
-				},
-				true);
+			ret = AsyncGet("/rr_filelist",
+						   query,
+						   [this, dir](const HttpResponsePtr& r) -> bool
+						   {
+							   JsonDecoder decoder;
+							   if (r->status_code != 200)
+							   {
+								   LOG_ERROR("HTTP error {:d} ({:s}): Failed to get file list for {:s}",
+											 (int)r->status_code,
+											 r->status_message(),
+											 dir);
+								   return false;
+							   }
+							   decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
+							   return true;
+						   });
 			break;
 		}
 		default:
@@ -630,6 +634,12 @@ namespace Comm
 
 	bool Duet::RequestFileInfo(std::string_view filename)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot request file info for file: {:s}", filename);
+			return false;
+		}
+
 		LOG_DBG("for {:s}", filename);
 		bool ret = true;
 		switch (m_config.communicationType)
@@ -645,23 +655,21 @@ namespace Comm
 			query["name"] = filename;
 
 #if 1
-			ret = AsyncGet(
-				"/rr_fileinfo",
-				query,
-				[this](const HttpResponsePtr& r) -> bool
-				{
-					JsonDecoder decoder;
-					if (r->status_code != 200)
-					{
-						LOG_ERROR("HTTP error {:d}: Failed to get file info for file: {:s}",
-								  (int)r->status_code,
-								  r->body.c_str());
-						return false;
-					}
-					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
-					return true;
-				},
-				true);
+			ret = AsyncGet("/rr_fileinfo",
+						   query,
+						   [this](const HttpResponsePtr& r) -> bool
+						   {
+							   JsonDecoder decoder;
+							   if (r->status_code != 200)
+							   {
+								   LOG_ERROR("HTTP error {:d}: Failed to get file info for file: {:s}",
+											 (int)r->status_code,
+											 r->body.c_str());
+								   return false;
+							   }
+							   decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.length() + 1);
+							   return true;
+						   });
 
 			break;
 #endif
@@ -774,8 +782,7 @@ namespace Comm
 						OM::FileSystem::GetListView()->refreshListView();
 					}
 					return true;
-				},
-				true);
+				});
 			break;
 #endif
 		}
@@ -787,6 +794,12 @@ namespace Comm
 
 	bool Duet::RequestThumbnail(std::string_view filename, uint32_t offset)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot request thumbnail for file: {:s}", filename);
+			return false;
+		}
+
 		LOG_DBG("for {:s}, offset={:d}", filename, offset);
 		bool ret = true;
 		switch (m_config.communicationType)
@@ -801,24 +814,22 @@ namespace Comm
 			hv::QueryParams query;
 			query["name"] = filename;
 			query["offset"] = fmt::format("{:d}", offset);
-			ret = AsyncGet(
-				"/rr_thumbnail",
-				query,
-				[this](const HttpResponsePtr& r) -> bool
-				{
-					JsonDecoder decoder;
-					if (r->status_code != 200)
-					{
-						LOG_ERROR("HTTP error {:d}: Failed to get thumbnail for file: {:s}",
-								  (int)r->status_code,
-								  r->body.c_str());
-						return false;
-					}
-					decoder.SetPrefix("thumbnail:");
-					decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.size() + 1);
-					return true;
-				},
-				true);
+			ret = AsyncGet("/rr_thumbnail",
+						   query,
+						   [this](const HttpResponsePtr& r) -> bool
+						   {
+							   JsonDecoder decoder;
+							   if (r->status_code != 200)
+							   {
+								   LOG_ERROR("HTTP error {:d}: Failed to get thumbnail for file: {:s}",
+											 (int)r->status_code,
+											 r->body.c_str());
+								   return false;
+							   }
+							   decoder.SetPrefix("thumbnail:");
+							   decoder.CheckInput((const unsigned char*)r->body.c_str(), r->body.size() + 1);
+							   return true;
+						   });
 #endif
 			break;
 		}
@@ -877,6 +888,12 @@ namespace Comm
 
 	void Duet::RequestReply(HttpResponse& r)
 	{
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot request reply");
+			return;
+		}
+
 		hv::QueryParams query;
 		Get("/rr_reply", r, query);
 	}
@@ -886,6 +903,7 @@ namespace Comm
 		Disconnect();
 		Reset();
 		bool ret = false;
+		m_connectionState = ConnectionState::CONNECTING;
 
 		LOG_DBG("Connecting to Duet, communication type: {:d}", (int)m_config.communicationType);
 
@@ -895,6 +913,20 @@ namespace Comm
 		{
 			LOG_INFO("Opening UART {:s} at {:d}", DEFAULT_UART_PORT, GetBaudRate().rate);
 			ret = SerialIo::Init(DEFAULT_UART_PORT, GetBaudRate().internal);
+			if (!ret)
+			{
+				LOG_ERROR("Failed to open UART {:s} at {:d}", DEFAULT_UART_PORT, GetBaudRate().rate);
+				break;
+			}
+
+			SerialIo::SetDataCallback(
+				[this](const std::string_view data)
+				{
+					m_connectionState = ConnectionState::CONNECTED;
+					SerialIo::RestoreDataCallback();
+					Model::get().post<EventType::Connected>();
+				});
+			SendGcode("M115", true); // arbitrary command to trigger a response
 			break;
 		}
 		case CommunicationType::network:
@@ -907,49 +939,59 @@ namespace Comm
 			if (useSessionKey)
 				query["sessionKey"] = "yes";
 
-			Get("/rr_connect", r, query);
+			ret = AsyncGet("/rr_connect",
+						   query,
+						   [this](const HttpResponsePtr& r)
+						   {
+							   if (r->status_code != HTTP_STATUS_OK)
+							   {
+								   LOG_ERROR("rr_connect failed, returned response {:d}", (int)r->status_code);
+								   m_connectionState = ConnectionState::DISCONNECTED;
+								   return;
+							   }
 
-			if (r.status_code != HTTP_STATUS_OK)
-			{
-				LOG_ERROR("rr_connect failed, returned response {:d}", (int)r.status_code);
-				break;
-			}
+							   LOG_VERBOSE("parsing rr_connect response");
+							   auto body = nlohmann::json::parse(r->body, nullptr, false);
+							   if (body.is_discarded())
+							   {
+								   LOG_ERROR("Failed to parse JSON response from rr_connect");
+								   m_connectionState = ConnectionState::DISCONNECTED;
+								   return;
+							   }
 
-			LOG_VERBOSE("parsing rr_connect response");
-			auto body = nlohmann::json::parse(r.body, nullptr, false);
-			if (body.is_discarded())
-			{
-				LOG_ERROR("Failed to parse JSON response from rr_connect");
-				break;
-			}
+							   if (body.contains("err") && body["err"].get<int>() != 0)
+							   {
+								   LOG_ERROR("rr_connect failed, returned error {:d}", body["err"].get<int>());
+								   m_connectionState = ConnectionState::DISCONNECTED;
+								   return;
+							   }
 
-			if (body.contains("err") && body["err"].get<int>() != 0)
-			{
-				LOG_ERROR("rr_connect failed, returned error {:d}", body["err"].get<int>());
-				break;
-			}
+							   if (body.contains("sessionTimeout"))
+							   {
+								   m_sessionTimeout = std::chrono::milliseconds(body["sessionTimeout"].get<int>());
+								   m_lastRequestTime = TimeHelper::getCurrentTime();
+								   LOG_INFO("Duet session timeout set to {}", m_sessionTimeout);
+							   }
 
-			if (body.contains("sessionTimeout"))
-			{
-				m_sessionTimeout = std::chrono::milliseconds(body["sessionTimeout"].get<int>());
-				m_lastRequestTime = TimeHelper::getCurrentTime();
-				LOG_INFO("Duet session timeout set to {}", m_sessionTimeout);
-			}
+							   if (body.contains("sessionKey"))
+							   {
+								   SetSessionKey(body["sessionKey"].get<unsigned int>());
+								   LOG_INFO("Duet session key = {:d}", m_sessionKey);
+							   }
+							   if (body.contains("isEmulated"))
+							   {
+								   SetSessionKey(sm_noSessionKey);
+								   m_sbcMode = true;
+								   LOG_INFO("Connected to Duet in SBC mode");
+							   }
+							   LOG_INFO("rr_connect succeeded");
+							   OM::SetChannelIndex(
+								   0); // state.thisInput is not returned by `rr_model` so manually set here
+							   m_connectionState = ConnectionState::CONNECTED;
+							   Model::get().post<EventType::Connected>();
+							   return;
+						   });
 
-			if (body.contains("sessionKey"))
-			{
-				SetSessionKey(body["sessionKey"].get<unsigned int>());
-				LOG_INFO("Duet session key = {:d}", m_sessionKey);
-			}
-			if (body.contains("isEmulated"))
-			{
-				SetSessionKey(sm_noSessionKey);
-				m_sbcMode = true;
-				LOG_INFO("Connected to Duet in SBC mode");
-			}
-			LOG_INFO("rr_connect succeeded");
-			OM::SetChannelIndex(0); // state.thisInput is not returned by `rr_model` so manually set here
-			ret = true;
 			break;
 		}
 		case CommunicationType::usb:
@@ -959,8 +1001,9 @@ namespace Comm
 			LOG_DBG(ret ? "Connected to USB device" : "Failed to connect to USB device");
 			if (ret)
 			{
-				m_connected = ret; // set connected state so SendGcode actually works
-				SendGcode("M575 P0 S4\n");
+				m_connectionState = ConnectionState::CONNECTED; // set connected state so SendGcode actually works
+				SendGcode("M575 P0 S4\n",
+						  true); // set serial comm parameters for USB port to use JSON responses and CRC
 			}
 			break;
 		}
@@ -968,8 +1011,14 @@ namespace Comm
 			break;
 		}
 
-		m_connected = ret;
-		if (m_connected)
+		if (!ret)
+		{
+			m_connectionState = ConnectionState::DISCONNECTED;
+			return ret;
+		}
+
+		/* Only for USB, UART & network is async */
+		if (IsConnected())
 		{
 			Model::get().post<EventType::Connected>();
 		}
@@ -979,10 +1028,11 @@ namespace Comm
 
 	const bool Duet::Disconnect()
 	{
-		if (!m_connected)
+		if (m_connectionState == ConnectionState::DISCONNECTED)
 		{
 			return true;
 		}
+
 		LOG_INFO("Disconnecting from Duet");
 		SetStatus(OM::PrinterStatus::connecting);
 
@@ -999,15 +1049,22 @@ namespace Comm
 			{
 				break;
 			}
-			HttpResponse r;
 			hv::QueryParams query;
-			if (!Get("/rr_disconnect", r, query))
+			ret = AsyncGet("/rr_disconnect",
+						   query,
+						   [this](const HttpResponsePtr& r)
+						   {
+							   if (r->status_code != HTTP_STATUS_OK)
+							   {
+								   LOG_ERROR("rr_disconnect failed, returned response {:d}", (int)r->status_code);
+								   return;
+							   }
+						   });
+
+			if (!ret)
 			{
-				LOG_ERROR("rr_disconnect failed, returned response {:d}", (int)r.status_code);
-				ret = false;
-				break;
+				LOG_ERROR("rr_disconnect failed");
 			}
-			ret = true;
 			break;
 		}
 		case CommunicationType::usb:
@@ -1021,8 +1078,12 @@ namespace Comm
 		}
 
 		Reset();
-		m_connected = false;
-		Model::get().post<EventType::Disconnected>();
+		bool wasConnected = IsConnected();
+		m_connectionState == ConnectionState::DISCONNECTED;
+		if (wasConnected)
+		{
+			Model::get().post<EventType::Disconnected>();
+		}
 		return ret;
 	}
 
@@ -1090,6 +1151,11 @@ namespace Comm
 
 	void Duet::SetHostname(std::string_view hostname)
 	{
+		if (hostname == m_config.hostname)
+		{
+			return;
+		}
+
 		LOG_DBG("Hostname = {:s}", hostname);
 		// TODO store hostname
 		m_config.hostname.clear();

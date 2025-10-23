@@ -14,7 +14,7 @@ class UartController
   public:
 	static constexpr size_t DEFAULT_BUFFER_SIZE = 4096;
 
-	using DataCallback = std::function<void(const uint8_t*, size_t)>;
+	using DataCallback = std::function<void(const std::string_view data)>;
 
 	UartController();
 	~UartController();

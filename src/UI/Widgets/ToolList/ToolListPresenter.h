@@ -42,6 +42,7 @@ namespace UI
 		}
 		void onActivate() override;
 		void onDeactivate() override;
+		void onDisconnect() override { update(); };
 
 		struct NumberPadConfig
 		{

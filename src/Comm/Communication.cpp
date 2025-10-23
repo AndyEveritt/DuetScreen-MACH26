@@ -409,6 +409,12 @@ namespace Comm
 	 */
 	bool sendNext()
 	{
+		if (!DUET.IsConnected() && !DUET.IsConnecting())
+		{
+			Reconnect();
+			return false;
+		}
+
 		const auto now = TimeHelper::getCurrentTime();
 		const auto expectedResponseBy = s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
 		if (now > expectedResponseBy)

@@ -23,9 +23,6 @@ bool UartController::open(const std::string& device)
 #if SIMULATION
 	LOG_INFO("Simulating UART open on device: {:s}", device.c_str());
 	m_fd = 1; // Simulate success
-	m_running = true;
-	m_readThread = std::thread(&UartController::readLoop, this);
-	return true;
 #else
 	if (isOpen())
 	{
@@ -47,13 +44,13 @@ bool UartController::open(const std::string& device)
 		m_fd = -1;
 		return false;
 	}
+#endif
 
 	// Start read thread
 	m_running = true;
 	m_readThread = std::thread(&UartController::readLoop, this);
 
 	return true;
-#endif
 }
 
 void UartController::close()
@@ -231,21 +228,20 @@ ssize_t UartController::_send(const uint8_t* data, size_t length)
 
 void UartController::readLoop()
 {
-#if SIMULATION
 	std::vector<uint8_t> buffer(m_bufferSize);
+#if SIMULATION
 	while (m_running)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		if (m_receiveCallback)
 		{
-			const char* testData = "simulated data\n";
+			const char* testData = "{\"key\": \"value\"}\n";
 			size_t len = strlen(testData);
 			memcpy(buffer.data(), testData, len);
-			m_receiveCallback(buffer.data(), len);
+			m_receiveCallback(std::string_view(reinterpret_cast<char*>(buffer.data()), len));
 		}
 	}
 #else
-	std::vector<uint8_t> buffer(m_bufferSize);
 	fd_set readfds;
 	struct timeval tv;
 
@@ -281,7 +277,7 @@ void UartController::readLoop()
 
 			if (callback)
 			{
-				callback(buffer.data(), bytesRead);
+				callback(std::string_view(reinterpret_cast<char*>(buffer.data()), bytesRead));
 			}
 		}
 		else if (bytesRead < 0 && errno != EAGAIN && errno != EWOULDBLOCK)

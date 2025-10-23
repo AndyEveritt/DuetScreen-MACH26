@@ -27,6 +27,7 @@ namespace SerialIo
 	bool SetBaudRate(speed_t baudRate);
 	bool IsConnected();
 	void SetDataCallback(UartController::DataCallback callback);
+	void RestoreDataCallback();
 } // namespace SerialIo
 
 #endif /* JNI_SERIALIO_HPP_ */

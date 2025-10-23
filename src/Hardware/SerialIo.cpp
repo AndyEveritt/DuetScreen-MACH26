@@ -25,7 +25,7 @@ namespace SerialIo
 	static std::array<unsigned char, UART_DATA_BUF_SIZE> s_buffer;
 	static size_t s_bufferLen = 0;
 
-	static void processData(const uint8_t* data, size_t len);
+	static void processData(const std::string_view data);
 
 	bool Init(const char* device, speed_t baudRate)
 	{
@@ -39,7 +39,7 @@ namespace SerialIo
 			LOG_ERROR("Failed to set baud rate");
 			return false;
 		}
-		s_uart->setReceiveCallback(processData);
+		RestoreDataCallback();
 
 		return s_uart->open(device);
 	}
@@ -80,9 +80,18 @@ namespace SerialIo
 		}
 	}
 
-	static void processData(const uint8_t* data, size_t len)
+	void RestoreDataCallback()
 	{
-		LOG_VERBOSE("Received ({0:d}) '{1:.{0}s}'", (int)len, reinterpret_cast<const char*>(data));
+		if (s_uart)
+		{
+			s_uart->setReceiveCallback(processData);
+		}
+	}
+
+	static void processData(const std::string_view data)
+	{
+		size_t len = data.length();
+		LOG_VERBOSE("Received ({:d}) '{:s}'", len, data);
 
 		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::uart)
 		{
@@ -92,7 +101,7 @@ namespace SerialIo
 
 		if (s_bufferLen + len <= UART_DATA_BUF_SIZE)
 		{
-			std::copy(data, data + len, s_buffer.data() + s_bufferLen);
+			std::copy(data.begin(), data.end(), s_buffer.data() + s_bufferLen);
 			s_bufferLen += len;
 		}
 		else
