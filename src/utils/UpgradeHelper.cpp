@@ -108,7 +108,7 @@ namespace UpgradeHelper
 			return false;
 		}
 
-		int ret = system("/etc/init.d/S02setup start");
+		int ret = system("/etc/init.d/S03rootfs-upgrade start");
 		return ret == 0;
 	}
 
