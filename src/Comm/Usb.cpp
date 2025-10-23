@@ -183,6 +183,10 @@ namespace Comm
 			LOG_ERROR("Failed to submit transfer: {:s}", libusb_error_name(r));
 			libusb_free_transfer(transfer);
 			delete transferData;
+			if (r == LIBUSB_ERROR_NO_DEVICE)
+			{
+				Reconnect();
+			}
 			return false;
 		}
 
