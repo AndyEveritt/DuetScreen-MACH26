@@ -235,6 +235,7 @@ void UartController::readLoop()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		if (m_receiveCallback)
 		{
+			// TODO simulate incoming data
 			const char* testData = "{\"key\": \"value\"}\n";
 			size_t len = strlen(testData);
 			memcpy(buffer.data(), testData, len);

@@ -7,6 +7,7 @@
 
 #include "Comm/Communication.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
 #include "test_utils/TestSuite.h"
 #include <gtest/gtest.h>
 
@@ -18,6 +19,18 @@ class TestCommunication : public TestSuite
 
 TEST_F(TestCommunication, SendNext)
 {
+	/* Need to set uart mode since it the duet needs to be "connected" for sendNext to work. Uart mode fakes this in
+	 * SIMULATION */
+	Comm::DUET.SetCommunicationType(Comm::CommunicationType::uart);
+
+	auto startTime = TimeHelper::getCurrentTime();
+	while (!Comm::DUET.IsConnected())
+	{
+		ASSERT_LT(TimeHelper::getTimeSince(startTime), std::chrono::seconds(5))
+			<< "Timed out waiting for Duet to connect in UART mode";
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
 	auto seq = Comm::GetNextSeq(Comm::g_currentReqSeq);
 	EXPECT_STREQ(seq->key, "network");
 

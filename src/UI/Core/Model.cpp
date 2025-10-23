@@ -15,10 +15,18 @@
 Model::Model()
 {
 	// Timers
-	m_timers.tick = lv_timer_create([](lv_timer_t* timer)
-									{ static_cast<Model*>(lv_timer_get_user_data(timer))->post<EventType::Tick>(); },
-									MODEL_TICK_INTERVAL,
-									this);
+	if (lv_is_initialized())
+	{
+		m_timers.tick = lv_timer_create(
+			[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->post<EventType::Tick>(); },
+			MODEL_TICK_INTERVAL,
+			this);
+	}
+	else
+	{
+		LOG_WARN("LVGL not initialized, skipping model tick timer creation");
+		m_timers.tick = nullptr;
+	}
 
 #if !MULTITHREADED
 	m_timers.request =
