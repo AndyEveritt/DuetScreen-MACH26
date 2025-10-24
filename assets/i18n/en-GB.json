@@ -24,7 +24,7 @@
     "connection_method": { /* Duet connection methods */
       "network": "Network",
       "usb": "USB",
-      "uart": "UART",
+      "uart": "UART (legacy)",
       "unknown": "Unknown"
     },
     "units": {
