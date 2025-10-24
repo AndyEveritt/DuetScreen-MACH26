@@ -230,6 +230,11 @@ namespace UI
 		}
 		case LV_EVENT_VALUE_CHANGED:
 		{
+			if (slider->m_slider.hasState(LV_STATE_FOCUSED))
+			{
+				// Ignore changes while the slider is being dragged
+				break;
+			}
 			float value = atof(slider->m_input.getText().data());
 			if (value > slider->getMax() && slider->m_outOfRangeMode & ~OutOfRange::UPPER)
 			{
