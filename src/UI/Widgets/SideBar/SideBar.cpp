@@ -15,6 +15,8 @@
 #include "i18n/i18n.h"
 
 #define ESTOP_SIZE 80
+#define APP_DRAWER_ICON "apps.png"
+#define APP_DRAWER_CLOSE_ICON "menu_close.png"
 
 namespace UI
 {
@@ -57,7 +59,7 @@ namespace UI
 		m_homeBtn.setIcon("home.png");
 		m_backBtn.setIcon("back.png");
 		m_macrosBtn.setIcon("macros.png");
-		m_menuBtn.setIcon("apps.png");
+		m_menuBtn.setIcon(APP_DRAWER_ICON);
 
 		m_backBtn.addClickedCallback(backBtnEvent, this);
 		m_homeBtn.addClickedCallback(homeBtnEvent, this);
@@ -133,7 +135,7 @@ namespace UI
 			return;
 		}
 
-		m_menuBtn.setIcon(show ? "menu_close.png" : "apps.png");
+		m_menuBtn.setIcon(show ? APP_DRAWER_CLOSE_ICON : APP_DRAWER_ICON);
 		m_appDrawer.updateLayout();
 		m_appDrawer.setState(LV_STATE_USER_1, show);
 		m_appDrawerModalBg.setVisible(show);
