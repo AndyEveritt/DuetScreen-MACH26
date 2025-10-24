@@ -28,12 +28,12 @@ namespace UI
 			DISABLED		 // Do not run the callback
 		};
 
-		enum class OutOfRange
+		enum OutOfRange
 		{
-			NONE,  // Do not allow the value to go out of range
-			BOTH,  // Allow the value to go out of range in both directions
-			UPPER, // Allow the value to go out of range in the +ve direction
-			LOWER, // Allow the value to go out of range in the -ve direction
+			NONE = (1 << 0),  // Do not allow the value to go out of range
+			UPPER = (1 << 1), // Allow the value to go out of range in the +ve direction
+			LOWER = (1 << 2), // Allow the value to go out of range in the -ve direction
+			BOTH = UPPER | LOWER
 		};
 
 		Slider(const std::string& name, LvObj& parent);

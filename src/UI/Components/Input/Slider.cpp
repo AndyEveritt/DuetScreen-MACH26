@@ -9,6 +9,8 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 
+#define BUTTON_SIZE 50
+
 namespace UI
 {
 	Slider::Slider(const std::string& name, LvObj& parent)
@@ -32,10 +34,11 @@ namespace UI
 		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		m_decrement.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_increment.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_decrement.setSize(BUTTON_SIZE, BUTTON_SIZE);
+		m_increment.setSize(BUTTON_SIZE, BUTTON_SIZE);
 		m_increment.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
-		m_input.setSize(50, LV_SIZE_CONTENT);
+		m_input.setMinWidth(50);
+		m_input.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_slider.setHeight(LV_SIZE_CONTENT);
 		m_slider.setFlexGrow(1);
 		m_slider.setStylePad(2);
@@ -75,7 +78,7 @@ namespace UI
 		m_input.setStylePad(2);
 		m_input.setOneLine(true);
 		m_input.setAcceptedChars("0123456789-.");
-		m_input.setMaxLength(4);
+		// m_input.setMaxLength(4);
 		m_input.setCursorClickPos(false);
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		updateText();
@@ -89,16 +92,13 @@ namespace UI
 	void Slider::setOutOfRangeMode(OutOfRange mode)
 	{
 		UI_LOCK();
-		switch (mode)
+		if (mode & OutOfRange::LOWER || getMin() < 0)
 		{
-		case OutOfRange::NONE:
-		case OutOfRange::UPPER:
-			m_input.setAcceptedChars(getMin() < 0 ? "-0123456789" : "0123456789");
-			break;
-		case OutOfRange::LOWER:
-		case OutOfRange::BOTH:
 			m_input.setAcceptedChars("-0123456789");
-			break;
+		}
+		else
+		{
+			m_input.setAcceptedChars("0123456789");
 		}
 		m_outOfRangeMode = mode;
 	}
@@ -228,17 +228,28 @@ namespace UI
 			slider->setValue(value);
 			break;
 		}
+		case LV_EVENT_VALUE_CHANGED:
+		{
+			float value = atof(slider->m_input.getText().data());
+			if (value > slider->getMax() && slider->m_outOfRangeMode & ~OutOfRange::UPPER)
+			{
+				slider->m_input.setText(fmt::format("{:g}", slider->getMax()));
+			}
+			slider->boundValue(value);
+			slider->m_value = value;
+			slider->m_slider.setValue(slider->normaliseValue(value));
+			break;
+		}
 		}
 	}
 
 	bool Slider::boundValue(float& value)
 	{
 		UI_LOCK();
-		bool outOfRange = false;
+		float original = value;
 		switch (m_outOfRangeMode)
 		{
 		case OutOfRange::NONE:
-			outOfRange = value < getMin() || value > getMax();
 			value = std::clamp(value, getMin(), getMax());
 			m_decrement.setDisabled(value == getMin());
 			m_increment.setDisabled(value == getMax());
@@ -248,19 +259,17 @@ namespace UI
 			m_increment.setDisabled(false);
 			break;
 		case OutOfRange::UPPER:
-			outOfRange = value < getMin();
 			value = std::max(value, getMin());
 			m_decrement.setDisabled(value == getMin());
 			m_increment.setDisabled(false);
 			break;
 		case OutOfRange::LOWER:
-			outOfRange = value > getMax();
 			value = std::min(value, getMax());
 			m_decrement.setDisabled(false);
 			m_increment.setDisabled(value == getMax());
 			break;
 		}
-		return outOfRange;
+		return original != value;
 	}
 
 	int32_t Slider::normaliseValue(float value) const
