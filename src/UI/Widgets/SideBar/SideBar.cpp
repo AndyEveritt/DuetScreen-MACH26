@@ -133,6 +133,7 @@ namespace UI
 			return;
 		}
 
+		m_menuBtn.setIcon(show ? "menu_close.png" : "apps.png");
 		m_appDrawer.updateLayout();
 		m_appDrawer.setState(LV_STATE_USER_1, show);
 		m_appDrawerModalBg.setVisible(show);
