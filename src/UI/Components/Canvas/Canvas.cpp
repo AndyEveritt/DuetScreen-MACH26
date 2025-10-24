@@ -482,10 +482,8 @@ namespace UI
 		getResolution(res_x, res_y);
 
 		lv_point_t txt_size;
-		lv_text_attributes_t txt_attr;
-		lv_text_attributes_init(&txt_attr);
-		txt_attr.max_width = std::min((res_x - pos.x) * 2, res_x);
-		lv_text_get_size(&txt_size, dsc.text, dsc.font, &txt_attr);
+		int32_t max_width = std::min((res_x - pos.x) * 2, res_x);
+		lv_text_get_size(&txt_size, dsc.text, dsc.font, dsc.letter_space, dsc.line_space, max_width, dsc.flag);
 
 		lv_area_t area;
 		area.x1 = pos.x - txt_size.x / 2;
