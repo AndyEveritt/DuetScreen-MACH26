@@ -41,7 +41,7 @@ namespace UI
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
 		lv_obj_set_grid_cell(m_settingsList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		setGridCell(m_subWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_keyboard, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 1, 1);
 
 		// List
 		lv_obj_set_user_data(m_duetSettings, &m_duetSettingsView);
@@ -60,6 +60,9 @@ namespace UI
 
 		// Sub window
 		m_subWindow.setStylePad(0);
+
+		/* Keyboard */
+		m_keyboard.setSize(LV_PCT(100), LV_PCT(40));
 	}
 
 	void SettingsView::onWindowSelectEvent(lv_event_t* e)
@@ -89,13 +92,11 @@ namespace UI
 		UI_LOCK();
 		if (show)
 		{
-			m_layoutRowDsc[1] = LV_GRID_FR(1);
 			m_keyboard.setMode(mode);
 			setKeyboardTextArea(textArea);
 		}
 		else
 		{
-			m_layoutRowDsc[1] = 0;
 			setKeyboardTextArea(NULL);
 		}
 		m_keyboard.setVisible(show);
@@ -445,6 +446,7 @@ namespace UI
 			this);
 		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
 		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_themePreview.setKeyboard(&getMainSettingsView().getKeyboard());
 	}
 
 	void ThemeSettingsView::updateThemePreview()

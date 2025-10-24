@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
@@ -30,6 +31,8 @@ namespace UI
 
 		void showControls(bool show);
 
+		void setKeyboard(LvKeyboard* keyboard);
+
 	  private:
 		void updateThemeColors();
 
@@ -38,5 +41,7 @@ namespace UI
 		Slider m_secondaryHueSlider;
 		Slider m_chromaSlider;
 		LvCheckbox m_darkMode;
+
+		LvKeyboard* m_keyboard = nullptr;
 	};
 } // namespace UI
