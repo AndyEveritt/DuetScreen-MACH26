@@ -73,6 +73,8 @@ namespace UI::Themes
 
 	void DefaultTheme::onInit()
 	{
+		Theme::onInit();
+
 		LvglStyles& lvgl = getLvglStyles();
 		ComponentStyles& components = getComponentStyles();
 

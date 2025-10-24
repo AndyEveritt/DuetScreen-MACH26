@@ -1058,15 +1058,7 @@ namespace UI::Themes
 	std::string getIconPath(std::string_view icon_name)
 	{
 		UI_LOCK();
-		return fmt::format(
-#if SIMULATION
-			"A:assets/"
-#else
-			"A:/etc/assets/"
-#endif
-			"icons/{:s}/{:s}",
-			s_iconFolder,
-			icon_name);
+		return fmt::format("A:" ASSETS_FOLDER "icons/{:s}/{:s}", s_iconFolder, icon_name);
 	}
 
 	bool iconExists(std::string_view icon_name)

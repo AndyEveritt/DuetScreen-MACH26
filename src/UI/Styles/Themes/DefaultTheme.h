@@ -44,7 +44,6 @@ namespace UI::Themes
 		DefaultTheme(std::string_view name,
 					 ThemeColors colors,
 					 const lv_font_t* font,
-					 bool darkMode,
 					 std::string_view iconFolder,
 					 std::function<void(Theme* theme)> styleOverrides = nullptr)
 			: Theme(name, iconFolder, styleOverrides)
@@ -52,25 +51,21 @@ namespace UI::Themes
 			, m_fontSmall(font)
 			, m_fontNormal(font)
 			, m_fontLarge(font)
-			, m_darkMode(darkMode)
 		{
 		}
 
-		bool isDarkMode() const { return m_darkMode; }
 		void updateColors(const ThemeColors& colors);
 
 	  protected:
+		virtual void onInit() override;
+
 		ThemeColors m_colors;
 		const lv_font_t* m_fontSmall;
 		const lv_font_t* m_fontNormal;
 		const lv_font_t* m_fontLarge;
-		bool m_darkMode;
 
 		lv_style_transition_dsc_t m_draggableTransition;
 		lv_style_transition_dsc_t m_draggingTransition;
 		lv_style_transition_dsc_t m_dragCompleteTransition;
-
-	  private:
-		virtual void onInit() override;
 	};
 } // namespace UI::Themes

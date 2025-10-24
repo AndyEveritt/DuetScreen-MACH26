@@ -22,6 +22,7 @@ namespace UI
 		ThemePreview(const std::string& name, LvObj& parent);
 
 		void updateSwatches();
+		void updateSliders(size_t primaryHue, size_t secondaryHue, float chroma, bool darkMode);
 		void setPrimaryHue(size_t hue);
 		void setSecondaryHue(size_t hue);
 		void setChroma(float chroma);

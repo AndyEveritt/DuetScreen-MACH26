@@ -25,6 +25,7 @@ namespace UI
 		{
 			VALUE_CONFIRMED, // Only run callback once the slider has been released or the buttons are pressed
 			VALUE_CHANGED,	 // Run callback as soon as the slider is moved or the buttons are pressed
+			DISABLED		 // Do not run the callback
 		};
 
 		enum class OutOfRange

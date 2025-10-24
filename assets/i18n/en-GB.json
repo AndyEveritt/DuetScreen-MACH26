@@ -272,6 +272,7 @@
     },
     "theme": {
       "id": { /* Theme names */
+        "custom": "Custom",
         "dark": "Dark",
         "grey": "Greyscale",
         "light": "Light"

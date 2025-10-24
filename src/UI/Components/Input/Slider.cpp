@@ -139,7 +139,7 @@ namespace UI
 			updateText();
 		}
 
-		if (m_valueChangedCallback)
+		if (m_valueChangedCallback && m_sendMode != SendMode::DISABLED)
 		{
 			m_valueChangedCallback(getValue());
 		}
@@ -178,7 +178,7 @@ namespace UI
 		}
 		case LV_EVENT_RELEASED:
 			slider->m_focused = false;
-			if (slider->m_valueChangedCallback)
+			if (slider->m_valueChangedCallback && slider->m_sendMode != SendMode::DISABLED)
 			{
 				slider->m_valueChangedCallback(slider->getValue());
 			}

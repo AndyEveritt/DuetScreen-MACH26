@@ -14,6 +14,12 @@
 #include <string>
 #include <vector>
 
+#if SIMULATION
+#  define ASSETS_FOLDER "assets/"
+#else
+#  define ASSETS_FOLDER "/etc/assets/"
+#endif
+
 namespace UI::Themes
 {
 	struct Style
@@ -254,10 +260,9 @@ namespace UI::Themes
 	  protected:
 		LvglStyles& getLvglStyles();
 		ComponentStyles& getComponentStyles();
-
-	  private:
 		virtual void onInit() {}
 
+	  private:
 		// Base LVGL styles applied to existing and newly created objects
 		std::unique_ptr<LvglStyles> m_lvgl;
 

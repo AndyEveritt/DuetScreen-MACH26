@@ -5,6 +5,7 @@
 #include "Hardware/Reset.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
+#include "UI/Styles/Themes/CustomTheme.h"
 #include "i18n/i18n.h"
 #include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
@@ -436,7 +437,7 @@ namespace UI
 					return;
 				}
 				theme->setThemeActive();
-				view->m_themePreview.updateSwatches();
+				view->updateThemePreview();
 				StorageHelper::setData(ID_THEME, selected);
 				// view->getMainSettingsPresenter()->setTheme(selected);
 			},
@@ -444,6 +445,31 @@ namespace UI
 			this);
 		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
 		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+	}
+
+	void ThemeSettingsView::updateThemePreview()
+	{
+		auto theme = Themes::getCurrentTheme();
+		if (theme == nullptr)
+		{
+			return;
+		}
+
+		auto customTheme = dynamic_cast<const Themes::CustomTheme*>(theme);
+		m_themePreview.showControls(customTheme != nullptr);
+		if (customTheme != nullptr)
+		{
+			m_themePreview.updateSliders(customTheme->getPrimaryHue(),
+										 customTheme->getSecondaryHue(),
+										 customTheme->getChroma(),
+										 customTheme->getDarkMode());
+		}
+		m_themePreview.updateSwatches();
+	}
+
+	void ThemeSettingsView::onShow()
+	{
+		updateThemePreview();
 	}
 
 	NetworkSettingsView::NetworkSettingsView(LvObj& parent, SettingsView& mainSettingsView)

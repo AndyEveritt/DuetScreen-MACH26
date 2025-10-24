@@ -29,7 +29,7 @@
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Styles/Styles.h"
-#include "UI/Styles/Themes/DefaultTheme.h"
+#include "UI/Styles/Themes/CustomTheme.h"
 #include "UI/Widgets/SideBar/SideBar.h"
 #include "UI/Widgets/Temperature/HeaterSlider.h"
 #include "UI/Widgets/ToolList/ToolList.h"
@@ -63,8 +63,7 @@ TEST_F(TestTheme, DefaultTheme)
 	const lv_font_t* font = LV_FONT_DEFAULT;
 	constexpr bool darkMode = true;
 
-	Themes::ThemeColors colors = Themes::createThemeColors(primaryHue, secondaryHue, chroma, darkMode);
-	Themes::DefaultTheme theme("test_theme", colors, font, darkMode, "material", [](Themes::Theme* theme) {});
+	Themes::CustomTheme theme("test_theme", font, "material", [](Themes::Theme* theme) {});
 	theme.init();
 	theme.setThemeActive();
 
@@ -72,22 +71,22 @@ TEST_F(TestTheme, DefaultTheme)
 	themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 	EXPECT_TRUE(Themes::getCurrentTheme() == &theme);
+	themePreview.setDarkMode(darkMode);
 	themePreview.setPrimaryHue(primaryHue);
 	themePreview.setSecondaryHue(secondaryHue);
 	themePreview.setChroma(chroma);
-	themePreview.setDarkMode(darkMode);
 	EXPECT_EQUAL_SCREENSHOT("theme/example_1.png");
 
+	themePreview.setDarkMode(false);
 	themePreview.setPrimaryHue(25);
 	themePreview.setSecondaryHue(150);
 	themePreview.setChroma(0.5f);
-	themePreview.setDarkMode(false);
 	EXPECT_EQUAL_SCREENSHOT("theme/example_2.png");
 
+	themePreview.setDarkMode(true);
 	themePreview.setPrimaryHue(300);
 	themePreview.setSecondaryHue(50);
 	themePreview.setChroma(0.5f);
-	themePreview.setDarkMode(true);
 	EXPECT_EQUAL_SCREENSHOT("theme/example_3.png");
 }
 

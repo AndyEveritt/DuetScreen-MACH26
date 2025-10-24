@@ -98,6 +98,9 @@ namespace UI
 		ThemeSettingsView(LvObj& parent, SettingsView& mainSettingsView);
 
 	  private:
+		void updateThemePreview();
+		virtual void onShow() override;
+
 		DropdownMenu m_theme;
 		ThemePreview m_themePreview;
 	};

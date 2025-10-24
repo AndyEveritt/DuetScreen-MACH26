@@ -8,7 +8,7 @@
 #include "ThemePreview.h"
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
-#include "UI/Styles/Themes/DefaultTheme.h"
+#include "UI/Styles/Themes/CustomTheme.h"
 #include "i18n/i18n.h"
 
 namespace UI
@@ -148,28 +148,40 @@ namespace UI
 								});
 	}
 
+	void ThemePreview::updateSliders(size_t primaryHue, size_t secondaryHue, float chroma, bool darkMode)
+	{
+		m_primaryHueSlider.setSendMode(Slider::SendMode::DISABLED);
+		m_secondaryHueSlider.setSendMode(Slider::SendMode::DISABLED);
+		m_chromaSlider.setSendMode(Slider::SendMode::DISABLED);
+
+		m_primaryHueSlider.setValue(static_cast<float>(primaryHue));
+		m_secondaryHueSlider.setValue(static_cast<float>(secondaryHue));
+		m_chromaSlider.setValue(chroma);
+		m_darkMode.setChecked(darkMode); // this will call the updateThemeColors() callback
+
+		m_primaryHueSlider.setSendMode(Slider::SendMode::VALUE_CONFIRMED);
+		m_secondaryHueSlider.setSendMode(Slider::SendMode::VALUE_CONFIRMED);
+		m_chromaSlider.setSendMode(Slider::SendMode::VALUE_CONFIRMED);
+	}
+
 	void ThemePreview::setPrimaryHue(size_t hue)
 	{
 		m_primaryHueSlider.setValue(static_cast<float>(hue));
-		updateThemeColors();
 	}
 
 	void ThemePreview::setSecondaryHue(size_t hue)
 	{
 		m_secondaryHueSlider.setValue(static_cast<float>(hue));
-		updateThemeColors();
 	}
 
 	void ThemePreview::setChroma(float chroma)
 	{
 		m_chromaSlider.setValue(chroma);
-		updateThemeColors();
 	}
 
 	void ThemePreview::setDarkMode(bool enable)
 	{
 		m_darkMode.setChecked(enable);
-		updateThemeColors();
 	}
 
 	void ThemePreview::showControls(bool show)
@@ -190,18 +202,17 @@ namespace UI
 			return;
 		}
 
-		auto defaultTheme = dynamic_cast<UI::Themes::DefaultTheme*>(theme);
-		if (!defaultTheme)
+		auto customTheme = dynamic_cast<UI::Themes::CustomTheme*>(theme);
+		if (!customTheme)
 		{
-			LOG_ERROR("Current theme does not inherit from DefaultTheme");
+			LOG_ERROR("Current theme does not inherit from CustomTheme");
 			return;
 		}
 
-		auto colors = UI::Themes::createThemeColors(m_primaryHueSlider.getValue(),
-													m_secondaryHueSlider.getValue(),
-													m_chromaSlider.getValue(),
-													m_darkMode.getChecked());
-		defaultTheme->updateColors(colors);
+		customTheme->setColors(m_primaryHueSlider.getValue(),
+							   m_secondaryHueSlider.getValue(),
+							   m_chromaSlider.getValue(),
+							   m_darkMode.getChecked());
 
 		UI::Themes::refreshCurrentTheme();
 		updateSwatches();
