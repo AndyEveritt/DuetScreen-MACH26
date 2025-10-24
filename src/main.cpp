@@ -14,6 +14,7 @@
 #include "Hardware/Reset.h"
 #include "Hardware/Usb.h"
 #include "UI/Screens/Home/HomeView.h"
+#include "UI/Styles/Font.h"
 #include "UI/Styles/Styles.h"
 #include "UI/Widgets/HardwareTest/HardwareTest.h"
 #include "glob.h"
@@ -103,6 +104,7 @@ int main(int argc, char** argv)
 #if LV_USE_LOG
 	lv_log_register_print_cb(lvgl_log_cb);
 #endif
+	UI::Font::init();
 	i18n::init();
 
 	Model::get(); // Initialize the model instance, this creates the subscribers

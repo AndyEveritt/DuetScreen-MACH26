@@ -41,6 +41,7 @@
 #define LV_USE_THEME_MONO 0
 
 /* Fonts */
+#define LV_USE_FONT_MANAGER 1
 #define LV_USE_FREETYPE 1
 
 /* File system support */

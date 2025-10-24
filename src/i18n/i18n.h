@@ -22,11 +22,12 @@ namespace i18n
     void refreshLanguageFiles();
     const std::map<std::string, std::string>& getAvailableLanguages();
     int32_t getLanguageIndex(std::string_view lang);
-    
-    bool setLanguage(const std::string_view lang);
-    bool setLanguageByIndex(size_t index);
+
+	bool setLanguage(const std::string_view lang);
 
 	const std::string& translate(std::string_view tag);
+
+	const std::vector<std::string>& getSupportedFonts();
 } // namespace i18n
 
 /**

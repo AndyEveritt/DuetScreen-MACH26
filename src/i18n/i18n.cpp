@@ -27,6 +27,7 @@ namespace i18n
 	using language_table_t = std::map<language_code_t, language_readable_t>;
 	static language_code_t s_currentLanguage;
 	static language_table_t s_languages;
+	static std::vector<std::string> s_supportedFonts;
 
 	struct string_hash
 	{
@@ -44,7 +45,9 @@ namespace i18n
 	static translation_table_t s_translationTable;
 
 	static bool loadLanguageFile(const std::filesystem::path& filepath);
-	static std::string parseLanguageReadableName(const std::filesystem::path& filepath);
+	static nlohmann::json parseLanguageFile(const std::filesystem::path& filepath);
+	static std::string getLanguageReadableName(const nlohmann::json& contents);
+	static std::vector<std::string> getLanguageFonts(const nlohmann::json& contents);
 
 	void init()
 	{
@@ -66,11 +69,23 @@ namespace i18n
 		std::ranges::for_each(std::filesystem::directory_iterator(LANG_DIR),
 							  [](const auto& entry)
 							  {
-								  if (entry.is_regular_file() && entry.path().extension() == LANG_FILE_EXT)
+								  auto& path = entry.path();
+								  if (entry.is_regular_file() && path.extension() == LANG_FILE_EXT)
 								  {
-									  std::string lang_code = entry.path().stem().string();
-									  std::string readable = parseLanguageReadableName(entry.path());
+									  std::string lang_code = path.stem().string();
+									  nlohmann::json contents = parseLanguageFile(path);
+									  if (contents.is_null())
+									  {
+										  LOG_DBG("Skipping invalid language file: {:s}", path.c_str());
+										  return;
+									  }
 
+									  std::string readable = getLanguageReadableName(contents);
+									  if (readable.empty())
+									  {
+										  LOG_WARN("Language file {:s} missing readable name, skipping", path.c_str());
+										  return;
+									  }
 									  s_languages[lang_code] = readable;
 								  }
 							  });
@@ -93,6 +108,7 @@ namespace i18n
 
 		if (!loadLanguageFile(lang_file))
 		{
+			LOG_ERROR("Failed to load language file: {:s}", lang_file.string());
 			return false;
 		}
 
@@ -123,34 +139,20 @@ namespace i18n
 		}
 	}
 
+	const std::vector<std::string>& getSupportedFonts()
+	{
+		return s_supportedFonts;
+	}
+
 	static bool loadLanguageFile(const std::filesystem::path& filepath)
 	{
-		LOG_DBG("Loading language file: {:s}...", filepath.string());
-		std::ifstream file(filepath);
-		if (!file.is_open())
+		nlohmann::json data = parseLanguageFile(filepath);
+		if (data.is_null())
 		{
-			LOG_ERROR("Failed to open language file: {:s}", filepath.string());
 			return false;
 		}
-		nlohmann::json j;
-		try
-		{
-			/* Parse json and ignore comments */
-			j = nlohmann::json::parse(file, nullptr, true, true);
-		}
-		catch (const std::exception& e)
-		{
-			LOG_ERROR("Error reading JSON file: {}", e.what());
-			return false;
-		}
-		auto data = j.get<std::map<std::string, nlohmann::json>>();
 
-		if (data.find("readable") == data.end() || !data["readable"].is_string())
-		{
-			LOG_ERROR("Language file missing 'readable' field or it is not a string: {:s}", filepath.string());
-			return false;
-		}
-		std::string readable = data["readable"].get<std::string>();
+		std::string readable = getLanguageReadableName(data);
 
 		if (data.find("translations") == data.end() || !data["translations"].is_object())
 		{
@@ -161,6 +163,9 @@ namespace i18n
 
 		// Extract language code from filename
 		std::string lang_code = filepath.filename().stem().string();
+
+		// Extract supported fonts
+		s_supportedFonts = getLanguageFonts(data);
 
 		// Add to languages
 		s_languages[lang_code] = readable;
@@ -195,14 +200,14 @@ namespace i18n
 		return true;
 	}
 
-	static std::string parseLanguageReadableName(const std::filesystem::path& filepath)
+	static nlohmann::json parseLanguageFile(const std::filesystem::path& filepath)
 	{
-		LOG_DBG("Parsing language readable name from file: {:s}...", filepath.string());
+		LOG_DBG("Parsing language file: {:s}...", filepath.string());
 		std::ifstream file(filepath);
 		if (!file.is_open())
 		{
 			LOG_ERROR("Failed to open language file: {:s}", filepath.string());
-			return "";
+			return {};
 		}
 
 		nlohmann::json j;
@@ -217,13 +222,27 @@ namespace i18n
 		catch (const std::exception& e)
 		{
 			LOG_ERROR("Error reading JSON file: {}", e.what());
-			return "";
+			return {};
 		}
 
-		if (j.find("readable") != j.end() && j["readable"].is_string())
+		return j;
+	}
+
+	static std::string getLanguageReadableName(const nlohmann::json& contents)
+	{
+		if (contents.find("readable") != contents.end() && contents["readable"].is_string())
 		{
-			return j["readable"].get<std::string>();
+			return contents["readable"].get<std::string>();
 		}
 		return "";
+	}
+
+	static std::vector<std::string> getLanguageFonts(const nlohmann::json& contents)
+	{
+		if (contents.find("fonts") != contents.end() && contents["fonts"].is_array())
+		{
+			return contents["fonts"].get<std::vector<std::string>>();
+		}
+		return {};
 	}
 } // namespace i18n
