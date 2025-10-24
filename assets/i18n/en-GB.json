@@ -217,7 +217,7 @@
     },
     "side_bar": { /* Side bar buttons */
       "back": "Back",
-      "home": "Home",
+      "home": "Dashboard",
       "menu": "Menu",
       "macros": "Macros"
     },
