@@ -158,11 +158,12 @@ def run_tests(build_dir: Path, test_filter: Optional[str] = None) -> int:
 	log(f"Running tests in: {build_dir}")
 
 	# Normal path: use ctest if available
-	ctest_cmd = ["ctest", "--test-dir", build_dir / "tests", "--output-on-failure", "-j1"]
+	ctest_cmd = ["ctest", "--test-dir", (build_dir / "tests").as_posix(), "--output-on-failure", "-j1"]
 	if test_filter:
 		ctest_cmd.extend(["-R", test_filter])
 
 	try:
+		log(" ".join(ctest_cmd))
 		result = subprocess.run(ctest_cmd, cwd=str(PROJECT_ROOT), check=False)
 		return result.returncode
 	except FileNotFoundError:
@@ -173,6 +174,7 @@ def run_tests(build_dir: Path, test_filter: Optional[str] = None) -> int:
 		test_bin = f"{test_bin} --gtest_filter={test_filter}"
 
 	if test_bin.exists() and os.access(test_bin, os.X_OK):
+		log(str(test_bin))
 		result = subprocess.run([str(test_bin)], cwd=str(PROJECT_ROOT), check=False)
 		return result.returncode
 

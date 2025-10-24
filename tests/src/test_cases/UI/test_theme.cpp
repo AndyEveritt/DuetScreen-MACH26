@@ -64,7 +64,7 @@ TEST_F(TestTheme, DefaultTheme)
 	constexpr bool darkMode = true;
 
 	Themes::ThemeColors colors = Themes::createThemeColors(primaryHue, secondaryHue, chroma, darkMode);
-	Themes::DefaultTheme theme("test_theme", colors, font, darkMode, [](Themes::Theme* theme) {});
+	Themes::DefaultTheme theme("test_theme", colors, font, darkMode, "material", [](Themes::Theme* theme) {});
 	theme.init();
 	theme.setThemeActive();
 
@@ -296,6 +296,7 @@ TEST_F(TestTheme, Widgets)
 	cont2.setGridCell(sidebar, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 0, 4);
 
 	/* Message Box */
+	UI::Themes::setIconFolder("examples");
 	MessageBox message_box("message_box", cont2, layout_t(0, 0, 0, 0));
 	cont2.setGridCell(message_box, LV_GRID_ALIGN_STRETCH, 3, 2, LV_GRID_ALIGN_STRETCH, 0, 2);
 	message_box.setTitle("Message Box Title");
@@ -303,9 +304,10 @@ TEST_F(TestTheme, Widgets)
 	message_box.cancelVisible(true);
 	message_box.okVisible(true);
 	message_box.imageVisible(true);
-	message_box.setImage(IMAGE_ASSET("examples/example.bmp"));
+	message_box.setImage(Themes::getIconPath("example.bmp").c_str());
 	message_box.progressVisible(true);
 	message_box.setProgress(40);
+	UI::Themes::resetIconFolder();
 
 	/* Heater Slider */
 	HeaterSlider heater_slider("heater_slider", cont2);
@@ -319,10 +321,12 @@ TEST_F(TestTheme, Widgets)
 	heater_slider.setHeaterState(HeaterSliderPresenter::heater_state_t::active, "Active");
 
 	/* Icon */
+	UI::Themes::setIconFolder("examples");
 	Icon icon("icon", cont2);
 	cont2.setGridCell(icon, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
 	icon.setFlag(LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
-	icon.setSrc(IMAGE_ASSET("examples/example_full_color.png"));
+	icon.setIcon("example_full_color.png");
+	UI::Themes::resetIconFolder();
 
 	/* Axis Control */
 	LvContainer axis_cont("axis_cont", cont2);

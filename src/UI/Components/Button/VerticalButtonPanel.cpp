@@ -13,9 +13,9 @@ namespace UI
 {
 	VerticalButtonPanel::VerticalButtonPanel(const std::string& name, LvObj& parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_reset("reset", getRoot(), "")
-		, m_increment("increment", getRoot(), "")
-		, m_decrement("decrement", getRoot(), "")
+		, m_reset("reset", getRoot())
+		, m_increment("increment", getRoot())
+		, m_decrement("decrement", getRoot())
 		, m_valueCont("value_cont", getRoot())
 		, m_values{Button("value1", m_valueCont, ""), Button("value2", m_valueCont, "")}
 	{
@@ -29,6 +29,9 @@ namespace UI
 		m_increment.setFlexGrow(3);
 		m_decrement.setFlexGrow(3);
 		m_valueCont.setFlexGrow(2);
+
+		m_increment.setIcon("increment.png");
+		m_decrement.setIcon("decrement.png");
 
 		m_valueCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_valueCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -87,6 +90,16 @@ namespace UI
 				}
 			},
 			this);
+	}
+
+	void VerticalButtonPanel::setIncrementIcon(std::string_view icon)
+	{
+		m_increment.setIcon(icon);
+	}
+
+	void VerticalButtonPanel::setDecrementIcon(std::string_view icon)
+	{
+		m_decrement.setIcon(icon);
 	}
 
 	void VerticalButtonPanel::setIncrementLabel(std::string_view label)

@@ -63,6 +63,8 @@
     "extrude": { /* Extrude control widget */
       "tool_select": "Select Tool",
       "distance_header": "Set Extrusion Distance ({:s})",
+      "extrude": "Extrude",
+      "retract": "Retract",
       "feed_dist": "Feed Distance ({:s})",
       "feed_rate": "Feed Rate ({:s})",
       "feedrate_header": "Set Extrusion Feedrate ({:s})"
@@ -192,7 +194,26 @@
       "usb_mode_device": "USB-C Device",
       "usb_mode_host": "USB-C Host",
       "usb_mode_internal_wifi": "Internal WiFi",
-      "start_hardware_test": "Start Hardware Test"
+      "start_hardware_test": "Start Hardware Test",
+      "style": {
+        "style_bg_dark": "Background Dark",
+        "style_bg": "Background",
+        "style_bg_light": "Background Light",
+        "style_bg_color_primary": "Primary ",
+        "style_bg_color_primary_muted": "Primary Muted",
+        "style_bg_color_secondary": "Secondary",
+        "style_bg_color_secondary_muted": "Secondary Muted",
+        "style_bg_color_header": "Header",
+        "style_bg_color_list_item": "List Item",
+        "style_text": "Text",
+        "style_text_muted": "Text Muted",
+        "style_text_header": "Text Header",
+        "style_border": "Border",
+        "style_border_muted": "Border Muted",
+        "style_border_highlight": "Border Hightlight",
+        "style_border_color_primary": "Border Primary",
+        "style_border_color_secondary": "Border Secondary"
+      }
     },
     "side_bar": { /* Side bar buttons */
       "back": "Back",

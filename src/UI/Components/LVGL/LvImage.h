@@ -8,14 +8,6 @@
 
 #include "LvObj.h"
 
-#if SIMULATION
-#  define IMAGE_ASSET(name) "A:assets/" name
-#  define VIDEO_ASSET(name) "assets/" name
-#else
-#  define IMAGE_ASSET(name) "A:/etc/assets/" name
-#  define VIDEO_ASSET(name) "/etc/assets/" name
-#endif
-
 namespace UI
 {
 	class LvImage : public LvObj

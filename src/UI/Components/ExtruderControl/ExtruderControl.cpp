@@ -51,6 +51,10 @@ namespace UI
 		m_controlsContainer.setGridCell(m_retractBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		m_controlsContainer.setGridCell(m_extrudeBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
+		m_retractBtn.setText(_("extrude.retract"));
+		m_extrudeBtn.setText(_("extrude.extrude"));
+		m_retractBtn.setIcon("retract.png");
+		m_extrudeBtn.setIcon("extrude.png");
 		m_distanceInput.setTitle(_("extrude.feed_dist", Units::getDisplayedDistanceUnit()));
 		m_feedrateInput.setTitle(_("extrude.feed_rate", Units::getDisplayedSpeedUnit()));
 

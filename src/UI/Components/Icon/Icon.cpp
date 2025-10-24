@@ -22,6 +22,12 @@ namespace UI
 		setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 	}
 
+	void Icon::setIcon(std::string_view icon)
+	{
+		UI_LOCK();
+		setSrc(icon.empty() ? nullptr : Themes::getIconPath(icon).c_str());
+	}
+
 	void Icon::enableRecolor(bool enable)
 	{
 		UI_LOCK();

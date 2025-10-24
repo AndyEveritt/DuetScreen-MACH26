@@ -18,13 +18,13 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent)
 		, m_xLabel("x_label", getRoot())
 		, m_yLabel("y_label", getRoot())
-		, m_xIncrementButton("x_increment", getRoot(), LV_SYMBOL_RIGHT)
-		, m_xDecrementButton("x_decrement", getRoot(), LV_SYMBOL_LEFT)
-		, m_yIncrementButton("y_increment", getRoot(), LV_SYMBOL_UP)
-		, m_yDecrementButton("y_decrement", getRoot(), LV_SYMBOL_DOWN)
-		, m_homeXYButton("home_xy", getRoot(), fmt::format(LV_SYMBOL_HOME " {}{}", sm_xAxisLetter, sm_yAxisLetter))
-		, m_homeXButton("home_x", getRoot(), fmt::format(LV_SYMBOL_HOME " {}", sm_xAxisLetter))
-		, m_homeYButton("home_y", getRoot(), fmt::format(LV_SYMBOL_HOME " {}", sm_yAxisLetter))
+		, m_xIncrementButton("x_increment", getRoot())
+		, m_xDecrementButton("x_decrement", getRoot())
+		, m_yIncrementButton("y_increment", getRoot())
+		, m_yDecrementButton("y_decrement", getRoot())
+		, m_homeXYButton("home_xy", getRoot(), fmt::format("{}{}", sm_xAxisLetter, sm_yAxisLetter))
+		, m_homeXButton("home_x", getRoot(), fmt::format("{}", sm_xAxisLetter))
+		, m_homeYButton("home_y", getRoot(), fmt::format("{}", sm_yAxisLetter))
 	{
 		UI_LOCK();
 		setGridDsc(m_colDsc, m_rowDsc);
@@ -43,6 +43,15 @@ namespace UI
 
 		m_xLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_yLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+
+		m_xIncrementButton.setIcon("arrow_right.png");
+		m_xDecrementButton.setIcon("arrow_left.png");
+		m_yIncrementButton.setIcon("arrow_up.png");
+		m_yDecrementButton.setIcon("arrow_down.png");
+
+		m_homeXButton.setIcon("home_axis.png");
+		m_homeYButton.setIcon("home_axis.png");
+		m_homeXYButton.setIcon("home_axis.png");
 
 		m_xLabel.addClickedCallback(onLabelEvent, this);
 		m_yLabel.addClickedCallback(onLabelEvent, this);

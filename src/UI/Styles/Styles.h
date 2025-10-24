@@ -126,6 +126,7 @@ namespace UI::Themes
 #if LV_USE_BUTTONMATRIX
 		Style btnm_bg;
 		Style btnm_btn;
+		Style btnm_btn_checked;
 #endif
 
 #if LV_USE_CHART
@@ -237,7 +238,7 @@ namespace UI::Themes
 	class Theme
 	{
 	  public:
-		Theme(const char* name, std::function<void(Theme* theme)> initFunc = nullptr);
+		Theme(std::string_view name, std::string_view iconFolder, std::function<void(Theme* theme)> initFunc = nullptr);
 		~Theme();
 		Theme& operator=(const Theme&) = delete;
 
@@ -246,6 +247,7 @@ namespace UI::Themes
 		void setThemeActive() const;
 		const LvglStyles& getLvglStyles() const;
 		const ComponentStyles& getComponentStyles() const;
+		const std::string_view getIconFolder() const { return m_iconFolder; }
 
 		const std::string_view getName() const { return m_name; }
 
@@ -262,7 +264,8 @@ namespace UI::Themes
 		// Specific component styles
 		std::unique_ptr<ComponentStyles> m_components;
 
-		const std::string m_name;
+		const std::string_view m_name;
+		const std::string_view m_iconFolder;
 		std::function<void(Theme*)> m_initFunc;
 
 		enum class DisplaySize_t
@@ -278,11 +281,17 @@ namespace UI::Themes
 	const std::vector<Theme*>& getThemes();
 	Theme* getCurrentTheme();
 	const Theme* getTheme(const size_t index);
-	const Theme* getThemeByName(const char* name);
+	const Theme* getThemeByName(std::string_view name);
 	const Theme* getDefaultTheme();
 	const size_t getThemeCount();
 	bool refreshCurrentTheme();
 	const std::vector<std::string_view> getThemeNames();
+
+	/* Icons */
+	void resetIconFolder();
+	void setIconFolder(std::string_view folder);
+	std::string getIconPath(std::string_view icon_name);
+	bool iconExists(std::string_view icon_name);
 
 #if DEBUG_BORDERS
 	bool isdebugBorderVisible(lv_obj_t* obj);

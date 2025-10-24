@@ -41,6 +41,7 @@ namespace UI
 		void setValue(float value);
 		float getValue() const;
 		bool validateInput();
+		void setConfirmIsAction(bool isAction);
 
 		void setCloseOnConfirm(bool closeOnConfirm) { m_closeOnConfirm = closeOnConfirm; }
 		bool getCloseOnConfirm() const { return m_closeOnConfirm; }

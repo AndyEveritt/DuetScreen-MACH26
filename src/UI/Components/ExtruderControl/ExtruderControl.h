@@ -74,8 +74,8 @@ namespace UI
 		Button m_filamentUnloadBtn{"filament_load_unload", m_filamentContainer};
 
 		LvContainer m_controlsContainer{"controls", getRoot()};
-		Button m_retractBtn{"retract", m_controlsContainer, LV_SYMBOL_UP};
-		Button m_extrudeBtn{"extrude", m_controlsContainer, LV_SYMBOL_DOWN};
+		Button m_retractBtn{"retract", m_controlsContainer};
+		Button m_extrudeBtn{"extrude", m_controlsContainer};
 		List<Button> m_distanceInput{"distance_input", m_controlsContainer};
 		List<Button> m_feedrateInput{"feedrate_input", m_controlsContainer};
 

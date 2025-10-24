@@ -338,7 +338,14 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_BUTTONMATRIX
-		lv_style_set_bg_color(lvgl.btnm_btn, m_colors.primary);
+		lv_style_set_bg_color(lvgl.btnm_btn, m_colors.bg_light);
+		lv_style_set_bg_grad_dir(lvgl.btnm_btn, LV_GRAD_DIR_NONE);
+		lv_style_merge(lvgl.btnm_btn, lvgl.border_muted);
+		lv_style_set_shadow_width(lvgl.btnm_btn, 0);
+		lv_style_set_radius(lvgl.btnm_btn, RADIUS_DEFAULT);
+		lv_style_set_bg_color(lvgl.btnm_btn_checked, m_colors.primary);
+		lv_style_set_bg_opa(lvgl.btnm_btn_checked, LV_OPA_COVER);
+		lv_style_set_text_color(lvgl.btnm_btn_checked, m_colors.text);
 #endif
 
 #if LV_USE_DROPDOWN

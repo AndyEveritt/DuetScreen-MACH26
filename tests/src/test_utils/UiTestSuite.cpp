@@ -12,22 +12,11 @@
 #include "i18n/i18n.h"
 #include "test_utils/utils.h"
 
-UiTestSuite::UiTestSuite()
+UiTestSuiteInner::UiTestSuiteInner()
 	: TestSuite()
 {
 	/* Run at start of each test */
-	lv_obj_set_style_pad_all(lv_screen_active(), 0, 0);
-	screen.setStylePad(0);
-	screen.setFlexFlow(LV_FLEX_FLOW_COLUMN_WRAP);
-}
-
-UiTestSuite::~UiTestSuite()
-{
-	/* Run at end of each test */
-}
-
-void UiTestSuite::SetUpTestSuite()
-{
+	LOG_INFO("Setting up UI test");
 	lv_init();
 
 #if LV_USE_PROFILER && LV_USE_PROFILER_BUILTIN
@@ -54,14 +43,22 @@ void UiTestSuite::SetUpTestSuite()
 	i18n::init();
 	i18n::setLanguage(DEFAULT_LANGUAGE_CODE);
 
-	TestSuite::SetUpTestSuite();
-
 	UI::Themes::init(display);
+
+	lv_obj_set_style_pad_all(lv_screen_active(), 0, 0);
 }
 
-void UiTestSuite::TearDownTestSuite()
+UiTestSuiteInner::~UiTestSuiteInner()
 {
+	/* Run at end of each test */
 	// Cleanup
-	TestSuite::TearDownTestSuite();
+	LOG_INFO("Tearing down UI test");
 	lv_deinit();
+}
+
+UiTestSuite::UiTestSuite()
+	: UiTestSuiteInner()
+{
+	screen.setStylePad(0);
+	screen.setFlexFlow(LV_FLEX_FLOW_COLUMN_WRAP);
 }

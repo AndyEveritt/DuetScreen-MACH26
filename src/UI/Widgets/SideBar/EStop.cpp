@@ -17,7 +17,7 @@ namespace UI
 	{
 		UI_LOCK();
 
-		setIcon(IMAGE_ASSET("estop.png"));
+		setIcon("estop.png");
 		addStyle(Themes::getComponentStyles().estop, LV_PART_MAIN, true);
 
 		m_label.setSize(LV_PCT(100), LV_PCT(100));

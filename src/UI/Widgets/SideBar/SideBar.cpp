@@ -54,7 +54,10 @@ namespace UI
 
 		m_eStopBtn.setSize(ESTOP_SIZE, ESTOP_SIZE);
 
-		m_homeBtn.setIcon(IMAGE_ASSET("home.png"));
+		m_homeBtn.setIcon("home.png");
+		m_backBtn.setIcon("back.png");
+		m_macrosBtn.setIcon("macros.png");
+		m_menuBtn.setIcon("apps.png");
 
 		m_backBtn.addClickedCallback(backBtnEvent, this);
 		m_homeBtn.addClickedCallback(homeBtnEvent, this);

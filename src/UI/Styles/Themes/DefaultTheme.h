@@ -41,12 +41,13 @@ namespace UI::Themes
 	class DefaultTheme : public Theme
 	{
 	  public:
-		DefaultTheme(const char* name,
+		DefaultTheme(std::string_view name,
 					 ThemeColors colors,
 					 const lv_font_t* font,
 					 bool darkMode,
+					 std::string_view iconFolder,
 					 std::function<void(Theme* theme)> styleOverrides = nullptr)
-			: Theme(name, styleOverrides)
+			: Theme(name, iconFolder, styleOverrides)
 			, m_colors(colors)
 			, m_fontSmall(font)
 			, m_fontNormal(font)

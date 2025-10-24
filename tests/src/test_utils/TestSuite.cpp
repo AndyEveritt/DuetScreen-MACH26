@@ -20,6 +20,13 @@
 TestSuite::TestSuite()
 {
 	/* Run at start of each test */
+	std::filesystem::remove("tests/config.json");
+	StorageHelper::setConfigFile("tests/config.json");
+
+	Comm::init();
+
+	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
+
 	OM::RemoveAll();
 	std::filesystem::create_directories("/tmp/thumbnails");
 }
@@ -30,18 +37,6 @@ TestSuite::~TestSuite()
 	OM::RemoveAll();
 	std::filesystem::remove_all("/tmp/thumbnails");
 }
-
-void TestSuite::SetUpTestSuite()
-{
-	std::filesystem::remove("tests/config.json");
-	StorageHelper::setConfigFile("tests/config.json");
-
-	Comm::init();
-
-	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
-}
-
-void TestSuite::TearDownTestSuite() {}
 
 bool TestSuite::load_model_data_from_file(std::string_view filename)
 {

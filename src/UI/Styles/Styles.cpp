@@ -145,7 +145,7 @@ namespace UI::Themes
 		*s_componentStyles = styles;
 	}
 
-	static bool themeExists(const char* name)
+	static bool themeExists(std::string_view name)
 	{
 		for (const auto& theme : themes())
 		{
@@ -157,8 +157,9 @@ namespace UI::Themes
 		return false;
 	}
 
-	Theme::Theme(const char* name, std::function<void(Theme* theme)> initFunc)
+	Theme::Theme(std::string_view name, std::string_view iconFolder, std::function<void(Theme* theme)> initFunc)
 		: m_name(name)
+		, m_iconFolder(iconFolder)
 		, m_initFunc(initFunc)
 	{
 		if (themeExists(name))
@@ -197,6 +198,7 @@ namespace UI::Themes
 		LOG_INFO("Applying theme: {:s}", m_name);
 		setLvglStyles(getLvglStyles());
 		setComponentStyles(getComponentStyles());
+		setIconFolder(m_iconFolder);
 
 		s_currentTheme = const_cast<Theme*>(this);
 
@@ -422,7 +424,7 @@ namespace UI::Themes
 			lv_obj_add_style(obj, lvgl.disabled, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_DISABLED));
 			lv_obj_add_style(obj, lvgl.pressed, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_PRESSED));
 			lv_obj_add_style(
-				obj, lvgl.bg_color_secondary, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_CHECKED));
+				obj, lvgl.btnm_btn_checked, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_CHECKED));
 			lv_obj_add_style(
 				obj, lvgl.outline_primary, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_FOCUS_KEY));
 			lv_obj_add_style(
@@ -978,7 +980,7 @@ namespace UI::Themes
 		return themes()[index];
 	}
 
-	const Theme* getThemeByName(const char* name)
+	const Theme* getThemeByName(std::string_view name)
 	{
 		for (const auto& theme : themes())
 		{
@@ -1031,6 +1033,46 @@ namespace UI::Themes
 			names.push_back(theme->getName());
 		}
 		return names;
+	}
+
+	static std::string_view s_iconFolder;
+
+	void resetIconFolder()
+	{
+		UI_LOCK();
+		Theme* currentTheme = getCurrentTheme();
+		if (currentTheme == nullptr)
+		{
+			s_iconFolder = "material";
+			return;
+		}
+		s_iconFolder = currentTheme->getIconFolder();
+	}
+
+	void setIconFolder(std::string_view folder)
+	{
+		UI_LOCK();
+		s_iconFolder = folder;
+	}
+
+	std::string getIconPath(std::string_view icon_name)
+	{
+		UI_LOCK();
+		return fmt::format(
+#if SIMULATION
+			"A:assets/"
+#else
+			"A:/etc/assets/"
+#endif
+			"icons/{:s}/{:s}",
+			s_iconFolder,
+			icon_name);
+	}
+
+	bool iconExists(std::string_view icon_name)
+	{
+		std::string path = getIconPath(icon_name);
+		return std::filesystem::exists(path);
 	}
 
 #if DEBUG_BORDERS

@@ -15,9 +15,9 @@ namespace UI
 	GenericAxisControl::GenericAxisControl(const std::string& name, LvObj& parent)
 		: LvObj(lv_obj_create, name, parent)
 		, m_label("label", getRoot())
-		, m_incrementButton("increment", getRoot(), LV_SYMBOL_PLUS)
-		, m_homeButton("home", getRoot(), LV_SYMBOL_HOME)
-		, m_decrementButton("decrement", getRoot(), LV_SYMBOL_MINUS)
+		, m_incrementButton("increment", getRoot())
+		, m_homeButton("home", getRoot())
+		, m_decrementButton("decrement", getRoot())
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -35,6 +35,10 @@ namespace UI
 		m_incrementButton.setFlexGrow(1);
 		m_homeButton.setFlexGrow(1);
 		m_decrementButton.setFlexGrow(1);
+
+		m_incrementButton.setIcon("increment.png");
+		m_homeButton.setIcon("home_axis.png");
+		m_decrementButton.setIcon("decrement.png");
 
 		m_incrementButton.addClickedCallback(onJogBtn, this);
 		m_homeButton.addClickedCallback(onHomeBtn, this);
@@ -57,7 +61,7 @@ namespace UI
 		UI_LOCK();
 		m_axisLetter = letter;
 
-		m_homeButton.setText(LV_SYMBOL_HOME " " + std::string(1, m_axisLetter));
+		m_homeButton.setText(std::string(1, m_axisLetter));
 		updateLabel();
 	}
 

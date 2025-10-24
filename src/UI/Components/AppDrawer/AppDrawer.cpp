@@ -16,6 +16,7 @@ namespace UI
 	{
 		std::string_view name;
 		LvContainer* screen;
+		std::string_view icon;
 	};
 
 	AppDrawer::AppDrawer(const std::string& name, LvObj& parent)
@@ -40,15 +41,25 @@ namespace UI
 	void AppDrawer::init()
 	{
 		static const AppInfo apps[] = {
-			{_("app_drawer.console"), &HomeView::instance().getConsoleView()},
-			{_("app_drawer.move"), &HomeView::instance().getMoveView()},
-			{_("app_drawer.temperature"), &HomeView::instance().getTemperatureView()},
-			// {_("app_drawer.fan"), &HomeView::instance().getFanView()},
-			{_("app_drawer.fine_tune"), &HomeView::instance().getFineTuneView()},
-			// {_("app_drawer.macros"), &HomeView::instance().getMacroView()},
-			{_("app_drawer.heightmap"), &HomeView::instance().getHeightmapView()},
-			{_("app_drawer.settings"), &HomeView::instance().getSettingsView()},
-			{_("app_drawer.status"), &HomeView::instance().getDashboard().getStatusView()},
+			{.name = _("app_drawer.console"), .screen = &HomeView::instance().getConsoleView(), .icon = "console.png"},
+			{.name = _("app_drawer.move"), .screen = &HomeView::instance().getMoveView(), .icon = "move.png"},
+			{.name = _("app_drawer.temperature"),
+			 .screen = &HomeView::instance().getTemperatureView(),
+			 .icon = "temperature.png"},
+			// {.name=_("app_drawer.fan"), .screen=&HomeView::instance().getFanView(), .icon="fan.png"},
+			{.name = _("app_drawer.fine_tune"),
+			 .screen = &HomeView::instance().getFineTuneView(),
+			 .icon = "fine_tune.png"},
+			// {.name=_("app_drawer.macros"), .screen=&HomeView::instance().getMacroView(), .icon="macros.png"},
+			{.name = _("app_drawer.heightmap"),
+			 .screen = &HomeView::instance().getHeightmapView(),
+			 .icon = "heightmap.png"},
+			{.name = _("app_drawer.settings"),
+			 .screen = &HomeView::instance().getSettingsView(),
+			 .icon = "settings.png"},
+			{.name = _("app_drawer.status"),
+			 .screen = &HomeView::instance().getDashboard().getStatusView(),
+			 .icon = "status.png"},
 		};
 
 		m_apps.setItemCount(std::size(apps),
@@ -57,6 +68,7 @@ namespace UI
 								auto app = std::make_shared<App>(index, parent);
 								const auto& appInfo = apps[index];
 								app->setName(appInfo.name);
+								app->setIcon(appInfo.icon);
 								app->setSize(100, 100);
 								app->setMinWidth(LV_SIZE_CONTENT);
 								// app->setMinHeight(LV_SIZE_CONTENT);

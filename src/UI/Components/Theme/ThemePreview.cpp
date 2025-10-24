@@ -97,23 +97,29 @@ namespace UI
 	{
 		const auto& styles = Themes::getLvglStyles();
 		const LabelledStyle swatch_styles[] = {
-			{"style_bg_dark", styles.bg_dark, LV_STYLE_BG_COLOR},
-			{"style_bg", styles.bg, LV_STYLE_BG_COLOR},
-			{"style_bg_light", styles.bg_light, LV_STYLE_BG_COLOR},
-			{"style_bg_color_primary", styles.bg_color_primary, LV_STYLE_BG_COLOR},
-			{"style_bg_color_primary_muted", styles.bg_color_primary_muted, LV_STYLE_BG_COLOR},
-			{"style_bg_color_secondary", styles.bg_color_secondary, LV_STYLE_BG_COLOR},
-			{"style_bg_color_secondary_muted", styles.bg_color_secondary_muted, LV_STYLE_BG_COLOR},
-			// {"style_bg_color_header", styles.bg_color_header, LV_STYLE_BG_COLOR},
-			// {"style_bg_color_list_item", styles.bg_color_list_item, LV_STYLE_BG_COLOR},
-			{"style_text", styles.text, LV_STYLE_TEXT_COLOR},
-			{"style_text_muted", styles.text_muted, LV_STYLE_TEXT_COLOR},
-			{"style_text_header", styles.text_header, LV_STYLE_TEXT_COLOR},
-			{"style_border", styles.border, LV_STYLE_BORDER_COLOR},
-			{"style_border_muted", styles.border_muted, LV_STYLE_BORDER_COLOR},
-			{"style_border_highlight", styles.border_highlight, LV_STYLE_BORDER_COLOR},
-			// {"style_border_color_primary", styles.border_color_primary, LV_STYLE_BORDER_COLOR},
-			// {"style_border_color_secondary", styles.border_color_secondary, LV_STYLE_BORDER_COLOR},
+			{.name = "style_bg_dark", .style = styles.bg_dark, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "style_bg", .style = styles.bg, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "style_bg_light", .style = styles.bg_light, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "style_bg_color_primary", .style = styles.bg_color_primary, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "style_bg_color_primary_muted",
+			 .style = styles.bg_color_primary_muted,
+			 .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "style_bg_color_secondary", .style = styles.bg_color_secondary, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "style_bg_color_secondary_muted",
+			 .style = styles.bg_color_secondary_muted,
+			 .color_prop = LV_STYLE_BG_COLOR},
+			// {.name="style_bg_color_header", .style=styles.bg_color_header, .color_prop=LV_STYLE_BG_COLOR},
+			// {.name="style_bg_color_list_item", .style=styles.bg_color_list_item, .color_prop=LV_STYLE_BG_COLOR},
+			{.name = "style_text", .style = styles.text, .color_prop = LV_STYLE_TEXT_COLOR},
+			{.name = "style_text_muted", .style = styles.text_muted, .color_prop = LV_STYLE_TEXT_COLOR},
+			{.name = "style_text_header", .style = styles.text_header, .color_prop = LV_STYLE_TEXT_COLOR},
+			{.name = "style_border", .style = styles.border, .color_prop = LV_STYLE_BORDER_COLOR},
+			{.name = "style_border_muted", .style = styles.border_muted, .color_prop = LV_STYLE_BORDER_COLOR},
+			{.name = "style_border_highlight", .style = styles.border_highlight, .color_prop = LV_STYLE_BORDER_COLOR},
+			// {.name="style_border_color_primary", .style=styles.border_color_primary,
+			// .color_prop=LV_STYLE_BORDER_COLOR},
+			// {.name="style_border_color_secondary", .style=styles.border_color_secondary,
+			// .color_prop=LV_STYLE_BORDER_COLOR},
 		};
 
 		m_swatches.clear();
@@ -124,7 +130,7 @@ namespace UI
 									swatch->setSize(180, LV_SIZE_CONTENT);
 									swatch->setMaxWidth(LV_PCT(100));
 									auto& style = swatch_styles[index];
-									swatch->setLabel(style.name);
+									swatch->setLabel(_(fmt::format("settings.style.{:s}", style.name)));
 
 									lv_style_value_t value;
 									if (lv_style_get_prop(style.style, style.color_prop, &value) == LV_STYLE_RES_FOUND)

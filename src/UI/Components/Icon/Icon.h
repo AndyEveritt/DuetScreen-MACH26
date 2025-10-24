@@ -11,17 +11,18 @@
 
 namespace UI
 {
-    class Icon : public LvImage
-    {
-      public:
+	class Icon : public LvImage
+	{
+	  public:
 		Icon(const std::string& name, LvObj& parent);
 
+		void setIcon(std::string_view icon);
 		void enableRecolor(bool enable);
-        void setRecolor(lv_color_t color);
+		void setRecolor(lv_color_t color);
 
-        bool isRecolorEnabled() const;
-        lv_color_t getRecolor() const;
+		bool isRecolorEnabled() const;
+		lv_color_t getRecolor() const;
 
-      private:
-    };
+	  private:
+	};
 } // namespace UI

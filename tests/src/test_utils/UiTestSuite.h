@@ -12,16 +12,18 @@
 #include "test_utils/utils.h"
 #include <gtest/gtest.h>
 
-class UiTestSuite : public TestSuite
+class UiTestSuiteInner : public TestSuite
+{
+  protected:
+	UiTestSuiteInner();
+	virtual ~UiTestSuiteInner();
+};
+
+class UiTestSuite : public UiTestSuiteInner
 {
   protected:
 	UiTestSuite();
-
-	virtual ~UiTestSuite();
-
-	static void SetUpTestSuite();
-
-	static void TearDownTestSuite();
+	virtual ~UiTestSuite() = default;
 
 	UI::Screen screen{"test_screen"};
 };

@@ -180,6 +180,18 @@ namespace UI
 		}
 	}
 
+	void NumberPad::setConfirmIsAction(bool isAction)
+	{
+		if (isAction)
+		{
+			m_btnMatrix.setButtonCtrl(13, LV_BTNMATRIX_CTRL_CUSTOM_1);
+		}
+		else
+		{
+			m_btnMatrix.clearButtonCtrl(13, LV_BTNMATRIX_CTRL_CUSTOM_1);
+		}
+	}
+
 	void NumberPad::setConfirmCallback(confirm_cb_t eventCb)
 	{
 		UI_LOCK();

@@ -28,8 +28,8 @@ namespace UI
 		// m_buttonPanel.setMinWidth(LV_SIZE_CONTENT);
 
 		setBabyStepValue(0);
-		m_buttonPanel.setIncrementLabel(_("babystep.increment"));
-		m_buttonPanel.setDecrementLabel(_("babystep.decrement"));
+		m_buttonPanel.setIncrementIcon("babystep_increment.png");
+		m_buttonPanel.setDecrementIcon("babystep_decrement.png");
 		m_buttonPanel.setValueLabelFmt("{:g} mm");
 		m_buttonPanel.setIncrementValues({0.01f, 0.05f});
 		m_buttonPanel.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });

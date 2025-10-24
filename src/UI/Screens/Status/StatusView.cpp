@@ -49,6 +49,11 @@ namespace UI
 		m_printAgainBtn.setText(_("status.print_again"));
 		m_cancelBtn.setText(_("status.cancel"));
 
+		m_pauseBtn.setIcon("pause.png");
+		m_resumeBtn.setIcon("resume.png");
+		m_printAgainBtn.setIcon("print_again.png");
+		m_cancelBtn.setIcon("cancel.png");
+
 		for (size_t i = 0; i < m_footer.getChildCount(); i++)
 		{
 			LvObj* child = m_footer.getChild(i);

@@ -123,17 +123,17 @@ namespace UI
 		addEventCallback(event_cb, LV_EVENT_CLICKED, user_data);
 	}
 
-	void Button::setIcon(const char* icon_path)
+	void Button::setIcon(std::string_view icon)
 	{
 		UI_LOCK();
 		// If the icon is null, remove the icon and center the label
-		m_icon.setSrc(icon_path);
+		m_icon.setIcon(icon);
 
 		// Check the icon has loaded correctly
 		bool icon_loaded = m_icon.getSrc() != nullptr;
-		if (icon_path && !icon_loaded)
+		if (!icon.empty() && !icon_loaded)
 		{
-			LOG_ERROR("Failed to load icon from path: {}", icon_path);
+			LOG_ERROR("Failed to load icon from path: {}", icon);
 		}
 		m_icon.setVisible(icon_loaded);
 	}

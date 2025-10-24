@@ -19,19 +19,9 @@ class TestStatus : public UiTestSuite
 	TestStatus()
 		: view(screen)
 	{
-		HomeView::setInstance(&home);
-		view.setSize(LV_PCT(36), LV_PCT(90));
-		home.hide();
-	}
-
-	~TestStatus() { HomeView::setInstance(nullptr); }
-
-	static void SetUpTestSuite()
-	{
 		// TODO: there is a race condition between the filesystem operations and the test execution when tests are run
 		// in parallel
-
-		UiTestSuite::SetUpTestSuite();
+		UI::Themes::setIconFolder("examples");
 
 		/* Need to wait for the filesystem operations to finish fully */
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -39,8 +29,14 @@ class TestStatus : public UiTestSuite
 		std::string_view filename = "0:/gcodes/ROTO-VORON-HEATSINK-FAN-DUCT v4 (T0 0.6mm HF - Prusament PETG).gcode";
 		std::string thumbnailPath = GetThumbnailPath(filename);
 		assert(CreateThumbnailDirectory(thumbnailPath));
-		system(fmt::format("cp assets/examples/print_thumbnail.png '{:s}'", thumbnailPath).c_str());
+		system(fmt::format("cp {:s} '{:s}'", Themes::getIconPath("print_thumbnail.png"), thumbnailPath).c_str());
+
+		HomeView::setInstance(&home);
+		view.setSize(LV_PCT(36), LV_PCT(90));
+		home.hide();
 	}
+
+	~TestStatus() { HomeView::setInstance(nullptr); }
 
 	StatusView view;
 	HomeView home;
@@ -59,7 +55,7 @@ TEST_F(TestStatus, Header)
 
 	view.setFilename("test.gcode");
 	view.updateProgress(50);
-	view.setThumbnail(IMAGE_ASSET("example/example.bmp"));
+	view.setThumbnail(UI::Themes::getIconPath("example.bmp").c_str());
 	view.updateLayout();
 
 	EXPECT_EQUAL_SCREENSHOT("status_view/header.png")
