@@ -12,22 +12,16 @@ namespace Comm
 	static UsbDevice s_currentUsbDevice;
 	static libusb_context* s_context = nullptr;
 
-	static const uint16_t vendorId = 0x1d50;
-	struct UsbDeviceId
-	{
-		const char* name;
-		uint16_t productId;
-	};
+	using vendor_id_t = uint16_t;
+	using product_id_t = uint16_t;
+
+	static const std::unordered_map<vendor_id_t, std::unordered_map<product_id_t, std::string_view>> s_devices = {
+		{0x1d50, {{0x60ec, "Duet 2"}, {0x60ed, "Duet 2 Maestro"}, {0x60ee, "Duet 3"}}},
+		{0x16c0, {{0x27dd, "CDC-ACM Device"}}}};
 
 	static std::recursive_mutex s_usbMutex;
 	static std::mutex s_transferMutex;
 	static std::condition_variable s_completionCondition;
-
-	static UsbDeviceId s_deviceIds[] = {
-		{"Duet 2", 0x60ec},
-		{"Duet 2 Maestro", 0x60ed},
-		{"Duet 3", 0x60ee},
-	};
 
 	static constexpr int32_t s_usbTimeoutMs = 1000;
 
@@ -383,27 +377,33 @@ namespace Comm
 		{
 			libusb_device* device = device_list[i];
 			libusb_device_descriptor desc;
-			if (libusb_get_device_descriptor(device, &desc) == 0)
+			if (libusb_get_device_descriptor(device, &desc) != 0)
 			{
-				if (desc.idVendor == vendorId)
-				{
-					for (UsbDeviceId deviceId : s_deviceIds)
-					{
-						LOG_DBG("Found device {:s} (Vendor ID: {:#x}, Product ID: {:#x})",
-								deviceId.name,
-								vendorId,
-								desc.idProduct);
-						if (desc.idProduct == deviceId.productId)
-						{
-							LOG_INFO(
-								"{:s} target device (Product ID: {:#x}) found.", deviceId.name, deviceId.productId);
-							*found_device_name = deviceId.name;
-							*found_device = device;
-							return true;
-						}
-					}
-				}
+				continue;
 			}
+
+			auto vendorDevicesIt = s_devices.find(desc.idVendor);
+			if (vendorDevicesIt == s_devices.end())
+			{
+				continue;
+			}
+
+			auto& productDevices = vendorDevicesIt->second;
+			auto productDeviceIt = productDevices.find(desc.idProduct);
+			if (productDeviceIt == productDevices.end())
+			{
+				continue;
+			}
+
+			std::string_view device_name = productDeviceIt->second;
+
+			LOG_INFO("{:s} target device (Vendor ID: {:#x}, Product ID: {:#x}) found.",
+					 device_name,
+					 desc.idVendor,
+					 desc.idProduct);
+			*found_device_name = device_name.data();
+			*found_device = device;
+			return true;
 		}
 
 		*found_device_name = nullptr;
