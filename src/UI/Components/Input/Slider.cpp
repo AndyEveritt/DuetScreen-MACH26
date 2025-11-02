@@ -132,7 +132,8 @@ namespace UI
 		UI_LOCK();
 		boundValue(value);
 		m_value = value;
-		m_slider.setValue(normaliseValue(value));
+		const int32_t normalised = normaliseValue(value);
+		m_slider.setValue(normalised);
 
 		if (!m_input.hasState(LV_STATE_FOCUSED))
 		{
@@ -230,9 +231,19 @@ namespace UI
 		}
 		case LV_EVENT_VALUE_CHANGED:
 		{
-			if (slider->m_slider.hasState(LV_STATE_FOCUSED))
+			if (!slider->m_input.hasState(LV_STATE_FOCUSED))
 			{
-				// Ignore changes while the slider is being dragged
+				/*
+				Ignore changes while the slider is being dragged.
+
+				Because the input box has accepted chars set, a `LV_EVENT_VALUE_CHANGED` event is generated for every
+				char. This means that when the `Slider::setValue()` udpates the input box text, it generates multiple
+				events which should be ignored to prevent flicker.
+
+				ie: If the user types "123", events are generated for '1', '12', and '123'. We only actually want to
+				update the slider bar if the input is focused by the user and not when we update the text
+				programmatically.
+				*/
 				break;
 			}
 			float value = atof(slider->m_input.getText().data());

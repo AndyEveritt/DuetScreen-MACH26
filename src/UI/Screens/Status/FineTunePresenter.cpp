@@ -76,6 +76,7 @@ namespace UI
 			return;
 		}
 
+		LOG_DBG("Setting extruder {:d} slider factor to {:d}", extruder->index, value);
 		Comm::DUET.SendGcodef("M221 D{:d} S{:d}\n", extruder->index, value);
 	}
 
