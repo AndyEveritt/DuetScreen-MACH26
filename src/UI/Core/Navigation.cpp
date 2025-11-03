@@ -79,7 +79,7 @@ namespace UI
 		{
 			closeScreen(currentScreen, false);
 
-			if (!s_returnableScreens.empty())
+			if (s_openScreens.empty() && !s_returnableScreens.empty())
 			{
 				LvObjPtr lastReturnable = s_returnableScreens.back();
 				openScreen(lastReturnable);
