@@ -53,7 +53,8 @@
       "reset": "Reset {:g} mm"
     },
     "console": { /* Console screen */
-      "input_placeholder": "Enter G-code command"
+      "input_placeholder": "Enter G-code command",
+      "shell": "Shell Mode"
     },
     "estop": { /* Estop widget */
       "label": "\uF071", /* Warning symbol */

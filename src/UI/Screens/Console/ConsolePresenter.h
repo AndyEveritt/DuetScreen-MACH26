@@ -13,7 +13,11 @@ namespace UI
 
 		// Actions
 		bool back();
-		void sendGcode(std::string_view gcode);
+		void sendCommand(std::string_view cmd);
+
+#if ENABLE_CONSOLE_SHELL
+		void enableShell(bool enable) { m_shellEnabled = enable; }
+#endif
 
 		// Observers
 		void newResponse(const std::string& resp);
@@ -27,5 +31,9 @@ namespace UI
 			registerEventListener<EventType::Response>(this, &ConsolePresenter::newResponse);
 			registerEventListener<EventType::LogMessage>(this, &ConsolePresenter::newLogMessage);
 		}
+
+#if ENABLE_CONSOLE_SHELL
+		bool m_shellEnabled = false;
+#endif
 	};
 } // namespace UI

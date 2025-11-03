@@ -65,6 +65,14 @@ namespace UI
 		m_clear.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_enter.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
+#if ENABLE_CONSOLE_SHELL
+		m_shellToggle.setText(_("console.shell"));
+		m_shellToggle.setChecked(false);
+		m_shellToggle.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
+		m_shellToggle.setAlign(LV_ALIGN_TOP_RIGHT, -30, 20);
+		m_shellToggle.setCheckedCallback([this](bool checked) { getPresenter()->enableShell(checked); });
+#endif
+
 		m_topCont.addStyle(Themes::getLvglStyles().no_border);
 		m_inputCont.addStyle(Themes::getLvglStyles().no_border);
 		m_input.addStyle(Themes::getLvglStyles().pad_zero);
@@ -95,7 +103,6 @@ namespace UI
 
 	void ConsoleView::clear()
 	{
-		UI_LOCK();
 		m_input.setText("");
 	}
 
@@ -268,7 +275,7 @@ namespace UI
 			std::string_view text = view->m_input.getText();
 			if (!text.empty())
 			{
-				view->m_presenter->sendGcode(text);
+				view->m_presenter->sendCommand(text);
 			}
 			break;
 		}

@@ -2,6 +2,7 @@
 
 #include "ConsolePresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/LVGL/LvTextArea.h"
@@ -45,5 +46,9 @@ namespace UI
 		Button m_clear{"clear", m_input, LV_SYMBOL_TRASH};
 		Button m_enter{"enter", m_inputCont, LV_SYMBOL_NEW_LINE};
 		LvKeyboard m_kb{"keyboard", getRoot()};
+
+#if ENABLE_CONSOLE_SHELL
+		LvCheckbox m_shellToggle{"shell_toggle", getRoot()};
+#endif
 	};
 } // namespace UI

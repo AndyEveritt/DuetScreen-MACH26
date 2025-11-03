@@ -23,10 +23,33 @@ namespace UI
 		m_view->addResponse(message);
 	}
 
-	void ConsolePresenter::sendGcode(std::string_view gcode)
+	void ConsolePresenter::sendCommand(std::string_view cmd)
 	{
-		m_view->addCommand(gcode);
-		Comm::DUET.SendGcode(gcode);
+		m_view->addCommand(cmd);
+#if ENABLE_CONSOLE_SHELL
+		if (m_shellEnabled)
+		{
+			std::string result;
+
+			FILE* pipe = ::popen(cmd.data(), "r");
+			if (!pipe)
+				return;
+			char buffer[256];
+			while (fgets(buffer, sizeof(buffer), pipe))
+			{
+				result.append(buffer);
+			}
+			::pclose(pipe);
+
+			m_view->addResponse(result);
+		}
+		else
+		{
+#endif
+			Comm::DUET.SendGcode(cmd);
+#if ENABLE_CONSOLE_SHELL
+		}
+#endif
 	}
 
 	void ConsolePresenter::onActivate() {}
