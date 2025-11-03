@@ -13,15 +13,15 @@
 
 namespace UI
 {
-    class BabyStep : public View<BabyStepPresenter>
-    {
-      public:
+	class BabyStep : public View<BabyStepPresenter>
+	{
+	  public:
 		BabyStep(const std::string& name, LvObj& parent);
 
 		void setBabyStepValue(float value);
 
 	  private:
-        LvLabel m_header{"header", getRoot()};
+		LvLabel m_header{"header", getRoot()};
 		VerticalButtonPanel m_buttonPanel{"button_panel", getRoot()};
-    };
+	};
 } // namespace UI

@@ -225,6 +225,20 @@ namespace UI
 
 		const std::vector<TPtr>& getItems() const { return m_list; }
 
+		void iterateListItems(const std::function<void(size_t index, T& item)>& func)
+		{
+			UI_LOCK();
+			for (size_t i = 0; i < m_list.size(); i++)
+			{
+				TPtr& item = m_list.at(i);
+				if (!item)
+				{
+					continue;
+				}
+				func(i, *item);
+			}
+		}
+
 		auto begin() { return m_list.begin(); }
 		auto end() { return m_list.end(); }
 		auto begin() const { return m_list.begin(); }

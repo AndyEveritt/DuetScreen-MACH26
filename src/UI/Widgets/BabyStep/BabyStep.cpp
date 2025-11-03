@@ -14,7 +14,7 @@
 namespace UI
 {
 	BabyStep::BabyStep(const std::string& name, LvObj& parent)
-		: View(name, parent, layout_t(0, 0, 100, 100))
+		: View(name, parent)
 	{
 		UI_LOCK();
 

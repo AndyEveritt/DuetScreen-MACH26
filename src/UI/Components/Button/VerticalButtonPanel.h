@@ -7,8 +7,9 @@
 
 #pragma once
 
-#include "UI/Core/View.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/List/List.h"
+#include "UI/Core/View.h"
 
 namespace UI
 {
@@ -22,30 +23,31 @@ namespace UI
 		void setDecrementLabel(std::string_view label);
 		void setResetLabel(std::string_view label);
 		void setValueLabelFmt(std::string_view fmt);
-		void setIncrementValues(const std::array<float, 2>& values);
-        
-        float getSelectedValue() const;
+		void setIncrementValues(const std::vector<float>& values);
+
+		float getSelectedValue() const;
         void setSelectedValueIndex(uint8_t index);
 
         void setValueChangeCallback(std::function<void(float)> callback);
         void setResetCallback(std::function<void()> callback);
 
 	  private:
+		std::shared_ptr<Button> createValueButton(size_t index, LvObj& parent);
+
 		void updateValueLabels();
 
 		Button m_reset;
 		Button m_increment;
 		Button m_decrement;
 
-		LvContainer m_valueCont;
-		Button m_values[2];
+		List<Button> m_values;
 
-        uint8_t m_selectedValueIndex = 0;
+		uint8_t m_selectedValueIndex = 0;
 
-        std::string m_fmt;
-        float m_incrementValues[2];
+		std::string m_fmt;
+		std::vector<float> m_incrementValues;
 
-        std::function<void(float)> m_valueChangeCallback;
-        std::function<void()> m_resetCallback;
+		std::function<void(float)> m_valueChangeCallback;
+		std::function<void()> m_resetCallback;
 	};
 } // namespace UI

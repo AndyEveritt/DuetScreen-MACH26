@@ -16,8 +16,7 @@ namespace UI
 		, m_reset("reset", getRoot())
 		, m_increment("increment", getRoot())
 		, m_decrement("decrement", getRoot())
-		, m_valueCont("value_cont", getRoot())
-		, m_values{Button("value1", m_valueCont, ""), Button("value2", m_valueCont, "")}
+		, m_values{"value_list", getRoot()}
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -26,34 +25,21 @@ namespace UI
 		iterateChildren([](size_t i, LvObj& child) { child.setWidth(LV_PCT(100)); });
 
 		m_reset.setFlexGrow(1);
+		m_reset.setMinHeight(LV_SIZE_CONTENT);
 		m_increment.setFlexGrow(3);
 		m_decrement.setFlexGrow(3);
-		m_valueCont.setFlexGrow(2);
+
+		m_values.setFlexGrow(2);
+		m_values.setMinHeight(LV_SIZE_CONTENT);
+		m_values.setListFlow(LV_FLEX_FLOW_ROW);
+		m_values.getListContainer().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_values.getListContainer().setFlexGrow(1);
+		// m_values.getListContainer().setHeight(LV_PCT(100));
+		m_values.getListContainer().setMinHeight(LV_SIZE_CONTENT);
+		m_values.setStylePad(0);
 
 		m_increment.setIcon("increment.png");
 		m_decrement.setIcon("decrement.png");
-
-		m_valueCont.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_valueCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-
-		for (auto& v : m_values)
-		{
-			v.setHeight(LV_PCT(100));
-			v.setFlexGrow(1);
-			v.setCheckable(true);
-			v.setChecked(false);
-			v.setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(&v - m_values)));
-			v.addClickedCallback(
-				[](lv_event_t* e)
-				{
-					UI_LOCK();
-					VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
-					LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
-					panel->setSelectedValueIndex(static_cast<uint8_t>(reinterpret_cast<uintptr_t>(btn->getUserData())));
-				},
-				this);
-		}
-		m_values[m_selectedValueIndex].setChecked(true);
 
 		m_decrement.addClickedCallback(
 			[](lv_event_t* e)
@@ -125,19 +111,41 @@ namespace UI
 		updateValueLabels();
 	}
 
-	void VerticalButtonPanel::setIncrementValues(const std::array<float, 2>& values)
+	void VerticalButtonPanel::setIncrementValues(const std::vector<float>& values)
 	{
 		UI_LOCK();
-		m_incrementValues[0] = values[0];
-		m_incrementValues[1] = values[1];
+		m_values.setItemCount(values.size(), this, &VerticalButtonPanel::createValueButton);
+		m_incrementValues = values;
 
 		updateValueLabels();
 	}
 
+	std::shared_ptr<Button> VerticalButtonPanel::createValueButton(size_t index, LvObj& parent)
+	{
+		auto btn = std::make_shared<Button>(fmt::format("value_btn_{}", index), parent);
+		btn->getLabel().setLongMode(LV_LABEL_LONG_MODE_WRAP);
+		btn->setHeight(LV_PCT(100));
+		// btn->setMinHeight(LV_SIZE_CONTENT); // FIXME: this seems to cause a lvgl layout bug
+		btn->setFlexGrow(1);
+		btn->setCheckable(true);
+		btn->setChecked(index == m_selectedValueIndex);
+		btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
+		btn->addClickedCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
+				LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
+				panel->setSelectedValueIndex(static_cast<uint8_t>(reinterpret_cast<uintptr_t>(btn->getUserData())));
+			},
+			this);
+		return btn;
+	}
+
 	void VerticalButtonPanel::updateValueLabels()
 	{
-		m_values[0].setText(fmt::format(fmt::runtime(m_fmt), m_incrementValues[0]).c_str());
-		m_values[1].setText(fmt::format(fmt::runtime(m_fmt), m_incrementValues[1]).c_str());
+		m_values.iterateListItems([this](size_t index, Button& btn)
+								  { btn.setText(fmt::format(fmt::runtime(m_fmt), m_incrementValues.at(index))); });
 	}
 
 	float VerticalButtonPanel::getSelectedValue() const
@@ -148,13 +156,8 @@ namespace UI
 	void VerticalButtonPanel::setSelectedValueIndex(uint8_t index)
 	{
 		UI_LOCK();
-		if (index >= 2)
-		{
-			return;
-		}
-		m_values[m_selectedValueIndex].setChecked(false); // uncheck the current value
+		m_values.iterateListItems([index](size_t i, Button& btn) { btn.setChecked(i == index); });
 		m_selectedValueIndex = index;
-		m_values[m_selectedValueIndex].setChecked(true); // check the new value
 	}
 
 	void VerticalButtonPanel::setValueChangeCallback(std::function<void(float)> callback)

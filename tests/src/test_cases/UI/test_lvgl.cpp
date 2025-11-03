@@ -181,6 +181,8 @@ static lv_obj_t* create_cont(
 	lv_obj_set_size(cont, width, height);
 	lv_obj_set_name(cont, name.data());
 	lv_obj_set_style_bg_color(cont, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_outline_color(cont, lv_color_black(), 0);
+	lv_obj_set_style_outline_width(cont, 2, 0);
 	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
 	return cont;
 }
@@ -191,9 +193,50 @@ static lv_obj_t* create_item(std::string_view name, lv_obj_t* parent)
 	lv_obj_set_name(item, name.data());
 	lv_obj_set_style_bg_color(item, lv_palette_main(LV_PALETTE_GREEN), 0);
 	lv_obj_set_style_bg_opa(item, LV_OPA_COVER, 0);
+	lv_obj_set_style_outline_color(item, lv_color_black(), 0);
+	lv_obj_set_style_outline_width(item, 2, 0);
 	lv_obj_set_width(item, LV_PCT(100));
 	return item;
 }
+
+#if 0
+/**
+* This is a test to try to cause a lvgl layout bug observed with the babystepping increment value buttons.
+* I could not replicate the issue here so the test is disabled for now
+*/
+TEST_F(TestLvgl, FlexGrowMinSize)
+{
+	lv_obj_t* parent = create_cont("parent", screen.getRootPtr(), LV_FLEX_FLOW_COLUMN, 200, 200);
+
+	lv_obj_t* cont = create_cont("cont", parent, LV_FLEX_FLOW_COLUMN, LV_PCT(100), LV_PCT(100));
+	lv_obj_set_flex_grow(cont, 1);
+	lv_obj_set_style_min_height(cont, LV_SIZE_CONTENT, LV_PART_MAIN);
+
+	lv_obj_t* item = create_item("item", cont);
+	lv_obj_set_flex_grow(item, 50);
+	lv_obj_set_style_min_height(item, LV_SIZE_CONTENT, LV_PART_MAIN);
+
+	lv_obj_t* sub_cont = create_cont("sub_cont", cont, LV_FLEX_FLOW_ROW, LV_PCT(100), LV_SIZE_CONTENT);
+	lv_obj_set_flex_grow(sub_cont, 1);
+	lv_obj_set_style_bg_color(sub_cont, lv_color_hex(0x0000ff), 0);
+
+	lv_obj_t* sub_item = create_item("sub_item", sub_cont);
+	lv_obj_set_height(sub_item, LV_PCT(100));
+	lv_obj_set_style_min_height(sub_item, LV_SIZE_CONTENT, LV_PART_MAIN);
+	lv_obj_set_flex_grow(sub_item, 1);
+	lv_obj_set_style_bg_color(sub_item, lv_color_hex(0xffff00), 0);
+
+	lv_obj_t* sub_item2 = create_item("sub_item2", sub_cont);
+	lv_obj_set_height(sub_item2, LV_PCT(100));
+	lv_obj_set_style_min_height(sub_item2, LV_SIZE_CONTENT, LV_PART_MAIN);
+	lv_obj_set_flex_grow(sub_item2, 1);
+	lv_obj_set_style_bg_color(sub_item2, lv_color_hex(0xffff00), 0);
+
+	lv_label_create(sub_item);
+
+	EXPECT_EQUAL_SCREENSHOT("lvgl/flex_grow_min_size.png");
+}
+#endif
 
 TEST_F(TestLvgl, FlexPadding)
 {

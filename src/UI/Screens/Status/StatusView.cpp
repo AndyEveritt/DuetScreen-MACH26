@@ -54,13 +54,13 @@ namespace UI
 		m_printAgainBtn.setIcon("print_again.png");
 		m_cancelBtn.setIcon("cancel.png");
 
-		for (size_t i = 0; i < m_footer.getChildCount(); i++)
-		{
-			LvObj* child = m_footer.getChild(i);
-			child->setHeight(LV_PCT(100));
-			child->setMinHeight(LV_SIZE_CONTENT, 0);
-			child->setFlexGrow(1);
-		}
+		m_footer.iterateChildren(
+			[](size_t i, LvObj& child)
+			{
+				child.setHeight(LV_PCT(100));
+				child.setMinHeight(LV_SIZE_CONTENT, 0);
+				child.setFlexGrow(1);
+			});
 
 		// Hide resume button initially
 		m_resumeBtn.hide();

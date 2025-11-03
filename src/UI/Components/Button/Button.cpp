@@ -57,7 +57,13 @@ namespace UI
 			{
 				// Update the label width
 				auto& btn = *static_cast<Button*>(lv_event_get_user_data(e));
-				lv_obj_t* parent = btn.getParentPtr();
+				LvObj* parent = btn.getParent();
+
+				if (!parent)
+				{
+					LOG_DBG("Button has no parent, cannot adjust label size");
+					return;
+				}
 
 				// while (parent != nullptr)
 				// {
@@ -70,12 +76,14 @@ namespace UI
 
 				// 	parent = lv_obj_get_parent(parent);
 				// }
-				lv_layout_t parent_layout = static_cast<lv_layout_t>(lv_obj_get_style_layout(parent, LV_PART_MAIN));
-				lv_flex_flow_t parent_flex_flow = lv_obj_get_style_flex_flow(parent, LV_PART_MAIN);
-				int32_t parent_width = lv_obj_get_style_width(parent, LV_PART_MAIN);
-				int32_t parent_height = lv_obj_get_style_height(parent, LV_PART_MAIN);
-				int32_t parent_min_width = lv_obj_get_style_min_width(parent, LV_PART_MAIN);
-				int32_t parent_min_height = lv_obj_get_style_min_height(parent, LV_PART_MAIN);
+
+				lv_layout_t parent_layout =
+					static_cast<lv_layout_t>(lv_obj_get_style_layout(parent->getRootPtr(), LV_PART_MAIN));
+				lv_flex_flow_t parent_flex_flow = lv_obj_get_style_flex_flow(parent->getRootPtr(), LV_PART_MAIN);
+				int32_t parent_width = lv_obj_get_style_width(parent->getRootPtr(), LV_PART_MAIN);
+				int32_t parent_height = lv_obj_get_style_height(parent->getRootPtr(), LV_PART_MAIN);
+				int32_t parent_min_width = lv_obj_get_style_min_width(parent->getRootPtr(), LV_PART_MAIN);
+				int32_t parent_min_height = lv_obj_get_style_min_height(parent->getRootPtr(), LV_PART_MAIN);
 
 				uint8_t flex_grow = lv_obj_get_style_flex_grow(btn.getRootPtr(), LV_PART_MAIN);
 				int32_t width = lv_obj_get_style_width(btn.getRootPtr(), LV_PART_MAIN);
