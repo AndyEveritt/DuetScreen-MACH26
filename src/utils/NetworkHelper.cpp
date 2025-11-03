@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -23,9 +24,10 @@
 
 namespace NetworkHelper
 {
-	static const std::string INTERFACE = "wlan0";
-	static constexpr const char* s_wpa_supplicant = "/etc/wpa_supplicant.conf";
-	static constexpr const char* s_ctrl_path = "/var/run/wpa_supplicant";
+#define INTERFACE "wlan0"
+#define CTRL_PATH "/var/run/wpa_supplicant"
+#define WPA_SUPPLICANT_CONF "/etc/wpa_supplicant.conf"
+
 	static constexpr int s_timeout_ms = 10000;
 
 	static struct wpa_ctrl* s_ctrl_conn = nullptr;
@@ -38,7 +40,7 @@ namespace NetworkHelper
 		if (s_ctrl_conn != nullptr)
 			return true;
 
-		std::string ctrl_path = std::string(s_ctrl_path) + "/" + INTERFACE;
+		std::string ctrl_path = CTRL_PATH "/" INTERFACE;
 		s_ctrl_conn = wpa_ctrl_open(ctrl_path.c_str());
 		if (s_ctrl_conn == nullptr)
 		{
@@ -116,12 +118,25 @@ namespace NetworkHelper
 	void enable(bool enable)
 	{
 		LOG_INFO("{:s} WiFi", enable ? "Enabling" : "Disabling");
-		std::string cmd = "ip link set " + INTERFACE + (enable ? " up" : " down");
+#if T113
+		std::string cmd = fmt::format("ip link set " INTERFACE " {:s}", (enable ? " up" : " down"));
 		int32_t errorCode = system(cmd.c_str());
 		if (errorCode != 0)
 		{
 			LOG_ERROR("Failed to {:s} WiFi, code={:d}", enable ? "enable" : "disable", errorCode);
+			return;
 		}
+
+		if (!std::filesystem::exists(CTRL_PATH "/" INTERFACE))
+		{
+			errorCode = system("wpa_supplicant -B -i " INTERFACE " -c " WPA_SUPPLICANT_CONF);
+			if (errorCode != 0)
+			{
+				LOG_ERROR("Failed to start wpa_supplicant, code={:d}", errorCode);
+				return;
+			}
+		}
+#endif
 	}
 
 	bool isEnabled()
