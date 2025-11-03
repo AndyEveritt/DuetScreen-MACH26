@@ -163,8 +163,6 @@ namespace UI
 		}
 		setFilamentDisabled(index < 0);
 		m_loadedFilament = "some_placeholder"; // This is a hack
-		m_retractBtn.setState(LV_STATE_DISABLED, index < 0, true);
-		m_extrudeBtn.setState(LV_STATE_DISABLED, index < 0, true);
 	}
 
 	void ExtruderControl::setFilamentDisabled(bool disabled)
@@ -210,6 +208,26 @@ namespace UI
 		UI_LOCK();
 		LOG_DBG("Setting filament callback for {}", getName());
 		m_filamentCb = std::move(cb);
+	}
+
+	void ExtruderControl::setExtrudeDisabled(bool disabled)
+	{
+		if (disabled == m_extrudeBtn.hasState(LV_STATE_DISABLED))
+		{
+			return;
+		}
+
+		m_extrudeBtn.setState(LV_STATE_DISABLED, disabled, true);
+	}
+
+	void ExtruderControl::setRetractDisabled(bool disabled)
+	{
+		if (disabled == m_retractBtn.hasState(LV_STATE_DISABLED))
+		{
+			return;
+		}
+
+		m_retractBtn.setState(LV_STATE_DISABLED, disabled, true);
 	}
 
 	void ExtruderControl::setExtrudeCallback(extrude_cb_t cb)

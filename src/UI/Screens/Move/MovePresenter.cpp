@@ -227,6 +227,8 @@ namespace UI
 		if (!currentTool)
 		{
 			m_view->setCurrentTool(-1);
+			m_view->setExtrudeDisabled(true);
+			m_view->setRetractDisabled(true);
 		}
 		for (size_t i = 0; i < OM::GetToolCount(); i++)
 		{
@@ -243,6 +245,36 @@ namespace UI
 				m_view->setCurrentTool(i);
 				m_view->setFilamentDisabled(tool->filamentExtruder < 0);
 				m_view->setLoadedFilament(tool->GetFilament().c_str());
+
+				bool canExtrude = true;
+				bool canRetract = true;
+
+				const float coldExtrudeTemp = OM::Heat::GetColdExtrudeTemperature();
+				const float coldRetractTemp = OM::Heat::GetColdRetractTemperature();
+				tool->IterateHeaters(
+					[this, &canExtrude, &canRetract, &coldExtrudeTemp, &coldRetractTemp](OM::ToolHeaterPtr heater,
+																						 size_t index)
+					{
+						if (!heater || !heater->heater)
+						{
+							return;
+						}
+
+						const float temperature = heater->heater->current;
+
+						if (temperature < coldExtrudeTemp)
+						{
+							canExtrude = false;
+						}
+
+						if (temperature < coldRetractTemp)
+						{
+							canRetract = false;
+						}
+					});
+
+				m_view->setExtrudeDisabled(!canExtrude);
+				m_view->setRetractDisabled(!canRetract);
 			}
 		}
 	}

@@ -7,6 +7,8 @@ class HeatSubscribers : public SubscriberMap
   public:
 	HeatSubscribers()
 	{
+		addSubscriber("heat:coldExtrudeTemperature", coldExtrudeTemperature);
+		addSubscriber("heat:coldRetractTemperature", coldRetractTemperature);
 		addSubscriber("heat:heaters^", nullHeater);
 		addSubscriber("heat:bedHeaters^", bedHeater);
 		addSubscriber("heat:chamberHeaters^", chamberHeater);
@@ -25,6 +27,8 @@ class HeatSubscribers : public SubscriberMap
 	}
 
   private:
+	static bool coldExtrudeTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool coldRetractTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool bedHeater(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);
 	static bool chamberHeater(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);

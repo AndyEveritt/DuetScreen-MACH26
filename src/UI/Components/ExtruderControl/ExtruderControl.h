@@ -39,6 +39,8 @@ namespace UI
 		void setFilamentSelected(const std::string& filament);
 		void setFilamentCallback(filament_cb_t cb);
 
+		void setExtrudeDisabled(bool disabled);
+		void setRetractDisabled(bool disabled);
 		void setExtrudeCallback(extrude_cb_t cb);
 		void setDistanceCallback(distance_cb_t cb);
 		void setFeedrateCallback(feedrate_cb_t cb);

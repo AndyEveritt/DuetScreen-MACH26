@@ -36,6 +36,9 @@ namespace UI
 		}
 		void setLoadedFilament(const std::string& filament) { m_extruderControl.setFilamentSelected(filament); }
 
+		void setExtrudeDisabled(bool disabled) { m_extruderControl.setExtrudeDisabled(disabled); }
+		void setRetractDisabled(bool disabled) { m_extruderControl.setRetractDisabled(disabled); }
+
 		void clear();
 
 	  private:

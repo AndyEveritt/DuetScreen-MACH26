@@ -14,6 +14,18 @@
 
 #include "UI/Core/Model.h"
 
+bool HeatSubscribers::coldExtrudeTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
+{
+	OM::Heat::SetColdExtrudeTemperature(data);
+	return true;
+}
+
+bool HeatSubscribers::coldRetractTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
+{
+	OM::Heat::SetColdRetractTemperature(data);
+	return true;
+}
+
 bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	if (OM::Heat::RemoveHeater(indices[0], false) > 0)

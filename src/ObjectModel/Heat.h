@@ -91,5 +91,10 @@ namespace OM
 		bool UpdateHeaterStatus(const size_t heaterIndex, const char* status);
 		bool UpdateHeaterSensor(const size_t heaterIndex, const size_t sensorIndex);
 		size_t RemoveHeater(const size_t index, const bool allFollowing);
+
+		void SetColdExtrudeTemperature(float temp);
+		float GetColdExtrudeTemperature();
+		void SetColdRetractTemperature(float temp);
+		float GetColdRetractTemperature();
 	} // namespace Heat
 } // namespace OM

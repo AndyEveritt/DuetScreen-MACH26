@@ -21,6 +21,9 @@ namespace OM
 {
 	namespace Heat
 	{
+		static float s_coldExtrudeTemperature = 160.0f;
+		static float s_coldRetractTemperature = 90.0f;
+
 		void Heater::Reset()
 		{
 			index = 0;
@@ -206,6 +209,26 @@ namespace OM
 		{
 			LOG_DBG("Removing heater {:d} (allFollowing={:s})", index, allFollowing ? "true" : "false");
 			return Remove<HeaterList, Heater>(heaters, index, allFollowing);
+		}
+
+		void SetColdExtrudeTemperature(float temp)
+		{
+			s_coldExtrudeTemperature = temp;
+		}
+
+		float GetColdExtrudeTemperature()
+		{
+			return s_coldExtrudeTemperature;
+		}
+
+		void SetColdRetractTemperature(float temp)
+		{
+			s_coldRetractTemperature = temp;
+		}
+
+		float GetColdRetractTemperature()
+		{
+			return s_coldRetractTemperature;
 		}
 	} // namespace Heat
 } // namespace OM
