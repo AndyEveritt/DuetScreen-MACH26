@@ -34,7 +34,6 @@ There are a few methods to connect the Duet3D screen to a WiFi network. The reco
 2. Alternatively, you can connect to a network using the “Settings” page in the GUI.
     - This method is useful if you are setting up a single screen and you do not know the WiFi credentials in advance.
     - The GUI is currently a placeholder and has some known issues.
-    - You need to power cycle the screen after selecting network mode in the GUI
 
 
 ## Powering the Duet3D screen
@@ -69,8 +68,7 @@ Multiple methods are available to connect the Duet3D screen to a mainboard. The 
 1. Ensure the Duet3D screen is connected to the same WiFi network as the mainboard.
     - See the [Connecting the Duet3D screen to a WiFi network](#connecting-the-duet3d-screen-to-a-wifi-network) section above.
 2. In the GUI, select the WiFi connection method.
-3. Power cycle the screen.
-4. Once rebooted, enter the IP address of the mainboard.
+4. Enter the IP address of the mainboard.
 
 ### UART
 
