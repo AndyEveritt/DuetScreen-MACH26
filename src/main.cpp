@@ -271,6 +271,17 @@ int main(int argc, char** argv)
 		1000, // Timer period in milliseconds
 		NULL);
 
+	lv_timer_create(
+		[](lv_timer_t* timer)
+		{
+			if (system("touch /tmp/duetscreen-watchdog") != 0)
+			{
+				LOG_ERROR("Failed to update watchdog timestamp");
+			}
+		},
+		1000,
+		NULL);
+
 	// Try to set UI thread to real-time priority first
 	if (set_thread_priority(pthread_self(), SCHED_FIFO, sched_get_priority_max(SCHED_FIFO)) != 0)
 	{

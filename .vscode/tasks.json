@@ -125,7 +125,7 @@
 			"options": {
 				"cwd": "${config:buildroot_path}"
 			},
-			"command": "command ssh root@${config:duetscreen_ip} 'start-stop-daemon -K -n DuetScreen';scp output/target/usr/bin/DuetScreen root@${config:duetscreen_ip}:/usr/bin/DuetScreen",
+			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S21DuetScreenMonitor stop; start-stop-daemon -K -n DuetScreen';scp output/target/usr/bin/DuetScreen root@${config:duetscreen_ip}:/usr/bin/DuetScreen",
 			"group": {
 				"kind": "build",
 				"isDefault": false
@@ -145,7 +145,7 @@
 			"options": {
 				"cwd": "${config:buildroot_path}"
 			},
-			"command": "command ssh root@${config:duetscreen_ip} 'start-stop-daemon -K -n DuetScreen';scp output/target/usr/bin/DuetScreen root@${config:duetscreen_ip}:/usr/bin/DuetScreen",
+			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S21DuetScreenMonitor stop; start-stop-daemon -K -n DuetScreen';scp output/target/usr/bin/DuetScreen root@${config:duetscreen_ip}:/usr/bin/DuetScreen",
 			"group": {
 				"kind": "build",
 				"isDefault": false
@@ -195,7 +195,7 @@
 		{
 			"label": "Start DuetScreen on remote",
 			"type": "shell",
-			"command": "command ssh root@${config:duetscreen_ip} 'start-stop-daemon -K -n DuetScreen;/etc/init.d/S20DuetScreen start'",
+			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S21DuetScreenMonitor stop; start-stop-daemon -K -n DuetScreen; /etc/init.d/20DuetScreen start'",
 			"problemMatcher": [],
 			"isBackground": true
 		},
