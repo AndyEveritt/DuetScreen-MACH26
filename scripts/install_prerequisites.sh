@@ -19,7 +19,11 @@ sudo apt-get install -y \
     python3-tk \
     gcovr \
     libfreetype6 \
-    libfreetype-dev
+    libfreetype-dev \
+    python3 \
+    python3-dev \
+    python3-pip \
+    python3-venv
 
 python3 -m venv env
 source env/bin/activate
