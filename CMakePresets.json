@@ -59,15 +59,6 @@
             ]
         },
         {
-            "name": "Test",
-            "displayName": "Unit Tests",
-            "description": "Configure the project to build and run unit tests",
-            "inherits": "Simulation",
-            "cacheVariables": {
-                "ENABLE_COVERAGE": "ON"
-            }
-        },
-        {
             "name": "Simulation-Release",
             "displayName": "Simulation-Release",
             "description": "Configure the project to be run locally on the host machine",
@@ -75,6 +66,16 @@
                 "Simulation-Base",
                 "Release"
             ]
+        },
+        {
+            "name": "Test",
+            "displayName": "Unit Tests",
+            "description": "Configure the project to build and run unit tests",
+            "inherits": "Simulation-Release",
+            "cacheVariables": {
+                "BUILD_TESTING": "ON",
+                "ENABLE_COVERAGE": "ON"
+            }
         },
         {
             "name": "T113-Base",

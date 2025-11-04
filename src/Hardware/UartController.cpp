@@ -57,7 +57,7 @@ void UartController::close()
 {
 	if (isOpen())
 	{
-		LOG_INFO("Closing UART device");
+		LOG_DBG("Closing UART device"); // Caused a segfault in release mode for unit tests when level was info?
 		// Signal the read thread to stop first
 		m_running = false;
 
