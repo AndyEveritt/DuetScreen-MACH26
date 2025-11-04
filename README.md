@@ -122,3 +122,22 @@ USB hubs are supported **if they are NOT smart**. A smart hub is one that requir
 
 ## Building the project
 Notes on how to build the project are found in [DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## Configuring Screen Settings
+It is possible to configure the screen settings without using the GUI. This is done by creating a file called `duetscreen.json`. This file stores the non-volatile settings for the screen.
+
+For information on what settings are available, look at [Storage.h](src/Storage.h) to find all the supported keys. Key names are split by `:` to indicate hierarchy. For example the key `ui:move:selected_feedrate` would refer to:
+```json
+{
+  "ui": {
+    "move": {
+      "selected_feedrate": <value>
+    }
+  }
+}
+```
+
+This file should be placed in the root directory of the microSD card. When the screen first boots, it will read this file and apply the settings.
+
+> [!NOTE]
+> This only works on first boot for security reasons. After the first boot, settings need to be changed via the GUI.
