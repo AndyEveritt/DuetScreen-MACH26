@@ -111,7 +111,7 @@ namespace UI
 	  protected:
 		virtual void onInit() override;
 		virtual void onActivate() override;
-		virtual void onDeactivate() override {}
+		virtual void onDeactivate() override;
 
 		virtual void onConnect() {}
 		virtual void onDisconnect() {}

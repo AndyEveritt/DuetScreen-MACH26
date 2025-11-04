@@ -82,7 +82,7 @@ namespace UI
 		m_hint.setX(LV_PCT(10));
 		m_hint.setText("Tap the target");
 		m_target.setSize(50, 50);
-		m_target.setSrc(Themes::getIconPath("touch_target.png").c_str());
+		m_target.setSrc(Themes::getFixedIconPath("hardware_test", "touch_target.png").c_str());
 		m_target.setStyleRecolor(lv_color_white());
 		m_target.setStyleRecolorOpa(LV_OPA_COVER);
 		m_target.setFlag(LV_OBJ_FLAG_FLOATING, true);

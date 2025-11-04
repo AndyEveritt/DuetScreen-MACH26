@@ -296,6 +296,7 @@ namespace UI::Themes
 	void resetIconFolder();
 	void setIconFolder(std::string_view folder);
 	std::string getIconPath(std::string_view icon_name);
+	std::string getFixedIconPath(std::string_view folder, std::string_view icon_name);
 	bool iconExists(std::string_view icon_name);
 
 #if DEBUG_BORDERS

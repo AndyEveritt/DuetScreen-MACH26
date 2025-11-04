@@ -986,4 +986,6 @@ namespace UI
 		updateUsbMounts();
 		restartTests();
 	}
+
+	void HardwareTestPresenter::onDeactivate() {}
 } // namespace UI

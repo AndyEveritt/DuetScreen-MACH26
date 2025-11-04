@@ -1057,8 +1057,13 @@ namespace UI::Themes
 
 	std::string getIconPath(std::string_view icon_name)
 	{
+		return getFixedIconPath(s_iconFolder, icon_name);
+	}
+
+	std::string getFixedIconPath(std::string_view folder, std::string_view icon_name)
+	{
 		UI_LOCK();
-		return fmt::format("A:" ASSETS_FOLDER "icons/{:s}/{:s}", s_iconFolder, icon_name);
+		return fmt::format("A:" ASSETS_FOLDER "icons/{:s}/{:s}", folder, icon_name);
 	}
 
 	bool iconExists(std::string_view icon_name)
