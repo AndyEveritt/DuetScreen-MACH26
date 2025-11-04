@@ -43,8 +43,8 @@ namespace UI
 		LvTextArea m_output{"output", m_topCont};
 		LvContainer m_inputCont{"input_cont", getRoot()};
 		LvTextArea m_input{"input", m_inputCont};
-		Button m_clear{"clear", m_input, LV_SYMBOL_TRASH};
-		Button m_enter{"enter", m_inputCont, LV_SYMBOL_NEW_LINE};
+		Button m_clear{"clear", m_inputCont};
+		Button m_enter{"enter", m_inputCont};
 		LvKeyboard m_kb{"keyboard", getRoot()};
 
 #if ENABLE_CONSOLE_SHELL

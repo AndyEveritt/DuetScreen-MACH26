@@ -12,6 +12,7 @@ namespace UI
 {
 #define TABLE_GCODE_WIDTH 100
 #define TABLE_DESCRIPTION_WIDTH 500
+#define INPUT_BTN_SIZE 50
 
 	ConsoleView::ConsoleView(LvObj& parent)
 		: View("console_view", parent, layout_t(0, 0, 100, 100))
@@ -54,16 +55,17 @@ namespace UI
 		// Input Area
 		m_inputCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_inputCont.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_inputCont.addStyle(Themes::getLvglStyles().pad_zero);
 
 		m_input.setFlexGrow(1);
 		m_input.setOneLine(true);
 		m_input.setPlaceholderText(_("console.input_placeholder"));
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT, 0);
-		m_clear.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_input.setHeight(LV_SIZE_CONTENT);
-		m_clear.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_enter.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_clear.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
+		m_enter.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
+
+		m_clear.setIcon("clear.png");
+		m_enter.setIcon("send.png");
 
 #if ENABLE_CONSOLE_SHELL
 		m_shellToggle.setText(_("console.shell"));
@@ -75,9 +77,6 @@ namespace UI
 
 		m_topCont.addStyle(Themes::getLvglStyles().no_border);
 		m_inputCont.addStyle(Themes::getLvglStyles().no_border);
-		m_input.addStyle(Themes::getLvglStyles().pad_zero);
-		m_clear.addStyle(Themes::getLvglStyles().pad_zero);
-		m_enter.addStyle(Themes::getLvglStyles().pad_zero);
 
 		// Hide keyboard initially
 		m_kb.setSize(LV_PCT(100), LV_PCT(40));
