@@ -202,7 +202,7 @@ int main(int argc, char** argv)
 		[](lv_timer_t* timer)
 		{
 			static bool screensaver_enabled = false;
-#ifdef BURNIN_TEST
+#if BURNIN_TEST
 			static bool first_run = true;
 			static lv_timer_t* burnin_timer = lv_timer_create(
 				[](lv_timer_t* timer)
@@ -246,7 +246,7 @@ int main(int argc, char** argv)
 				if (!screensaver_enabled)
 				{
 					LOG_INFO("Screensaver timeout reached");
-#ifdef BURNIN_TEST
+#if BURNIN_TEST
 					lv_timer_resume(burnin_timer);
 #else
 					DisplayHelper::enableScreenSaver(true);
@@ -259,7 +259,7 @@ int main(int argc, char** argv)
 				if (screensaver_enabled)
 				{
 					LOG_INFO("Screensaver timeout cancelled");
-#ifdef BURNIN_TEST
+#if BURNIN_TEST
 					lv_timer_pause(burnin_timer);
 #else
 					DisplayHelper::enableScreenSaver(false);
