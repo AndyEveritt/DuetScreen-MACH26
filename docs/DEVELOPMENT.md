@@ -7,6 +7,10 @@ Clone the project and the related sub modules:
 ```bash
 git clone --recursive https://github.com/Duet3D/DuetScreen.git
 ```
+or
+```bash
+git clone --recursive git@github.com:Duet3D/DuetScreen.git
+```
 
 The following steps are required to setup VSCode as the development environment for the project.
 - Copy `.vscode/settings.json.default` to `.vscode/settings.json`
@@ -14,6 +18,9 @@ The following steps are required to setup VSCode as the development environment 
   - Clone the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) repository.
   - Build the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) project.
   - Set the `buildroot_path` and `duetscreen_ip` settings in `.vscode/settings.json` to the correct values.
+
+> [!WARNING]
+> The project uses Git Submodules. When cloning the project or checking out a branch/commit, make sure to run `git submodule update --init --recursive` to ensure that the submodules are checked out to the correct commit.
 
 ## Simulating
 It is possible to simulate the GUI on PC without access to the physical hardware. This can be beneficial for testing and development purposes as it allows for debugging using gdb. 
@@ -28,15 +35,21 @@ The following steps are required to run the GUI on PC:
 ```
 
 ### Setup udev rules for USB communications
+> [!NOTE]
+> This step is only required if you want to communicate between the PC and the Duet3D mainboard via USB. This is not required for simulating the GUI on PC.
+> If you want to skip this step, you can communicate with the Duet3D mainboard via WiFi instead.
+
 ```bash
 sudo bash -c 'cat ./config/99-usb.rules > /etc/udev/rules.d/99-usb.rules'
 sudo service udev restart
 sudo usermod -aG plugdev $USER
 ```
 
-### *WSL2 only* Setup USBIPD:
+#### *WSL2 only* Setup USBIPD:
 - Attach the Duet as a USB device using usbipd
 
+> [!NOTE]
+> The https://marketplace.visualstudio.com/items?itemName=thecreativedodo.usbip-connect extension for VSCode can be used to make this easier.
 
 ### Configure the project:
 > [!NOTE]
