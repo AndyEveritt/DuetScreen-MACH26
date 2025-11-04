@@ -8,6 +8,7 @@
 #include "XYControl.h"
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {
@@ -22,6 +23,7 @@ namespace UI
 		, m_xDecrementButton("x_decrement", getRoot())
 		, m_yIncrementButton("y_increment", getRoot())
 		, m_yDecrementButton("y_decrement", getRoot())
+		, m_homeAllButton("home_all", getRoot())
 		, m_homeXYButton("home_xy", getRoot(), fmt::format("{}{}", sm_xAxisLetter, sm_yAxisLetter))
 		, m_homeXButton("home_x", getRoot(), fmt::format("{}", sm_xAxisLetter))
 		, m_homeYButton("home_y", getRoot(), fmt::format("{}", sm_yAxisLetter))
@@ -34,6 +36,7 @@ namespace UI
 		setGridCell(m_xIncrementButton, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
 		setGridCell(m_yDecrementButton, LV_GRID_ALIGN_STRETCH, 1, 2, LV_GRID_ALIGN_STRETCH, 3, 1);
 		setGridCell(m_yIncrementButton, LV_GRID_ALIGN_STRETCH, 1, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_homeAllButton, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		setGridCell(m_homeXYButton, LV_GRID_ALIGN_STRETCH, 1, 2, LV_GRID_ALIGN_STRETCH, 2, 1);
 		setGridCell(m_homeXButton, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		setGridCell(m_homeYButton, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
@@ -49,6 +52,8 @@ namespace UI
 		m_yIncrementButton.setIcon("arrow_up.png");
 		m_yDecrementButton.setIcon("arrow_down.png");
 
+		m_homeAllButton.setText(_("move.home_all"));
+		m_homeAllButton.setIcon("home_axis.png");
 		m_homeXButton.setIcon("home_axis.png");
 		m_homeYButton.setIcon("home_axis.png");
 		m_homeXYButton.setIcon("home_axis.png");
@@ -59,6 +64,7 @@ namespace UI
 		m_xDecrementButton.addClickedCallback(onJogBtn, this);
 		m_yIncrementButton.addClickedCallback(onJogBtn, this);
 		m_yDecrementButton.addClickedCallback(onJogBtn, this);
+		m_homeAllButton.addClickedCallback(onHomeBtn, this);
 		m_homeXYButton.addClickedCallback(onHomeBtn, this);
 		m_homeXButton.addClickedCallback(onHomeBtn, this);
 		m_homeYButton.addClickedCallback(onHomeBtn, this);
@@ -73,6 +79,7 @@ namespace UI
 		m_yIncrementButton.addStyle(Themes::getLvglStyles().actionBtn);
 		m_yDecrementButton.addStyle(Themes::getLvglStyles().actionBtn);
 
+		m_homeAllButton.addStyle(Themes::getLvglStyles().actionBtn);
 		m_homeXYButton.addStyle(Themes::getLvglStyles().actionBtn);
 		m_homeXButton.addStyle(Themes::getLvglStyles().actionBtn);
 		m_homeYButton.addStyle(Themes::getLvglStyles().actionBtn);
@@ -163,6 +170,12 @@ namespace UI
 		m_jogCallback = std::move(cb);
 	}
 
+	void XYControl::setHomeAllCallback(home_cb_t cb)
+	{
+		UI_LOCK();
+		m_homeAllCallback = std::move(cb);
+	}
+
 	void XYControl::setHomeXYCallback(home_cb_t cb)
 	{
 		UI_LOCK();
@@ -233,23 +246,30 @@ namespace UI
 		UI_LOCK();
 		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
 
-		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+		LvObj* target = LvObj::fromPtr(lv_event_get_target_obj(event));
 
-		if (target == control->m_homeXButton.getButton())
+		if (target == &control->m_homeAllButton)
+		{
+			if (control->m_homeAllCallback)
+			{
+				control->m_homeAllCallback();
+			}
+		}
+		else if (target == &control->m_homeXButton)
 		{
 			if (control->m_homeXCallback)
 			{
 				control->m_homeXCallback();
 			}
 		}
-		else if (target == control->m_homeYButton.getButton())
+		else if (target == &control->m_homeYButton)
 		{
 			if (control->m_homeYCallback)
 			{
 				control->m_homeYCallback();
 			}
 		}
-		else if (target == control->m_homeXYButton.getButton())
+		else if (target == &control->m_homeXYButton)
 		{
 			if (control->m_homeXYCallback)
 			{

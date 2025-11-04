@@ -68,6 +68,8 @@ namespace UI
 		m_heightmap.setFlexGrow(1);
 		m_disableMotors.setFlexGrow(1);
 
+		m_homeAll.hide();
+
 		// Axis Control
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_xyControl.setSize(LV_PCT(30), LV_PCT(100));
@@ -77,6 +79,7 @@ namespace UI
 				m_presenter->moveAxisRelative(
 					axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
 			});
+		m_xyControl.setHomeAllCallback([this]() { m_presenter->homeAll(); });
 		m_xyControl.setHomeXYCallback(
 			[this]()
 			{

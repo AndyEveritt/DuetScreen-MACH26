@@ -35,6 +35,7 @@ namespace UI
 		void setYHomeDisabled(bool disabled);
 
 		void setJogCallback(jog_cb_t cb);
+		void setHomeAllCallback(home_cb_t cb);
 		void setHomeXYCallback(home_cb_t cb);
 		void setHomeXCallback(home_cb_t cb);
 		void setHomeYCallback(home_cb_t cb);
@@ -60,6 +61,7 @@ namespace UI
 		Button m_xDecrementButton;
 		Button m_yIncrementButton;
 		Button m_yDecrementButton;
+		Button m_homeAllButton;
 		Button m_homeXYButton;
 		Button m_homeXButton;
 		Button m_homeYButton;
@@ -72,6 +74,7 @@ namespace UI
 
 		jog_cb_t m_jogCallback;
 
+		home_cb_t m_homeAllCallback;
 		home_cb_t m_homeXYCallback;
 		home_cb_t m_homeXCallback;
 		home_cb_t m_homeYCallback;
