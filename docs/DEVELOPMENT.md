@@ -84,6 +84,10 @@ cmake --build --preset Simulation
   "readable": "English (UK)",
   "translations": {
     "key": "translation",
+    "parent_key": {
+      "child_key": "child_translation",
+      "child_key_2": "child_translation_2"
+    }
     ...
 }
 ```
@@ -91,6 +95,7 @@ cmake --build --preset Simulation
 - The `translations` field is a dictionary of key-value pairs where the key is the identifier used in the code and the value is the translation.
 - The language file must be named using the [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag) format. For example, `en-GB.json` for English (UK) or `fr-FR.json` for French (France).
 - To add a new language, create a new JSON file in the `assets/i18n/` directory with the appropriate structure and name.
+- Translation keys support nesting using objects of arbitrary depth. For example, the key `parent_key.child_key` can be used to access the translation for `child_key` under `parent_key`.
 - Some translations may include formatting placeholders. The [fmt](https://github.com/fmtlib/fmt) library is used for string formatting. A good reference for the formatting syntax can be found [here](https://hackingcpp.com/cpp/libs/fmt.html).
   - The [en-GB.json](../assets/i18n/en-GB.json) file contains the reference implementation for all formatting placeholders. If the order of the placeholders needs to be changed for a specific language, this can be done by changing the order of the placeholders in the translation string and adding the appropriate index to the placeholder.
   ```json
