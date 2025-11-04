@@ -24,6 +24,10 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 		}
 		trimmed.assign(data, end);
 	}
+	else
+	{
+		trimmed = data;
+	}
 
 	if (trimmed.empty())
 	{
