@@ -25,9 +25,10 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "BUILD_TESTING": "ON",
-                "LOG_TIMESTAMPS": "ON",
-                "LOG_THREAD": "ON",
-                "DEBUG_BORDERS": "ON"
+                "DUETSCREEN_LOG_TIMESTAMPS": "ON",
+                "DUETSCREEN_LOG_THREAD": "ON",
+                "DUETSCREEN_DEBUG_BORDERS": "ON",
+                "DUETSCREEN_ENABLE_CONSOLE_SHELL": "ON"
             }
         },
         {
@@ -36,8 +37,8 @@
             "inherits": "Base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "LOG_TIMESTAMPS": "ON",
-                "LOG_THREAD": "OFF"
+                "DUETSCREEN_LOG_TIMESTAMPS": "ON",
+                "DUETSCREEN_LOG_THREAD": "OFF"
             }
         },
         {

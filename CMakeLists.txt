@@ -33,16 +33,16 @@ endif()
 
 set(MAIN_SOURCES "")
 
-# Options
+# Options. These are mirrored as PUBLIC DuetScreen.lib compile definitions without the DUETSCREEN_ prefix.
 set(PROCESSOR "T113" CACHE STRING "Target processor, 'T113' or 'Simulation'")
-option(DEBUG_BORDERS "Enable debug borders" OFF)
-option(LOG_TIMESTAMPS "Enable timestamps in log messages" ON)
-option(LOG_THREAD "Enable logging thread id in log messages" OFF)
-option(ASYNC_RR_MODEL "Enable asynchronous rr_model requests" OFF)
-option(HARDWARE_TEST "Enable hardware test" OFF)
-option(BURNIN_TEST "Enable burnin test" OFF)
-option(ENABLE_CONSOLE_SHELL "Enable sending shell commands via the GUI console" OFF)
-option(LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" OFF)
+option(DUETSCREEN_DEBUG_BORDERS "Enable debug borders" OFF)
+option(DUETSCREEN_LOG_TIMESTAMPS "Enable timestamps in log messages" ON)
+option(DUETSCREEN_LOG_THREAD "Enable logging thread id in log messages" OFF)
+option(DUETSCREEN_ASYNC_RR_MODEL "Enable asynchronous rr_model requests" OFF)
+option(DUETSCREEN_HARDWARE_TEST "Enable hardware test" OFF)
+option(DUETSCREEN_BURNIN_TEST "Enable burnin test" OFF)
+option(DUETSCREEN_ENABLE_CONSOLE_SHELL "Enable sending shell commands via the GUI console" OFF)
+option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" ON)
 
 if(NOT DEFINED PROCESSOR)
   message(
@@ -150,37 +150,27 @@ elseif(PROCESSOR STREQUAL "Simulation")
   target_compile_definitions(DuetScreen.lib PUBLIC SIMULATION=1)
 endif()
 
-if(DEBUG_BORDERS)
-  target_compile_definitions(DuetScreen.lib PUBLIC DEBUG_BORDERS=1)
-endif()
+# Set DUETSCREEN_* cache options as compile definitions without the prefix
+get_cmake_property(_cache_vars CACHE_VARIABLES)
+foreach(_var ${_cache_vars})
+  if(_var MATCHES "^DUETSCREEN_")
+    string(REPLACE "DUETSCREEN_" "" _short "${_var}")
 
-if(LOG_TIMESTAMPS)
-  target_compile_definitions(DuetScreen.lib PUBLIC LOG_TIMESTAMPS=1)
-endif()
+    # Normalize ON/OFF to 1/0
+    set(_val "${${_var}}")
+    string(TOUPPER "${_val}" _val_upper)
+    if(_val_upper STREQUAL "ON" OR _val_upper STREQUAL "TRUE" OR _val_upper STREQUAL "1" OR _val_upper STREQUAL "YES")
+      set(_int 1)
+    else()
+      set(_int 0)
+    endif()
 
-if(LOG_THREAD)
-  target_compile_definitions(DuetScreen.lib PUBLIC LOG_THREAD=1)
-endif()
-
-if(ASYNC_RR_MODEL)
-  target_compile_definitions(DuetScreen.lib PUBLIC ASYNC_RR_MODEL=1)
-endif()
-
-if(HARDWARE_TEST)
-  target_compile_definitions(DuetScreen.lib PUBLIC HARDWARE_TEST=1)
-endif()
-
-if (BURNIN_TEST)
-  target_compile_definitions(DuetScreen.lib PUBLIC BURNIN_TEST=1)
-endif()
-
-if (ENABLE_CONSOLE_SHELL)
-  target_compile_definitions(DuetScreen.lib PUBLIC ENABLE_CONSOLE_SHELL=1)
-endif()
-
-if (LV_NESTED_SHOW_HIDE)
-  target_compile_definitions(DuetScreen.lib PUBLIC LV_NESTED_SHOW_HIDE=1)
-endif()
+    # Mirror to local variable and define for compilation
+    set(${_short} ${_int})
+    message("Setting DuetScreen compile definition ${_short} to ${_int}")
+    target_compile_definitions(DuetScreen.lib PUBLIC ${_short}=${_int})
+  endif()
+endforeach()
 
 # Helper function to add preprocesor definition of FILE_BASENAME to pass the
 # filename without directory path for debugging use.

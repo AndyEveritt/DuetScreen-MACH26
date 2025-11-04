@@ -9,8 +9,6 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 
-#define LV_NESTED_SHOW_HIDE 1
-
 namespace UI
 {
 	void lv_timer_delete_safe(lv_timer_t* timer)
