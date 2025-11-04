@@ -22,8 +22,23 @@ The following steps are required to setup VSCode as the development environment 
 > [!WARNING]
 > The project uses Git Submodules. When cloning the project or checking out a branch/commit, make sure to run `git submodule update --init --recursive` to ensure that the submodules are checked out to the correct commit.
 
+## Setting up VSCode
+
+The project is setup to use VSCode as the development environment. The project uses CMake and is possible to build entirely from a CLI. However, using VSCode makes it easier to debug and develop the code.
+
+ The following extensions are required:
+- [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
+- [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
+
+These extensions are recommended but not required:
+- [Smart File Templates](https://marketplace.visualstudio.com/items?itemName=TrevorNesbitt.smart-file-templates)
+- [LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)
+
 ## Simulating
+
 It is possible to simulate the GUI on PC without access to the physical hardware. This can be beneficial for testing and development purposes as it allows for debugging using gdb. 
+
+The easiest way to setup the simulation environment is to use VSCode with the provided configurations
 
 The simulation is only setup to run on Linux or WSL2 on Windows.
 
@@ -33,6 +48,14 @@ The following steps are required to run the GUI on PC:
 ```bash
 ./scripts/install_prerequisites.sh
 ```
+
+### Create a `version.h` file
+The `version.h` file is required to build the project. Run the following command to create it:
+```bash
+./scripts/update_version.sh dev
+```
+
+This will create a `version.h` file with the version set to `dev`.
 
 ### Setup udev rules for USB communications
 > [!NOTE]
@@ -55,26 +78,58 @@ sudo usermod -aG plugdev $USER
 > [!NOTE]
 > Configuring and building the project can be skipped if you intend to debug the code since it can be done by running the `Debug DuetScreen` debug configuration in VSCode.
 
+A number of CMake presets are provided for different configurations. The 2 main ones for simulation are: `Simulation` and `Simulation-Release`. If you want to have breakpoint debugging and performance/memory overlays enabled, use the `Simulation` preset, otherwise use the `Simulation-Release` preset.
+
 ```bash
 cmake --preset Simulation
 ```
+or use the release configuration to remove performance and memory overlays (breakpoint debugging won't work):
+```bash
+cmake --preset Simulation-Release
+```
 
 ### Build the project:
+Use the same preset name as used for configuration:
 ```bash
 cmake --build --preset Simulation
+```
+or
+```bash
+cmake --build --preset Simulation-Release
+```
+
+### Run the simulation:
+The built binary can be found in the `out/build/<preset_name>/` directory. Run it using:
+```bash
+./out/build/Simulation/DuetScreen
+```
+or
+```bash
+./out/build/Simulation-Release/DuetScreen
 ```
 
 ## Building for the Duet3D screen
 1. Clone the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) project
-2. Checkout the `dev` branch
+2. Checkout the `master` branch
 3. Enable SSH on the Duet3D screen
-  - This can be done in the GUI by going to `Settings` > `Developer` > `Enable SSH`
-  - Alternatively, you can enable SSH by adding a file called `ssh` to the root of the microSD card.
+  - You can enable SSH by adding a file called `ssh` to the root of the microSD card on first boot and setting a password or `authorized_keys` file. https://github.com/Duet3D/buildroot-duetscreen/blob/master/BOOT.md#ssh
 4. In vscode, run the `Push DuetScreen - SSH - Release` task.
   - This will build the project and push the binary to the Duet3D screen.
   - Use the `Push DuetScreen - SSH - Debug` task to push the debug version of the binary.
 5. The code will not automatically start running on the Duet3D screen. You can run the `Start DuetScreen on remote` task to start the code.
 6. Alternatively, you can start a remote debug session using the `Remote Debug DuetScreen` configuration. This will start the code and attach gdb to it.
+
+## Debugging / Running Simulation
+> [!NOTE]
+> Debugging can be used as an easy way to configure and build the program even if you don't want to use the breakpoint debugging.
+
+The program can be debugged using gdb when running as a simulation or on the physical hardware. lldb can also be used instead of gdb for simulation debugging if preferred.
+
+VSCode has been configured for both of these scenarios.
+- To debug the simulation, select the `Debug DuetScreen` configuration in VSCode and start debugging.
+- To debug the code running on the physical hardware, select the `Remote Debug DuetScreen` configuration in VSCode and start debugging.
+  - This will start the code and attach gdb to it.
+  - If the code is already running, you need to kill it first. This can be done by pushing a new build to the Duet3D screen with the `Push DuetScreen - SSH - Debug` task.
 
 ## Adding a new language (i18n)
 - Language files are located in the `assets/i18n/` directory.
@@ -107,15 +162,6 @@ cmake --build --preset Simulation
 
 > [!NOTE]
 > The language files are loaded at runtime without need to be compiled into the binary. When simulating on PC, the language files are loaded from the `assets/i18n/` directory in the project. When running on the Duet3D screen, the language files are loaded from the `/etc/assets/i18n/` directory.
-
-## Debugging
-The program can be debugged using gdb when running as a simulation or on the physical hardware.
-
-VSCode has been configured for both of these scenarios.
-- To debug the simulation, select the `Debug DuetScreen` configuration in VSCode and start debugging.
-- To debug the code running on the physical hardware, select the `Remote Debug DuetScreen` configuration in VSCode and start debugging.
-  - This will start the code and attach gdb to it.
-  - If the code is already running, you need to kill it first. This can be done by pushing a new build to the Duet3D screen with the `Push DuetScreen - SSH - Debug` task.
 
 
 ## Testing
