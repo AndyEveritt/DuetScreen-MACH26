@@ -12,13 +12,6 @@ or
 git clone --recursive git@github.com:Duet3D/DuetScreen.git
 ```
 
-The following steps are required to setup VSCode as the development environment for the project.
-- Copy `.vscode/settings.json.default` to `.vscode/settings.json`
-- If you want to debug code running on the physical screen then you will need to:
-  - Clone the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) repository.
-  - Build the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) project.
-  - Set the `buildroot_path` and `duetscreen_ip` settings in `.vscode/settings.json` to the correct values.
-
 > [!WARNING]
 > The project uses Git Submodules. When cloning the project or checking out a branch/commit, make sure to run `git submodule update --init --recursive` to ensure that the submodules are checked out to the correct commit.
 
@@ -33,6 +26,15 @@ The project is setup to use VSCode as the development environment. The project u
 These extensions are recommended but not required:
 - [Smart File Templates](https://marketplace.visualstudio.com/items?itemName=TrevorNesbitt.smart-file-templates)
 - [LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)
+
+The following steps are required to setup VSCode as the development environment for the project.
+- Copy `.vscode/settings.json.default` to `.vscode/settings.json`
+- If you want to upload/debug code running on the physical screen then you will need to:
+  - Clone the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) repository.
+  - Build the [buildroot-duetscreen](https://github.com/Duet3D/buildroot-duetscreen) project.
+  - Set the `buildroot_path` and `duetscreen_ip` settings in `.vscode/settings.json` to the appropriate values:
+    - `buildroot_path`: The absolute path to the cloned `buildroot-duetscreen` repository.
+    - `duetscreen_ip`: The IP address of the Duet3D screen on the network.
 
 ## Simulating
 
