@@ -34,9 +34,10 @@ namespace NetworkHelper
 	static struct wpa_ctrl* s_monitor_conn = nullptr;
 	static std::vector<WiFiNetwork> s_networks;
 
-#if T113
 	static bool initWPAControl()
 	{
+		LOG_DBG("Initializing wpa_supplicant control interface");
+#if T113
 		if (s_ctrl_conn != nullptr)
 			return true;
 
@@ -68,10 +69,15 @@ namespace NetworkHelper
 		}
 
 		return true;
+#else
+		return false;
+#endif
 	}
 
 	static void closeWPAControl()
 	{
+		LOG_DBG("Closing wpa_supplicant control interface");
+#if T113
 		if (s_monitor_conn != nullptr)
 		{
 			wpa_ctrl_detach(s_monitor_conn);
@@ -83,37 +89,36 @@ namespace NetworkHelper
 			wpa_ctrl_close(s_ctrl_conn);
 			s_ctrl_conn = nullptr;
 		}
+#endif
 	}
 
 	static std::string sendCommand(const std::string& cmd)
 	{
+#if T113
 		if (!initWPAControl())
+		{
+			LOG_ERROR("Failed to initialize wpa_supplicant control interface, could not send command: {:s}", cmd);
 			return "";
+		}
 
+		LOG_INFO("Sending command: {:s}", cmd);
 		char buf[4096];
 		size_t len = sizeof(buf) - 1;
 
 		int ret = wpa_ctrl_request(s_ctrl_conn, cmd.c_str(), cmd.length(), buf, &len, nullptr);
 		if (ret < 0)
 		{
-			LOG_ERROR("Failed to send command: {:s}", cmd.c_str());
+			LOG_ERROR("Failed to send command: {:s}", cmd);
 			return "";
 		}
 
 		buf[len] = '\0';
 		return std::string(buf);
-	}
 #else
-	static bool initWPAControl()
-	{
-		return false;
-	}
-	static void closeWPAControl() {}
-	static std::string sendCommand(const std::string&)
-	{
+		LOG_DBG("Simulating sending command: {:s}", cmd);
 		return "";
-	}
 #endif
+	}
 
 	void enable(bool enable)
 	{
@@ -312,24 +317,30 @@ namespace NetworkHelper
 	void connect(std::string_view ssid, std::string_view password)
 	{
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid);
-		if (!isNetworkKnown(ssid))
+#if T113
+		if (isNetworkKnown(ssid))
 		{
-			std::string cmd = "ADD_NETWORK";
-			std::string output = sendCommand(cmd);
-			int networkId = std::stoi(output);
-
-			cmd = fmt::format("SET_NETWORK {} ssid \"{}\"", networkId, ssid);
-			sendCommand(cmd);
-
-			cmd = fmt::format("SET_NETWORK {} psk \"{}\"", networkId, password);
-			sendCommand(cmd);
-
-			cmd = fmt::format("ENABLE_NETWORK {}", networkId);
-			sendCommand(cmd);
-
-			sendCommand("SAVE_CONFIG");
+			// Network is already known, remove existing entry first
+			forgetNetwork(ssid);
 		}
+
+		std::string cmd = "ADD_NETWORK";
+		std::string output = sendCommand(cmd);
+		int networkId = std::stoi(output);
+
+		cmd = fmt::format("SET_NETWORK {:d} ssid \"{:s}\"", networkId, ssid);
+		sendCommand(cmd);
+
+		cmd = fmt::format("SET_NETWORK {:d} psk \"{:s}\"", networkId, password);
+		sendCommand(cmd);
+
+		cmd = fmt::format("ENABLE_NETWORK {}", networkId);
+		sendCommand(cmd);
+
+		sendCommand("SAVE_CONFIG");
+
 		connect(ssid);
+#endif
 	}
 
 	void disconnect()
