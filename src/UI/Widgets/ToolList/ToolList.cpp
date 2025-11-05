@@ -79,8 +79,10 @@ namespace UI
 		m_toolName.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_heaters.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
+		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::TOP);
+		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::BOTTOM);
 		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::RIGHT);
-		m_heaters.getListContainer().setStylePad(0, LV_PART_MAIN, Padding::RIGHT);
+		m_heaters.getListContainer().setStylePad(0, LV_PART_MAIN);
 
 		m_toolName.addClickedCallback(onNameEvent, this);
 
@@ -102,7 +104,7 @@ namespace UI
 		setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		setStylePad(0, LV_PART_MAIN, Padding::RIGHT);
+		setStylePad(0, LV_PART_MAIN, Padding::ALL);
 
 		m_label.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 
