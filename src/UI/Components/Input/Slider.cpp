@@ -195,17 +195,16 @@ namespace UI
 		Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
 		switch (code)
 		{
-		case LV_EVENT_PRESSED:
-		case LV_EVENT_FOCUSED:
+		case LV_EVENT_CLICKED:
 		{
 			slider->m_focused = true;
 			if (slider->m_keyboard)
 			{
 				slider->m_keyboard->setTextArea(&slider->m_input);
-				if (slider->m_focusedCallback)
-				{
-					slider->m_focusedCallback(true);
-				}
+			}
+			if (slider->m_focusedCallback)
+			{
+				slider->m_focusedCallback(true);
 			}
 			break;
 		}
@@ -215,12 +214,12 @@ namespace UI
 			if (slider->m_keyboard)
 			{
 				slider->m_keyboard->setTextArea(nullptr);
-				if (slider->m_focusedCallback)
-				{
-					slider->m_focusedCallback(false);
-				}
-				slider->updateText();
 			}
+			if (slider->m_focusedCallback)
+			{
+				slider->m_focusedCallback(false);
+			}
+			slider->updateText();
 			break;
 		}
 		case LV_EVENT_READY:

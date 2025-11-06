@@ -38,6 +38,7 @@ namespace UI
 
 		Slider(const std::string& name, LvObj& parent);
 
+		std::string_view getLabel() const { return m_label.getText(); }
 		float getValue() const { return m_value; }
 		float getMin() const { return m_min; }
 		float getMax() const { return m_max; }
@@ -54,6 +55,10 @@ namespace UI
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
 		void setKeyboard(LvKeyboard* keyboard) { m_keyboard = keyboard; }
 		void setValueChangedCallback(std::function<void(int32_t)> callback) { m_valueChangedCallback = callback; }
+
+		/**
+		 * @brief Set a callback to run when the focus state of the text input changes
+		 */
 		void setFocusedCallback(std::function<void(bool)> callback) { m_focusedCallback = callback; }
 
 	  protected:
