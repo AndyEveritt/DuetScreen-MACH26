@@ -4,11 +4,21 @@
 
 enum class ResponseType
 {
-	SUCCESS = 0,
-	INFO,
+	INFO = 0,
+	SUCCESS,
 	WARNING,
-	ERROR
+	ERROR,
+	NONE
 };
+
+constexpr std::string_view RESPONSE_TYPE_STRINGS[] = {"settings.severity.info",
+													  "settings.severity.success",
+													  "settings.severity.warn",
+													  "settings.severity.error",
+													  "settings.severity.none"};
+
+static_assert(std::size(RESPONSE_TYPE_STRINGS) == static_cast<size_t>(ResponseType::NONE) + 1,
+			  "RESPONSE_TYPE_STRINGS size does not match ResponseType enum");
 
 class ResponseSubscribers : public SubscriberMap
 {

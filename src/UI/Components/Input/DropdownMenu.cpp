@@ -41,6 +41,19 @@ namespace UI
 		m_dropdown.setFlexGrow(1);
 		m_dropdown.clearOptions();
 
+		m_dropdown.addEventCallback(
+			[](lv_event_t* e)
+			{
+				UI_LOCK();
+				DropdownMenu* menu = static_cast<DropdownMenu*>(lv_event_get_user_data(e));
+				if (menu->m_selectedCallback)
+				{
+					menu->m_selectedCallback(menu->m_dropdown.getSelected(), menu->m_dropdown.getSelectedString());
+				}
+			},
+			LV_EVENT_VALUE_CHANGED,
+			this);
+
 		m_dropdown.addStyle(Themes::getLvglStyles().input);
 
 		setLabel("");
@@ -163,6 +176,11 @@ namespace UI
 	bool DropdownMenu::isOpen() const
 	{
 		return m_dropdown.isOpen();
+	}
+
+	void DropdownMenu::setSelectedCallback(selected_cb_t cb)
+	{
+		m_selectedCallback = cb;
 	}
 
 	void DropdownMenu::addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData)

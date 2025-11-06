@@ -39,12 +39,10 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 	if (trimmed.starts_with("Error: "))
 	{
 		type = ResponseType::ERROR;
-		trimmed = trimmed.substr(7);
 	}
 	else if (trimmed.starts_with("Warning: "))
 	{
 		type = ResponseType::WARNING;
-		trimmed = trimmed.substr(9);
 	}
 
 	Model::get().post<EventType::Response>(type, trimmed);

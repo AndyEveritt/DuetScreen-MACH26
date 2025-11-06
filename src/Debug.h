@@ -17,12 +17,12 @@ namespace Log
 	using log_time_t = std::chrono::_V2::system_clock::time_point;
 
 	constexpr const char* DebugLevelStrings[] = {
-		"Verbose",
-		"Debug",
-		"Info",
-		"Warn",
-		"Error",
-		"Fatal",
+		"settings.severity.verbose",
+		"settings.severity.debug",
+		"settings.severity.info",
+		"settings.severity.warn",
+		"settings.severity.error",
+		"settings.severity.fatal",
 	};
 
 	enum class DebugLevel

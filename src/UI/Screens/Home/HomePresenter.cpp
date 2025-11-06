@@ -82,6 +82,11 @@ namespace UI
 			return;
 		}
 
+		if (static_cast<int>(type) < StorageHelper::getData<int>(ID_NOTIFICATION_LEVEL, DEFAULT_NOTIFICATION_LEVEL))
+		{
+			return;
+		}
+
 		std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
 		msgBox->setText(resp);
 		msgBox->setCancelCallback(
@@ -93,7 +98,7 @@ namespace UI
 				{
 					auto msgBox = m_view->getMessageBox(0);
 					msgBox->show();
-					msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+					msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
 				}
 			});
 		switch (type)
@@ -131,7 +136,11 @@ namespace UI
 		if (m_view->getMessageBoxCount() == 1)
 		{
 			msgBox->show();
-			msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+			if (type != ResponseType::ERROR ||
+				StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR))
+			{
+				msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
+			}
 		}
 		msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
 		if (m_view->m_alert.isVisible())
@@ -182,7 +191,8 @@ namespace UI
 					if (msgBox) // Add null check
 					{
 						msgBox->show();
-						msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
+						msgBox->setTimeout(
+							StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
 					}
 				}
 			});

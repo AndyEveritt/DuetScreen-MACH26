@@ -48,8 +48,8 @@ namespace UI
 			WifiSettings(DuetSettingsView& parent);
 
 		  private:
-			TextBox m_hostname;
-			TextBox m_password;
+			TextBox m_hostname{"hostname", getRoot()};
+			TextBox m_password{"password", getRoot()};
 		};
 
 		class UartSettings : public LvContainer
@@ -66,12 +66,11 @@ namespace UI
 		void showConnectionMethodSettings(const Comm::CommunicationType method);
 		virtual void onShow() override;
 
-		DropdownMenu m_connectionMethod;
+		DropdownMenu m_connectionMethod{"connection_method", getRoot()};
 		UsbSettings m_usbSettings;
 		WifiSettings m_wifiSettings;
 		UartSettings m_uartSettings;
-		Slider m_pollInterval;
-		Slider m_infoTimeout;
+		Slider m_pollInterval{"poll_interval", getRoot()};
 	};
 
 	class ScreenSettingsView : public SettingsSubView
@@ -82,14 +81,17 @@ namespace UI
 	  private:
 		void onShow() override;
 
-		lv_obj_t* m_firmwareVersion;
-		lv_obj_t* m_buildTime;
-		DropdownMenu m_language;
-		DropdownMenu m_usbMode;
-		Slider m_brightness;
-		Slider m_screensaverTimeout;
-		lv_obj_t* m_systemLogging;
-		lv_obj_t* m_displayConnectedMessage;
+		LvLabel m_firmwareVersion{"firmware_version", getRoot()};
+		LvLabel m_buildTime{"build_time", getRoot()};
+		DropdownMenu m_language{"language", getRoot()};
+		DropdownMenu m_usbMode{"usb_mode", getRoot()};
+		Slider m_brightness{"brightness", getRoot()};
+		Slider m_screensaverTimeout{"screensaver_timeout", getRoot()};
+		LvCheckbox m_systemLogging{"system_logging", getRoot()};
+		LvCheckbox m_displayConnectedMessage{"display_connected_message", getRoot()};
+		DropdownMenu m_notificationLevel{"notification_level", getRoot()};
+		Slider m_notificationTimeout{"info_timeout", getRoot()};
+		LvCheckbox m_notificationAutoCloseError{"notification_auto_close_error", getRoot()};
 	};
 
 	class ThemeSettingsView : public SettingsSubView

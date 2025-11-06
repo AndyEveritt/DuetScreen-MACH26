@@ -16,6 +16,8 @@ namespace UI
 	class DropdownMenu : public LvObj
 	{
 	  public:
+		using selected_cb_t = std::function<void(uint32_t index, std::string_view option)>;
+
 		DropdownMenu(const std::string& name, LvObj& parent);
 		DropdownMenu(const std::string& name, LvObj& parent, layout_t layout);
 
@@ -48,6 +50,7 @@ namespace UI
 		void close();
 		bool isOpen() const;
 
+		void setSelectedCallback(selected_cb_t cb);
 		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
 
 	  private:
@@ -55,5 +58,7 @@ namespace UI
 
 		LvLabel m_label;
 		LvDropdown m_dropdown;
+
+		selected_cb_t m_selectedCallback;
 	};
 } // namespace UI

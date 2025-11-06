@@ -155,7 +155,7 @@ namespace UI
 		}
 
 		LvTextArea* ta = static_cast<LvTextArea*>(LvObj::fromPtr(lv_event_get_target_obj(e)));
-		SettingsSubView* view = (SettingsSubView*)lv_event_get_user_data(e);
+		SettingsSubView* view = static_cast<SettingsSubView*>(lv_event_get_user_data(e));
 		const char* acceptedChars = ta->getAcceptedChars();
 		lv_keyboard_mode_t mode = (!acceptedChars || strpbrk(acceptedChars, "abcdefghijklmnopqrstuvwxyz") != nullptr)
 									  ? LV_KEYBOARD_MODE_TEXT_LOWER
@@ -173,12 +173,9 @@ namespace UI
 
 	DuetSettingsView::DuetSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("duet_settings_view", parent, mainSettingsView)
-		, m_connectionMethod("duet_settings_connection_method", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
 		, m_usbSettings(*this)
 		, m_wifiSettings(*this)
 		, m_uartSettings(*this)
-		, m_pollInterval("duet_settings_poll_interval", getRoot())
-		, m_infoTimeout("duet_settings_info_timeout", getRoot())
 	{
 		UI_LOCK();
 
@@ -189,6 +186,7 @@ namespace UI
 			options.push_back(_(method.data()));
 		}
 		m_connectionMethod.setLabel(_("settings.duet_connection_method"));
+		m_connectionMethod.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_connectionMethod.setOptions(options);
 		m_connectionMethod.addEventCallback(onConnectionMethodEvent, LV_EVENT_VALUE_CHANGED, this);
 		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType());
@@ -205,36 +203,22 @@ namespace UI
 		m_pollInterval.setFocusedCallback(
 			[this](bool focused)
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_pollInterval.getInput()); });
-
-		// Info Timeout
-		m_infoTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_infoTimeout.setLabel(_("settings.duet_info_timeout"));
-		m_infoTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-		m_infoTimeout.setRange(0, 5000);
-		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
-		m_infoTimeout.setValueChangedCallback([](int32_t value)
-											  { StorageHelper::setData(ID_INFO_TIMEOUT, (uint32_t)value); });
-		m_infoTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
-		m_infoTimeout.setFocusedCallback(
-			[this](bool focused)
-			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_infoTimeout.getInput()); });
 	}
 
 	DuetSettingsView::UsbSettings::UsbSettings(DuetSettingsView& parent)
-		: LvContainer("duet_settings_usb", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		: LvContainer("usb", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 	}
 
 	DuetSettingsView::WifiSettings::WifiSettings(DuetSettingsView& parent)
-		: LvContainer("duet_settings_wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_hostname("duet_settings_hostname", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_password("duet_settings_password", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
+		: LvContainer("wifi", parent, layout_t(0, 0, 100, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
+		m_hostname.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_hostname.setOneLine(true);
 		m_hostname.setLabel(_("settings.duet_hostname"));
 		m_hostname.setPlaceholderText(_("settings.duet_hostname_prompt"));
@@ -250,6 +234,7 @@ namespace UI
 			},
 			nullptr);
 
+		m_password.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_password.setOneLine(true);
 		m_password.setLabel(_("settings.duet_password"));
 		m_password.setPlaceholderText(_("settings.duet_password_prompt"));
@@ -267,7 +252,7 @@ namespace UI
 	}
 
 	DuetSettingsView::UartSettings::UartSettings(DuetSettingsView& parent)
-		: LvContainer("duet_settings_uart", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
+		: LvContainer("uart", parent, layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 	}
@@ -307,46 +292,30 @@ namespace UI
 	{
 		UI_LOCK();
 		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
-		m_infoTimeout.setValue(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 		showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
 	}
 
 	ScreenSettingsView::ScreenSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("screen", parent, mainSettingsView)
-		, m_firmwareVersion(lv_label_create(getRootPtr()))
-		, m_buildTime(lv_label_create(getRootPtr()))
-		, m_language("language", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_usbMode("usb_mode", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_brightness("brightness", getRoot())
-		, m_screensaverTimeout("screensaver_timeout", getRoot())
-		, m_systemLogging(lv_checkbox_create(getRootPtr()))
-		, m_displayConnectedMessage(lv_checkbox_create(getRootPtr()))
 	{
 		UI_LOCK();
 
-		lv_label_set_text(m_firmwareVersion, _("settings.firmware_version", FIRMWARE_VERSION).c_str());
-		lv_label_set_text(m_buildTime, _("settings.build_time", BuildDateText, BuildTimeSuffix).c_str());
+		m_firmwareVersion.setText(_("settings.firmware_version", FIRMWARE_VERSION));
+		m_buildTime.setText(_("settings.build_time", BuildDateText, BuildTimeSuffix));
 
+		m_language.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_language.setLabel(_("settings.language"));
 		m_language.setOptions(_("settings.language_en"));
 
+		m_usbMode.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_usbMode.setLabel(_("settings.usb_mode"));
 		m_usbMode.setOptions(
 			{_("settings.usb_mode_host"), _("settings.usb_mode_device"), _("settings.usb_mode_internal_wifi")});
-		m_usbMode.addEventCallback(
-			[](lv_event_t* e)
-			{
-				UI_LOCK();
-				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
-				ScreenSettingsView* view = (ScreenSettingsView*)lv_event_get_user_data(e);
-				int32_t selected = view->m_usbMode.getSelected();
-				view->getMainSettingsPresenter()->setUsbMode((UsbMode(selected)));
-			},
-			LV_EVENT_VALUE_CHANGED,
-			this);
+		m_usbMode.setSelectedCallback([this](uint32_t index, std::string_view option)
+									  { getMainSettingsPresenter()->setUsbMode((UsbMode(index))); });
 		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 
-		// Brightness
+		/* Brightness */
 		m_brightness.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_brightness.setRange(0, 100);
 		m_brightness.setLabel(_("settings.brightness"));
@@ -358,7 +327,7 @@ namespace UI
 			[this](bool focused)
 			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_brightness.getInput()); });
 
-		// Screensaver Timeout
+		/* Screensaver Timeout */
 		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_screensaverTimeout.setLabel(_("settings.screensaver_timeout"));
 		m_screensaverTimeout.setRange(0, 5 * 60); // seconds
@@ -372,37 +341,51 @@ namespace UI
 				getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_screensaverTimeout.getInput());
 			});
 
-		// System Logging
-		lv_checkbox_set_text(m_systemLogging, _("settings.system_logging").c_str());
-		lv_obj_set_state(m_systemLogging, LV_STATE_CHECKED, StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
-		lv_obj_add_event_cb(
-			m_systemLogging,
-			[](lv_event_t* e)
+		/* System Logging */
+		m_systemLogging.setText(_("settings.system_logging"));
+		m_systemLogging.setChecked(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
+		m_systemLogging.setCheckedCallback(
+			[](bool checked)
 			{
-				UI_LOCK();
-				lv_obj_t* checkbox = (lv_obj_t*)lv_event_get_target(e);
-				bool checked = lv_obj_has_state(checkbox, LV_STATE_CHECKED);
 				StorageHelper::setData(ID_ENABLE_UI_LOGGING, checked);
 				Log::EnableUiLogging(checked);
-			},
-			LV_EVENT_VALUE_CHANGED,
-			this);
+			});
 
-		// Display Connected Message
-		lv_checkbox_set_text(m_displayConnectedMessage, _("settings.display_connected_message").c_str());
-		lv_obj_set_state(
-			m_displayConnectedMessage, LV_STATE_CHECKED, StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true));
-		lv_obj_add_event_cb(
-			m_displayConnectedMessage,
-			[](lv_event_t* e)
+		/* Display Connected Message */
+		m_displayConnectedMessage.setText(_("settings.display_connected_message"));
+		m_displayConnectedMessage.setChecked(StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true));
+		m_displayConnectedMessage.setCheckedCallback(
+			[](bool checked) { StorageHelper::setData(ID_DISPLAY_CONNECTED_MESSAGE, checked); });
+
+		/* Notification Level */
+		m_notificationLevel.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_notificationLevel.setLabel(_("settings.notification_level"));
+		for (auto& level : RESPONSE_TYPE_STRINGS)
+		{
+			m_notificationLevel.addOption(_(level));
+		}
+		m_notificationLevel.setSelectedCallback([](uint32_t index, std::string_view option)
+												{ StorageHelper::setData(ID_NOTIFICATION_LEVEL, index); });
+
+		/* Info Timeout */
+		m_notificationTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_notificationTimeout.setLabel(_("settings.notification_timeout"));
+		m_notificationTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
+		m_notificationTimeout.setRange(0, 5000);
+		m_notificationTimeout.setValue(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
+		m_notificationTimeout.setValueChangedCallback(
+			[](int32_t value) { StorageHelper::setData(ID_NOTIFICATION_TIMEOUT, (uint32_t)value); });
+		m_notificationTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
+		m_notificationTimeout.setFocusedCallback(
+			[this](bool focused)
 			{
-				UI_LOCK();
-				lv_obj_t* checkbox = (lv_obj_t*)lv_event_get_target(e);
-				bool checked = lv_obj_has_state(checkbox, LV_STATE_CHECKED);
-				StorageHelper::setData(ID_DISPLAY_CONNECTED_MESSAGE, checked);
-			},
-			LV_EVENT_VALUE_CHANGED,
-			this);
+				getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_notificationTimeout.getInput());
+			});
+
+		/* Auto-close Error Notifications */
+		m_notificationAutoCloseError.setText(_("settings.notification_auto_close_error"));
+		m_notificationAutoCloseError.setCheckedCallback(
+			[](bool checked) { StorageHelper::setData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, !checked); });
 	}
 
 	void ScreenSettingsView::onShow()
@@ -411,6 +394,10 @@ namespace UI
 		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 		m_brightness.setValue(DisplayHelper::getBrightness());
 		m_screensaverTimeout.setValue(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000);
+		m_notificationLevel.setSelected(StorageHelper::getData(ID_NOTIFICATION_LEVEL, DEFAULT_NOTIFICATION_LEVEL));
+		m_notificationTimeout.setValue(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
+		m_notificationAutoCloseError.setChecked(
+			!StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR));
 	}
 
 	ThemeSettingsView::ThemeSettingsView(LvObj& parent, SettingsView& mainSettingsView)
@@ -425,25 +412,19 @@ namespace UI
 		{
 			m_theme.addOption(_(fmt::format("theme.id.{:s}", theme->getName())));
 		}
-		m_theme.addEventCallback(
-			[](lv_event_t* e)
+		m_theme.setSelectedCallback(
+			[this](uint32_t index, std::string_view option)
 			{
-				UI_LOCK();
-				lv_obj_t* obj = (lv_obj_t*)lv_event_get_target(e);
-				auto view = (ThemeSettingsView*)lv_event_get_user_data(e);
-				int32_t selected = view->m_theme.getSelected();
-				auto theme = Themes::getTheme(selected);
+				auto theme = Themes::getTheme(index);
 				if (theme == nullptr)
 				{
 					return;
 				}
 				theme->setThemeActive();
-				view->updateThemePreview();
-				StorageHelper::setData(ID_THEME, selected);
+				updateThemePreview();
+				StorageHelper::setData(ID_THEME, index);
 				// view->getMainSettingsPresenter()->setTheme(selected);
-			},
-			LV_EVENT_VALUE_CHANGED,
-			this);
+			});
 		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
 		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_themePreview.setKeyboard(&getMainSettingsView().getKeyboard());
@@ -663,7 +644,7 @@ namespace UI
 		std::string options;
 		for (const auto& level : Log::DebugLevelStrings)
 		{
-			options += level;
+			options += _(level);
 			options += "\n";
 		}
 		lv_dropdown_set_options(m_debugLevel, options.c_str());

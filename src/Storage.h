@@ -23,7 +23,9 @@ constexpr const char* ID_THEME = "ui:theme";
 
 constexpr const char* ID_SCREENSAVER_ENABLE = "ui:screensaver_enable";
 constexpr const char* ID_SCREENSAVER_TIMEOUT = "ui:screensaver_timeout";
-constexpr const char* ID_INFO_TIMEOUT = "ui:info_timeout";
+constexpr const char* ID_NOTIFICATION_TIMEOUT = "ui:info_timeout";
+constexpr const char* ID_NOTIFICATION_LEVEL = "ui:notification_level";
+constexpr const char* ID_NOTIFICATION_AUTO_CLOSE_ERROR = "ui:notification_auto_close_error";
 
 constexpr const char* ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED = "ui:console_command_list_collapsed";
 

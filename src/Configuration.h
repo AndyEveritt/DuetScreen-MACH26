@@ -114,7 +114,9 @@ constexpr bool DEFAULT_SHOW_SETUP_ON_STARTUP = true;
 constexpr const char* DEFAULT_LANGUAGE_CODE = "en-GB";
 
 /* Popup */
-constexpr uint32_t DEFAULT_POPUP_TIMEOUT = 5000;
+constexpr uint32_t DEFAULT_NOTIFICATION_TIMEOUT = 5000;
+constexpr size_t DEFAULT_NOTIFICATION_LEVEL = 0;
+constexpr bool DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR = false;
 
 /* Alert */
 constexpr size_t ALERT_TEXT_LENGTH = 165;		 // maximum characters in the alert text

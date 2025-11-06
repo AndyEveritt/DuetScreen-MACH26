@@ -156,6 +156,16 @@
       "tool_position": "Tool Pos ({:s})"
     },
     "settings": { /* Settings screen */
+      "severity": {
+        "verbose": "Verbose",
+        "debug": "Debug",
+        "info": "Info",
+        "warn": "Warn",
+        "error": "Error",
+        "fatal": "Fatal",
+        "success": "Success",
+        "none": "None"
+      },
       "brightness": "Brightness",
       "build_time": "Firmware built on: {:s} {:s}",
       "connectivity_header": "Connectivity",
@@ -168,7 +178,6 @@
       "duet_connection_method": "Connection Method: ",
       "duet_hostname": "IP Address: ",
       "duet_hostname_prompt": "Enter IP Address",
-      "duet_info_timeout": "Notification Timeout (ms)",
       "duet_password": "Password: ",
       "duet_password_prompt": "Enter Password",
       "duet_poll_interval": "Poll Interval (ms)",
@@ -187,6 +196,9 @@
       "network_password_title": "Password",
       "network_signal": "Signal",
       "network_ssid": "SSID",
+      "notification_auto_close_error": "Do not close error messages automatically",
+      "notification_level": "Notification Level",
+      "notification_timeout": "Notification Timeout (ms)",
       "reboot": "Reboot",
       "refresh": "Refresh",
       "restart": "Restart",
