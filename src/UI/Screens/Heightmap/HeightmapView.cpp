@@ -222,6 +222,8 @@ namespace UI
 		clear();
 	}
 
+	HeightmapView::~HeightmapView() = default;
+
 	const size_t HeightmapView::getHeightmapCount() const
 	{
 		UI_LOCK();

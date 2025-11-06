@@ -32,7 +32,7 @@ namespace UI
         void setResetCallback(std::function<void()> callback);
 
 	  private:
-		std::shared_ptr<Button> createValueButton(size_t index, LvObj& parent);
+		std::unique_ptr<Button> createValueButton(size_t index, LvObj& parent);
 
 		void updateValueLabels();
 

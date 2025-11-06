@@ -182,7 +182,7 @@ namespace UI
 		m_distances.setItemCount(ARRAY_SIZE(s_distances),
 								 [this](size_t i, LvObj& parent)
 								 {
-									 auto btn = std::make_shared<Button>(
+									 auto btn = std::make_unique<Button>(
 										 fmt::format("{}", i), parent, fmt::format("{}", s_distances[i]));
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 									 btn->addClickedCallback(onDistanceEvent, this);
@@ -336,7 +336,7 @@ namespace UI
 			axis_data_excluding_xyz.size(),
 			[this](size_t i, LvObj& parent)
 			{
-				auto control = std::make_shared<GenericAxisControl>(fmt::format("{}", i), parent);
+				auto control = std::make_unique<GenericAxisControl>(fmt::format("{}", i), parent);
 				lv_coord_t width = m_zControl.getWidth();
 				control->setSize(width, LV_PCT(100));
 				control->setJogCallback(
@@ -516,7 +516,7 @@ namespace UI
 			count,
 			[this](size_t i, LvObj& parent)
 			{
-				auto item = std::make_shared<AxisItem>(i, parent);
+				auto item = std::make_unique<AxisItem>(i, parent);
 				item->setJogAmounts(s_relMoveValues, ARRAY_SIZE(s_relMoveValues));
 				item->setJogCallback(
 					[this](size_t axis_index, size_t jog_index, void* user_data)
@@ -528,7 +528,7 @@ namespace UI
 			});
 	}
 
-	std::shared_ptr<AxisItem> MoveView::getAxisItem(size_t index)
+	auto MoveView::getAxisItem(size_t index)
 	{
 		return m_axisList.getAxisItems().getItem(index);
 	}

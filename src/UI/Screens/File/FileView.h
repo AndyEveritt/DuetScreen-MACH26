@@ -53,7 +53,7 @@ namespace UI
 
 		const size_t getFileCount() const { return m_fileList.getItemCount(); }
 		void setFileCount(const size_t count);
-		std::shared_ptr<FileItem> getFileItem(size_t index) const;
+		FileView::FileItem* getFileItem(size_t index) const;
 
 		void setFolder(const std::string& path);
 		bool cancelStartPrint();

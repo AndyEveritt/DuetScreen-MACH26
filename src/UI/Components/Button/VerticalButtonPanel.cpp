@@ -120,9 +120,9 @@ namespace UI
 		updateValueLabels();
 	}
 
-	std::shared_ptr<Button> VerticalButtonPanel::createValueButton(size_t index, LvObj& parent)
+	std::unique_ptr<Button> VerticalButtonPanel::createValueButton(size_t index, LvObj& parent)
 	{
-		auto btn = std::make_shared<Button>(fmt::format("value_btn_{}", index), parent);
+		auto btn = std::make_unique<Button>(fmt::format("value_btn_{}", index), parent);
 		btn->getLabel().setLongMode(LV_LABEL_LONG_MODE_WRAP);
 		btn->setHeight(LV_PCT(100));
 		// btn->setMinHeight(LV_SIZE_CONTENT); // FIXME: this seems to cause a lvgl layout bug

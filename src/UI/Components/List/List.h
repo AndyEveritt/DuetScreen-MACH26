@@ -10,7 +10,9 @@
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Styles/Styles.h"
+#include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace UI
@@ -36,7 +38,8 @@ namespace UI
 	// requires(std::is_base_of_v<LvObj, T>)
 	class List : public LvObj
 	{
-		using TPtr = std::shared_ptr<T>;
+		using TPtr = std::unique_ptr<T>;
+		using TRef = T&;
 
 	  public:
 		List(const std::string& name, LvObj& parent)
@@ -111,20 +114,20 @@ namespace UI
 
 		void clear() { m_list.clear(); }
 
-		TPtr addItem()
+		TRef addItem()
 		{
 			UI_LOCK();
-			auto item = std::make_shared<T>(getItemCount(), m_listCont);
-			m_list.push_back(item);
-			return item;
+			auto item = std::make_unique<T>(getItemCount(), m_listCont);
+			m_list.push_back(std::move(item));
+			return *m_list.back();
 		}
 
-		TPtr addItem(std::function<TPtr(size_t, LvObj&)> constructor)
+		TRef addItem(std::function<TPtr(size_t, LvObj&)> constructor)
 		{
 			UI_LOCK();
 			auto item = constructor(getItemCount(), m_listCont);
-			m_list.push_back(item);
-			return item;
+			m_list.push_back(std::move(item));
+			return *m_list.back();
 		}
 
 		size_t setItemCount(const size_t count, std::function<TPtr(size_t, LvObj&)> constructor)
@@ -205,7 +208,7 @@ namespace UI
 			m_list.reserve(count);
 			for (size_t i = currentCount; i < count; i++)
 			{
-				m_list.emplace_back(std::make_shared<T>(i, m_listCont, std::forward<Args>(args)...));
+				m_list.emplace_back(std::make_unique<T>(i, m_listCont, std::forward<Args>(args)...));
 			}
 
 			return count > currentCount ? count - currentCount : 0;
@@ -213,24 +216,24 @@ namespace UI
 
 		const size_t getItemCount() const { return m_list.size(); }
 
-		TPtr getItem(const size_t index) const
+		T* getItem(const size_t index) const
 		{
 			UI_LOCK();
 			if (index >= m_list.size())
 			{
 				return nullptr;
 			}
-			return m_list.at(index);
+			return m_list.at(index).get();
 		}
 
 		const std::vector<TPtr>& getItems() const { return m_list; }
 
-		void iterateListItems(const std::function<void(size_t index, T& item)>& func)
+		void iterateListItems(const std::function<void(size_t index, TRef item)>& func)
 		{
 			UI_LOCK();
 			for (size_t i = 0; i < m_list.size(); i++)
 			{
-				TPtr& item = m_list.at(i);
+				auto& item = m_list.at(i);
 				if (!item)
 				{
 					continue;

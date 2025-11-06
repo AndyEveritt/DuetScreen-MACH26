@@ -218,6 +218,9 @@ TEST_F(TestHomeViewWithData, FineTuneView)
 	openScreen(&fineTuneView);
 	EXPECT_EQUAL_SCREENSHOT("home_view/fine_tune_view.png")
 
-	fineTuneView.showKeyboard(true);
+	UI::LvObj* input = fineTuneView.getChildByName("sliders.speed.slider_cont.slider_input");
+	ASSERT_NE(input, nullptr);
+
+	input->sendEvent(LV_EVENT_CLICKED, nullptr);
 	EXPECT_EQUAL_SCREENSHOT("home_view/fine_tune_view_keyboard.png")
 }

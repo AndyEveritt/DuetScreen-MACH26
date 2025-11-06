@@ -80,7 +80,7 @@ namespace UI
 		m_relMove.setItemCount(count,
 							   [&distances, this](size_t i, LvObj& parent)
 							   {
-								   auto btn = std::make_shared<Button>(
+								   auto btn = std::make_unique<Button>(
 									   fmt::format("{}", i), parent, fmt::format("{:.1f}", distances[i]));
 								   btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 								   btn->addClickedCallback(onRelMoveEvent, this);

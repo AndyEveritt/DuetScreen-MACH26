@@ -20,7 +20,6 @@ namespace UI
 		, m_speed("speed", m_sliderCont)
 		, m_extruders("extruders", m_sliderCont)
 		, m_fans("fans", m_sliderCont)
-		, m_keyboard("kb", getRoot())
 		, m_numberPad("numberpad", numberpad_parent ? *numberpad_parent : parent, layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();
@@ -37,7 +36,6 @@ namespace UI
 		iterateChildren([](size_t i, LvObj& child) { child.setHeight(LV_PCT(100)); });
 		m_babystep.setFlexGrow(2);
 		m_sliderCont.setFlexGrow(5);
-		m_keyboard.setFlexGrow(6);
 
 		m_babystep.setMaxWidth(200);
 
@@ -51,36 +49,20 @@ namespace UI
 		m_extruders.setTitle(_("fine_tune.extruder_header"));
 		m_fans.setTitle(_("fine_tune.fan_header"));
 
-		m_keyboard.setMode(LV_KEYBOARD_MODE_NUMBER);
-		m_keyboard.hide();
-		m_keyboard.addEventCallback(
-			[](lv_event_t* e)
-			{
-				UI_LOCK();
-				FineTune* view = static_cast<FineTune*>(lv_event_get_user_data(e));
-				view->showKeyboard(false);
-			},
-			LV_EVENT_CANCEL,
-			this);
-
 		m_numberPad.hide();
 
 		m_speed.setLabel(_("fine_tune.speed_factor"));
-		m_speed.setKeyboard(&m_keyboard);
-		m_speed.setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+		m_speed.setFocusedCallback(
+			[this](bool focused)
+			{
+				if (!focused)
+					return;
+				configureNumberPad(&m_speed);
+				showNumberPad();
+			});
 		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_speed.setRange(1, 200);
 		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter->setSpeedFactor(value); });
-
-		m_sliderCont.addEventCallback(
-			[](lv_event_t* e)
-			{
-				UI_LOCK();
-				FineTune* view = static_cast<FineTune*>(lv_event_get_user_data(e));
-				view->showKeyboard(false);
-			},
-			LV_EVENT_SCROLL,
-			this);
 	}
 
 	void FineTune::setSpeedValue(uint32_t value)
@@ -97,10 +79,20 @@ namespace UI
 		m_extruders.setItemCount(count,
 								 [this](size_t index, LvObj& parent)
 								 {
-									 auto slider = std::make_shared<Slider>(fmt::format("{:d}", index), parent);
+									 auto slider = std::make_unique<Slider>(fmt::format("{:d}", index), parent);
 									 slider->setSize(LV_PCT(100), LV_SIZE_CONTENT);
-									 slider->setKeyboard(&m_keyboard);
-									 slider->setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+									 slider->setFocusedCallback(
+										 [this, index](bool focused)
+										 {
+											 if (!focused)
+												 return;
+
+											 if (auto slider = m_extruders.getItem(index))
+											 {
+												 configureNumberPad(slider);
+												 showNumberPad();
+											 }
+										 });
 									 slider->setRange(0, 200);
 									 slider->setOutOfRangeMode(Slider::OutOfRange::UPPER);
 									 slider->setValueChangedCallback([this, index](int32_t value)
@@ -114,11 +106,21 @@ namespace UI
 		m_fans.setItemCount(count,
 							[this](size_t index, LvObj& parent)
 							{
-								auto slider = std::make_shared<Slider>(fmt::format("{:d}", index), parent);
+								auto slider = std::make_unique<Slider>(fmt::format("{:d}", index), parent);
 
 								slider->setSize(LV_PCT(100), LV_SIZE_CONTENT);
-								slider->setKeyboard(&m_keyboard);
-								slider->setFocusedCallback([this](bool focused) { showKeyboard(focused); });
+								slider->setFocusedCallback(
+									[this, index](bool focused)
+									{
+										if (!focused)
+											return;
+
+										if (auto slider = m_fans.getItem(index))
+										{
+											configureNumberPad(slider);
+											showNumberPad();
+										}
+									});
 								slider->setValueChangedCallback([this, index](int32_t value)
 																{ m_presenter->setFanValue(index, value); });
 								return slider;
@@ -128,51 +130,68 @@ namespace UI
 	void FineTune::setExtruderLabel(size_t index, std::string_view label)
 	{
 		UI_LOCK();
-		auto extruder = m_extruders.getItem(index);
-		if (!extruder || extruder->isFocused())
+		if (auto extruder = m_extruders.getItem(index))
 		{
-			return;
+			if (!extruder->isFocused())
+			{
+				extruder->setLabel(label);
+			}
 		}
-		extruder->setLabel(label);
 	}
 
 	void FineTune::setExtruderValue(size_t index, uint32_t value)
 	{
 		UI_LOCK();
-		auto extruder = m_extruders.getItem(index);
-		if (!extruder || extruder->isFocused())
+		if (auto extruder = m_extruders.getItem(index))
 		{
-			return;
+			if (!extruder->isFocused())
+			{
+				LOG_DBG("Setting extruder {:d} extrusion factor to {:d}", index, value);
+				extruder->setValue(value);
+			}
 		}
-		LOG_DBG("Setting extruder {:d} extrusion factor to {:d}", index, value);
-		extruder->setValue(value);
 	}
 
 	void FineTune::setFanLabel(size_t index, std::string_view label)
 	{
 		UI_LOCK();
-		auto fan = m_fans.getItem(index);
-		if (!fan || fan->isFocused())
+		if (auto fan = m_fans.getItem(index))
 		{
-			return;
+			if (!fan->isFocused())
+			{
+				fan->setLabel(label);
+			}
 		}
-		fan->setLabel(label);
 	}
 
 	void FineTune::setFanValue(size_t index, uint32_t value)
 	{
 		UI_LOCK();
-		auto fan = m_fans.getItem(index);
-		if (!fan || fan->isFocused())
+		if (auto fan = m_fans.getItem(index))
 		{
-			return;
+			if (!fan->isFocused())
+			{
+				fan->setValue(value);
+			}
 		}
-
-		fan->setValue(value);
 	}
 
-	void FineTune::showKeyboard(bool show)
+	void FineTune::showNumberPad()
 	{
-		m_keyboard.setVisible(show);
+		openModal(&m_numberPad);
+	}
+
+	void FineTune::configureNumberPad(Slider* slider)
+	{
+		m_numberPad.setHeader(slider->getLabel());
+		m_numberPad.setValue(slider->getValue());
+		m_numberPad.setMinValue(slider->getMin());
+		m_numberPad.setMaxValue(slider->getMax());
+		slider->getInput().sendEvent(LV_EVENT_DEFOCUSED, nullptr);
+		m_numberPad.setConfirmCallback(
+			[slider](float value)
+			{
+				slider->setValue(value); // This might be a bug if the slider is destroyed while the numberpad is open?
+			});
 	}
 } // namespace UI

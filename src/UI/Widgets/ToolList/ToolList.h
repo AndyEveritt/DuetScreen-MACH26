@@ -57,7 +57,7 @@ namespace UI
 
 		size_t setHeaterCount(size_t count);
 		size_t getHeaterCount() const { return m_heaters.getItemCount(); }
-		std::shared_ptr<ToolListHeater> getHeater(size_t index) const { return m_heaters.getItem(index); }
+		auto getHeater(size_t index) const { return m_heaters.getItem(index); }
 
 	  private:
 		static void onNameEvent(lv_event_t* e);
@@ -81,9 +81,9 @@ namespace UI
 		size_t getBedCount() const { return m_beds.getItemCount(); }
 		size_t getChamberCount() const { return m_chambers.getItemCount(); }
 
-		std::shared_ptr<ToolListTool> getTool(size_t index) const { return m_tools.getItem(index); }
-		std::shared_ptr<ToolListHeater> getBed(size_t index) const { return m_beds.getItem(index); }
-		std::shared_ptr<ToolListHeater> getChamber(size_t index) const { return m_chambers.getItem(index); }
+		auto getTool(size_t index) const { return m_tools.getItem(index); }
+		auto getBed(size_t index) const { return m_beds.getItem(index); }
+		auto getChamber(size_t index) const { return m_chambers.getItem(index); }
 
 		auto& getNumberPad() { return m_numberPad; }
 		void showNumberPad();

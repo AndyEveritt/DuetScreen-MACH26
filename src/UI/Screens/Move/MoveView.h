@@ -54,7 +54,7 @@ namespace UI
 
 		const size_t getAxisCount() const { return m_axisList.getItemCount(); }
 		void setAxisCount(const size_t count);
-		std::shared_ptr<AxisItem> getAxisItem(size_t index);
+		auto getAxisItem(size_t index);
 
 		void configureNumberpadForAxis(char axis_letter, float position);
 		void configureNumberpadForExtruder(const std::string& header, float value);

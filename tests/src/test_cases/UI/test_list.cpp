@@ -30,7 +30,7 @@ TEST_F(TestList, VerticalWrap)
 	list.setItemCount(10,
 					  [](size_t index, UI::LvObj& parent)
 					  {
-						  auto item = std::make_shared<UI::LvContainer>(fmt::format("", index), parent);
+						  auto item = std::make_unique<UI::LvContainer>(fmt::format("", index), parent);
 						  item->setSize(100, 100);
 						  item->addStyle(UI::Themes::getLvglStyles().bg_color_primary);
 						  return item;

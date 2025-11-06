@@ -36,9 +36,11 @@ namespace UI
 		void setFanLabel(size_t index, std::string_view label);
 		void setFanValue(size_t index, uint32_t value);
 
-		void showKeyboard(bool show);
+		void showNumberPad();
 
 	  protected:
+		void configureNumberPad(Slider* slider);
+
 		BabyStep m_babystep;
 		LvContainer m_sliderCont;
 
@@ -51,7 +53,6 @@ namespace UI
 		// Fans
 		List<Slider> m_fans;
 
-		LvKeyboard m_keyboard;
 		ModalNumberPad m_numberPad;
 	};
 } // namespace UI

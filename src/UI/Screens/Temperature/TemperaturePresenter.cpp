@@ -26,9 +26,9 @@ namespace UI
 			});
 
 		tools.setItemCount(toolIndices.size(),
-						   [this, &toolIndices](size_t index, LvObj& parent) -> std::shared_ptr<ToolControl>
+						   [this, &toolIndices](size_t index, LvObj& parent)
 						   {
-							   auto control = std::make_shared<ToolControl>(fmt::format("{}", index), parent);
+							   auto control = std::make_unique<ToolControl>(fmt::format("{}", index), parent);
 							   control->getPresenter()->setToolIndex(toolIndices[index]);
 							   control->setNumberPad(&m_view->getNumberPad());
 							   control->addStyle(Themes::getLvglStyles().card);
@@ -42,9 +42,9 @@ namespace UI
 		auto& beds = m_view->getBeds();
 		beds.clear();
 		beds.setItemCount(OM::GetBedCount(),
-						  [this](size_t index, LvObj& parent) -> std::shared_ptr<HeaterSlider>
+						  [this](size_t index, LvObj& parent)
 						  {
-							  auto control = std::make_shared<HeaterSlider>(fmt::format("{}", index), parent);
+							  auto control = std::make_unique<HeaterSlider>(fmt::format("{}", index), parent);
 							  control->getPresenter()->setBedIndex(index);
 							  control->setNumberPad(&m_view->getNumberPad());
 							  control->addStyle(Themes::getLvglStyles().card);
@@ -58,9 +58,9 @@ namespace UI
 		auto& chambers = m_view->getChambers();
 		chambers.clear();
 		chambers.setItemCount(OM::GetChamberCount(),
-							  [this](size_t index, LvObj& parent) -> std::shared_ptr<HeaterSlider>
+							  [this](size_t index, LvObj& parent)
 							  {
-								  auto control = std::make_shared<HeaterSlider>(fmt::format("{}", index), parent);
+								  auto control = std::make_unique<HeaterSlider>(fmt::format("{}", index), parent);
 								  control->getPresenter()->setChamberIndex(index);
 								  control->setNumberPad(&m_view->getNumberPad());
 								  control->addStyle(Themes::getLvglStyles().card);

@@ -443,10 +443,10 @@ namespace UI
 	void HardwareTest::TestResults::addResult(std::string_view name, std::string_view output, bool passed)
 	{
 		auto& list = passed ? m_passed : m_failed;
-		auto item = list.addItem();
-		item->setName(name);
-		item->setOutput(output);
-		item->setPassed(passed);
+		auto& item = list.addItem();
+		item.setName(name);
+		item.setOutput(output);
+		item.setPassed(passed);
 	}
 
 	HardwareTest::TestResults::TestResult::TestResult(size_t index, LvObj& parent)

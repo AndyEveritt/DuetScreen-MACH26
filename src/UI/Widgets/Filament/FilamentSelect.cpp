@@ -117,6 +117,8 @@ namespace UI
 			this);
 	}
 
+	FilamentSelect::~FilamentSelect() = default;
+
 	void FilamentSelect::setToolCount(size_t count)
 	{
 		UI_LOCK();
@@ -142,8 +144,6 @@ namespace UI
 			LOG_ERROR("Failed to get tool item at index {} in {}", index, getName());
 			return;
 		}
-		item->setToolName(toolName);
-		item->setFilamentName(filamentName);
 	}
 
 	void FilamentSelect::setFilamentOptions(const std::vector<std::string>& options)
@@ -152,9 +152,9 @@ namespace UI
 		LOG_DBG("Setting filament options for {}", getName());
 		m_filamentOptions.clear();
 		m_filamentOptions.setItemCount(options.size(),
-									   [this, &options](size_t index, LvObj& parent) -> std::shared_ptr<Button>
+									   [this, &options](size_t index, LvObj& parent)
 									   {
-										   auto btn = std::make_shared<Button>(fmt::format("{}", index), parent);
+										   auto btn = std::make_unique<Button>(fmt::format("{}", index), parent);
 										   btn->setText(options[index]);
 										   btn->setFlexGrow(1);
 										   //    btn->setMinWidth(LV_SIZE_CONTENT);

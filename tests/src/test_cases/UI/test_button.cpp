@@ -64,7 +64,7 @@ TEST_F(TestButton, LongText)
 	button_ver_list.setItemCount(5,
 								 [](size_t index, UI::LvObj& parent)
 								 {
-									 auto btn = std::make_shared<UI::Button>(fmt::format("{}", index), parent);
+									 auto btn = std::make_unique<UI::Button>(fmt::format("{}", index), parent);
 									 btn->setText("Truncate should this text");
 									 btn->setFlexGrow(1);
 									 btn->setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -76,7 +76,7 @@ TEST_F(TestButton, LongText)
 	button_ver_list_no_grow.setItemCount(2,
 										 [](size_t index, UI::LvObj& parent)
 										 {
-											 auto btn = std::make_shared<UI::Button>(fmt::format("{}", index), parent);
+											 auto btn = std::make_unique<UI::Button>(fmt::format("{}", index), parent);
 											 btn->setText("Wrap should this text");
 											 btn->setSize(LV_PCT(100), LV_SIZE_CONTENT);
 											 return btn;
@@ -89,7 +89,7 @@ TEST_F(TestButton, LongText)
 	button_hor_list.setItemCount(5,
 								 [](size_t index, UI::LvObj& parent)
 								 {
-									 auto btn = std::make_shared<UI::Button>(fmt::format("{}", index), parent);
+									 auto btn = std::make_unique<UI::Button>(fmt::format("{}", index), parent);
 									 btn->setText("Wrap should this text"); // since the list height is LV_SIZE_CONTENT
 									 btn->setFlexGrow(1);
 									 return btn;
@@ -103,7 +103,7 @@ TEST_F(TestButton, LongText)
 		5,
 		[](size_t index, UI::LvObj& parent)
 		{
-			auto btn = std::make_shared<UI::Button>(fmt::format("{}", index), parent);
+			auto btn = std::make_unique<UI::Button>(fmt::format("{}", index), parent);
 			btn->setText("Truncate should this text"); // Since list height is smaller
 													   // than required label height
 			btn->setHeight(LV_PCT(100));

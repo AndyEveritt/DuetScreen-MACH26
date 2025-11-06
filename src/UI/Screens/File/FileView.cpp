@@ -178,7 +178,7 @@ namespace UI
 		m_fileList.setItemCount(count, *this);
 	}
 
-	std::shared_ptr<FileView::FileItem> FileView::getFileItem(size_t index) const
+	FileView::FileItem* FileView::getFileItem(size_t index) const
 	{
 		return m_fileList.getItem(index);
 	}

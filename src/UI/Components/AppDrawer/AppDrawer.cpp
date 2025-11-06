@@ -65,7 +65,7 @@ namespace UI
 		m_apps.setItemCount(std::size(apps),
 							[](size_t index, LvObj& parent)
 							{
-								auto app = std::make_shared<App>(index, parent);
+								auto app = std::make_unique<App>(index, parent);
 								const auto& appInfo = apps[index];
 								app->setName(appInfo.name);
 								app->setIcon(appInfo.icon);

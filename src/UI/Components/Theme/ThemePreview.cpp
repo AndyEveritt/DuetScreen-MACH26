@@ -123,6 +123,8 @@ namespace UI
 		updateSwatches();
 	}
 
+	ThemePreview::~ThemePreview() = default;
+
 	void ThemePreview::updateSwatches()
 	{
 		const auto& styles = Themes::getLvglStyles();
@@ -156,7 +158,7 @@ namespace UI
 		m_swatches.setItemCount(std::size(swatch_styles),
 								[this, &swatch_styles](size_t index, LvObj& parent)
 								{
-									auto swatch = std::make_shared<Swatch>(fmt::format("{:d}", index), parent);
+									auto swatch = std::make_unique<Swatch>(fmt::format("{:d}", index), parent);
 									swatch->setSize(180, LV_SIZE_CONTENT);
 									swatch->setMaxWidth(LV_PCT(100));
 									auto& style = swatch_styles[index];

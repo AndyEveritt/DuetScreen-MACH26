@@ -63,10 +63,10 @@ namespace UI
 
 		void onShow() override;
 
-		std::shared_ptr<Button> createBaseListButton(size_t index, LvObj& parent);
-		std::shared_ptr<Button> createToolButton(size_t index, LvObj& parent);
-		std::shared_ptr<Button> createDistanceButton(size_t index, LvObj& parent);
-		std::shared_ptr<Button> createFeedrateButton(size_t index, LvObj& parent);
+		std::unique_ptr<Button> createBaseListButton(size_t index, LvObj& parent);
+		std::unique_ptr<Button> createToolButton(size_t index, LvObj& parent);
+		std::unique_ptr<Button> createDistanceButton(size_t index, LvObj& parent);
+		std::unique_ptr<Button> createFeedrateButton(size_t index, LvObj& parent);
 
 		List<Button> m_toolSelect{"tool_select", getRoot()};
 

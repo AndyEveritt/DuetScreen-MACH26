@@ -21,6 +21,7 @@ namespace UI
 	{
 	  public:
 		ThemePreview(const std::string& name, LvObj& parent);
+		virtual ~ThemePreview(); // = default but Swatch is forward declared;
 
 		void updateSwatches();
 		void updateSliders(size_t primaryHue, size_t secondaryHue, float chroma, bool darkMode);

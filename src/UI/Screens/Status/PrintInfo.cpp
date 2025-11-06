@@ -99,7 +99,7 @@ namespace UI
 		m_positions.setItemCount(count,
 								 [this](size_t index, LvObj& parent)
 								 {
-									 auto btn = std::make_shared<Button>(fmt::format("axis_{}", index), parent);
+									 auto btn = std::make_unique<Button>(fmt::format("axis_{}", index), parent);
 									 btn->setHeight(LV_SIZE_CONTENT);
 									 btn->setFlexGrow(1);
 									 btn->setMinWidth(LV_SIZE_CONTENT);

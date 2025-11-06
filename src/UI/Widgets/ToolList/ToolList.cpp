@@ -42,7 +42,7 @@ namespace UI
 		return m_tools.setItemCount(count,
 									[this](size_t index, LvObj& parent)
 									{
-										auto item = std::make_shared<ToolListTool>(index, parent, *this);
+										auto item = std::make_unique<ToolListTool>(index, parent, *this);
 										item->activate();
 										return item;
 									});

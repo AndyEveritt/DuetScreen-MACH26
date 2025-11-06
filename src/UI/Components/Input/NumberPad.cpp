@@ -139,11 +139,11 @@ namespace UI
 
 		if (value < 0)
 		{
-			m_btnMatrix.setButtonCtrl(9, LV_BTNMATRIX_CTRL_DISABLED);
+			m_btnMatrix.clearButtonCtrl(9, LV_BTNMATRIX_CTRL_DISABLED);
 		}
 		else
 		{
-			m_btnMatrix.clearButtonCtrl(9, LV_BTNMATRIX_CTRL_DISABLED);
+			m_btnMatrix.setButtonCtrl(9, LV_BTNMATRIX_CTRL_DISABLED);
 		}
 
 		validateInput();
