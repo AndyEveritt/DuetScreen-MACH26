@@ -395,9 +395,15 @@ namespace UI
 			{
 			case LV_EVENT_CLICKED:
 			{
-				control->m_distanceInput.getItem(control->m_selectedDistanceIndex)->setChecked(false);
+				if (auto item = control->m_distanceInput.getItem(control->m_selectedDistanceIndex))
+				{
+					item->setChecked(false);
+				}
 				control->m_selectedDistanceIndex = index;
-				control->m_distanceInput.getItem(index)->setChecked(true);
+				if (auto item = control->m_distanceInput.getItem(index))
+				{
+					item->setChecked(true);
+				}
 				StorageHelper::setData(ID_EXTRUSION_SELECTED_DISTANCE, index);
 				break;
 			}
@@ -432,9 +438,15 @@ namespace UI
 			{
 			case LV_EVENT_CLICKED:
 			{
-				control->m_feedrateInput.getItem(control->m_selectedFeedrateIndex)->setChecked(false);
+				if (auto item = control->m_feedrateInput.getItem(control->m_selectedFeedrateIndex))
+				{
+					item->setChecked(false);
+				}
 				control->m_selectedFeedrateIndex = index;
-				control->m_feedrateInput.getItem(index)->setChecked(true);
+				if (auto item = control->m_feedrateInput.getItem(index))
+				{
+					item->setChecked(true);
+				}
 				StorageHelper::setData(ID_EXTRUSION_SELECTED_FEEDRATE, index);
 				break;
 			}
@@ -488,18 +500,18 @@ namespace UI
 		setFilamentSelected(filament);
 	}
 
-	std::shared_ptr<Button> ExtruderControl::createBaseListButton(size_t index, LvObj& parent)
+	std::unique_ptr<Button> ExtruderControl::createBaseListButton(size_t index, LvObj& parent)
 	{
 		UI_LOCK();
 		LOG_DBG("Creating base list button {:d} for {:s}", index, parent.getName());
-		auto btn = std::make_shared<Button>(fmt::format("{}", index), parent);
+		auto btn = std::make_unique<Button>(fmt::format("{}", index), parent);
 		btn->setFlexGrow(1);
 		btn->setHeight(LV_SIZE_CONTENT);
 		btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
 		return btn;
 	}
 
-	std::shared_ptr<Button> ExtruderControl::createToolButton(size_t index, LvObj& parent)
+	std::unique_ptr<Button> ExtruderControl::createToolButton(size_t index, LvObj& parent)
 	{
 		LOG_DBG("Creating tool button {} for {}", index, getName());
 		auto btn = createBaseListButton(index, parent);
@@ -508,7 +520,7 @@ namespace UI
 		return btn;
 	}
 
-	std::shared_ptr<Button> ExtruderControl::createDistanceButton(size_t index, LvObj& parent)
+	std::unique_ptr<Button> ExtruderControl::createDistanceButton(size_t index, LvObj& parent)
 	{
 		LOG_DBG("Creating distance button {} for {}", index, getName());
 		auto btn = createBaseListButton(index, parent);
@@ -528,7 +540,7 @@ namespace UI
 		return btn;
 	}
 
-	std::shared_ptr<Button> ExtruderControl::createFeedrateButton(size_t index, LvObj& parent)
+	std::unique_ptr<Button> ExtruderControl::createFeedrateButton(size_t index, LvObj& parent)
 	{
 		LOG_DBG("Creating feedrate button {} for {}", index, getName());
 		auto btn = createBaseListButton(index, parent);

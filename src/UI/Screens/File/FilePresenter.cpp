@@ -134,7 +134,7 @@ namespace UI
 				break;
 			}
 			auto item = m_view->getFileItem(i);
-			if (item == nullptr)
+			if (!item)
 			{
 				continue;
 			}
@@ -143,6 +143,7 @@ namespace UI
 			{
 				continue;
 			}
+
 			item->setFileLabel(file->GetName().c_str());
 			std::string date = file->GetDate();
 			std::replace(date.begin(), date.end(), 'T', ' ');
@@ -257,7 +258,7 @@ namespace UI
 			if (file->GetPath() == filename)
 			{
 				auto item = this->m_view->getFileItem(i);
-				if (item != nullptr)
+				if (item)
 				{
 					item->setThumbnail(GetThumbnailPath(filename.c_str()).c_str());
 				}

@@ -239,7 +239,7 @@ namespace UI
 		UI_LOCK();
 
 		auto item = m_heightmapList.getItem(index);
-		if (item == nullptr)
+		if (!item)
 		{
 			LOG_WARN("Can't set heightmap {:d} name to {:s}, index invalid", index, name);
 			return;
@@ -251,7 +251,7 @@ namespace UI
 	void HeightmapView::setSelectedHeightmap(const int32_t index)
 	{
 		UI_LOCK();
-		for (auto item : m_heightmapList)
+		for (auto& item : m_heightmapList)
 		{
 			if (item == nullptr)
 			{

@@ -59,7 +59,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_numberPad = numberPad;
-		for (auto heater : m_heaters)
+		for (auto& heater : m_heaters)
 		{
 			heater->setNumberPad(numberPad);
 		}

@@ -132,8 +132,12 @@ namespace UI
 			return;
 		}
 
-		auto item = m_toolList.getItem(index);
-		if (!item)
+		if (auto item = m_toolList.getItem(index))
+		{
+			item->setToolName(toolName);
+			item->setFilamentName(filamentName);
+		}
+		else
 		{
 			LOG_ERROR("Failed to get tool item at index {} in {}", index, getName());
 			return;
@@ -201,6 +205,7 @@ namespace UI
 				LOG_ERROR("Failed to get filament option item at index {} in {}", i, getName());
 				continue;
 			}
+
 			bool match = item->getLabel().getText() == filamentName;
 			item->setChecked(match);
 			if (match)
@@ -224,12 +229,12 @@ namespace UI
 		}
 
 		std::string_view selectedFilament = btn->getText();
-		auto prev_btn = control.m_filamentOptions.getItem(control.m_selectedFilamentIndex);
-		if (prev_btn)
+		if (auto prev_btn = control.m_filamentOptions.getItem(control.m_selectedFilamentIndex))
 		{
 			prev_btn->setChecked(false);
 		}
 		btn->setChecked(true);
+
 		control.m_selectedFilamentIndex = index;
 		control.m_unload.hide();
 		control.m_confirmation.getOkBtn().show();

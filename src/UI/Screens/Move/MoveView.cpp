@@ -191,7 +191,10 @@ namespace UI
 									 btn->setHeight(LV_SIZE_CONTENT);
 									 return btn;
 								 });
-		m_distances.getItem(s_currentDistanceIndex)->setChecked(true);
+		if (auto item = m_distances.getItem(s_currentDistanceIndex))
+		{
+			item->setChecked(true);
+		}
 
 		m_numberpad.hide();
 	}
@@ -236,9 +239,15 @@ namespace UI
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
-		view->m_distances.getItem(s_currentDistanceIndex)->setChecked(false);
+		if (auto item = view->m_distances.getItem(s_currentDistanceIndex))
+		{
+			item->setChecked(false);
+		}
 		s_currentDistanceIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
-		view->m_distances.getItem(s_currentDistanceIndex)->setChecked(true);
+		if (auto item = view->m_distances.getItem(s_currentDistanceIndex))
+		{
+			item->setChecked(true);
+		}
 	}
 
 	void MoveView::onShow()
@@ -345,12 +354,18 @@ namespace UI
 		for (size_t i = 0; i < axis_data_excluding_xyz.size(); ++i)
 		{
 			const MovePresenter::AxisData& data = axis_data_excluding_xyz[i];
-			auto control = m_genericAxisControls.getItem(i);
-			control->setAxisLetter(data.letter);
-			control->setAxisPosition(Units::convertDistanceToCurrentDisplayedUnit(data.position));
-			control->setAxisHomed(data.homed);
-			control->setHomeDisabled(data.home_disabled);
-			control->setJogDisabled(data.jog_disabled);
+			if (auto item = m_genericAxisControls.getItem(i))
+			{
+				item->setAxisLetter(data.letter);
+				item->setAxisPosition(Units::convertDistanceToCurrentDisplayedUnit(data.position));
+				item->setAxisHomed(data.homed);
+				item->setHomeDisabled(data.home_disabled);
+				item->setJogDisabled(data.jog_disabled);
+			}
+			else
+			{
+				LOG_WARN("No control found for axis letter: {}", data.letter);
+			}
 		}
 
 		m_axisDataListPtr = &axis_data;

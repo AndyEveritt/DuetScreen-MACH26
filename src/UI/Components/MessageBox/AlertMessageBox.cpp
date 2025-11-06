@@ -281,6 +281,10 @@ namespace UI
 			setJogAxisCount(index + 1);
 		}
 		auto control = m_axisJogList.getItem(index);
+		if (!control)
+		{
+			return;
+		}
 		control->setAxisLetter(letter);
 	}
 
@@ -292,6 +296,10 @@ namespace UI
 			setJogAxisCount(index + 1);
 		}
 		auto control = m_axisJogList.getItem(index);
+		if (!control)
+		{
+			return;
+		}
 		control->setPosition(position);
 	}
 
@@ -303,6 +311,10 @@ namespace UI
 			setJogAxisCount(index + 1);
 		}
 		auto control = m_axisJogList.getItem(index);
+		if (!control)
+		{
+			return;
+		}
 		control->setEnabled(enabled);
 	}
 
@@ -317,7 +329,7 @@ namespace UI
 								   [this](size_t i, LvObj& parent)
 								   {
 									   auto btn =
-										   std::make_shared<Button>(fmt::format("msgbox_choice_{:d}", i), parent, "");
+										   std::make_unique<Button>(fmt::format("msgbox_choice_{:d}", i), parent, "");
 									   btn->setSize(LV_PCT(20), LV_SIZE_CONTENT);
 									   btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 									   btn->addClickedCallback(onChoiceEvent, this);

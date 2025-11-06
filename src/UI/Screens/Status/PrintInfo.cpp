@@ -117,8 +117,7 @@ namespace UI
 			LOG_ERROR("Index out of bounds for position list");
 			return;
 		}
-		auto item = m_positions.getItem(index);
-		if (item)
+		if (auto item = m_positions.getItem(index))
 		{
 			item->setText(fmt::format("{}\n{:.2f}", axis_letter, value));
 		}
