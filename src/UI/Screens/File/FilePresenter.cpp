@@ -148,7 +148,9 @@ namespace UI
 			std::string date = file->GetDate();
 			std::replace(date.begin(), date.end(), 'T', ' ');
 			item->setFileDate(date.c_str());
+#if SHOW_FILE_ITEM_SIZE
 			item->setFileSize(file->GetReadableSize().c_str());
+#endif
 			item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
 
 			// Set thumbnail

@@ -225,7 +225,9 @@ TEST_F(TestTheme, Widgets)
 	file_item.setType(false);
 	file_item.setFileLabel("File name");
 	file_item.setFileDate("2025-08-20 12:37:10");
+#if SHOW_FILE_ITEM_SIZE
 	file_item.setFileSize("671 KB");
+#endif
 
 	FileView::FileItem folder_item(0, file_folder_cont, file_view);
 	folder_item.setFlexGrow(1);
@@ -233,7 +235,9 @@ TEST_F(TestTheme, Widgets)
 	folder_item.setType(true);
 	folder_item.setFileLabel("Folder name");
 	folder_item.setFileDate("2025-08-20 12:39:59");
+#if SHOW_FILE_ITEM_SIZE
 	folder_item.setFileSize("0 B");
+#endif
 
 	/* Graph */
 	Graph graph("graph", cont);

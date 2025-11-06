@@ -13,6 +13,8 @@
 
 namespace UI
 {
+#define SHOW_FILE_ITEM_SIZE 0
+
 	class FileView : public View<FilePresenter>
 	{
 	  public:
@@ -22,13 +24,17 @@ namespace UI
 			FileItem(const size_t index, LvObj& parent, FileView& view);
 			void setFileLabel(const char* name);
 			void setFileDate(const char* date);
+#if SHOW_FILE_ITEM_SIZE
 			void setFileSize(const char* size);
+#endif
 			void setThumbnail(const char* thumbnail);
 			void setType(const bool isFolder);
 
 			const char* getLabel() const;
 			const char* getDate() const;
+#if SHOW_FILE_ITEM_SIZE
 			const char* getSize() const;
+#endif
 
 		  private:
 			FileView& getList() const { return m_list; }
@@ -41,10 +47,11 @@ namespace UI
 			int32_t m_layoutRowDsc[4];
 
 			LvLabel m_label{"label", getRoot()};
+#if SHOW_FILE_ITEM_SIZE
 			LvLabel m_size{"size", getRoot()};
+#endif
 			LvLabel m_date{"date", getRoot()};
 			LvImage m_thumbnail{"thumb", getRoot()};
-			LvLabel m_type{"type", getRoot()};
 
 			bool m_isFolder;
 		};
