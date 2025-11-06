@@ -134,6 +134,18 @@ namespace UI
 	void NumberPad::setMinValue(float value)
 	{
 		m_minValue = value;
+
+		m_textBox.setAcceptedChars(value < 0 ? "0123456789.-" : "0123456789.");
+
+		if (value < 0)
+		{
+			m_btnMatrix.setButtonCtrl(9, LV_BTNMATRIX_CTRL_DISABLED);
+		}
+		else
+		{
+			m_btnMatrix.clearButtonCtrl(9, LV_BTNMATRIX_CTRL_DISABLED);
+		}
+
 		validateInput();
 	}
 
