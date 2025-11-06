@@ -129,29 +129,34 @@ namespace UI
 	{
 		const auto& styles = Themes::getLvglStyles();
 		const LabelledStyle swatch_styles[] = {
-			{.name = "style_bg_dark", .style = styles.bg_dark, .color_prop = LV_STYLE_BG_COLOR},
-			{.name = "style_bg", .style = styles.bg, .color_prop = LV_STYLE_BG_COLOR},
-			{.name = "style_bg_light", .style = styles.bg_light, .color_prop = LV_STYLE_BG_COLOR},
-			{.name = "style_bg_color_primary", .style = styles.bg_color_primary, .color_prop = LV_STYLE_BG_COLOR},
-			{.name = "style_bg_color_primary_muted",
-			 .style = styles.bg_color_primary_muted,
-			 .color_prop = LV_STYLE_BG_COLOR},
-			{.name = "style_bg_color_secondary", .style = styles.bg_color_secondary, .color_prop = LV_STYLE_BG_COLOR},
-			{.name = "style_bg_color_secondary_muted",
+			{.name = "bg_dark", .style = styles.bg_dark, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "bg", .style = styles.bg, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "bg_light", .style = styles.bg_light, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "bg_color_primary", .style = styles.bg_color_primary, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "bg_color_primary_muted", .style = styles.bg_color_primary_muted, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "bg_color_secondary", .style = styles.bg_color_secondary, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "bg_color_secondary_muted",
 			 .style = styles.bg_color_secondary_muted,
 			 .color_prop = LV_STYLE_BG_COLOR},
-			// {.name="style_bg_color_header", .style=styles.bg_color_header, .color_prop=LV_STYLE_BG_COLOR},
-			// {.name="style_bg_color_list_item", .style=styles.bg_color_list_item, .color_prop=LV_STYLE_BG_COLOR},
-			{.name = "style_text", .style = styles.text, .color_prop = LV_STYLE_TEXT_COLOR},
-			{.name = "style_text_muted", .style = styles.text_muted, .color_prop = LV_STYLE_TEXT_COLOR},
-			{.name = "style_text_header", .style = styles.text_header, .color_prop = LV_STYLE_TEXT_COLOR},
-			{.name = "style_border", .style = styles.border, .color_prop = LV_STYLE_BORDER_COLOR},
-			{.name = "style_border_muted", .style = styles.border_muted, .color_prop = LV_STYLE_BORDER_COLOR},
-			{.name = "style_border_highlight", .style = styles.border_highlight, .color_prop = LV_STYLE_BORDER_COLOR},
-			// {.name="style_border_color_primary", .style=styles.border_color_primary,
-			// .color_prop=LV_STYLE_BORDER_COLOR},
-			// {.name="style_border_color_secondary", .style=styles.border_color_secondary,
-			// .color_prop=LV_STYLE_BORDER_COLOR},
+#if 0
+			{.name="bg_color_header", .style=styles.bg_color_header, .color_prop=LV_STYLE_BG_COLOR},
+			{.name="bg_color_list_item", .style=styles.bg_color_list_item, .color_prop=LV_STYLE_BG_COLOR},
+#endif
+			{.name = "text", .style = styles.text, .color_prop = LV_STYLE_TEXT_COLOR},
+			{.name = "text_muted", .style = styles.text_muted, .color_prop = LV_STYLE_TEXT_COLOR},
+			{.name = "text_header", .style = styles.text_header, .color_prop = LV_STYLE_TEXT_COLOR},
+			{.name = "border", .style = styles.border, .color_prop = LV_STYLE_BORDER_COLOR},
+			{.name = "border_muted", .style = styles.border_muted, .color_prop = LV_STYLE_BORDER_COLOR},
+			{.name = "border_highlight", .style = styles.border_highlight, .color_prop = LV_STYLE_BORDER_COLOR},
+			{.name = "success", .style = styles.bg_color_success, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "warning", .style = styles.bg_color_warning, .color_prop = LV_STYLE_BG_COLOR},
+			{.name = "error", .style = styles.bg_color_error, .color_prop = LV_STYLE_BG_COLOR},
+#if 0
+			{.name="style_border_color_primary", .style=styles.border_color_primary,
+			.color_prop=LV_STYLE_BORDER_COLOR},
+			{.name="style_border_color_secondary", .style=styles.border_color_secondary,
+			.color_prop=LV_STYLE_BORDER_COLOR},
+#endif
 		};
 
 		m_swatches.clear();

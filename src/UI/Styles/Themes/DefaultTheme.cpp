@@ -58,6 +58,10 @@ namespace UI::Themes
 		colors.highlight = Color(darkMode ? 0.70 : 1.0, chroma, primaryHue);
 		colors.shadow = Color(darkMode ? 0.2 : 0.4, bgChroma, primaryHue);
 
+		colors.success = Color(darkMode ? 0.6 : 0.8, std::max(0.075f, chroma), 160);
+		colors.warning = Color(darkMode ? 0.6 : 0.8, std::max(0.075f, chroma), 100);
+		colors.error = Color(darkMode ? 0.6 : 0.8, std::max(0.075f, chroma), 30);
+
 		if (customizer)
 		{
 			customizer(colors);
@@ -108,9 +112,20 @@ namespace UI::Themes
 		lv_style_set_bg_opa(lvgl.bg_color_secondary_muted, LV_OPA_COVER);
 		lv_style_set_bg_grad_dir(lvgl.bg_color_secondary_muted, LV_GRAD_DIR_NONE);
 
-		lv_style_set_bg_color(lvgl.bg_color_header, m_colors.bg_light);
-		lv_style_set_bg_opa(lvgl.bg_color_header, LV_OPA_COVER);
-		lv_style_set_bg_grad_color(lvgl.bg_color_header, m_colors.bg);
+		lv_style_set_bg_color(lvgl.bg_color_success, m_colors.success);
+		lv_style_set_bg_opa(lvgl.bg_color_success, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_color_success, LV_GRAD_DIR_NONE);
+
+		lv_style_set_bg_color(lvgl.bg_color_warning, m_colors.warning);
+		lv_style_set_bg_opa(lvgl.bg_color_warning, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_color_warning, LV_GRAD_DIR_NONE);
+
+		lv_style_set_bg_color(lvgl.bg_color_error, m_colors.error);
+		lv_style_set_bg_opa(lvgl.bg_color_error, LV_OPA_COVER);
+		lv_style_set_bg_grad_dir(lvgl.bg_color_error, LV_GRAD_DIR_NONE);
+
+		lv_style_set_bg_color(lvgl.bg_color_header, lv_color_white());
+		lv_style_set_bg_opa(lvgl.bg_color_header, LV_OPA_10);
 
 		lv_style_set_bg_color(lvgl.bg_color_list_item, m_colors.bg);
 		lv_style_set_bg_opa(lvgl.bg_color_list_item, LV_OPA_COVER);

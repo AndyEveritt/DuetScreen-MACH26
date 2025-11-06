@@ -54,7 +54,7 @@ namespace UI
 		EStop* estop = static_cast<EStop*>(user_data);
 		if (pct < 0.5f)
 		{
-			Model::get().post<EventType::Response>(_("estop.prompt"));
+			Model::get().post<EventType::Response>(ResponseType::WARNING, _("estop.prompt"));
 		}
 
 		if (pct == 1.0f)

@@ -69,7 +69,7 @@ namespace UI
 		}
 	}
 
-	void HomePresenter::newResponse(const std::string& resp)
+	void HomePresenter::newResponse(const ResponseType type, const std::string& resp)
 	{
 		UI_LOCK();
 		if (m_view->m_consoleView.isVisible())
@@ -83,7 +83,6 @@ namespace UI
 		}
 
 		std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
-		msgBox->setTitle("Response");
 		msgBox->setText(resp);
 		msgBox->setCancelCallback(
 			[this]()
@@ -97,6 +96,25 @@ namespace UI
 					msgBox->setTimeout(StorageHelper::getData(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 				}
 			});
+		switch (type)
+		{
+		case ResponseType::SUCCESS:
+			msgBox->setTitle(_("msgbox.response_success"));
+			msgBox->addStyle(Themes::getLvglStyles().bg_color_success);
+			break;
+		case ResponseType::INFO:
+			msgBox->setTitle(_("msgbox.response_info"));
+			msgBox->setTitle("Response");
+			break;
+		case ResponseType::WARNING:
+			msgBox->setTitle(_("msgbox.response_warning"));
+			msgBox->addStyle(Themes::getLvglStyles().bg_color_warning);
+			break;
+		case ResponseType::ERROR:
+			msgBox->setTitle(_("msgbox.response_error"));
+			msgBox->addStyle(Themes::getLvglStyles().bg_color_error);
+			break;
+		}
 
 		msgBox->setCancelBtnText(_("msgbox.close"));
 		msgBox->setOkBtnText(_("msgbox.open_console"));

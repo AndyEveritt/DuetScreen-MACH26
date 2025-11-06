@@ -30,6 +30,10 @@ namespace UI::Themes
 		Color border_muted;
 		Color highlight;
 		Color shadow;
+
+		Color success;
+		Color warning;
+		Color error;
 	};
 
 	ThemeColors createThemeColors(uint16_t primaryHue,

@@ -2,6 +2,14 @@
 
 #include "Subscribers/Subscribers.h"
 
+enum class ResponseType
+{
+	SUCCESS = 0,
+	INFO,
+	WARNING,
+	ERROR
+};
+
 class ResponseSubscribers : public SubscriberMap
 {
   public:

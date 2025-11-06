@@ -20,7 +20,7 @@ namespace UI
 
 		void newUpdateAvailable(const std::string& file);
 		void newAxesData();
-		void newResponse(const std::string& response);
+		void newResponse(const ResponseType type, const std::string& response);
 		void newAlertData(const OM::Alert& alert);
 
 	  protected:

@@ -20,7 +20,7 @@ namespace UI
 #endif
 
 		// Observers
-		void newResponse(const std::string& resp);
+		void newResponse(ResponseType type, const std::string& resp);
 		void newLogMessage(const Log::DebugLevel& level, const Log::log_time_t& time, const std::string& message);
 
 	  private:

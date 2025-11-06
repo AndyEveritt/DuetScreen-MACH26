@@ -77,14 +77,14 @@ def maximize_window(win: "Any") -> None:
 
 
 def clean_err_images(ref_dir: Path) -> List[Path]:
-	"""Remove any *_err.* images recursively under ref_dir.
+	"""Remove any *_err.png images recursively under ref_dir.
 
 	Returns list of removed paths.
 	"""
 	removed: List[Path] = []
 	if not ref_dir.exists():
 		return removed
-	for p in sorted(ref_dir.rglob("*_err.*")):
+	for p in sorted(ref_dir.rglob("*_err.png")):
 		if not p.is_file():
 			continue
 		try:
@@ -108,7 +108,7 @@ def snapshot_existing_refs(ref_dir: Path) -> set[str]:
 	for p in ref_dir.rglob("*"):
 		if not p.is_file():
 			continue
-		if "_err." in p.name:
+		if "_err.png" in p.name:
 			continue
 		try:
 			rel = p.relative_to(ref_dir).as_posix()
@@ -126,7 +126,7 @@ def list_new_refs(ref_dir: Path, before: set[str]) -> List[Path]:
 	for p in sorted(ref_dir.rglob("*")):
 		if not p.is_file():
 			continue
-		if "_err." in p.name:
+		if "_err.png" in p.name:
 			continue
 		try:
 			rel = p.relative_to(ref_dir).as_posix()
@@ -229,7 +229,7 @@ def list_err_images(ref_dir: Path) -> List[Path]:
 	"""Return list of *_err.* images found recursively under ref_dir."""
 	if not ref_dir.exists():
 		return []
-	return sorted(p for p in ref_dir.rglob("*_err.*") if p.is_file())
+	return sorted(p for p in ref_dir.rglob("*_err.png") if p.is_file())
 
 
 def load_images_for_compare(ref_path: Path, err_path: Path):
@@ -977,7 +977,10 @@ def main(argv: List[str]) -> int:
 		pil_ok = True
 		try:
 			for err_path in err_images:
-				ref_path = Path(str(err_path).replace("_err", ""))
+				if err_path.name.endswith("_err.png") is False:
+					continue
+
+				ref_path = Path(str(err_path).replace("_err.png", ".png"))
 				comp = load_images_for_compare(ref_path, err_path)
 				if comp is None:
 					pil_ok = False

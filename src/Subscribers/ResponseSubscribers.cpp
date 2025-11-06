@@ -14,6 +14,8 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 		return false;
 	}
 
+	ResponseType type = ResponseType::INFO;
+
 	std::string trimmed;
 	if (len > 0 && (data[len - 1] == '\n' || data[len - 1] == '\r'))
 	{
@@ -34,7 +36,18 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 		return false;
 	}
 
-	Model::get().post<EventType::Response>(trimmed);
+	if (trimmed.starts_with("Error: "))
+	{
+		type = ResponseType::ERROR;
+		trimmed = trimmed.substr(7);
+	}
+	else if (trimmed.starts_with("Warning: "))
+	{
+		type = ResponseType::WARNING;
+		trimmed = trimmed.substr(9);
+	}
+
+	Model::get().post<EventType::Response>(type, trimmed);
 	return true;
 }
 

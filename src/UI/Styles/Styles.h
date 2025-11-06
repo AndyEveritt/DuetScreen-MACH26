@@ -57,6 +57,9 @@ namespace UI::Themes
 		Style bg_color_primary_muted;
 		Style bg_color_secondary;
 		Style bg_color_secondary_muted;
+		Style bg_color_success;
+		Style bg_color_warning;
+		Style bg_color_error;
 		Style bg_color_header;
 		Style bg_color_list_item;
 		Style bg_modal;

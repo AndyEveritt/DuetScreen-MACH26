@@ -77,7 +77,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(CurrentMoveTopSpeed)                                                                                            \
 	XX(CurrentMoveExtrusionSpeed)                                                                                      \
 	XX(CompensationFile)                                                                                               \
-	XX(Response, std::string)                                                                                          \
+	XX(Response, ResponseType, std::string)                                                                            \
 	XX(LogMessage, Log::DebugLevel, Log::log_time_t, std::string)                                                      \
 	XX(AnalogSensorData)                                                                                               \
 	XX(EndstopData)                                                                                                    \

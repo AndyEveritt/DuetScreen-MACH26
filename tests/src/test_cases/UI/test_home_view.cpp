@@ -96,8 +96,26 @@ TEST_F(TestHomeView, AppDrawer)
 
 TEST_F(TestHomeView, Response)
 {
-	view.getPresenter()->newResponse("This is a response message from the Duet");
+	view.getPresenter()->newResponse(ResponseType::INFO, "This is a response message from the Duet");
 	EXPECT_EQUAL_SCREENSHOT("home_view/response.png");
+}
+
+TEST_F(TestHomeView, SuccessResponse)
+{
+	view.getPresenter()->newResponse(ResponseType::SUCCESS, "This is a success message from the Duet");
+	EXPECT_EQUAL_SCREENSHOT("home_view/response_success.png");
+}
+
+TEST_F(TestHomeView, WarningResponse)
+{
+	view.getPresenter()->newResponse(ResponseType::WARNING, "This is a warning message from the Duet");
+	EXPECT_EQUAL_SCREENSHOT("home_view/response_warning.png");
+}
+
+TEST_F(TestHomeView, ErrorResponse)
+{
+	view.getPresenter()->newResponse(ResponseType::ERROR, "This is an error message from the Duet");
+	EXPECT_EQUAL_SCREENSHOT("home_view/response_error.png");
 }
 
 class TestHomeViewWithData : public TestHomeView
@@ -151,8 +169,11 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 
 	auto presenter = view.getConsoleView().getPresenter();
 	view.getConsoleView().addCommand("M115");
-	presenter->newResponse("Testing response");
-	presenter->newResponse("new multi-line response\nline 2");
+	presenter->newResponse(ResponseType::INFO, "Testing response");
+	presenter->newResponse(ResponseType::INFO, "new multi-line response\nline 2");
+	presenter->newResponse(ResponseType::SUCCESS, "Success response");
+	presenter->newResponse(ResponseType::WARNING, "Warning response");
+	presenter->newResponse(ResponseType::ERROR, "Error response");
 
 	presenter->newLogMessage(Log::DebugLevel::Info, Log::log_time_t{}, "Testing log message");
 
