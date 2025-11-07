@@ -133,13 +133,14 @@ namespace UI
 			return;
 		}
 
+		bool removed = false;
 		if (inVector(s_openScreens, view))
 		{
-			removeFromVector(s_openScreens, view);
+			removed = removeFromVector(s_openScreens, view);
 		}
 		s_homeScreens.push_back(view);
 
-		if (s_openScreens.empty() && s_openModals.empty())
+		if (removed && s_openScreens.empty() && s_openModals.empty())
 		{
 			/* Home screen was previously visible so it should remain visible */
 			home();

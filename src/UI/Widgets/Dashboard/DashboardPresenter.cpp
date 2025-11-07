@@ -22,10 +22,10 @@ namespace UI
 		case OM::PrinterStatus::processing:
 		case OM::PrinterStatus::resuming:
 		case OM::PrinterStatus::simulating:
-			addHomeScreen(&getView()->getStatusView());
+			getView()->disableJobsTab(true);
 			break;
 		case OM::PrinterStatus::idle:
-			removeHomeScreen(&getView()->getStatusView(), true);
+			getView()->disableJobsTab(false);
 			break;
 		default:
 			break;

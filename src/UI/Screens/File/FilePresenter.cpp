@@ -113,7 +113,7 @@ namespace UI
 	void FilePresenter::startPrint()
 	{
 		OM::FileSystem::StartPrint(m_gcodePath);
-		addHomeScreen(&HomeView::instance().getDashboard().getStatusView());
+		HomeView::instance().getDashboard().disableJobsTab(true);
 		home();
 	}
 

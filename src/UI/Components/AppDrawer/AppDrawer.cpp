@@ -46,20 +46,26 @@ namespace UI
 			{.name = _("app_drawer.temperature"),
 			 .screen = &HomeView::instance().getTemperatureView(),
 			 .icon = "temperature.png"},
-			// {.name=_("app_drawer.fan"), .screen=&HomeView::instance().getFanView(), .icon="fan.png"},
+#if 0
+			{.name = _("app_drawer.fan"), .screen = &HomeView::instance().getFanView(), .icon = "fan.png"},
+#endif
 			{.name = _("app_drawer.fine_tune"),
 			 .screen = &HomeView::instance().getFineTuneView(),
 			 .icon = "fine_tune.png"},
-			// {.name=_("app_drawer.macros"), .screen=&HomeView::instance().getMacroView(), .icon="macros.png"},
+#if 0
+			{.name=_("app_drawer.macros"), .screen=&HomeView::instance().getMacroView(), .icon="macros.png"},
+#endif
 			{.name = _("app_drawer.heightmap"),
 			 .screen = &HomeView::instance().getHeightmapView(),
 			 .icon = "heightmap.png"},
 			{.name = _("app_drawer.settings"),
 			 .screen = &HomeView::instance().getSettingsView(),
 			 .icon = "settings.png"},
+#if 0
 			{.name = _("app_drawer.status"),
 			 .screen = &HomeView::instance().getDashboard().getStatusView(),
 			 .icon = "status.png"},
+#endif
 		};
 
 		m_apps.setItemCount(std::size(apps),

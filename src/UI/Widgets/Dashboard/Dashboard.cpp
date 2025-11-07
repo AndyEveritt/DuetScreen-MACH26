@@ -9,6 +9,7 @@
 #include "Configuration.h"
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {
@@ -17,6 +18,8 @@ namespace UI
 
 	Dashboard::Dashboard(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
+		, m_fileView(m_tabs.addTab(_("app_drawer.files")), this)
+		, m_statusView(m_tabs.addTab(_("app_drawer.status")))
 	{
 		setStylePad(0);
 
@@ -31,16 +34,20 @@ namespace UI
 		// m_toolList.setMaxHeight(LV_PCT(50));
 		setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		setGridCell(m_graph, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		setGridCell(m_fileView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-		setGridCell(m_statusView, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+		setGridCell(m_tabs, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 
 		/* Graph */
 		m_graph.setXRange({.min = -60, .max = 0});
 		m_graph.setYRange({.min = 0, .max = 300});
 		m_graph.setXCount(-m_graph.getXRange().min * MODEL_TICK_HZ * 2);
 
-		/* Status */
-		m_statusView.hide();
+		/* Tabs (Jobs & Status) */
+		m_tabs.setActiveTab(0);
+	}
+
+	void Dashboard::disableJobsTab(bool disable)
+	{
+		m_tabs.disableTab(0, disable);
 	}
 
 	void Dashboard::clear()

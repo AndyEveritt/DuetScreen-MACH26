@@ -317,12 +317,7 @@ namespace UI
 		UI_LOCK();
 		m_startPrint.setTitle(_("file.start_print_title"));
 		m_startPrint.setText(_("file.start_print_message", filename, date, size));
-		m_startPrint.setOkCallback(
-			[this]()
-			{
-				m_presenter->startPrint();
-				openScreen(&HomeView::instance().getDashboard().getStatusView());
-			});
+		m_startPrint.setOkCallback([this]() { m_presenter->startPrint(); });
 		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail.data() : nullptr);
 		openModal(&m_startPrint);
 	}

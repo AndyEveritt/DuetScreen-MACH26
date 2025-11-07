@@ -4,4 +4,5 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/Card.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Column.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Row.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/TabView.cpp
 )

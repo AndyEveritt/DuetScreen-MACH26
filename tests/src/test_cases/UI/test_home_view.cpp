@@ -83,7 +83,7 @@ TEST_F(TestHomeView, BlankSettingsView)
 
 TEST_F(TestHomeView, BlankStatusView)
 {
-	openScreen(&view.getDashboard().getStatusView(), false);
+	view.getDashboard().showStatusTab();
 	EXPECT_EQUAL_SCREENSHOT("home_view/status_view_blank.png")
 }
 
@@ -229,7 +229,7 @@ TEST_F(TestHomeViewWithData, SettingsView)
 
 TEST_F(TestHomeViewWithData, StatusView)
 {
-	openScreen(&view.getDashboard().getStatusView());
+	view.getDashboard().showStatusTab();
 	EXPECT_EQUAL_SCREENSHOT("home_view/status_view.png")
 }
 

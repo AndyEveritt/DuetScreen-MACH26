@@ -8,6 +8,7 @@
 #pragma once
 
 #include "DashboardPresenter.h"
+#include "UI/Components/Containers/TabView.h"
 #include "UI/Core/View.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Status/StatusView.h"
@@ -26,12 +27,18 @@ namespace UI
 		FileView& getFileView() { return m_fileView; }
 		StatusView& getStatusView() { return m_statusView; }
 
+		void showJobsTab() { m_tabs.setActiveTab(0); }
+		void showStatusTab() { m_tabs.setActiveTab(1); }
+		void disableJobsTab(bool disable);
+
 		void clear();
 
 	  private:
 		ToolList m_toolList{"tool_list", getRoot(), this};
 		TemperatureGraph m_graph{"graph", getRoot()};
-		FileView m_fileView{getRoot(), this};
-		StatusView m_statusView{getRoot()};
+
+		TabView m_tabs{"tabs", getRoot()};
+		FileView m_fileView;
+		StatusView m_statusView;
 	};
 } // namespace UI
