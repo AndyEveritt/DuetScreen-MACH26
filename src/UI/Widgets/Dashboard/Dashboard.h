@@ -24,6 +24,7 @@ namespace UI
 
 		ToolList& getToolList() { return m_toolList; }
 		TemperatureGraph& getGraph() { return m_graph; }
+		TabView& getTabs() { return m_tabs; }
 		FileView& getFileView() { return m_fileView; }
 		StatusView& getStatusView() { return m_statusView; }
 

@@ -210,7 +210,7 @@ int main(int argc, char** argv)
 					static size_t screen_index = 0;
 					auto& home = UI::HomeView::instance();
 					static const std::vector<UI::LvObj*> screens{nullptr,
-																 &home.getDashboard().getStatusView(),
+																 nullptr,
 																 &home.getConsoleView(),
 																 &home.getMoveView(),
 																 &home.getTemperatureView(),
@@ -222,7 +222,15 @@ int main(int argc, char** argv)
 					auto screen = screens[screen_index];
 					if (screen == nullptr)
 					{
-						UI::home();
+						if (screen_index == 0)
+						{
+							UI::home();
+							home.getDashboard().showJobsTab();
+						}
+						else if (screen_index == 1)
+						{
+							home.getDashboard().showStatusTab();
+						}
 					}
 					else
 					{
