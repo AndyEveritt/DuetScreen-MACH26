@@ -169,6 +169,7 @@ namespace UI
 		m_startPrint.okVisible(true);
 		m_startPrint.cancelVisible(true);
 		m_startPrint.setImageSize(LV_PCT(50), 200);
+		m_startPrint.setCloseCallback([this]() { closeModal(&m_startPrint); });
 		m_startPrint.hide();
 
 		// Callbacks
