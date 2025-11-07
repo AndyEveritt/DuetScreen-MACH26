@@ -12,6 +12,7 @@
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 #include "lvgl/src/lvgl_private.h"
+#include "utils/StorageHelper.h"
 
 namespace UI
 {
@@ -285,6 +286,12 @@ namespace UI
 	void MessageBox::setTimeout(uint32_t timeout)
 	{
 		UI_LOCK();
+		if (m_type == ResponseType::ERROR &&
+			!StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR))
+		{
+			return;
+		}
+
 		m_timeout = timeout;
 		if (timeout == 0)
 		{
@@ -333,6 +340,32 @@ namespace UI
 		}
 		LOG_VERBOSE("Time remaining: {:d}", getTimeRemaining());
 		return 100 * getTimeRemaining() / m_timeout;
+	}
+
+	void MessageBox::setType(ResponseType type)
+	{
+		UI_LOCK();
+		m_type = type;
+
+		removeStyle(Themes::getLvglStyles().bg_color_success);
+		removeStyle(Themes::getLvglStyles().bg_color_warning);
+		removeStyle(Themes::getLvglStyles().bg_color_error);
+
+		switch (type)
+		{
+		case ResponseType::INFO:
+			// No additional style
+			break;
+		case ResponseType::SUCCESS:
+			addStyle(Themes::getLvglStyles().bg_color_success);
+			break;
+		case ResponseType::WARNING:
+			addStyle(Themes::getLvglStyles().bg_color_warning);
+			break;
+		case ResponseType::ERROR:
+			addStyle(Themes::getLvglStyles().bg_color_error);
+			break;
+		}
 	}
 
 	void MessageBox::onOkEvent(lv_event_t* e)

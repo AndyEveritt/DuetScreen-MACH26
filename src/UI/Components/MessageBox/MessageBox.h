@@ -67,6 +67,8 @@ namespace UI
 		uint32_t getTimeRemaining() const;
 		uint32_t getTimeOutPercentage() const;
 
+		void setType(ResponseType type);
+
 	  protected:
 		static void onOkEvent(lv_event_t* e);
 		static void onCancelEvent(lv_event_t* e);
@@ -101,6 +103,7 @@ namespace UI
 
 		uint32_t m_timeout = 0;
 		bool m_autoSizeImage = true;
+		ResponseType m_type = ResponseType::INFO;
 
 		struct
 		{

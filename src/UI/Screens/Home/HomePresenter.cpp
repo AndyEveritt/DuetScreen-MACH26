@@ -101,23 +101,21 @@ namespace UI
 					msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
 				}
 			});
+
+		msgBox->setType(type);
 		switch (type)
 		{
 		case ResponseType::SUCCESS:
 			msgBox->setTitle(_("msgbox.response_success"));
-			msgBox->addStyle(Themes::getLvglStyles().bg_color_success);
 			break;
 		case ResponseType::INFO:
 			msgBox->setTitle(_("msgbox.response_info"));
-			msgBox->setTitle("Response");
 			break;
 		case ResponseType::WARNING:
 			msgBox->setTitle(_("msgbox.response_warning"));
-			msgBox->addStyle(Themes::getLvglStyles().bg_color_warning);
 			break;
 		case ResponseType::ERROR:
 			msgBox->setTitle(_("msgbox.response_error"));
-			msgBox->addStyle(Themes::getLvglStyles().bg_color_error);
 			break;
 		}
 
@@ -136,11 +134,7 @@ namespace UI
 		if (m_view->getMessageBoxCount() == 1)
 		{
 			msgBox->show();
-			if (type != ResponseType::ERROR ||
-				StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR))
-			{
-				msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
-			}
+			msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
 		}
 		msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
 		if (m_view->m_alert.isVisible())
