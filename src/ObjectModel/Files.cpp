@@ -19,7 +19,7 @@
 
 namespace OM::FileSystem
 {
-	static std::map<std::string, FileListRequestPtr> s_fileListRequests;
+	static std::unordered_map<std::string, FileListRequestPtr> s_fileListRequests;
 
 	static FileContentsPtr s_fileContents;
 

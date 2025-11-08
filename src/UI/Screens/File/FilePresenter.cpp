@@ -182,7 +182,7 @@ namespace UI
 						getBaseFolderPath(),
 						this->m_currentFolder);
 				UI_LOCK();
-				m_items = files; // using std::move here caused a rare segfault???
+				m_items = std::move(files);
 				this->m_view->setFolder(fmt::format("{}{}", getBaseFolderPath(), this->m_currentFolder));
 				this->sortFiles();
 				this->displayFiles();
@@ -252,7 +252,7 @@ namespace UI
 				LOG_WARN("File count mismatch");
 				break;
 			}
-			auto file = m_items[i];
+			auto file = m_items.at(i);
 			if (file == nullptr)
 			{
 				continue;
