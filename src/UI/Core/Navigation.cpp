@@ -97,19 +97,29 @@ namespace UI
 		UI_LOCK();
 		LOG_INFO("Home button pressed");
 		closeAllModals();
-		for (auto screen : s_openScreens)
+
+		if (!s_openScreens.empty())
 		{
-			if (!screen->isVisible())
+			for (auto screen : s_openScreens)
 			{
-				continue;
+				if (!screen->isVisible())
+				{
+					continue;
+				}
+
+				// This will call screen->show() for home screens on closing last screen
+				closeScreen(screen, false);
 			}
-			closeScreen(screen, false);
 		}
-		for (auto screen : s_homeScreens)
+		else // prevents double-showing home screens
 		{
-			openScreen(screen);
+			for (auto screen : s_homeScreens)
+			{
+				openScreen(screen);
+			}
 		}
 
+		s_openModals.clear();
 		s_openScreens.clear();
 		s_returnableScreens.clear();
 		notifySideBar();
