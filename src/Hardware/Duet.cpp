@@ -58,7 +58,6 @@ namespace Comm
 
 	void Duet::Init()
 	{
-		// TODO restore from memory
 		DuetConfig config = StorageHelper::getData<DuetConfig>(ID_DUET, DuetConfig());
 
 		SetPollInterval(config.pollInterval);
@@ -67,6 +66,8 @@ namespace Comm
 		SetHostname(config.hostname);
 		SetPassword(config.password);
 		SetCommunicationType((CommunicationType)config.communicationType);
+
+		OM::RemoveAll();
 	}
 
 	void Duet::Reset()
