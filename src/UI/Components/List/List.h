@@ -175,13 +175,17 @@ namespace UI
 
 			if (count < currentCount)
 			{
+				LOG_DBG("Resizing list \"{:s}\" down from {:d} to {:d}", getName(), currentCount, count);
 				m_list.resize(count);
 			}
-
-			m_list.reserve(count);
-			for (size_t i = currentCount; i < count; i++)
+			else
 			{
-				m_list.emplace_back((instance->*constructor)(i, m_listCont, std::forward<Args>(args)...));
+				LOG_DBG("Resizing list \"{:s}\" up from {:d} to {:d}", getName(), currentCount, count);
+				m_list.reserve(count);
+				for (size_t i = currentCount; i < count; i++)
+				{
+					m_list.emplace_back((instance->*constructor)(i, m_listCont, std::forward<Args>(args)...));
+				}
 			}
 
 			return count > currentCount ? count - currentCount : 0;
@@ -202,13 +206,17 @@ namespace UI
 
 			if (count < currentCount)
 			{
+				LOG_DBG("Resizing list \"{:s}\" down from {:d} to {:d}", getName(), currentCount, count);
 				m_list.resize(count);
 			}
-
-			m_list.reserve(count);
-			for (size_t i = currentCount; i < count; i++)
+			else
 			{
-				m_list.emplace_back(std::make_unique<T>(i, m_listCont, std::forward<Args>(args)...));
+				LOG_DBG("Resizing list \"{:s}\" up from {:d} to {:d}", getName(), currentCount, count);
+				m_list.reserve(count);
+				for (size_t i = currentCount; i < count; i++)
+				{
+					m_list.emplace_back(std::make_unique<T>(i, m_listCont, std::forward<Args>(args)...));
+				}
 			}
 
 			return count > currentCount ? count - currentCount : 0;

@@ -126,19 +126,16 @@ namespace UI
 	{
 		m_view->setFileCount(m_items.size());
 		m_view->showSort(m_sortBy, m_sortOrder);
-		for (size_t i = 0; i < m_view->getFileCount(); i++)
+
+		auto item_count = m_items.size();
+		for (size_t i = 0; i < item_count; i++)
 		{
-			if (i >= m_items.size())
-			{
-				LOG_WARN("File count mismatch");
-				break;
-			}
 			auto item = m_view->getFileItem(i);
 			if (!item)
 			{
 				continue;
 			}
-			auto file = m_items[i];
+			auto file = m_items.at(i);
 			if (file == nullptr)
 			{
 				continue;
@@ -170,8 +167,6 @@ namespace UI
 	{
 		LOG_DBG("Requesting files for folder {:s}{:s}", getBaseFolderPath(), m_currentFolder);
 		UI_LOCK();
-		m_items.clear();
-		m_view->setFileCount(0);
 		OM::FileSystem::RequestFiles(
 			getBaseFolderType(m_baseFolder),
 			m_currentFolder,
