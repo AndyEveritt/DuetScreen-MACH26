@@ -117,6 +117,7 @@ namespace UI
 		TRef addItem()
 		{
 			UI_LOCK();
+			LOG_DBG("Adding item to list \"{:s}\"", getName());
 			auto item = std::make_unique<T>(getItemCount(), m_listCont);
 			m_list.push_back(std::move(item));
 			return *m_list.back();
@@ -125,6 +126,7 @@ namespace UI
 		TRef addItem(std::function<TPtr(size_t, LvObj&)> constructor)
 		{
 			UI_LOCK();
+			LOG_DBG("Adding item to list \"{:s}\"", getName());
 			auto item = constructor(getItemCount(), m_listCont);
 			m_list.push_back(std::move(item));
 			return *m_list.back();
@@ -141,13 +143,17 @@ namespace UI
 
 			if (count < currentCount)
 			{
+				LOG_DBG("Resizing list \"{:s}\" down from {:d} to {:d}", getName(), currentCount, count);
 				m_list.resize(count);
 			}
-
-			m_list.reserve(count);
-			for (size_t i = currentCount; i < count; i++)
+			else
 			{
-				m_list.emplace_back(constructor(i, m_listCont));
+				LOG_DBG("Resizing list \"{:s}\" up from {:d} to {:d}", getName(), currentCount, count);
+				m_list.reserve(count);
+				for (size_t i = currentCount; i < count; i++)
+				{
+					m_list.emplace_back(constructor(i, m_listCont));
+				}
 			}
 
 			return count > currentCount ? count - currentCount : 0;
