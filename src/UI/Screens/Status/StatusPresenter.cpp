@@ -45,6 +45,7 @@ namespace UI
 		newCurrentMoveTopSpeed();
 		newCurrentMoveExtrusionSpeed();
 		updateLayerInfo();
+		newAxesData();
 		newExtruderData();
 		newSpeedFactor();
 		newFanData();

@@ -22,6 +22,7 @@ namespace UI
 		, m_statusView(m_tabs.addTab(_("app_drawer.status")))
 	{
 		setStylePad(0);
+		// setExtDrawSize(100); /* for outer tab buttons */
 
 		m_toolList.addStyle(Themes::getLvglStyles().card);
 		m_graph.addStyle(Themes::getLvglStyles().card);
@@ -43,6 +44,7 @@ namespace UI
 
 		/* Tabs (Jobs & Status) */
 		m_tabs.setActiveTab(0);
+		// m_tabs.setTabBarPosition(LV_DIR_TOP, true);
 	}
 
 	void Dashboard::disableJobsTab(bool disable)

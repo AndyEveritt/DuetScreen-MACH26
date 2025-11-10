@@ -53,6 +53,8 @@ namespace UI
 		m_statusBar.setHeight(LV_SIZE_CONTENT);
 		m_mainWindow.setFlexGrow(1);
 		m_mainWindow.setHeight(LV_PCT(100));
+		m_mainWindow.moveToFront();
+		// m_mainWindow.setExtDrawSize(100); /* required for tab view outer buttons */
 
 		// Main Window Layout
 		m_sideBar.moveToFront();

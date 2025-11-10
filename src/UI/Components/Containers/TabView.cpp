@@ -13,11 +13,14 @@ namespace UI
 	TabView::TabView(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
-		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setTabBarPosition(LV_DIR_TOP, false);
 		setStylePad(0);
+		setStylePad(-5, LV_PART_MAIN, Padding::ROW);
+		setStylePad(-5, LV_PART_MAIN, Padding::COLUMN);
 
 		m_tabButtons.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_tabButtons.setStylePad(0);
+		m_tabButtons.setStylePad(0, LV_PART_MAIN, Padding::VERTICAL);
+		m_tabButtons.getListContainer().setStylePad(0);
 		m_tabButtons.getListContainer().setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_tabButtons.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_tabButtons.addStyle(Themes::getLvglStyles().bg_color_header, LV_PART_MAIN);
@@ -136,6 +139,48 @@ namespace UI
 		m_tabs.at(index)->show(true);
 
 		m_tabButtons.iterateListItems([&](size_t i, TabButton& button) { button.setChecked(i == index); });
+	}
+
+	void TabView::setTabBarPosition(lv_dir_t dir, bool outer)
+	{
+		UI_LOCK();
+		if (!outer)
+		{
+			m_tabButtons.setFlag(LV_OBJ_FLAG_FLOATING, false);
+			switch (dir)
+			{
+			case LV_DIR_TOP:
+				setFlexFlow(LV_FLEX_FLOW_COLUMN);
+				break;
+			case LV_DIR_BOTTOM:
+				setFlexFlow(LV_FLEX_FLOW_COLUMN_REVERSE);
+				break;
+			case LV_DIR_LEFT:
+				setFlexFlow(LV_FLEX_FLOW_ROW);
+				break;
+			case LV_DIR_RIGHT:
+				setFlexFlow(LV_FLEX_FLOW_ROW_REVERSE);
+				break;
+			default:
+				LOG_ERROR("Invalid tab bar direction");
+				return;
+			}
+			return;
+		}
+
+		// Outer tab bar
+		m_tabButtons.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		setExtDrawSize(100);
+
+		switch (dir)
+		{
+		case LV_DIR_TOP:
+			m_tabButtons.setAlign(LV_ALIGN_OUT_TOP_LEFT, 0, 0);
+			break;
+		default:
+			LOG_ERROR("Invalid outer tab bar direction");
+			return;
+		}
 	}
 
 	bool TabView::disableTab(size_t index, bool disable)
