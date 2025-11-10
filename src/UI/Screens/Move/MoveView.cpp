@@ -32,7 +32,7 @@ namespace UI
 		, m_genericAxisControls("generic_axis_controls", m_axisControlCont)
 		, m_axisList("axis_control_list", m_axisControlCont)
 		, m_extruderControl("extruder_control", m_axisControlCont)
-		, m_distances("feed_rates", m_bottomBarCont)
+		, m_distances("distances", m_bottomBarCont)
 		, m_numberpad("numberpad", getRoot(), layout_t(0, 0, 50, 70))
 	{
 		UI_LOCK();
@@ -178,6 +178,7 @@ namespace UI
 		m_distances.setFlexGrow(1);
 		m_distances.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_distances.setListFlow(LV_FLEX_FLOW_ROW);
+		m_distances.getListContainer().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_distances.setListPad(0);
 		m_distances.setItemCount(ARRAY_SIZE(s_distances),
 								 [this](size_t i, LvObj& parent)
