@@ -60,6 +60,8 @@ namespace UI
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
 		SettingsView& getSettingsView() { return m_settingsView; }
 
+		ModalNumberPad& getNumberPad() { return m_numberpad; }
+
 		void showUpdatePrompt(bool show);
 
 		HomeView();

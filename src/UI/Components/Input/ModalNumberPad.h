@@ -12,5 +12,12 @@
 
 namespace UI
 {
-	using ModalNumberPad = Modal<NumberPad>;
+	class ModalNumberPad : public Modal<NumberPad>
+	{
+	  public:
+		ModalNumberPad(const std::string& name, LvObj& parent)
+			: Modal<NumberPad>(name, parent, layout_t(0, 0, 50, 70))
+		{
+		}
+	};
 } // namespace UI

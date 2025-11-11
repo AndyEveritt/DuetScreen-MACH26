@@ -20,7 +20,7 @@ namespace UI
 		, m_speed("speed", m_sliderCont)
 		, m_extruders("extruders", m_sliderCont)
 		, m_fans("fans", m_sliderCont)
-		, m_numberPad("numberpad", numberpad_parent ? *numberpad_parent : parent, layout_t(0, 0, 50, 70))
+		, m_numberPad("numberpad", numberpad_parent ? *numberpad_parent : parent)
 	{
 		UI_LOCK();
 
@@ -62,6 +62,7 @@ namespace UI
 			});
 		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_speed.setRange(1, 200);
+		m_speed.setDefaultValue(100);
 		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter->setSpeedFactor(value); });
 	}
 
@@ -94,6 +95,7 @@ namespace UI
 											 }
 										 });
 									 slider->setRange(0, 200);
+									 slider->setDefaultValue(100);
 									 slider->setOutOfRangeMode(Slider::OutOfRange::UPPER);
 									 slider->setValueChangedCallback([this, index](int32_t value)
 																	 { m_presenter->setExtruderFactor(index, value); });
@@ -121,6 +123,8 @@ namespace UI
 											showNumberPad();
 										}
 									});
+								slider->setRange(0, 100);
+								slider->setDefaultValue(100);
 								slider->setValueChangedCallback([this, index](int32_t value)
 																{ m_presenter->setFanValue(index, value); });
 								return slider;

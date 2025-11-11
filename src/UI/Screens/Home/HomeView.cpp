@@ -30,7 +30,7 @@ namespace UI
 		, m_settingsView(m_mainWindow)
 		, m_alert("alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 		, m_updatePrompt("update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
-		, m_numberpad("numberpad", m_mainWindow, layout_t(0, 0, LV_SIZE_CONTENT, 100))
+		, m_numberpad("numberpad", m_mainWindow)
 		, m_kb("keyboard", m_mainWindow)
 	{
 		UI_LOCK();

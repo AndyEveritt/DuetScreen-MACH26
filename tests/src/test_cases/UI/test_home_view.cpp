@@ -231,6 +231,20 @@ TEST_F(TestHomeViewWithData, StatusView)
 {
 	view.getDashboard().showStatusTab();
 	EXPECT_EQUAL_SCREENSHOT("home_view/status_view.png")
+
+	UI::LvObj* speed_factor =
+		view.getDashboard().getStatusView().getChildByName("print_info.speed_cont.speed_multiplier");
+	ASSERT_NE(speed_factor, nullptr);
+	speed_factor->sendEvent(LV_EVENT_CLICKED, nullptr);
+	EXPECT_EQUAL_SCREENSHOT("home_view/status_view_speed_factor_numberpad.png")
+
+	UI::closeAllModals();
+
+	UI::LvObj* extrusion_factor =
+		view.getDashboard().getStatusView().getChildByName("print_info.flow_cont.flow_multiplier");
+	ASSERT_NE(extrusion_factor, nullptr);
+	extrusion_factor->sendEvent(LV_EVENT_CLICKED, nullptr);
+	EXPECT_EQUAL_SCREENSHOT("home_view/status_view_extrusion_factor_numberpad.png")
 }
 
 TEST_F(TestHomeViewWithData, FineTuneView)

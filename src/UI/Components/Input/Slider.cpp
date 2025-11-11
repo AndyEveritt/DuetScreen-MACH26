@@ -8,21 +8,14 @@
 #include "Slider.h"
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
+#include "i18n/i18n.h"
 
 #define BUTTON_SIZE 50
 
 namespace UI
 {
 	Slider::Slider(const std::string& name, LvObj& parent)
-		: LvObj(lv_obj_create, name, parent)
-		, m_label("label", getRoot())
-		, m_sliderCont("slider_cont", getRoot())
-		, m_decrement("slider_decrement", m_sliderCont, LV_SYMBOL_MINUS)
-		, m_slider("slider", m_sliderCont)
-		, m_increment("slider_increment", m_sliderCont, LV_SYMBOL_PLUS)
-		, m_input("slider_input", m_sliderCont)
-		, m_incrementValue(1)
-		, m_keyboard(nullptr)
+		: LvContainer(name, parent)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -31,12 +24,20 @@ namespace UI
 		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_sliderCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
+		m_reset.setText(_("slider.reset"));
+		m_reset.setFlag(LV_OBJ_FLAG_FLOATING, true);
+		m_reset.setAlign(LV_ALIGN_TOP_RIGHT, -5, 5);
+		m_reset.setVisible(false);
+
 		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		m_decrement.setSize(BUTTON_SIZE, BUTTON_SIZE);
 		m_increment.setSize(BUTTON_SIZE, BUTTON_SIZE);
 		m_increment.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_decrement.setIcon("decrement.png");
+		m_increment.setIcon("increment.png");
+
 		m_input.setMinWidth(50);
 		m_input.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_slider.setHeight(LV_SIZE_CONTENT);
@@ -53,6 +54,7 @@ namespace UI
 				if (code == LV_EVENT_PRESSED || (code == LV_EVENT_LONG_PRESSED_REPEAT && slider->m_longPressEnabled))
 				{
 					slider->setValue(slider->getValue() - slider->m_incrementValue);
+					slider->sendEvent(LV_EVENT_VALUE_CHANGED, &slider->m_value);
 				}
 			},
 			LV_EVENT_ALL,
@@ -68,17 +70,26 @@ namespace UI
 				if (code == LV_EVENT_PRESSED || (code == LV_EVENT_LONG_PRESSED_REPEAT && slider->m_longPressEnabled))
 				{
 					slider->setValue(slider->getValue() + slider->m_incrementValue);
+					slider->sendEvent(LV_EVENT_VALUE_CHANGED, &slider->m_value);
 				}
 			},
 			LV_EVENT_ALL,
 			this);
 
+		m_reset.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				Slider& slider = *static_cast<Slider*>(lv_event_get_user_data(e));
+				slider.setValue(slider.m_defaultValue);
+				slider.sendEvent(LV_EVENT_VALUE_CHANGED, &slider.m_value);
+			},
+			this);
+
 		setRange(0, 100);
+		setOutOfRangeMode(OutOfRange::NONE);
 
 		m_input.setStylePad(2);
 		m_input.setOneLine(true);
-		m_input.setAcceptedChars("0123456789-.");
-		// m_input.setMaxLength(4);
 		m_input.setCursorClickPos(false);
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		updateText();
@@ -94,11 +105,11 @@ namespace UI
 		UI_LOCK();
 		if (mode & OutOfRange::LOWER || getMin() < 0)
 		{
-			m_input.setAcceptedChars("-0123456789");
+			m_input.setAcceptedChars("-0123456789.");
 		}
 		else
 		{
-			m_input.setAcceptedChars("0123456789");
+			m_input.setAcceptedChars("0123456789.");
 		}
 		m_outOfRangeMode = mode;
 	}
@@ -144,6 +155,18 @@ namespace UI
 		{
 			m_valueChangedCallback(getValue());
 		}
+
+		if (hasDefaultValue())
+		{
+			m_reset.setVisible(getValue() != m_defaultValue);
+		}
+	}
+
+	void Slider::setDefaultValue(float value)
+	{
+		UI_LOCK();
+		m_defaultValue = value;
+		m_reset.setVisible(hasDefaultValue() && getValue() != m_defaultValue);
 	}
 
 	void Slider::onValueChanged(lv_event_t* e)
@@ -175,6 +198,11 @@ namespace UI
 			{
 				slider->updateText();
 			}
+			if (slider->hasDefaultValue())
+			{
+				slider->m_reset.setVisible(slider->getValue() != slider->m_defaultValue);
+			}
+			slider->sendEvent(LV_EVENT_VALUE_CHANGED, &slider->m_value);
 			break;
 		}
 		case LV_EVENT_RELEASED:
@@ -233,7 +261,7 @@ namespace UI
 			if (!slider->m_input.hasState(LV_STATE_FOCUSED))
 			{
 				/*
-				Ignore changes while the slider is being dragged.
+				Ignore changes while input is not focused (ie slider being dragged) to prevent flicker.
 
 				Because the input box has accepted chars set, a `LV_EVENT_VALUE_CHANGED` event is generated for every
 				char. This means that when the `Slider::setValue()` udpates the input box text, it generates multiple

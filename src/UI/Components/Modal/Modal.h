@@ -18,20 +18,23 @@ namespace UI
 	class Modal : public T
 	{
 	  public:
-		Modal(const std::string& name, LvObj& parent, layout_t layout)
-			: T(name, parent, layout)
+		template <typename... Args>
+			requires(std::is_constructible_v<T, const std::string&, LvObj&, Args...>)
+		Modal(const std::string& name, LvObj& parent, Args&&... args)
+			: T(name, parent, std::forward<Args>(args)...)
 			, m_modalBg("modal_bg", parent, layout_t(0, 0, 100, 100))
 		{
 			UI_LOCK();
 
 			this->addStyle(Themes::getLvglStyles().card);
+			this->addStyle(Themes::getLvglStyles().modal);
 
 			this->setAlign(LV_ALIGN_CENTER, 0, 0);
-			this->setParent(m_modalBg);
+			static_cast<T*>(this)->setParent(m_modalBg); // make sure to call the base setParent
+			this->hide();
+
 			m_modalBg.setFlag(LV_OBJ_FLAG_FLOATING, true);
-
 			m_modalBg.addEventCallback(modalBgEventHandler, LV_EVENT_CLICKED, this);
-
 			m_modalBg.addStyle(Themes::getLvglStyles().bg_modal);
 		}
 
@@ -43,6 +46,8 @@ namespace UI
 			}
 			this->hide();
 		}
+
+		void setParent(LvObj& parent) { m_modalBg.setParent(parent); }
 
 	  private:
 		static void modalBgEventHandler(lv_event_t* e)

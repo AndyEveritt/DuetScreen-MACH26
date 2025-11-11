@@ -18,18 +18,12 @@
 #define APP_DRAWER_ICON "apps.png"
 #define APP_DRAWER_CLOSE_ICON "menu_close.png"
 
+#define SIDE_BAR_TEXT 0
+
 namespace UI
 {
 	SideBar::SideBar(const std::string& name, LvObj& parent)
 		: View(name, parent)
-		, m_btns("buttons", getRoot())
-		, m_homeBtn("home", m_btns, _("side_bar.home"))
-		, m_backBtn("back", m_btns, _("side_bar.back"))
-		, m_menuBtn("menu", m_btns, _("side_bar.menu"))
-		, m_macrosBtn("macros", m_btns, _("side_bar.macros"))
-		, m_eStopBtn("estop", m_btns)
-		, m_appDrawer("app_drawer", getRoot())
-		, m_appDrawerModalBg("app_drawer_modal_bg", getRoot())
 	{
 		LOG_VERBOSE("Creating SideBar");
 
@@ -41,31 +35,53 @@ namespace UI
 
 		m_btns.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
-		m_backBtn.setWidth(LV_PCT(100));
 		m_homeBtn.setWidth(LV_PCT(100));
+#if SIDE_BAR_BACK_BUTTON
+		m_backBtn.setWidth(LV_PCT(100));
+#endif
 		m_macrosBtn.setWidth(LV_PCT(100));
 		m_menuBtn.setWidth(LV_PCT(100));
+		m_settingsBtn.setWidth(LV_PCT(100));
 
 		setExtDrawSize(lv_obj_get_width(getScreenPtr()));
 		m_btns.setExtDrawSize(400);
 
-		m_backBtn.setFlexGrow(1);
 		m_homeBtn.setFlexGrow(1);
+#if SIDE_BAR_BACK_BUTTON
+		m_backBtn.setFlexGrow(1);
+#endif
 		m_macrosBtn.setFlexGrow(1);
 		m_menuBtn.setFlexGrow(1);
+		m_settingsBtn.setFlexGrow(1);
 
 		m_eStopBtn.setSize(ESTOP_SIZE, ESTOP_SIZE);
 
+#if SIDE_BAR_TEXT
+		m_homeBtn.setText(_("side_bar.home"));
+#  if SIDE_BAR_BACK_BUTTON
+		m_backBtn.setText(_("side_bar.back"));
+#  endif
+		m_menuBtn.setText(_("side_bar.menu"));
+		m_macrosBtn.setText(_("side_bar.macros"));
+		m_settingsBtn.setText(_("side_bar.settings"));
+#endif
+
 		m_homeBtn.setIcon("home.png");
+#if SIDE_BAR_BACK_BUTTON
 		m_backBtn.setIcon("back.png");
+#endif
 		m_macrosBtn.setIcon("macros.png");
 		m_menuBtn.setIcon(APP_DRAWER_ICON);
+		m_settingsBtn.setIcon("settings.png");
 
-		m_backBtn.addClickedCallback(backBtnEvent, this);
 		m_homeBtn.addClickedCallback(homeBtnEvent, this);
+#if SIDE_BAR_BACK_BUTTON
+		m_backBtn.addClickedCallback(backBtnEvent, this);
+#endif
 		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
 		m_menuBtn.addClickedCallback(menuBtnEvent, this);
 
+#if SIDE_BAR_APP_DRAWER
 		m_appDrawer.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_appDrawer.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_appDrawer.hide(true);
@@ -80,8 +96,11 @@ namespace UI
 			},
 			LV_EVENT_CLICKED,
 			this);
+#endif
 
+#if SIDE_BAR_BACK_BUTTON
 		enableBackButton(false);
+#endif
 		enableHomeButton(false);
 
 		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);
@@ -95,6 +114,7 @@ namespace UI
 		m_homeBtn.setDisabled(!enable);
 	}
 
+#if SIDE_BAR_BACK_BUTTON
 	void SideBar::enableBackButton(bool enable)
 	{
 		m_backBtn.setDisabled(!enable);
@@ -105,6 +125,7 @@ namespace UI
 	{
 		UI::back();
 	}
+#endif
 
 	void SideBar::homeBtnEvent(lv_event_t* e)
 	{
@@ -119,6 +140,7 @@ namespace UI
 		openScreen(&macrosView, true);
 	}
 
+#if SIDE_BAR_APP_DRAWER
 	void SideBar::menuBtnEvent(lv_event_t* e)
 	{
 		LOG_DBG("Menu button pressed");
@@ -175,9 +197,12 @@ namespace UI
 			m_appDrawer.setVisible(show);
 		}
 	}
+#endif
 
 	void SideBar::onShow()
 	{
+#if SIDE_BAR_APP_DRAWER
 		m_appDrawer.init();
+#endif
 	}
 } // namespace UI

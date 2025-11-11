@@ -15,7 +15,7 @@ namespace UI
 		, m_beds("beds", m_temperatureCont)
 		, m_chambers("chambers", m_temperatureCont)
 		, m_filamentSelect("filament_select", getRoot(), &getRoot())
-		, m_numberPad("number_pad", getRoot(), layout_t(0, 0, 50, 70))
+		, m_numberPad("number_pad", getRoot())
 	{
 		UI_LOCK();
 

@@ -38,17 +38,7 @@ namespace UI
 	{
 		newJobFileName(OM::GetJobName());
 		newJobLastFileName(OM::GetLastJobName());
-		newJobPrintTime();
 		newJobDuration();
-		newJobTimeLeft();
-		newCurrentMoveRequestedSpeed();
-		newCurrentMoveTopSpeed();
-		newCurrentMoveExtrusionSpeed();
-		updateLayerInfo();
-		newAxesData();
-		newExtruderData();
-		newSpeedFactor();
-		newFanData();
 		newStatus(OM::GetStatus());
 
 		std::string filename = OM::GetJobName();
@@ -94,15 +84,12 @@ namespace UI
 		setOrRequestThumbnail(filename);
 	}
 
-	void StatusPresenter::newJobPrintTime() {}
-
 	void StatusPresenter::newJobDuration()
 	{
 		uint32_t progress = 0;
 		{
 			MODEL_LOCK();
 			uint32_t elapsed = OM::GetPrintDuration();
-			m_view->updateElapsedTime(elapsed);
 
 			// Progress
 			uint32_t warmupTime = OM::GetWarmUpDuration();
@@ -114,116 +101,6 @@ namespace UI
 		}
 
 		m_view->updateProgress(progress);
-	}
-
-	void StatusPresenter::newJobTimeLeft()
-	{
-		uint32_t timeRemaining = OM::GetPrintRemaining(OM::RemainingTimeType::AUTO);
-
-		m_view->updateRemainingTime(timeRemaining);
-	}
-
-	void StatusPresenter::newCurrentMoveRequestedSpeed()
-	{
-		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
-	}
-
-	void StatusPresenter::newCurrentMoveTopSpeed()
-	{
-		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
-	}
-
-	void StatusPresenter::newCurrentMoveExtrusionSpeed()
-	{
-		m_view->updateExtrusionRate(OM::Move::GetExtrusionRate(), OM::Move::GetVolumetricFlow());
-	}
-
-	void StatusPresenter::updateLayerInfo()
-	{
-		auto axis = OM::Move::GetAxisByLetter('Z');
-		if (axis == nullptr)
-		{
-			m_view->updateLayer(0, OM::GetPrintHeight());
-			return;
-		}
-
-		m_view->updateLayer(axis->userPosition, OM::GetPrintHeight());
-	}
-
-	void StatusPresenter::newAxesData()
-	{
-		{
-			MODEL_LOCK();
-			size_t axis_count = OM::Move::GetAxisCount();
-			m_view->setAxisCount(axis_count);
-			for (size_t i = 0; i < axis_count; i++)
-			{
-				auto axis = OM::Move::GetAxisBySlot(i);
-				if (axis == nullptr)
-				{
-					continue;
-				}
-				m_view->setPosition(i, axis->letter[0], axis->userPosition);
-			}
-		}
-
-		float zOffset = 0;
-		auto axis = OM::Move::GetAxisByLetter('Z');
-		if (axis != nullptr)
-		{
-			zOffset = axis->babystep;
-		}
-
-		m_view->updateAcceleration(OM::Move::GetPrintingAcceleration());
-		m_view->updateZOffset(zOffset);
-	}
-
-	void StatusPresenter::newExtruderData()
-	{
-		auto tool = OM::GetCurrentTool();
-		if (tool == nullptr)
-		{
-			m_view->updateFlowMultiplier(100);
-			return;
-		}
-		// TODO show all extruder multipliers
-		size_t extruderCount = 0;
-		uint32_t flowMultiplier = 0;
-		tool->IterateExtruders(
-			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
-			{
-				flowMultiplier += 100 * extruder->factor;
-				extruderCount++;
-			});
-
-		if (extruderCount == 0)
-		{
-			m_view->updateFlowMultiplier(100);
-			return;
-		}
-
-		m_view->updateFlowMultiplier(flowMultiplier / extruderCount);
-	}
-
-	void StatusPresenter::newSpeedFactor()
-	{
-		m_view->updateSpeedMultiplier(100 * OM::Move::GetSpeedFactor());
-	}
-
-	void StatusPresenter::newFanData()
-	{
-		uint32_t fanSpeed = 0;
-		{
-			MODEL_LOCK();
-			auto tool = OM::GetCurrentTool();
-
-			if (tool != nullptr)
-			{
-				// TODO show all fan speeds
-				tool->IterateFans([&](std::shared_ptr<OM::Fan> fan, size_t index) { fanSpeed = fan->requestedValue; });
-			}
-		}
-		m_view->updateFanSpeed(fanSpeed);
 	}
 
 	void StatusPresenter::newStatus(OM::PrinterStatus status)

@@ -11,10 +11,10 @@
 
 namespace UI
 {
-    class {{file_name}} : public LvContainer
-    {
-      public:
-        {{file_name}}(const std::string& name, LvObj& parent);
-      private:
-    };
+	class {{file_name}} : public LvContainer
+	{
+		public:
+			{{file_name}}(const std::string& name, LvObj& parent);
+		private:
+	};
 } // namespace UI

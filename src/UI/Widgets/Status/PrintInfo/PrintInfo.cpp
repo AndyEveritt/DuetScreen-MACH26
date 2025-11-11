@@ -14,7 +14,7 @@
 namespace UI
 {
 	PrintInfo::PrintInfo(const std::string& name, LvObj& parent)
-		: LvContainer(name, parent, layout_t(0, 0, 100, 100))
+		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
 		UI_LOCK();
 
@@ -39,39 +39,34 @@ namespace UI
 		m_speedCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 		m_speedHeader.setText(_("status.speed_header"));
 		m_speedHeader.hide();
+		m_speedFactorModal.setSize(LV_PCT(70), LV_SIZE_CONTENT);
 		updateSpeed(0, 0);
 		updateSpeedMultiplier(100);
+		m_speedMultiplier.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto& printInfo = *static_cast<PrintInfo*>(lv_event_get_user_data(e));
+				printInfo.m_presenter->openSpeedFactorModal();
+			},
+			this);
 
 		/* Flow */
 		m_flowCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_flowHeader.setText(_("status.flow_header"));
 		m_flowHeader.hide();
+		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
 		updateFlowMultiplier(100);
+		m_flowMultiplier.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				auto& printInfo = *static_cast<PrintInfo*>(lv_event_get_user_data(e));
+				openModal(&printInfo.m_extrusionFactorModal);
+			},
+			this);
 
 		/* Time */
 		m_timeCont.setHeight(LV_SIZE_CONTENT);
 		m_timeCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
-
-		m_speedInfo.setSize(LV_PCT(100), LV_PCT(100));
-		m_speedInfo.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
-		m_speedInfo.hide();
-
-		m_speedInfo.addStyle(Themes::getLvglStyles().card, 0);
-		m_speedInfo.addStyle(Themes::getLvglStyles().no_border, 0);
-	}
-
-	bool PrintInfo::back()
-	{
-		UI_LOCK();
-		for (LvObj* subView : {&m_speedInfo})
-		{
-			if (subView->isVisible())
-			{
-				subView->hide();
-				return true;
-			}
-		}
-		return false;
 	}
 
 	void PrintInfo::openSubView(lv_event_t* e)
@@ -86,8 +81,8 @@ namespace UI
 		if (!m_initialised)
 		{
 			// Can't put this in the constructor as it would cause `HomeView::instance()` to be called within itself
-			m_speedMultiplier.addEventCallback(openSubView, LV_EVENT_CLICKED, &HomeView::instance().getFineTuneView());
-			m_flowMultiplier.addEventCallback(openSubView, LV_EVENT_CLICKED, &HomeView::instance().getFineTuneView());
+			m_speedFactorModal.setParent(HomeView::instance().getMainWindow());
+			m_extrusionFactorModal.setParent(HomeView::instance().getMainWindow());
 			m_initialised = true;
 		}
 	}
@@ -138,7 +133,6 @@ namespace UI
 	{
 		m_currentSpeed.setText(_("status.current_speed", topSpeed));
 		m_requestedSpeed.setText(_("status.requested_speed", requestedSpeed));
-		m_speedInfo.updateSpeed(topSpeed, requestedSpeed);
 	}
 
 	void PrintInfo::updateFlowMultiplier(uint32_t multiplier)
@@ -149,7 +143,6 @@ namespace UI
 	void PrintInfo::updateSpeedMultiplier(uint32_t multiplier)
 	{
 		m_speedMultiplier.setText(_("status.speed_multiplier", multiplier));
-		m_speedInfo.updateSpeedMultiplier(multiplier);
 	}
 
 	void PrintInfo::updateElapsedTime(uint32_t elapsed)
@@ -170,84 +163,4 @@ namespace UI
 		std::string remainingStr = fmt::format("{:02d}:{:02d}:{:02d}", hours, minutes, seconds);
 		m_remainingTime.setText(_("status.remaining_time", remainingStr));
 	}
-
-	void PrintInfo::updateLayer(float height, float maxHeight)
-	{
-		UI_LOCK();
-		m_speedInfo.updatePrintHeight(maxHeight);
-		m_speedInfo.updatePrintHeight(height);
-	}
-
-	void PrintInfo::updateFanSpeed(uint32_t speed)
-	{
-		// m_fanSpeed.setText(_("status.fan_speed", speed));
-	}
-
-	void PrintInfo::updateAcceleration(uint32_t acceleration)
-	{
-		m_speedInfo.updateAcceleration(acceleration);
-	}
-
-	void PrintInfo::updateZOffset(float offset)
-	{
-		m_speedInfo.updateZOffset(offset);
-	}
-
-	void PrintInfo::updateLayerNumber(uint32_t layer)
-	{
-		m_speedInfo.updateLayerNumber(layer);
-	}
-
-	PrintInfo::SpeedInfo::SpeedInfo(const std::string& name, LvObj& parent)
-		: LvObj(lv_obj_create, name, parent, layout_t(0, 0, 100, 100))
-	{
-		UI_LOCK();
-		setFlexFlow(LV_FLEX_FLOW_COLUMN);
-
-		iterateChildren(
-			[](size_t i, LvObj& child)
-			{
-				child.setAlign(LV_ALIGN_LEFT_MID);
-				child.setWidth(LV_PCT(100));
-				child.setHeight(LV_SIZE_CONTENT);
-			});
-
-		updateSpeed(0, 0);
-		updateSpeedMultiplier(0);
-		updateAcceleration(0);
-		updateZOffset(0);
-		updatePrintHeight(0);
-		updateLayerNumber(0);
-	}
-
-	void PrintInfo::SpeedInfo::updateSpeed(float topSpeed, float requestedSpeed)
-	{
-		m_speed.setText(_("status.speed_detailed", topSpeed, requestedSpeed));
-	}
-
-	void PrintInfo::SpeedInfo::updateSpeedMultiplier(uint32_t multiplier)
-	{
-		m_speedMultiplier.setText(_("status.speed_multiplier", multiplier));
-	}
-
-	void PrintInfo::SpeedInfo::updateAcceleration(uint32_t acceleration)
-	{
-		m_acceleration.setText(_("status.acceleration", acceleration));
-	}
-
-	void PrintInfo::SpeedInfo::updateZOffset(float offset)
-	{
-		m_z_offset.setText(_("status.z_offset", offset));
-	}
-
-	void PrintInfo::SpeedInfo::updatePrintHeight(float height)
-	{
-		m_z_height.setText(_("status.print_height", height));
-	}
-
-	void PrintInfo::SpeedInfo::updateLayerNumber(uint32_t layer)
-	{
-		m_layer.setText(_("status.layer_number", layer));
-	}
-
 } // namespace UI

@@ -12,10 +12,10 @@
 
 namespace UI
 {
-    class {{file_name}} : public View<{{file_name}}Presenter>
-    {
-      public:
-        {{file_name}}(const std::string& name, LvObj& parent);
-      private:
-    };
+	class {{file_name}} : public View<{{file_name}}Presenter>
+	{
+	  public:
+		{{file_name}}(const std::string& name, LvObj& parent);
+	  private:
+	};
 } // namespace UI

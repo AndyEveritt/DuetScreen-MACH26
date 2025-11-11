@@ -81,6 +81,7 @@ namespace UI::Themes
 		Style scrollbar;
 		Style scrollbar_scrolled;
 		Style card;
+		Style modal;
 		Style btn;
 		Style btn_checked;
 
@@ -260,9 +261,10 @@ namespace UI::Themes
 
 		const std::string_view getName() const { return m_name; }
 
-	  protected:
 		LvglStyles& getLvglStyles();
 		ComponentStyles& getComponentStyles();
+
+	  protected:
 		virtual void onInit() {}
 
 	  private:

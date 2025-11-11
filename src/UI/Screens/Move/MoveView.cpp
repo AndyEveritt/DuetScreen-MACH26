@@ -33,7 +33,7 @@ namespace UI
 		, m_axisList("axis_control_list", m_axisControlCont)
 		, m_extruderControl("extruder_control", m_axisControlCont)
 		, m_distances("distances", m_bottomBarCont)
-		, m_numberpad("numberpad", getRoot(), layout_t(0, 0, 50, 70))
+		, m_numberpad("numberpad", getRoot())
 	{
 		UI_LOCK();
 

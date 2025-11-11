@@ -21,7 +21,7 @@ namespace UI
 		int16_t maxValue;
 	};
 
-	class NumberPad : public LvObj
+	class NumberPad : public LvContainer
 	{
 
 	  public:
@@ -53,11 +53,11 @@ namespace UI
 		static void onReadyEventHandler(lv_event_t* e);
 		static void btnmEventHandler(lv_event_t* e);
 
-		LvLabel m_header;
-		LvContainer m_textCont;
-		TextBox m_textBox;
-		Button m_clearBtn;
-		LvButtonMatrix m_btnMatrix;
+		LvLabel m_header{"header", getRoot()};
+		LvContainer m_textCont{"textcont", getRoot()};
+		TextBox m_textBox{"textarea", m_textCont};
+		Button m_clearBtn{"Clear", m_textCont, LV_SYMBOL_TRASH, layout_t(75, 0, 20, 80)};
+		LvButtonMatrix m_btnMatrix{"btnmatrix", getRoot()};
 
 		confirm_cb_t m_confirmCb = nullptr;
 

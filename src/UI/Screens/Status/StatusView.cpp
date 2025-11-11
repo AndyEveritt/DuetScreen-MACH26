@@ -140,61 +140,6 @@ namespace UI
 		m_progressLabel.setText(fmt::format("{:d}%", percent));
 	}
 
-	void StatusView::updateExtrusionRate(float feedrate, float volumetric)
-	{
-		m_printInfo.updateExtrusionRate(feedrate, volumetric);
-	}
-
-	void StatusView::updateSpeed(float topSpeed, float requestedSpeed)
-	{
-		m_printInfo.updateSpeed(topSpeed, requestedSpeed);
-	}
-
-	void StatusView::updateFlowMultiplier(uint32_t multiplier)
-	{
-		m_printInfo.updateFlowMultiplier(multiplier);
-	}
-
-	void StatusView::updateSpeedMultiplier(uint32_t multiplier)
-	{
-		m_printInfo.updateSpeedMultiplier(multiplier);
-	}
-
-	void StatusView::updateAcceleration(uint32_t acceleration)
-	{
-		m_printInfo.updateAcceleration(acceleration);
-	}
-
-	void StatusView::updateZOffset(float offset)
-	{
-		m_printInfo.updateZOffset(offset);
-	}
-
-	void StatusView::updateLayerNumber(uint32_t layer)
-	{
-		m_printInfo.updateLayerNumber(layer);
-	}
-
-	void StatusView::updateElapsedTime(uint32_t elapsed)
-	{
-		m_printInfo.updateElapsedTime(elapsed);
-	}
-
-	void StatusView::updateRemainingTime(uint32_t remaining)
-	{
-		m_printInfo.updateRemainingTime(remaining);
-	}
-
-	void StatusView::updateLayer(float height, float maxHeight)
-	{
-		m_printInfo.updateLayer(height, maxHeight);
-	}
-
-	void StatusView::updateFanSpeed(uint32_t speed)
-	{
-		m_printInfo.updateFanSpeed(speed);
-	}
-
 	void StatusView::setThumbnail(const char* img)
 	{
 		UI_LOCK();

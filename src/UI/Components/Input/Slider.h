@@ -18,7 +18,7 @@
 
 namespace UI
 {
-	class Slider : public LvObj
+	class Slider : public LvContainer
 	{
 	  public:
 		enum class SendMode
@@ -51,6 +51,7 @@ namespace UI
 		void setIncrementValue(float value);
 		void setRange(float min, float max);
 		void setValue(float value);
+		void setDefaultValue(float value);
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
 		void setKeyboard(LvKeyboard* keyboard) { m_keyboard = keyboard; }
@@ -68,21 +69,25 @@ namespace UI
 		bool boundValue(float& value);
 		int32_t normaliseValue(float value) const;
 		void updateText();
+		bool hasDefaultValue() const { return !std::isnan(m_defaultValue); }
 
-		LvLabel m_label;
-		LvContainer m_sliderCont;
+	  private:
+		LvLabel m_label{"label", getRoot()};
+		LvContainer m_sliderCont{"slider_cont", getRoot()};
 
-		Button m_decrement;
-		LvSlider m_slider;
-		Button m_increment;
-		LvTextArea m_input;
+		Button m_decrement{"decrement", m_sliderCont};
+		LvSlider m_slider{"slider", m_sliderCont};
+		Button m_increment{"increment", m_sliderCont};
+		LvTextArea m_input{"input", m_sliderCont};
+		Button m_reset{"reset", getRoot()};
 
-		float m_incrementValue;
-		LvKeyboard* m_keyboard;
+		float m_incrementValue = 1;
+		LvKeyboard* m_keyboard = nullptr;
 
 		float m_min;
 		float m_max;
 		float m_value;
+		float m_defaultValue = std::numeric_limits<float>::quiet_NaN();
 		bool m_focused = false;
 		bool m_longPressEnabled = true;
 		SendMode m_sendMode = SendMode::VALUE_CONFIRMED;

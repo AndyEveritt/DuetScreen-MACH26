@@ -7,15 +7,19 @@
 
 #pragma once
 
+#include "PrintInfoPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
+#include "UI/Components/Modal/Modal.h"
+#include "UI/Widgets/Control/ExtrusionFactor/ExtrusionFactor.h"
 #include "UI/Core/View.h"
 #include "UI/Widgets/BabyStep/BabyStep.h"
+#include "UI/Widgets/Control/SpeedFactor/SpeedFactor.h"
 
 namespace UI
 {
-	class PrintInfo : public LvContainer
+	class PrintInfo : public View<PrintInfoPresenter>
 	{
 	  public:
 		PrintInfo(const std::string& name, LvObj& parent);
@@ -28,38 +32,12 @@ namespace UI
 		void updateSpeedMultiplier(uint32_t multiplier);
 		void updateElapsedTime(uint32_t elapsed);
 		void updateRemainingTime(uint32_t remaining);
-		void updateLayer(float height, float maxHeight);
-		void updateFanSpeed(uint32_t speed);
-		void updateAcceleration(uint32_t acceleration);
-		void updatePosition(float x, float y, float z);
-		void updateZOffset(float offset);
-		void updateLayerNumber(uint32_t layer);
 
-		virtual bool back() override;
+		auto& getModalExtrusionFactor() { return m_extrusionFactorModal; }
 
 	  private:
-		class SpeedInfo : public LvObj
-		{
-		  public:
-			SpeedInfo(const std::string& name, LvObj& parent);
-
-			void updateSpeed(float topSpeed, float requestedSpeed);
-			void updateSpeedMultiplier(uint32_t multiplier);
-			void updateAcceleration(uint32_t acceleration);
-			void updateZOffset(float offset);
-			void updatePrintHeight(float height);
-			void updateLayerNumber(uint32_t layer);
-
-		  private:
-			LvLabel m_speed{"speed", getRoot()};
-			LvLabel m_speedMultiplier{"speed_multiplier", getRoot()};
-			LvLabel m_acceleration{"acceleration", getRoot()};
-			LvLabel m_z_offset{"z_offset", getRoot()};
-			LvLabel m_z_height{"z_height", getRoot()};
-			LvLabel m_layer{"layer", getRoot()};
-		};
-
 		static void openSubView(lv_event_t* e);
+
 		void onShow() override;
 		void onHide() override;
 
@@ -83,7 +61,8 @@ namespace UI
 
 		BabyStep m_babyStep{"baby_step", getRoot()};
 
-		SpeedInfo m_speedInfo{"speed_info", getRoot()};
+		Modal<SpeedFactor> m_speedFactorModal{"speed_factor", getRoot()};
+		ModalExtrusionFactor m_extrusionFactorModal{"extrusion_factor", getRoot()};
 
 		bool m_initialised = false;
 	};

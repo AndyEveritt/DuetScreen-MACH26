@@ -16,7 +16,7 @@ namespace UI
 {
 	ToolList::ToolList(const std::string& name, LvObj& parent, LvObj* numberPadParent)
 		: View(name, parent)
-		, m_numberPad("number_pad", numberPadParent ? *numberPadParent : parent, layout_t(0, 0, 50, 70))
+		, m_numberPad("number_pad", numberPadParent ? *numberPadParent : parent)
 	{
 		init();
 	}

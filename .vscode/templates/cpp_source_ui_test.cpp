@@ -13,10 +13,10 @@ using namespace UI;
 
 class {{file_name_pascal_case}} : public UiTestSuite
 {
-  public:
-    {{file_name_pascal_case}}()
-    {
-    }
+	public:
+		{{file_name_pascal_case}}()
+		{
+		}
 
 };
 

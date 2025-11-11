@@ -14,10 +14,12 @@
 
 namespace UI
 {
+#if SIDE_BAR_BACK_BUTTON
 	void SideBarPresenter::enableBackButton(bool enable)
 	{
 		m_view->enableBackButton(enable);
 	}
+#endif
 
 	void SideBarPresenter::enableHomeButton(bool enable)
 	{
@@ -26,7 +28,9 @@ namespace UI
 
 	void SideBarPresenter::onInit()
 	{
+#if SIDE_BAR_BACK_BUTTON
 		registerEventListener<EventType::NavigationBackEnable>(this, &SideBarPresenter::enableBackButton);
+#endif
 		registerEventListener<EventType::NavigationHomeEnable>(this, &SideBarPresenter::enableHomeButton);
 	}
 

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "FineTune.h"
-#include "PrintInfo.h"
 #include "StatusPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/Status/PrintInfo/PrintInfo.h"
 
 namespace UI
 {
@@ -25,22 +25,6 @@ namespace UI
 		void setFilename(std::string_view filename);
 		void updateProgress(uint32_t percent);
 
-		void setAxisCount(size_t count) { m_printInfo.setAxisCount(count); }
-		void setPosition(size_t index, char axis_letter, float value)
-		{
-			m_printInfo.setPosition(index, axis_letter, value);
-		}
-		void updateExtrusionRate(float feedrate, float volumetric);
-		void updateSpeed(float topSpeed, float requestedSpeed);
-		void updateFlowMultiplier(uint32_t multiplier);
-		void updateSpeedMultiplier(uint32_t multiplier);
-		void updateAcceleration(uint32_t acceleration);
-		void updateZOffset(float offset);
-		void updateLayerNumber(uint32_t layer);
-		void updateElapsedTime(uint32_t elapsed);
-		void updateRemainingTime(uint32_t remaining);
-		void updateLayer(float height, float maxHeight);
-		void updateFanSpeed(uint32_t speed);
 		void setThumbnail(const char* img);
 
 		void setPause(ControlVisibility visibility);

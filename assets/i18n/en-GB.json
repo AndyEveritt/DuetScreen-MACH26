@@ -239,7 +239,11 @@
       "back": "Back",
       "home": "Dashboard",
       "menu": "Menu",
-      "macros": "Macros"
+      "macros": "Macros",
+      "settings": "Settings"
+    },
+    "slider": {
+      "reset": "Reset"
     },
     "status": { /* Status screen */
       "print_cancel_message": "Are you sure you want to cancel the print?",
@@ -295,7 +299,8 @@
         "custom": "Custom",
         "dark": "Dark",
         "grey": "Greyscale",
-        "light": "Light"
+        "light": "Light",
+        "flat": "Flat"
       },
       "primary_hue": "Primary Hue",
       "secondary_hue": "Secondary Hue",

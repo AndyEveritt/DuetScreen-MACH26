@@ -11,9 +11,9 @@
 
 class {{file_name_pascal_case}} : public TestSuite
 {
-  public:
-    {{file_name_pascal_case}}()
-    {
-    }
+	public:
+		{{file_name_pascal_case}}()
+		{
+		}
 
 };

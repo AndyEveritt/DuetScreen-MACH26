@@ -35,12 +35,7 @@ namespace UI
 	// clang-format on
 
 	NumberPad::NumberPad(const std::string& name, LvObj& parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
-		, m_header("header", getRoot())
-		, m_textCont("textcont", getRoot())
-		, m_textBox("textarea", m_textCont)
-		, m_clearBtn("Clear", m_textCont, LV_SYMBOL_TRASH, layout_t{LV_PCT(75), 0, LV_PCT(20), LV_PCT(80)})
-		, m_btnMatrix("btnmatrix", getRoot())
+		: LvContainer(name, parent, layout)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);

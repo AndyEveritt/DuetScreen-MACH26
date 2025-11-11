@@ -42,7 +42,7 @@ namespace UI::Themes
 
 		colors.bg_dark = Color(darkMode ? 0.1 : 0.92, bgChroma, primaryHue);
 		colors.bg = Color(darkMode ? 0.15 : 0.96, bgChroma, primaryHue);
-		colors.bg_light = Color(darkMode ? 0.2 : 1.0, bgChroma, primaryHue);
+		colors.bg_light = Color(darkMode ? 0.25 : 1.0, bgChroma, primaryHue);
 
 		colors.primary = Color(darkMode ? 0.56 : 0.8, colorChroma, primaryHue);
 		colors.primary_muted = Color(colors.primary.getL() - mutedDiff, colorChroma, primaryHue);
@@ -306,7 +306,7 @@ namespace UI::Themes
 		lv_style_set_border_color(lvgl.input, m_colors.border);
 		lv_style_set_border_width(lvgl.input, 1);
 		lv_style_set_pad_all(lvgl.input, 20);
-		lv_style_set_radius(lvgl.input, 2);
+		// lv_style_set_radius(lvgl.input, 2);
 		lv_style_set_pad_ver(lvgl.input, 0);
 		lv_style_set_text_align(lvgl.input, LV_TEXT_ALIGN_CENTER);
 

@@ -59,6 +59,7 @@ namespace UI::Themes
 		}
 
 		void updateColors(const ThemeColors& colors);
+		const ThemeColors& getColors() const { return m_colors; }
 
 	  protected:
 		virtual void onInit() override;
