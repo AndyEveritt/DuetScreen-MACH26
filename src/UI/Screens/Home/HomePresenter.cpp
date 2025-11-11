@@ -87,7 +87,7 @@ namespace UI
 			return;
 		}
 
-		std::shared_ptr<MessageBox> msgBox = m_view->createMessageBox();
+		auto& msgBox = m_view->createMessageBox();
 		msgBox->setText(resp);
 		msgBox->setCancelCallback(
 			[this]()
@@ -97,6 +97,8 @@ namespace UI
 				if (m_view->getMessageBoxCount() > 0)
 				{
 					auto msgBox = m_view->getMessageBox(0);
+					if (!msgBox)
+						return;
 					msgBox->show();
 					msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
 				}

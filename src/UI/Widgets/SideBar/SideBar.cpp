@@ -36,50 +36,59 @@ namespace UI
 		m_btns.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
 		m_homeBtn.setWidth(LV_PCT(100));
+		m_homeBtn.setFlexGrow(1);
+		m_homeBtn.setText(_("side_bar.home"));
+		m_homeBtn.setIcon("home.png");
+		m_homeBtn.addClickedCallback(homeBtnEvent, this);
+
 #if SIDE_BAR_BACK_BUTTON
 		m_backBtn.setWidth(LV_PCT(100));
+		m_backBtn.setFlexGrow(1);
+		m_backBtn.setText(_("side_bar.back"));
+		m_backBtn.setIcon("back.png");
+		m_backBtn.addClickedCallback(backBtnEvent, this);
 #endif
+
+		m_controlBtn.setWidth(LV_PCT(100));
+		m_controlBtn.setFlexGrow(1);
+		m_controlBtn.setText(_("side_bar.control"));
+		m_controlBtn.setIcon("control.png");
+		m_controlBtn.addClickedCallback(controlBtnEvent, this);
+
 		m_macrosBtn.setWidth(LV_PCT(100));
+		m_macrosBtn.setFlexGrow(1);
+		m_macrosBtn.setText(_("side_bar.macros"));
+		m_macrosBtn.setIcon("macros.png");
+		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
+
+#if SIDE_BAR_APP_DRAWER
 		m_menuBtn.setWidth(LV_PCT(100));
+		m_menuBtn.setFlexGrow(1);
+		m_menuBtn.setText(_("side_bar.menu"));
+		m_menuBtn.setIcon(APP_DRAWER_ICON);
+		m_menuBtn.addClickedCallback(menuBtnEvent, this);
+#endif
+
+#if SIDE_BAR_CONSOLE_BUTTON
+		m_consoleBtn.setWidth(LV_PCT(100));
+		m_consoleBtn.setFlexGrow(1);
+		m_consoleBtn.setText(_("side_bar.console"));
+		m_consoleBtn.setIcon("console.png");
+		m_consoleBtn.addClickedCallback(consoleBtnEvent, this);
+#endif
+
+#if SIDE_BAR_SETTINGS_BUTTON
 		m_settingsBtn.setWidth(LV_PCT(100));
+		m_settingsBtn.setFlexGrow(1);
+		m_settingsBtn.setText(_("side_bar.settings"));
+		m_settingsBtn.setIcon("settings.png");
+		m_settingsBtn.addClickedCallback(settingsBtnEvent, this);
+#endif
 
 		setExtDrawSize(lv_obj_get_width(getScreenPtr()));
 		m_btns.setExtDrawSize(400);
 
-		m_homeBtn.setFlexGrow(1);
-#if SIDE_BAR_BACK_BUTTON
-		m_backBtn.setFlexGrow(1);
-#endif
-		m_macrosBtn.setFlexGrow(1);
-		m_menuBtn.setFlexGrow(1);
-		m_settingsBtn.setFlexGrow(1);
-
 		m_eStopBtn.setSize(ESTOP_SIZE, ESTOP_SIZE);
-
-#if SIDE_BAR_TEXT
-		m_homeBtn.setText(_("side_bar.home"));
-#  if SIDE_BAR_BACK_BUTTON
-		m_backBtn.setText(_("side_bar.back"));
-#  endif
-		m_menuBtn.setText(_("side_bar.menu"));
-		m_macrosBtn.setText(_("side_bar.macros"));
-		m_settingsBtn.setText(_("side_bar.settings"));
-#endif
-
-		m_homeBtn.setIcon("home.png");
-#if SIDE_BAR_BACK_BUTTON
-		m_backBtn.setIcon("back.png");
-#endif
-		m_macrosBtn.setIcon("macros.png");
-		m_menuBtn.setIcon(APP_DRAWER_ICON);
-		m_settingsBtn.setIcon("settings.png");
-
-		m_homeBtn.addClickedCallback(homeBtnEvent, this);
-#if SIDE_BAR_BACK_BUTTON
-		m_backBtn.addClickedCallback(backBtnEvent, this);
-#endif
-		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
-		m_menuBtn.addClickedCallback(menuBtnEvent, this);
 
 #if SIDE_BAR_APP_DRAWER
 		m_appDrawer.setSize(LV_SIZE_CONTENT, LV_PCT(100));
@@ -106,7 +115,9 @@ namespace UI
 		addStyle(Themes::getComponentStyles().sidebar, LV_PART_MAIN);
 		addStyle(Themes::getLvglStyles().pad_zero);
 		m_btns.addStyle(Themes::getLvglStyles().bg_dark);
+#if SIDE_BAR_APP_DRAWER
 		m_appDrawerModalBg.addStyle(Themes::getLvglStyles().bg_modal);
+#endif
 	}
 
 	void SideBar::enableHomeButton(bool enable)
@@ -130,6 +141,13 @@ namespace UI
 	void SideBar::homeBtnEvent(lv_event_t* e)
 	{
 		UI::home();
+	}
+
+	void SideBar::controlBtnEvent(lv_event_t* e)
+	{
+		LOG_INFO("Control button pressed");
+		HomeView& homeView = HomeView::instance();
+		openScreen(&homeView.getControlView(), true);
 	}
 
 	void SideBar::macrosBtnEvent(lv_event_t* e)
@@ -196,6 +214,24 @@ namespace UI
 			m_appDrawer.setX(end);
 			m_appDrawer.setVisible(show);
 		}
+	}
+#endif
+
+#if SIDE_BAR_CONSOLE_BUTTON
+	void SideBar::consoleBtnEvent(lv_event_t* e)
+	{
+		LOG_INFO("Console button pressed");
+		HomeView& homeView = HomeView::instance();
+		openScreen(&homeView.getConsoleView(), true);
+	}
+#endif
+
+#if SIDE_BAR_SETTINGS_BUTTON
+	void SideBar::settingsBtnEvent(lv_event_t* e)
+	{
+		LOG_INFO("Settings button pressed");
+		HomeView& homeView = HomeView::instance();
+		openScreen(&homeView.getSettingsView(), true);
 	}
 #endif
 

@@ -21,7 +21,7 @@ namespace UI
 	class FineTune : public View<FineTunePresenter>
 	{
 	  public:
-		FineTune(LvObj& parent, LvObj* numberpad_parent = nullptr);
+		FineTune(const std::string& name, LvObj& parent, LvObj* numberpad_parent = nullptr);
 
 		void setSpeedValue(uint32_t value);
 

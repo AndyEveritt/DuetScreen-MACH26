@@ -87,12 +87,14 @@ TEST_F(TestHomeView, BlankStatusView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/status_view_blank.png")
 }
 
+#if SIDE_BAR_APP_DRAWER
 TEST_F(TestHomeView, AppDrawer)
 {
 	view.show();
 	view.getSideBar().showAppDrawer(true, LV_ANIM_OFF);
 	EXPECT_EQUAL_SCREENSHOT("home_view/app_drawer.png");
 }
+#endif
 
 TEST_F(TestHomeView, Response)
 {

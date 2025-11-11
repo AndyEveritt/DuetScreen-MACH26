@@ -18,8 +18,8 @@ namespace UI
 
 	Dashboard::Dashboard(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
-		, m_fileView(m_tabs.addTab(_("app_drawer.files")), this)
-		, m_statusView(m_tabs.addTab(_("app_drawer.status")))
+		, m_fileView("files", m_tabs.addTab(_("app_drawer.files")))
+		, m_statusView("status", m_tabs.addTab(_("app_drawer.status")))
 	{
 		setStylePad(0);
 		// setExtDrawSize(100); /* for outer tab buttons */

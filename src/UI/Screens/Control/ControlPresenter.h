@@ -4,12 +4,12 @@
 
 namespace UI
 {
-	class CustomView;
+	class ControlView;
 
-	class CustomPresenter : public Presenter<CustomView>
+	class ControlPresenter : public Presenter<ControlView>
 	{
 	  public:
-		PRESENTER_CONSTRUCTOR(CustomPresenter, CustomView);
+		PRESENTER_CONSTRUCTOR(ControlPresenter, ControlView);
 
 		// Setters
 

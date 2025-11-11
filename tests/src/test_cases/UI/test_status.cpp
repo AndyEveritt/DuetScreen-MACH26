@@ -17,7 +17,7 @@ class TestStatus : public UiTestSuite
 {
   public:
 	TestStatus()
-		: view(screen)
+		: view("status", screen)
 	{
 		// TODO: there is a race condition between the filesystem operations and the test execution when tests are run
 		// in parallel

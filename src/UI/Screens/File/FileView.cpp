@@ -105,8 +105,8 @@ namespace UI
 		item->getList().onItemClicked(item->getIndex(), item->m_isFolder);
 	}
 
-	FileView::FileView(LvObj& parent, LvObj* msgBoxParent)
-		: View("file_view", parent, layout_t(0, 0, 100, 100))
+	FileView::FileView(const std::string& name, LvObj& parent, LvObj* msgBoxParent)
+		: View(name, parent, layout_t(0, 0, 100, 100))
 		, m_startPrint("messageBox", msgBoxParent ? *msgBoxParent : getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();

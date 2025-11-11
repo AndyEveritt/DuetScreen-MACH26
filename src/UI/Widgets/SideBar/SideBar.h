@@ -15,8 +15,10 @@
 #include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
 
-#define SIDE_BAR_BACK_BUTTON 1
-#define SIDE_BAR_APP_DRAWER 1
+#define SIDE_BAR_BACK_BUTTON 0
+#define SIDE_BAR_APP_DRAWER 0
+#define SIDE_BAR_SETTINGS_BUTTON 1
+#define SIDE_BAR_CONSOLE_BUTTON 1
 
 namespace UI
 {
@@ -40,8 +42,15 @@ namespace UI
 #endif
 		static void homeBtnEvent(lv_event_t* e);
 		static void macrosBtnEvent(lv_event_t* e);
+		static void controlBtnEvent(lv_event_t* e);
 #if SIDE_BAR_APP_DRAWER
 		static void menuBtnEvent(lv_event_t* e);
+#endif
+#if SIDE_BAR_CONSOLE_BUTTON
+		static void consoleBtnEvent(lv_event_t* e);
+#endif
+#if SIDE_BAR_SETTINGS_BUTTON
+		static void settingsBtnEvent(lv_event_t* e);
 #endif
 
 		void onShow() override;
@@ -51,13 +60,21 @@ namespace UI
 #if SIDE_BAR_BACK_BUTTON
 		Button m_backBtn{"back", m_btns};
 #endif
+		Button m_controlBtn{"control", m_btns};
+#if SIDE_BAR_APP_DRAWER
 		Button m_menuBtn{"menu", m_btns};
+#endif
 		Button m_macrosBtn{"macros", m_btns};
+#if SIDE_BAR_CONSOLE_BUTTON
+		Button m_consoleBtn{"console", m_btns};
+#endif
+#if SIDE_BAR_SETTINGS_BUTTON
 		Button m_settingsBtn{"settings", m_btns};
+#endif
 		EStop m_eStopBtn{"estop", m_btns};
 #if SIDE_BAR_APP_DRAWER
 		AppDrawer m_appDrawer{"app_drawer", getRoot()};
-#endif
 		LvContainer m_appDrawerModalBg{"app_drawer_modal_bg", getRoot()};
+#endif
 	};
 } // namespace UI

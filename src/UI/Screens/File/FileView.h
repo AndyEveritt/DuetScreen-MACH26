@@ -56,7 +56,7 @@ namespace UI
 			bool m_isFolder;
 		};
 
-		FileView(LvObj& parent, LvObj* msgBoxParent = nullptr);
+		FileView(const std::string& name, LvObj& parent, LvObj* msgBoxParent = nullptr);
 
 		const size_t getFileCount() const { return m_fileList.getItemCount(); }
 		void setFileCount(const size_t count);

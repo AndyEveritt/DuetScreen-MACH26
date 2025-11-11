@@ -13,8 +13,8 @@
 
 namespace UI
 {
-	FineTune::FineTune(LvObj& parent, LvObj* numberpad_parent)
-		: View("fine_tune", parent, layout_t(0, 0, 100, 100))
+	FineTune::FineTune(const std::string& name, LvObj& parent, LvObj* numberpad_parent)
+		: View(name, parent, layout_t(0, 0, 100, 100))
 		, m_babystep("babystep", getRoot())
 		, m_sliderCont("sliders", getRoot())
 		, m_speed("speed", m_sliderCont)

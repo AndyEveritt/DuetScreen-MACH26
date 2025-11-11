@@ -17,7 +17,7 @@ class TestFileView : public UiTestSuite
   public:
 	TestFileView() {}
 
-	FileView file_view{screen};
+	FileView file_view{"files", screen};
 };
 
 TEST_F(TestFileView, Basic)

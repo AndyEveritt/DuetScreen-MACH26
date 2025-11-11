@@ -49,7 +49,7 @@ namespace UI
 		using range_t = Heatmap::range_t;
 		using range_float_t = Heatmap::range_float_t;
 
-		HeightmapView(LvObj& parent);
+		HeightmapView(const std::string& name, LvObj& parent);
 		virtual ~HeightmapView(); // = default but HeightmapItem is forward declared;
 
 		/* Heightmap list methods */

@@ -30,7 +30,7 @@ namespace UI
 			Button m_max;
 		};
 
-		FanView(LvObj& parent);
+		FanView(const std::string& name, LvObj& parent);
 
 		size_t getFanCount() const { return m_fans.getItemCount(); }
 		void setFanCount(size_t count);

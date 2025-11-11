@@ -13,8 +13,8 @@
 
 namespace UI
 {
-	SettingsView::SettingsView(LvObj& parent)
-		: View("settings_view", parent, layout_t(0, 0, 100, 100))
+	SettingsView::SettingsView(const std::string& name, LvObj& parent)
+		: View(name, parent, layout_t(0, 0, 100, 100))
 		, m_settingsList(lv_list_create(getRootPtr()))
 		, m_subWindow("sub_window", getRoot())
 		, m_keyboard("keyboard", getRoot())

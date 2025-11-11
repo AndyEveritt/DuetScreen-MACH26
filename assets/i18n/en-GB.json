@@ -56,6 +56,12 @@
       "input_placeholder": "Enter G-code command",
       "shell": "Shell Mode"
     },
+    "control": {
+      "move_tab": "Move",
+      "temperature_tab": "Temperature",
+      "heightmap_tab": "Bed Leveling",
+      "fan_tab": "Fans"
+    },
     "estop": { /* Estop widget */
       "label": "\uF071", /* Warning symbol */
       "prompt": "Drag to E-Stop!",
@@ -237,6 +243,8 @@
     },
     "side_bar": { /* Side bar buttons */
       "back": "Back",
+      "console": "Console",
+      "control": "Control",
       "home": "Dashboard",
       "menu": "Menu",
       "macros": "Macros",

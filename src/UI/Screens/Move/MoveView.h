@@ -15,7 +15,7 @@ namespace UI
 	class MoveView : public View<MovePresenter>
 	{
 	  public:
-		MoveView(LvObj& parent);
+		MoveView(const std::string& name, LvObj& parent);
 
 		void setAxisData(const std::vector<MovePresenter::AxisData>& axis_data);
 		void setPositionType(const MovePresenter::PositionType type);

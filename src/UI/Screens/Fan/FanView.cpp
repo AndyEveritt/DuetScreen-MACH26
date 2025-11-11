@@ -6,8 +6,8 @@
 
 namespace UI
 {
-	FanView::FanView(LvObj& parent)
-		: View("fan_view", parent, layout_t(0, 0, 100, 100))
+	FanView::FanView(const std::string& name, LvObj& parent)
+		: View(name, parent, layout_t(0, 0, 100, 100))
 		, m_fans("list", getRoot())
 	{
 		UI_LOCK();

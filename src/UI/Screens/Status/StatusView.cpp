@@ -9,8 +9,8 @@
  */
 namespace UI
 {
-	StatusView::StatusView(LvObj& parent)
-		: View("print_view", parent, layout_t(0, 0, 100, 100))
+	StatusView::StatusView(const std::string& name, LvObj& parent)
+		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
 		UI_LOCK();
 

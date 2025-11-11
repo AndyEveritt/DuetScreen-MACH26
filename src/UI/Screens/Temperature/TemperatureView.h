@@ -18,7 +18,7 @@ namespace UI
 		friend class ToolItem;
 		friend class TemperaturePresenter;
 
-		TemperatureView(LvObj& parent);
+		TemperatureView(const std::string& name, LvObj& parent);
 
 		auto& getTools() { return m_tools; }
 		auto& getBeds() { return m_beds; }

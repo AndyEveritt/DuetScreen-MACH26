@@ -14,8 +14,8 @@ namespace UI
 #define TABLE_DESCRIPTION_WIDTH 500
 #define INPUT_BTN_SIZE 50
 
-	ConsoleView::ConsoleView(LvObj& parent)
-		: View("console_view", parent, layout_t(0, 0, 100, 100))
+	ConsoleView::ConsoleView(const std::string& name, LvObj& parent)
+		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
 		UI_LOCK();
 

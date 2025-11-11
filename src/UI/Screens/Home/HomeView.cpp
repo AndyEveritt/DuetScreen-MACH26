@@ -16,22 +16,6 @@ namespace UI
 
 	HomeView::HomeView()
 		: View("HomeView")
-		, m_statusBar(getRoot())
-		, m_sideBar("sidebar", getRoot())
-		, m_mainWindow("main_window", getRoot())
-		, m_dashboard("dashboard", m_mainWindow)
-		, m_consoleView(m_mainWindow)
-		, m_moveView(m_mainWindow)
-		, m_temperatureView(m_mainWindow)
-		, m_fanView(m_mainWindow)
-		, m_macroView(m_mainWindow)
-		, m_fineTuneView(m_mainWindow)
-		, m_heightmapView(m_mainWindow)
-		, m_settingsView(m_mainWindow)
-		, m_alert("alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
-		, m_updatePrompt("update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
-		, m_numberpad("numberpad", m_mainWindow)
-		, m_kb("keyboard", m_mainWindow)
 	{
 		UI_LOCK();
 		LOG_INFO("Creating UI");
@@ -58,6 +42,7 @@ namespace UI
 		// Main Window Layout
 		m_sideBar.moveToFront();
 		m_consoleView.hide();
+		m_controlView.hide();
 		m_moveView.hide();
 		m_temperatureView.hide();
 		m_fanView.hide();
@@ -127,12 +112,12 @@ namespace UI
 
 	void HomeView::onHide() {}
 
-	std::shared_ptr<MessageBox> HomeView::createMessageBox()
+	std::unique_ptr<MessageBox>& HomeView::createMessageBox()
 	{
 		UI_LOCK();
 		m_messageBoxList.emplace_back(
-			std::make_shared<MessageBox>("home_message_box", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
-		std::shared_ptr<MessageBox> msgBox = m_messageBoxList.back();
+			std::make_unique<MessageBox>("home_message_box", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
+		auto& msgBox = m_messageBoxList.back();
 		msgBox->setFlag(LV_OBJ_FLAG_FLOATING, true);
 		msgBox->setAlign(LV_ALIGN_TOP_MID, 0, 2);
 		msgBox->setMaxHeight(LV_PCT(70));
@@ -140,7 +125,7 @@ namespace UI
 		return msgBox;
 	}
 
-	std::shared_ptr<MessageBox> HomeView::getMessageBox(size_t index) const
+	MessageBox* HomeView::getMessageBox(size_t index) const
 	{
 		UI_LOCK();
 		if (index >= getMessageBoxCount())
@@ -149,7 +134,7 @@ namespace UI
 		}
 		auto it = m_messageBoxList.cbegin();
 		std::advance(it, index);
-		return (*it);
+		return it->get();
 	}
 
 	void HomeView::popMessageBox()

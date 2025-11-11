@@ -188,7 +188,7 @@ namespace UI
 		friend class ThemeSettingsView;
 
 	  public:
-		SettingsView(LvObj& parent);
+		SettingsView(const std::string& name, LvObj& parent);
 
 		void showKeyboard(bool show,
 						  lv_keyboard_mode_t mode = LV_KEYBOARD_MODE_TEXT_LOWER,

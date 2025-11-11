@@ -15,8 +15,8 @@ namespace UI
 	static uint32_t s_currentDistanceIndex = 4;
 	static uint32_t s_currentFeedRate = 50;
 
-	MoveView::MoveView(LvObj& parent)
-		: View("move_view", parent, layout_t(0, 0, 100, 100))
+	MoveView::MoveView(const std::string& name, LvObj& parent)
+		: View(name, parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_topBarCont("topbar", getRoot())
