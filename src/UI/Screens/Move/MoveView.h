@@ -43,9 +43,6 @@ namespace UI
 
 	  private:
 		static void onHomeAllEvent(lv_event_t* e);
-		static void onTrueBedLevelEvent(lv_event_t* e);
-		static void onMeshBedLevelEvent(lv_event_t* e);
-		static void onHeightmapEvent(lv_event_t* e);
 		static void onDisableMotorsEvent(lv_event_t* e);
 		static void onDistanceEvent(lv_event_t* e);
 
@@ -67,9 +64,6 @@ namespace UI
 
 		// Top Bar
 		Button m_homeAll;
-		Button m_trueBedLevel;
-		Button m_meshBedLevel;
-		Button m_heightmap;
 		Button m_disableMotors;
 
 		// Axis Control

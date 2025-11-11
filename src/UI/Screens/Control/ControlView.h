@@ -16,6 +16,11 @@ namespace UI
 	  public:
 		ControlView(const std::string& name, LvObj& parent);
 
+		void showMoveView() { m_tabs.setActiveTab(0); }
+		void showTemperatureView() { m_tabs.setActiveTab(1); }
+		void showHeightmapView() { m_tabs.setActiveTab(2); }
+		void showFanView() { m_tabs.setActiveTab(3); }
+
 	  private:
 		TabView m_tabs{"tabs", getRoot()};
 		MoveView m_moveView{"move", m_tabs.addTab(_("control.move_tab"))};

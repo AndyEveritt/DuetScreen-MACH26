@@ -71,21 +71,6 @@ namespace UI
 		Comm::DUET.SendGcode("G28\n");
 	}
 
-	void MovePresenter::trueBedLevel()
-	{
-		Comm::DUET.SendGcode("G32\n");
-	}
-
-	void MovePresenter::meshBedLevel()
-	{
-		Comm::DUET.SendGcode("G29\n");
-	}
-
-	void MovePresenter::heightmap()
-	{
-		openScreen(&HomeView::instance().getHeightmapView());
-	}
-
 	void MovePresenter::disableMotors()
 	{
 		Comm::DUET.SendGcode("M18\n");

@@ -99,7 +99,14 @@ namespace UI
 									 btn->setFlexGrow(1);
 									 btn->setMinWidth(LV_SIZE_CONTENT);
 									 btn->addEventCallback(
-										 openSubView, LV_EVENT_CLICKED, &HomeView::instance().getMoveView());
+										 [](lv_event_t* e)
+										 {
+											 auto& control = HomeView::instance().getControlView();
+											 control.showMoveView();
+											 openScreen(&control);
+										 },
+										 LV_EVENT_CLICKED,
+										 NULL);
 									 return btn;
 								 });
 	}

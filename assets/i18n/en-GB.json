@@ -58,7 +58,7 @@
     },
     "control": {
       "move_tab": "Move",
-      "temperature_tab": "Temperature",
+      "temperature_tab": "Tool / Temperature",
       "heightmap_tab": "Bed Leveling",
       "fan_tab": "Fans"
     },
@@ -127,7 +127,9 @@
       "render_mode": "Render Mode:",
       "std_dev": "RMS error: {:g} mm",
       "title": "Heightmap: {:s}",
-      "unload": "Unload"
+      "unload": "Unload",
+      "mesh_bed_level": "Mesh Bed Level",
+      "true_bed_level": "True Bed Level"
     },
     "message": { /* Messages specific to the screen */
       "connected": "Connected to Duet",
@@ -152,8 +154,6 @@
     },
     "move": { /* Move screen */
       "home_all": "Home All",
-      "mesh_bed_level": "Mesh Bed Level",
-      "true_bed_level": "True Bed Level",
       "axis_home": "Home {:s}",
       "distance": "Move Distance ({:s})",
       "disable_motors": "Disable Motors",

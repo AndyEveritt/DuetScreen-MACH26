@@ -32,9 +32,6 @@ namespace UI
 
 		// Actions
 		void homeAll();
-		void meshBedLevel();
-		void trueBedLevel();
-		void heightmap();
 		void disableMotors();
 
 		// AxisItem actions

@@ -192,12 +192,7 @@ namespace UI
 
 	HeightmapView::HeightmapView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
-		, m_layoutColDsc{LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_layoutRowDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_heightmap("heightmap", getRoot(), layout_t(0, 0, 100, 100))
 		, m_heightmapList("heightmap_list", getRoot())
-		, m_statistics("heightmap_statistics", getRoot())
-		, m_renderMode(getRoot(), *getPresenter().get())
 	{
 		UI_LOCK();
 
@@ -206,14 +201,29 @@ namespace UI
 		m_heightmapList.addStyle(Themes::getLvglStyles().card);
 		m_statistics.addStyle(Themes::getLvglStyles().card);
 		m_renderMode.addStyle(Themes::getLvglStyles().card);
+		m_trueBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);
+		m_meshBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
-		setGridCell(m_heightmap, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
-		setGridCell(m_heightmapList, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_renderMode, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);
-		setGridCell(m_statistics, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 2, 1);
+		setGridCell(m_heightmap, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 3);
+		setGridCell(m_btnCont, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 0, 1);
+		setGridCell(m_heightmapList, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_renderMode, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+		setGridCell(m_statistics, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 3, 1);
 
 		m_heightmap.setResolution(200, 200);
+
+		m_btnCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_btnCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_btnCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_trueBedLevel.setHeight(LV_SIZE_CONTENT);
+		m_meshBedLevel.setHeight(LV_SIZE_CONTENT);
+		m_trueBedLevel.setFlexGrow(1);
+		m_meshBedLevel.setFlexGrow(1);
+		m_trueBedLevel.setText(_("heightmap.true_bed_level"));
+		m_meshBedLevel.setText(_("heightmap.mesh_bed_level"));
+		m_trueBedLevel.addClickedCallback(onTrueBedLevelEvent, this);
+		m_meshBedLevel.addClickedCallback(onMeshBedLevelEvent, this);
 
 		// List
 		m_heightmapList.setTitle(_("heightmap.list_header"));
@@ -300,6 +310,20 @@ namespace UI
 	{
 		UI_LOCK();
 		m_statistics.setStatistics(numPoints, area, minError, maxError, meanError, stdDev);
+	}
+
+	void HeightmapView::onTrueBedLevelEvent(lv_event_t* e)
+	{
+		UI_LOCK();
+		auto view = static_cast<HeightmapView*>(lv_event_get_user_data(e));
+		view->m_presenter->trueBedLevel();
+	}
+
+	void HeightmapView::onMeshBedLevelEvent(lv_event_t* e)
+	{
+		UI_LOCK();
+		auto view = static_cast<HeightmapView*>(lv_event_get_user_data(e));
+		view->m_presenter->meshBedLevel();
 	}
 
 	void HeightmapView::onShow() {}

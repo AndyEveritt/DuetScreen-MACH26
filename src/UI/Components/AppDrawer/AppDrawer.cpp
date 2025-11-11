@@ -42,21 +42,43 @@ namespace UI
 	{
 		static const AppInfo apps[] = {
 			{.name = _("app_drawer.console"), .screen = &HomeView::instance().getConsoleView(), .icon = "console.png"},
-			{.name = _("app_drawer.move"), .screen = &HomeView::instance().getMoveView(), .icon = "move.png"},
+			{.name = _("app_drawer.move"),
+			 .screen =
+#if SIDE_BAR_APP_DRAWER
+				 &HomeView::instance().getMoveView(),
+#else
+				 &HomeView::instance().getControlView(),
+#endif
+			 .icon = "move.png"},
 			{.name = _("app_drawer.temperature"),
-			 .screen = &HomeView::instance().getTemperatureView(),
+			 .screen =
+#if SIDE_BAR_APP_DRAWER
+				 &HomeView::instance().getTemperatureView(),
+#else
+				 &HomeView::instance().getControlView(),
+#endif
 			 .icon = "temperature.png"},
 #if 0
 			{.name = _("app_drawer.fan"), .screen = &HomeView::instance().getFanView(), .icon = "fan.png"},
 #endif
 			{.name = _("app_drawer.fine_tune"),
-			 .screen = &HomeView::instance().getFineTuneView(),
+			 .screen =
+#if SIDE_BAR_APP_DRAWER
+				 &HomeView::instance().getFineTuneView(),
+#else
+				 &HomeView::instance().getControlView(),
+#endif
 			 .icon = "fine_tune.png"},
 #if 0
 			{.name=_("app_drawer.macros"), .screen=&HomeView::instance().getMacroView(), .icon="macros.png"},
 #endif
 			{.name = _("app_drawer.heightmap"),
-			 .screen = &HomeView::instance().getHeightmapView(),
+			 .screen =
+#if SIDE_BAR_APP_DRAWER
+				 &HomeView::instance().getHeightmapView(),
+#else
+				 &HomeView::instance().getControlView(),
+#endif
 			 .icon = "heightmap.png"},
 			{.name = _("app_drawer.settings"),
 			 .screen = &HomeView::instance().getSettingsView(),

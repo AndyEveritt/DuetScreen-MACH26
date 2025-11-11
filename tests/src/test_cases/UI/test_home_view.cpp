@@ -44,6 +44,26 @@ TEST_F(TestHomeView, BlankConsoleView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/console_view_blank.png")
 }
 
+TEST_F(TestHomeView, BlankMacroView)
+{
+	openScreen(&view.getMacroView(), false);
+	EXPECT_EQUAL_SCREENSHOT("home_view/macro_view_blank.png");
+}
+
+TEST_F(TestHomeView, BlankSettingsView)
+{
+	openScreen(&view.getSettingsView(), false);
+	view.getSettingsView().getDuetSettingsView().show(true);
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_blank.png")
+}
+
+TEST_F(TestHomeView, BlankStatusView)
+{
+	view.getDashboard().showStatusTab();
+	EXPECT_EQUAL_SCREENSHOT("home_view/status_view_blank.png")
+}
+
+#if SIDE_BAR_APP_DRAWER
 TEST_F(TestHomeView, BlankMoveView)
 {
 	openScreen(&view.getMoveView(), false);
@@ -62,32 +82,12 @@ TEST_F(TestHomeView, BlankFanView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/fan_view_blank.png");
 }
 
-TEST_F(TestHomeView, BlankMacroView)
-{
-	openScreen(&view.getMacroView(), false);
-	EXPECT_EQUAL_SCREENSHOT("home_view/macro_view_blank.png");
-}
-
 TEST_F(TestHomeView, BlankHeightmapView)
 {
 	openScreen(&view.getHeightmapView(), false);
 	EXPECT_EQUAL_SCREENSHOT("home_view/heightmap_view_blank.png");
 }
 
-TEST_F(TestHomeView, BlankSettingsView)
-{
-	openScreen(&view.getSettingsView(), false);
-	view.getSettingsView().getDuetSettingsView().show(true);
-	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_blank.png")
-}
-
-TEST_F(TestHomeView, BlankStatusView)
-{
-	view.getDashboard().showStatusTab();
-	EXPECT_EQUAL_SCREENSHOT("home_view/status_view_blank.png")
-}
-
-#if SIDE_BAR_APP_DRAWER
 TEST_F(TestHomeView, AppDrawer)
 {
 	view.show();
@@ -188,38 +188,10 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/console_view_keyboard.png");
 }
 
-TEST_F(TestHomeViewWithData, MoveView)
-{
-	openScreen(&view.getMoveView());
-	EXPECT_EQUAL_SCREENSHOT("home_view/move_view.png")
-
-	load_model_data_from_file("tests/object_model/5_axis/model_move_vn.json");
-	view.getMoveView().activate();
-	EXPECT_EQUAL_SCREENSHOT("home_view/move_view_5_axis.png")
-}
-
-TEST_F(TestHomeViewWithData, TemperatureView)
-{
-	openScreen(&view.getTemperatureView());
-	EXPECT_EQUAL_SCREENSHOT("home_view/temperature_view.png")
-}
-
-TEST_F(TestHomeViewWithData, FanView)
-{
-	openScreen(&view.getFanView());
-	EXPECT_EQUAL_SCREENSHOT("home_view/fan_view.png")
-}
-
 TEST_F(TestHomeViewWithData, MacroView)
 {
 	openScreen(&view.getMacroView());
 	EXPECT_EQUAL_SCREENSHOT("home_view/macro_view.png")
-}
-
-TEST_F(TestHomeViewWithData, HeightmapView)
-{
-	openScreen(&view.getHeightmapView());
-	EXPECT_EQUAL_SCREENSHOT("home_view/heightmap_view.png")
 }
 
 TEST_F(TestHomeViewWithData, SettingsView)
@@ -249,6 +221,35 @@ TEST_F(TestHomeViewWithData, StatusView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/status_view_extrusion_factor_numberpad.png")
 }
 
+#if SIDE_BAR_APP_DRAWER
+TEST_F(TestHomeViewWithData, MoveView)
+{
+	openScreen(&view.getMoveView());
+	EXPECT_EQUAL_SCREENSHOT("home_view/move_view.png")
+
+	load_model_data_from_file("tests/object_model/5_axis/model_move_vn.json");
+	view.getMoveView().activate();
+	EXPECT_EQUAL_SCREENSHOT("home_view/move_view_5_axis.png")
+}
+
+TEST_F(TestHomeViewWithData, TemperatureView)
+{
+	openScreen(&view.getTemperatureView());
+	EXPECT_EQUAL_SCREENSHOT("home_view/temperature_view.png")
+}
+
+TEST_F(TestHomeViewWithData, FanView)
+{
+	openScreen(&view.getFanView());
+	EXPECT_EQUAL_SCREENSHOT("home_view/fan_view.png")
+}
+
+TEST_F(TestHomeViewWithData, HeightmapView)
+{
+	openScreen(&view.getHeightmapView());
+	EXPECT_EQUAL_SCREENSHOT("home_view/heightmap_view.png")
+}
+
 TEST_F(TestHomeViewWithData, FineTuneView)
 {
 	UI::FineTune& fineTuneView = view.getFineTuneView();
@@ -261,3 +262,4 @@ TEST_F(TestHomeViewWithData, FineTuneView)
 	input->sendEvent(LV_EVENT_CLICKED, nullptr);
 	EXPECT_EQUAL_SCREENSHOT("home_view/fine_tune_view_keyboard.png")
 }
+#endif

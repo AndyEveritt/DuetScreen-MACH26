@@ -43,13 +43,15 @@ namespace UI
 		m_sideBar.moveToFront();
 		m_consoleView.hide();
 		m_controlView.hide();
+		m_macroView.hide();
+		m_settingsView.hide();
+#if SIDE_BAR_APP_DRAWER
 		m_moveView.hide();
 		m_temperatureView.hide();
 		m_fanView.hide();
-		m_macroView.hide();
 		m_fineTuneView.hide();
 		m_heightmapView.hide();
-		m_settingsView.hide();
+#endif
 
 		m_macroView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
 

@@ -54,13 +54,15 @@ namespace UI
 		LvContainer& getMainWindow() { return m_mainWindow; }
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		ControlView& getControlView() { return m_controlView; }
+		FileView& getMacroView() { return m_macroView; }
+		SettingsView& getSettingsView() { return m_settingsView; }
+#if SIDE_BAR_APP_DRAWER
 		MoveView& getMoveView() { return m_moveView; }
 		TemperatureView& getTemperatureView() { return m_temperatureView; }
 		FanView& getFanView() { return m_fanView; }
-		FileView& getMacroView() { return m_macroView; }
 		FineTune& getFineTuneView() { return m_fineTuneView; }
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
-		SettingsView& getSettingsView() { return m_settingsView; }
+#endif
 
 		ModalNumberPad& getNumberPad() { return m_numberpad; }
 
@@ -84,13 +86,15 @@ namespace UI
 		Dashboard m_dashboard{"dashboard", m_mainWindow};
 		ConsoleView m_consoleView{"console", m_mainWindow};
 		ControlView m_controlView{"control", m_mainWindow};
+		FileView m_macroView{"macros", m_mainWindow};
+		SettingsView m_settingsView{"settings", m_mainWindow};
+#if SIDE_BAR_APP_DRAWER
 		MoveView m_moveView{"move", m_mainWindow};
 		TemperatureView m_temperatureView{"temperature", m_mainWindow};
 		FanView m_fanView{"fan", m_mainWindow};
-		FileView m_macroView{"macros", m_mainWindow};
 		FineTune m_fineTuneView{"fine_tune", m_mainWindow};
 		HeightmapView m_heightmapView{"heightmap", m_mainWindow};
-		SettingsView m_settingsView{"settings", m_mainWindow};
+#endif
 
 		// Message box
 		std::list<std::unique_ptr<MessageBox>> m_messageBoxList;

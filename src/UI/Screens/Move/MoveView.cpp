@@ -22,9 +22,6 @@ namespace UI
 		, m_topBarCont("topbar", getRoot())
 		, m_bottomBarCont("bottombar", getRoot())
 		, m_homeAll("home_all", m_topBarCont, _("move.home_all"))
-		, m_trueBedLevel("true_bed_level", m_topBarCont, _("move.true_bed_level"))
-		, m_meshBedLevel("mesh_bed_level", m_topBarCont, _("move.mesh_bed_level"))
-		, m_heightmap("heightmap", m_topBarCont, _("app_drawer.heightmap"))
 		, m_disableMotors("disable_motors", m_topBarCont, _("move.disable_motors"))
 		, m_axisControlCont("axis_control", getRoot())
 		, m_xyControl("xy_control", m_axisControlCont)
@@ -40,8 +37,6 @@ namespace UI
 		addStyle(Themes::getLvglStyles().bg_dark);
 
 		m_homeAll.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_trueBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_meshBedLevel.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		m_disableMotors.addStyle(Themes::getLvglStyles().actionBtn, 0);
 
 		// Layout
@@ -58,14 +53,8 @@ namespace UI
 		m_topBarCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_topBarCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_homeAll.setHeight(LV_SIZE_CONTENT);
-		m_trueBedLevel.setHeight(LV_SIZE_CONTENT);
-		m_meshBedLevel.setHeight(LV_SIZE_CONTENT);
-		m_heightmap.setHeight(LV_SIZE_CONTENT);
 		m_disableMotors.setHeight(LV_SIZE_CONTENT);
 		m_homeAll.setFlexGrow(1);
-		m_trueBedLevel.setFlexGrow(1);
-		m_meshBedLevel.setFlexGrow(1);
-		m_heightmap.setFlexGrow(1);
 		m_disableMotors.setFlexGrow(1);
 
 		m_homeAll.hide();
@@ -158,9 +147,6 @@ namespace UI
 											 { m_presenter->extrude(distance, feedrate); });
 
 		m_homeAll.addClickedCallback(onHomeAllEvent, this);
-		m_trueBedLevel.addClickedCallback(onTrueBedLevelEvent, this);
-		m_meshBedLevel.addClickedCallback(onMeshBedLevelEvent, this);
-		m_heightmap.addClickedCallback(onHeightmapEvent, this);
 		m_disableMotors.addClickedCallback(onDisableMotorsEvent, this);
 
 		// Bottom Bar
@@ -205,27 +191,6 @@ namespace UI
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter->homeAll();
-	}
-
-	void MoveView::onTrueBedLevelEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter->trueBedLevel();
-	}
-
-	void MoveView::onMeshBedLevelEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter->meshBedLevel();
-	}
-
-	void MoveView::onHeightmapEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
-		view->m_presenter->heightmap();
 	}
 
 	void MoveView::onDisableMotorsEvent(lv_event_t* e)

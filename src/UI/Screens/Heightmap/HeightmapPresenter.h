@@ -33,6 +33,8 @@ namespace UI
 		void render();
 		void setActiveHeightmap(const size_t index);
 		void toggleHeightmap(const size_t index);
+		void meshBedLevel();
+		void trueBedLevel();
 
 		// Observers
 		void newCompensationFile();

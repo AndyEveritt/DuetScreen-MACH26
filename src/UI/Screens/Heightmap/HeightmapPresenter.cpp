@@ -140,6 +140,16 @@ namespace UI
 		OM::ToggleHeightmap(name.c_str());
 	}
 
+	void HeightmapPresenter::trueBedLevel()
+	{
+		Comm::DUET.SendGcode("G32\n");
+	}
+
+	void HeightmapPresenter::meshBedLevel()
+	{
+		Comm::DUET.SendGcode("G29\n");
+	}
+
 	void HeightmapPresenter::newCompensationFile()
 	{
 		LOG_INFO("New compensation file");
