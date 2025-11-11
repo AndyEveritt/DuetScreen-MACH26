@@ -2,6 +2,8 @@
 
 ## Get started
 
+This project is tested on developed on Ubuntu 24.04 LTS. It might be possible to develop on other Linux distributions or operating systems but this is not officially supported.
+
 Clone the project and the related sub modules:
 
 ```bash
