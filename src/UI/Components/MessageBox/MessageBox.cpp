@@ -117,6 +117,7 @@ namespace UI
 	void MessageBox::ok()
 	{
 		UI_LOCK();
+		auto self = getPtr(); // Keep shared ptr to self to prevent deletion during callback
 		if (m_okCb)
 		{
 			LOG_INFO("Calling ok callback");
@@ -128,6 +129,7 @@ namespace UI
 	void MessageBox::cancel()
 	{
 		UI_LOCK();
+		auto self = getPtr(); // Keep shared ptr to self to prevent deletion during callback
 		if (m_cancelCb)
 		{
 			LOG_INFO("Calling cancel callback");

@@ -212,11 +212,13 @@ int main(int argc, char** argv)
 					static const std::vector<UI::LvObj*> screens{nullptr,
 																 nullptr,
 																 &home.getConsoleView(),
+																 &home.getMacroView(),
+#  if SIDE_BAR_APP_DRAWER
 																 &home.getMoveView(),
 																 &home.getTemperatureView(),
-																 &home.getMacroView(),
 																 &home.getFineTuneView(),
 																 &home.getHeightmapView(),
+#  endif
 																 &home.getSettingsView()};
 
 					auto screen = screens[screen_index];

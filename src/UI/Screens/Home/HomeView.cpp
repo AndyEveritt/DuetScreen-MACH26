@@ -114,11 +114,11 @@ namespace UI
 
 	void HomeView::onHide() {}
 
-	std::unique_ptr<MessageBox>& HomeView::createMessageBox()
+	std::shared_ptr<MessageBox>& HomeView::createMessageBox()
 	{
 		UI_LOCK();
 		m_messageBoxList.emplace_back(
-			std::make_unique<MessageBox>("home_message_box", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
+			std::make_shared<MessageBox>("home_message_box", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
 		auto& msgBox = m_messageBoxList.back();
 		msgBox->setFlag(LV_OBJ_FLAG_FLOATING, true);
 		msgBox->setAlign(LV_ALIGN_TOP_MID, 0, 2);
@@ -127,7 +127,7 @@ namespace UI
 		return msgBox;
 	}
 
-	MessageBox* HomeView::getMessageBox(size_t index) const
+	std::shared_ptr<MessageBox> HomeView::getMessageBox(size_t index) const
 	{
 		UI_LOCK();
 		if (index >= getMessageBoxCount())
@@ -136,7 +136,7 @@ namespace UI
 		}
 		auto it = m_messageBoxList.cbegin();
 		std::advance(it, index);
-		return it->get();
+		return *it;
 	}
 
 	void HomeView::popMessageBox()

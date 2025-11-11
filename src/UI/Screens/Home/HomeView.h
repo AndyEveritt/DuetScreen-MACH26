@@ -37,9 +37,9 @@ namespace UI
 
 		void clear();
 
-		std::unique_ptr<MessageBox>& createMessageBox();
+		std::shared_ptr<MessageBox>& createMessageBox();
 		size_t getMessageBoxCount() const { return m_messageBoxList.size(); }
-		MessageBox* getMessageBox(size_t index) const;
+		std::shared_ptr<MessageBox> getMessageBox(size_t index) const;
 		void popMessageBox();
 		void clearMessageBoxes() { m_messageBoxList.clear(); }
 
@@ -97,7 +97,7 @@ namespace UI
 #endif
 
 		// Message box
-		std::list<std::unique_ptr<MessageBox>> m_messageBoxList;
+		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;
 		AlertMessageBox m_alert{"alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
 
 		// Update prompt

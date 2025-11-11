@@ -17,12 +17,13 @@
 namespace UI
 {
 
-	class MessageBox : public LvContainer
+	class MessageBox : public std::enable_shared_from_this<MessageBox>, public LvContainer
 	{
-
 	  public:
 		MessageBox(const std::string& name, LvObj& parent, layout_t layout);
 		virtual ~MessageBox();
+
+		auto getPtr() { return weak_from_this().lock(); }
 
 		LvContainer& getHeader() { return m_header; }
 		LvContainer& getBody() { return m_body; }

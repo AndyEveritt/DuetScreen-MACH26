@@ -22,7 +22,6 @@ namespace UI
 {
     class AlertMessageBox : public MessageBox
 	{
-
 	  public:
 		class AxisJog : public LvObj
 		{
