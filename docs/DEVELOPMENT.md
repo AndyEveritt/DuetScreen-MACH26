@@ -135,6 +135,29 @@ VSCode has been configured for both of these scenarios.
   - This will start the code and attach gdb to it.
   - If the code is already running, you need to kill it first. This can be done by pushing a new build to the Duet3D screen with the `Push DuetScreen - SSH - Debug` task.
 
+## Commit messages
+Commit messages should be in the following format:
+```
+<type>(<scope>): <short description>
+```
+
+Where:
+- `<type>` is the type of change being made. Valid types are:
+  - `feat`: A new feature
+  - `fix`: A bug fix
+  - `docs`: Documentation changes
+  - `refactor`: Code changes that neither fix a bug nor add a feature
+  - `test`: Adding or updating tests
+  - `chore`: Changes that are neither a bug fix nor a feature (eg. build scripts, CI/CD, etc.)
+- `<scope>` is the area of the code being changed. This can be a specific module
+  - Typically this would be the name of a directory in `src/` or `assets/` (eg. `UI`, `Network`, `i18n`, etc.)
+  - If the change affects multiple areas of the code, use the scope that is most relevant
+- `<short description>` is a brief description of the change being made. This should be written in the imperative mood (eg. "Add feature" not "Added feature" or "Adds feature").
+  - Multi-line descriptions are allowed but require a blank line between the short description and the long description.
+
+> [!WARNING]
+> The commit message format is used to automatically generate the changelog for the project. Pull Requests that do not follow this format may be rejected.
+
 ## Adding a new language (i18n)
 - Language files are located in the `assets/i18n/` directory.
 - Each language file is a JSON file with the following structure:
