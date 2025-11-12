@@ -141,3 +141,8 @@ This file should be placed in the root directory of the microSD card. When the s
 
 > [!NOTE]
 > This only works on first boot for security reasons. After the first boot, settings need to be changed via the GUI.
+
+## Contributing
+Contributions are welcome! Please see [DEVELOPMENT.md](docs/DEVELOPMENT.md) for more information on how to contribute.
+
+Ensure all commit messages follow the format outlined in [commit messages](docs/DEVELOPMENT.md#commit-messages).
