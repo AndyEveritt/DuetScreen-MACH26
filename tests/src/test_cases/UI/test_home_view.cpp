@@ -38,6 +38,26 @@ TEST_F(TestHomeView, BlankView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/keyboard.png");
 }
 
+TEST_F(TestHomeView, BlankControlView)
+{
+	auto& control = view.getControlView();
+
+	openScreen(&control);
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_move_blank.png");
+
+	control.showTemperatureView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_temperature_blank.png");
+
+	control.showHeightmapView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_heightmap_blank.png");
+
+	control.showFanView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_fan_blank.png");
+
+	control.showMoveView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_move_blank.png");
+}
+
 TEST_F(TestHomeView, BlankConsoleView)
 {
 	openScreen(&view.getConsoleView(), false);
@@ -186,6 +206,26 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 
 	view.getConsoleView().showKeyboard(true);
 	EXPECT_EQUAL_SCREENSHOT("home_view/console_view_keyboard.png");
+}
+
+TEST_F(TestHomeViewWithData, BlankControlView)
+{
+	auto& control = view.getControlView();
+
+	openScreen(&control);
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_move.png");
+
+	control.showTemperatureView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_temperature.png");
+
+	control.showHeightmapView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_heightmap.png");
+
+	control.showFanView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_fan.png");
+
+	control.showMoveView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_move.png");
 }
 
 TEST_F(TestHomeViewWithData, MacroView)

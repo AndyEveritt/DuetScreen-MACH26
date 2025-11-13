@@ -11,33 +11,33 @@ namespace UI
 {
 	static constexpr float s_distances[] = {0.1f, 0.5f, 1, 5, 10, 25, 50};						   // mm
 	static constexpr float s_relMoveValues[] = {-50, -10, -1.0f, -0.1f, 0.1f, 1.0f, 10.0f, 50.0f}; // mm
-	static constexpr uint32_t s_feedRates[] = {300, 100, 50, 20, 10, 5};						   // mm/s
+	static constexpr uint32_t s_feedRates[] = {5, 10, 25, 50, 100, 200, 300};					   // mm/s
 	static uint32_t s_currentDistanceIndex = 4;
-	static uint32_t s_currentFeedRate = 50;
+	static uint32_t s_currentFeedrateIndex = 4;
+
+	static float getSelectedDistance()
+	{
+		return s_distances[s_currentDistanceIndex];
+	}
+
+	static uint32_t getSelectedFeedrate()
+	{
+		return s_feedRates[s_currentFeedrateIndex];
+	}
 
 	MoveView::MoveView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
-		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_layoutRowDsc{LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_bottomBarCont("bottombar", getRoot())
-		, m_axisControlCont("axis_control", getRoot())
-		, m_xyControl("xy_control", m_axisControlCont)
-		, m_zControl("z_control", m_axisControlCont)
-		, m_genericAxisControls("generic_axis_controls", m_axisControlCont)
-		, m_extruderControl("extruder_control", m_axisControlCont)
-		, m_distances("distances", m_bottomBarCont)
-		, m_numberpad("numberpad", getRoot())
 	{
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
 
-		// Layout
-		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
-		setGridCell(m_axisControlCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 1, 1);
+		/* Layout */
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		// Axis Control
+		/* Axis Control */
+		m_axisControlCont.setWidth(LV_PCT(100));
+		m_axisControlCont.setFlexGrow(1);
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_xyControl.setSize(LV_PCT(30), LV_PCT(100));
 		m_xyControl.setDisableMotorsCallback([this]() { m_presenter->disableMotors(); });
@@ -45,7 +45,7 @@ namespace UI
 			[this](char axis_letter, bool forward)
 			{
 				m_presenter->moveAxisRelative(
-					axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
+					axis_letter, (forward ? 1 : -1) * getSelectedDistance(), getSelectedFeedrate());
 			});
 		m_xyControl.setHomeAllCallback([this]() { m_presenter->homeAll(); });
 		m_xyControl.setHomeXYCallback(
@@ -66,7 +66,7 @@ namespace UI
 			[this](char axis_letter, bool forward)
 			{
 				m_presenter->moveAxisRelative(
-					axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
+					axis_letter, (forward ? 1 : -1) * getSelectedDistance(), getSelectedFeedrate());
 			});
 		m_zControl.setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
 		m_zControl.setLabelCallback([this](char axis_letter, float position)
@@ -121,39 +121,77 @@ namespace UI
 		m_extruderControl.setExtrudeCallback([this](float distance, float feedrate)
 											 { m_presenter->extrude(distance, feedrate); });
 
-		// Bottom Bar
-		m_bottomBarCont.setHeight(LV_SIZE_CONTENT);
+		/* Bottom Bar */
+		m_bottomBarCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_bottomBarCont.setStylePad(0, LV_PART_MAIN, Padding::ALL);
 		m_bottomBarCont.setStylePad(0, LV_PART_MAIN, Padding::COLUMN);
-		m_bottomBarCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_bottomBarCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_bottomBarCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		assert(s_currentDistanceIndex < ARRAY_SIZE(s_distances));
+		/* Distances */
+		assert(s_currentDistanceIndex < std::size(s_distances));
 
 		m_distances.addStyle(Themes::getLvglStyles().no_border);
 		m_distances.setTitle(_("move.distance", Units::getDisplayedDistanceUnit()));
-		m_distances.setHeight(LV_SIZE_CONTENT);
-		m_distances.setFlexGrow(1);
-		m_distances.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_distances.getHeader().setWidth(LV_SIZE_CONTENT);
+		m_distances.getHeader().setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_distances.getHeader().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_distances.getListContainer().setFlexGrow(1);
+		m_distances.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_distances.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_distances.setListSize(LV_PCT(100), LV_PCT(100));
 		m_distances.setListFlow(LV_FLEX_FLOW_ROW);
 		m_distances.getListContainer().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_distances.setListPad(0);
-		m_distances.setItemCount(ARRAY_SIZE(s_distances),
+		m_distances.setItemCount(std::size(s_distances),
 								 [this](size_t i, LvObj& parent)
 								 {
-									 auto btn = std::make_unique<Button>(
-										 fmt::format("{}", i), parent, fmt::format("{}", s_distances[i]));
+									 auto btn = std::make_unique<Button>(fmt::format("{}", i), parent);
+									 btn->setText(fmt::format("{}", s_distances[i]));
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 									 btn->addClickedCallback(onDistanceEvent, this);
 									 btn->setCheckable(true);
+									 btn->setChecked(i == s_currentDistanceIndex);
 									 btn->setFlexGrow(1);
-									 btn->setHeight(LV_SIZE_CONTENT);
+									 btn->setHeight(LV_PCT(100));
+									 btn->setMinHeight(LV_SIZE_CONTENT);
 									 return btn;
 								 });
-		if (auto item = m_distances.getItem(s_currentDistanceIndex))
-		{
-			item->setChecked(true);
-		}
+
+		m_distances.updateLayout();
+
+		/* Feedrates */
+
+		assert(s_currentFeedrateIndex < std::size(s_feedRates));
+
+		m_feedrates.addStyle(Themes::getLvglStyles().no_border);
+		m_feedrates.setTitle(_("move.feedrate", Units::getDisplayedSpeedUnit()));
+		m_feedrates.getHeader().setWidth(m_distances.getHeader().getWidth());
+		m_feedrates.getHeader().setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+		m_feedrates.getHeader().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_feedrates.getListContainer().setFlexGrow(1);
+		m_feedrates.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_feedrates.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_feedrates.setListSize(LV_PCT(100), LV_PCT(100));
+		m_feedrates.setListFlow(LV_FLEX_FLOW_ROW);
+		m_feedrates.getListContainer().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_feedrates.setListPad(0);
+		m_feedrates.setItemCount(std::size(s_feedRates),
+								 [this](size_t i, LvObj& parent)
+								 {
+									 auto btn = std::make_unique<Button>(fmt::format("{}", i), parent);
+									 btn->setText(fmt::format("{}", s_feedRates[i]));
+									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
+									 btn->addClickedCallback(onFeedrateEvent, this);
+									 btn->setCheckable(true);
+									 btn->setChecked(i == s_currentFeedrateIndex);
+									 btn->setFlexGrow(1);
+									 btn->setHeight(LV_PCT(100));
+									 btn->setMinHeight(LV_SIZE_CONTENT);
+									 return btn;
+								 });
+
+		/* Numberpad */
 
 		m_numberpad.hide();
 	}
@@ -175,14 +213,30 @@ namespace UI
 	void MoveView::onDistanceEvent(lv_event_t* e)
 	{
 		UI_LOCK();
-		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
+		MoveView& view = *static_cast<MoveView*>(lv_event_get_user_data(e));
 		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
-		if (auto item = view->m_distances.getItem(s_currentDistanceIndex))
+		if (auto item = view.m_distances.getItem(s_currentDistanceIndex))
 		{
 			item->setChecked(false);
 		}
 		s_currentDistanceIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
-		if (auto item = view->m_distances.getItem(s_currentDistanceIndex))
+		if (auto item = view.m_distances.getItem(s_currentDistanceIndex))
+		{
+			item->setChecked(true);
+		}
+	}
+
+	void MoveView::onFeedrateEvent(lv_event_t* e)
+	{
+		UI_LOCK();
+		MoveView& view = *static_cast<MoveView*>(lv_event_get_user_data(e));
+		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
+		if (auto item = view.m_feedrates.getItem(s_currentFeedrateIndex))
+		{
+			item->setChecked(false);
+		}
+		s_currentFeedrateIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
+		if (auto item = view.m_feedrates.getItem(s_currentFeedrateIndex))
 		{
 			item->setChecked(true);
 		}
@@ -281,7 +335,7 @@ namespace UI
 					[this](char axis_letter, bool forward)
 					{
 						m_presenter->moveAxisRelative(
-							axis_letter, (forward ? 1 : -1) * s_distances[s_currentDistanceIndex], s_currentFeedRate);
+							axis_letter, (forward ? 1 : -1) * getSelectedDistance(), getSelectedFeedrate());
 					});
 				control->setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
 				control->setLabelCallback([this](char axis_letter, float position)
@@ -465,6 +519,6 @@ namespace UI
 			}
 		}
 		m_numberpad.setConfirmCallback([this, axis_letter](float value)
-									   { m_presenter->moveAxisAbsolute(axis_letter, value, s_currentFeedRate); });
+									   { m_presenter->moveAxisAbsolute(axis_letter, value, getSelectedFeedrate()); });
 	}
 } // namespace UI

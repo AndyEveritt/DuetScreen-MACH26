@@ -155,7 +155,8 @@
     "move": { /* Move screen */
       "home_all": "Home All",
       "axis_home": "Home {:s}",
-      "distance": "Move Distance ({:s})",
+      "distance": "Move Distance\n({:s})",
+      "feedrate": "Feedrate\n({:s})",
       "disable_motors": "Disable",
       "machine_position": "Machine Pos ({:s})",
       "set_position": "Set absolute position for axis {:c}",

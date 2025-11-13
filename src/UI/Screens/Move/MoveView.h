@@ -45,6 +45,7 @@ namespace UI
 		static void onHomeAllEvent(lv_event_t* e);
 		static void onDisableMotorsEvent(lv_event_t* e);
 		static void onDistanceEvent(lv_event_t* e);
+		static void onFeedrateEvent(lv_event_t* e);
 
 		virtual void onShow() override;
 		virtual void onHide() override;
@@ -52,24 +53,21 @@ namespace UI
 		void configureNumberpadForAxis(char axis_letter, float position);
 		void configureNumberpadForExtruder(const std::string& header, float value);
 
-		int32_t m_layoutColDsc[2];
-		int32_t m_layoutRowDsc[4];
-
-		Card m_bottomBarCont;
-
 		// Axis Control
-		Card m_axisControlCont;
-		XYControl m_xyControl;
-		GenericAxisControl m_zControl;
-		List<GenericAxisControl> m_genericAxisControls;
+		Card m_axisControlCont{"axis_control", getRoot()};
+		XYControl m_xyControl{"xy_control", m_axisControlCont};
+		GenericAxisControl m_zControl{"z_control", m_axisControlCont};
+		List<GenericAxisControl> m_genericAxisControls{"generic_axis_controls", m_axisControlCont};
 
 		// Extruder Control
-		ExtruderControl m_extruderControl;
+		ExtruderControl m_extruderControl{"extruder_control", m_axisControlCont};
 
 		// Bottom Bar
-		List<Button> m_distances;
+		Card m_bottomBarCont{"bottombar", getRoot()};
+		List<Button> m_distances{"distances", m_bottomBarCont};
+		List<Button> m_feedrates{"feedrates", m_bottomBarCont};
 
-		ModalNumberPad m_numberpad;
+		ModalNumberPad m_numberpad{"numberpad", getRoot()};
 
 		const MovePresenter::AxisDataList* m_axisDataListPtr = nullptr;
 	};
