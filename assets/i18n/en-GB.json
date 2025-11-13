@@ -128,8 +128,8 @@
       "std_dev": "RMS error: {:g} mm",
       "title": "Heightmap: {:s}",
       "unload": "Unload",
-      "mesh_bed_level": "Mesh Bed Level",
-      "true_bed_level": "True Bed Level"
+      "mesh_bed_level": "Mesh Bed Compensation (G29)",
+      "true_bed_level": "True Bed Level (G32)"
     },
     "message": { /* Messages specific to the screen */
       "connected": "Connected to Duet",
@@ -211,7 +211,7 @@
       "screen": "Screen",
       "screen_header": "Screen Settings",
       "screensaver_timeout": "Screensaver Timeout (s)",
-      "system_logging": "Log system messages to console",
+      "system_logging": "Log system messages to console (might cause lag)",
       "theme": "Theme",
       "usb_mode": "USB-C Mode",
       "usb_mode_device": "USB-C Device",

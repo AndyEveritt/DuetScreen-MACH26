@@ -216,8 +216,17 @@ namespace UI
 		m_btnCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_btnCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_btnCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		m_trueBedLevel.setHeight(LV_SIZE_CONTENT);
-		m_meshBedLevel.setHeight(LV_SIZE_CONTENT);
+
+		/*
+		TODO: https://github.com/Duet3D/DuetScreen/issues/61
+		update lvgl to support LV_PCT() when parent is LV_SIZE_CONTENT and there are other children with a fixed/clamped
+		size
+		*/
+		m_trueBedLevel.setHeight(60);
+		m_meshBedLevel.setHeight(60);
+
+		m_trueBedLevel.setMinHeight(LV_SIZE_CONTENT);
+		m_meshBedLevel.setMinHeight(LV_SIZE_CONTENT);
 		m_trueBedLevel.setFlexGrow(1);
 		m_meshBedLevel.setFlexGrow(1);
 		m_trueBedLevel.setText(_("heightmap.true_bed_level"));
