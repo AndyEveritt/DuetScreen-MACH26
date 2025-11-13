@@ -362,3 +362,79 @@ TEST_F(TestLvgl, GridSizeContent)
 	lv_obj_update_layout(cont);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/grid_size_content.png");
 }
+
+TEST_F(TestLvgl, CircularHeight)
+{
+	lv_obj_t* cont = lv_obj_create(screen.getRootPtr());
+	lv_obj_set_name(cont, "cont");
+	lv_obj_set_size(cont, LV_PCT(100), LV_SIZE_CONTENT);
+	lv_obj_set_style_bg_color(cont, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
+	lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_ROW);
+
+	lv_obj_t* item1 = lv_obj_create(cont);
+	lv_obj_set_name(item1, "item1");
+	lv_obj_set_style_bg_color(item1, lv_palette_main(LV_PALETTE_GREEN), 0);
+	lv_obj_set_style_bg_opa(item1, LV_OPA_COVER, 0);
+	// because parent is size content this will evaluate to 0 but ideally should be 50 because of item2
+	lv_obj_set_height(item1, LV_PCT(100));
+	lv_obj_set_flex_grow(item1, 1);
+
+	lv_obj_t* item2 = lv_obj_create(cont);
+	lv_obj_set_name(item2, "item2");
+	lv_obj_set_style_bg_color(item2, lv_palette_main(LV_PALETTE_BLUE), 0);
+	lv_obj_set_style_bg_opa(item2, LV_OPA_COVER, 0);
+	lv_obj_set_height(item2, 50); // fixed size
+	lv_obj_set_flex_grow(item2, 1);
+
+	lv_obj_t* item3 = lv_obj_create(cont);
+	// lv_obj_set_flag(item3, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
+	lv_obj_set_name(item3, "item3");
+	lv_obj_set_style_bg_color(item3, lv_palette_main(LV_PALETTE_GREEN), 0);
+	lv_obj_set_style_bg_opa(item3, LV_OPA_COVER, 0);
+	lv_obj_set_height(item3, LV_PCT(100)); // same as item1 but checking if child order matters
+	lv_obj_set_flex_grow(item3, 1);
+
+	EXPECT_EQUAL_SCREENSHOT("lvgl/circular_height.png");
+
+	lv_obj_set_height(item2, 40);
+	EXPECT_EQUAL_SCREENSHOT("lvgl/circular_height2.png");
+}
+
+TEST_F(TestLvgl, CircularWidth)
+{
+	lv_obj_t* cont = lv_obj_create(screen.getRootPtr());
+	lv_obj_set_name(cont, "cont");
+	lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_PCT(100));
+	lv_obj_set_style_bg_color(cont, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
+	lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
+
+	lv_obj_t* item1 = lv_obj_create(cont);
+	lv_obj_set_name(item1, "item1");
+	lv_obj_set_style_bg_color(item1, lv_palette_main(LV_PALETTE_GREEN), 0);
+	lv_obj_set_style_bg_opa(item1, LV_OPA_COVER, 0);
+	// because parent is size content this will evaluate to 0 but ideally should be 50 because of item2
+	lv_obj_set_width(item1, LV_PCT(100));
+	lv_obj_set_flex_grow(item1, 1);
+
+	lv_obj_t* item2 = lv_obj_create(cont);
+	lv_obj_set_name(item2, "item2");
+	lv_obj_set_style_bg_color(item2, lv_palette_main(LV_PALETTE_BLUE), 0);
+	lv_obj_set_style_bg_opa(item2, LV_OPA_COVER, 0);
+	lv_obj_set_width(item2, 50); // fixed size
+	lv_obj_set_flex_grow(item2, 1);
+
+	lv_obj_t* item3 = lv_obj_create(cont);
+	// lv_obj_set_flag(item3, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
+	lv_obj_set_name(item3, "item3");
+	lv_obj_set_style_bg_color(item3, lv_palette_main(LV_PALETTE_GREEN), 0);
+	lv_obj_set_style_bg_opa(item3, LV_OPA_COVER, 0);
+	lv_obj_set_width(item3, LV_PCT(100)); // same as item1 but checking if child order matters
+	lv_obj_set_flex_grow(item3, 1);
+
+	EXPECT_EQUAL_SCREENSHOT("lvgl/circular_width.png");
+
+	lv_obj_set_width(item2, 40);
+	EXPECT_EQUAL_SCREENSHOT("lvgl/circular_width2.png");
+}
