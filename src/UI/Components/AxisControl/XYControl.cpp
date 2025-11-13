@@ -17,16 +17,6 @@ namespace UI
 
 	XYControl::XYControl(const std::string& name, LvObj& parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_xLabel("x_label", getRoot())
-		, m_yLabel("y_label", getRoot())
-		, m_xIncrementButton("x_increment", getRoot())
-		, m_xDecrementButton("x_decrement", getRoot())
-		, m_yIncrementButton("y_increment", getRoot())
-		, m_yDecrementButton("y_decrement", getRoot())
-		, m_homeAllButton("home_all", getRoot())
-		, m_homeXYButton("home_xy", getRoot(), fmt::format("{}{}", sm_xAxisLetter, sm_yAxisLetter))
-		, m_homeXButton("home_x", getRoot(), fmt::format("{}", sm_xAxisLetter))
-		, m_homeYButton("home_y", getRoot(), fmt::format("{}", sm_yAxisLetter))
 	{
 		UI_LOCK();
 		setGridDsc(m_colDsc, m_rowDsc);
@@ -40,12 +30,18 @@ namespace UI
 		setGridCell(m_homeXYButton, LV_GRID_ALIGN_STRETCH, 1, 2, LV_GRID_ALIGN_STRETCH, 2, 1);
 		setGridCell(m_homeXButton, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		setGridCell(m_homeYButton, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
+		setGridCell(m_disableMotorsButton, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
 
 		m_xLabel.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_yLabel.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 		m_xLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_yLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+
+		m_homeXYButton.setText(fmt::format("{}{}", sm_xAxisLetter, sm_yAxisLetter));
+		m_homeXButton.setText(fmt::format("{}", sm_xAxisLetter));
+		m_homeYButton.setText(fmt::format("{}", sm_yAxisLetter));
+		m_disableMotorsButton.setText(_("move.disable_motors"));
 
 		m_xIncrementButton.setIcon("arrow_right.png");
 		m_xDecrementButton.setIcon("arrow_left.png");
@@ -57,6 +53,7 @@ namespace UI
 		m_homeXButton.setIcon("home_axis.png");
 		m_homeYButton.setIcon("home_axis.png");
 		m_homeXYButton.setIcon("home_axis.png");
+		m_disableMotorsButton.setIcon("disable_motors.png");
 
 		m_xLabel.addClickedCallback(onLabelEvent, this);
 		m_yLabel.addClickedCallback(onLabelEvent, this);
@@ -68,6 +65,16 @@ namespace UI
 		m_homeXYButton.addClickedCallback(onHomeBtn, this);
 		m_homeXButton.addClickedCallback(onHomeBtn, this);
 		m_homeYButton.addClickedCallback(onHomeBtn, this);
+		m_disableMotorsButton.addClickedCallback(
+			[](lv_event_t* e)
+			{
+				XYControl& control = *static_cast<XYControl*>(lv_event_get_user_data(e));
+				if (control.m_disableMotorsCallback)
+				{
+					control.m_disableMotorsCallback();
+				}
+			},
+			this);
 
 		m_xLabel.addStyle(Themes::getLvglStyles().input);
 		m_yLabel.addStyle(Themes::getLvglStyles().input);
@@ -83,7 +90,9 @@ namespace UI
 		m_homeXYButton.addStyle(Themes::getLvglStyles().actionBtn);
 		m_homeXButton.addStyle(Themes::getLvglStyles().actionBtn);
 		m_homeYButton.addStyle(Themes::getLvglStyles().actionBtn);
+		m_disableMotorsButton.addStyle(Themes::getLvglStyles().actionBtn);
 
+		m_homeAllButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
 		m_homeXYButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
 		m_homeXButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
 		m_homeYButton.addStyle(Themes::getComponentStyles().unhomed, LV_STATE_CHECKED);
@@ -192,6 +201,12 @@ namespace UI
 	{
 		UI_LOCK();
 		m_homeYCallback = std::move(cb);
+	}
+
+	void XYControl::setDisableMotorsCallback(disable_cb_t cb)
+	{
+		UI_LOCK();
+		m_disableMotorsCallback = std::move(cb);
 	}
 
 	void XYControl::setXLabelCallback(label_cb_t cb)

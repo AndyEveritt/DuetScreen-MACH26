@@ -17,6 +17,7 @@ namespace UI
 	{
 		using jog_cb_t = std::function<void(char axis_letter, bool forward)>;
 		using home_cb_t = std::function<void()>;
+		using disable_cb_t = std::function<void()>;
 		using label_cb_t = std::function<void(float position)>;
 
 	  public:
@@ -39,6 +40,7 @@ namespace UI
 		void setHomeXYCallback(home_cb_t cb);
 		void setHomeXCallback(home_cb_t cb);
 		void setHomeYCallback(home_cb_t cb);
+		void setDisableMotorsCallback(disable_cb_t cb);
 
 		void setXLabelCallback(label_cb_t cb);
 		void setYLabelCallback(label_cb_t cb);
@@ -55,16 +57,17 @@ namespace UI
 		int32_t m_colDsc[5] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
 		int32_t m_rowDsc[5] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
-		Button m_xLabel;
-		Button m_yLabel;
-		Button m_xIncrementButton;
-		Button m_xDecrementButton;
-		Button m_yIncrementButton;
-		Button m_yDecrementButton;
-		Button m_homeAllButton;
-		Button m_homeXYButton;
-		Button m_homeXButton;
-		Button m_homeYButton;
+		Button m_xLabel{"x_label", getRoot()};
+		Button m_yLabel{"y_label", getRoot()};
+		Button m_xIncrementButton{"x_increment", getRoot()};
+		Button m_xDecrementButton{"x_decrement", getRoot()};
+		Button m_yIncrementButton{"y_increment", getRoot()};
+		Button m_yDecrementButton{"y_decrement", getRoot()};
+		Button m_homeAllButton{"home_all", getRoot()};
+		Button m_homeXYButton{"home_xy", getRoot()};
+		Button m_homeXButton{"home_x", getRoot()};
+		Button m_homeYButton{"home_y", getRoot()};
+		Button m_disableMotorsButton{"disable_motors", getRoot()};
 
 		static const char sm_xAxisLetter;
 		static const char sm_yAxisLetter;
@@ -78,6 +81,7 @@ namespace UI
 		home_cb_t m_homeXYCallback;
 		home_cb_t m_homeXCallback;
 		home_cb_t m_homeYCallback;
+		disable_cb_t m_disableMotorsCallback;
 
 		label_cb_t m_xLabelCallback;
 		label_cb_t m_yLabelCallback;

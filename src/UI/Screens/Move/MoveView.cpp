@@ -18,16 +18,12 @@ namespace UI
 	MoveView::MoveView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_topBarCont("topbar", getRoot())
+		, m_layoutRowDsc{LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_bottomBarCont("bottombar", getRoot())
-		, m_homeAll("home_all", m_topBarCont, _("move.home_all"))
-		, m_disableMotors("disable_motors", m_topBarCont, _("move.disable_motors"))
 		, m_axisControlCont("axis_control", getRoot())
 		, m_xyControl("xy_control", m_axisControlCont)
 		, m_zControl("z_control", m_axisControlCont)
 		, m_genericAxisControls("generic_axis_controls", m_axisControlCont)
-		, m_axisList("axis_control_list", m_axisControlCont)
 		, m_extruderControl("extruder_control", m_axisControlCont)
 		, m_distances("distances", m_bottomBarCont)
 		, m_numberpad("numberpad", getRoot())
@@ -36,32 +32,15 @@ namespace UI
 
 		addStyle(Themes::getLvglStyles().bg_dark);
 
-		m_homeAll.addStyle(Themes::getLvglStyles().actionBtn, 0);
-		m_disableMotors.addStyle(Themes::getLvglStyles().actionBtn, 0);
-
 		// Layout
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
-		setGridCell(m_topBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_axisControlCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		setGridCell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
-
-		// Top Bar
-		constexpr lv_coord_t pad = 10;
-		m_topBarCont.setHeight(LV_SIZE_CONTENT);
-		m_topBarCont.setStylePad(pad, LV_PART_MAIN, Padding::ALL);
-		m_topBarCont.setStylePad(pad, LV_PART_MAIN, Padding::COLUMN);
-		m_topBarCont.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_topBarCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		m_homeAll.setHeight(LV_SIZE_CONTENT);
-		m_disableMotors.setHeight(LV_SIZE_CONTENT);
-		m_homeAll.setFlexGrow(1);
-		m_disableMotors.setFlexGrow(1);
-
-		m_homeAll.hide();
+		setGridCell(m_axisControlCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_bottomBarCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 1, 1);
 
 		// Axis Control
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_xyControl.setSize(LV_PCT(30), LV_PCT(100));
+		m_xyControl.setDisableMotorsCallback([this]() { m_presenter->disableMotors(); });
 		m_xyControl.setJogCallback(
 			[this](char axis_letter, bool forward)
 			{
@@ -102,10 +81,6 @@ namespace UI
 		m_genericAxisControls.addStyle(Themes::getLvglStyles().pad_zero);
 		m_genericAxisControls.getListContainer().addStyle(Themes::getLvglStyles().pad_zero);
 
-		m_axisList.setFlexGrow(1);
-		m_axisList.setHeight(LV_PCT(100));
-		m_axisList.setVisible(false);
-
 		m_extruderControl.setHeight(LV_PCT(100));
 		m_extruderControl.setFlexGrow(1);
 		m_extruderControl.setToolCallback([this](size_t index) { m_presenter->toggleToolState(index); });
@@ -145,9 +120,6 @@ namespace UI
 			});
 		m_extruderControl.setExtrudeCallback([this](float distance, float feedrate)
 											 { m_presenter->extrude(distance, feedrate); });
-
-		m_homeAll.addClickedCallback(onHomeAllEvent, this);
-		m_disableMotors.addClickedCallback(onDisableMotorsEvent, this);
 
 		// Bottom Bar
 		m_bottomBarCont.setHeight(LV_SIZE_CONTENT);
@@ -473,30 +445,6 @@ namespace UI
 	void MoveView::setCurrentTool(const int32_t index)
 	{
 		m_extruderControl.setCurrentTool(index);
-	}
-
-	void MoveView::setAxisCount(const size_t count)
-	{
-		List<AxisItem>& list = m_axisList.getAxisItems();
-		list.setItemCount(
-			count,
-			[this](size_t i, LvObj& parent)
-			{
-				auto item = std::make_unique<AxisItem>(i, parent);
-				item->setJogAmounts(s_relMoveValues, ARRAY_SIZE(s_relMoveValues));
-				item->setJogCallback(
-					[this](size_t axis_index, size_t jog_index, void* user_data)
-					{ m_presenter->moveAxisRelative(axis_index, s_relMoveValues[jog_index], s_currentFeedRate); },
-					this);
-				item->setHomeCallback([this](size_t axis_index, void* user_data) { m_presenter->homeAxis(axis_index); },
-									  this);
-				return item;
-			});
-	}
-
-	auto MoveView::getAxisItem(size_t index)
-	{
-		return m_axisList.getAxisItems().getItem(index);
 	}
 
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)

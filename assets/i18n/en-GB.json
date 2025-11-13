@@ -156,7 +156,7 @@
       "home_all": "Home All",
       "axis_home": "Home {:s}",
       "distance": "Move Distance ({:s})",
-      "disable_motors": "Disable Motors",
+      "disable_motors": "Disable",
       "machine_position": "Machine Pos ({:s})",
       "set_position": "Set absolute position for axis {:c}",
       "tool_position": "Tool Pos ({:s})"

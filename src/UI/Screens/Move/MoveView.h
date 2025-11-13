@@ -49,29 +49,19 @@ namespace UI
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		const size_t getAxisCount() const { return m_axisList.getItemCount(); }
-		void setAxisCount(const size_t count);
-		auto getAxisItem(size_t index);
-
 		void configureNumberpadForAxis(char axis_letter, float position);
 		void configureNumberpadForExtruder(const std::string& header, float value);
 
 		int32_t m_layoutColDsc[2];
 		int32_t m_layoutRowDsc[4];
 
-		Card m_topBarCont;
 		Card m_bottomBarCont;
-
-		// Top Bar
-		Button m_homeAll;
-		Button m_disableMotors;
 
 		// Axis Control
 		Card m_axisControlCont;
 		XYControl m_xyControl;
 		GenericAxisControl m_zControl;
 		List<GenericAxisControl> m_genericAxisControls;
-		AxisJogList m_axisList;
 
 		// Extruder Control
 		ExtruderControl m_extruderControl;
