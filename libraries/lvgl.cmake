@@ -29,13 +29,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     PRIVATE -pedantic-errors
             -Wall
             -Werror
-            -Wclobbered
             -Wdeprecated
             -Wdouble-promotion
             -Wempty-body
             -Wextra
             -Wformat-security
-            -Wmaybe-uninitialized
             # -Wmissing-prototypes
             -Wpointer-arith
             -Wmultichar
@@ -51,6 +49,15 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             -Wunreachable-code
             -Wfloat-conversion
             -Wstrict-aliasing)
+            
+  if(!APPLE)
+    target_compile_options(
+      lvgl
+      PRIVATE 
+              -Wclobbered
+              -Wmaybe-uninitialized
+              )
+  endif()
 endif()
 
 
