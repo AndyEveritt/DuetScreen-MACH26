@@ -207,8 +207,8 @@ namespace UI
 			for (size_t i = 0; i < m_tabs.size(); i++)
 			{
 				size_t shifted_index = (index + i + 1) % m_tabs.size();
-				TabButton* tab_button = m_tabButtons.getItem(shifted_index);
-				if (shifted_index != index && tab_button && !tab_button->hasState(LV_STATE_DISABLED))
+				TabButton* next_button = m_tabButtons.getItem(shifted_index);
+				if (shifted_index != index && next_button && !next_button->hasState(LV_STATE_DISABLED))
 				{
 					setActiveTab(shifted_index);
 					switched = true;

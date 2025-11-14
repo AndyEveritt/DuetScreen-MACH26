@@ -6,6 +6,8 @@
 
 bool JobSubscribers::currentFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetJobName(data);
 	Model::get().post<EventType::JobFileName>(OM::GetJobName());
 	return true;
@@ -13,6 +15,8 @@ bool JobSubscribers::currentFileName(Comm::JsonDecoder* decoder, const char* dat
 
 bool JobSubscribers::lastFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetLastJobName(data);
 	Model::get().post<EventType::JobLastFileName>(OM::GetLastJobName());
 	return true;
@@ -20,6 +24,8 @@ bool JobSubscribers::lastFileName(Comm::JsonDecoder* decoder, const char* data, 
 
 bool JobSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetPrintTime(data);
 	Model::get().post<EventType::JobPrintTime>();
 	return true;
@@ -27,6 +33,8 @@ bool JobSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data,
 
 bool JobSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	uint32_t val = 0;
 	Comm::GetUnsignedInteger(data, val);
 	OM::SetSimulatedTime(val);
@@ -36,6 +44,8 @@ bool JobSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const char* data,
 
 bool JobSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetPrintHeight(data);
 	Model::get().post<EventType::JobHeight>();
 	return true;
@@ -43,6 +53,8 @@ bool JobSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const
 
 bool JobSubscribers::duration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetPrintDuration(data);
 	Model::get().post<EventType::JobDuration>();
 	if (OM::GetSimulatedTime() > 0)
@@ -56,6 +68,8 @@ bool JobSubscribers::duration(Comm::JsonDecoder* decoder, const uint32_t& data, 
 
 bool JobSubscribers::filamentTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	uint32_t val = 0;
 	Comm::GetUnsignedInteger(data, val);
 	OM::SetPrintRemaining(OM::RemainingTimeType::FILAMENT, val);
@@ -65,6 +79,8 @@ bool JobSubscribers::filamentTimeLeft(Comm::JsonDecoder* decoder, const char* da
 
 bool JobSubscribers::fileTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	uint32_t val = 0;
 	Comm::GetUnsignedInteger(data, val);
 	OM::SetPrintRemaining(OM::RemainingTimeType::FILE, val);
@@ -74,6 +90,8 @@ bool JobSubscribers::fileTimeLeft(Comm::JsonDecoder* decoder, const char* data, 
 
 bool JobSubscribers::slicerTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	uint32_t val = 0;
 	Comm::GetUnsignedInteger(data, val);
 	OM::SetPrintRemaining(OM::RemainingTimeType::SLICER, val);
@@ -83,6 +101,8 @@ bool JobSubscribers::slicerTimeLeft(Comm::JsonDecoder* decoder, const char* data
 
 bool JobSubscribers::warmUpDuration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetWarmUpDuration(data);
 	Model::get().post<EventType::JobWarmupDuration>();
 	return true;
@@ -90,6 +110,8 @@ bool JobSubscribers::warmUpDuration(Comm::JsonDecoder* decoder, const uint32_t& 
 
 bool JobSubscribers::nullBuild(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(data);
 	LOG_DBG("Job: build is null");
 	OM::RemoveJobObject(indices[0], true);
 	Model::get().post<EventType::JobBuild>();
@@ -98,6 +120,8 @@ bool JobSubscribers::nullBuild(Comm::JsonDecoder* decoder, const char* data, con
 
 bool JobSubscribers::currentObject(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetCurrentJobObject(data);
 	Model::get().post<EventType::JobCurrentObject>();
 	return true;
@@ -105,6 +129,8 @@ bool JobSubscribers::currentObject(Comm::JsonDecoder* decoder, const int32_t& da
 
 bool JobSubscribers::nullObject(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(data);
 	OM::RemoveJobObject(indices[0], false);
 	Model::get().post<EventType::JobObjectData>();
 	return true;
@@ -112,6 +138,7 @@ bool JobSubscribers::nullObject(Comm::JsonDecoder* decoder, const char* data, co
 
 bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
@@ -123,6 +150,7 @@ bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& dat
 
 bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
@@ -134,12 +162,13 @@ bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, co
 
 bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
 		LOG_WARN("Job object {:d} not found", indices[0]);
 	}
-	if (indices[1] < 0 || indices[1] >= 2)
+	if (indices[1] >= 2)
 	{
 		LOG_WARN("Job object {:d} x index {:d} out of range", indices[0], indices[1]);
 		return false;
@@ -150,12 +179,13 @@ bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, co
 
 bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
 	{
 		LOG_WARN("Job object {:d} not found", indices[0]);
 	}
-	if (indices[1] < 0 || indices[1] >= 2)
+	if (indices[1] >= 2)
 	{
 		LOG_WARN("Job object {:d} y index {:d} out of range", indices[0], indices[1]);
 		return false;
@@ -166,6 +196,7 @@ bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, co
 
 bool JobSubscribers::objectArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	OM::RemoveJobObject(indices[0], true);
 	Model::get().post<EventType::JobObjectData>();
 	return true;

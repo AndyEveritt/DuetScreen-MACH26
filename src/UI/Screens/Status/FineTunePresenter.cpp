@@ -18,12 +18,9 @@
 
 namespace UI
 {
-	static float s_speedValues[] = {5.0f, 25.0f};
-	static float s_flowValues[] = {1.0f, 2.0f};
-
 	void FineTunePresenter::newSpeedFactor()
 	{
-		m_view->setSpeedValue(std::round(100 * OM::Move::GetSpeedFactor()));
+		m_view->setSpeedValue(static_cast<uint32_t>(std::round(100 * OM::Move::GetSpeedFactor())));
 	}
 
 	void FineTunePresenter::newExtruderData()
@@ -34,7 +31,7 @@ namespace UI
 			[this](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
 				m_view->setExtruderLabel(index, _("fine_tune.extruder", extruder->index));
-				m_view->setExtruderValue(index, std::round(100 * extruder->factor));
+				m_view->setExtruderValue(index, static_cast<uint32_t>(std::round(100 * extruder->factor)));
 				return true;
 			});
 	}
@@ -47,7 +44,7 @@ namespace UI
 			[this](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
 				m_view->setFanLabel(index, _("fine_tune.fan", fan->index));
-				m_view->setFanValue(index, std::round(100 * fan->requestedValue));
+				m_view->setFanValue(index, static_cast<uint32_t>(std::round(100 * fan->requestedValue)));
 				return true;
 			});
 	}

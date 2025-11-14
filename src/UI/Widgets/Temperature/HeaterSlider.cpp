@@ -26,7 +26,8 @@ namespace UI
 		m_heaterState.setText("State");
 		setActiveTemperature(-2000);
 		setStandbyTemperature(-2000);
-		m_currentTemperature.setRange(m_minTempValue, m_maxTempValue);
+		m_currentTemperature.setRange(static_cast<int32_t>(std::floor(m_minTempValue)),
+									  static_cast<int32_t>(std::ceil(m_maxTempValue)));
 
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -93,7 +94,7 @@ namespace UI
 		// 	return;
 
 		LOG_DBG("Setting min temperature to {:g} °C", temperature);
-		m_currentTemperature.setMinValue(m_minTempValue);
+		m_currentTemperature.setMinValue(static_cast<int32_t>(std::floor(m_minTempValue)));
 		updateLabelPositions();
 	}
 
@@ -105,7 +106,7 @@ namespace UI
 
 		LOG_DBG("Setting max temperature to {:g} °C", temperature);
 		m_maxTempValue = temperature;
-		m_currentTemperature.setMaxValue(temperature);
+		m_currentTemperature.setMaxValue(static_cast<int32_t>(std::ceil(temperature)));
 		updateLabelPositions();
 	}
 
@@ -117,7 +118,7 @@ namespace UI
 
 		LOG_DBG("Setting current temperature to {:g} °C", temperature);
 		m_currentTempValue = temperature;
-		m_currentTemperature.setValue(temperature);
+		m_currentTemperature.setValue(static_cast<int32_t>(temperature));
 	}
 
 	void HeaterSlider::setActiveTemperature(int32_t temperature, bool dragging)
@@ -163,7 +164,7 @@ namespace UI
 		label_dsc.font = LV_FONT_DEFAULT;
 
 		char buf[8];
-		snprintf(buf, sizeof(buf), "%.1f", slider.m_currentTempValue);
+		snprintf(buf, sizeof(buf), "%.1f", static_cast<double>(slider.m_currentTempValue));
 
 		lv_point_t txt_size;
 		lv_text_get_size(
@@ -177,8 +178,8 @@ namespace UI
 
 		lv_area_t indic_area = slider.m_currentTemperature.getCoords();
 		lv_area_set_width(&indic_area,
-						  lv_area_get_width(&indic_area) * slider.m_currentTempValue /
-							  (slider.m_maxTempValue - slider.m_minTempValue));
+						  static_cast<int32_t>(lv_area_get_width(&indic_area) * slider.m_currentTempValue /
+											   (slider.m_maxTempValue - slider.m_minTempValue)));
 
 		/*If the indicator is long enough put the text inside on the right*/
 		if (lv_area_get_width(&indic_area) > txt_size.x + 20)
@@ -239,7 +240,8 @@ namespace UI
 			float pct =
 				(float)(temperature - control.m_minTempValue) / (control.m_maxTempValue - control.m_minTempValue);
 
-			control.m_pressedPointOffset.x = control.m_pressedPoint.x - label.getCoords().x1 - label.getWidth() * pct;
+			control.m_pressedPointOffset.x =
+				static_cast<int32_t>(control.m_pressedPoint.x - label.getCoords().x1 - label.getWidth() * pct);
 			break;
 		}
 		case LV_EVENT_PRESSING:
@@ -255,14 +257,14 @@ namespace UI
 			lv_indev_get_point(indev, &p);
 			lv_obj_transform_point(label.getRootPtr(), &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
 
-			const int32_t range = control.m_maxTempValue - control.m_minTempValue;
+			const int32_t range = static_cast<int32_t>(control.m_maxTempValue - control.m_minTempValue);
 			const int32_t w = control.m_currentTemperature.getWidth();
 			const int32_t rel_position =
 				p.x - control.m_currentTemperature.getCoords().x1 - control.m_pressedPointOffset.x;
 			int32_t new_temperature =
-				std::clamp((int32_t)(((range * rel_position + w / 2) / w)) + control.m_minTempValue,
-						   control.m_minTempValue,
-						   control.m_maxTempValue);
+				static_cast<int32_t>(std::clamp(((range * rel_position + w / 2) / w) + control.m_minTempValue,
+												control.m_minTempValue,
+												control.m_maxTempValue));
 
 			if (activeTemperature)
 				control.setActiveTemperature(new_temperature, true);
@@ -331,7 +333,7 @@ namespace UI
 
 			lv_area_t label_area = label.getCoords();
 			lv_coord_t label_width = label.getWidth();
-			const int32_t range = control.m_maxTempValue - control.m_minTempValue;
+			const int32_t range = static_cast<int32_t>(control.m_maxTempValue - control.m_minTempValue);
 
 			int32_t pct =
 				range > 0 ? std::clamp(100 * static_cast<int32_t>(temperature - control.m_minTempValue) / range, 0, 100)
@@ -380,6 +382,8 @@ namespace UI
 #endif
 			break;
 		}
+		default:
+			break;
 		}
 	}
 
@@ -404,7 +408,7 @@ namespace UI
 	{
 		LOG_DBG("Updating label '{}' position for value: {:d}", label.getName(), value);
 		// Calculate the position based on the current temperature value
-		const int32_t range = m_maxTempValue - m_minTempValue;
+		const int32_t range = static_cast<int32_t>(m_maxTempValue - m_minTempValue);
 		if (range <= 0)
 		{
 			LOG_DBG("Invalid temperature range: min = {:g}, max = {:g}", m_minTempValue, m_maxTempValue);

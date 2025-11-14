@@ -265,7 +265,6 @@ namespace UI::Themes
 		lv_obj_t* parent = lv_obj_get_parent(obj);
 
 		const LvglStyles& lvgl = getLvglStyles();
-		const ComponentStyles& components = getComponentStyles();
 
 		lv_obj_add_style(obj, lvgl.base, 0);
 
@@ -938,8 +937,8 @@ namespace UI::Themes
 		{
 			LOG_INFO("Theme not found, using default theme");
 			theme = getDefaultTheme();
-			int theme_id = 0;
-			for (int i = 0; i < themes().size(); ++i)
+			size_t theme_id = 0;
+			for (size_t i = 0; i < themes().size(); ++i)
 			{
 				if (themes()[i] == theme)
 				{
@@ -972,7 +971,7 @@ namespace UI::Themes
 
 	const Theme* getTheme(const size_t index)
 	{
-		if (index < 0 || index >= themes().size())
+		if (index >= getThemeCount())
 		{
 			LOG_ERROR("Theme with index {:d} not found", index);
 			return nullptr;
@@ -1005,7 +1004,7 @@ namespace UI::Themes
 		return theme;
 	}
 
-	const size_t getThemeCount()
+	size_t getThemeCount()
 	{
 		return themes().size();
 	}

@@ -367,6 +367,9 @@ namespace UI
 		case ResponseType::ERROR:
 			addStyle(Themes::getLvglStyles().bg_color_error);
 			break;
+		default:
+			LOG_WARN("Unknown message box type {:d}", (int)type);
+			break;
 		}
 	}
 

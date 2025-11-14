@@ -33,7 +33,8 @@ namespace UI
 		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_speed.setRange(1, 200);
 		m_speed.setDefaultValue(100);
-		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter->setSpeedFactor(value); });
+		m_speed.setValueChangedCallback([this](float value)
+										{ m_presenter->setSpeedFactor(static_cast<uint32_t>(value)); });
 	}
 
 	void SpeedFactor::setSpeedValue(uint32_t value)

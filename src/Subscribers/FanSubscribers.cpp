@@ -14,12 +14,15 @@
 
 bool FanSubscribers::nullFan(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(data);
 	OM::RemoveFan(indices[0], false);
 	return true;
 }
 
 bool FanSubscribers::actualValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateFanActualVal(indices[0], data))
 	{
 		LOG_ERROR("Failed to update fan {:d} actualValue to {:g}", indices[0], data);
@@ -30,6 +33,7 @@ bool FanSubscribers::actualValue(Comm::JsonDecoder* decoder, const float& data, 
 
 bool FanSubscribers::requestedValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateFanRequestedVal(indices[0], data))
 	{
 		LOG_ERROR("Failed to update fan {:d} requestedValue to {:g}", indices[0], data);
@@ -40,6 +44,7 @@ bool FanSubscribers::requestedValue(Comm::JsonDecoder* decoder, const float& dat
 
 bool FanSubscribers::rpm(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateFanRpm(indices[0], data))
 	{
 		LOG_ERROR("Failed to update fan {:d} rpm to {:d}", indices[0], data);
@@ -50,6 +55,7 @@ bool FanSubscribers::rpm(Comm::JsonDecoder* decoder, const int32_t& data, const 
 
 bool FanSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (OM::RemoveFan(indices[0], true))
 	{
 	}

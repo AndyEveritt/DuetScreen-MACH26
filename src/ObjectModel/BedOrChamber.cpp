@@ -145,6 +145,9 @@ namespace OM
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
 			break;
+		default:
+			LOG_WARN("Cannot toggle bed state, unknown heater status");
+			return false;
 		}
 		return true;
 	}
@@ -170,6 +173,9 @@ namespace OM
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
 			break;
+		default:
+			LOG_WARN("Cannot toggle chamber state, unknown heater status");
+			return false;
 		}
 		return true;
 	}

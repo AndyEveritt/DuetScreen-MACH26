@@ -133,13 +133,6 @@ namespace UI
 		uint32_t height;
 		m_canvas.getResolution(width, height);
 
-		// Get the data ranges
-		range_t xRange = getXRange();
-		range_t yRange = getYRange();
-
-		float xScale = static_cast<float>(width) / (xRange.max - xRange.min);
-		float yScale = static_cast<float>(height) / (yRange.max - yRange.min);
-
 		// Clear the canvas before rendering
 		m_canvas.clear();
 
@@ -163,9 +156,9 @@ namespace UI
 		uint32_t barWidth;
 		uint32_t barHeight;
 		m_colorBar.getResolution(barWidth, barHeight);
-		for (int y = 0; y < barHeight; y++)
+		for (uint32_t y = 0; y < barHeight; y++)
 		{
-			float percent = 1.0f - (float)y / barHeight;
+			float percent = 1.0f - static_cast<float>(y) / barHeight;
 			lv_color_t color = GetColorForPercent(percent);
 			m_colorBar.drawPx(0, y, color, LV_OPA_COVER);
 		}

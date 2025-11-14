@@ -7,9 +7,6 @@ namespace UI
 {
 	StatusBar::StatusBar(LvObj& parent)
 		: View("status_bar", parent)
-		, m_duetStatus("status", getRoot())
-		, m_duetName("name", getRoot())
-		, m_time("time", getRoot())
 	{
 		activate();
 

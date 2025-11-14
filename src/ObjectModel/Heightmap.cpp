@@ -395,7 +395,7 @@ namespace OM
 		const uint32_t indexX0Y1 = indexX0Y0 + meta.GetSamples(0);		// (X0 Y1)
 		const uint32_t indexX1Y1 = indexX0Y1 + 1;						// (X1,Y1)
 
-		const float xyFrac = axis0Frac * axis1Frac;
+		const double xyFrac = axis0Frac * axis1Frac;
 
 		if (indexX1Y1 >= m_heightmap.size())
 		{
@@ -411,7 +411,7 @@ namespace OM
 		{
 			if (point.isNull)
 			{
-				result = 0.0f;
+				result = 0.0;
 				return false;
 			}
 		}

@@ -112,7 +112,7 @@ namespace Comm
 		saveConfig();
 	}
 
-	const CommunicationType Duet::GetCommunicationType() const
+	CommunicationType Duet::GetCommunicationType() const
 	{
 		return m_config.communicationType;
 	}
@@ -161,12 +161,12 @@ namespace Comm
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
-	const std::chrono::milliseconds Duet::GetPollInterval() const
+	std::chrono::milliseconds Duet::GetPollInterval() const
 	{
 		return m_config.pollInterval;
 	}
 
-	const std::chrono::milliseconds Duet::GetScaledPollInterval() const
+	std::chrono::milliseconds Duet::GetScaledPollInterval() const
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(m_config.pollInterval * m_pollIntervalScale);
 	}
@@ -306,6 +306,11 @@ namespace Comm
 			return false;
 		}
 		m_lastRequestTime = TimeHelper::getCurrentTime();
+#else
+		UNUSED(subUrl);
+		UNUSED(r);
+		UNUSED(queryParameters);
+		UNUSED(data);
 #endif
 		return true;
 	}
@@ -346,9 +351,9 @@ namespace Comm
 				{
 					uint32_t lineNumber = GetNextLineNumber();
 					std::string lineNumberStr = fmt::format("N{:d} ", lineNumber);
-					for (char c : lineNumberStr)
+					for (char line_c : lineNumberStr)
 					{
-						crc.Update(c);
+						crc.Update(line_c);
 					}
 					send_cb(lineNumberStr);
 				}
@@ -365,7 +370,6 @@ namespace Comm
 		}
 		case CommunicationType::network:
 		{
-			HttpResponse r;
 			hv::QueryParams query;
 			query["gcode"] = gcode;
 			AsyncGet("/rr_gcode",
@@ -603,8 +607,6 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-			JsonDecoder decoder;
-			HttpResponse r;
 			hv::QueryParams query;
 			query["dir"] = dir;
 			query["first"] = fmt::format("{:d}", first);
@@ -651,7 +653,6 @@ namespace Comm
 			break;
 		case CommunicationType::network:
 		{
-			JsonDecoder decoder;
 			hv::QueryParams query;
 			query["name"] = filename;
 
@@ -901,7 +902,7 @@ namespace Comm
 		Get("/rr_reply", r, query);
 	}
 
-	const bool Duet::Connect(bool useSessionKey)
+	bool Duet::Connect(bool useSessionKey)
 	{
 		Disconnect();
 		Reset();
@@ -925,6 +926,7 @@ namespace Comm
 			SerialIo::SetDataCallback(
 				[this](const std::string_view data)
 				{
+					UNUSED(data);
 					m_connectionState = ConnectionState::CONNECTED;
 					SerialIo::RestoreDataCallback();
 					Model::get().post<EventType::Connected>();
@@ -936,7 +938,6 @@ namespace Comm
 		{
 			LOG_INFO("Connecting to Duet at {:s}", GetBaseUrl());
 
-			HttpResponse r;
 			hv::QueryParams query;
 			query["password"] = std::string("\"") + m_config.password + "\"";
 			if (useSessionKey)
@@ -1029,7 +1030,7 @@ namespace Comm
 		return ret;
 	}
 
-	const bool Duet::Disconnect()
+	bool Duet::Disconnect()
 	{
 		if (m_connectionState == ConnectionState::DISCONNECTED)
 		{

@@ -69,7 +69,8 @@ namespace UI
 		m_slider.setLabel(_("fan.header"));
 		m_slider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_slider.setRange(0, 100);
-		m_slider.setValueChangedCallback([this](int32_t value) { m_view.m_presenter->setFanSpeed(getIndex(), value); });
+		m_slider.setValueChangedCallback(
+			[this](float value) { m_view.m_presenter->setFanSpeed(getIndex(), static_cast<uint32_t>(value)); });
 		m_slider.setStylePad(5, LV_PART_MAIN, Padding::ALL);
 		m_slider.addStyle(Themes::getLvglStyles().no_border, 0);
 

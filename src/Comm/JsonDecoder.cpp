@@ -939,7 +939,7 @@ namespace Comm
 						break;
 					}
 					m_state = jsExpValFirstDigit;
-					// no break
+					[[fallthrough]];
 				case jsExpValFirstDigit:
 					if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
 					{

@@ -168,7 +168,7 @@ namespace UI
 
 	float NumberPad::getValue() const
 	{
-		return atof(m_textBox.getText().data());
+		return static_cast<float>(atof(m_textBox.getText().data()));
 	}
 
 	bool NumberPad::validateInput()

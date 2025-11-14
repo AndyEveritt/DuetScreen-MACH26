@@ -49,8 +49,9 @@ namespace UI
 
 	float DraggableButton::getDragPct(const lv_point_t& start_pos, const lv_event_t* e) const
 	{
+		UNUSED(e);
 		lv_point_t curr_pos;
-		lv_indev_get_point(lv_indev_get_act(), &curr_pos);
+		lv_indev_get_point(lv_indev_active(), &curr_pos);
 
 		lv_coord_t dx = curr_pos.x - start_pos.x;
 		lv_coord_t dy = curr_pos.y - start_pos.y;
@@ -93,7 +94,8 @@ namespace UI
 			lv_style_value_t borderWidth;
 			lv_style_get_prop(Themes::getLvglStyles().dragging, LV_STYLE_BORDER_WIDTH, &borderWidth);
 
-			lv_obj_set_style_border_width(button->getButton(), borderWidth.num * (1 - pct), LV_STATE_PRESSED);
+			lv_obj_set_style_border_width(
+				button->getButton(), static_cast<int32_t>(borderWidth.num * (1.0f - pct)), LV_STATE_PRESSED);
 
 			if (!lv_obj_has_state(button->getButton(), LV_STATE_USER_1) && pct == 1.0f)
 			{

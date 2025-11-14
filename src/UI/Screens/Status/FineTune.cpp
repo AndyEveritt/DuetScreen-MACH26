@@ -33,7 +33,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		iterateChildren([](size_t i, LvObj& child) { child.setHeight(LV_PCT(100)); });
+		iterateChildren([](size_t /* i */, LvObj& child) { child.setHeight(LV_PCT(100)); });
 		m_babystep.setFlexGrow(2);
 		m_sliderCont.setFlexGrow(5);
 
@@ -63,7 +63,8 @@ namespace UI
 		m_speed.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_speed.setRange(1, 200);
 		m_speed.setDefaultValue(100);
-		m_speed.setValueChangedCallback([this](int32_t value) { m_presenter->setSpeedFactor(value); });
+		m_speed.setValueChangedCallback([this](float value)
+										{ m_presenter->setSpeedFactor(static_cast<uint32_t>(value)); });
 	}
 
 	void FineTune::setSpeedValue(uint32_t value)
@@ -97,8 +98,9 @@ namespace UI
 									 slider->setRange(0, 200);
 									 slider->setDefaultValue(100);
 									 slider->setOutOfRangeMode(Slider::OutOfRange::UPPER);
-									 slider->setValueChangedCallback([this, index](int32_t value)
-																	 { m_presenter->setExtruderFactor(index, value); });
+									 slider->setValueChangedCallback(
+										 [this, index](float value)
+										 { m_presenter->setExtruderFactor(index, static_cast<uint32_t>(value)); });
 									 return slider;
 								 });
 	}
@@ -125,8 +127,9 @@ namespace UI
 									});
 								slider->setRange(0, 100);
 								slider->setDefaultValue(100);
-								slider->setValueChangedCallback([this, index](int32_t value)
-																{ m_presenter->setFanValue(index, value); });
+								slider->setValueChangedCallback(
+									[this, index](float value)
+									{ m_presenter->setFanValue(index, static_cast<uint32_t>(value)); });
 								return slider;
 							});
 	}

@@ -191,7 +191,7 @@ namespace UI
 		UI_LOCK();
 		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_hScale) / lv_scale_get_major_tick_every(m_hScale);
 		createLabels(range, ticks, m_xLabels, m_xLabelPtr);
-		lv_scale_set_range(m_hScale, range.min, range.max);
+		lv_scale_set_range(m_hScale, static_cast<int32_t>(range.min), static_cast<int32_t>(range.max));
 		lv_scale_set_text_src(m_hScale, m_xLabelPtr);
 	}
 
@@ -200,7 +200,7 @@ namespace UI
 		UI_LOCK();
 		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_vScale) / lv_scale_get_major_tick_every(m_vScale);
 		createLabels(range, ticks, m_yLabels, m_yLabelPtr);
-		lv_scale_set_range(m_vScale, range.min, range.max);
+		lv_scale_set_range(m_vScale, static_cast<int32_t>(range.min), static_cast<int32_t>(range.max));
 		lv_scale_set_text_src(m_vScale, m_yLabelPtr);
 	}
 
@@ -334,6 +334,7 @@ namespace UI
 
 	void Canvas::drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa)
 	{
+		UNUSED(opa);
 		UI_LOCK();
 		// Draw the pixel
 		lv_canvas_set_px(getCanvasObj(), px, py, color, LV_OPA_COVER);

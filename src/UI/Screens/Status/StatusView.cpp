@@ -55,7 +55,7 @@ namespace UI
 		m_cancelBtn.setIcon("cancel.png");
 
 		m_footer.iterateChildren(
-			[](size_t i, LvObj& child)
+			[](size_t /* i */, LvObj& child)
 			{
 				child.setHeight(LV_PCT(100));
 				child.setMinHeight(LV_SIZE_CONTENT, 0);

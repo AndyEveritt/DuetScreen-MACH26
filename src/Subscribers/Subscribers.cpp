@@ -4,7 +4,7 @@
 SubscriberMap::SubscriberMap_t SubscriberMap::s_subscribers;
 SubscriberMap::ArrayEndSubscriberMap_t SubscriberMap::s_arrayEndSubscribers;
 
-size_t const SubscriberMap::getSubscriberCount(const char* key)
+size_t SubscriberMap::getSubscriberCount(const char* key)
 {
 	auto it = s_subscribers.find(key);
 	if (it == s_subscribers.end())
@@ -25,7 +25,7 @@ const std::vector<Subscriber>& SubscriberMap::getSubscribers(const char* key)
 	return it->second;
 }
 
-size_t const SubscriberMap::getArrayEndSubscriberCount(const char* key)
+size_t SubscriberMap::getArrayEndSubscriberCount(const char* key)
 {
 	auto it = s_arrayEndSubscribers.find(key);
 	if (it == s_arrayEndSubscribers.end())

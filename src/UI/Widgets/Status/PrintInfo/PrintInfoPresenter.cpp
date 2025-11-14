@@ -65,7 +65,7 @@ namespace UI
 	void PrintInfoPresenter::openExtrusionFactorModal()
 	{
 		auto& modal = m_view->getModalExtrusionFactor();
-		openModal(&m_view->getModalExtrusionFactor());
+		openModal(&modal);
 	}
 
 	void PrintInfoPresenter::newAxesData()
@@ -98,9 +98,9 @@ namespace UI
 		size_t extruderCount = 0;
 		uint32_t flowMultiplier = 0;
 		tool->IterateExtruders(
-			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
+			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t /* index */)
 			{
-				flowMultiplier += 100 * extruder->factor;
+				flowMultiplier += static_cast<uint32_t>(100 * extruder->factor);
 				extruderCount++;
 			});
 
@@ -115,7 +115,7 @@ namespace UI
 
 	void PrintInfoPresenter::newSpeedFactor()
 	{
-		m_view->updateSpeedMultiplier(100 * OM::Move::GetSpeedFactor());
+		m_view->updateSpeedMultiplier(static_cast<uint32_t>(100 * OM::Move::GetSpeedFactor()));
 	}
 
 	void PrintInfoPresenter::newJobDuration()

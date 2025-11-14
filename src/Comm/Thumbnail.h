@@ -81,8 +81,8 @@ namespace Comm
 		ThumbnailContext context;
 		ThumbnailImage image;
 
-		Thumbnail(StringRef filename)
-			: filename(filename)
+		Thumbnail(StringRef name)
+			: filename(name)
 		{
 		}
 		uint32_t GetProgress() const;

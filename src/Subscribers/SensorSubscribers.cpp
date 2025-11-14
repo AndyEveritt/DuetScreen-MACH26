@@ -6,6 +6,8 @@
 
 bool SensorSubscribers::nullAnalogSensor(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(data);
 	OM::RemoveAnalogSensor(indices[0], false);
 	Model::get().post<EventType::AnalogSensorData>();
 	return true;
@@ -13,6 +15,7 @@ bool SensorSubscribers::nullAnalogSensor(Comm::JsonDecoder* decoder, const char*
 
 bool SensorSubscribers::analogSensorReading(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateAnalogSensorReading(indices[0], data))
 	{
 		LOG_ERROR("Failed to update analog sensor {:d} reading to {:g}", indices[0], data);
@@ -23,6 +26,7 @@ bool SensorSubscribers::analogSensorReading(Comm::JsonDecoder* decoder, const fl
 
 bool SensorSubscribers::analogSensorName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateAnalogSensorName(indices[0], data))
 	{
 		LOG_ERROR("Failed to update analog sensor {:d} name to {:s}", indices[0], data);
@@ -33,6 +37,8 @@ bool SensorSubscribers::analogSensorName(Comm::JsonDecoder* decoder, const char*
 
 bool SensorSubscribers::nullEndstop(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(data);
 	OM::RemoveEndstop(indices[0], false);
 	Model::get().post<EventType::EndstopData>();
 	return true;
@@ -40,6 +46,7 @@ bool SensorSubscribers::nullEndstop(Comm::JsonDecoder* decoder, const char* data
 
 bool SensorSubscribers::endstopTriggered(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateEndstopTriggered(indices[0], data))
 	{
 		LOG_ERROR("Failed to update endstop {:d} triggered to {:d}", indices[0], data);
@@ -50,6 +57,7 @@ bool SensorSubscribers::endstopTriggered(Comm::JsonDecoder* decoder, const bool&
 
 bool SensorSubscribers::analogSensorArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (OM::RemoveAnalogSensor(indices[0], true))
 	{
 	}
@@ -59,6 +67,7 @@ bool SensorSubscribers::analogSensorArrayEnd(Comm::JsonDecoder* decoder, const s
 
 bool SensorSubscribers::endstopArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (OM::RemoveEndstop(indices[0], true))
 	{
 	}

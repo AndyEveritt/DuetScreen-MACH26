@@ -125,7 +125,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_incrementValue = value;
-		m_slider.setMaxValue((m_max - m_min) / m_incrementValue);
+		m_slider.setMaxValue(static_cast<int32_t>((m_max - m_min) / m_incrementValue));
 	}
 
 	void Slider::setRange(float min, float max)
@@ -134,8 +134,8 @@ namespace UI
 		m_min = min;
 		m_max = max;
 		boundValue(m_value);
-		m_slider.setMaxValue((m_max - m_min) / m_incrementValue);
-		m_slider.setValue(m_value);
+		m_slider.setMaxValue(static_cast<int32_t>((m_max - m_min) / m_incrementValue));
+		setValue(m_value);
 	}
 
 	void Slider::setValue(float value)
@@ -213,6 +213,8 @@ namespace UI
 			}
 			slider->updateText();
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -252,7 +254,7 @@ namespace UI
 		}
 		case LV_EVENT_READY:
 		{
-			float value = atof(slider->m_input.getText().data());
+			float value = static_cast<float>(atof(slider->m_input.getText().data()));
 			slider->setValue(value);
 			break;
 		}
@@ -273,7 +275,7 @@ namespace UI
 				*/
 				break;
 			}
-			float value = atof(slider->m_input.getText().data());
+			float value = static_cast<float>(atof(slider->m_input.getText().data()));
 			if (value > slider->getMax() && slider->m_outOfRangeMode & ~OutOfRange::UPPER)
 			{
 				slider->m_input.setText(fmt::format("{:g}", slider->getMax()));
@@ -283,6 +285,8 @@ namespace UI
 			slider->m_slider.setValue(slider->normaliseValue(value));
 			break;
 		}
+		default:
+			break;
 		}
 	}
 

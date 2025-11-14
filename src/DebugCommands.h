@@ -16,8 +16,8 @@ namespace Debug
 
 	struct DebugCommand
 	{
-		const char* id;
-		debugCb_t callback;
+		const char* m_id;
+		debugCb_t m_callback;
 
 		DebugCommand(const char* id, debugCb_t callback);
 	};

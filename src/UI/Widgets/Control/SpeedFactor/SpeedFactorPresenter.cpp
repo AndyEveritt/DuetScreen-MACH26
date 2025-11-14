@@ -15,7 +15,7 @@ namespace UI
 {
 	void SpeedFactorPresenter::newSpeedFactor()
 	{
-		m_view->setSpeedValue(std::round(100 * OM::Move::GetSpeedFactor()));
+		m_view->setSpeedValue(static_cast<uint32_t>(std::round(100 * OM::Move::GetSpeedFactor())));
 	}
 
 	void SpeedFactorPresenter::setSpeedFactor(uint32_t value)

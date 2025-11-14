@@ -29,7 +29,6 @@ std::string GetThumbnailPath(std::string_view filepath)
 bool CreateThumbnailDirectory(std::string_view thumbnailFilepath)
 {
 	std::filesystem::path directory = thumbnailFilepath.substr(0, thumbnailFilepath.find_last_of('/'));
-	struct stat sb;
 	if (!std::filesystem::exists(directory))
 	{
 		try
@@ -147,11 +146,6 @@ bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)
 bool ThumbnailDataIsValid(Comm::ThumbnailBuf& data)
 {
 	if (data.size == 0)
-	{
-		return false;
-	}
-
-	if (!data.buffer)
 	{
 		return false;
 	}

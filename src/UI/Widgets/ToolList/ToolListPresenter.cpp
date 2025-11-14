@@ -179,8 +179,6 @@ namespace UI
 		size_t slot = getSlotIndex();
 		LOG_VERBOSE("Tool index {:d}", slot);
 
-		uint8_t count = 0;
-		uint8_t tHeaterIndex = 0;
 		m_tool = OM::GetToolBySlot(slot);
 
 		if (m_tool == nullptr)

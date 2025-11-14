@@ -92,7 +92,7 @@ constexpr int MAX_EXTRUDE_FEEDRATE = 300;
 constexpr int MAX_EXTRUDE_DISTANCE = 500;
 
 /* Print Status */
-constexpr float DEFAULT_BABY_STEP_SIZE = 0.05;
+constexpr float DEFAULT_BABY_STEP_SIZE = 0.05f;
 
 /* Heightmap */
 constexpr double HEIGHTMAP_FIXED_MAX = 0.25;

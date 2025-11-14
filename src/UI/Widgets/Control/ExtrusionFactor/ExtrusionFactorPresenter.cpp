@@ -23,7 +23,7 @@ namespace UI
 			[this](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
 				m_view->setExtruderLabel(index, _("fine_tune.extruder", extruder->index));
-				m_view->setExtruderValue(index, std::round(100 * extruder->factor));
+				m_view->setExtruderValue(index, static_cast<uint32_t>(std::round(100 * extruder->factor)));
 				return true;
 			});
 	}

@@ -20,7 +20,7 @@ struct gcode
 class Gcodes
 {
   public:
-	static const size_t getGcodeCount();
+	static size_t getGcodeCount();
 	static const gcode* getGcode(size_t index);
 
   private:

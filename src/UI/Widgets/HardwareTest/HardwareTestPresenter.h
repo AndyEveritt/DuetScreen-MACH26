@@ -113,8 +113,8 @@ namespace UI
 		virtual void onActivate() override;
 		virtual void onDeactivate() override;
 
-		virtual void onConnect() {}
-		virtual void onDisconnect() {}
+		virtual void onConnect() override {}
+		virtual void onDisconnect() override {}
 
 		void nextTest();
 
@@ -142,13 +142,13 @@ namespace UI
 		std::vector<std::pair<lv_point_t, lv_point_t>> m_touchPoints;
 
 		size_t m_colorIndex = 0;
-		struct color_test
+		struct color_test_t
 		{
 			lv_color_t color;
 			std::string_view name;
 			bool result;
 		};
-		std::vector<color_test> m_colors = {{lv_color_hex(0xFF0000), "Red", false},
+		std::vector<color_test_t> m_colors = {{lv_color_hex(0xFF0000), "Red", false},
 											{lv_color_hex(0x00FF00), "Green", false},
 											{lv_color_hex(0x0000FF), "Blue", false},
 											{lv_color_hex(0xFFFFFF), "White", false}};

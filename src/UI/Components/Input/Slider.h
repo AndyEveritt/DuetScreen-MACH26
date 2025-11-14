@@ -21,6 +21,9 @@ namespace UI
 	class Slider : public LvContainer
 	{
 	  public:
+		using value_changed_callback_t = std::function<void(float)>;
+		using focused_callback_t = std::function<void(bool)>;
+
 		enum class SendMode
 		{
 			VALUE_CONFIRMED, // Only run callback once the slider has been released or the buttons are pressed
@@ -55,12 +58,12 @@ namespace UI
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
 		void setKeyboard(LvKeyboard* keyboard) { m_keyboard = keyboard; }
-		void setValueChangedCallback(std::function<void(int32_t)> callback) { m_valueChangedCallback = callback; }
+		void setValueChangedCallback(value_changed_callback_t callback) { m_valueChangedCallback = callback; }
 
 		/**
 		 * @brief Set a callback to run when the focus state of the text input changes
 		 */
-		void setFocusedCallback(std::function<void(bool)> callback) { m_focusedCallback = callback; }
+		void setFocusedCallback(focused_callback_t callback) { m_focusedCallback = callback; }
 
 	  protected:
 		static void onValueChanged(lv_event_t* e);
@@ -92,7 +95,7 @@ namespace UI
 		bool m_longPressEnabled = true;
 		SendMode m_sendMode = SendMode::VALUE_CONFIRMED;
 		OutOfRange m_outOfRangeMode = OutOfRange::NONE;
-		std::function<void(int32_t)> m_valueChangedCallback;
-		std::function<void(int32_t)> m_focusedCallback;
+		value_changed_callback_t m_valueChangedCallback;
+		focused_callback_t m_focusedCallback;
 	};
 } // namespace UI

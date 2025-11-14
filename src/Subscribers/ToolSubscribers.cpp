@@ -6,6 +6,8 @@
 
 bool ToolSubscribers::nullTool(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(data);
 	if (OM::RemoveTool(indices[0], false) > 0)
 	{
 		Model::get().post<EventType::ToolData>();
@@ -15,6 +17,7 @@ bool ToolSubscribers::nullTool(Comm::JsonDecoder* decoder, const char* data, con
 
 bool ToolSubscribers::toolHeater(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolHeater(indices[0], indices[1], (uint8_t)data))
 	{
 		LOG_ERROR("Failed to update tool {:d} heater {:d}", indices[0], indices[1]);
@@ -25,6 +28,7 @@ bool ToolSubscribers::toolHeater(Comm::JsonDecoder* decoder, const uint32_t& dat
 
 bool ToolSubscribers::toolExtruder(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolExtruder(indices[0], indices[1], (uint8_t)data))
 	{
 		LOG_ERROR("Failed to update tool {:d} extruder {:d}", indices[0], indices[1]);
@@ -35,6 +39,7 @@ bool ToolSubscribers::toolExtruder(Comm::JsonDecoder* decoder, const uint32_t& d
 
 bool ToolSubscribers::toolFan(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolFan(indices[0], indices[1], (uint8_t)data))
 	{
 		LOG_ERROR("Failed to update tool {:d} fan {:d}", indices[0], indices[1]);
@@ -45,6 +50,7 @@ bool ToolSubscribers::toolFan(Comm::JsonDecoder* decoder, const uint32_t& data, 
 
 bool ToolSubscribers::toolFilamentExtruder(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolFilamentExtruder(indices[0], (int8_t)data))
 	{
 		LOG_ERROR("Failed to update tool {:d} filamentExtruder to {:d}", indices[0], data);
@@ -55,6 +61,7 @@ bool ToolSubscribers::toolFilamentExtruder(Comm::JsonDecoder* decoder, const int
 
 bool ToolSubscribers::toolActiveTemp(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolTemp(indices[0], indices[1], data, true))
 	{
 		LOG_ERROR("Failed to update tool {:d} active temperature[{:d}] to {:d}", indices[0], indices[1], data);
@@ -65,6 +72,7 @@ bool ToolSubscribers::toolActiveTemp(Comm::JsonDecoder* decoder, const int32_t& 
 
 bool ToolSubscribers::toolStandbyTemp(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolTemp(indices[0], indices[1], data, false))
 	{
 		LOG_ERROR("Failed to update tool {:d} standby temperature[{:d}] to {:d}", indices[0], indices[1], data);
@@ -75,6 +83,7 @@ bool ToolSubscribers::toolStandbyTemp(Comm::JsonDecoder* decoder, const int32_t&
 
 bool ToolSubscribers::toolSpindle(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolSpindle(indices[0], data))
 	{
 		LOG_ERROR("Failed to update tool {:d} spindle to {:d}", indices[0], data);
@@ -85,6 +94,7 @@ bool ToolSubscribers::toolSpindle(Comm::JsonDecoder* decoder, const int32_t& dat
 
 bool ToolSubscribers::toolSpindleRpm(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolSpindleRpm(indices[0], data))
 	{
 		LOG_ERROR("Failed to update tool {:d} spindleRpm to {:d}", indices[0], data);
@@ -95,6 +105,7 @@ bool ToolSubscribers::toolSpindleRpm(Comm::JsonDecoder* decoder, const int32_t& 
 
 bool ToolSubscribers::toolName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolName(indices[0], data))
 	{
 		LOG_ERROR("Failed to update tool {:d} name to {:s}", indices[0], data);
@@ -105,6 +116,7 @@ bool ToolSubscribers::toolName(Comm::JsonDecoder* decoder, const char* data, con
 
 bool ToolSubscribers::toolMix(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolMix(indices[0], indices[1], data))
 	{
 		LOG_ERROR("Failed to update tool {:d} mix {:d} to {:g}", indices[0], indices[1], data);
@@ -115,6 +127,7 @@ bool ToolSubscribers::toolMix(Comm::JsonDecoder* decoder, const float& data, con
 
 bool ToolSubscribers::toolState(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (!OM::UpdateToolStatus(indices[0], data))
 	{
 		LOG_ERROR("Failed to update tool {:d} name to {:s}", indices[0], data);
@@ -125,6 +138,7 @@ bool ToolSubscribers::toolState(Comm::JsonDecoder* decoder, const char* data, co
 
 bool ToolSubscribers::toolArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (OM::RemoveTool(indices[0], true))
 	{
 	}
@@ -134,6 +148,7 @@ bool ToolSubscribers::toolArrayEnd(Comm::JsonDecoder* decoder, const size_t indi
 
 bool ToolSubscribers::toolHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (OM::RemoveToolHeaters(indices[0], indices[1]))
 	{
 	}
@@ -143,6 +158,7 @@ bool ToolSubscribers::toolHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_
 
 bool ToolSubscribers::toolExtruderArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (OM::RemoveToolExtruders(indices[0], indices[1]))
 	{
 	}
@@ -151,6 +167,7 @@ bool ToolSubscribers::toolExtruderArrayEnd(Comm::JsonDecoder* decoder, const siz
 
 bool ToolSubscribers::toolFanArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (OM::RemoveToolFans(indices[0], indices[1]))
 	{
 	}

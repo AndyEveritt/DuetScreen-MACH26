@@ -50,8 +50,9 @@ namespace UI
 									 slider->setRange(0, 200);
 									 slider->setDefaultValue(100);
 									 slider->setOutOfRangeMode(Slider::OutOfRange::UPPER);
-									 slider->setValueChangedCallback([this, index](int32_t value)
-																	 { m_presenter->setExtruderFactor(index, value); });
+									 slider->setValueChangedCallback(
+										 [this, index](float value)
+										 { m_presenter->setExtruderFactor(index, static_cast<uint32_t>(value)); });
 									 slider->addEventCallback(
 										 [](lv_event_t* e)
 										 {
@@ -123,7 +124,7 @@ namespace UI
 		m_extrusionFactor.setFlexGrow(1);
 		m_extrusionFactor.setNumberPad(&m_numberPad);
 		m_extrusionFactor.setInputFocusCb(
-			[this](bool focused, size_t index, Slider& slider)
+			[this](bool focused, size_t index, Slider& /* slider */)
 			{
 				if (!focused)
 					return;

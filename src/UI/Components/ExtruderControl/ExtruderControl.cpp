@@ -159,7 +159,7 @@ namespace UI
 				continue;
 			}
 
-			btn->setChecked(static_cast<int32_t>(index) == i);
+			btn->setChecked(static_cast<size_t>(index) == i);
 		}
 		setFilamentDisabled(index < 0);
 		m_loadedFilament = "some_placeholder"; // This is a hack
@@ -418,6 +418,8 @@ namespace UI
 				}
 				break;
 			}
+			default:
+				break;
 			}
 		}
 	}
@@ -461,6 +463,8 @@ namespace UI
 				}
 				break;
 			}
+			default:
+				break;
 			}
 		}
 	}

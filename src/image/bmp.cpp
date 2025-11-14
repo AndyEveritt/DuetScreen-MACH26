@@ -126,7 +126,7 @@ void BMP::generateBitmapHeaders()
 void BMP::writeRow(unsigned char* pixels)
 {
 	LOG_DBG("Writing row to file {:s}", m_imageFileName);
-#if DEBUG_LEVEL <= DEBUG_LEVEL_VERBOSE
+#if DEBUG
 	for (int i = 0; i < m_width; i++)
 	{
 		rgba_t* pixel = (rgba_t*)(pixels) + i;

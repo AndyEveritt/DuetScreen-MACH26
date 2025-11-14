@@ -113,7 +113,7 @@ namespace OM::FileSystem
 		std::lock_guard<std::mutex> lock(m_mutex);
 		return m_items;
 	}
-	const size_t FileListRequest::GetItemCount() const
+	size_t FileListRequest::GetItemCount() const
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 		return m_items.size();
@@ -301,7 +301,7 @@ namespace OM::FileSystem
 						[descending](const ItemPtr& L, const ItemPtr& R)
 						{
 							if (L->GetType() == R->GetType())
-								return descending == L->GetName() > R->GetName();
+								return descending == (L->GetName() > R->GetName());
 							return L->GetType() < R->GetType();
 						});
 			break;
@@ -310,7 +310,7 @@ namespace OM::FileSystem
 						[descending](const ItemPtr& L, const ItemPtr& R)
 						{
 							if (L->GetType() == R->GetType())
-								return descending == L->GetDate() > R->GetDate();
+								return descending == (L->GetDate() > R->GetDate());
 							return L->GetType() < R->GetType();
 						});
 			break;
@@ -319,7 +319,7 @@ namespace OM::FileSystem
 						[descending](const ItemPtr& L, const ItemPtr& R)
 						{
 							if (L->GetType() == R->GetType())
-								return descending == L->GetSize() > R->GetSize();
+								return descending == (L->GetSize() > R->GetSize());
 							return L->GetType() < R->GetType();
 						});
 			break;
@@ -360,6 +360,7 @@ namespace OM::FileSystem
 
 	void RequestUsbFiles(const std::string& path)
 	{
+		LOG_DBG("Requesting USB files in path '{:s}'", path);
 #if 0
 		ClearFileSystem();
 		s_usbFolder = true;
@@ -408,6 +409,7 @@ namespace OM::FileSystem
 	void UploadFile(const ItemPtr& file)
 	{
 		// TODO upload file
+		LOG_DBG("Uploading file '{:s}'", file ? file->GetPath() : "null");
 #if 0
 		if (file == nullptr || file->GetType() != FileSystemItemType::file)
 		{

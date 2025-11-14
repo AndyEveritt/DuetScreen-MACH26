@@ -122,7 +122,7 @@ namespace OM::FileSystem
 		const std::string& GetDir() const { return m_path; }
 		// Returns a snapshot copy of the items to avoid races
 		ItemList GetItemsCopy() const;
-		const size_t GetItemCount() const;
+		size_t GetItemCount() const;
 		ItemPtr GetLastItem() const;
 		ItemPtr GetItem(const size_t index) const;
 		size_t GetFirst() const { return m_first; }

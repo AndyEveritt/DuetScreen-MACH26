@@ -20,6 +20,7 @@
 
 bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	OM::FileSystem::FileListRequestWeakPtr request = OM::FileSystem::GetFileListRequest(data);
 	if (!request.lock())
 	{
@@ -35,6 +36,7 @@ bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char
 
 bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
 		return false;
@@ -65,6 +67,7 @@ bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& 
 
 bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
 		return false;
@@ -91,6 +94,7 @@ bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
 		return false;
@@ -114,6 +118,7 @@ bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
 		return false;
@@ -136,6 +141,7 @@ bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, 
 
 bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
 		return false;
@@ -158,6 +164,7 @@ bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder && decoder->GetSeq() != nullptr)
 	{
 		// There is a key collision with `M409 K"boards" F"v"`, so we need to check if the key is part of an OM request
@@ -189,6 +196,7 @@ bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& d
 
 bool FileSubscribers::setFragFilename(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents = OM::FileSystem::GetCurrentFileRequestContents();
 	if (!fileContents || fileContents->GetFilename() != data)
 	{
@@ -223,6 +231,7 @@ static bool getFileContentsFromDecoder(Comm::JsonDecoder* decoder, OM::FileSyste
 
 bool FileSubscribers::setFragOffset(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
 	{
@@ -243,6 +252,7 @@ bool FileSubscribers::setFragOffset(Comm::JsonDecoder* decoder, const char* data
 
 bool FileSubscribers::setFragData(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
 	{
@@ -256,6 +266,7 @@ bool FileSubscribers::setFragData(Comm::JsonDecoder* decoder, const char* data, 
 
 bool FileSubscribers::setFragNext(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
 	{
@@ -276,6 +287,7 @@ bool FileSubscribers::setFragNext(Comm::JsonDecoder* decoder, const char* data, 
 
 bool FileSubscribers::setFragErr(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
 	{
@@ -307,6 +319,7 @@ bool FileSubscribers::setFragErr(Comm::JsonDecoder* decoder, const char* data, c
 
 bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	UNUSED(indices);
 	{
 		MODEL_LOCK();
 		if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)

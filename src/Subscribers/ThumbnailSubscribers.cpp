@@ -13,6 +13,7 @@
 
 bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	// TODO this is not thread safe with multiple parallel requests
 	FILEINFO_CACHE->ReceivingFileInfoResponse(data);
 	Comm::FileInfoCache::FileInfoRequestPtr request = FILEINFO_CACHE->GetFileInfoRequest(data);
@@ -31,6 +32,7 @@ bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data
 
 bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	LOG_DBG("lastModified {:s}", data);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -54,6 +56,7 @@ bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* 
 
 bool ThumbnailSubscribers::size(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
 		LOG_DBG("size received but not in fileInfo response");
@@ -76,6 +79,7 @@ bool ThumbnailSubscribers::size(Comm::JsonDecoder* decoder, const uint32_t& data
 
 bool ThumbnailSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
 		LOG_DBG("printTime received but not in fileInfo response");
@@ -98,6 +102,7 @@ bool ThumbnailSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t&
 
 bool ThumbnailSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
 		LOG_DBG("simulatedTime received but not in fileInfo response");
@@ -120,6 +125,7 @@ bool ThumbnailSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const uint3
 
 bool ThumbnailSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
 		LOG_DBG("height received but not in fileInfo response");
@@ -142,6 +148,7 @@ bool ThumbnailSubscribers::height(Comm::JsonDecoder* decoder, const float& data,
 
 bool ThumbnailSubscribers::layerHeight(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
 		LOG_DBG("layerHeight received but not in fileInfo response");
@@ -285,6 +292,7 @@ bool ThumbnailSubscribers::thumbnailsWidth(Comm::JsonDecoder* decoder, const uin
 
 bool ThumbnailSubscribers::generatedBy(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
 		LOG_DBG("lastModified received but not in fileInfo response");
@@ -308,6 +316,7 @@ bool ThumbnailSubscribers::generatedBy(Comm::JsonDecoder* decoder, const char* d
 
 bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request = FILEINFO_CACHE->GetThumbnailRequest(data);
 	if (!request)
 	{
@@ -359,6 +368,7 @@ static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder,
 
 bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
 	if (!getThumbnailFromDecoder(decoder, request, thumbnail))
@@ -378,6 +388,7 @@ bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const cha
 
 bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
 	if (!getThumbnailFromDecoder(decoder, request, thumbnail))
@@ -396,6 +407,7 @@ bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char*
 
 bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
 	if (!getThumbnailFromDecoder(decoder, request, thumbnail))
@@ -415,6 +427,7 @@ bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char*
 
 bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
 	if (!getThumbnailFromDecoder(decoder, request, thumbnail))

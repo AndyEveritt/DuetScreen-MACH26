@@ -40,27 +40,27 @@ namespace UI::Themes
 		const float colorChroma = std::max(s_minColorChroma, chroma);
 		static float mutedDiff = 0.2f;
 
-		colors.bg_dark = Color(darkMode ? 0.1 : 0.92, bgChroma, primaryHue);
-		colors.bg = Color(darkMode ? 0.15 : 0.96, bgChroma, primaryHue);
-		colors.bg_light = Color(darkMode ? 0.25 : 1.0, bgChroma, primaryHue);
+		colors.bg_dark = Color(darkMode ? 0.1f : 0.92f, bgChroma, primaryHue);
+		colors.bg = Color(darkMode ? 0.15f : 0.96f, bgChroma, primaryHue);
+		colors.bg_light = Color(darkMode ? 0.25f : 1.0f, bgChroma, primaryHue);
 
-		colors.primary = Color(darkMode ? 0.56 : 0.8, colorChroma, primaryHue);
+		colors.primary = Color(darkMode ? 0.56f : 0.8f, colorChroma, primaryHue);
 		colors.primary_muted = Color(colors.primary.getL() - mutedDiff, colorChroma, primaryHue);
-		colors.secondary = Color(darkMode ? 0.56 : 0.8, colorChroma, secondaryHue);
+		colors.secondary = Color(darkMode ? 0.56f : 0.8f, colorChroma, secondaryHue);
 		colors.secondary_muted = Color(colors.secondary.getL() - mutedDiff, colorChroma, secondaryHue);
 
-		colors.text = Color(darkMode ? 0.96 : 0.15, chroma, primaryHue);
-		colors.text_muted = Color(darkMode ? 0.76 : 0.40, chroma, primaryHue);
+		colors.text = Color(darkMode ? 0.96f : 0.15f, chroma, primaryHue);
+		colors.text_muted = Color(darkMode ? 0.76f : 0.40f, chroma, primaryHue);
 		colors.text_header = colors.text;
 
-		colors.border = Color(darkMode ? 0.40 : 0.6, chroma, primaryHue);
-		colors.border_muted = Color(darkMode ? 0.30 : 0.7, chroma, primaryHue);
-		colors.highlight = Color(darkMode ? 0.70 : 1.0, chroma, primaryHue);
-		colors.shadow = Color(darkMode ? 0.2 : 0.4, bgChroma, primaryHue);
+		colors.border = Color(darkMode ? 0.40f : 0.6f, chroma, primaryHue);
+		colors.border_muted = Color(darkMode ? 0.30f : 0.7f, chroma, primaryHue);
+		colors.highlight = Color(darkMode ? 0.70f : 1.0f, chroma, primaryHue);
+		colors.shadow = Color(darkMode ? 0.2f : 0.4f, bgChroma, primaryHue);
 
-		colors.success = Color(darkMode ? 0.6 : 0.8, std::max(0.075f, chroma), 160);
-		colors.warning = Color(darkMode ? 0.6 : 0.8, std::max(0.075f, chroma), 100);
-		colors.error = Color(darkMode ? 0.6 : 0.8, std::max(0.075f, chroma), 30);
+		colors.success = Color(darkMode ? 0.6f : 0.8f, std::max(0.075f, chroma), 160);
+		colors.warning = Color(darkMode ? 0.6f : 0.8f, std::max(0.075f, chroma), 100);
+		colors.error = Color(darkMode ? 0.6f : 0.8f, std::max(0.075f, chroma), 30);
 
 		if (customizer)
 		{

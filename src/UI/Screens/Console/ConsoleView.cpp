@@ -117,12 +117,12 @@ namespace UI
 
 		std::string_view currentText = m_output.getText();
 
-		int newLineCount = std::count(currentText.begin(), currentText.end(), '\n');
+		size_t newLineCount = std::count(currentText.begin(), currentText.end(), '\n');
 
 		if (newLineCount > MAX_RESPONSE_LINES)
 		{
 			size_t pos = 0;
-			for (int i = 0; i < newLineCount - MAX_RESPONSE_LINES; ++i)
+			for (size_t i = 0; i < newLineCount - MAX_RESPONSE_LINES; ++i)
 			{
 				pos = currentText.find('\n', pos) + 1;
 			}

@@ -29,7 +29,7 @@ class DisplayHelper
 
 	bool setBrightnessInner(unsigned int percentage);
 
-	int m_fd;			   // File descriptor for the display device
+	int m_fd = -1;		   // File descriptor for the display device
 	unsigned int m_screen; // Screen number (typically 0 or 1)
 	unsigned int m_percentage = 100;
 	unsigned int m_screensaverPercentage = 0;

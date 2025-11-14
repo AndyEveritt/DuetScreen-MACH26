@@ -206,7 +206,7 @@ namespace UI
 			return;
 		}
 
-		color_test color_test = m_colors[m_colorIndex];
+		color_test_t color_test = m_colors[m_colorIndex];
 		LOG_INFO("Dead pixel check for color '{:s}' (0x{:02x}{:02x}{:02x}) - {:s}",
 				 color_test.name,
 				 color_test.color.red,
@@ -845,14 +845,14 @@ namespace UI
 #if ENABLE_TOUCH_TEST
 		createTestProcedure(
 			TestId::TouchCalibration,
-			[this](TestProcedure& test) { startTouchCalibration(); },
+			[this](TestProcedure& /* test */) { startTouchCalibration(); },
 			[this](TestProcedure& test) { return checkTouchCalibration(test); });
 #endif
 
 #if ENABLE_PIXEL_TEST
 		createTestProcedure(
 			TestId::DeadPixelTest,
-			[this](TestProcedure& test) { getView()->showTest(&getView()->getDeadPixelTest()); },
+			[this](TestProcedure& /* test */) { getView()->showTest(&getView()->getDeadPixelTest()); },
 			[this](TestProcedure& test)
 			{
 				for (size_t i = 0; i < test.output["color_test"].size(); ++i)
@@ -869,7 +869,7 @@ namespace UI
 #if ENABLE_MEMORY_TEST
 		createTestProcedure(
 			TestId::MemoryTest,
-			[this](TestProcedure& test) { testMemory(); },
+			[this](TestProcedure& /* test */) { testMemory(); },
 			[this](TestProcedure& test)
 			{
 				std::string result = test.output["result"].get<std::string>();
@@ -882,7 +882,7 @@ namespace UI
 #if ENABLE_WIFI_TEST
 		createTestProcedure(
 			TestId::WifiTest,
-			[this](TestProcedure& test) { testWifi(); },
+			[this](TestProcedure& /* test */) { testWifi(); },
 			[this](TestProcedure& test)
 			{
 				std::string mac_addr = test.output["mac_address"].get<std::string>();
@@ -895,7 +895,7 @@ namespace UI
 #if ENABLE_USB_TEST
 		createTestProcedure(
 			TestId::UsbTest,
-			[this](TestProcedure& test) { testUsb(); },
+			[this](TestProcedure& /* test */) { testUsb(); },
 			[this](TestProcedure& test)
 			{
 				bool passed = true;
@@ -966,7 +966,7 @@ namespace UI
 #if ENABLE_BUZZER_TEST
 		createTestProcedure(
 			TestId::BuzzerTest,
-			[this](TestProcedure& test)
+			[this](TestProcedure& /* test */)
 			{
 				getView()->showTest(&getView()->getBuzzerTest());
 				playBuzzer();
@@ -978,7 +978,7 @@ namespace UI
 #if ENABLE_SPEAKER_TEST
 		createTestProcedure(
 			TestId::SpeakerTest,
-			[this](TestProcedure& test) { testSpeaker(); },
+			[this](TestProcedure& /* test */) { testSpeaker(); },
 			[this](TestProcedure& test)
 			{ return test.output.contains("result") && test.output["result"].get<bool>(); });
 #endif

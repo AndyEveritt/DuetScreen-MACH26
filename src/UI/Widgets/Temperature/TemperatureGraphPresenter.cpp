@@ -27,7 +27,7 @@ namespace UI
 				m_view->createSeries(lv_palette_main((lv_palette_t)m_view->getSeriesCount()), sensor->name.c_str());
 			}
 			m_view->updateSeriesName(i, sensor->name.c_str());
-			m_view->addData(i, sensor->lastReading);
+			m_view->addData(i, static_cast<int32_t>(sensor->lastReading));
 		}
 
 		size_t heaterCount = OM::Heat::GetHeaterCount();

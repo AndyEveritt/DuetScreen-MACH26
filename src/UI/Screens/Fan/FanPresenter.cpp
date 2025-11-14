@@ -26,7 +26,7 @@ namespace UI
 			[&](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
 				m_view->setFanLabel(index, _("fine_tune.fan", fan->index));
-				m_view->setFanValue(index, std::round(100 * fan->requestedValue));
+				m_view->setFanValue(index, static_cast<uint32_t>(std::round(100 * fan->requestedValue)));
 				return true;
 			});
 	}

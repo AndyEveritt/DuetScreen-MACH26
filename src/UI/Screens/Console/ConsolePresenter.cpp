@@ -11,13 +11,13 @@ namespace UI
 		return false;
 	}
 
-	void ConsolePresenter::newResponse(ResponseType type, const std::string& resp)
+	void ConsolePresenter::newResponse(ResponseType /* type */, const std::string& resp)
 	{
 		m_view->addResponse(resp);
 	}
 
-	void ConsolePresenter::newLogMessage(const Log::DebugLevel& level,
-										 const Log::log_time_t& time,
+	void ConsolePresenter::newLogMessage(const Log::DebugLevel& /* level */,
+										 const Log::log_time_t& /* time */,
 										 const std::string& message)
 	{
 		m_view->addResponse(message);

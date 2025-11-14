@@ -42,8 +42,8 @@ namespace OM
 	  private:
 		void CheckValidity();
 
-		static constexpr float MinSpacing = 0.1; // The minimum point spacing allowed
-		static constexpr float MinRange = 1.0;	 // The minimum X and Y range allowed
+		static constexpr double MinSpacing = 0.1; // The minimum point spacing allowed
+		static constexpr double MinRange = 1.0;	  // The minimum X and Y range allowed
 
 		std::string m_axis[2];
 		double m_min[2];

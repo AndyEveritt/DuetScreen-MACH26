@@ -239,7 +239,7 @@ namespace OM::Move
 		return true;
 	}
 
-	const uint8_t GetCurrentWorkplaceNumber()
+	uint8_t GetCurrentWorkplaceNumber()
 	{
 		return s_currentWorkplaceNumber;
 	}
@@ -249,7 +249,7 @@ namespace OM::Move
 		s_printingAcceleration = acceleration;
 	}
 
-	const uint32_t& GetPrintingAcceleration()
+	uint32_t GetPrintingAcceleration()
 	{
 		return s_printingAcceleration;
 	}
@@ -366,12 +366,12 @@ namespace OM::Move
 		s_extrusionRate = rate;
 	}
 
-	const float GetExtrusionRate()
+	float GetExtrusionRate()
 	{
 		return s_extrusionRate;
 	}
 
-	const float GetVolumetricFlow()
+	float GetVolumetricFlow()
 	{
 		auto tool = OM::GetCurrentTool();
 		if (tool == nullptr)
@@ -386,7 +386,9 @@ namespace OM::Move
 				if (extruder == nullptr)
 					return;
 				numExtruders++;
-				filamentArea += tool->mix[index] * (M_PI * pow(extruder->filamentDiameter / 2, 2));
+				const float half_filamentDiameter = extruder->filamentDiameter / 2.0f;
+				const float filament_csa = static_cast<float>(M_PI) * half_filamentDiameter * half_filamentDiameter;
+				filamentArea += tool->mix[index] * filament_csa;
 			});
 
 		if (numExtruders == 0)
@@ -398,7 +400,7 @@ namespace OM::Move
 		return filamentArea * GetExtrusionRate();
 	}
 
-	const float GetSpeedFactor()
+	float GetSpeedFactor()
 	{
 		return s_speedFactor;
 	}
@@ -408,7 +410,7 @@ namespace OM::Move
 		s_speedFactor = factor;
 	}
 
-	const float GetCurrentMoveRequestedSpeed()
+	float GetCurrentMoveRequestedSpeed()
 	{
 		return s_currentMoveRequestedSpeed;
 	}
@@ -418,7 +420,7 @@ namespace OM::Move
 		s_currentMoveRequestedSpeed = speed;
 	}
 
-	const float GetCurrentMoveTopSpeed()
+	float GetCurrentMoveTopSpeed()
 	{
 		return s_currentMoveTopSpeed;
 	}

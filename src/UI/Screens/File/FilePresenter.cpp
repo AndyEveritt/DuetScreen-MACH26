@@ -14,7 +14,7 @@ namespace UI
 {
 	static std::string s_emptyStr = "";
 
-	static const OM::Directories::DirectoryType getBaseFolderType(FilePresenter::BaseFolder folder)
+	static OM::Directories::DirectoryType getBaseFolderType(FilePresenter::BaseFolder folder)
 	{
 		switch (folder)
 		{

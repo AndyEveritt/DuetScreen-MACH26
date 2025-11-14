@@ -121,7 +121,7 @@ namespace OM
 	ToolPtr GetTool(const size_t index);
 	ToolPtr GetOrCreateTool(const size_t index);
 	ToolPtr GetToolBySlot(const size_t slot);
-	const size_t GetToolCount();
+	size_t GetToolCount();
 	bool IterateToolsWhile(function_ref<bool(ToolPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveTool(const size_t index, const bool allFollowing);
 

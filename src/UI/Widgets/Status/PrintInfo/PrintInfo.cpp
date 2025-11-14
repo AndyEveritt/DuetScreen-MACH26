@@ -99,7 +99,7 @@ namespace UI
 									 btn->setFlexGrow(1);
 									 btn->setMinWidth(LV_SIZE_CONTENT);
 									 btn->addEventCallback(
-										 [](lv_event_t* e)
+										 [](lv_event_t*)
 										 {
 											 auto& control = HomeView::instance().getControlView();
 											 control.showMoveView();

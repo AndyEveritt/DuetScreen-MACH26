@@ -71,20 +71,20 @@ namespace UI
 		m_primaryHueSlider.setRange(0, 360);
 		m_primaryHueSlider.setValue(0);
 		m_primaryHueSlider.setLabel(_("theme.primary_hue"));
-		m_primaryHueSlider.setValueChangedCallback([this](int32_t) { updateThemeColors(); });
+		m_primaryHueSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
 
 		m_secondaryHueSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_secondaryHueSlider.setRange(0, 360);
 		m_secondaryHueSlider.setValue(0);
 		m_secondaryHueSlider.setLabel(_("theme.secondary_hue"));
-		m_secondaryHueSlider.setValueChangedCallback([this](int32_t) { updateThemeColors(); });
+		m_secondaryHueSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
 
 		m_chromaSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_chromaSlider.setRange(0, 0.4);
+		m_chromaSlider.setRange(0.0f, 0.4f);
 		m_chromaSlider.setIncrementValue(0.01f);
-		m_chromaSlider.setValue(0.2);
+		m_chromaSlider.setValue(0.2f);
 		m_chromaSlider.setLabel(_("theme.chroma"));
-		m_chromaSlider.setValueChangedCallback([this](int32_t) { updateThemeColors(); });
+		m_chromaSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
 
 		m_primaryHueSlider.setFocusedCallback(
 			[this](bool focused)
@@ -118,7 +118,7 @@ namespace UI
 
 		m_darkMode.setText(_("theme.dark_mode"));
 		m_darkMode.setChecked(true);
-		m_darkMode.setCheckedCallback([this](bool checked) { updateThemeColors(); });
+		m_darkMode.setCheckedCallback([this](bool) { updateThemeColors(); });
 
 		updateSwatches();
 	}
@@ -255,8 +255,8 @@ namespace UI
 			return;
 		}
 
-		customTheme->setColors(m_primaryHueSlider.getValue(),
-							   m_secondaryHueSlider.getValue(),
+		customTheme->setColors(static_cast<uint16_t>(m_primaryHueSlider.getValue()),
+							   static_cast<uint16_t>(m_secondaryHueSlider.getValue()),
 							   m_chromaSlider.getValue(),
 							   m_darkMode.getChecked());
 

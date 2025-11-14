@@ -42,6 +42,9 @@ DisplayHelper::DisplayHelper(const char* device, unsigned int screen)
 	{
 		throw std::runtime_error(std::string("Failed to open device: ") + strerror(errno));
 	}
+#else
+	UNUSED(device);
+	UNUSED(screen);
 #endif
 }
 
@@ -106,6 +109,8 @@ bool DisplayHelper::setBrightnessInner(unsigned int percentage)
 		LOG_ERROR("ioctl setBrightness failed");
 		return false;
 	}
+#else
+	UNUSED(param);
 #endif
 	return true;
 }

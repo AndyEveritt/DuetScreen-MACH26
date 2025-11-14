@@ -197,8 +197,8 @@ namespace UI
 		m_pollInterval.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL.count(), 2000);
 		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
-		m_pollInterval.setValueChangedCallback([](int32_t value)
-											   { Comm::DUET.SetPollInterval(std::chrono::milliseconds(value)); });
+		m_pollInterval.setValueChangedCallback(
+			[](float value) { Comm::DUET.SetPollInterval(std::chrono::milliseconds(static_cast<int32_t>(value))); });
 		m_pollInterval.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_pollInterval.setFocusedCallback(
 			[this](bool focused)
@@ -311,7 +311,7 @@ namespace UI
 		m_usbMode.setLabel(_("settings.usb_mode"));
 		m_usbMode.setOptions(
 			{_("settings.usb_mode_host"), _("settings.usb_mode_device"), _("settings.usb_mode_internal_wifi")});
-		m_usbMode.setSelectedCallback([this](uint32_t index, std::string_view option)
+		m_usbMode.setSelectedCallback([this](uint32_t index, std::string_view /* option */)
 									  { getMainSettingsPresenter()->setUsbMode((UsbMode(index))); });
 		m_usbMode.setSelected(StorageHelper::getData(ID_USB_MODE, 0));
 
@@ -320,7 +320,8 @@ namespace UI
 		m_brightness.setRange(0, 100);
 		m_brightness.setLabel(_("settings.brightness"));
 		m_brightness.setValue(DisplayHelper::getBrightness());
-		m_brightness.setValueChangedCallback([](uint32_t value) { DisplayHelper::setBrightness(value); });
+		m_brightness.setValueChangedCallback([](float value)
+											 { DisplayHelper::setBrightness(static_cast<int32_t>(value)); });
 		m_brightness.setSendMode(Slider::SendMode::VALUE_CHANGED);
 		m_brightness.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_brightness.setFocusedCallback(
@@ -331,8 +332,8 @@ namespace UI
 		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_screensaverTimeout.setLabel(_("settings.screensaver_timeout"));
 		m_screensaverTimeout.setRange(0, 5 * 60); // seconds
-		m_screensaverTimeout.setValueChangedCallback([](uint32_t value)
-													 { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, value * 1000); });
+		m_screensaverTimeout.setValueChangedCallback(
+			[](float value) { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, static_cast<int32_t>(value * 1000)); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_screensaverTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_screensaverTimeout.setFocusedCallback(
@@ -364,7 +365,7 @@ namespace UI
 		{
 			m_notificationLevel.addOption(_(level));
 		}
-		m_notificationLevel.setSelectedCallback([](uint32_t index, std::string_view option)
+		m_notificationLevel.setSelectedCallback([](uint32_t index, std::string_view /* option */)
 												{ StorageHelper::setData(ID_NOTIFICATION_LEVEL, index); });
 
 		/* Info Timeout */
@@ -374,7 +375,7 @@ namespace UI
 		m_notificationTimeout.setRange(0, 5000);
 		m_notificationTimeout.setValue(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
 		m_notificationTimeout.setValueChangedCallback(
-			[](int32_t value) { StorageHelper::setData(ID_NOTIFICATION_TIMEOUT, (uint32_t)value); });
+			[](float value) { StorageHelper::setData(ID_NOTIFICATION_TIMEOUT, static_cast<uint32_t>(value)); });
 		m_notificationTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
 		m_notificationTimeout.setFocusedCallback(
 			[this](bool focused)
@@ -413,7 +414,7 @@ namespace UI
 			m_theme.addOption(_(fmt::format("theme.id.{:s}", theme->getName())));
 		}
 		m_theme.setSelectedCallback(
-			[this](uint32_t index, std::string_view option)
+			[this](uint32_t index, std::string_view /* option */)
 			{
 				auto theme = Themes::getTheme(index);
 				if (theme == nullptr)
@@ -527,7 +528,7 @@ namespace UI
 		m_ipAddress.setText(_("settings.network_ip_address", ipAddress));
 	}
 
-	void NetworkSettingsView::setEnabled(bool enabled)
+	void NetworkSettingsView::setEnabled(bool /* enabled */)
 	{
 		UI_LOCK();
 	}
@@ -723,19 +724,19 @@ namespace UI
 		}
 	}
 
-	void DeveloperSettingsView::onRestartEvent(lv_event_t* e)
+	void DeveloperSettingsView::onRestartEvent(lv_event_t* /* e */)
 	{
 		UI_LOCK();
 		Restart();
 	}
 
-	void DeveloperSettingsView::onEraseAndRestartEvent(lv_event_t* e)
+	void DeveloperSettingsView::onEraseAndRestartEvent(lv_event_t* /* e */)
 	{
 		UI_LOCK();
 		EraseAndRestart();
 	}
 
-	void DeveloperSettingsView::onRebootEvent(lv_event_t* e)
+	void DeveloperSettingsView::onRebootEvent(lv_event_t* /* e */)
 	{
 		UI_LOCK();
 		Reboot();

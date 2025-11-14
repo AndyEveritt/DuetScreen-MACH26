@@ -69,10 +69,10 @@ namespace OM
 			std::string_view GetName() const;
 			const char* GetHeaterStatusStr() const;
 			void UpdateTarget(const int32_t temp, const bool active);
-			void UpdateTemp(const float temp) { current = temp; }
-			void UpdatePwm(const float pwm) { avgPwm = pwm; }
-			void UpdateMin(const float min) { this->min = min; }
-			void UpdateMax(const float max) { this->max = max; }
+			void UpdateTemp(const float value) { current = value; }
+			void UpdatePwm(const float value) { avgPwm = value; }
+			void UpdateMin(const float value) { this->min = value; }
+			void UpdateMax(const float value) { this->max = value; }
 		};
 
 		using HeaterPtr = std::shared_ptr<Heater>;

@@ -45,7 +45,6 @@ namespace UI
 		static void onToolSelectEvent(lv_event_t* e)
 		{
 			auto& control = *static_cast<ToolItem*>(lv_event_get_user_data(e));
-			auto& btn = *static_cast<Button*>(LvObj::fromPtr(lv_event_get_target_obj(e))->getUserData());
 
 			auto presenter = control.m_widget.getPresenter();
 			presenter->setSelectedToolBySlot(control.getIndex());
@@ -228,7 +227,6 @@ namespace UI
 			return;
 		}
 
-		std::string_view selectedFilament = btn->getText();
 		if (auto prev_btn = control.m_filamentOptions.getItem(control.m_selectedFilamentIndex))
 		{
 			prev_btn->setChecked(false);

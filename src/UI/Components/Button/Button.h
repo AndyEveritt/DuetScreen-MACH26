@@ -20,7 +20,7 @@ namespace UI
 		void setIcon(std::string_view icon_path);
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);
-		const bool getChecked() const;
+		bool getChecked() const;
 		void setDisabled(bool disabled);
 
 		LvLabel& getLabel() { return m_label; }

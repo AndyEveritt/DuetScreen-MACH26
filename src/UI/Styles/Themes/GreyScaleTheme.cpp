@@ -30,5 +30,5 @@ namespace UI::Themes
 														colors.secondary_muted.setC(0);
 													});
 
-	static DefaultTheme s_greyTheme("grey", s_colors, s_font, s_iconFolder, [](Theme* theme) {});
+	static DefaultTheme s_greyTheme("grey", s_colors, s_font, s_iconFolder, []([[maybe_unused]] Theme* theme) {});
 } // namespace UI::Themes

@@ -28,6 +28,9 @@ namespace UI
 			(this->*setter)(m_slot);
 			break;
 		}
+		default:
+			LOG_WARN("HeaterSliderPresenter '{}' has unknown slot type on activate", getName());
+			break;
 		}
 
 		newHeaterData();
@@ -136,6 +139,9 @@ namespace UI
 			m_bedOrChamber->ToggleChamberState();
 			break;
 		}
+		default:
+			LOG_WARN("HeaterSliderPresenter '{}' has unknown slot type on cycleHeaterState", getName());
+			break;
 		}
 	}
 
@@ -155,7 +161,7 @@ namespace UI
 				LOG_ERROR("Tool heater is null");
 				return;
 			}
-			m_tool->SetHeaterTemps(m_tHeater->index, value, active);
+			m_tool->SetHeaterTemps(m_tHeater->index, static_cast<int32_t>(value), active);
 			break;
 		}
 		case SlotType::Bed:
@@ -165,7 +171,7 @@ namespace UI
 				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
-			m_bedOrChamber->SetBedTemp(value, active);
+			m_bedOrChamber->SetBedTemp(static_cast<int32_t>(value), active);
 			break;
 		}
 		case SlotType::Chamber:
@@ -175,9 +181,12 @@ namespace UI
 				LOG_ERROR("BedOrChamber is null");
 				return;
 			}
-			m_bedOrChamber->SetChamberTemp(value, active);
+			m_bedOrChamber->SetChamberTemp(static_cast<int32_t>(value), active);
 			break;
 		}
+		default:
+			LOG_WARN("HeaterSliderPresenter '{}' has unknown slot type on sendTemperature", getName());
+			break;
 		}
 	}
 
@@ -246,6 +255,9 @@ namespace UI
 			standbyTemp = m_bedOrChamber->GetStandbyTemp();
 			break;
 		}
+		default:
+			LOG_WARN("HeaterSliderPresenter '{}' has unknown slot type on newHeaterData", getName());
+			return;
 		}
 
 		if (heater == nullptr)

@@ -34,9 +34,9 @@ namespace UI
 		virtual void onActivate() override {}
 		virtual void onDeactivate() override {}
 
-		virtual void onConnect() {}
-		virtual void onDisconnect() {}
+		virtual void onConnect() override {}
+		virtual void onDisconnect() override {}
 
-        OM::PrinterStatus m_lastStatus = OM::PrinterStatus::unknown;
+		OM::PrinterStatus m_lastStatus = OM::PrinterStatus::unknown;
 	};
 } // namespace UI

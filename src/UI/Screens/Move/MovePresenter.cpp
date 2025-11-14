@@ -238,7 +238,7 @@ namespace UI
 				const float coldRetractTemp = OM::Heat::GetColdRetractTemperature();
 				tool->IterateHeaters(
 					[this, &canExtrude, &canRetract, &coldExtrudeTemp, &coldRetractTemp](OM::ToolHeaterPtr heater,
-																						 size_t index)
+																						 size_t /* index */)
 					{
 						if (!heater || !heater->heater)
 						{
@@ -264,7 +264,7 @@ namespace UI
 		}
 	}
 
-	void MovePresenter::newStatus(const OM::PrinterStatus& status)
+	void MovePresenter::newStatus(const OM::PrinterStatus& /* status */)
 	{
 		newAxesData();
 	}

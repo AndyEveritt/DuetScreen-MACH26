@@ -33,6 +33,7 @@ namespace
 
 int GpioHelper::togglePin(int pin)
 {
+	LOG_DBG("Toggling GPIO pin {:d}", pin);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
 	struct gpiod_chip* chip;
@@ -73,6 +74,7 @@ int GpioHelper::togglePin(int pin)
 
 int GpioHelper::setPinValue(int pin, int value)
 {
+	LOG_DBG("Setting GPIO pin {:d} to value {:d}", pin, value);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
 	struct gpiod_chip* chip;
@@ -111,6 +113,7 @@ int GpioHelper::setPinValue(int pin, int value)
 
 int GpioHelper::getPinValue(int pin)
 {
+	LOG_DBG("Getting GPIO pin {:d} value", pin);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
 	struct gpiod_chip* chip;
@@ -188,6 +191,7 @@ int GpioHelper::pinNameToNumber(const std::string& pinName)
 
 int GpioHelper::monitorPin(int pin, PinChangeCallback callback)
 {
+	LOG_DBG("Monitoring GPIO pin {:d}", pin);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
 	struct gpiod_chip* chip;
@@ -266,12 +270,14 @@ int GpioHelper::monitorPin(int pin, PinChangeCallback callback)
 
 	return 0;
 #else
+	UNUSED(callback);
 	return -1;
 #endif
 }
 
 void GpioHelper::stopMonitoring(int pin)
 {
+	LOG_DBG("Stopping monitoring GPIO pin {:d}", pin);
 #if T113
 	std::lock_guard<std::mutex> lock(monitorMutex);
 	auto it = monitors.find(pin);

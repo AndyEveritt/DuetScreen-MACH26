@@ -180,14 +180,6 @@ class Model
 	{
 		// Verify at compile time that the callable can be invoked with the event's argument list
 		using Tuple = typename EventTraits<E>::tuple_type;
-		static_assert(
-			[]()
-			{
-				using wrapper = EventWrapper<E>;
-				// Build an invocability check using an index sequence
-				return true; // deferred below in second static_assert for clearer message
-			}(),
-			"internal");
 		// Expanded check (kept separate for a clean message)
 		[]<typename F, typename T, std::size_t... I>(F&&, T*, std::index_sequence<I...>)
 		{
@@ -248,14 +240,14 @@ class Model
 
 	void runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	const std::vector<Subscriber>& getSubscribers(const char* key) { return SubscriberMap::getSubscribers(key); }
-	const size_t getSubscriberCount(const char* key) { return SubscriberMap::getSubscriberCount(key); }
+	size_t getSubscriberCount(const char* key) { return SubscriberMap::getSubscriberCount(key); }
 
 	void runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[]);
 	const std::vector<ArrayEndSubscriber>& getArrayEndSubscribers(const char* key)
 	{
 		return SubscriberMap::getArrayEndSubscribers(key);
 	}
-	const size_t getArrayEndSubscriberCount(const char* key) { return SubscriberMap::getArrayEndSubscriberCount(key); }
+	size_t getArrayEndSubscriberCount(const char* key) { return SubscriberMap::getArrayEndSubscriberCount(key); }
 
   private:
 	Model();

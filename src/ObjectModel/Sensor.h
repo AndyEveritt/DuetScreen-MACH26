@@ -39,7 +39,7 @@ namespace OM
 		void Reset();
 	};
 
-	const size_t GetAnalogSensorCount();
+	size_t GetAnalogSensorCount();
 	std::shared_ptr<AnalogSensor> GetAnalogSensor(const size_t index, const bool silent = false);
 	std::shared_ptr<AnalogSensor> GetOrCreateAnalogSensor(const size_t index);
 	std::shared_ptr<AnalogSensor> GetAnalogSensorBySlot(const size_t index);
@@ -48,7 +48,7 @@ namespace OM
 	bool UpdateAnalogSensorReading(const size_t index, const float reading);
 	bool UpdateAnalogSensorName(const size_t index, const char* name);
 
-	const size_t GetEndstopCount();
+	size_t GetEndstopCount();
 	std::shared_ptr<Endstop> GetEndstop(const size_t index);
 	std::shared_ptr<Endstop> GetOrCreateEndstop(const size_t index);
 	size_t RemoveEndstop(const size_t index, const bool allFollowing);

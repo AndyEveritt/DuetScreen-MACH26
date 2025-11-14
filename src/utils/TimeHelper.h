@@ -22,5 +22,5 @@ class TimeHelper
 	 */
 	static std::chrono::milliseconds getTimeSince(std::chrono::milliseconds ms) { return getCurrentTime() - ms; }
 
-	static bool setDateTime(const char* dateTime) { return true; }
+	static bool setDateTime(const char* /* dateTime */) { return true; }
 };

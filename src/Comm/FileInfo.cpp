@@ -709,6 +709,8 @@ namespace Comm
 			 largestThumbnail->meta.size,
 			 largestThumbnail->meta.offset);
 		m_queuedLargeThumbnail = largestThumbnail;
+#else
+		UNUSED(filepath);
 #endif
 		return true;
 	}
@@ -761,6 +763,8 @@ namespace Comm
 		ThumbnailRequest* request = GetThumbnailRequest(thumbnail->filename.c_str());
 		thumbnail->context.state = ThumbnailState::DataWait;
 		DUET.RequestThumbnail(thumbnail->filename.c_str(), thumbnail->meta.offset);
+#else
+		UNUSED(thumbnail);
 #endif
 		return true;
 	}
@@ -825,6 +829,7 @@ namespace Comm
 	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
 		MODEL_LOCK();
+		UNUSED(largeOnly);
 		return true;
 	}
 

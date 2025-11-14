@@ -132,25 +132,25 @@ namespace UI
 		showAppDrawer(false);
 	}
 
-	void SideBar::backBtnEvent(lv_event_t* e)
+	void SideBar::backBtnEvent(lv_event_t*)
 	{
 		UI::back();
 	}
 #endif
 
-	void SideBar::homeBtnEvent(lv_event_t* e)
+	void SideBar::homeBtnEvent(lv_event_t*)
 	{
 		UI::home();
 	}
 
-	void SideBar::controlBtnEvent(lv_event_t* e)
+	void SideBar::controlBtnEvent(lv_event_t*)
 	{
 		LOG_INFO("Control button pressed");
 		HomeView& homeView = HomeView::instance();
 		openScreen(&homeView.getControlView(), true);
 	}
 
-	void SideBar::macrosBtnEvent(lv_event_t* e)
+	void SideBar::macrosBtnEvent(lv_event_t*)
 	{
 		LOG_INFO("Macros button pressed");
 		FileView& macrosView = HomeView::instance().getMacroView();
@@ -159,7 +159,7 @@ namespace UI
 	}
 
 #if SIDE_BAR_APP_DRAWER
-	void SideBar::menuBtnEvent(lv_event_t* e)
+	void SideBar::menuBtnEvent(lv_event_t*)
 	{
 		LOG_DBG("Menu button pressed");
 		SideBar& sidebar = *static_cast<SideBar*>(lv_event_get_user_data(e));
@@ -218,7 +218,7 @@ namespace UI
 #endif
 
 #if SIDE_BAR_CONSOLE_BUTTON
-	void SideBar::consoleBtnEvent(lv_event_t* e)
+	void SideBar::consoleBtnEvent(lv_event_t*)
 	{
 		LOG_INFO("Console button pressed");
 		HomeView& homeView = HomeView::instance();
@@ -227,7 +227,7 @@ namespace UI
 #endif
 
 #if SIDE_BAR_SETTINGS_BUTTON
-	void SideBar::settingsBtnEvent(lv_event_t* e)
+	void SideBar::settingsBtnEvent(lv_event_t*)
 	{
 		LOG_INFO("Settings button pressed");
 		HomeView& homeView = HomeView::instance();

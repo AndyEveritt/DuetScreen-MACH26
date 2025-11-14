@@ -52,8 +52,8 @@ class SubscriberMap
 	typedef std::map<const char*, std::vector<ArrayEndSubscriber>, ConstCharComparator> ArrayEndSubscriberMap_t;
 
   public:
-	static const size_t getSubscriberCount(const char* key);
-	static const size_t getArrayEndSubscriberCount(const char* key);
+	static size_t getSubscriberCount(const char* key);
+	static size_t getArrayEndSubscriberCount(const char* key);
 	static const std::vector<Subscriber>& getSubscribers(const char* key);
 	static const std::vector<ArrayEndSubscriber>& getArrayEndSubscribers(const char* key);
 

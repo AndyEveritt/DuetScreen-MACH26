@@ -32,7 +32,7 @@ namespace UI
 		m_view->setDuetName(OM::GetPrinterName());
 	}
 
-	void StatusBarPresenter::newStatus(const OM::PrinterStatus& status)
+	void StatusBarPresenter::newStatus(const OM::PrinterStatus& /* status */)
 	{
 		m_view->setDuetStatus(fmt::format("{:s} - {:s}",
 										  _(Comm::DUET.GetCommunicationTypeName()),

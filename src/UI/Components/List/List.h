@@ -28,7 +28,7 @@ namespace UI
 			// addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 		}
 
-		const size_t getIndex() const { return m_index; }
+		size_t getIndex() const { return m_index; }
 
 	  private:
 		const size_t m_index;
@@ -228,7 +228,7 @@ namespace UI
 			return count > currentCount ? count - currentCount : 0;
 		}
 
-		const size_t getItemCount() const { return m_list.size(); }
+		size_t getItemCount() const { return m_list.size(); }
 
 		T* getItem(const size_t index) const
 		{

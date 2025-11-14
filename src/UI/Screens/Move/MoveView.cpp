@@ -363,7 +363,7 @@ namespace UI
 		m_axisDataListPtr = &axis_data;
 	}
 
-	void MoveView::setPositionType(const MovePresenter::PositionType type) {}
+	void MoveView::setPositionType(const MovePresenter::PositionType /* type */) {}
 
 	void MoveView::setAxisPosition(char axis_letter, float position)
 	{

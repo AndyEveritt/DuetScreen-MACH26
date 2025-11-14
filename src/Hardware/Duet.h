@@ -82,13 +82,13 @@ namespace Comm
 		void Reconnect();
 
 		void SetCommunicationType(CommunicationType type);
-		const CommunicationType GetCommunicationType() const;
+		CommunicationType GetCommunicationType() const;
 		std::string_view GetCommunicationTypeName() const;
 		void SetPollInterval(std::chrono::milliseconds interval);
 		void ScalePollIntervalScale(float scale);
-		const std::chrono::milliseconds GetPollInterval() const;
-		const std::chrono::milliseconds GetScaledPollInterval() const;
-		const uint32_t GetNextLineNumber() { return m_nextLineNumber++; }
+		std::chrono::milliseconds GetPollInterval() const;
+		std::chrono::milliseconds GetScaledPollInterval() const;
+		uint32_t GetNextLineNumber() { return m_nextLineNumber++; }
 
 		void SendGcode(std::string_view gcode, bool force = false);
 
@@ -117,12 +117,12 @@ namespace Comm
 		const baudrate_t& GetBaudRate() const;
 
 		// Network methods
-		const bool Connect(bool useSessionKey = true);
-		const bool Disconnect();
-		const bool IsDisconnected() const { return m_connectionState == ConnectionState::DISCONNECTED; }
-		const bool IsConnected() const { return m_connectionState == ConnectionState::CONNECTED; }
-		const bool IsConnecting() const { return m_connectionState == ConnectionState::CONNECTING; }
-		const bool IsSbcMode() const { return m_sbcMode; }
+		bool Connect(bool useSessionKey = true);
+		bool Disconnect();
+		bool IsDisconnected() const { return m_connectionState == ConnectionState::DISCONNECTED; }
+		bool IsConnected() const { return m_connectionState == ConnectionState::CONNECTED; }
+		bool IsConnecting() const { return m_connectionState == ConnectionState::CONNECTING; }
+		bool IsSbcMode() const { return m_sbcMode; }
 
 		const std::string_view GetBaseUrl() const;
 

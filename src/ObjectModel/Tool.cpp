@@ -34,7 +34,6 @@ namespace OM
 
 	void Tool::operator delete(void* p) noexcept
 	{
-		Tool* t = static_cast<Tool*>(p);
 		FreelistManager::Release<Tool>(p);
 	}
 
@@ -78,7 +77,7 @@ namespace OM
 
 	Move::ExtruderAxisPtr Tool::GetExtruder(const uint8_t toolExtruderIndex) const
 	{
-		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL || toolExtruderIndex < 0)
+		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL)
 		{
 			return nullptr;
 		}
@@ -310,6 +309,9 @@ namespace OM
 		case ToolStatus::off:
 			Comm::DUET.SendGcodef("T{:d}\n", index);
 			break;
+		default:
+			LOG_WARN("Cannot toggle tool state, unknown tool status");
+			return;
 		}
 	}
 
@@ -337,6 +339,9 @@ namespace OM
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
 			break;
+		default:
+			LOG_WARN("Cannot toggle heater state, unknown heater status");
+			return;
 		}
 	}
 
@@ -355,6 +360,9 @@ namespace OM
 		case SpindleState::stopped:
 			Comm::DUET.SendGcode("M3\n");
 			break;
+		default:
+			LOG_WARN("Cannot toggle spindle state, unknown spindle status");
+			return;
 		}
 	}
 
@@ -493,7 +501,7 @@ namespace OM
 		return s_tools[slot];
 	}
 
-	const size_t GetToolCount()
+	size_t GetToolCount()
 	{
 		return s_tools.Size();
 	}

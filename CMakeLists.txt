@@ -53,6 +53,13 @@ if(NOT DEFINED PROCESSOR)
   )
 endif()
 
+if (NOT PROCESSOR STREQUAL "T113" AND NOT PROCESSOR STREQUAL "Simulation")
+  message(
+    FATAL_ERROR
+      "Invalid PROCESSOR value: ${PROCESSOR}. Please set it to 'T113' or 'Simulation'."
+  )
+endif()
+
 # ----------------------------------------------------------------------------
 # Set source files for executable
 # ----------------------------------------------------------------------------
@@ -126,6 +133,38 @@ endif()
 # ----------------------------------------------------------------------------
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(DuetScreen.lib PUBLIC DEBUG)
+
+  target_compile_options(
+    DuetScreen.lib
+    PRIVATE -pedantic-errors
+            -Wall
+            -Wdeprecated
+            -Wdouble-promotion
+            -Wempty-body
+            -Wextra
+            -Wformat-security
+            -Wpointer-arith
+            -Wmultichar
+            -Wno-pedantic
+            -Wreturn-type
+            # -Wshadow
+            -Wshift-negative-value
+            -Wsizeof-pointer-memaccess
+            -Wtype-limits
+            -Wundef
+            -Wuninitialized
+            -Wunreachable-code
+            -Wfloat-conversion
+            -Wstrict-aliasing)
+
+  if(!APPLE)
+    target_compile_options(
+      DuetScreen.lib
+      PRIVATE 
+              -Wclobbered
+              -Wmaybe-uninitialized
+              )
+  endif()
 else()
   set_target_properties(DuetScreen.lib PROPERTIES CMAKE_INTERPROCEDURAL_OPTIMIZATION
                                               TRUE)
@@ -138,46 +177,18 @@ if(PROCESSOR STREQUAL "T113")
                                   LV_USE_EVDEV=1
                                   LV_LINUX_FBDEV_RENDER_MODE=LV_DISPLAY_RENDER_MODE_DIRECT
                                   LV_LINUX_FBDEV_BUFFER_COUNT=2)
+                                  # add_compile_definitions(T113=1)
+  
   target_compile_definitions(DuetScreen.lib PUBLIC T113=1)
-  # add_compile_definitions(T113=1)
+  target_compile_definitions(DuetScreen.lib PUBLIC SIMULATION=0)
 elseif(PROCESSOR STREQUAL "Simulation")
   target_compile_definitions(lvgl PUBLIC 
                                   LV_USE_SDL=1
                                   LV_SDL_BUF_COUNT=2
                                   LV_SDL_RENDER_MODE=LV_DISPLAY_RENDER_MODE_DIRECT)
+  
+  target_compile_definitions(DuetScreen.lib PUBLIC T113=0)
   target_compile_definitions(DuetScreen.lib PUBLIC SIMULATION=1)
-endif()
-
-target_compile_options(
-  DuetScreen.lib
-  PRIVATE -pedantic-errors
-          -Wall
-          -Wdeprecated
-          -Wdouble-promotion
-          -Wempty-body
-          -Wextra
-          -Wformat-security
-          -Wpointer-arith
-          -Wmultichar
-          -Wno-pedantic
-          -Wreturn-type
-          -Wshadow
-          -Wshift-negative-value
-          -Wsizeof-pointer-memaccess
-          -Wtype-limits
-          -Wundef
-          -Wuninitialized
-          -Wunreachable-code
-          -Wfloat-conversion
-          -Wstrict-aliasing)
-
-if(!APPLE)
-  target_compile_options(
-    DuetScreen.lib
-    PRIVATE 
-            -Wclobbered
-            -Wmaybe-uninitialized
-            )
 endif()
 
 # Set DUETSCREEN_* cache options as compile definitions without the prefix

@@ -186,6 +186,8 @@ std::chrono::milliseconds Model::requestNewData()
 	{
 		return 50; // 50ms
 	}
+#else
+	UNUSED(seqAvailable);
 #endif
 	return Comm::DUET.GetScaledPollInterval();
 }

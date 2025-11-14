@@ -18,7 +18,6 @@
 namespace UI::Themes
 {
 	static const lv_font_t* s_font = LV_FONT_DEFAULT;
-	static bool s_darkMode = true;
 	static std::string_view s_iconFolder = "material";
 
 	CustomTheme::CustomTheme(std::string_view name,
@@ -64,5 +63,5 @@ namespace UI::Themes
 		setColors(primaryHue, secondaryHue, chroma, darkMode);
 	}
 
-	static CustomTheme s_customTheme("custom", s_font, s_iconFolder, [](Theme* theme) {});
+	static CustomTheme s_customTheme("custom", s_font, s_iconFolder, []([[maybe_unused]] Theme* theme) {});
 } // namespace UI::Themes

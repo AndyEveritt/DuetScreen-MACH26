@@ -288,7 +288,7 @@ namespace UI
 		view->m_presenter->setFolder(view->m_breadcrumbPaths[index]);
 	}
 
-	void FileView::onItemClicked(size_t index, bool isFolder)
+	void FileView::onItemClicked(size_t index, bool /* isFolder */)
 	{
 		UI_LOCK();
 		if (index >= m_fileList.getItemCount())

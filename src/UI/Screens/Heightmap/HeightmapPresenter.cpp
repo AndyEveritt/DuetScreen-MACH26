@@ -90,7 +90,7 @@ namespace UI
 					{
 						continue;
 					}
-					m_view->setPx(px, height - py - 1, value);
+					m_view->setPx(px, height - py - 1, static_cast<float>(value));
 				}
 			}
 		}
@@ -124,7 +124,7 @@ namespace UI
 		const std::string& name = m_heightmapFiles[index]->GetName();
 		LOG_INFO("Loading heightmap {:s}", name);
 		m_heightmap = OM::GetHeightmapData(name);
-		m_heightmap->LoadFromDuet([this](OM::Heightmap& heightmap) { render(); });
+		m_heightmap->LoadFromDuet([this](OM::Heightmap& /* heightmap */) { render(); });
 	}
 
 	void HeightmapPresenter::toggleHeightmap(const size_t index)
@@ -260,7 +260,7 @@ namespace UI
 			currentHeightmap.empty() ? nullptr : OM::GetHeightmapData(currentHeightmap);
 		if (map)
 		{
-			map->LoadFromDuet([this](OM::Heightmap& heightmap) { render(); });
+			map->LoadFromDuet([this](OM::Heightmap& /* heightmap */) { render(); });
 		}
 		setHeightmap(map);
 	}

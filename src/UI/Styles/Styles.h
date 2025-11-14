@@ -293,7 +293,7 @@ namespace UI::Themes
 	const Theme* getTheme(const size_t index);
 	const Theme* getThemeByName(std::string_view name);
 	const Theme* getDefaultTheme();
-	const size_t getThemeCount();
+	size_t getThemeCount();
 	bool refreshCurrentTheme();
 	const std::vector<std::string_view> getThemeNames();
 

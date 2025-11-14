@@ -105,9 +105,9 @@ namespace OM::Move
 	bool SetAxisVisible(size_t index, bool visible);
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset);
 	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber);
-	const uint8_t GetCurrentWorkplaceNumber();
+	uint8_t GetCurrentWorkplaceNumber();
 	void SetPrintingAcceleration(uint32_t printingAcceleration);
-	const uint32_t& GetPrintingAcceleration();
+	uint32_t GetPrintingAcceleration();
 	bool GetNoMovesBeforeHoming();
 	void SetNoMovesBeforeHoming(bool val);
 
@@ -126,14 +126,14 @@ namespace OM::Move
 	bool SetExtruderFilamentName(size_t index, const char* name);
 
 	void SetExtrusionRate(float rate);
-	const float GetExtrusionRate();
-	const float GetVolumetricFlow();
+	float GetExtrusionRate();
+	float GetVolumetricFlow();
 
-	const float GetSpeedFactor();
+	float GetSpeedFactor();
 	void SetSpeedFactor(float factor);
-	const float GetCurrentMoveRequestedSpeed();
+	float GetCurrentMoveRequestedSpeed();
 	void SetCurrentMoveRequestedSpeed(float speed);
-	const float GetCurrentMoveTopSpeed();
+	float GetCurrentMoveTopSpeed();
 	void SetCurrentMoveTopSpeed(float speed);
 
 	void SetKinematicsName(const std::string& name);

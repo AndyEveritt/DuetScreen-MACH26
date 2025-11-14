@@ -284,7 +284,7 @@ namespace Comm
 		float d = strtof(s, &endptr); // try parsing a floating point number
 		if (errno == 0 && *endptr == 0)
 		{
-			rslt = static_cast<int32_t>(((d < 0.0) ? d - 0.5 : d + 0.5));
+			rslt = static_cast<int32_t>(((d < 0.0f) ? d - 0.5f : d + 0.5f));
 			return true;
 		}
 		return false;
@@ -319,11 +319,11 @@ namespace Comm
 		float d = strtof(s, &endptr); // try parsing a floating point number
 		if (errno == 0 && *endptr == 0)
 		{
-			if (d < 0.0)
+			if (d < 0.0f)
 			{
 				return false; // negative number
 			}
-			rslt = static_cast<uint32_t>(d + 0.5);
+			rslt = static_cast<uint32_t>(d + 0.5f);
 			return true;
 		}
 		return *endptr == 0;

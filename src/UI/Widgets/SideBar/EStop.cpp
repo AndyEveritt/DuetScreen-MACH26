@@ -40,6 +40,8 @@ namespace UI
 				case LV_EVENT_RELEASED:
 					estop.m_label.show();
 					break;
+				default:
+					break;
 				}
 			},
 			LV_EVENT_ALL,

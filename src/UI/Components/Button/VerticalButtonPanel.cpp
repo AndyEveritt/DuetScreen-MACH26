@@ -22,7 +22,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		iterateChildren([](size_t i, LvObj& child) { child.setWidth(LV_PCT(100)); });
+		iterateChildren([](size_t /* i */, LvObj& child) { child.setWidth(LV_PCT(100)); });
 
 		m_reset.setFlexGrow(1);
 		m_reset.setMinHeight(LV_SIZE_CONTENT);

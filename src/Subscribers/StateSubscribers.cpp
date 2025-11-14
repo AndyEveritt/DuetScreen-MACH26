@@ -11,6 +11,8 @@
 
 bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetPrinterName(data);
 	Model::get().post<EventType::NetworkName>();
 	return true;
@@ -18,12 +20,16 @@ bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data,
 
 bool StateSubscribers::networkActualIP(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	Model::get().post<EventType::IpAddress>(std::string(data));
 	return true;
 }
 
 bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::PrinterStatus prevStatus = OM::GetStatus();
 	OM::SetStatus(data);
 	if (prevStatus != OM::GetStatus())
@@ -35,6 +41,8 @@ bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool StateSubscribers::currentTool(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::SetCurrentTool(data);
 	Model::get().post<EventType::CurrentTool>();
 	return true;
@@ -42,6 +50,8 @@ bool StateSubscribers::currentTool(Comm::JsonDecoder* decoder, const int32_t& da
 
 bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	if (data[0] != 0)
 		return true;
 	OM::g_currentAlert.Reset();
@@ -52,6 +62,8 @@ bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* da
 
 bool StateSubscribers::messageBoxAxisControls(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::g_currentAlert.controls = data;
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotControls);
 	return true;
@@ -59,6 +71,8 @@ bool StateSubscribers::messageBoxAxisControls(Comm::JsonDecoder* decoder, const 
 
 bool StateSubscribers::messageBoxMessage(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::g_currentAlert.text.copy(data);
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotText);
 	return true;
@@ -66,6 +80,8 @@ bool StateSubscribers::messageBoxMessage(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::messageBoxMode(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::g_currentAlert.mode = static_cast<OM::Alert::Mode>(data);
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotMode);
 	return true;
@@ -73,6 +89,8 @@ bool StateSubscribers::messageBoxMode(Comm::JsonDecoder* decoder, const int32_t&
 
 bool StateSubscribers::messageBoxSeq(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::g_currentAlert.seq = data;
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotSeq);
 	return true;
@@ -80,6 +98,8 @@ bool StateSubscribers::messageBoxSeq(Comm::JsonDecoder* decoder, const uint32_t&
 
 bool StateSubscribers::messageBoxTimeout(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::g_currentAlert.timeout = data;
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotTimeout);
 	return true;
@@ -87,6 +107,8 @@ bool StateSubscribers::messageBoxTimeout(Comm::JsonDecoder* decoder, const float
 
 bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::g_currentAlert.title.copy(data);
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotTitle);
 
@@ -101,6 +123,8 @@ bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* d
 
 bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	if (data[0] == 0)
 	{
 		OM::g_currentAlert.limits.numberInt.min = std::numeric_limits<int32_t>::min();
@@ -116,6 +140,8 @@ bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* dat
 
 bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	if (data[0] == 0)
 	{
 		OM::g_currentAlert.limits.numberInt.max = std::numeric_limits<int32_t>::max();
@@ -131,6 +157,8 @@ bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* dat
 
 bool StateSubscribers::messageBoxDefault(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	if (data[0] == 0)
 	{
 		OM::g_currentAlert.limits.numberInt.valueDefault = 0;
@@ -146,12 +174,15 @@ bool StateSubscribers::messageBoxDefault(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::messageBoxCancelButton(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	OM::g_currentAlert.cancelButton = data;
 	return true;
 }
 
 bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
 	if (indices[0] >= ALERT_MAX_CHOICES)
 	{
 		LOG_ERROR("Too many choices in message box");
@@ -164,6 +195,8 @@ bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	static std::chrono::milliseconds lastUpdated = 0ms;
 
 	if (data[0] == 0)
@@ -182,6 +215,8 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 
 bool StateSubscribers::inputChannel(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	UNUSED(decoder);
+	UNUSED(indices);
 	/* This will not be triggered by a `rr_model` HTTP request,
 	 * it needs to be requested explicitly with `M409 K"state" F"vn"` */
 	OM::SetChannelIndex(data);

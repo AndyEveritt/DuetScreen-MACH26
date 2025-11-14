@@ -45,8 +45,8 @@ namespace Debug
 	}
 
 	DebugCommand::DebugCommand(const char* id, debugCb_t callback)
-		: id(id)
-		, callback(callback)
+		: m_id(id)
+		, m_callback(callback)
 	{
 		registry()[id] = this;
 	}
@@ -54,12 +54,13 @@ namespace Debug
 	DebugCommand* GetCommand(const char* id)
 	{
 		auto& cmds = registry();
-		if (cmds.find(id) == cmds.end())
+		auto it = cmds.find(id);
+		if (it == cmds.end())
 		{
 			LOG_WARN("id {:s} not found", id);
 			return nullptr;
 		}
-		return cmds[id];
+		return it->second;
 	}
 
 	DebugCommand* GetCommandByIndex(size_t index)

@@ -236,7 +236,7 @@ namespace UI
 
 	HeightmapView::~HeightmapView() = default;
 
-	const size_t HeightmapView::getHeightmapCount() const
+	size_t HeightmapView::getHeightmapCount() const
 	{
 		UI_LOCK();
 		return m_heightmapList.getItemCount();
@@ -262,7 +262,7 @@ namespace UI
 		item->setLabel(name);
 	}
 
-	void HeightmapView::setSelectedHeightmap(const int32_t index)
+	void HeightmapView::setSelectedHeightmap(const size_t index)
 	{
 		UI_LOCK();
 		for (auto& item : m_heightmapList)

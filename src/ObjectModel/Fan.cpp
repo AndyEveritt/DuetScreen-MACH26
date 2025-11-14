@@ -44,7 +44,7 @@ namespace OM
 		return GetOrCreate<FanList, Fan>(s_fans, index, true);
 	}
 
-	const size_t GetFanCount()
+	size_t GetFanCount()
 	{
 		return s_fans.Size();
 	}

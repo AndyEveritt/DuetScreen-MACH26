@@ -137,6 +137,7 @@ bool UartController::setBaudRate(speed_t baudRate)
 
 bool UartController::setParameters(int dataBits, int stopBits, char parity)
 {
+	LOG_DBG("Setting UART parameters: dataBits={:d}, stopBits={:d}, parity={:c}", dataBits, stopBits, parity);
 #if SIMULATION
 	return true;
 #else

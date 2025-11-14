@@ -97,7 +97,7 @@ namespace UI
 		bool validateFloatInput(std::string_view text);
 		bool validateTextInput(std::string_view text);
 
-		const OM::Alert::Mode getMode() const { return m_mode; }
+		OM::Alert::Mode getMode() const { return m_mode; }
 
 	  private:
 		static void onChoiceEvent(lv_event_t* e);

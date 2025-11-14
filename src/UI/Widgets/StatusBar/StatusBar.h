@@ -16,8 +16,8 @@ namespace UI
 		void setTime(std::string_view time);
 
 	  private:
-		LvLabel m_duetName;
-		LvLabel m_duetStatus;
-		LvLabel m_time;
+		LvLabel m_duetName{"name", getRoot()};
+		LvLabel m_duetStatus{"status", getRoot()};
+		LvLabel m_time{"time", getRoot()};
 	};
 } // namespace UI

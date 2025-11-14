@@ -119,6 +119,9 @@ namespace UI
 		case ResponseType::ERROR:
 			msgBox->setTitle(_("msgbox.response_error"));
 			break;
+		default:
+			LOG_WARN("Unknown response type {:d}", static_cast<int>(type));
+			break;
 		}
 
 		msgBox->setCancelBtnText(_("msgbox.close"));
@@ -305,7 +308,7 @@ namespace UI
 				[alert, &msgBox](std::string_view text) -> bool
 				{
 					UI_LOCK();
-					float value = std::atof(text.data());
+					float value = static_cast<float>(std::atof(text.data()));
 					bool valid = value >= alert.limits.numberFloat.min && value <= alert.limits.numberFloat.max;
 					msgBox.warningTextVisible(!valid);
 					if (!valid)
@@ -318,7 +321,7 @@ namespace UI
 			msgBox.setOkCallback(
 				[seq, &msgBox]()
 				{
-					float value = std::atof(msgBox.getInput().data());
+					float value = static_cast<float>(std::atof(msgBox.getInput().data()));
 					Comm::DUET.SendGcodef("M292 R{{{:g}}} S{:d}", value, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
@@ -392,7 +395,7 @@ namespace UI
 		}
 
 		// Configure timeout and progress last
-		msgBox.setTimeout(alert.timeout);
+		msgBox.setTimeout(static_cast<uint32_t>(alert.timeout));
 		msgBox.progressVisible(alert.timeout > 0);
 		if (alert.timeout > 0)
 		{

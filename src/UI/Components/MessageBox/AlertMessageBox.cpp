@@ -191,6 +191,9 @@ namespace UI
 			inputVisible(true);
 			okVisible(true);
 			break;
+		default:
+			LOG_WARN("Unknown alert mode {:d}", (int)mode);
+			break;
 		}
 	}
 
@@ -361,7 +364,7 @@ namespace UI
 	{
 		UI_LOCK();
 		char buf[32];
-		snprintf(buf, sizeof(buf), "%.1f", val);
+		snprintf(buf, sizeof(buf), "%.1f", static_cast<double>(val));
 		m_input.setText(buf);
 	}
 
@@ -429,6 +432,8 @@ namespace UI
 			msgBox->m_okBtn.setDisabled(!msgBox->validate());
 			break;
 		}
+		default:
+			break;
 		}
 	}
 

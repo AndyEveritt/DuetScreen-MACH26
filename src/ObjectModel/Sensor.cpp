@@ -34,7 +34,7 @@ namespace OM
 		triggered = false;
 	}
 
-	const size_t GetAnalogSensorCount()
+	size_t GetAnalogSensorCount()
 	{
 		return s_analogSensors.Size();
 	}
@@ -95,7 +95,7 @@ namespace OM
 		return true;
 	}
 
-	const size_t GetEndstopCount()
+	size_t GetEndstopCount()
 	{
 		return s_endstops.Size();
 	}

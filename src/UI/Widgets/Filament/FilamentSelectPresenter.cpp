@@ -65,7 +65,7 @@ namespace UI
 		m_tools.resize(OM::GetToolCount());
 		size_t toolCount = 0;
 		OM::IterateToolsWhile(
-			[this, &toolCount](OM::ToolPtr tool, size_t index)
+			[this, &toolCount](OM::ToolPtr tool, size_t /* index */)
 			{
 				if (tool->filamentExtruder >= 0)
 				{

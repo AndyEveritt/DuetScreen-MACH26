@@ -295,7 +295,7 @@ Gcodes::Gcodes()
 	LOG_VERBOSE("Creating Gcodes");
 }
 
-const size_t Gcodes::getGcodeCount()
+size_t Gcodes::getGcodeCount()
 {
 	return Gcodes::get().m_gcodes.size();
 }

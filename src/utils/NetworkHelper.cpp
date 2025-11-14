@@ -31,11 +31,11 @@ namespace NetworkHelper
 
 	static constexpr int s_timeout_ms = 10000;
 
-	static struct wpa_ctrl* s_ctrl_conn = nullptr;
-	static struct wpa_ctrl* s_monitor_conn = nullptr;
+	[[maybe_unused]] static struct wpa_ctrl* s_ctrl_conn = nullptr;
+	[[maybe_unused]] static struct wpa_ctrl* s_monitor_conn = nullptr;
 	static std::vector<WiFiNetwork> s_networks;
 
-	static bool initWPAControl()
+	[[maybe_unused]] static bool initWPAControl()
 	{
 		LOG_DBG("Initializing wpa_supplicant control interface");
 #if T113
@@ -75,7 +75,7 @@ namespace NetworkHelper
 #endif
 	}
 
-	static void closeWPAControl()
+	[[maybe_unused]] static void closeWPAControl()
 	{
 		LOG_DBG("Closing wpa_supplicant control interface");
 #if T113
@@ -341,6 +341,8 @@ namespace NetworkHelper
 		sendCommand("SAVE_CONFIG");
 
 		connect(ssid);
+#else
+		UNUSED(password);
 #endif
 	}
 

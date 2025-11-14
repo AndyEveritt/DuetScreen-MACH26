@@ -37,7 +37,7 @@ namespace UI
 		virtual void onActivate() override { newAxesData(); }
 		virtual void onDeactivate() override {}
 
-		virtual void onConnect() {}
-		virtual void onDisconnect() {}
+		virtual void onConnect() override {}
+		virtual void onDisconnect() override {}
 	};
 } // namespace UI

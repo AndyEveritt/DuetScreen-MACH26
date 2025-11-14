@@ -58,7 +58,7 @@ namespace UI
 
 		FileView(const std::string& name, LvObj& parent, LvObj* msgBoxParent = nullptr);
 
-		const size_t getFileCount() const { return m_fileList.getItemCount(); }
+		size_t getFileCount() const { return m_fileList.getItemCount(); }
 		void setFileCount(const size_t count);
 		FileView::FileItem* getFileItem(size_t index) const;
 
