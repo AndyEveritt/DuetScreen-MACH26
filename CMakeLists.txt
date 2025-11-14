@@ -148,6 +148,38 @@ elseif(PROCESSOR STREQUAL "Simulation")
   target_compile_definitions(DuetScreen.lib PUBLIC SIMULATION=1)
 endif()
 
+target_compile_options(
+  DuetScreen.lib
+  PRIVATE -pedantic-errors
+          -Wall
+          -Wdeprecated
+          -Wdouble-promotion
+          -Wempty-body
+          -Wextra
+          -Wformat-security
+          -Wpointer-arith
+          -Wmultichar
+          -Wno-pedantic
+          -Wreturn-type
+          -Wshadow
+          -Wshift-negative-value
+          -Wsizeof-pointer-memaccess
+          -Wtype-limits
+          -Wundef
+          -Wuninitialized
+          -Wunreachable-code
+          -Wfloat-conversion
+          -Wstrict-aliasing)
+
+if(!APPLE)
+  target_compile_options(
+    DuetScreen.lib
+    PRIVATE 
+            -Wclobbered
+            -Wmaybe-uninitialized
+            )
+endif()
+
 # Set DUETSCREEN_* cache options as compile definitions without the prefix
 get_cmake_property(_cache_vars CACHE_VARIABLES)
 foreach(_var ${_cache_vars})
