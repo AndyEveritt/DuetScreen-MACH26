@@ -28,7 +28,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     lvgl
     PRIVATE -pedantic-errors
             -Wall
-            -Werror
             -Wdeprecated
             -Wdouble-promotion
             -Wempty-body
