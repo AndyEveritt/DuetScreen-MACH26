@@ -121,6 +121,10 @@ void DeadlockDetector::beforeLockRelease(const void* lockPtr)
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
+#if !DEBUG
+	UNUSED(threadId);
+	UNUSED(lockName);
+#endif
 	LOG_VERBOSE("Thread {} about to release lock: {:s}", threadId, lockName.c_str());
 }
 

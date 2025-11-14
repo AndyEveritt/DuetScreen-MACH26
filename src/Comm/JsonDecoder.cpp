@@ -25,7 +25,7 @@
 
 #include "Debug.h"
 
-#define jserror(fmt, args...)                                                                                          \
+#define jserror(fmt, ...)                                                                                              \
 	LOG_ERROR("jsError id='{:s}' [{:d},{:d},{:d},{:d}] val='{:s}' @ {:d}: " fmt,                                       \
 			  m_fieldId.c_str(),                                                                                       \
 			  m_arrayIndices[0],                                                                                       \
@@ -33,8 +33,7 @@
 			  m_arrayIndices[2],                                                                                       \
 			  m_arrayIndices[3],                                                                                       \
 			  m_fieldVal.c_str(),                                                                                      \
-			  m_nextOut,                                                                                               \
-			  ##args)
+			  m_nextOut __VA_OPT__(, ) __VA_ARGS__)
 
 namespace Comm
 {
@@ -860,7 +859,7 @@ namespace Comm
 							else
 							{
 								m_state = jsError;
-								jserror("jsUnicodeEscape, unknown code {:s}", code);
+								jserror("jsUnicodeEscape, unknown code");
 							}
 							m_nextOut += 4;
 							break;
