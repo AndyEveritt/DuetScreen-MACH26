@@ -1,6 +1,6 @@
 FetchContent_Declare(
   colorm
-  GIT_REPOSITORY https://github.com/soreja/colorm.git
+  GIT_REPOSITORY https://github.com/AndyEveritt/colorm.git
   GIT_TAG master
 )
 FetchContent_MakeAvailable(colorm)

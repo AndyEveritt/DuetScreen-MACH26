@@ -138,6 +138,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     DuetScreen.lib
     PRIVATE -pedantic-errors
             -Wall
+            -Werror
             -Wdeprecated
             -Wdouble-promotion
             -Wempty-body
