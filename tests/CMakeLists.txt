@@ -14,6 +14,10 @@ add_custom_target(
   -print | xargs ${CLANG_FORMAT_19} -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Running clang-format-19-tests")
+
+if(TARGET clang_format_bootstrap)
+  add_dependencies(clang-format-tests clang_format_bootstrap)
+endif()
 add_dependencies(DuetScreen.tests clang-format-tests)
 
 file(GLOB_RECURSE DUETSCREEN_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)

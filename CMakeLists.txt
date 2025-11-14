@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(DuetScreen C CXX)
 include(FetchContent)
+include(ExternalProject)
 include(CTest) # Enables BUILD_TESTING and CTest integration
 
 # Set C and C++ standards
@@ -64,15 +65,7 @@ add_library(DuetScreen.lib ${MAIN_SOURCES})
 add_executable(DuetScreen)
 
 # Find clang-format-19
-find_program(CLANG_FORMAT_19 clang-format-19 REQUIRED)
-
-# Add clang-format custom target
-add_custom_target(
-  clang-format
-  COMMAND find src/ -iname '*.h' -o -iname '*.cpp'
-  -print | xargs ${CLANG_FORMAT_19} -i
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMMENT "Running clang-format-19")
+include(${LIBRARIES_DIR}/clang-format.cmake)
 add_dependencies(DuetScreen.lib clang-format)
   
   # Touch BuildDate.cpp to ensure it is always compiled
