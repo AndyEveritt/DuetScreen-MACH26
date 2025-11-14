@@ -65,4 +65,4 @@ namespace Log
 #define LOG_FATAL_THROW(...)                                                                                           \
 	CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::critical, __VA_ARGS__);                     \
 	spdlog::dump_backtrace();                                                                                          \
-	throw std::runtime_error(fmt::format("Fatal error: " __VA_ARGS__));
+	std::abort();

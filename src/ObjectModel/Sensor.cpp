@@ -90,7 +90,7 @@ namespace OM
 		if (sensor->name.IsEmpty())
 		{
 			sensor->name.copy("Heater ");
-			sensor->name.catf("%lu", index);
+			sensor->name.catf("%zu", index);
 		}
 		return true;
 	}
