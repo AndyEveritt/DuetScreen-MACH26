@@ -31,6 +31,7 @@
 #define LV_DEF_REFR_PERIOD 10
 
 /* Abort on failed asserts. Default behaviour is to enter an infinite loop which is hard to detect and recover from */
+#define LV_ASSERT_HANDLER_INCLUDE "lv_assert_handler_include.h"
 #define LV_ASSERT_HANDLER abort();
 
 /* Enable object names which are useful for debugging and unit tests. Also allows the LvObj::getChildByName() API */

@@ -4,8 +4,9 @@ include(FetchContent)
 include(CTest) # Enables BUILD_TESTING and CTest integration
 
 # Set C and C++ standards
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
