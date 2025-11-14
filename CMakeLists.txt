@@ -123,6 +123,10 @@ include(${LIBRARIES_DIR}/spdlog.cmake)
 
 # Include libusb headers
 target_include_directories(DuetScreen.lib PUBLIC ${LIBUSB_INCLUDE_DIRS})
+if(LIBUSB_LIBRARY_DIRS)
+  # Ensure libusb library directory is on the link line (needed on macOS)
+  target_link_directories(DuetScreen.lib PUBLIC ${LIBUSB_LIBRARY_DIRS})
+endif()
 
 # ----------------------------------------------------------------------------
 # Add Definitions
@@ -240,9 +244,20 @@ endif()
 
 # Link the executable with the DuetScreen core library.
 # There is some static initialisation in some translation units so force linker to include everything.
-target_link_libraries(DuetScreen
-    -Wl,--whole-archive DuetScreen.lib -Wl,--no-whole-archive
-)
+if(APPLE)
+  # macOS linker doesn't support --whole-archive; use -force_load on the static library instead
+  target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
+  target_link_options(DuetScreen PRIVATE "-Wl,-force_load,$<TARGET_FILE:DuetScreen.lib>")
+elseif(MSVC)
+  # MSVC equivalent of forcing all objects from a static library
+  target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
+  target_link_options(DuetScreen PRIVATE "/WHOLEARCHIVE:$<TARGET_FILE:DuetScreen.lib>")
+else()
+  # GNU ld/Gold/LLD on ELF platforms
+  target_link_libraries(DuetScreen PRIVATE
+      -Wl,--whole-archive DuetScreen.lib -Wl,--no-whole-archive
+  )
+endif()
 # target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
 
 # Custom target to run the executable
@@ -277,13 +292,27 @@ endif()
 
 # Conditionally include and link FFmpeg libraries if LV_USE_FFMPEG is enabled
 if(CONFIG_LV_USE_FFMPEG)
-  target_link_libraries(DuetScreen.lib PRIVATE avformat avcodec avutil swscale z)
+  pkg_check_modules(FFMPEG REQUIRED libavformat libavcodec libavutil libswscale)
+
+  if(FFMPEG_LIBRARY_DIRS)
+    # Ensure FFmpeg library directory is on the link line (needed on macOS)
+    target_link_directories(DuetScreen.lib PUBLIC ${FFMPEG_LIBRARY_DIRS})
+  elseif(APPLE)
+    target_link_directories(DuetScreen.lib PUBLIC /opt/homebrew/lib)
+  endif()
+
+  target_link_libraries(DuetScreen.lib PRIVATE ${FFMPEG_LIBRARIES} z)
 endif()
 
 # Conditionally include and link FreeType if LV_USE_FREETYPE is enabled
 if(CONFIG_LV_USE_FREETYPE)
   find_package(Freetype REQUIRED)
   target_include_directories(lvgl PUBLIC ${FREETYPE_INCLUDE_DIRS})
+
+  if (FREETYPE_LIBRARY_DIRS)
+    # Ensure FreeType library directory is on the link line (needed on macOS)
+    target_link_directories(DuetScreen.lib PUBLIC ${FREETYPE_LIBRARY_DIRS})
+  endif()
   target_link_libraries(DuetScreen.lib PRIVATE ${FREETYPE_LIBRARIES})
 endif()
 

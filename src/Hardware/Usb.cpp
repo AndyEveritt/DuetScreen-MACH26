@@ -53,9 +53,11 @@ namespace USB
 				info.st_size = sb.st_size;
 				info.st_blksize = sb.st_blksize;
 				info.st_blocks = sb.st_blocks;
+#  ifndef __APPLE__
 				info.st_atim = sb.st_atim;
 				info.st_ctim = sb.st_ctim;
 				info.st_mtim = sb.st_mtim;
+#  endif
 				files.push_back(info);
 			}
 		}

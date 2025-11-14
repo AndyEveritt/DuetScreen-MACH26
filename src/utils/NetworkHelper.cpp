@@ -7,6 +7,7 @@
 
 #include "NetworkHelper.h"
 #include "Debug.h"
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -222,7 +223,7 @@ namespace NetworkHelper
 		std::vector<WiFiNetwork> knownNetworks = getKnownWiFiNetworks();
 
 		sendCommand("SCAN");
-		usleep(100000); // Wait 100 milliseconds for scan to complete
+		std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait 100 milliseconds for scan to complete
 
 		std::string output = sendCommand("SCAN_RESULTS");
 		std::istringstream stream(output);

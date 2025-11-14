@@ -38,8 +38,11 @@ namespace Comm
 										{57600, B57600},
 										{115200, B115200},
 										{230400, B230400},
+#ifndef __APPLE__
 										{460800, B460800},
-										{921600, B921600}};
+										{921600, B921600}
+#endif
+	};
 
 	enum class CommunicationType
 	{

@@ -8,13 +8,14 @@
 #pragma once
 
 #include "utils/utils.h"
+#include <chrono>
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
 
 namespace Log
 {
-	using log_time_t = std::chrono::_V2::system_clock::time_point;
+	using log_time_t = std::chrono::system_clock::time_point;
 
 	constexpr const char* DebugLevelStrings[] = {
 		"settings.severity.verbose",

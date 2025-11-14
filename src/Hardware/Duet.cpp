@@ -1082,7 +1082,7 @@ namespace Comm
 
 		Reset();
 		bool wasConnected = IsConnected();
-		m_connectionState == ConnectionState::DISCONNECTED;
+		m_connectionState = ConnectionState::DISCONNECTED;
 		if (wasConnected)
 		{
 			Model::get().post<EventType::Disconnected>();
@@ -1103,7 +1103,7 @@ namespace Comm
 
 	void Duet::SetBaudRate(const unsigned int baudRateCode)
 	{
-		for (unsigned int i = 0; i < ARRAY_SIZE(baudRates); i++)
+		for (unsigned int i = 0; i < std::size(baudRates); i++)
 		{
 			if (baudRates[i].internal == baudRateCode)
 			{

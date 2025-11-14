@@ -400,6 +400,7 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 
 int set_thread_priority(pthread_t thread_id, int policy, int priority)
 {
+#ifndef __APPLE__
 	sched_param sch;
 	int current_policy;
 	pthread_getschedparam(thread_id, &current_policy, &sch);
@@ -410,5 +411,6 @@ int set_thread_priority(pthread_t thread_id, int policy, int priority)
 		LOG_WARN("Failed to set thread priority for thread {}, err {} '{}'", thread_id, ret, strerror(ret));
 		return -1;
 	}
+#endif
 	return 0;
 }

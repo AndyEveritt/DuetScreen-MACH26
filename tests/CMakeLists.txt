@@ -37,9 +37,20 @@ target_link_libraries(DuetScreen.tests PRIVATE
 
 # Link the executable with the DuetScreen core library.
 # There is some static initialisation in some translation units so force linker to include everything.
-target_link_libraries(DuetScreen.tests PRIVATE
-    -Wl,--whole-archive DuetScreen.lib -Wl,--no-whole-archive
-)
+if(APPLE)
+  # macOS linker doesn't support --whole-archive; use -force_load on the static library instead
+  target_link_libraries(DuetScreen.tests PRIVATE DuetScreen.lib)
+  target_link_options(DuetScreen.tests PRIVATE "-Wl,-force_load,$<TARGET_FILE:DuetScreen.lib>")
+elseif(MSVC)
+  # MSVC equivalent of forcing all objects from a static library
+  target_link_libraries(DuetScreen.tests PRIVATE DuetScreen.lib)
+  target_link_options(DuetScreen.tests PRIVATE "/WHOLEARCHIVE:$<TARGET_FILE:DuetScreen.lib>")
+else()
+  # GNU ld/Gold/LLD on ELF platforms
+  target_link_libraries(DuetScreen.tests PRIVATE
+      -Wl,--whole-archive DuetScreen.lib -Wl,--no-whole-archive
+  )
+endif()
 
 define_file_relpath_for_sources(DuetScreen.tests)
 

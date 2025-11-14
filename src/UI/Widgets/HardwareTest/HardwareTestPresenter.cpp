@@ -559,8 +559,14 @@ namespace UI
 	{
 
 		const auto& mounts = USB::UsbMonitor::getInstance().getMountedDrives();
-		std::string mount_str =
-			fmt::format("Mounted drives:\n  {:s}\nTarget drive: {:s}", fmt::join(mounts, "\n  "), m_usbMountPath);
+		std::string mount_str = fmt::format("Mounted drives:\n  {:s}\nTarget drive: {:s}",
+#ifdef __APPLE__
+											""
+#else
+											fmt::join(mounts, "\n  ")
+#endif
+											,
+											m_usbMountPath);
 		getView()->getUsbTest().setOutput(mount_str);
 	}
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "libusb-1.0/libusb.h"
 #include <atomic>
 #include <functional>
+#include <libusb-1.0/libusb.h>
 #include <string>
 #include <thread>
 
@@ -31,7 +31,7 @@ namespace Comm
 			FAILED_TO_ALLOCATE_TRANSFER = -1,
 			FAILED_TO_SUBMIT_TRANSFER = -2,
 			BUFFER_TOO_SMALL = -3,
-			OVERFLOW = -4,
+			BUFFER_OVERFLOW = -4,
 			TIMEOUT = -5,
 			BUSY = -6,
 			NO_DEVICE = -7,

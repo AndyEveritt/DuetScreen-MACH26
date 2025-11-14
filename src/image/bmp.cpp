@@ -90,7 +90,7 @@ bool BMP::Close()
 		return true;
 	}
 	LOG_INFO("Closing file {:s}", m_imageFileName);
-	if (!fclose(m_imageFile) == 0)
+	if (fclose(m_imageFile) != 0)
 	{
 		LOG_ERROR("Failed to close file {:s}", m_imageFileName);
 		return false;
@@ -111,11 +111,15 @@ void BMP::generateBitmapImage(rgba_t* pixels)
 void BMP::generateBitmapHeaders()
 {
 	unsigned char* fileHeader = createBitmapFileHeader();
+#ifndef __APPLE__ // fmt::join is broken in libfmt on MacOS
 	LOG_DBG("fileHeader: {:#x}", fmt::join(fileHeader, fileHeader + FILE_HEADER_SIZE, ", "));
+#endif
 	fwrite(fileHeader, 1, FILE_HEADER_SIZE, m_imageFile);
 
 	unsigned char* infoHeader = createBitmapInfoHeader();
+#ifndef __APPLE__
 	LOG_DBG("infoHeader: {:#x}", fmt::join(infoHeader, infoHeader + INFO_HEADER_SIZE, ", "));
+#endif
 	fwrite(infoHeader, 1, INFO_HEADER_SIZE, m_imageFile);
 }
 
