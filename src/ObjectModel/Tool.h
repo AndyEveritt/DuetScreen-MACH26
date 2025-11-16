@@ -85,9 +85,11 @@ namespace OM
 
 		Move::ExtruderAxisPtr GetExtruder(const uint8_t toolExtruderIndex) const;
 		Move::ExtruderAxisPtr GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex);
+		size_t GetExtruderCount() const;
 
 		FanPtr GetFan(const uint8_t toolFanIndex);
 		FanPtr GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex);
+		size_t GetFanCount() const;
 
 		StringRef GetFilament() const;
 
@@ -109,8 +111,8 @@ namespace OM
 		void ToggleSpindleState();
 		void UpdateSpindleTarget(const int32_t rpm);
 
-		void ChangeFilament(const char* filament);
-		void LoadFilament(const char* filament);
+		void ChangeFilament(const std::string& filament);
+		void LoadFilament(const std::string& filament);
 		void UnloadFilament();
 
 		void Reset();

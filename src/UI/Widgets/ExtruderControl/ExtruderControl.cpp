@@ -19,29 +19,14 @@ namespace UI
 	static const std::vector<float> s_defaultFeedrateValues = {1.0f, 5.0f, 20.0f};
 
 	ExtruderControl::ExtruderControl(const std::string& name, LvObj& parent)
-		: LvContainer(name, parent)
+		: View(name, parent)
 	{
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
-		m_toolSelect.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_filamentContainer.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_controlsContainer.setWidth(LV_PCT(100));
 		m_controlsContainer.setFlexGrow(1);
-
-		m_toolSelect.setTitle(_("extrude.tool_select"));
-
-		m_filamentContainer.setFlexFlow(LV_FLEX_FLOW_ROW);
-
-		m_filamentSelect.setHeight(LV_SIZE_CONTENT);
-		m_filamentSelect.setFlexGrow(1);
-		m_filamentChangeBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
-		m_filamentUnloadBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
-
-		m_filamentSelect.setLabel(_("filament.select"));
-		m_filamentChangeBtn.setText(_("filament.change"));
-		m_filamentUnloadBtn.setText(_("filament.unload"));
 
 		static int32_t col_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -73,141 +58,19 @@ namespace UI
 		m_distanceInput.setItemCount(m_distanceValues.size(), this, &ExtruderControl::createDistanceButton);
 		m_feedrateInput.setItemCount(m_feedrateValues.size(), this, &ExtruderControl::createFeedrateButton);
 
-		m_toolSelect.setListFlow(LV_FLEX_FLOW_ROW);
-		m_toolSelect.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
-
-		m_filamentSelect.addEventCallback(onFilamentSelectEvent, LV_EVENT_VALUE_CHANGED, this);
-		m_filamentChangeBtn.addClickedCallback(onFilamentChangeEvent, this);
-		m_filamentUnloadBtn.addClickedCallback(onFilamentUnloadEvent, this);
 		m_retractBtn.addClickedCallback(onRetractEvent, this);
 		m_extrudeBtn.addClickedCallback(onExtrudeEvent, this);
 
-		m_toolSelect.addStyle(Themes::getLvglStyles().no_border);
-		m_filamentContainer.addStyle(Themes::getLvglStyles().no_border);
-		m_filamentSelect.addStyle(Themes::getLvglStyles().no_border);
-		m_controlsContainer.addStyle(Themes::getLvglStyles().no_border);
 		m_retractBtn.addStyle(Themes::getLvglStyles().actionBtn);
 		m_extrudeBtn.addStyle(Themes::getLvglStyles().actionBtn);
-		m_filamentChangeBtn.addStyle(Themes::getLvglStyles().actionBtn);
-		m_filamentUnloadBtn.addStyle(Themes::getLvglStyles().actionBtn);
 		m_distanceInput.addStyle(Themes::getLvglStyles().no_border);
 		m_feedrateInput.addStyle(Themes::getLvglStyles().no_border);
 	}
 
 	void ExtruderControl::clear()
 	{
-		m_toolSelect.clear();
-		setFilamentDisabled(true);
 		m_retractBtn.setState(LV_STATE_DISABLED, true);
 		m_extrudeBtn.setState(LV_STATE_DISABLED, true);
-	}
-
-	void ExtruderControl::setToolCallback(tool_select_cb_t cb)
-	{
-		UI_LOCK();
-		LOG_DBG("Setting tool select callback for {}", getName());
-		m_toolSelectCb = std::move(cb);
-	}
-
-	void ExtruderControl::setToolCount(const size_t count)
-	{
-		UI_LOCK();
-		if (count == m_toolSelect.getItemCount())
-		{
-			return;
-		}
-
-		LOG_DBG("Setting tool count to {} for {}", count, getName());
-		m_toolSelect.setItemCount(count, this, &ExtruderControl::createToolButton);
-	}
-
-	void ExtruderControl::setToolName(const size_t index, const std::string& name)
-	{
-		UI_LOCK();
-		if (index >= m_toolSelect.getItemCount())
-		{
-			LOG_WARN("Index {} out of bounds for tool names in {}", index, getName());
-			return;
-		}
-
-		LOG_DBG("Setting tool name at index {} to '{}' for {}", index, name, getName());
-		auto btn = m_toolSelect.getItem(index);
-		if (!btn)
-		{
-			LOG_ERROR("Failed to get tool button at index {} in {}", index, getName());
-			return;
-		}
-		btn->setText(name);
-	}
-
-	void ExtruderControl::setCurrentTool(const int32_t index)
-	{
-		UI_LOCK();
-		LOG_DBG("Setting current tool to {} for {}", index, getName());
-		if (index == m_currentToolIndex)
-		{
-			return;
-		}
-
-		m_currentToolIndex = index;
-
-		for (size_t i = 0; i < m_toolSelect.getItemCount(); ++i)
-		{
-			auto btn = m_toolSelect.getItem(i);
-			if (!btn)
-			{
-				continue;
-			}
-
-			btn->setChecked(static_cast<size_t>(index) == i);
-		}
-		setFilamentDisabled(index < 0);
-		m_loadedFilament = "some_placeholder"; // This is a hack
-	}
-
-	void ExtruderControl::setFilamentDisabled(bool disabled)
-	{
-		if (disabled == m_filamentContainer.hasState(LV_STATE_DISABLED))
-		{
-			return;
-		}
-
-		m_filamentContainer.setState(LV_STATE_DISABLED, disabled, true);
-		m_filamentSelect.setOptions(disabled ? std::vector<std::string>() : m_filamentOptions);
-		// m_filamentSelect.setText(disabled ? "" : m_loadedFilament);
-	}
-
-	void ExtruderControl::setFilamentOptions(const std::vector<std::string>& options)
-	{
-		UI_LOCK();
-		LOG_DBG("Setting filament options for {}", getName());
-		m_filamentOptions = options;
-		m_filamentSelect.setOptions(options);
-	}
-
-	void ExtruderControl::setFilamentSelected(const std::string& filament)
-	{
-		UI_LOCK();
-		LOG_DBG("Setting selected filament to '{}' for {}", filament, getName());
-
-		if (filament == m_loadedFilament)
-		{
-			return;
-		}
-
-		m_filamentSelect.setSelected(filament);
-		m_filamentSelect.setText(filament);
-		m_loadedFilament = filament;
-		m_filamentChangeBtn.hide();
-		m_filamentUnloadBtn.setDisabled(filament.empty());
-		m_filamentChangeBtn.setText(filament.empty() ? _("filament.load") : _("filament.change"));
-	}
-
-	void ExtruderControl::setFilamentCallback(filament_cb_t cb)
-	{
-		UI_LOCK();
-		LOG_DBG("Setting filament callback for {}", getName());
-		m_filamentCb = std::move(cb);
 	}
 
 	void ExtruderControl::setExtrudeDisabled(bool disabled)
@@ -342,43 +205,6 @@ namespace UI
 		}
 	}
 
-	void ExtruderControl::onFilamentSelectEvent(lv_event_t* event)
-	{
-		UI_LOCK();
-		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-
-		std::string selected_filament = control->m_filamentSelect.getSelectedString();
-		control->m_filamentSelect.setText(selected_filament);
-		control->m_filamentSelect.invalidate(); // lvgl bug? This shouldn't be necessary
-
-		control->m_filamentChangeBtn.setVisible(selected_filament != control->m_loadedFilament);
-	}
-
-	void ExtruderControl::onFilamentChangeEvent(lv_event_t* event)
-	{
-		UI_LOCK();
-		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-
-		if (control && control->m_filamentCb)
-		{
-			std::string selected = control->m_filamentSelect.getSelectedString();
-			LOG_DBG("Calling filament callback for '{}' in {}", selected, control->getName());
-			control->m_filamentCb(selected);
-		}
-	}
-
-	void ExtruderControl::onFilamentUnloadEvent(lv_event_t* event)
-	{
-		UI_LOCK();
-		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
-
-		if (control && control->m_filamentCb)
-		{
-			LOG_DBG("Calling filament unload callback in {}", control->getName());
-			control->m_filamentCb("");
-		}
-	}
-
 	void ExtruderControl::onDistanceEvent(lv_event_t* event)
 	{
 		UI_LOCK();
@@ -497,13 +323,6 @@ namespace UI
 		}
 	}
 
-	void ExtruderControl::onShow()
-	{
-		std::string filament = m_loadedFilament;
-		m_loadedFilament = "some_placeholder";
-		setFilamentSelected(filament);
-	}
-
 	std::unique_ptr<Button> ExtruderControl::createBaseListButton(size_t index, LvObj& parent)
 	{
 		UI_LOCK();
@@ -519,6 +338,8 @@ namespace UI
 	{
 		LOG_DBG("Creating tool button {} for {}", index, getName());
 		auto btn = createBaseListButton(index, parent);
+		btn->setHeight(LV_PCT(100));
+		btn->setMinHeight(LV_SIZE_CONTENT);
 		btn->addClickedCallback(onToolSelectEvent, this);
 		btn->addStyle(Themes::getLvglStyles().actionBtn);
 		return btn;

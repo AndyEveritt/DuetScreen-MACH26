@@ -1,5 +1,5 @@
 /*
- * FilamentSelect.h
+ * FilamentSelectMulti.h
  *
  *  Created on: 2025-07-15
  *      Author: Andy Everitt
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "FilamentSelectPresenter.h"
+#include "FilamentSelectMultiPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
 #include "UI/Components/MessageBox/MessageBox.h"
@@ -16,11 +16,11 @@
 
 namespace UI
 {
-	class FilamentSelect : public View<FilamentSelectPresenter>
+	class FilamentSelectMulti : public View<FilamentSelectMultiPresenter>
 	{
 	  public:
-		FilamentSelect(const std::string& name, LvObj& parent, LvObj* messageBoxParent = nullptr);
-		virtual ~FilamentSelect(); // = default but ToolItem is forward declared;
+		FilamentSelectMulti(const std::string& name, LvObj& parent, LvObj* messageBoxParent = nullptr);
+		virtual ~FilamentSelectMulti(); // = default but ToolItem is forward declared;
 
 		void setToolCount(size_t count);
 		void setToolData(size_t index, std::string_view toolName, std::string_view filamentName);

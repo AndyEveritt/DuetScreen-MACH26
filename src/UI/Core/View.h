@@ -51,7 +51,7 @@ namespace UI
 		 */
 		Model& getModel() const { return m_presenter->getModel(); }
 
-		std::shared_ptr<Presenter> getPresenter() { return m_presenter; }
+		std::shared_ptr<Presenter>& getPresenter() { return m_presenter; }
 
 		void activate() { m_presenter->activate(); }
 		void deactivate() { m_presenter->deactivate(); }

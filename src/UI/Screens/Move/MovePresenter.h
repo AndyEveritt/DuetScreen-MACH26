@@ -41,16 +41,8 @@ namespace UI
 		void moveAxisRelative(char axis_letter, float distance, uint32_t feedrate);
 		void moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate);
 
-		// Extruder actions
-		void extrude(float distance, float feedrate);
-		void toggleToolState(size_t index);
-		void updateFilamentList();
-		void loadFilament(const std::string& filament);
-		void unloadFilament();
-
 		// Observers
 		void newAxesData();
-		void newToolData();
 		void newStatus(const OM::PrinterStatus& status);
 
 	  protected:
@@ -60,6 +52,5 @@ namespace UI
 
 	  private:
 		AxisDataList m_axisData;
-		std::vector<std::string> m_filamentOptions;
 	};
 } // namespace UI

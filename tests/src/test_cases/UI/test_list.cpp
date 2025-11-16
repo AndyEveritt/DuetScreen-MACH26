@@ -6,6 +6,7 @@
  */
 
 #include "Debug.h"
+#include "UI/Components/Button/Button.h"
 #include "UI/Components/List/List.h"
 #include "test_utils/UiTestSuite.h"
 #include <gtest/gtest.h>
@@ -37,4 +38,11 @@ TEST_F(TestList, VerticalWrap)
 					  });
 
 	EXPECT_EQUAL_SCREENSHOT("list/vertical_wrap.png");
+}
+
+TEST_F(TestList, Empty)
+{
+	UI::List<UI::Button> list("list", screen);
+
+	EXPECT_EQUAL_SCREENSHOT("list/empty.png");
 }

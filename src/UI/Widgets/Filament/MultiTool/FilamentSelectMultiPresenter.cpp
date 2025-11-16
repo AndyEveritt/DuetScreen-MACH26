@@ -1,19 +1,19 @@
 /*
- * FilamentSelectPresenter.cpp
+ * FilamentSelectMultiPresenter.cpp
  *
  *  Created on: 2025-07-15
  *      Author: Andy Everitt
  */
 
-#include "FilamentSelectPresenter.h"
+#include "FilamentSelectMultiPresenter.h"
 #include "Debug.h"
-#include "FilamentSelect.h"
+#include "FilamentSelectMulti.h"
 #include "ObjectModel/Files.h"
 #include "i18n/i18n.h"
 
 namespace UI
 {
-	void FilamentSelectPresenter::setSelectedToolBySlot(size_t slot)
+	void FilamentSelectMultiPresenter::setSelectedToolBySlot(size_t slot)
 	{
 		if (slot >= m_tools.size())
 		{
@@ -26,7 +26,7 @@ namespace UI
 		getView()->showSelection(m_selectedTool->GetName(), m_selectedTool->GetFilament().c_str());
 	}
 
-	void FilamentSelectPresenter::setFilament(std::string_view filamentName)
+	void FilamentSelectMultiPresenter::setFilament(std::string_view filamentName)
 	{
 		if (m_selectedTool == nullptr)
 		{
@@ -36,7 +36,7 @@ namespace UI
 		m_selectedTool->ChangeFilament(filamentName.data());
 	}
 
-	void FilamentSelectPresenter::unloadFilament()
+	void FilamentSelectMultiPresenter::unloadFilament()
 	{
 		if (m_selectedTool == nullptr)
 		{
@@ -47,7 +47,7 @@ namespace UI
 		m_selectedTool->UnloadFilament();
 	}
 
-	void FilamentSelectPresenter::clear()
+	void FilamentSelectMultiPresenter::clear()
 	{
 		m_selectedTool.reset();
 		getView()->setToolCount(0);
@@ -55,7 +55,7 @@ namespace UI
 		updateFilamentList();
 	}
 
-	void FilamentSelectPresenter::newToolData()
+	void FilamentSelectMultiPresenter::newToolData()
 	{
 		MODEL_LOCK();
 
@@ -99,12 +99,12 @@ namespace UI
 		}
 	}
 
-	void FilamentSelectPresenter::updateFilamentList()
+	void FilamentSelectMultiPresenter::updateFilamentList()
 	{
 		getView()->setFilamentOptions(m_filamentOptions);
 	}
 
-	void FilamentSelectPresenter::onActivate()
+	void FilamentSelectMultiPresenter::onActivate()
 	{
 		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
 									 "",

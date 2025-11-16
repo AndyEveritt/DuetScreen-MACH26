@@ -39,6 +39,7 @@ namespace UI
 		m_axisControlCont.setWidth(LV_PCT(100));
 		m_axisControlCont.setFlexGrow(1);
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_axisControlCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_xyControl.setSize(LV_PCT(30), LV_PCT(100));
 		m_xyControl.setDisableMotorsCallback([this]() { m_presenter->disableMotors(); });
 		m_xyControl.setJogCallback(
@@ -75,51 +76,11 @@ namespace UI
 		m_genericAxisControls.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_genericAxisControls.setListSize(LV_SIZE_CONTENT, LV_PCT(100));
 		// m_genericAxisControls.setFlexGrow(1);
-		m_genericAxisControls.setMaxWidth(LV_PCT(20));
+		m_genericAxisControls.setMaxWidth(LV_PCT(60));
 		m_genericAxisControls.setListFlow(LV_FLEX_FLOW_ROW);
 		m_genericAxisControls.addStyle(Themes::getLvglStyles().no_border);
 		m_genericAxisControls.addStyle(Themes::getLvglStyles().pad_zero);
 		m_genericAxisControls.getListContainer().addStyle(Themes::getLvglStyles().pad_zero);
-
-		m_extruderControl.setHeight(LV_PCT(100));
-		m_extruderControl.setFlexGrow(1);
-		m_extruderControl.setToolCallback([this](size_t index) { m_presenter->toggleToolState(index); });
-		m_extruderControl.setFilamentCallback(
-			[this](const std::string& filament)
-			{
-				if (filament.empty())
-				{
-					m_presenter->unloadFilament();
-				}
-				else
-				{
-					m_presenter->loadFilament(filament);
-				}
-			});
-		m_extruderControl.setDistanceCallback(
-			[this](size_t index, float distance)
-			{
-				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude.distance_header", Units::getDisplayedDistanceUnit()));
-				m_numberpad.setValue(distance);
-				m_numberpad.setMinValue(0);
-				m_numberpad.setMaxValue(1000);
-				m_numberpad.setConfirmCallback([this, index](float distance)
-											   { m_extruderControl.setDistanceValue(index, distance); });
-			});
-		m_extruderControl.setFeedrateCallback(
-			[this](size_t index, float feedrate)
-			{
-				openModal(&m_numberpad);
-				m_numberpad.setHeader(_("extrude.feedrate_header", Units::getDisplayedSpeedUnit()));
-				m_numberpad.setValue(feedrate);
-				m_numberpad.setMinValue(0);
-				m_numberpad.setMaxValue(100); // mm/s
-				m_numberpad.setConfirmCallback([this, index](float feedrate)
-											   { m_extruderControl.setFeedrateValue(index, feedrate); });
-			});
-		m_extruderControl.setExtrudeCallback([this](float distance, float feedrate)
-											 { m_presenter->extrude(distance, feedrate); });
 
 		/* Bottom Bar */
 		m_bottomBarCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -242,13 +203,6 @@ namespace UI
 		}
 	}
 
-	void MoveView::onShow()
-	{
-		m_extruderControl.show();
-	}
-
-	void MoveView::onHide() {}
-
 	void MoveView::clear()
 	{
 		m_xyControl.setXDisabled(true);
@@ -257,7 +211,6 @@ namespace UI
 		m_xyControl.setYHomed(false);
 		m_zControl.setDisabled(true);
 		m_zControl.setAxisHomed(false);
-		m_extruderControl.clear();
 	}
 
 	void MoveView::setAxisData(const std::vector<MovePresenter::AxisData>& axis_data)
@@ -484,21 +437,6 @@ namespace UI
 				}
 			}
 		}
-	}
-
-	void MoveView::setToolCount(const size_t count)
-	{
-		m_extruderControl.setToolCount(count);
-	}
-
-	void MoveView::setToolName(const size_t index, const std::string& name)
-	{
-		m_extruderControl.setToolName(index, name);
-	}
-
-	void MoveView::setCurrentTool(const int32_t index)
-	{
-		m_extruderControl.setCurrentTool(index);
 	}
 
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)

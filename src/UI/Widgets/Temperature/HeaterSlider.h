@@ -35,13 +35,13 @@ namespace UI
 		void updateLabelPositions();
 		void updateLabelPosition(LvObj& label, int32_t value);
 
-		LvContainer m_heaterInfoCont;
-		Button m_heaterName;
-		LvLabel m_heaterState;
-		LvContainer m_temperatureCont;
-		LvBar m_currentTemperature;
-		Button m_activeTemperature;
-		Button m_standbyTemperature;
+		LvContainer m_heaterInfoCont{"heater_info_cont", getRoot()};
+		Button m_heaterName{"heater_name", m_heaterInfoCont};
+		LvLabel m_heaterState{"heater_state", m_heaterInfoCont};
+		LvContainer m_temperatureCont{"temperature_cont", getRoot()};
+		LvBar m_currentTemperature{"current_temperature", m_temperatureCont};
+		Button m_activeTemperature{"active_temperature", m_temperatureCont};
+		Button m_standbyTemperature{"standby_temperature", m_temperatureCont};
 
 		lv_point_t m_pressedPoint;
 		lv_point_t m_pressedPointOffset;

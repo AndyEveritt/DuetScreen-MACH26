@@ -97,6 +97,15 @@ namespace OM
 		return extruder;
 	}
 
+	size_t Tool::GetExtruderCount() const
+	{
+		size_t count;
+		for (count = 0; count < MAX_EXTRUDERS_PER_TOOL && extruders[count] != nullptr; ++count)
+		{
+		}
+		return count;
+	}
+
 	FanPtr Tool::GetFan(const uint8_t toolFanIndex)
 	{
 		if (toolFanIndex >= MAX_FANS)
@@ -117,6 +126,15 @@ namespace OM
 		LOG_DBG("Setting tool {:d} fan {:d}={:d}", index, toolFanIndex, fanIndex);
 		fans[toolFanIndex] = fan;
 		return fan;
+	}
+
+	size_t Tool::GetFanCount() const
+	{
+		size_t count;
+		for (count = 0; count < MAX_FANS && fans[count] != nullptr; ++count)
+		{
+		}
+		return count;
 	}
 
 	StringRef Tool::GetFilament() const
@@ -375,7 +393,7 @@ namespace OM
 		Comm::DUET.SendGcodef("M568 P{:d} F{:d}\n", index, rpm);
 	}
 
-	void Tool::ChangeFilament(const char* filament)
+	void Tool::ChangeFilament(const std::string& filament)
 	{
 		if (filamentExtruder < 0)
 		{
@@ -388,12 +406,12 @@ namespace OM
 			LOG_WARN("Failed to get extruder {:d} for tool {:d}", filamentExtruder, index);
 			return;
 		}
-		if (extruder->filamentName.Equals(filament))
+		if (extruder->filamentName.Equals(filament.c_str()))
 		{
 			return;
 		}
 
-		if (filament[0] == '\0')
+		if (filament.empty())
 		{
 			UnloadFilament();
 			return;
@@ -405,7 +423,7 @@ namespace OM
 		Comm::DUET.SendGcode(command.c_str());
 	}
 
-	void Tool::LoadFilament(const char* filament)
+	void Tool::LoadFilament(const std::string& filament)
 	{
 		if (filamentExtruder < 0)
 		{
@@ -418,12 +436,7 @@ namespace OM
 			LOG_WARN("Failed to get extruder {:d} for tool {:d}", filamentExtruder, index);
 			return;
 		}
-		if (extruder->filamentName.Equals(filament))
-		{
-			return;
-		}
-
-		if (filament[0] == '\0')
+		if (extruder->filamentName.Equals(filament.c_str()))
 		{
 			return;
 		}

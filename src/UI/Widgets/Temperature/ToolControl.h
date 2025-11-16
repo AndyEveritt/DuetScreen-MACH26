@@ -14,6 +14,7 @@
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/Filament/Dropdown/FilamentSelectDropdown.h"
 
 namespace UI
 {
@@ -24,16 +25,21 @@ namespace UI
 
 		void setToolName(std::string_view name);
         void setToolState(ToolControlPresenter::tool_state_t state, std::string_view str);
+		List<Button>& getExtrusionFactors() { return m_extrusionFactors; }
+		FilamentSelectDropdown& getFilamentDropdown() { return m_filament; }
 		List<HeaterSlider>& getHeaters() { return m_heaters; }
 
 		void setNumberPad(NumberPad* numberPad);
 		auto getNumberPad() { return m_numberPad; }
 
 	  private:
-		LvContainer m_toolInfoCont;
-		Button m_name;
-		LvLabel m_state;
-		List<HeaterSlider> m_heaters;
+		LvContainer m_toolInfoCont{"tool_info", getRoot()};
+		Button m_name{"tool_name", m_toolInfoCont};
+		LvLabel m_state{"tool_state", m_toolInfoCont};
+		LvContainer m_toolInfoSpacer{"tool_info_spacer", m_toolInfoCont};
+		List<Button> m_extrusionFactors{"extrusion_factors", m_toolInfoCont};
+		FilamentSelectDropdown m_filament{"filament_select", m_toolInfoCont};
+		List<HeaterSlider> m_heaters{"heaters", getRoot()};
 
 		NumberPad* m_numberPad = nullptr;
 	};

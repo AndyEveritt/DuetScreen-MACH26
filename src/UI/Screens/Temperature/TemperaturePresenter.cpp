@@ -32,7 +32,7 @@ namespace UI
 							   control->getPresenter()->setToolIndex(toolIndices[index]);
 							   control->setNumberPad(&m_view->getNumberPad());
 							   control->addStyle(Themes::getLvglStyles().card);
-							   control->activate();
+							   control->show(); // show recursively activates presenters
 							   return control;
 						   });
 	}
@@ -48,7 +48,7 @@ namespace UI
 							  control->getPresenter()->setBedIndex(index);
 							  control->setNumberPad(&m_view->getNumberPad());
 							  control->addStyle(Themes::getLvglStyles().card);
-							  control->activate();
+							  control->show(); // show recursively activates presenters
 							  return control;
 						  });
 	}
@@ -64,7 +64,7 @@ namespace UI
 								  control->getPresenter()->setChamberIndex(index);
 								  control->setNumberPad(&m_view->getNumberPad());
 								  control->addStyle(Themes::getLvglStyles().card);
-								  control->activate();
+								  control->show(); // show recursively activates presenters
 								  return control;
 							  });
 	}
@@ -83,40 +83,7 @@ namespace UI
 		newToolData();
 		newBedHeaterData();
 		newChamberHeaterData();
-
-		for (auto& tool : getView()->getTools())
-		{
-			tool->activate();
-		}
-		for (auto& bed : getView()->getBeds())
-		{
-			bed->activate();
-		}
-		for (auto& chamber : getView()->getChambers())
-		{
-			chamber->activate();
-		}
-
-		getView()->m_filamentSelect.activate();
 	}
 
-	void TemperaturePresenter::onDeactivate()
-	{
-		MODEL_LOCK();
-
-		for (auto& tool : getView()->getTools())
-		{
-			tool->deactivate();
-		}
-		for (auto& bed : getView()->getBeds())
-		{
-			bed->deactivate();
-		}
-		for (auto& chamber : getView()->getChambers())
-		{
-			chamber->deactivate();
-		}
-
-		getView()->m_filamentSelect.deactivate();
-	}
+	void TemperaturePresenter::onDeactivate() {}
 } // namespace UI

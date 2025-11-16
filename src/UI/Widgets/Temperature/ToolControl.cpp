@@ -12,20 +12,28 @@ namespace UI
 {
 	ToolControl::ToolControl(const std::string& name, LvObj& parent)
 		: View(name, parent)
-		, m_toolInfoCont("tool_info", getRoot())
-		, m_name("tool_name", m_toolInfoCont)
-		, m_state("tool_state", m_toolInfoCont)
-		, m_heaters("heaters", getRoot())
 	{
 		UI_LOCK();
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		m_toolInfoCont.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_toolInfoCont.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_toolInfoCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_toolInfoCont.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 		m_toolInfoCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_name.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_state.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_toolInfoSpacer.setHeight(0);
+		m_toolInfoSpacer.setFlexGrow(1);
+
+		m_extrusionFactors.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_extrusionFactors.setListFlow(LV_FLEX_FLOW_ROW);
+		m_extrusionFactors.setStylePad(0);
+		m_extrusionFactors.getListContainer().setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_filament.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_filament.setMinWidth(300);
+		m_filament.showHint(false);
 
 		m_heaters.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_heaters.setListFlow(LV_FLEX_FLOW_COLUMN);

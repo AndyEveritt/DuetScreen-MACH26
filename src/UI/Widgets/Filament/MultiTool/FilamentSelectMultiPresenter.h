@@ -1,5 +1,5 @@
 /*
- * FilamentSelectPresenter.h
+ * FilamentSelectMultiPresenter.h
  *
  *  Created on: 2025-07-15
  *      Author: Andy Everitt
@@ -12,12 +12,12 @@
 
 namespace UI
 {
-	class FilamentSelect;
+	class FilamentSelectMulti;
 
-	class FilamentSelectPresenter : public Presenter<FilamentSelect>
+	class FilamentSelectMultiPresenter : public Presenter<FilamentSelectMulti>
 	{
 	  public:
-		PRESENTER_CONSTRUCTOR(FilamentSelectPresenter, FilamentSelect);
+		PRESENTER_CONSTRUCTOR(FilamentSelectMultiPresenter, FilamentSelectMulti);
 
 		// Setters
 		void setSelectedToolBySlot(size_t slot);
@@ -36,7 +36,7 @@ namespace UI
 	  protected:
 		virtual void onInit() override
 		{
-			registerEventListener<EventType::ToolData>(this, &FilamentSelectPresenter::newToolData);
+			registerEventListener<EventType::ToolData>(this, &FilamentSelectMultiPresenter::newToolData);
 		}
 		virtual void onActivate() override;
 		virtual void onDeactivate() override {}

@@ -25,6 +25,7 @@ namespace UI
 		void setText(const std::string& text);
 		const std::string& getText() const;
 		void clearText();
+		LvLabel& getLabel() { return m_label; }
 		LvDropdown& getDropdownMenu() { return m_dropdown; }
 
 		void setOptions(const std::string& options);

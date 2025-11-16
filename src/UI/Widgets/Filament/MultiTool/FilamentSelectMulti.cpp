@@ -1,20 +1,20 @@
 /*
- * FilamentSelect.cpp
+ * FilamentSelectMulti.cpp
  *
  *  Created on: 2025-07-15
  *      Author: Andy Everitt
  */
 
-#include "FilamentSelect.h"
+#include "FilamentSelectMulti.h"
 #include "Debug.h"
 #include "i18n/i18n.h"
 
 namespace UI
 {
-	class FilamentSelect::ToolItem : public ListItem
+	class FilamentSelectMulti::ToolItem : public ListItem
 	{
 	  public:
-		ToolItem(const size_t index, LvObj& parent, FilamentSelect& widget)
+		ToolItem(const size_t index, LvObj& parent, FilamentSelectMulti& widget)
 			: ListItem(index, parent)
 			, m_toolName("tool", getRoot())
 			, m_filament("filament", getRoot())
@@ -52,10 +52,10 @@ namespace UI
 
 		LvLabel m_toolName;
 		Button m_filament;
-		FilamentSelect& m_widget;
+		FilamentSelectMulti& m_widget;
 	};
 
-	FilamentSelect::FilamentSelect(const std::string& name, LvObj& parent, LvObj* messageBoxParent)
+	FilamentSelectMulti::FilamentSelectMulti(const std::string& name, LvObj& parent, LvObj* messageBoxParent)
 		: View(name, parent)
 		, m_header("header", getRoot())
 		, m_cont("cont", getRoot())
@@ -109,22 +109,22 @@ namespace UI
 		m_unload.addClickedCallback(
 			[](lv_event_t* e)
 			{
-				auto& control = *static_cast<FilamentSelect*>(lv_event_get_user_data(e));
+				auto& control = *static_cast<FilamentSelectMulti*>(lv_event_get_user_data(e));
 				control.getPresenter()->unloadFilament();
 				control.m_confirmation.close();
 			},
 			this);
 	}
 
-	FilamentSelect::~FilamentSelect() = default;
+	FilamentSelectMulti::~FilamentSelectMulti() = default;
 
-	void FilamentSelect::setToolCount(size_t count)
+	void FilamentSelectMulti::setToolCount(size_t count)
 	{
 		UI_LOCK();
 		m_toolList.setItemCount(count, *this);
 	}
 
-	void FilamentSelect::setToolData(size_t index, std::string_view toolName, std::string_view filamentName)
+	void FilamentSelectMulti::setToolData(size_t index, std::string_view toolName, std::string_view filamentName)
 	{
 		UI_LOCK();
 		if (index >= m_toolList.getItemCount())
@@ -145,7 +145,7 @@ namespace UI
 		}
 	}
 
-	void FilamentSelect::setFilamentOptions(const std::vector<std::string>& options)
+	void FilamentSelectMulti::setFilamentOptions(const std::vector<std::string>& options)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
@@ -163,12 +163,12 @@ namespace UI
 									   });
 	}
 
-	void FilamentSelect::showToolSelect(bool show)
+	void FilamentSelectMulti::showToolSelect(bool show)
 	{
 		m_toolList.setVisible(show);
 	}
 
-	void FilamentSelect::showSelection(std::string_view toolName, std::string_view filamentName)
+	void FilamentSelectMulti::showSelection(std::string_view toolName, std::string_view filamentName)
 	{
 		UI_LOCK();
 		m_confirmation.setTitle(_("filament.select_tool", toolName));
@@ -188,7 +188,7 @@ namespace UI
 		openModal(&m_confirmation);
 	}
 
-	void FilamentSelect::setSelectedFilament(std::string_view filamentName)
+	void FilamentSelectMulti::setSelectedFilament(std::string_view filamentName)
 	{
 		LOG_DBG("Setting selected filament to {}", filamentName);
 		UI_LOCK();
@@ -214,9 +214,9 @@ namespace UI
 		}
 	}
 
-	void FilamentSelect::onFilamentOptionClicked(lv_event_t* e)
+	void FilamentSelectMulti::onFilamentOptionClicked(lv_event_t* e)
 	{
-		auto& control = *static_cast<FilamentSelect*>(lv_event_get_user_data(e));
+		auto& control = *static_cast<FilamentSelectMulti*>(lv_event_get_user_data(e));
 		LvObj* obj = LvObj::fromPtr(lv_event_get_target_obj(e));
 		size_t index = reinterpret_cast<size_t>(obj->getUserData());
 		auto presenter = control.getPresenter();
@@ -238,7 +238,7 @@ namespace UI
 		control.m_confirmation.getOkBtn().show();
 	}
 
-	void FilamentSelect::onShow()
+	void FilamentSelectMulti::onShow()
 	{
 		m_confirmation.hide();
 	}

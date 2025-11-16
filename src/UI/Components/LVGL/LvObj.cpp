@@ -740,6 +740,13 @@ namespace UI
 		}
 	}
 
+	void LvObj::setVisible(bool display, bool move_to_front)
+	{
+		if (display == isVisible())
+			return;
+		display ? show(move_to_front) : hide(move_to_front);
+	}
+
 	/**
 	 * @brief Shows the view.
 	 *
@@ -827,7 +834,6 @@ namespace UI
 
 	bool LvObj::isVisible()
 	{
-		UI_LOCK();
 		return !hasFlag(LV_OBJ_FLAG_HIDDEN);
 	}
 

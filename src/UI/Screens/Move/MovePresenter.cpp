@@ -36,34 +36,12 @@ namespace UI
 		MODEL_LOCK();
 
 		registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
-		registerEventListener<EventType::ToolData>(this, &MovePresenter::newToolData);
 		registerEventListener<EventType::Status>(this, &MovePresenter::newStatus);
 	}
 
 	void MovePresenter::onActivate()
 	{
 		newAxesData();
-		newToolData();
-
-		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
-									 "",
-									 [this](OM::FileSystem::ItemList files)
-									 {
-										 {
-											 MODEL_LOCK();
-											 this->m_filamentOptions.clear();
-											 this->m_filamentOptions.reserve(files.size());
-											 for (const auto& item : files)
-											 {
-												 if (!item)
-												 {
-													 continue;
-												 }
-												 this->m_filamentOptions.emplace_back(item->GetName());
-											 }
-										 }
-										 this->updateFilamentList();
-									 });
 	}
 
 	void MovePresenter::homeAll()
@@ -136,50 +114,6 @@ namespace UI
 		axis->MoveRelative(distance, feedrate);
 	}
 
-	void MovePresenter::extrude(float distance, float feedrate)
-	{
-		OM::Move::Extrude(distance, feedrate);
-	}
-
-	void MovePresenter::toggleToolState(size_t index)
-	{
-		MODEL_LOCK();
-		auto tool = OM::GetToolBySlot(index);
-		if (tool == nullptr)
-		{
-			LOG_WARN("Tool {:d} not found", index);
-			return;
-		}
-		tool->ToggleState();
-	}
-
-	void MovePresenter::updateFilamentList()
-	{
-		m_view->setFilamentOptions(m_filamentOptions);
-	}
-
-	void MovePresenter::loadFilament(const std::string& filament)
-	{
-		MODEL_LOCK();
-		auto tool = OM::GetCurrentTool();
-		if (tool == nullptr)
-		{
-			return;
-		}
-		tool->ChangeFilament(filament.c_str());
-	}
-
-	void MovePresenter::unloadFilament()
-	{
-		MODEL_LOCK();
-		auto tool = OM::GetCurrentTool();
-		if (tool == nullptr)
-		{
-			return;
-		}
-		tool->UnloadFilament();
-	}
-
 	void MovePresenter::newAxesData()
 	{
 		std::vector<OM::Move::AxisPtr> axes = OM::Move::GetAxes(false);
@@ -202,65 +136,6 @@ namespace UI
 			}
 
 			m_view->setAxisData(m_axisData);
-		}
-	}
-
-	void MovePresenter::newToolData()
-	{
-		m_view->setToolCount(OM::GetToolCount());
-		auto currentTool = OM::GetCurrentTool();
-		if (!currentTool)
-		{
-			m_view->setCurrentTool(-1);
-			m_view->setExtrudeDisabled(true);
-			m_view->setRetractDisabled(true);
-		}
-		for (size_t i = 0; i < OM::GetToolCount(); i++)
-		{
-			auto tool = OM::GetToolBySlot(i);
-			if (!tool)
-			{
-				LOG_WARN("Tool {:d} not found", i);
-				continue;
-			}
-			m_view->setToolName(i, tool->GetName());
-			if (currentTool && currentTool == tool)
-			{
-				UI_LOCK();
-				m_view->setCurrentTool(i);
-				m_view->setFilamentDisabled(tool->filamentExtruder < 0);
-				m_view->setLoadedFilament(tool->GetFilament().c_str());
-
-				bool canExtrude = true;
-				bool canRetract = true;
-
-				const float coldExtrudeTemp = OM::Heat::GetColdExtrudeTemperature();
-				const float coldRetractTemp = OM::Heat::GetColdRetractTemperature();
-				tool->IterateHeaters(
-					[this, &canExtrude, &canRetract, &coldExtrudeTemp, &coldRetractTemp](OM::ToolHeaterPtr heater,
-																						 size_t /* index */)
-					{
-						if (!heater || !heater->heater)
-						{
-							return;
-						}
-
-						const float temperature = heater->heater->current;
-
-						if (temperature < coldExtrudeTemp)
-						{
-							canExtrude = false;
-						}
-
-						if (temperature < coldRetractTemp)
-						{
-							canRetract = false;
-						}
-					});
-
-				m_view->setExtrudeDisabled(!canExtrude);
-				m_view->setRetractDisabled(!canRetract);
-			}
 		}
 	}
 

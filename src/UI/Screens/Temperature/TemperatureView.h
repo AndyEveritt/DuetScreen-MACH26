@@ -6,7 +6,7 @@
 #include "UI/Components/List/List.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Core/View.h"
-#include "UI/Widgets/Filament/FilamentSelect.h"
+#include "UI/Widgets/ExtruderControl/ExtruderControl.h"
 #include "UI/Widgets/Temperature/ToolControl.h"
 #include "UI/Widgets/ToolList/ToolList.h"
 
@@ -29,13 +29,13 @@ namespace UI
 		virtual void onShow() override;
 		virtual void onHide() override;
 
-		LvContainer m_temperatureCont;
-		List<ToolControl> m_tools;
-		List<HeaterSlider> m_beds;
-		List<HeaterSlider> m_chambers;
+		LvContainer m_temperatureCont{"temperature_cont", getRoot()};
+		List<ToolControl> m_tools{"tools", m_temperatureCont};
+		List<HeaterSlider> m_beds{"beds", m_temperatureCont};
+		List<HeaterSlider> m_chambers{"chambers", m_temperatureCont};
 
-		FilamentSelect m_filamentSelect;
+		ExtruderControl m_extruderControl{"extruder_control", getRoot()};
 
-		ModalNumberPad m_numberPad;
+		ModalNumberPad m_numberPad{"number_pad", getRoot()};
 	};
 } // namespace UI

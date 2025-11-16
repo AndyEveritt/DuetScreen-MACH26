@@ -9,13 +9,6 @@ namespace UI
 {
 	HeaterSlider::HeaterSlider(const std::string& name, LvObj& parent)
 		: View(name, parent)
-		, m_heaterInfoCont("heater_info_cont", getRoot())
-		, m_heaterName("heater_name", m_heaterInfoCont)
-		, m_heaterState("heater_state", m_heaterInfoCont)
-		, m_temperatureCont("temperature_cont", getRoot())
-		, m_currentTemperature("current_temperature", m_temperatureCont)
-		, m_activeTemperature("active_temperature", m_temperatureCont)
-		, m_standbyTemperature("standby_temperature", m_temperatureCont)
 	{
 		UI_LOCK();
 
@@ -32,7 +25,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_heaterInfoCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		m_heaterInfoCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		m_heaterInfoCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 		m_heaterInfoCont.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_heaterInfoCont.setMinHeight(LV_SIZE_CONTENT);
 		m_temperatureCont.setHeight(LV_PCT(100));

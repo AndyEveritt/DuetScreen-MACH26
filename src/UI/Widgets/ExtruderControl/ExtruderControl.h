@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include "ExtruderControlPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/DropdownMenu.h"
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
@@ -16,7 +18,7 @@
 
 namespace UI
 {
-	class ExtruderControl : public LvContainer
+	class ExtruderControl : public View<ExtruderControlPresenter>
 	{
 		using tool_select_cb_t = std::function<void(size_t index)>;
 		using filament_cb_t = std::function<void(const std::string& filament)>;
@@ -28,16 +30,6 @@ namespace UI
 		ExtruderControl(const std::string& name, LvObj& parent);
 
 		void clear();
-
-		void setToolCallback(tool_select_cb_t cb);
-		void setToolCount(size_t count);
-		void setToolName(size_t index, const std::string& name);
-		void setCurrentTool(int32_t index);
-
-		void setFilamentDisabled(bool disabled);
-		void setFilamentOptions(const std::vector<std::string>& options);
-		void setFilamentSelected(const std::string& filament);
-		void setFilamentCallback(filament_cb_t cb);
 
 		void setExtrudeDisabled(bool disabled);
 		void setRetractDisabled(bool disabled);
@@ -51,6 +43,8 @@ namespace UI
 		float getDistanceValue(size_t index) const;
 		float getFeedrateValue(size_t index) const;
 
+		NumberPad* getNumberPad() const { return m_numberPad; }
+
 	  private:
 		static void onToolSelectEvent(lv_event_t* event);
 		static void onFilamentSelectEvent(lv_event_t* event);
@@ -61,25 +55,18 @@ namespace UI
 		static void onRetractEvent(lv_event_t* event);
 		static void onExtrudeEvent(lv_event_t* event);
 
-		void onShow() override;
-
 		std::unique_ptr<Button> createBaseListButton(size_t index, LvObj& parent);
 		std::unique_ptr<Button> createToolButton(size_t index, LvObj& parent);
 		std::unique_ptr<Button> createDistanceButton(size_t index, LvObj& parent);
 		std::unique_ptr<Button> createFeedrateButton(size_t index, LvObj& parent);
-
-		List<Button> m_toolSelect{"tool_select", getRoot()};
-
-		LvContainer m_filamentContainer{"filament", getRoot()};
-		DropdownMenu m_filamentSelect{"filament_select", m_filamentContainer};
-		Button m_filamentChangeBtn{"filament_change", m_filamentContainer};
-		Button m_filamentUnloadBtn{"filament_load_unload", m_filamentContainer};
 
 		LvContainer m_controlsContainer{"controls", getRoot()};
 		Button m_retractBtn{"retract", m_controlsContainer};
 		Button m_extrudeBtn{"extrude", m_controlsContainer};
 		List<Button> m_distanceInput{"distance_input", m_controlsContainer};
 		List<Button> m_feedrateInput{"feedrate_input", m_controlsContainer};
+
+		NumberPad* m_numberPad = nullptr; // used for long press callbacks
 
 		std::vector<float> m_distanceValues;
 		std::vector<float> m_feedrateValues;

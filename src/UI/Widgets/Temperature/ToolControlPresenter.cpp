@@ -19,11 +19,6 @@ namespace UI
 			setToolIndex(m_toolSlot);
 		}
 		newToolData();
-
-		for (auto& heater : m_view->getHeaters())
-		{
-			heater->activate();
-		}
 	}
 
 	void ToolControlPresenter::onDeactivate()
@@ -81,7 +76,29 @@ namespace UI
 		m_view->setToolName(m_tool->GetName());
 		m_view->setToolState(m_tool->status, _(fmt::format("temperature.status.{:s}", m_tool->GetStatusStr())));
 
+		auto& extrusionFactors = m_view->getExtrusionFactors();
+		extrusionFactors.setItemCount(m_tool->GetExtruderCount(),
+									  [&](size_t index, LvObj& parent)
+									  {
+										  auto btn = std::make_unique<Button>(fmt::format("extrusion_factor_{}", index),
+																			  parent);
+										  btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
+										  //   btn->setSize(LV_SIZE_CONTENT, LV_PCT(100));
+										  return btn;
+									  });
+		extrusionFactors.iterateListItems(
+			[&](size_t index, Button& btn)
+			{
+				auto extruder = m_tool->GetExtruder(index);
+				if (!extruder)
+					return;
+				int factor = static_cast<int>(100 * extruder->factor);
+				btn.setText(fmt::format("{:d}%", factor));
+			});
+
 		auto& heaters = m_view->getHeaters();
+
+		getView()->getFilamentDropdown().setVisible(m_tool->filamentExtruder >= 0);
 
 		heaters.setItemCount(m_tool->GetHeaterCount(),
 							 [this](size_t index, LvObj& parent)
@@ -90,7 +107,7 @@ namespace UI
 								 auto presenter = control->getPresenter();
 								 presenter->setToolHeaterIndex(m_tool->index, index);
 								 control->setNumberPad(m_view->getNumberPad());
-								 control->activate();
+								 control->show();
 								 return control;
 							 });
 	}
