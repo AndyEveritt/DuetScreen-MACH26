@@ -165,7 +165,6 @@ target_compile_options(
   DuetScreen.lib
   PRIVATE -pedantic-errors
           -Wall
-          -Werror
           -Wdeprecated
           -Wdouble-promotion
           -Wempty-body
@@ -173,7 +172,6 @@ target_compile_options(
           -Wformat-security
           -Wpointer-arith
           -Wmultichar
-          -Wno-pedantic
           -Wreturn-type
           # -Wshadow
           -Wshift-negative-value
@@ -186,9 +184,13 @@ target_compile_options(
           -Wstrict-aliasing)
 
 if(!APPLE)
+  # I don't have a Mac and the compiler seems to generate additional warnings so it seems unfair to make Ian suffer
+  # -Wclobbered and -Wmaybe-uninitialized are not supported on macOS
+  # -Werror is disabled on macOS to avoid build failures due to warnings
   target_compile_options(
     DuetScreen.lib
     PRIVATE 
+            -Werror
             -Wclobbered
             -Wmaybe-uninitialized
             )

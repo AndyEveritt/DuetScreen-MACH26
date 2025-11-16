@@ -711,15 +711,23 @@ namespace UI
 		if (checked)
 		{
 #if !SIMULATION
-			system("mv /etc/init.d/50dropbear /etc/init.d/S50dropbear;"
-				   "/etc/init.d/S50dropbear start");
+			if (system("mv /etc/init.d/50dropbear /etc/init.d/S50dropbear;"
+					   "/etc/init.d/S50dropbear start") != 0)
+			{
+				LOG_ERROR("Failed to enable SSH server");
+				return;
+			}
 #endif
 		}
 		else
 		{
 #if !SIMULATION
-			system("/etc/init.d/S50dropbear stop;"
-				   "mv /etc/init.d/S50dropbear /etc/init.d/50dropbear");
+			if (system("/etc/init.d/S50dropbear stop;"
+					   "mv /etc/init.d/S50dropbear /etc/init.d/50dropbear") != 0)
+			{
+				LOG_ERROR("Failed to disable SSH server");
+				return;
+			}
 #endif
 		}
 	}

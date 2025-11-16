@@ -46,7 +46,7 @@ bool PNG::Close()
 		return true;
 	}
 	LOG_DBG("Closing file {:s}", m_imageFileName);
-	if (!fclose(m_imageFile) == 0)
+	if (fclose(m_imageFile) != 0)
 	{
 		LOG_ERROR("Failed to close file {:s}", m_imageFileName);
 		return false;

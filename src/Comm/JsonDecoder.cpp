@@ -293,7 +293,7 @@ namespace Comm
 
 		case rcvControlCommand:
 		{
-			const ControlCommandMapEntry key = (ControlCommandMapEntry){data, ControlCommand::invalid};
+			const ControlCommandMapEntry key{data, ControlCommand::invalid};
 			const ControlCommandMapEntry* controlCommandFromMap =
 				(ControlCommandMapEntry*)bsearch(&key,
 												 controlCommandMap,

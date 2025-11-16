@@ -374,7 +374,7 @@ namespace Comm
 			query["gcode"] = gcode;
 			AsyncGet("/rr_gcode",
 					 query,
-					 [this, gcode](const HttpResponsePtr& r)
+					 [gcode](const HttpResponsePtr& r)
 					 {
 						 if (r->status_code != HTTP_STATUS_OK)
 						 {
@@ -500,7 +500,7 @@ namespace Comm
 #if ASYNC_RR_MODEL
 			AsyncGet("/rr_model",
 					 query,
-					 [this, flags](const HttpResponsePtr& r)
+					 [flags](const HttpResponsePtr& r)
 					 {
 						 JsonDecoder decoder;
 						 if (r->status_code != HTTP_STATUS_OK)
@@ -553,7 +553,7 @@ namespace Comm
 #if ASYNC_RR_MODEL
 			AsyncGet("/rr_model",
 					 query,
-					 [this, key, flags](const HttpResponsePtr& r)
+					 [key, flags](const HttpResponsePtr& r)
 					 {
 						 JsonDecoder decoder;
 						 if (r->status_code != HTTP_STATUS_OK)
@@ -612,7 +612,7 @@ namespace Comm
 			query["first"] = fmt::format("{:d}", first);
 			ret = AsyncGet("/rr_filelist",
 						   query,
-						   [this, dir](const HttpResponsePtr& r) -> bool
+						   [dir](const HttpResponsePtr& r) -> bool
 						   {
 							   JsonDecoder decoder;
 							   if (r->status_code != 200)
@@ -659,7 +659,7 @@ namespace Comm
 #if 1
 			ret = AsyncGet("/rr_fileinfo",
 						   query,
-						   [this](const HttpResponsePtr& r) -> bool
+						   [](const HttpResponsePtr& r) -> bool
 						   {
 							   JsonDecoder decoder;
 							   if (r->status_code != 200)
@@ -818,7 +818,7 @@ namespace Comm
 			query["offset"] = fmt::format("{:d}", offset);
 			ret = AsyncGet("/rr_thumbnail",
 						   query,
-						   [this](const HttpResponsePtr& r) -> bool
+						   [](const HttpResponsePtr& r) -> bool
 						   {
 							   JsonDecoder decoder;
 							   if (r->status_code != 200)
@@ -1056,7 +1056,7 @@ namespace Comm
 			hv::QueryParams query;
 			ret = AsyncGet("/rr_disconnect",
 						   query,
-						   [this](const HttpResponsePtr& r)
+						   [](const HttpResponsePtr& r)
 						   {
 							   if (r->status_code != HTTP_STATUS_OK)
 							   {

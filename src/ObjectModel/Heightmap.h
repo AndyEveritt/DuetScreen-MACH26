@@ -102,11 +102,11 @@ namespace OM
 		}
 
 		std::string m_fileName;
-		double m_minError = 0.0f;
-		double m_maxError = 0.0f;
-		double m_meanError = 0.0f;
-		double m_stdDev = 0.0f;
-		double m_area = 0.0f;
+		double m_minError = 0.0;
+		double m_maxError = 0.0;
+		double m_meanError = 0.0;
+		double m_stdDev = 0.0;
+		double m_area = 0.0;
 		std::vector<Point> m_heightmap;
 	};
 

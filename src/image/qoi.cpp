@@ -5,13 +5,13 @@
 
 #define QOI_DEBUG 0
 #if QOI_DEBUG
-#  define qoi_dbg(fmt, args...)                                                                                        \
+#  define qoi_dbg(fmt, ...)                                                                                            \
 	  do                                                                                                               \
 	  {                                                                                                                \
-		  printf("%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                                      \
+		  printf("%s(%d): " fmt, __FUNCTION__, __LINE__, __VA_ARGS__);                                                 \
 	  } while (0)
 #else
-#  define qoi_dbg(fmt, args...)                                                                                        \
+#  define qoi_dbg(fmt, ...)                                                                                            \
 	  do                                                                                                               \
 	  {                                                                                                                \
 	  } while (0)

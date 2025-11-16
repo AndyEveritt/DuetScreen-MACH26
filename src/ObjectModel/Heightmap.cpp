@@ -40,17 +40,17 @@ namespace OM
 		m_isValid = false;
 		m_axis[0] = "X";
 		m_axis[1] = "Y";
-		m_min[0] = 0.0f;
-		m_min[1] = 0.0f;
-		m_max[0] = 0.0f;
-		m_max[1] = 0.0f;
-		m_radius = 0.0f;
-		m_spacing[0] = 0.0f;
-		m_spacing[1] = 0.0f;
+		m_min[0] = 0.0;
+		m_min[1] = 0.0;
+		m_max[0] = 0.0;
+		m_max[1] = 0.0;
+		m_radius = 0.0;
+		m_spacing[0] = 0.0;
+		m_spacing[1] = 0.0;
 		m_samples[0] = 0;
 		m_samples[1] = 0;
-		m_recipSpacing[0] = 0.0f;
-		m_recipSpacing[1] = 0.0f;
+		m_recipSpacing[0] = 0.0;
+		m_recipSpacing[1] = 0.0;
 	}
 
 	void HeightmapMeta::Parse(std::string_view meta)

@@ -17,7 +17,7 @@ extern "C"
 std::string GetThumbnailPath(std::string_view filepath)
 {
 	std::string sanitisedFilename(filepath);
-	utils::replaceSubstring(sanitisedFilename, ":", "\%3A");
+	utils::replaceSubstring(sanitisedFilename, ":", "\\%3A");
 	// utils::replaceSubstring(sanitisedFilename, "/", "\%2F");
 	if (sanitisedFilename.rfind("/tmp/thumbnails/") == 0)
 	{
