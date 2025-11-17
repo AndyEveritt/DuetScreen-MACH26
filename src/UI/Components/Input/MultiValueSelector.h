@@ -19,15 +19,24 @@ namespace UI
 	  public:
 		MultiValueSelector(const std::string& name, LvObj& parent);
 
-        void setValues(const std::vector<float>& values);
+		void setLabel(const std::string& label);
+
+		void setValue(float value);
+		float getValue() const;
+
+		void setIncrement(float increment);
+		void setValues(const std::vector<float>& values);
 
 	  private:
-        LvContainer m_topRow{"topRow", getRoot()};
-        Button m_decrement{"decrement", m_topRow};
-        TextBox m_valueDisplay{"valueDisplay", m_topRow};
-        Button m_increment{"increment", m_topRow};
-        List<Button> m_values{"values", getRoot()};
+		LvLabel m_label{"label", getRoot()};
+		LvContainer m_topRow{"topRow", getRoot()};
+		Button m_decrementBtn{"decrement", m_topRow};
+		TextBox m_valueDisplay{"valueDisplay", m_topRow};
+		Button m_incrementBtn{"increment", m_topRow};
+		List<Button> m_valueBtns{"values", getRoot()};
 
-        std::vector<float> m_currentValues;
+		float m_incrementValue = 1.0f;
+		float m_value = 0.0f;
+		std::vector<float> m_currentValues;
 	};
 } // namespace UI
