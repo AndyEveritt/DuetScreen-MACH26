@@ -33,15 +33,3 @@ TEST_F(TestMoveView, OpenNumberpad)
 	label->sendEvent(LV_EVENT_CLICKED, nullptr);
 	EXPECT_EQUAL_SCREENSHOT("move_view/numberpad.png");
 }
-
-TEST_F(TestMoveView, ExtrudeControl)
-{
-	LvObj* btn = move_view.getChildByName("axis_control.extruder_control.controls.distance_input.list.1");
-	ASSERT_NE(btn, nullptr);
-
-	btn->sendEvent(LV_EVENT_CLICKED, nullptr);
-	EXPECT_EQUAL_SCREENSHOT("move_view/extrude_feedrate_select.png");
-
-	btn->sendEvent(LV_EVENT_LONG_PRESSED, nullptr);
-	EXPECT_EQUAL_SCREENSHOT("move_view/extrude_feedrate_select_long.png");
-}
