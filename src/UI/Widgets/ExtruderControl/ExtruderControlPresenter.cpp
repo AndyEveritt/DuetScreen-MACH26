@@ -97,38 +97,6 @@ namespace UI
 
 	void ExtruderControlPresenter::onInit()
 	{
-		m_view->setDistanceCallback(
-			[this](size_t index, float distance)
-			{
-				NumberPad* np = m_view->getNumberPad();
-				if (!np)
-				{
-					LOG_ERROR("NumberPad not available in ExtruderControl view");
-					return;
-				}
-				openModal(np);
-				np->setHeader(_("extrude.distance_header", Units::getDisplayedDistanceUnit()));
-				np->setValue(distance);
-				np->setMinValue(0);
-				np->setMaxValue(1000);
-				np->setConfirmCallback([this, index](float distance) { m_view->setDistanceValue(index, distance); });
-			});
-		m_view->setFeedrateCallback(
-			[this](size_t index, float feedrate)
-			{
-				NumberPad* np = m_view->getNumberPad();
-				if (!np)
-				{
-					LOG_ERROR("NumberPad not available in ExtruderControl view");
-					return;
-				}
-				openModal(np);
-				np->setHeader(_("extrude.feedrate_header", Units::getDisplayedSpeedUnit()));
-				np->setValue(feedrate);
-				np->setMinValue(0);
-				np->setMaxValue(100); // mm/s
-				np->setConfirmCallback([this, index](float feedrate) { m_view->setFeedrateValue(index, feedrate); });
-			});
 		m_view->setExtrudeCallback([this](float distance, float feedrate) { extrude(distance, feedrate); });
 
 		registerEventListener<EventType::ToolData>(this, &ExtruderControlPresenter::newToolData);

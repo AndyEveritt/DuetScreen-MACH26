@@ -23,7 +23,7 @@ TEST_F(TestMultiValueSelector, Basic)
 	MultiValueSelector mvs("multiValueSelector", screen);
 
 	mvs.setSize(400, 200);
-	mvs.setValues({0.1f, 0.5f, 1.0f, 5.0f, 10.0f});
+	mvs.setValueBtns({0.1f, 0.5f, 1.0f, 5.0f, 10.0f});
 
 	EXPECT_EQUAL_SCREENSHOT("multi_value_selector/basic.png");
 }

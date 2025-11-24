@@ -208,7 +208,7 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/console_view_keyboard.png");
 }
 
-TEST_F(TestHomeViewWithData, BlankControlView)
+TEST_F(TestHomeViewWithData, ControlView)
 {
 	auto& control = view.getControlView();
 
@@ -217,6 +217,13 @@ TEST_F(TestHomeViewWithData, BlankControlView)
 
 	control.showTemperatureView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_temperature.png");
+	{
+		auto& temperature = control.getTemperatureView();
+		auto input = temperature.getChildByName("extruder_control.controls.distance_selector.topRow.valueDisplay");
+		ASSERT_NE(input, nullptr);
+		input->sendEvent(LV_EVENT_CLICKED, nullptr);
+		EXPECT_EQUAL_SCREENSHOT("home_view/control_view_temperature_distance_input.png");
+	}
 
 	control.showHeightmapView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_heightmap.png");

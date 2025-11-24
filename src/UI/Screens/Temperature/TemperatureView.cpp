@@ -25,6 +25,7 @@ namespace UI
 
 		m_extruderControl.setHeight(LV_PCT(100));
 		m_extruderControl.setFlexGrow(1);
+		m_extruderControl.setNumberPad(&m_numberPad);
 
 		m_tools.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_beds.setSize(LV_PCT(100), LV_SIZE_CONTENT);

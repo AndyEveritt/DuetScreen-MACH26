@@ -25,7 +25,6 @@ namespace UI
 		// Actions
 		void extrude(float distance, float feedrate);
 		void toggleToolState(size_t index);
-		void updateFilamentList();
 		void loadFilament(const std::string& filament);
 		void unloadFilament();
 

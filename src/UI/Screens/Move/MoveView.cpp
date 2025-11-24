@@ -153,7 +153,6 @@ namespace UI
 								 });
 
 		/* Numberpad */
-
 		m_numberpad.hide();
 	}
 

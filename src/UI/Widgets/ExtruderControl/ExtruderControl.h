@@ -10,6 +10,7 @@
 #include "ExtruderControlPresenter.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/DropdownMenu.h"
+#include "UI/Components/Input/MultiValueSelector.h"
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Components/LVGL/LvContainer.h"
@@ -34,47 +35,26 @@ namespace UI
 		void setExtrudeDisabled(bool disabled);
 		void setRetractDisabled(bool disabled);
 		void setExtrudeCallback(extrude_cb_t cb);
-		void setDistanceCallback(distance_cb_t cb);
-		void setFeedrateCallback(feedrate_cb_t cb);
 
-		void setDistanceValue(size_t index, float value);
-		void setFeedrateValue(size_t index, float value);
+		float getDistanceValue() const;
+		float getFeedrateValue() const;
 
-		float getDistanceValue(size_t index) const;
-		float getFeedrateValue(size_t index) const;
-
+		void setNumberPad(NumberPad* np);
 		NumberPad* getNumberPad() const { return m_numberPad; }
 
 	  private:
-		static void onToolSelectEvent(lv_event_t* event);
-		static void onFilamentSelectEvent(lv_event_t* event);
-		static void onFilamentChangeEvent(lv_event_t* event);
-		static void onFilamentUnloadEvent(lv_event_t* event);
-		static void onDistanceEvent(lv_event_t* event);
-		static void onFeedrateEvent(lv_event_t* event);
 		static void onRetractEvent(lv_event_t* event);
 		static void onExtrudeEvent(lv_event_t* event);
-
-		std::unique_ptr<Button> createBaseListButton(size_t index, LvObj& parent);
-		std::unique_ptr<Button> createToolButton(size_t index, LvObj& parent);
-		std::unique_ptr<Button> createDistanceButton(size_t index, LvObj& parent);
-		std::unique_ptr<Button> createFeedrateButton(size_t index, LvObj& parent);
 
 		LvContainer m_controlsContainer{"controls", getRoot()};
 		Button m_retractBtn{"retract", m_controlsContainer};
 		Button m_extrudeBtn{"extrude", m_controlsContainer};
-		List<Button> m_distanceInput{"distance_input", m_controlsContainer};
-		List<Button> m_feedrateInput{"feedrate_input", m_controlsContainer};
+
+		MultiValueSelector m_distanceSelector{"distance_selector", m_controlsContainer};
+		MultiValueSelector m_feedrateSelector{"feedrate_selector", m_controlsContainer};
 
 		NumberPad* m_numberPad = nullptr; // used for long press callbacks
 
-		std::vector<float> m_distanceValues;
-		std::vector<float> m_feedrateValues;
-		size_t m_selectedDistanceIndex;
-		size_t m_selectedFeedrateIndex;
-
-		tool_select_cb_t m_toolSelectCb; // Callback for when a tool is selected
-		filament_cb_t m_filamentCb;		 // Callback for when a filament selection changes
 		extrude_cb_t m_extrudeCb;		 // Callback for when extrude/retract is clicked
 		distance_cb_t m_distanceCb;		 // Callback for when distance input is clicked
 		feedrate_cb_t m_feedrateCb;		 // Callback for when feedrate input is clicked

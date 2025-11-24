@@ -32,10 +32,11 @@ constexpr const char* ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED = "ui:console_command
 constexpr const char* ID_BABYSTEP_AMOUNT = "ui:baby_step_amount";
 constexpr const char* ID_MOVE_FEEDRATES = "ui:move:feedrates";
 constexpr const char* ID_MOVE_SELECTED_FEEDRATE = "ui:move:selected_feedrate";
-constexpr const char* ID_EXTRUSION_DISTANCES = "ui:extrusion:distances";
-constexpr const char* ID_EXTRUSION_SELECTED_DISTANCE = "ui:extrusion:selected_distance";
-constexpr const char* ID_EXTRUSION_FEEDRATES = "ui:extrusion:feedrates";
-constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "ui:extrusion:selected_feedrate";
+
+/* Multi value selectors */
+// these will be prefixed with "ui:mvs:" and have the following sub keys {"values", "selected"}
+constexpr const char* ID_MVS_EXTRUSION_FEEDRATES = "extrusion:feedrates";
+constexpr const char* ID_MVS_EXTRUSION_DISTANCES = "extrusion:distances";
 
 constexpr const char* ID_FILE_SORT_BY = "ui:file:sort_by";
 constexpr const char* ID_FILE_SORT_DESCENDING = "ui:file:sort_descending";

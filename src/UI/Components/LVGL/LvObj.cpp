@@ -73,6 +73,8 @@ namespace UI
 		assert(obj != nullptr && "LvObj::fromPtr: obj is null");
 
 		void* user_data = lv_obj_get_user_data(obj);
+		if (user_data == nullptr)
+			return nullptr;
 		return static_cast<LvObj*>(user_data);
 	}
 
@@ -157,6 +159,10 @@ namespace UI
 					found = true;
 					break;
 				}
+			}
+			if (!found)
+			{
+				LOG_ERROR("LvObj::getChildByName: Could not find child '{}' in '{}'", part, obj->getName());
 			}
 		}
 

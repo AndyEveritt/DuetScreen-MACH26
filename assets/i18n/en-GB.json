@@ -152,6 +152,10 @@
       "warning_int_range": "Value must be between {:d} and {:d}",
       "warning_text_length": "Input must be between {:d} and {:d} characters"
     },
+    "multi_value_selector": {
+      "numberpad_input_header": "Enter value:",
+      "numberpad_new_value_header": "Enter new value:"
+    },
     "move": { /* Move screen */
       "home_all": "Home All",
       "axis_home": "Home {:s}",

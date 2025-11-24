@@ -21,6 +21,11 @@ namespace UI
 		void showHeightmapView() { m_tabs.setActiveTab(2); }
 		void showFanView() { m_tabs.setActiveTab(3); }
 
+		MoveView& getMoveView() { return m_moveView; }
+		TemperatureView& getTemperatureView() { return m_temperatureView; }
+		HeightmapView& getHeightmapView() { return m_heightmapView; }
+		FanView& getFanView() { return m_fanView; }
+
 	  private:
 		TabView m_tabs{"tabs", getRoot()};
 		MoveView m_moveView{"move", m_tabs.addTab(_("control.move_tab"))};
