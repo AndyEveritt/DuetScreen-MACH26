@@ -219,7 +219,8 @@ TEST_F(TestHomeViewWithData, ControlView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view_temperature.png");
 	{
 		auto& temperature = control.getTemperatureView();
-		auto input = temperature.getChildByName("extruder_control.controls.distance_selector.topRow.valueDisplay");
+		auto input =
+			temperature.getChildByName("control_cont.extruder_control.controls.distance_selector.topRow.valueDisplay");
 		ASSERT_NE(input, nullptr);
 		input->sendEvent(LV_EVENT_CLICKED, nullptr);
 		EXPECT_EQUAL_SCREENSHOT("home_view/control_view_temperature_distance_input.png");
