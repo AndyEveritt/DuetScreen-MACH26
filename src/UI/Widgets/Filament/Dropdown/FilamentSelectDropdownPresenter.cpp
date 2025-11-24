@@ -73,5 +73,9 @@ namespace UI
 	{
 		m_filamentOptions = OM::FileSystem::GetFilamentList();
 		updateFilamentList();
+		if (m_tool)
+		{
+			getView()->setFilamentSelected(m_tool->GetFilament().c_str(), true);
+		}
 	}
 } // namespace UI

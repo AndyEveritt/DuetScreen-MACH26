@@ -90,7 +90,8 @@
       "unload": "Unload",
       "select": "Select Filament",
       "select_tool": "Select Filament for {:s}",
-      "select_tool_list_header": "Tools"
+      "select_tool_list_header": "Tools",
+      "not_loaded": "No Filament Loaded"
     },
     "file": { /* File screen */
       "file": "File",

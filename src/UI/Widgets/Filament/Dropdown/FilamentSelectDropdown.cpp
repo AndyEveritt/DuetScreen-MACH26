@@ -80,7 +80,7 @@ namespace UI
 		}
 
 		m_selection.setSelected(filament);
-		m_selection.setText(filament);
+		m_selection.setText(filament.empty() ? _("filament.not_loaded") : filament);
 		m_loadedFilament = filament;
 		m_changeBtn.hide();
 		m_unloadBtn.setDisabled(filament.empty());
