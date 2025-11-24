@@ -15,22 +15,45 @@
 
 namespace UI
 {
+	void ExtrusionFactorPresenter::setTool(OM::ToolPtr tool)
+	{
+		m_tool = std::move(tool);
+
+		newExtruderData();
+	}
+
 	void ExtrusionFactorPresenter::newExtruderData()
 	{
-		m_view->setExtruderCount(OM::Move::GetExtruderAxisCount());
+		auto callback = [&](OM::Move::ExtruderAxisPtr extruder, size_t index)
+		{
+			m_view->setExtruderLabel(index, _("fine_tune.extruder", extruder->index));
+			m_view->setExtruderValue(index, static_cast<uint32_t>(std::round(100 * extruder->factor)));
+			return;
+		};
 
-		OM::Move::IterateExtruderAxesWhile(
-			[this](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
-			{
-				m_view->setExtruderLabel(index, _("fine_tune.extruder", extruder->index));
-				m_view->setExtruderValue(index, static_cast<uint32_t>(std::round(100 * extruder->factor)));
-				return true;
-			});
+		if (m_tool == nullptr)
+		{
+			m_view->setExtruderCount(OM::Move::GetExtruderAxisCount());
+
+			OM::Move::IterateExtruderAxesWhile(
+				[&](OM::Move::ExtruderAxisPtr extruder, size_t index)
+				{
+					callback(std::move(extruder), index);
+					return true;
+				});
+		}
+		else
+		{
+			size_t extruderCount = m_tool->GetExtruderCount();
+			m_view->setExtruderCount(extruderCount);
+
+			m_tool->IterateExtruders(callback);
+		}
 	}
 
 	void ExtrusionFactorPresenter::setExtruderFactor(size_t slot, uint32_t value)
 	{
-		auto extruder = OM::Move::GetExtruderAxisBySlot(slot);
+		auto extruder = m_tool ? m_tool->GetExtruder(slot) : OM::Move::GetExtruderAxisBySlot(slot);
 		if (extruder == nullptr || value == std::round(100 * extruder->factor))
 		{
 			return;
@@ -42,7 +65,8 @@ namespace UI
 
 	void ModalExtrusionFactorPresenter::configureNumberPad(size_t index)
 	{
-		auto extruder = OM::Move::GetExtruderAxisBySlot(index);
+		auto tool = getView()->getExtrusionFactor().getPresenter()->m_tool;
+		auto extruder = tool ? tool->GetExtruder(index) : OM::Move::GetExtruderAxisBySlot(index);
 		configureNumberPad(std::move(extruder));
 	};
 
@@ -66,9 +90,8 @@ namespace UI
 		np.setValue(std::round(100 * extruder->factor));
 		np.setMinValue(0);
 		np.setConfirmCallback(
-			[index = extruder->index](float value)
+			[extruder](float value)
 			{
-				auto extruder = OM::Move::GetExtruderAxis(index);
 				if (extruder == nullptr || value == std::round(100 * extruder->factor))
 				{
 					return;

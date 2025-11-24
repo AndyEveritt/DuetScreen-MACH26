@@ -64,6 +64,7 @@ namespace UI
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
 #endif
 
+		ModalExtrusionFactor& getExtrusionFactorModal() { return m_extrusionFactorModal; }
 		ModalNumberPad& getNumberPad() { return m_numberpad; }
 
 		void showUpdatePrompt(bool show);
@@ -102,6 +103,8 @@ namespace UI
 
 		// Update prompt
 		MessageBox m_updatePrompt{"update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
+
+		ModalExtrusionFactor m_extrusionFactorModal{"extrusion_factor_modal", m_mainWindow};
 
 		// Input
 		ModalNumberPad m_numberpad{"numberpad", m_mainWindow};

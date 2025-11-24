@@ -2,11 +2,11 @@
 
 #include "ControlPresenter.h"
 #include "UI/Components/Containers/TabView.h"
+#include "UI/Core/View.h"
+#include "UI/Screens/Fan/FanView.h"
+#include "UI/Screens/Heightmap/HeightmapView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/Temperature/TemperatureView.h"
-#include "UI/Screens/Heightmap/HeightmapView.h"
-#include "UI/Screens/Fan/FanView.h"
-#include "UI/Core/View.h"
 #include "i18n/i18n.h"
 
 namespace UI

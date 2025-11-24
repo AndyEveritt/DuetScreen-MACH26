@@ -74,6 +74,10 @@ namespace UI
 		m_updatePrompt.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_updatePrompt.setMaxHeight(LV_PCT(70));
 
+		// Extrusion Factor Modal
+		m_extrusionFactorModal.hide();
+		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
+
 		// Keyboard
 		showKeyboard(false);
 		m_kb.setFlag(LV_OBJ_FLAG_FLOATING, true);

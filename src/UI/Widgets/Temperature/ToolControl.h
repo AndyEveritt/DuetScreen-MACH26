@@ -14,6 +14,7 @@
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/Control/ExtrusionFactor/ExtrusionFactor.h"
 #include "UI/Widgets/Filament/Dropdown/FilamentSelectDropdown.h"
 
 namespace UI
@@ -32,6 +33,9 @@ namespace UI
 		void setNumberPad(NumberPad* numberPad);
 		auto getNumberPad() { return m_numberPad; }
 
+		void setExtrusionModal(ModalExtrusionFactor* modal);
+		auto getExtrusionModal() { return m_extrusionFactorModal; }
+
 	  private:
 		LvContainer m_toolInfoCont{"tool_info", getRoot()};
 		Button m_name{"tool_name", m_toolInfoCont};
@@ -42,5 +46,6 @@ namespace UI
 		List<HeaterSlider> m_heaters{"heaters", getRoot()};
 
 		NumberPad* m_numberPad = nullptr;
+		ModalExtrusionFactor* m_extrusionFactorModal = nullptr;
 	};
 } // namespace UI

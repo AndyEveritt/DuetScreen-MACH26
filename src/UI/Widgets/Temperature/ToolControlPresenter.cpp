@@ -78,15 +78,35 @@ namespace UI
 		m_view->setToolState(m_tool->status, _(fmt::format("temperature.status.{:s}", m_tool->GetStatusStr())));
 
 		auto& extrusionFactors = m_view->getExtrusionFactors();
-		extrusionFactors.setItemCount(m_tool->GetExtruderCount(),
-									  [&](size_t index, LvObj& parent)
-									  {
-										  auto btn = std::make_unique<Button>(fmt::format("extrusion_factor_{}", index),
-																			  parent);
-										  btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
-										  //   btn->setSize(LV_SIZE_CONTENT, LV_PCT(100));
-										  return btn;
-									  });
+		extrusionFactors.setItemCount(
+			m_tool->GetExtruderCount(),
+			[&](size_t index, LvObj& parent)
+			{
+				auto btn = std::make_unique<Button>(fmt::format("extrusion_factor_{}", index), parent);
+				btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
+				//   btn->setSize(LV_SIZE_CONTENT, LV_PCT(100));
+				btn->addClickedCallback(
+					[](lv_event_t* e)
+					{
+						auto& presenter = *(static_cast<ToolControlPresenter*>(lv_event_get_user_data(e)));
+						auto control = presenter.getView();
+						auto btn = LvObj::fromPtr(lv_event_get_target_obj(e));
+						size_t extruderIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
+
+						auto modal = control->getExtrusionModal();
+						if (modal == nullptr)
+						{
+							LOG_DBG("No extrusion modal set for tool control");
+							return;
+						}
+
+						modal->getExtrusionFactor().getPresenter()->setTool(presenter.m_tool);
+						openModal(modal);
+						modal->getPresenter()->configureNumberPad(extruderIndex);
+					},
+					this);
+				return btn;
+			});
 		extrusionFactors.iterateListItems(
 			[&](size_t index, Button& btn)
 			{

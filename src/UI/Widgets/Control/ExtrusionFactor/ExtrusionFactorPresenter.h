@@ -8,6 +8,7 @@
 #pragma once
 
 #include "ObjectModel/Axis.h"
+#include "ObjectModel/Tool.h"
 #include "UI/Core/Presenter.h"
 
 namespace UI
@@ -17,10 +18,13 @@ namespace UI
 
 	class ExtrusionFactorPresenter : public Presenter<ExtrusionFactor>
 	{
+		friend class ModalExtrusionFactorPresenter;
+
 	  public:
 		PRESENTER_CONSTRUCTOR(ExtrusionFactorPresenter, ExtrusionFactor);
 
 		// Setters
+		void setTool(OM::ToolPtr tool);
 
 		// Getters
 
@@ -42,6 +46,8 @@ namespace UI
 
 		void onConnect() override {}
 		void onDisconnect() override {}
+
+		OM::ToolPtr m_tool;
 	};
 
 	class ModalExtrusionFactorPresenter : public Presenter<ModalExtrusionFactor>

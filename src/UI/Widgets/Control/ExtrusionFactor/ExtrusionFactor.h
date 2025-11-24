@@ -48,6 +48,7 @@ namespace UI
 	  public:
 		ModalExtrusionFactor(const std::string& name, LvObj& parent);
 
+		auto& getExtrusionFactor() { return m_extrusionFactor; }
 		auto& getSliders() { return m_extrusionFactor.getList(); }
 		NumberPad& getNumberPad() { return m_numberPad; }
 

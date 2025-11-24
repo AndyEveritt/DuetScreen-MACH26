@@ -72,4 +72,9 @@ namespace UI
 			heater->setNumberPad(numberPad);
 		}
 	}
+
+	void ToolControl::setExtrusionModal(ModalExtrusionFactor* modal)
+	{
+		m_extrusionFactorModal = modal;
+	}
 } // namespace UI

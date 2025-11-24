@@ -4,6 +4,7 @@
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "TemperatureView.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "i18n/i18n.h"
 #include "utils/UnitSystem.h"
 
@@ -31,6 +32,7 @@ namespace UI
 							   auto control = std::make_unique<ToolControl>(fmt::format("{}", index), parent);
 							   control->getPresenter()->setToolIndex(toolIndices[index]);
 							   control->setNumberPad(&m_view->getNumberPad());
+							   control->setExtrusionModal(&HomeView::instance().getExtrusionFactorModal());
 							   control->addStyle(Themes::getLvglStyles().card);
 							   control->show(); // show recursively activates presenters
 							   return control;
