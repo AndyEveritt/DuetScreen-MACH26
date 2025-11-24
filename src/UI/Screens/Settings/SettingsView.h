@@ -64,7 +64,7 @@ namespace UI
 		static void onConnectionMethodEvent(lv_event_t* e);
 
 		void showConnectionMethodSettings(const Comm::CommunicationType method);
-		virtual void onShow() override;
+		void onShow() override;
 
 		DropdownMenu m_connectionMethod{"connection_method", getRoot()};
 		UsbSettings m_usbSettings;
@@ -101,7 +101,7 @@ namespace UI
 
 	  private:
 		void updateThemePreview();
-		virtual void onShow() override;
+		void onShow() override;
 
 		DropdownMenu m_theme;
 		ThemePreview m_themePreview;
@@ -201,15 +201,15 @@ namespace UI
 
 		HardwareTest& getHardwareTest() { return m_hardwareTest; }
 
-		virtual bool back() override;
+		bool back() override;
 
 	  protected:
 		static void onWindowSelectEvent(lv_event_t* e);
 
 		LvKeyboard& getKeyboard() { return m_keyboard; }
 
-		virtual void onShow() override;
-		virtual void onHide() override;
+		void onShow() override;
+		void onHide() override;
 
 		int32_t m_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_TEMPLATE_LAST};
 		int32_t m_layoutRowDsc[3] = {LV_GRID_FR(2), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};

@@ -31,20 +31,22 @@ namespace UI
 		// Observers
 		void clear();
 		void newToolData();
+		void newFilaments(const std::vector<std::string>& filaments);
 		void updateFilamentList();
 
 	  protected:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &FilamentSelectDropdownPresenter::newToolData);
+			registerEventListener<EventType::Filaments>(this, &FilamentSelectDropdownPresenter::newFilaments);
 		}
-		virtual void onActivate() override;
-		virtual void onDeactivate() override {}
+		void onActivate() override;
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override { clear(); }
+		void onConnect() override {}
+		void onDisconnect() override { clear(); }
 
 		std::vector<std::string> m_filamentOptions;
-		OM::ToolPtr m_selectedTool;
+		OM::ToolPtr m_tool;
 	};
 } // namespace UI

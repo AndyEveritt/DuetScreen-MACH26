@@ -92,6 +92,8 @@ namespace UI
 		newToolData();
 		newBedHeaterData();
 		newChamberHeaterData();
+
+		OM::FileSystem::RequestFilaments();
 	}
 
 	void TemperaturePresenter::onDeactivate() {}

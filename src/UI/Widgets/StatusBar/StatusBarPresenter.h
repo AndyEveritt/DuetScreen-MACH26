@@ -19,15 +19,15 @@ namespace UI
 		void newTime();
 
 	  protected:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::NetworkName>(this, &StatusBarPresenter::newDuetName);
 			registerEventListener<EventType::Status>(this, &StatusBarPresenter::newStatus);
 			registerEventListener<EventType::Time>(this, &StatusBarPresenter::newTime);
 		}
-		virtual void onActivate() override;
-		virtual void onDeactivate() override {}
-		virtual void onConnect() override;
-		virtual void onDisconnect() override;
+		void onActivate() override;
+		void onDeactivate() override {}
+		void onConnect() override;
+		void onDisconnect() override;
 	};
 } // namespace UI

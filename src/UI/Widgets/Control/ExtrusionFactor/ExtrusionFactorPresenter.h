@@ -31,17 +31,17 @@ namespace UI
 		void newExtruderData();
 
 	  protected:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::ExtruderData>(this, &ExtrusionFactorPresenter::newExtruderData);
 		}
 
-		virtual void onActivate() override { newExtruderData(); }
+		void onActivate() override { newExtruderData(); }
 
-		virtual void onDeactivate() override {}
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override {}
+		void onConnect() override {}
+		void onDisconnect() override {}
 	};
 
 	class ModalExtrusionFactorPresenter : public Presenter<ModalExtrusionFactor>
@@ -59,12 +59,12 @@ namespace UI
 		// Observers
 
 	  protected:
-		virtual void onInit() override {}
-		virtual void onActivate() override;
-		virtual void onDeactivate() override {}
+		void onInit() override {}
+		void onActivate() override;
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override {}
+		void onConnect() override {}
+		void onDisconnect() override {}
 
 		void configureNumberPad(OM::Move::ExtruderAxisPtr extruder);
 	};

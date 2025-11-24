@@ -49,6 +49,7 @@ namespace UI
 			LOG_ERROR("Tool with index {:d} not found", toolIndex);
 			return;
 		}
+		getView()->getFilamentDropdown().getPresenter()->setSelectedToolBySlot(toolIndex);
 		LOG_DBG("Set tool index to {} for presenter '{}'", toolIndex, getName());
 		m_toolSlot = (ssize_t)toolIndex;
 	}

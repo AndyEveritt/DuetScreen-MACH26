@@ -24,10 +24,10 @@ namespace UI
 		void newAlertData(const OM::Alert& alert);
 
 	  protected:
-		virtual void onInit() override;
-		virtual void onActivate() override {}
-		virtual void onDeactivate() override {}
-		virtual void onDisconnect() override { clear(); }
+		void onInit() override;
+		void onActivate() override {}
+		void onDeactivate() override {}
+		void onDisconnect() override { clear(); }
 
 		std::vector<char> m_alertAxes;
 		std::string m_updateFile;

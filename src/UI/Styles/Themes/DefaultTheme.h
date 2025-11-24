@@ -62,7 +62,7 @@ namespace UI::Themes
 		const ThemeColors& getColors() const { return m_colors; }
 
 	  protected:
-		virtual void onInit() override;
+		void onInit() override;
 
 		ThemeColors m_colors;
 		const lv_font_t* m_fontSmall;

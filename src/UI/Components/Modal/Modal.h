@@ -61,12 +61,12 @@ namespace UI
 			}
 		}
 
-		virtual void onShow() override
+		void onShow() override
 		{
 			m_modalBg.show(true);
 			T::onShow();
 		}
-		virtual void onHide() override
+		void onHide() override
 		{
 			T::onHide();
 			m_modalBg.hide();

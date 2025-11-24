@@ -33,9 +33,9 @@ namespace UI
 		static void onKeyboardEvent(lv_event_t* e);
 
 		void updateBtnPos();
-		
-		virtual void onShow() override;
-		virtual void onHide() override;
+
+		void onShow() override;
+		void onHide() override;
 
 		LvContainer m_topCont{"top_cont", getRoot()};
 		LvObj m_commandList{lv_table_create, "command_list", m_topCont};

@@ -28,9 +28,9 @@ namespace UI
 		void setFanValue(size_t slot, uint32_t value);
 
 	  protected:
-		virtual void onActivate() override;
+		void onActivate() override;
 
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::SpeedFactor>(this, &FineTunePresenter::newSpeedFactor);
 			registerEventListener<EventType::ExtruderData>(this, &FineTunePresenter::newExtruderData);

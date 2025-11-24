@@ -15,34 +15,34 @@ namespace UI
 {
 	void FilamentSelectDropdownPresenter::setSelectedToolBySlot(size_t slot)
 	{
-		m_selectedTool = OM::GetToolBySlot(slot);
-		getView()->setFilamentSelected(m_selectedTool->GetFilament().c_str());
+		m_tool = OM::GetToolBySlot(slot);
+		getView()->setFilamentSelected(m_tool->GetFilament().c_str());
 	}
 
 	void FilamentSelectDropdownPresenter::setFilament(const std::string& filamentName)
 	{
-		if (m_selectedTool == nullptr)
+		if (m_tool == nullptr)
 		{
 			LOG_ERROR("No tool selected, cannot set filament");
 			return;
 		}
-		m_selectedTool->ChangeFilament(filamentName);
+		m_tool->ChangeFilament(filamentName);
 	}
 
 	void FilamentSelectDropdownPresenter::unloadFilament()
 	{
-		if (m_selectedTool == nullptr)
+		if (m_tool == nullptr)
 		{
 			LOG_ERROR("No tool selected, cannot unload filament");
 			return;
 		}
 
-		m_selectedTool->UnloadFilament();
+		m_tool->UnloadFilament();
 	}
 
 	void FilamentSelectDropdownPresenter::clear()
 	{
-		m_selectedTool.reset();
+		m_tool.reset();
 		m_filamentOptions.clear();
 		updateFilamentList();
 	}
@@ -51,16 +51,17 @@ namespace UI
 	{
 		MODEL_LOCK();
 
-		if (OM::GetToolCount() == 0)
+		if (m_tool)
 		{
-			clear();
-			return;
+			getView()->setFilamentSelected(m_tool->GetFilament().c_str());
 		}
+	}
 
-		if (m_selectedTool)
-		{
-			getView()->setFilamentSelected(m_selectedTool->GetFilament().c_str());
-		}
+	void FilamentSelectDropdownPresenter::newFilaments(const std::vector<std::string>& filaments)
+	{
+		MODEL_LOCK();
+		m_filamentOptions = filaments;
+		updateFilamentList();
 	}
 
 	void FilamentSelectDropdownPresenter::updateFilamentList()
@@ -70,24 +71,7 @@ namespace UI
 
 	void FilamentSelectDropdownPresenter::onActivate()
 	{
-		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
-									 "",
-									 [this](OM::FileSystem::ItemList files)
-									 {
-										 {
-											 MODEL_LOCK();
-											 this->m_filamentOptions.clear();
-											 this->m_filamentOptions.reserve(files.size());
-											 for (const auto& item : files)
-											 {
-												 if (!item)
-												 {
-													 continue;
-												 }
-												 this->m_filamentOptions.emplace_back(item->GetName());
-											 }
-										 }
-										 this->updateFilamentList();
-									 });
+		m_filamentOptions = OM::FileSystem::GetFilamentList();
+		updateFilamentList();
 	}
 } // namespace UI

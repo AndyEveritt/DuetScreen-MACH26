@@ -22,40 +22,6 @@ namespace UI
 		OM::Move::Extrude(distance, feedrate);
 	}
 
-	void ExtruderControlPresenter::toggleToolState(size_t index)
-	{
-		MODEL_LOCK();
-		auto tool = OM::GetToolBySlot(index);
-		if (tool == nullptr)
-		{
-			LOG_WARN("Tool {:d} not found", index);
-			return;
-		}
-		tool->ToggleState();
-	}
-
-	void ExtruderControlPresenter::loadFilament(const std::string& filament)
-	{
-		MODEL_LOCK();
-		auto tool = OM::GetCurrentTool();
-		if (tool == nullptr)
-		{
-			return;
-		}
-		tool->ChangeFilament(filament.c_str());
-	}
-
-	void ExtruderControlPresenter::unloadFilament()
-	{
-		MODEL_LOCK();
-		auto tool = OM::GetCurrentTool();
-		if (tool == nullptr)
-		{
-			return;
-		}
-		tool->UnloadFilament();
-	}
-
 	void ExtruderControlPresenter::newToolData()
 	{
 		auto currentTool = OM::GetCurrentTool();
@@ -102,8 +68,6 @@ namespace UI
 
 	void ExtruderControlPresenter::onInit()
 	{
-		m_view->setExtrudeCallback([this](float distance, float feedrate) { extrude(distance, feedrate); });
-
 		registerEventListener<EventType::ToolData>(this, &ExtruderControlPresenter::newToolData);
 	}
 

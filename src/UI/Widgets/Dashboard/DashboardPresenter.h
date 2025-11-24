@@ -28,14 +28,12 @@ namespace UI
 		void newStatus(const OM::PrinterStatus& status);
 
 	  protected:
-		virtual void onInit() override {
-            registerEventListener<EventType::Status>(this, &DashboardPresenter::newStatus);
-        }
-		virtual void onActivate() override {}
-		virtual void onDeactivate() override {}
+		void onInit() override { registerEventListener<EventType::Status>(this, &DashboardPresenter::newStatus); }
+		void onActivate() override {}
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override {}
+		void onConnect() override {}
+		void onDisconnect() override {}
 
 		OM::PrinterStatus m_lastStatus = OM::PrinterStatus::unknown;
 	};

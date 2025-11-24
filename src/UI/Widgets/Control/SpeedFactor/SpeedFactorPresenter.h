@@ -29,14 +29,14 @@ namespace UI
 		void newSpeedFactor();
 
 	  protected:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::SpeedFactor>(this, &SpeedFactorPresenter::newSpeedFactor);
 		}
-		virtual void onActivate() override { newSpeedFactor(); }
-		virtual void onDeactivate() override {}
+		void onActivate() override { newSpeedFactor(); }
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override {}
+		void onConnect() override {}
+		void onDisconnect() override {}
 	};
 } // namespace UI

@@ -28,8 +28,8 @@ namespace UI
 		void setSelectedToolName(std::string_view tool_name);
 
 	  private:
-		virtual void onShow() override;
-		virtual void onHide() override;
+		void onShow() override;
+		void onHide() override;
 
 		LvContainer m_temperatureCont{"temperature_cont", getRoot()};
 		List<ToolControl> m_tools{"tools", m_temperatureCont};

@@ -81,8 +81,8 @@ namespace UI
 		static void onSortClicked(lv_event_t* e);
 		static void onBreadcrumbClicked(lv_event_t* e);
 
-		virtual void onShow() override;
-		virtual void onHide() override;
+		void onShow() override;
+		void onHide() override;
 
 		LvContainer m_sideBar{"sidebar", getRoot()};
 		List<FileItem> m_fileList{"list", getRoot()}; // manages header (breadcrumbs) + items container

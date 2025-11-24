@@ -89,13 +89,6 @@ namespace UI
 		m_retractBtn.setState(LV_STATE_DISABLED, disabled, true);
 	}
 
-	void ExtruderControl::setExtrudeCallback(extrude_cb_t cb)
-	{
-		UI_LOCK();
-		LOG_DBG("Setting extrude callback for {}", getName());
-		m_extrudeCb = cb;
-	}
-
 	float ExtruderControl::getDistanceValue() const
 	{
 		return m_distanceSelector.getValue();

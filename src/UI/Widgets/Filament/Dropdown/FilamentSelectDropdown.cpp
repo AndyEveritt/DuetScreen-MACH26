@@ -27,6 +27,8 @@ namespace UI
 		m_changeBtn.setText(_("filament.change"));
 		m_unloadBtn.setText(_("filament.unload"));
 
+		setFilamentSelected("", true);
+
 		m_selection.addEventCallback(onFilamentSelectEvent, LV_EVENT_VALUE_CHANGED, this);
 		m_changeBtn.addClickedCallback(onFilamentChangeEvent, this);
 		m_unloadBtn.addClickedCallback(onFilamentUnloadEvent, this);
@@ -67,12 +69,12 @@ namespace UI
 		m_selection.setOptions(options);
 	}
 
-	void FilamentSelectDropdown::setFilamentSelected(const std::string& filament)
+	void FilamentSelectDropdown::setFilamentSelected(const std::string& filament, bool forceUpdate)
 	{
 		UI_LOCK();
 		LOG_DBG("Setting selected filament to '{}' for {}", filament, getName());
 
-		if (filament == m_loadedFilament)
+		if (filament == m_loadedFilament && !forceUpdate)
 		{
 			return;
 		}
@@ -83,6 +85,7 @@ namespace UI
 		m_changeBtn.hide();
 		m_unloadBtn.setDisabled(filament.empty());
 		m_changeBtn.setText(filament.empty() ? _("filament.load") : _("filament.change"));
+		m_selection.invalidate(); // lvgl bug? This shouldn't be necessary
 	}
 
 	void FilamentSelectDropdown::onFilamentSelectEvent(lv_event_t* event)

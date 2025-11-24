@@ -12,15 +12,6 @@ namespace UI
 		PRESENTER_CONSTRUCTOR(TemperaturePresenter, TemperatureView)
 
 		// Actions
-		void updateFilamentList();
-
-		void toggleToolState(size_t index);
-		void toggleHeaterState(size_t toolIndex, size_t heaterIndex);
-		void loadFilament(size_t index, const char* filament);
-		void unloadFilament(size_t index);
-		bool configureNumberPad(const size_t toolIndex, const size_t heaterIndex, const bool active);
-
-		// ExtrudeItem actions
 
 		// Observers
 		void newToolData();
@@ -32,7 +23,7 @@ namespace UI
 		void onDeactivate() override;
 		void onDisconnect() override;
 
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &TemperaturePresenter::newToolData);
 			registerEventListener<EventType::BedHeaterData>(this, &TemperaturePresenter::newBedHeaterData);

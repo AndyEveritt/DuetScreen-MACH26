@@ -26,7 +26,7 @@ namespace UI::Themes
 		bool getDarkMode() const { return m_darkMode; }
 
 	  protected:
-		virtual void onInit() override;
+		void onInit() override;
 
 	  private:
 		uint16_t m_primaryHue;

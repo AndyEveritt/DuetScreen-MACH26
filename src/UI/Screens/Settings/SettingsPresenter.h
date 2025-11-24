@@ -24,7 +24,7 @@ namespace UI
 		void startHardwareTest();
 
 	  private:
-		virtual void onInit() override;
+		void onInit() override;
 
 		void setUsbHost(bool host);
 		void setUsbMux(bool usbc);

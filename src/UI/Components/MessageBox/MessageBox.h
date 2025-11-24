@@ -75,7 +75,7 @@ namespace UI
 		static void onCancelEvent(lv_event_t* e);
 		static void onProgressTimer(lv_timer_t* timer);
 
-		virtual void onHide() override;
+		void onHide() override;
 
 		void init();
 

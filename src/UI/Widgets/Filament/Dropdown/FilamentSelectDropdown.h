@@ -27,7 +27,7 @@ namespace UI
 		void showHint(bool show);
 
 		void setFilamentOptions(const std::vector<std::string>& options);
-		void setFilamentSelected(const std::string& filament);
+		void setFilamentSelected(const std::string& filament, bool forceUpdate = false);
 		void setFilamentDisabled(bool disabled);
 
 	  private:

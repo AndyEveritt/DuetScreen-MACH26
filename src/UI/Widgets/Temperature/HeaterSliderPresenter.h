@@ -40,13 +40,13 @@ namespace UI
 		void newHeaterData();
 
 	  protected:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::HeaterData>(this, &HeaterSliderPresenter::newHeaterData);
 		}
-		virtual void onActivate() override;
-		virtual void onDeactivate() override {}
-		virtual void onDisconnect() override { reset(); }
+		void onActivate() override;
+		void onDeactivate() override {}
+		void onDisconnect() override { reset(); }
 
 	  private:
 		SlotType m_slotType = SlotType::Unknown;

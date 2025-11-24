@@ -89,7 +89,7 @@ namespace UI
 		static void onTrueBedLevelEvent(lv_event_t* e);
 		static void onMeshBedLevelEvent(lv_event_t* e);
 
-		virtual void onShow() override;
+		void onShow() override;
 
 		Heatmap& getHeightmap() { return m_heightmap; }
 

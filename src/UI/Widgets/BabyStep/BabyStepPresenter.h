@@ -30,14 +30,11 @@ namespace UI
 		void newAxesData();
 
 	  protected:
-		virtual void onInit() override
-		{
-			registerEventListener<EventType::AxesData>(this, &BabyStepPresenter::newAxesData);
-		}
-		virtual void onActivate() override { newAxesData(); }
-		virtual void onDeactivate() override {}
+		void onInit() override { registerEventListener<EventType::AxesData>(this, &BabyStepPresenter::newAxesData); }
+		void onActivate() override { newAxesData(); }
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override {}
+		void onConnect() override {}
+		void onDisconnect() override {}
 	};
 } // namespace UI

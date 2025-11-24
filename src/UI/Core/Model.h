@@ -93,7 +93,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(Directories)                                                                                                    \
 	XX(NavigationHomeEnable, bool)                                                                                     \
 	XX(NavigationBackEnable, bool)                                                                                     \
-	XX(Filaments) // New filaments available after rr_filelist/M20 request
+	XX(Filaments, std::vector<std::string>) // New filaments available after rr_filelist/M20 request
 
 enum class EventType
 {

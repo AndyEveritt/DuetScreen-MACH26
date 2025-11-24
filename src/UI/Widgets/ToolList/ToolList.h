@@ -89,7 +89,7 @@ namespace UI
 		void showNumberPad();
 		void hideNumberPad() { m_numberPad.hide(); }
 
-		virtual void onHide() override { hideNumberPad(); }
+		void onHide() override { hideNumberPad(); }
 
 	  private:
 		void init();

@@ -34,15 +34,15 @@ namespace UI
 		void updateFilamentList();
 
 	  protected:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &FilamentSelectMultiPresenter::newToolData);
 		}
-		virtual void onActivate() override;
-		virtual void onDeactivate() override {}
+		void onActivate() override;
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override { clear(); }
+		void onConnect() override {}
+		void onDisconnect() override { clear(); }
 
 		std::vector<OM::ToolPtr> m_tools;
 		std::vector<std::string> m_filamentOptions;

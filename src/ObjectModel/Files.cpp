@@ -22,6 +22,7 @@ namespace OM::FileSystem
 	static std::unordered_map<std::string, FileListRequestPtr> s_fileListRequests;
 
 	static FileContentsPtr s_fileContents;
+	static std::vector<std::string> s_filaments;
 
 	std::string FileSystemItem::GetPath() const
 	{
@@ -466,6 +467,37 @@ namespace OM::FileSystem
 			FileListRequestPtr req = it->second;
 			req->ClearItems();
 		}
+	}
+
+	void RequestFilaments()
+	{
+		LOG_DBG("Requesting filaments");
+		RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
+					 "",
+					 [](OM::FileSystem::ItemList files)
+					 {
+						 {
+
+							 MODEL_LOCK();
+							 s_filaments.clear();
+							 s_filaments.reserve(files.size());
+							 for (const auto& item : files)
+							 {
+								 if (!item)
+								 {
+									 continue;
+								 }
+								 s_filaments.emplace_back(item->GetName());
+							 }
+						 }
+						 Model::get().post<EventType::Filaments>(s_filaments);
+					 });
+	}
+
+	const std::vector<std::string>& GetFilamentList()
+	{
+		MODEL_LOCK();
+		return s_filaments;
 	}
 
 	void RequestFileContents(const OM::Directories::DirectoryType baseFolder,

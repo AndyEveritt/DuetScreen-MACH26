@@ -26,7 +26,7 @@ namespace UI
 	  private:
 		void onActivate() override;
 
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::Response>(this, &ConsolePresenter::newResponse);
 			registerEventListener<EventType::LogMessage>(this, &ConsolePresenter::newLogMessage);

@@ -32,7 +32,7 @@ namespace UI
 		void setPrintAgain(ControlVisibility visibility);
 		void setCancel(ControlVisibility visibility);
 
-		virtual bool back() override;
+		bool back() override;
 
 	  private:
 		void onShow() override;

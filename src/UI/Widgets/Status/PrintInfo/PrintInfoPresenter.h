@@ -37,11 +37,11 @@ namespace UI
 		void newCurrentMoveExtrusionSpeed();
 
 	  protected:
-		virtual void onInit() override;
-		virtual void onActivate() override;
-		virtual void onDeactivate() override {}
+		void onInit() override;
+		void onActivate() override;
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override {}
+		void onConnect() override {}
+		void onDisconnect() override {}
 	};
 } // namespace UI

@@ -203,6 +203,10 @@ namespace OM::FileSystem
 	void ClearFileSystem();
 	void ClearFileList(const std::string& path);
 
+	/* Filaments */
+	void RequestFilaments();
+	const std::vector<std::string>& GetFilamentList();
+
 	/* File Contents */
 
 	void RequestFileContents(const OM::Directories::DirectoryType baseFolder,

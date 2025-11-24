@@ -28,13 +28,13 @@ namespace UI
         void tick();
 
 	  protected:
-		virtual void onInit() override {
+		void onInit() override {
             registerEventListener<EventType::Tick>(this, &TemperatureGraphPresenter::tick);
         }
-		virtual void onActivate() override {}
-		virtual void onDeactivate() override {}
+		void onActivate() override {}
+		void onDeactivate() override {}
 
-		virtual void onConnect() override {}
-		virtual void onDisconnect() override {}
+		void onConnect() override {}
+		void onDisconnect() override {}
 	};
 } // namespace UI

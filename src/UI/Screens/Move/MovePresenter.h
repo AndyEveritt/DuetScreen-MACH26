@@ -46,8 +46,8 @@ namespace UI
 		void newStatus(const OM::PrinterStatus& status);
 
 	  protected:
-		virtual void onActivate() override;
-		virtual void onInit() override;
+		void onActivate() override;
+		void onInit() override;
 		void onDisconnect() override;
 
 	  private:

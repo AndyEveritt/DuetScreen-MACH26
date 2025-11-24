@@ -35,7 +35,7 @@ namespace UI
 								   const bool addChambers = true);
 
 	  private:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &ToolListPresenter::update);
 			registerEventListener<EventType::HeaterData>(this, &ToolListPresenter::update);
@@ -70,7 +70,7 @@ namespace UI
 		void toggleState();
 
 	  private:
-		virtual void onInit() override
+		void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &ToolListToolPresenter::update);
 			registerEventListener<EventType::HeaterData>(this, &ToolListToolPresenter::update);

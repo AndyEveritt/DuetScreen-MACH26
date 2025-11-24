@@ -441,7 +441,7 @@ namespace OM
 			return;
 		}
 
-		Comm::DUET.SendGcodef("T{:d} M701 S\"{:s}\"\n", index, filament);
+		Comm::DUET.SendGcodef("T{:d}\nM701 S\"{:s}\"\n", index, filament);
 	}
 
 	void Tool::UnloadFilament()
@@ -462,7 +462,7 @@ namespace OM
 			return;
 		}
 
-		Comm::DUET.SendGcodef("T{:d} M702\n", index);
+		Comm::DUET.SendGcodef("T{:d}\nM702\n", index);
 	}
 
 	void Tool::Reset()
