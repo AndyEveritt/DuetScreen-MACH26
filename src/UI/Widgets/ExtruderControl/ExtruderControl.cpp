@@ -15,8 +15,8 @@
 
 namespace UI
 {
-	static const std::vector<float> s_defaultDistanceValues = {1.0f, 5.0f, 10.0f};
-	static const std::vector<float> s_defaultFeedrateValues = {1.0f, 5.0f, 20.0f};
+	static const std::vector<float> s_defaultDistanceValues = {1.0f, 2.0f, 5.0f, 10.0f};
+	static const std::vector<float> s_defaultFeedrateValues = {1.0f, 5.0f, 20.0f, 50.0f};
 
 	ExtruderControl::ExtruderControl(const std::string& name, LvObj& parent)
 		: View(name, parent)
@@ -29,7 +29,7 @@ namespace UI
 		m_controlsContainer.setFlexGrow(1);
 
 		static int32_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-		static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static int32_t row_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(3), LV_GRID_FR(3), LV_GRID_TEMPLATE_LAST};
 		m_controlsContainer.setGridDsc(col_dsc, row_dsc);
 		m_controlsContainer.setGridCell(m_retractBtn, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		m_controlsContainer.setGridCell(m_extrudeBtn, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
@@ -43,6 +43,8 @@ namespace UI
 		m_distanceSelector.setLabel(_("extrude.feed_dist", Units::getDisplayedDistanceUnit()));
 		m_feedrateSelector.setLabel(_("extrude.feed_rate", Units::getDisplayedSpeedUnit()));
 
+		m_distanceSelector.setMinValue(0.1f);
+		m_feedrateSelector.setMinValue(0.1f);
 		if (m_distanceSelector.getValues().empty())
 		{
 			m_distanceSelector.setValueBtns(s_defaultDistanceValues);

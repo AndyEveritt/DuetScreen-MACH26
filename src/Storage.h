@@ -34,9 +34,9 @@ constexpr const char* ID_MOVE_FEEDRATES = "ui:move:feedrates";
 constexpr const char* ID_MOVE_SELECTED_FEEDRATE = "ui:move:selected_feedrate";
 
 /* Multi value selectors */
-// these will be prefixed with "ui:mvs:" and have the following sub keys {"values", "selected"}
-constexpr const char* ID_MVS_EXTRUSION_FEEDRATES = "extrusion:feedrates";
-constexpr const char* ID_MVS_EXTRUSION_DISTANCES = "extrusion:distances";
+// these will have the following sub keys {"values", "selected"}
+constexpr const char* ID_MVS_EXTRUSION_FEEDRATES = "ui:extrusion:feedrates";
+constexpr const char* ID_MVS_EXTRUSION_DISTANCES = "ui:extrusion:distances";
 
 constexpr const char* ID_FILE_SORT_BY = "ui:file:sort_by";
 constexpr const char* ID_FILE_SORT_DESCENDING = "ui:file:sort_descending";

@@ -23,11 +23,13 @@ extern "C"
 	 */
 	void Restart() noexcept
 	{
-#if !SIMULATION
-		if (system("/etc/init.d/S20DuetScreen restart") != 0)
-		{
-			LOG_FATAL_THROW("Failed to restart DuetScreen service");
-		}
+#if SIMULATION
+		exit(EXIT_SUCCESS);
+#else
+	if (system("/etc/init.d/S20DuetScreen restart") != 0)
+	{
+		LOG_FATAL_THROW("Failed to restart DuetScreen service");
+	}
 #endif
 	}
 

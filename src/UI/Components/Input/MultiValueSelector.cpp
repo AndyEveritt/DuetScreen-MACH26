@@ -221,7 +221,7 @@ namespace UI
 			return;
 		}
 
-		m_storageKey = fmt::format("ui:mvs:{:s}", key);
+		m_storageKey = key;
 
 		/* Load values */
 		auto values = StorageHelper::getData<std::vector<float>>(m_storageKey + ID_MVS_VALUES_SUFFIX, {});
