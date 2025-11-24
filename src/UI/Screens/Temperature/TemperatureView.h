@@ -25,6 +25,8 @@ namespace UI
 		auto& getChambers() { return m_chambers; }
 		auto& getNumberPad() { return m_numberPad; }
 
+		void setSelectedToolName(std::string_view tool_name);
+
 	  private:
 		virtual void onShow() override;
 		virtual void onHide() override;
@@ -34,7 +36,9 @@ namespace UI
 		List<HeaterSlider> m_beds{"beds", m_temperatureCont};
 		List<HeaterSlider> m_chambers{"chambers", m_temperatureCont};
 
-		ExtruderControl m_extruderControl{"extruder_control", getRoot()};
+		LvContainer m_controlCont{"control_cont", getRoot()};
+		LvLabel m_selectedToolLabel{"selected_tool_label", m_controlCont};
+		ExtruderControl m_extruderControl{"extruder_control", m_controlCont};
 
 		ModalNumberPad m_numberPad{"number_pad", getRoot()};
 	};

@@ -23,7 +23,15 @@ namespace UI
 		m_temperatureCont.setHeight(LV_PCT(100));
 		m_temperatureCont.setFlexGrow(2);
 
-		m_extruderControl.setHeight(LV_PCT(100));
+		m_controlCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_controlCont.setHeight(LV_PCT(100));
+		m_controlCont.setFlexGrow(1);
+		m_controlCont.setStylePad(0);
+
+		m_selectedToolLabel.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_selectedToolLabel.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+
+		m_extruderControl.setWidth(LV_PCT(100));
 		m_extruderControl.setFlexGrow(1);
 		m_extruderControl.setNumberPad(&m_numberPad);
 
@@ -34,6 +42,11 @@ namespace UI
 		m_tools.setTitle(_("temperature.tools"));
 		m_beds.setTitle(_("temperature.beds"));
 		m_chambers.setTitle(_("temperature.chambers"));
+	}
+
+	void TemperatureView::setSelectedToolName(std::string_view tool_name)
+	{
+		m_selectedToolLabel.setText(_("temperature.selected_tool_label", tool_name));
 	}
 
 	void TemperatureView::onShow()

@@ -35,6 +35,15 @@ namespace UI
 							   control->show(); // show recursively activates presenters
 							   return control;
 						   });
+
+		if (auto current_tool = OM::GetCurrentTool())
+		{
+			getView()->setSelectedToolName(current_tool->GetName());
+		}
+		else
+		{
+			getView()->setSelectedToolName("");
+		}
 	}
 
 	void TemperaturePresenter::newBedHeaterData()

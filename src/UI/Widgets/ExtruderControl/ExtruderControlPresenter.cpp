@@ -90,9 +90,14 @@ namespace UI
 					}
 				});
 		}
+		else
+		{
+			canExtrude = false;
+			canRetract = false;
+		}
 
-		m_view->setExtrudeDisabled(currentTool && !canExtrude);
-		m_view->setRetractDisabled(currentTool && !canRetract);
+		m_view->setExtrudeDisabled(!canExtrude);
+		m_view->setRetractDisabled(!canRetract);
 	}
 
 	void ExtruderControlPresenter::onInit()
