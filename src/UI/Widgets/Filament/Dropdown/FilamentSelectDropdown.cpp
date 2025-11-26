@@ -23,7 +23,6 @@ namespace UI
 		m_changeBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_unloadBtn.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 
-		m_selection.setLabel(_("filament.select"));
 		m_changeBtn.setText(_("filament.change"));
 		m_unloadBtn.setText(_("filament.unload"));
 
@@ -46,7 +45,7 @@ namespace UI
 
 	void FilamentSelectDropdown::showHint(bool show)
 	{
-		m_selection.getLabel().setVisible(show);
+		UNUSED(show);
 	}
 
 	void FilamentSelectDropdown::setFilamentDisabled(bool disabled)
@@ -85,7 +84,6 @@ namespace UI
 		m_changeBtn.hide();
 		m_unloadBtn.setDisabled(filament.empty());
 		m_changeBtn.setText(filament.empty() ? _("filament.load") : _("filament.change"));
-		m_selection.invalidate(); // lvgl bug? This shouldn't be necessary
 	}
 
 	void FilamentSelectDropdown::onFilamentSelectEvent(lv_event_t* event)
@@ -95,8 +93,6 @@ namespace UI
 
 		std::string selected_filament = control->m_selection.getSelectedString();
 		control->m_selection.setText(selected_filament);
-		control->m_selection.invalidate(); // lvgl bug? This shouldn't be necessary
-
 		control->m_changeBtn.setVisible(selected_filament != control->m_loadedFilament);
 	}
 

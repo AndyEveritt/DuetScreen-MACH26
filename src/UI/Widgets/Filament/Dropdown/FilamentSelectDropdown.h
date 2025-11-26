@@ -35,7 +35,7 @@ namespace UI
 		static void onFilamentChangeEvent(lv_event_t* e);
 		static void onFilamentUnloadEvent(lv_event_t* e);
 
-		DropdownMenu m_selection{"filament_select", getRoot()};
+		LvDropdown m_selection{"filament_dropdown", getRoot()};
 		Button m_changeBtn{"filament_change", getRoot()};
 		Button m_unloadBtn{"filament_load_unload", getRoot()};
 

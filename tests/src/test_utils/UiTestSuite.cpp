@@ -46,6 +46,7 @@ UiTestSuiteInner::UiTestSuiteInner()
 	UI::Themes::init(display);
 
 	lv_obj_set_style_pad_all(lv_screen_active(), 0, 0);
+	lv_obj_set_name(lv_screen_active(), "screen_active");
 }
 
 UiTestSuiteInner::~UiTestSuiteInner()

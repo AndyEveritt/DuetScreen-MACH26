@@ -32,7 +32,8 @@ namespace UI
 		m_extrusionFactors.getListContainer().setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 		m_filament.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_filament.setMinWidth(300);
+		m_filament.setMinWidth(LV_SIZE_CONTENT);
+		m_filament.setFlexGrow(1);
 		m_filament.showHint(false);
 
 		m_heaters.setSize(LV_PCT(100), LV_SIZE_CONTENT);

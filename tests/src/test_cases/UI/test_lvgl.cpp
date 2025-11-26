@@ -438,3 +438,58 @@ TEST_F(TestLvgl, CircularWidth)
 	lv_obj_set_width(item2, 40);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/circular_width2.png");
 }
+
+TEST_F(TestLvgl, DropdownSizeContent)
+{
+	lv_obj_t* cont = lv_obj_create(lv_screen_active());
+	lv_obj_set_name(cont, "cont");
+	lv_obj_set_size(cont, 300, LV_SIZE_CONTENT);
+	lv_obj_set_style_bg_color(cont, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, 0);
+	lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_ROW_WRAP);
+
+	lv_obj_t* label = lv_label_create(cont);
+	lv_obj_set_name(label, "label");
+	lv_label_set_text(label, "Dropdown with size content:");
+
+#if 1
+	lv_obj_t* sub_cont = lv_obj_create(cont);
+	lv_obj_set_name(sub_cont, "sub_cont");
+	lv_obj_set_style_bg_color(sub_cont, lv_palette_main(LV_PALETTE_GREEN), 0);
+	lv_obj_set_style_bg_opa(sub_cont, LV_OPA_COVER, 0);
+	lv_obj_set_height(sub_cont, LV_SIZE_CONTENT);
+	lv_obj_set_flex_flow(sub_cont, LV_FLEX_FLOW_ROW);
+	lv_obj_set_flex_grow(sub_cont, 1);
+	lv_obj_set_style_min_width(sub_cont, LV_SIZE_CONTENT, LV_PART_MAIN);
+
+	lv_obj_t* dd = lv_dropdown_create(sub_cont);
+#else
+	lv_obj_t* dd = lv_dropdown_create(cont);
+#endif
+	lv_obj_set_name(dd, "dropdown");
+	lv_dropdown_set_options(dd, "Short\nA bit longer option\nThe longest option in the list");
+	lv_obj_set_width(dd, 0);
+	lv_obj_set_style_min_width(dd, LV_SIZE_CONTENT, 0);
+	lv_obj_set_flex_grow(dd, 1);
+	EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_1.png");
+
+#if 1
+	lv_dropdown_open(dd);
+	EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_1_open.png");
+
+	lv_test_mouse_click_at(300, 75); // select 2nd option
+	EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_2.png");
+#endif
+
+	// lv_dropdown_set_selected(dd, 1);
+	// EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_2.png");
+
+	lv_dropdown_set_selected(dd, 2);
+	EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_3.png");
+
+	lv_dropdown_set_text(dd, "text");
+	EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_text.png");
+
+	lv_label_set_text(label, "label");
+	EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_text2.png");
+}
