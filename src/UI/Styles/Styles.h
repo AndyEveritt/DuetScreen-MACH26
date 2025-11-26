@@ -237,6 +237,7 @@ namespace UI::Themes
 		Style folder;				 // Folder item style
 		Style unhomed;				 // Used for the move view
 		Style sidebar;				 // Sidebar style
+		Style sidebar_btn;			 // Sidebar button style
 		Style temperature_bar;		 // Temperature bar style
 		Style temperature_bar_indic; // Temperature bar indicator style
 		Style tool_selected;		 // Used in tool list

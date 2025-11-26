@@ -40,6 +40,7 @@ namespace UI
 		m_homeBtn.setText(_("side_bar.home"));
 		m_homeBtn.setIcon("home.png");
 		m_homeBtn.addClickedCallback(homeBtnEvent, this);
+		m_homeBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 
 #if SIDE_BAR_BACK_BUTTON
 		m_backBtn.setWidth(LV_PCT(100));
@@ -47,6 +48,7 @@ namespace UI
 		m_backBtn.setText(_("side_bar.back"));
 		m_backBtn.setIcon("back.png");
 		m_backBtn.addClickedCallback(backBtnEvent, this);
+		m_backBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 #endif
 
 		m_controlBtn.setWidth(LV_PCT(100));
@@ -54,12 +56,14 @@ namespace UI
 		m_controlBtn.setText(_("side_bar.control"));
 		m_controlBtn.setIcon("control.png");
 		m_controlBtn.addClickedCallback(controlBtnEvent, this);
+		m_controlBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 
 		m_macrosBtn.setWidth(LV_PCT(100));
 		m_macrosBtn.setFlexGrow(1);
 		m_macrosBtn.setText(_("side_bar.macros"));
 		m_macrosBtn.setIcon("macros.png");
 		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
+		m_macrosBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 
 #if SIDE_BAR_APP_DRAWER
 		m_menuBtn.setWidth(LV_PCT(100));
@@ -67,6 +71,7 @@ namespace UI
 		m_menuBtn.setText(_("side_bar.menu"));
 		m_menuBtn.setIcon(APP_DRAWER_ICON);
 		m_menuBtn.addClickedCallback(menuBtnEvent, this);
+		m_menuBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 #endif
 
 #if SIDE_BAR_CONSOLE_BUTTON
@@ -75,6 +80,7 @@ namespace UI
 		m_consoleBtn.setText(_("side_bar.console"));
 		m_consoleBtn.setIcon("console.png");
 		m_consoleBtn.addClickedCallback(consoleBtnEvent, this);
+		m_consoleBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 #endif
 
 #if SIDE_BAR_SETTINGS_BUTTON
@@ -83,6 +89,7 @@ namespace UI
 		m_settingsBtn.setText(_("side_bar.settings"));
 		m_settingsBtn.setIcon("settings.png");
 		m_settingsBtn.addClickedCallback(settingsBtnEvent, this);
+		m_settingsBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 #endif
 
 		setExtDrawSize(lv_obj_get_width(getScreenPtr()));
