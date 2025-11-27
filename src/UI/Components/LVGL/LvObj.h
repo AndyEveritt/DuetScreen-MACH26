@@ -12,6 +12,7 @@
 #include "lvgl/src/lv_conf_internal.h"
 #include <functional>
 #include <list>
+#include <vector>
 
 namespace UI
 {
@@ -46,40 +47,6 @@ namespace UI
 	class LvObj
 	{
 	  public:
-		template <typename F>
-		struct callback_t;
-
-		template <typename Ret, typename... Args>
-		struct callback_t<Ret(Args...)>
-		{
-			std::function<Ret(Args..., void* user_data)> func;
-			void* user_data = nullptr;
-
-			callback_t() = default;
-
-			/**
-			 * @brief Construct a callback with a function and optional user data
-			 * @param f Function to call when the callback is executed
-			 * @param data Optional user data to pass to the function
-			 */
-			callback_t(std::function<Ret(Args..., void* user_data)> f, void* data)
-				: func(std::move(f))
-				, user_data(data)
-			{
-			}
-
-			explicit operator bool() const { return static_cast<bool>(func); }
-			Ret run(Args... args) const
-			{
-				if (func)
-				{
-					return func(args..., user_data);
-				}
-
-				return Ret();
-			}
-		};
-
 		LvObj(lv_create_t initFunc, const std::string& name, LvObj& parent);
 		LvObj(lv_create_t initFunc, const std::string& name, LvObj& parent, layout_t layout);
 		LvObj(lv_create_t initFunc, const std::string& name)
@@ -216,6 +183,14 @@ namespace UI
 		/* Events */
 
 		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
+
+		template <typename F>
+		void addEventCallback(F&& cb, lv_event_code_t code)
+		{
+			/* This template wrapper exists to reduce the number of moves/copies done when adding event callbacks */
+			addEventCallbackInternal(std::forward<F>(cb), code);
+		}
+
 		bool removeEvent(size_t index);
 		uint32_t removeEventCallback(lv_event_cb_t cb);
 		uint32_t removeEventCallbackWithUserData(lv_event_cb_t cb, void* userData);
@@ -243,6 +218,8 @@ namespace UI
 		virtual void refresh() {}
 
 	  private:
+		void addEventCallbackInternal(std::function<void(lv_event_t*)> cb, lv_event_code_t code);
+
 		lv_obj_t* m_root;
 		std::string m_name;
 
@@ -250,6 +227,14 @@ namespace UI
 		uint8_t m_showing : 1 = 0; // 1 = showing, 0 = hidden
 		uint8_t m_hidding : 1 = 0; // 1 = hiding, 0 = not hiding
 		void* m_userData = nullptr;
+
+		struct EventCallbackInfo
+		{
+			std::function<void(lv_event_t*)> cb;
+			lv_event_code_t code;
+		};
+		std::vector<EventCallbackInfo> m_eventCallbacks;
+		static void genericEventCallback(lv_event_t* e);
 	};
 } // namespace UI
 

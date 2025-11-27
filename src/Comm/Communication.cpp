@@ -405,7 +405,6 @@ namespace Comm
 	 * @return false if falling back to requesting frequently changing data
 	 *
 	 * @note Manages printer timeout detection and automatic reconnection
-	 * @warning Currently allows sending the same request multiple times in a row (TODO)
 	 */
 	bool sendNext()
 	{

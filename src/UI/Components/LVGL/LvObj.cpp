@@ -688,6 +688,44 @@ namespace UI
 		return lv_obj_add_event_cb(getRootPtr(), cb, code, userData);
 	}
 
+	void LvObj::addEventCallbackInternal(std::function<void(lv_event_t*)> cb, lv_event_code_t code)
+	{
+		UI_LOCK();
+		if (!cb)
+		{
+			return;
+		}
+		if (m_eventCallbacks.empty())
+		{
+			lv_obj_add_event_cb(getRootPtr(), genericEventCallback, LV_EVENT_ALL, this);
+		}
+		m_eventCallbacks.emplace_back(std::move(cb), code);
+	}
+
+	void LvObj::genericEventCallback(lv_event_t* e)
+	{
+		LvObj* obj = static_cast<LvObj*>(lv_event_get_user_data(e));
+		if (obj == nullptr)
+			return;
+
+		lv_event_code_t code = lv_event_get_code(e);
+		// Iterate by index to avoid iterator invalidation if vector grows
+		for (size_t i = 0; i < obj->m_eventCallbacks.size(); ++i)
+		{
+			const auto cbCode = obj->m_eventCallbacks[i].code;
+			if (cbCode == LV_EVENT_ALL || cbCode == code)
+			{
+				/**
+				 * warning: if the callback adds or removes other callbacks while iterating, it may invalidate the
+				 * iterator. A reference is used for efficiency.
+				 */
+				const auto& cb = obj->m_eventCallbacks[i].cb;
+				if (cb)
+					cb(e);
+			}
+		}
+	}
+
 	bool LvObj::removeEvent(size_t index)
 	{
 		UI_LOCK();
