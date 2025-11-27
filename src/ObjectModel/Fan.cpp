@@ -96,6 +96,20 @@ namespace OM
 		return true;
 	}
 
+	bool UpdateFanThermostatic(const size_t fanIndex, const bool val)
+	{
+		auto fan = GetOrCreateFan(fanIndex);
+
+		// If we do not handle this fan back off
+		if (fan == nullptr)
+		{
+			return false;
+		}
+
+		fan->thermostatic = val;
+		return true;
+	}
+
 	size_t RemoveFan(const size_t index, const bool allFollowing)
 	{
 		LOG_DBG("Removing fan {:d} (allFollowing={:s})", index, allFollowing ? "true" : "false");

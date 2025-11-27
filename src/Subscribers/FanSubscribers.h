@@ -11,6 +11,7 @@ class FanSubscribers : public SubscriberMap
 		addSubscriber("fans^:actualValue", actualValue);
 		addSubscriber("fans^:requestedValue", requestedValue);
 		addSubscriber("fans^:rpm", rpm);
+		addSubscriber("fans^:thermostatic:lowTemperature", thermostatic);
 
 		addArrayEndSubscriber("fans^", arrayEnd);
 	}
@@ -20,5 +21,6 @@ class FanSubscribers : public SubscriberMap
 	static bool actualValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool requestedValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool rpm(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);
+	static bool thermostatic(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[]);
 };

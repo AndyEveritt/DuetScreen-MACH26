@@ -9,7 +9,7 @@ namespace UI
 {
 	void FanPresenter::setFanSpeed(size_t slot, uint32_t value)
 	{
-		auto fan = OM::GetFanBySlot(slot);
+		auto& fan = m_controllableFans.at(slot);
 		if (fan == nullptr || value == std::round(100 * fan->requestedValue))
 		{
 			return;
@@ -20,15 +20,28 @@ namespace UI
 
 	void FanPresenter::newFanData()
 	{
-		m_view->setFanCount(OM::GetFanCount());
+		m_controllableFans.resize(OM::GetFanCount());
 
+		size_t count = 0;
 		OM::IterateFansWhile(
-			[&](std::shared_ptr<OM::Fan> fan, size_t index)
+			[&](OM::FanPtr fan, size_t /* index */)
 			{
-				m_view->setFanLabel(index, _("fine_tune.fan", fan->index));
-				m_view->setFanValue(index, static_cast<uint32_t>(std::round(100 * fan->requestedValue)));
+				if (!fan->thermostatic)
+				{
+					m_controllableFans.at(count) = std::move(fan);
+					count++;
+				}
 				return true;
 			});
+
+		m_view->setFanCount(count);
+
+		for (size_t i = 0; i < count; i++)
+		{
+			auto& fan = m_controllableFans.at(i);
+			m_view->setFanLabel(i, _("fine_tune.fan", fan->index));
+			m_view->setFanValue(i, static_cast<uint32_t>(std::round(100 * fan->requestedValue)));
+		}
 	}
 
 	void FanPresenter::onActivate()

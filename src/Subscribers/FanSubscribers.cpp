@@ -53,6 +53,17 @@ bool FanSubscribers::rpm(Comm::JsonDecoder* decoder, const int32_t& data, const 
 	return true;
 }
 
+bool FanSubscribers::thermostatic(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
+{
+	UNUSED(decoder);
+	if (!OM::UpdateFanThermostatic(indices[0], data != nullptr))
+	{
+		LOG_ERROR("Failed to update fan {:d} thermostatic to {}", indices[0], data != nullptr);
+		return false;
+	}
+	return true;
+}
+
 bool FanSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	UNUSED(decoder);

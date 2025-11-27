@@ -29,6 +29,7 @@ namespace OM
 		float actualValue;
 		float requestedValue;
 		int32_t rpm;
+		bool thermostatic;
 
 		void Reset();
 	};
@@ -43,6 +44,7 @@ namespace OM
 	bool UpdateFanActualVal(const size_t fanIndex, const float val);
 	bool UpdateFanRequestedVal(const size_t fanIndex, const float val);
 	bool UpdateFanRpm(const size_t fanIndex, const int32_t val);
+	bool UpdateFanThermostatic(const size_t fanIndex, const bool val);
 	size_t RemoveFan(const size_t index, const bool allFollowing);
 } // namespace OM
 

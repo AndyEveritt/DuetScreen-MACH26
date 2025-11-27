@@ -11,10 +11,10 @@ namespace UI
 	class FanView : public View<FanPresenter>
 	{
 	  public:
-		class FanItem : ListItem
+		class ControllableFanItem : ListItem
 		{
 		  public:
-			FanItem(size_t index, LvObj& parent, FanView& view);
+			ControllableFanItem(size_t index, LvObj& parent, FanView& view);
 
 			void setLabel(std::string_view label);
 			void setValue(uint32_t value);
@@ -23,11 +23,23 @@ namespace UI
 			static void onFanOffClicked(lv_event_t* e);
 			static void onFanMaxClicked(lv_event_t* e);
 
-			// Fans
 			FanView& m_view;
 			Button m_off;
 			Slider m_slider;
 			Button m_max;
+		};
+
+		class ThermostaticFanItem : ListItem
+		{
+		  public:
+			ThermostaticFanItem(size_t index, LvObj& parent);
+
+			void setLabel(std::string_view label);
+			void setValue(uint32_t value);
+
+		  private:
+			LvLabel m_label;
+			LvLabel m_value;
 		};
 
 		FanView(const std::string& name, LvObj& parent);
@@ -38,6 +50,7 @@ namespace UI
 		void setFanValue(size_t index, uint32_t value);
 
 	  private:
-		List<FanItem> m_fans;
+		List<ControllableFanItem> m_fans{"controllable_fans", getRoot()};
+		// List<ThermostaticFanItem> m_thermostaticFans{"thermostatic_fans", getRoot()};
 	};
 } // namespace UI

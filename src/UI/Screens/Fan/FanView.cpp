@@ -8,7 +8,6 @@ namespace UI
 {
 	FanView::FanView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
-		, m_fans("list", getRoot())
 	{
 		UI_LOCK();
 
@@ -50,7 +49,7 @@ namespace UI
 		fan->setValue(value);
 	}
 
-	FanView::FanItem::FanItem(size_t index, LvObj& parent, FanView& view)
+	FanView::ControllableFanItem::ControllableFanItem(size_t index, LvObj& parent, FanView& view)
 		: ListItem(index, parent)
 		, m_view(view)
 		, m_off("off", getRoot(), _("fan.off"))
@@ -74,17 +73,23 @@ namespace UI
 		m_slider.setStylePad(5, LV_PART_MAIN, Padding::ALL);
 		m_slider.addStyle(Themes::getLvglStyles().no_border, 0);
 
+		m_off.setSize(60, LV_PCT(100));
+		m_max.setSize(60, LV_PCT(100));
+
+		m_off.setMinWidth(LV_SIZE_CONTENT);
+		m_max.setMinWidth(LV_SIZE_CONTENT);
+
 		m_off.addClickedCallback(onFanOffClicked, this);
 		m_max.addClickedCallback(onFanMaxClicked, this);
 	}
 
-	void FanView::FanItem::setLabel(std::string_view label)
+	void FanView::ControllableFanItem::setLabel(std::string_view label)
 	{
 		UI_LOCK();
 		m_slider.setLabel(label);
 	}
 
-	void FanView::FanItem::setValue(uint32_t value)
+	void FanView::ControllableFanItem::setValue(uint32_t value)
 	{
 		UI_LOCK();
 		if (m_slider.isFocused())
@@ -94,17 +99,17 @@ namespace UI
 		m_slider.setValue(value);
 	}
 
-	void FanView::FanItem::onFanOffClicked(lv_event_t* e)
+	void FanView::ControllableFanItem::onFanOffClicked(lv_event_t* e)
 	{
 		UI_LOCK();
-		FanItem* item = static_cast<FanItem*>(lv_event_get_user_data(e));
+		ControllableFanItem* item = static_cast<ControllableFanItem*>(lv_event_get_user_data(e));
 		item->m_view.m_presenter->setFanSpeed(item->getIndex(), 0);
 	}
 
-	void FanView::FanItem::onFanMaxClicked(lv_event_t* e)
+	void FanView::ControllableFanItem::onFanMaxClicked(lv_event_t* e)
 	{
 		UI_LOCK();
-		FanItem* item = static_cast<FanItem*>(lv_event_get_user_data(e));
+		ControllableFanItem* item = static_cast<ControllableFanItem*>(lv_event_get_user_data(e));
 		item->m_view.m_presenter->setFanSpeed(item->getIndex(), 100);
 	}
 } // namespace UI

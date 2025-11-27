@@ -1,6 +1,8 @@
 #pragma once
 
+#include "ObjectModel/Fan.h"
 #include "UI/Core/Presenter.h"
+#include <vector>
 
 namespace UI
 {
@@ -21,5 +23,7 @@ namespace UI
 		void onInit() override { registerEventListener<EventType::FanData>(this, &FanPresenter::newFanData); }
 		void onActivate() override;
 		void onDisconnect() override;
+
+		std::vector<OM::FanPtr> m_controllableFans;
 	};
 } // namespace UI
