@@ -35,12 +35,16 @@ namespace UI
 		/* Layout */
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
+		m_centralRow.setWidth(LV_PCT(100));
+		m_centralRow.setFlexGrow(1);
+		m_centralRow.setStylePad(0);
+
 		/* Axis Control */
-		m_axisControlCont.setWidth(LV_PCT(100));
+		m_axisControlCont.setHeight(LV_PCT(100));
 		m_axisControlCont.setFlexGrow(1);
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_axisControlCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		m_xyControl.setSize(LV_PCT(30), LV_PCT(100));
+		m_xyControl.setSize(LV_PCT(38), LV_PCT(100));
 		m_xyControl.setDisableMotorsCallback([this]() { m_presenter->disableMotors(); });
 		m_xyControl.setJogCallback(
 			[this](char axis_letter, bool forward)
@@ -61,7 +65,7 @@ namespace UI
 		m_xyControl.setXLabelCallback([this](float position) { configureNumberpadForAxis('X', position); });
 		m_xyControl.setYLabelCallback([this](float position) { configureNumberpadForAxis('Y', position); });
 
-		m_zControl.setSize(LV_PCT(10), LV_PCT(100));
+		m_zControl.setSize(LV_PCT(13), LV_PCT(100));
 		m_zControl.setAxisLetter('Z');
 		m_zControl.setJogCallback(
 			[this](char axis_letter, bool forward)
@@ -81,6 +85,9 @@ namespace UI
 		m_genericAxisControls.addStyle(Themes::getLvglStyles().no_border);
 		m_genericAxisControls.addStyle(Themes::getLvglStyles().pad_zero);
 		m_genericAxisControls.getListContainer().addStyle(Themes::getLvglStyles().pad_zero);
+
+		/* Babystepping */
+		m_babystep.setSize(LV_PCT(20), LV_PCT(100));
 
 		/* Bottom Bar */
 		m_bottomBarCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);

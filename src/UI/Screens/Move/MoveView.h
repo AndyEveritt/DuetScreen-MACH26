@@ -5,9 +5,11 @@
 #include "UI/Components/AxisControl/GenericAxisControl.h"
 #include "UI/Components/AxisControl/XYControl.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Containers/Row.h"
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
+#include "UI/Widgets/BabyStep/BabyStep.h"
 
 namespace UI
 {
@@ -36,10 +38,13 @@ namespace UI
 		void configureNumberpadForAxis(char axis_letter, float position);
 
 		// Axis Control
-		Card m_axisControlCont{"axis_control", getRoot()};
+		Row m_centralRow{"central_row", getRoot()};
+		Card m_axisControlCont{"axis_control", m_centralRow};
 		XYControl m_xyControl{"xy_control", m_axisControlCont};
 		GenericAxisControl m_zControl{"z_control", m_axisControlCont};
 		List<GenericAxisControl> m_genericAxisControls{"generic_axis_controls", m_axisControlCont};
+
+		BabyStep m_babystep{"babystep", m_centralRow};
 
 		// Bottom Bar
 		Card m_bottomBarCont{"bottombar", getRoot()};
