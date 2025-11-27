@@ -765,6 +765,13 @@ namespace UI
 		{
 			return;
 		}
+
+		if (!m_initialized)
+		{
+			m_initialized = 1;
+			onInit();
+		}
+
 		if (!hasFlag(LV_OBJ_FLAG_HIDDEN))
 		{
 			LOG_VERBOSE("'{:s}' is already visible", getName());

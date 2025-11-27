@@ -4,6 +4,7 @@
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "UI/Styles/Themes/CustomTheme.h"
 #include "i18n/i18n.h"
@@ -199,10 +200,6 @@ namespace UI
 		m_pollInterval.setValue(Comm::DUET.GetPollInterval().count());
 		m_pollInterval.setValueChangedCallback(
 			[](float value) { Comm::DUET.SetPollInterval(std::chrono::milliseconds(static_cast<int32_t>(value))); });
-		m_pollInterval.setKeyboard(&getMainSettingsView().getKeyboard());
-		m_pollInterval.setFocusedCallback(
-			[this](bool focused)
-			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_pollInterval.getInput()); });
 	}
 
 	DuetSettingsView::UsbSettings::UsbSettings(DuetSettingsView& parent)
@@ -288,6 +285,11 @@ namespace UI
 		m_uartSettings.setVisible(method == Comm::CommunicationType::uart);
 	}
 
+	void DuetSettingsView::onInit()
+	{
+		m_pollInterval.setNumberPad(&HomeView::instance().getNumberPad());
+	}
+
 	void DuetSettingsView::onShow()
 	{
 		UI_LOCK();
@@ -323,10 +325,6 @@ namespace UI
 		m_brightness.setValueChangedCallback([](float value)
 											 { DisplayHelper::setBrightness(static_cast<int32_t>(value)); });
 		m_brightness.setSendMode(Slider::SendMode::VALUE_CHANGED);
-		m_brightness.setKeyboard(&getMainSettingsView().getKeyboard());
-		m_brightness.setFocusedCallback(
-			[this](bool focused)
-			{ getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_brightness.getInput()); });
 
 		/* Screensaver Timeout */
 		m_screensaverTimeout.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -335,12 +333,6 @@ namespace UI
 		m_screensaverTimeout.setValueChangedCallback(
 			[](float value) { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, static_cast<int32_t>(value * 1000)); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
-		m_screensaverTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
-		m_screensaverTimeout.setFocusedCallback(
-			[this](bool focused)
-			{
-				getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_screensaverTimeout.getInput());
-			});
 
 		/* System Logging */
 		m_systemLogging.setText(_("settings.system_logging"));
@@ -376,17 +368,18 @@ namespace UI
 		m_notificationTimeout.setValue(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
 		m_notificationTimeout.setValueChangedCallback(
 			[](float value) { StorageHelper::setData(ID_NOTIFICATION_TIMEOUT, static_cast<uint32_t>(value)); });
-		m_notificationTimeout.setKeyboard(&getMainSettingsView().getKeyboard());
-		m_notificationTimeout.setFocusedCallback(
-			[this](bool focused)
-			{
-				getMainSettingsView().showKeyboard(focused, LV_KEYBOARD_MODE_NUMBER, &m_notificationTimeout.getInput());
-			});
 
 		/* Auto-close Error Notifications */
 		m_notificationAutoCloseError.setText(_("settings.notification_auto_close_error"));
 		m_notificationAutoCloseError.setCheckedCallback(
 			[](bool checked) { StorageHelper::setData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, !checked); });
+	}
+
+	void ScreenSettingsView::onInit()
+	{
+		m_brightness.setNumberPad(&HomeView::instance().getNumberPad());
+		m_screensaverTimeout.setNumberPad(&HomeView::instance().getNumberPad());
+		m_notificationTimeout.setNumberPad(&HomeView::instance().getNumberPad());
 	}
 
 	void ScreenSettingsView::onShow()
@@ -428,7 +421,6 @@ namespace UI
 			});
 		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
 		m_themePreview.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_themePreview.setKeyboard(&getMainSettingsView().getKeyboard());
 	}
 
 	void ThemeSettingsView::updateThemePreview()
@@ -449,6 +441,11 @@ namespace UI
 										 customTheme->getDarkMode());
 		}
 		m_themePreview.updateSwatches();
+	}
+
+	void ThemeSettingsView::onInit()
+	{
+		m_themePreview.setNumberPad(&HomeView::instance().getNumberPad());
 	}
 
 	void ThemeSettingsView::onShow()

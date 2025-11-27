@@ -7,6 +7,7 @@
 
 #include "Slider.h"
 #include "Debug.h"
+#include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 
@@ -228,9 +229,15 @@ namespace UI
 		case LV_EVENT_CLICKED:
 		{
 			slider->m_focused = true;
-			if (slider->m_keyboard)
+			if (slider->m_numberPad)
 			{
-				slider->m_keyboard->setTextArea(&slider->m_input);
+				slider->m_numberPad->setHeader(slider->getLabel());
+				slider->m_numberPad->setValue(slider->getValue());
+				slider->m_numberPad->setMinValue(slider->getMin());
+				slider->m_numberPad->setMaxValue(slider->getMax());
+				slider->m_numberPad->setConfirmCallback([slider](float value) { slider->setValue(value); });
+				slider->getInput().sendEvent(LV_EVENT_DEFOCUSED, nullptr); // stop cursor blinking
+				openModal(slider->m_numberPad);
 			}
 			if (slider->m_focusedCallback)
 			{
@@ -241,10 +248,6 @@ namespace UI
 		case LV_EVENT_DEFOCUSED:
 		{
 			slider->m_focused = false;
-			if (slider->m_keyboard)
-			{
-				slider->m_keyboard->setTextArea(nullptr);
-			}
 			if (slider->m_focusedCallback)
 			{
 				slider->m_focusedCallback(false);

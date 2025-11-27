@@ -1,6 +1,7 @@
 #include "FanView.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 
@@ -16,7 +17,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
-		m_fans.setTitle(_("fan.title"));
+		// m_fans.setTitle(_("fan.title"));
 		m_fans.setSize(LV_PCT(100), LV_PCT(100));
 		m_fans.setListGrow(1);
 	}
@@ -70,6 +71,7 @@ namespace UI
 		m_slider.setRange(0, 100);
 		m_slider.setValueChangedCallback(
 			[this](float value) { m_view.m_presenter->setFanSpeed(getIndex(), static_cast<uint32_t>(value)); });
+		m_slider.setNumberPad(&HomeView::instance().getNumberPad());
 		m_slider.setStylePad(5, LV_PART_MAIN, Padding::ALL);
 		m_slider.addStyle(Themes::getLvglStyles().no_border, 0);
 

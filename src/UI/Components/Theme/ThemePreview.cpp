@@ -86,36 +86,6 @@ namespace UI
 		m_chromaSlider.setLabel(_("theme.chroma"));
 		m_chromaSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
 
-		m_primaryHueSlider.setFocusedCallback(
-			[this](bool focused)
-			{
-				if (m_keyboard == nullptr)
-					return;
-				m_keyboard->setTextArea(&m_primaryHueSlider.getInput());
-				m_keyboard->setVisible(focused);
-				m_keyboard->setMode(LV_KEYBOARD_MODE_NUMBER);
-			});
-
-		m_secondaryHueSlider.setFocusedCallback(
-			[this](bool focused)
-			{
-				if (m_keyboard == nullptr)
-					return;
-				m_keyboard->setTextArea(&m_secondaryHueSlider.getInput());
-				m_keyboard->setVisible(focused);
-				m_keyboard->setMode(LV_KEYBOARD_MODE_NUMBER);
-			});
-
-		m_chromaSlider.setFocusedCallback(
-			[this](bool focused)
-			{
-				if (m_keyboard == nullptr)
-					return;
-				m_keyboard->setTextArea(&m_chromaSlider.getInput());
-				m_keyboard->setVisible(focused);
-				m_keyboard->setMode(LV_KEYBOARD_MODE_NUMBER);
-			});
-
 		m_darkMode.setText(_("theme.dark_mode"));
 		m_darkMode.setChecked(true);
 		m_darkMode.setCheckedCallback([this](bool) { updateThemeColors(); });
@@ -229,13 +199,13 @@ namespace UI
 		m_darkMode.setVisible(show);
 	}
 
-	void ThemePreview::setKeyboard(LvKeyboard* keyboard)
+	void ThemePreview::setNumberPad(NumberPad* numberPad)
 	{
-		m_keyboard = keyboard;
+		m_numberPad = numberPad;
 
-		m_primaryHueSlider.setKeyboard(keyboard);
-		m_secondaryHueSlider.setKeyboard(keyboard);
-		m_chromaSlider.setKeyboard(keyboard);
+		m_primaryHueSlider.setNumberPad(numberPad);
+		m_secondaryHueSlider.setNumberPad(numberPad);
+		m_chromaSlider.setNumberPad(numberPad);
 	}
 
 	void ThemePreview::updateThemeColors()

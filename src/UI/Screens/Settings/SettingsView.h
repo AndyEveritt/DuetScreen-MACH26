@@ -64,6 +64,7 @@ namespace UI
 		static void onConnectionMethodEvent(lv_event_t* e);
 
 		void showConnectionMethodSettings(const Comm::CommunicationType method);
+		void onInit() override;
 		void onShow() override;
 
 		DropdownMenu m_connectionMethod{"connection_method", getRoot()};
@@ -79,6 +80,7 @@ namespace UI
 		ScreenSettingsView(LvObj& parent, SettingsView& mainSettingsView);
 
 	  private:
+		void onInit() override;
 		void onShow() override;
 
 		LvLabel m_firmwareVersion{"firmware_version", getRoot()};
@@ -101,6 +103,7 @@ namespace UI
 
 	  private:
 		void updateThemePreview();
+		void onInit() override;
 		void onShow() override;
 
 		DropdownMenu m_theme;

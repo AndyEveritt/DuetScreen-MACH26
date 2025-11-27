@@ -32,7 +32,7 @@ namespace UI
 
 		void showControls(bool show);
 
-		void setKeyboard(LvKeyboard* keyboard);
+		void setNumberPad(NumberPad* numberPad);
 
 	  private:
 		void updateThemeColors();
@@ -43,6 +43,6 @@ namespace UI
 		Slider m_chromaSlider;
 		LvCheckbox m_darkMode;
 
-		LvKeyboard* m_keyboard = nullptr;
+		NumberPad* m_numberPad = nullptr;
 	};
 } // namespace UI
