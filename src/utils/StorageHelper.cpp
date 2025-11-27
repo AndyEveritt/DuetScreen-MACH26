@@ -1,4 +1,6 @@
 #include "StorageHelper.h"
+#include <cstdio>
+#include <unistd.h>
 
 #if T113
 static std::string filename_ = "/etc/duetscreen.json";
@@ -21,14 +23,25 @@ bool StorageHelper::setConfigFile(std::string_view filename)
 
 bool StorageHelper::save()
 {
-	std::ofstream file(filename_);
-	if (!file.is_open())
+	nlohmann::json j(data_);
+	auto json_string = j.dump();
+	LOG_DBG("Saving config.json:\n{:s}", json_string);
+
+	FILE* file = fopen(filename_.c_str(), "w");
+	if (!file)
 	{
 		return false;
 	}
-	nlohmann::json j(data_);
-	file << j.dump();
-	file.close();
+
+	if (fwrite(json_string.c_str(), 1, json_string.length(), file) != json_string.length())
+	{
+		fclose(file);
+		return false;
+	}
+
+	fflush(file);
+	fsync(fileno(file));
+	fclose(file);
 	return true;
 }
 
