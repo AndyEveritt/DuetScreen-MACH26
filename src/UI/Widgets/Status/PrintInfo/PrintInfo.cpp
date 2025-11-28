@@ -94,19 +94,12 @@ namespace UI
 		m_positions.setItemCount(count,
 								 [this](size_t index, LvObj& parent)
 								 {
-									 auto btn = std::make_unique<Button>(fmt::format("axis_{}", index), parent);
+									 auto btn = std::make_unique<LvLabel>(fmt::format("axis_{}", index), parent);
 									 btn->setHeight(LV_SIZE_CONTENT);
 									 btn->setFlexGrow(1);
 									 btn->setMinWidth(LV_SIZE_CONTENT);
-									 btn->addEventCallback(
-										 [](lv_event_t*)
-										 {
-											 auto& control = HomeView::instance().getControlView();
-											 control.showMoveView();
-											 openScreen(&control);
-										 },
-										 LV_EVENT_CLICKED,
-										 NULL);
+									 btn->setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+									 btn->addStyle(Themes::getLvglStyles().bg_light);
 									 return btn;
 								 });
 	}

@@ -185,6 +185,7 @@ namespace UI
 		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
 
 		template <typename F>
+			requires(std::is_invocable_v<F, lv_event_t*>)
 		void addEventCallback(F&& cb, lv_event_code_t code)
 		{
 			/* This template wrapper exists to reduce the number of moves/copies done when adding event callbacks */

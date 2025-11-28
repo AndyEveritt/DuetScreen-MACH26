@@ -41,7 +41,7 @@ namespace UI
 		void onShow() override;
 		void onHide() override;
 
-		List<Button> m_positions{"positions", getRoot()};
+		List<LvLabel> m_positions{"positions", getRoot()};
 
 		LvContainer m_speedCont{"speed_cont", getRoot()};
 		LvLabel m_speedHeader{"speed_header", m_speedCont};
