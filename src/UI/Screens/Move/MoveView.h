@@ -8,6 +8,7 @@
 #include "UI/Components/Containers/Row.h"
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/List/List.h"
+#include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Core/View.h"
 #include "UI/Widgets/BabyStep/BabyStep.h"
 
@@ -52,6 +53,7 @@ namespace UI
 		List<Button> m_feedrates{"feedrates", m_bottomBarCont};
 
 		ModalNumberPad m_numberpad{"numberpad", getRoot()};
+		Modal<MessageBox> m_messageBox{"confirm_msgbox", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
 
 		const MovePresenter::AxisDataList* m_axisDataListPtr = nullptr;
 	};

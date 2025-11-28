@@ -39,28 +39,69 @@ namespace UI
 		m_centralRow.setFlexGrow(1);
 		m_centralRow.setStylePad(0);
 
+		/* Message Box */
+		m_messageBox.setOkBtnText(_("common.yes"));
+		m_messageBox.setCancelBtnText(_("common.no"));
+		m_messageBox.okVisible(true);
+		m_messageBox.cancelVisible(true);
+
 		/* Axis Control */
 		m_axisControlCont.setHeight(LV_PCT(100));
 		m_axisControlCont.setFlexGrow(1);
 		m_axisControlCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_axisControlCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_xyControl.setSize(LV_PCT(38), LV_PCT(100));
-		m_xyControl.setDisableMotorsCallback([this]() { m_presenter->disableMotors(); });
+		m_xyControl.setDisableMotorsCallback(
+			[this]()
+			{
+				m_messageBox.setTitle(_("move.disable_motors_confirm.title"));
+				m_messageBox.setText(_("move.disable_motors_confirm.text"));
+				m_messageBox.setOkCallback([this]() { m_presenter->disableMotors(); });
+				openModal(&m_messageBox);
+			});
 		m_xyControl.setJogCallback(
 			[this](char axis_letter, bool forward)
 			{
 				m_presenter->moveAxisRelative(
 					axis_letter, (forward ? 1 : -1) * getSelectedDistance(), getSelectedFeedrate());
 			});
-		m_xyControl.setHomeAllCallback([this]() { m_presenter->homeAll(); });
+		m_xyControl.setHomeAllCallback(
+			[this]()
+			{
+				m_messageBox.setTitle(_("move.home_all_confirm.title"));
+				m_messageBox.setText(_("move.home_all_confirm.text"));
+				m_messageBox.setOkCallback([this]() { m_presenter->homeAll(); });
+				openModal(&m_messageBox);
+			});
 		m_xyControl.setHomeXYCallback(
 			[this]()
 			{
-				m_presenter->homeAxis('X');
-				m_presenter->homeAxis('Y');
+				m_messageBox.setTitle(_("move.home_xy_confirm.title"));
+				m_messageBox.setText(_("move.home_xy_confirm.text"));
+				m_messageBox.setOkCallback(
+					[this]()
+					{
+						m_presenter->homeAxis('X');
+						m_presenter->homeAxis('Y');
+					});
+				openModal(&m_messageBox);
 			});
-		m_xyControl.setHomeXCallback([this]() { m_presenter->homeAxis('X'); });
-		m_xyControl.setHomeYCallback([this]() { m_presenter->homeAxis('Y'); });
+		m_xyControl.setHomeXCallback(
+			[this]()
+			{
+				m_messageBox.setTitle(_("move.home_generic_confirm.title", 'X'));
+				m_messageBox.setText(_("move.home_generic_confirm.text", 'X'));
+				m_messageBox.setOkCallback([this]() { m_presenter->homeAxis('X'); });
+				openModal(&m_messageBox);
+			});
+		m_xyControl.setHomeYCallback(
+			[this]()
+			{
+				m_messageBox.setTitle(_("move.home_generic_confirm.title", 'Y'));
+				m_messageBox.setText(_("move.home_generic_confirm.text", 'Y'));
+				m_messageBox.setOkCallback([this]() { m_presenter->homeAxis('Y'); });
+				openModal(&m_messageBox);
+			});
 
 		m_xyControl.setXLabelCallback([this](float position) { configureNumberpadForAxis('X', position); });
 		m_xyControl.setYLabelCallback([this](float position) { configureNumberpadForAxis('Y', position); });
@@ -73,7 +114,14 @@ namespace UI
 				m_presenter->moveAxisRelative(
 					axis_letter, (forward ? 1 : -1) * getSelectedDistance(), getSelectedFeedrate());
 			});
-		m_zControl.setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
+		m_zControl.setHomeCallback(
+			[this](char axis_letter)
+			{
+				m_messageBox.setTitle(_("move.home_generic_confirm.title", axis_letter));
+				m_messageBox.setText(_("move.home_generic_confirm.text", axis_letter));
+				m_messageBox.setOkCallback([this, axis_letter]() { m_presenter->homeAxis(axis_letter); });
+				openModal(&m_messageBox);
+			});
 		m_zControl.setLabelCallback([this](char axis_letter, float position)
 									{ configureNumberpadForAxis(axis_letter, position); });
 

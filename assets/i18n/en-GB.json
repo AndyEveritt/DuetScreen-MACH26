@@ -21,6 +21,10 @@
       "unknown": "Unknown",
       "updating": "Updating"
     },
+    "common": {
+      "yes": "Yes",
+      "no": "No"
+    },
     "connection_method": { /* Duet connection methods */
       "network": "Network",
       "usb": "USB",
@@ -165,7 +169,23 @@
       "disable_motors": "Disable",
       "machine_position": "Machine Pos ({:s})",
       "set_position": "Set absolute position for axis {:c}",
-      "tool_position": "Tool Pos ({:s})"
+      "tool_position": "Tool Pos ({:s})",
+      "home_all_confirm": {
+        "title": "Confirm Home All",
+        "text": "Are you sure you want to home all axes?"
+      },
+      "home_xy_confirm": {
+        "title": "Confirm Home X and Y",
+        "text": "Are you sure you want to home X and Y axes?"
+      },
+      "home_generic_confirm": {
+        "title": "Confirm Home {:c}",
+        "text": "Are you sure you want to home axis {:c}?"
+      },
+      "disable_motors_confirm": {
+        "title": "Confirm Disable Motors",
+        "text": "Are you sure you want to disable all motors?"
+      }
     },
     "settings": { /* Settings screen */
       "severity": {

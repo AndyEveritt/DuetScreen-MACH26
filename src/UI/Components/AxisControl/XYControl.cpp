@@ -16,7 +16,7 @@ namespace UI
 	const char XYControl::sm_yAxisLetter = 'Y';
 
 	XYControl::XYControl(const std::string& name, LvObj& parent)
-		: LvObj(lv_obj_create, name, parent)
+		: LvContainer(name, parent)
 	{
 		UI_LOCK();
 		setGridDsc(m_colDsc, m_rowDsc);

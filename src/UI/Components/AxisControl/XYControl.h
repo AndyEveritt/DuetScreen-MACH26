@@ -13,7 +13,7 @@
 
 namespace UI
 {
-	class XYControl : public LvObj
+	class XYControl : public LvContainer
 	{
 		using jog_cb_t = std::function<void(char axis_letter, bool forward)>;
 		using home_cb_t = std::function<void()>;
