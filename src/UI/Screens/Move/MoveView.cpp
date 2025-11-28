@@ -9,11 +9,10 @@
 
 namespace UI
 {
-	static constexpr float s_distances[] = {0.1f, 0.5f, 1, 5, 10, 25, 50};						   // mm
-	static constexpr float s_relMoveValues[] = {-50, -10, -1.0f, -0.1f, 0.1f, 1.0f, 10.0f, 50.0f}; // mm
-	static constexpr uint32_t s_feedRates[] = {5, 10, 25, 50, 100, 200, 300};					   // mm/s
+	static std::vector<float> s_distances = {0.1f, 0.5f, 1, 5, 10, 25, 50};	   // mm
+	static std::vector<uint32_t> s_feedRates = {5, 10, 25, 50, 100, 200, 300}; // mm/s
 	static uint32_t s_currentDistanceIndex = 4;
-	static uint32_t s_currentFeedrateIndex = 4;
+	static uint32_t s_currentFeedrateIndex = 3;
 
 	static float getSelectedDistance()
 	{
@@ -34,6 +33,17 @@ namespace UI
 
 		/* Layout */
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+
+		auto distances = StorageHelper::getData<decltype(s_distances)>(ID_MOVE_DISTANCES, s_distances);
+		if (!distances.empty())
+		{
+			s_distances = std::move(distances);
+		}
+		auto feedRates = StorageHelper::getData<decltype(s_feedRates)>(ID_MOVE_FEEDRATES, s_feedRates);
+		if (!feedRates.empty())
+		{
+			s_feedRates = std::move(feedRates);
+		}
 
 		m_centralRow.setWidth(LV_PCT(100));
 		m_centralRow.setFlexGrow(1);
@@ -145,6 +155,8 @@ namespace UI
 		m_bottomBarCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		/* Distances */
+		if (s_currentDistanceIndex >= std::size(s_distances))
+			s_currentDistanceIndex = std::size(s_distances) - 1;
 		assert(s_currentDistanceIndex < std::size(s_distances));
 
 		m_distances.addStyle(Themes::getLvglStyles().no_border);
@@ -163,6 +175,7 @@ namespace UI
 								 [this](size_t i, LvObj& parent)
 								 {
 									 auto btn = std::make_unique<Button>(fmt::format("{}", i), parent);
+									 btn->addStyle(Themes::getLvglStyles().long_press);
 									 btn->setText(fmt::format("{}", s_distances[i]));
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 									 btn->addClickedCallback(onDistanceEvent, this);
@@ -171,6 +184,27 @@ namespace UI
 									 btn->setFlexGrow(1);
 									 btn->setHeight(LV_PCT(100));
 									 btn->setMinHeight(LV_SIZE_CONTENT);
+									 btn->addEventCallback(
+										 [this, i, btn_ptr = btn.get()](lv_event_t* /* e */)
+										 {
+											 assert(i < std::size(s_distances));
+
+											 float value = s_distances[i];
+											 openModal(&m_numberpad);
+											 m_numberpad.setHeader(
+												 _("move.distance_adjust_header", Units::getDisplayedDistanceUnit()));
+											 m_numberpad.setValue(value);
+											 m_numberpad.setMinValue(0.01f);
+											 m_numberpad.setMaxValue(1000.0f);
+											 m_numberpad.setConfirmCallback(
+												 [btn_ptr, i](float value)
+												 {
+													 s_distances[i] = value;
+													 btn_ptr->setText(fmt::format("{}", s_distances[i]));
+													 StorageHelper::setData(ID_MOVE_DISTANCES, s_distances);
+												 });
+										 },
+										 LV_EVENT_LONG_PRESSED);
 									 return btn;
 								 });
 
@@ -178,6 +212,8 @@ namespace UI
 
 		/* Feedrates */
 
+		if (s_currentFeedrateIndex >= std::size(s_feedRates))
+			s_currentFeedrateIndex = std::size(s_feedRates) - 1;
 		assert(s_currentFeedrateIndex < std::size(s_feedRates));
 
 		m_feedrates.addStyle(Themes::getLvglStyles().no_border);
@@ -196,6 +232,7 @@ namespace UI
 								 [this](size_t i, LvObj& parent)
 								 {
 									 auto btn = std::make_unique<Button>(fmt::format("{}", i), parent);
+									 btn->addStyle(Themes::getLvglStyles().long_press);
 									 btn->setText(fmt::format("{}", s_feedRates[i]));
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
 									 btn->addClickedCallback(onFeedrateEvent, this);
@@ -204,6 +241,27 @@ namespace UI
 									 btn->setFlexGrow(1);
 									 btn->setHeight(LV_PCT(100));
 									 btn->setMinHeight(LV_SIZE_CONTENT);
+									 btn->addEventCallback(
+										 [this, i, btn_ptr = btn.get()](lv_event_t* /* e */)
+										 {
+											 assert(i < std::size(s_feedRates));
+
+											 float value = s_feedRates[i];
+											 openModal(&m_numberpad);
+											 m_numberpad.setHeader(
+												 _("move.feedrate_adjust_header", Units::getDisplayedSpeedUnit()));
+											 m_numberpad.setValue(value);
+											 m_numberpad.setMinValue(0.01f);
+											 m_numberpad.setMaxValue(1000.0f);
+											 m_numberpad.setConfirmCallback(
+												 [btn_ptr, i](float value)
+												 {
+													 s_feedRates[i] = static_cast<uint32_t>(value);
+													 btn_ptr->setText(fmt::format("{}", s_feedRates[i]));
+													 StorageHelper::setData(ID_MOVE_FEEDRATES, s_feedRates);
+												 });
+										 },
+										 LV_EVENT_LONG_PRESSED);
 									 return btn;
 								 });
 

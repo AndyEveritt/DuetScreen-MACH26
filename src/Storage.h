@@ -30,6 +30,7 @@ constexpr const char* ID_NOTIFICATION_AUTO_CLOSE_ERROR = "ui:notification_auto_c
 constexpr const char* ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED = "ui:console_command_list_collapsed";
 
 constexpr const char* ID_BABYSTEP_AMOUNT = "ui:baby_step_amount";
+constexpr const char* ID_MOVE_DISTANCES = "ui:move:distances";
 constexpr const char* ID_MOVE_FEEDRATES = "ui:move:feedrates";
 constexpr const char* ID_MOVE_SELECTED_FEEDRATE = "ui:move:selected_feedrate";
 

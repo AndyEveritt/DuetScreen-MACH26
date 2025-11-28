@@ -185,7 +185,9 @@
       "disable_motors_confirm": {
         "title": "Confirm Disable Motors",
         "text": "Are you sure you want to disable all motors?"
-      }
+      },
+      "distance_adjust_header": "Update jog distance value ({:s})",
+      "feedrate_adjust_header": "Update jog feedrate value ({:s})"
     },
     "settings": { /* Settings screen */
       "severity": {
