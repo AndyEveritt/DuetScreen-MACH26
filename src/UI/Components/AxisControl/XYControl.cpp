@@ -19,6 +19,7 @@ namespace UI
 		: LvContainer(name, parent)
 	{
 		UI_LOCK();
+		addStyle(Themes::getLvglStyles().pad_large);
 		setGridDsc(m_colDsc, m_rowDsc);
 		setGridCell(m_xLabel, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 1);
 		setGridCell(m_yLabel, LV_GRID_ALIGN_STRETCH, 2, 2, LV_GRID_ALIGN_STRETCH, 0, 1);

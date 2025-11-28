@@ -97,6 +97,7 @@ namespace UI::Themes
 		Style pad_tiny;
 		Style pad_small;
 		Style pad_normal;
+		Style pad_large;
 		Style pad_gap;
 		Style line_space_large;	 // roller, dropdown
 		Style text_align_center; // roller

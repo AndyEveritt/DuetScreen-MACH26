@@ -20,6 +20,9 @@ namespace UI
 		, m_decrementButton("decrement", getRoot())
 	{
 		UI_LOCK();
+
+		addStyle(Themes::getLvglStyles().pad_large);
+
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 

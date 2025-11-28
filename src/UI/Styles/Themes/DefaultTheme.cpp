@@ -19,6 +19,7 @@ namespace UI::Themes
 
 #define RADIUS_DEFAULT 5
 
+#define PAD_LARGE 10
 #define PAD_DEF 5
 #define PAD_SMALL 2
 #define PAD_TINY 1
@@ -260,6 +261,10 @@ namespace UI::Themes
 		lv_style_set_border_post(lvgl.clip_corner, true);
 
 		/* Padding */
+
+		lv_style_set_pad_all(lvgl.pad_large, PAD_LARGE);
+		lv_style_set_pad_row(lvgl.pad_large, PAD_LARGE);
+		lv_style_set_pad_column(lvgl.pad_large, PAD_LARGE);
 
 		lv_style_set_pad_all(lvgl.pad_normal, PAD_DEF);
 		lv_style_set_pad_row(lvgl.pad_normal, PAD_DEF);
