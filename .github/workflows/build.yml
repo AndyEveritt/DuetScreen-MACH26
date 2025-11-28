@@ -164,14 +164,14 @@ jobs:
             echo "No seed: performing clean prerequisites"
             make clean || true
           fi
-          make duet3d_duetscreen_sd_defconfig
+          make duet3d_duetscreen_defconfig
           DUETSCREEN_SRC="../DuetScreen" make duetscreen-rebuild
 
       - name: Build sdcard.img
         working-directory: buildroot-duetscreen
         run: |
           # Ensure config is applied (idempotent) & build full image; cached objects accelerate this
-          make duet3d_duetscreen_sd_defconfig
+          make duet3d_duetscreen_defconfig
           DUETSCREEN_SRC="../DuetScreen" make
 
       - name: Prepare artifacts
