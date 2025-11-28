@@ -315,14 +315,22 @@ namespace UI
 		}
 	}
 
+	void MoveView::setDisabled(bool disabled)
+	{
+		m_centralRow.setState(LV_STATE_DISABLED, disabled, true);
+		// m_xyControl.setHomeAllDisabled(true);
+		// m_xyControl.setDisableMotorsDisabled(true);
+		// m_xyControl.setXDisabled(true);
+		// m_xyControl.setYDisabled(true);
+		// m_xyControl.setXHomed(false);
+		// m_xyControl.setYHomed(false);
+		// m_zControl.setDisabled(true);
+		// m_zControl.setAxisHomed(false);
+	}
+
 	void MoveView::clear()
 	{
-		m_xyControl.setXDisabled(true);
-		m_xyControl.setYDisabled(true);
-		m_xyControl.setXHomed(false);
-		m_xyControl.setYHomed(false);
-		m_zControl.setDisabled(true);
-		m_zControl.setAxisHomed(false);
+		m_genericAxisControls.clear();
 	}
 
 	void MoveView::setAxisData(const std::vector<MovePresenter::AxisData>& axis_data)
@@ -549,6 +557,16 @@ namespace UI
 				}
 			}
 		}
+	}
+
+	void MoveView::setHomeAllDisabled(bool disabled)
+	{
+		m_xyControl.setHomeAllDisabled(disabled);
+	}
+
+	void MoveView::setDisableMotorsDisabled(bool disabled)
+	{
+		m_xyControl.setDisableMotorsDisabled(disabled);
 	}
 
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)

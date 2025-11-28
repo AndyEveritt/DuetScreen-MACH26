@@ -30,6 +30,11 @@ namespace OM
 		return IsPrintingStatus(s_status);
 	}
 
+	bool IsConnected()
+	{
+		return s_status != OM::PrinterStatus::connecting && s_status != OM::PrinterStatus::off;
+	}
+
 	// Return true if sending a command or file list request to the printer now is a good idea.
 	// We don't want to send these when the printer is busy with a previous command, because they will block normal
 	// status requests.

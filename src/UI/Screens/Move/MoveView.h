@@ -27,7 +27,10 @@ namespace UI
 		void setAxisDisabled(char axis_letter, bool disabled);
 		void setAxisJogDisabled(char axis_letter, bool disabled);
 		void setAxisHomeDisabled(char axis_letter, bool disabled);
+		void setHomeAllDisabled(bool disabled);
+		void setDisableMotorsDisabled(bool disabled);
 
+		void setDisabled(bool disabled);
 		void clear();
 
 	  private:

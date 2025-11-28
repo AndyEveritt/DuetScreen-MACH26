@@ -173,6 +173,16 @@ namespace UI
 		m_homeXYButton.setDisabled(disabled || m_homeXButton.hasState(LV_STATE_DISABLED));
 	}
 
+	void XYControl::setHomeAllDisabled(bool disabled)
+	{
+		m_homeAllButton.setDisabled(disabled);
+	}
+
+	void XYControl::setDisableMotorsDisabled(bool disabled)
+	{
+		m_disableMotorsButton.setDisabled(disabled);
+	}
+
 	void XYControl::setJogCallback(jog_cb_t cb)
 	{
 		UI_LOCK();

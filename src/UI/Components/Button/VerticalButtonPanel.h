@@ -31,6 +31,10 @@ namespace UI
         void setValueChangeCallback(std::function<void(float)> callback);
         void setResetCallback(std::function<void()> callback);
 
+		Button& getResetButton() { return m_reset; }
+		Button& getIncrementButton() { return m_increment; }
+		Button& getDecrementButton() { return m_decrement; }
+
 	  private:
 		std::unique_ptr<Button> createValueButton(size_t index, LvObj& parent);
 

@@ -63,6 +63,7 @@ namespace OM
 
 	bool IsPrintingStatus(PrinterStatus status);
 	bool PrintInProgress();
+	bool IsConnected();
 	bool OkToSend();
 	PrinterStatus GetStatus();
 	const char* GetStatusText();

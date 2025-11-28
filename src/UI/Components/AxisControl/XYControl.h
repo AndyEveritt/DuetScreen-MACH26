@@ -34,6 +34,8 @@ namespace UI
 		void setYJogDisabled(bool disabled);
 		void setXHomeDisabled(bool disabled);
 		void setYHomeDisabled(bool disabled);
+		void setHomeAllDisabled(bool disabled);
+		void setDisableMotorsDisabled(bool disabled);
 
 		void setJogCallback(jog_cb_t cb);
 		void setHomeAllCallback(home_cb_t cb);

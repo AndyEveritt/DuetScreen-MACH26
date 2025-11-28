@@ -41,6 +41,7 @@ namespace UI
 
 	void MovePresenter::onActivate()
 	{
+		getView()->setDisabled(!OM::IsConnected());
 		newAxesData();
 	}
 
@@ -135,17 +136,26 @@ namespace UI
 								 .jog_disabled = !canMove(axis)};
 			}
 
-			m_view->setAxisData(m_axisData);
+			getView()->setAxisData(m_axisData);
+			getView()->setHomeAllDisabled(!canHome());
+			getView()->setDisableMotorsDisabled(!canHome());
 		}
 	}
 
 	void MovePresenter::newStatus(const OM::PrinterStatus& /* status */)
 	{
+		getView()->setDisabled(!OM::IsConnected());
 		newAxesData();
+	}
+
+	void MovePresenter::onConnect()
+	{
+		getView()->setDisabled(false);
 	}
 
 	void MovePresenter::onDisconnect()
 	{
-		m_view->clear();
+		getView()->setDisabled(true);
+		getView()->clear();
 	}
 } // namespace UI

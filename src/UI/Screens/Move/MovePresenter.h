@@ -48,6 +48,7 @@ namespace UI
 	  protected:
 		void onActivate() override;
 		void onInit() override;
+		void onConnect() override;
 		void onDisconnect() override;
 
 	  private:

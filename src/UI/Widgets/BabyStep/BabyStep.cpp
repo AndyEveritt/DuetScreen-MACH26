@@ -34,6 +34,10 @@ namespace UI
 		m_buttonPanel.setIncrementValues({0.01f, 0.05f});
 		m_buttonPanel.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
 		m_buttonPanel.setResetCallback([this]() { m_presenter->resetBabystep(); });
+
+		m_buttonPanel.getResetButton().addStyle(Themes::getLvglStyles().actionBtn);
+		m_buttonPanel.getIncrementButton().addStyle(Themes::getLvglStyles().actionBtn);
+		m_buttonPanel.getDecrementButton().addStyle(Themes::getLvglStyles().actionBtn);
 	}
 
 	void BabyStep::setBabyStepValue(float value)
