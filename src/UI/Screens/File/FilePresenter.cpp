@@ -264,16 +264,22 @@ namespace UI
 		}
 	}
 
-	void FilePresenter::onActivate()
+	void FilePresenter::onInit()
 	{
+		registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
 		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
 				StorageHelper::getData(ID_FILE_SORT_DESCENDING, true));
-		setFolder("");
+	}
+
+	void FilePresenter::onActivate()
+	{
+		// setFolder("");
+		requestFiles();
 	}
 
 	void FilePresenter::onConnect()
 	{
-		requestFiles();
+		setFolder("");
 	}
 
 	void FilePresenter::onDisconnect()

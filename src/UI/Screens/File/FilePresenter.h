@@ -37,11 +37,8 @@ namespace UI
 		void newThumbnailData(const std::string& filename);
 
 	  private:
+		void onInit() override;
 		void onActivate() override;
-		void onInit() override
-		{
-			registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
-		}
 		void onConnect() override;
 		void onDisconnect() override;
 

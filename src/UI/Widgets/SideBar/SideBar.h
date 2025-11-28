@@ -41,7 +41,7 @@ namespace UI
 		static void backBtnEvent(lv_event_t* e);
 #endif
 		static void homeBtnEvent(lv_event_t* e);
-		static void macrosBtnEvent(lv_event_t* e);
+		static void filesBtnEvent(lv_event_t* e);
 		static void controlBtnEvent(lv_event_t* e);
 #if SIDE_BAR_APP_DRAWER
 		static void menuBtnEvent(lv_event_t* e);
@@ -64,7 +64,7 @@ namespace UI
 #if SIDE_BAR_APP_DRAWER
 		Button m_menuBtn{"menu", m_btns};
 #endif
-		Button m_macrosBtn{"macros", m_btns};
+		Button m_filesBtn{"macros", m_btns};
 #if SIDE_BAR_CONSOLE_BUTTON
 		Button m_consoleBtn{"console", m_btns};
 #endif

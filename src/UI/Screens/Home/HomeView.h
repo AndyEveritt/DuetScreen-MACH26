@@ -54,7 +54,7 @@ namespace UI
 		LvContainer& getMainWindow() { return m_mainWindow; }
 		ConsoleView& getConsoleView() { return m_consoleView; }
 		ControlView& getControlView() { return m_controlView; }
-		FileView& getMacroView() { return m_macroView; }
+		TabView& getFileView() { return m_files; }
 		SettingsView& getSettingsView() { return m_settingsView; }
 #if SIDE_BAR_APP_DRAWER
 		MoveView& getMoveView() { return m_moveView; }
@@ -87,7 +87,9 @@ namespace UI
 		Dashboard m_dashboard{"dashboard", m_mainWindow};
 		ConsoleView m_consoleView{"console", m_mainWindow};
 		ControlView m_controlView{"control", m_mainWindow};
-		FileView m_macroView{"macros", m_mainWindow};
+		TabView m_files{"files", m_mainWindow};
+		FileView m_macroView{"macros", m_files.addTab(_("file.macros"))};
+		FileView m_jobView{"jobs", m_files.addTab(_("file.jobs"))};
 		SettingsView m_settingsView{"settings", m_mainWindow};
 #if SIDE_BAR_APP_DRAWER
 		MoveView m_moveView{"move", m_mainWindow};

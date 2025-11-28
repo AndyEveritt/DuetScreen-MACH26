@@ -22,6 +22,12 @@ namespace UI
 	void BasePresenter::activate()
 	{
 		UI_LOCK();
+		if (!m_isInitialized)
+		{
+			init();
+			m_isInitialized = true;
+		}
+
 		LOG_DBG("Activating presenter '{}'", getName());
 
 		onActivate();

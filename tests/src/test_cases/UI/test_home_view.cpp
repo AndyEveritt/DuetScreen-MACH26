@@ -66,8 +66,18 @@ TEST_F(TestHomeView, BlankConsoleView)
 
 TEST_F(TestHomeView, BlankMacroView)
 {
-	openScreen(&view.getMacroView(), false);
+	auto& files = view.getFileView();
+	openScreen(&files, false);
+	files.setActiveTab(0);
 	EXPECT_EQUAL_SCREENSHOT("home_view/macro_view_blank.png");
+}
+
+TEST_F(TestHomeView, BlankJobView)
+{
+	auto& files = view.getFileView();
+	openScreen(&files, false);
+	files.setActiveTab(1);
+	EXPECT_EQUAL_SCREENSHOT("home_view/job_view_blank.png");
 }
 
 TEST_F(TestHomeView, BlankSettingsView)
@@ -238,7 +248,9 @@ TEST_F(TestHomeViewWithData, ControlView)
 
 TEST_F(TestHomeViewWithData, MacroView)
 {
-	openScreen(&view.getMacroView());
+	auto& files = view.getFileView();
+	openScreen(&files, false);
+	files.setActiveTab(0);
 	EXPECT_EQUAL_SCREENSHOT("home_view/macro_view.png")
 }
 

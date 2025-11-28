@@ -58,12 +58,12 @@ namespace UI
 		m_controlBtn.addClickedCallback(controlBtnEvent, this);
 		m_controlBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 
-		m_macrosBtn.setWidth(LV_PCT(100));
-		m_macrosBtn.setFlexGrow(1);
-		m_macrosBtn.setText(_("side_bar.macros"));
-		m_macrosBtn.setIcon("macros.png");
-		m_macrosBtn.addClickedCallback(macrosBtnEvent, this);
-		m_macrosBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_filesBtn.setWidth(LV_PCT(100));
+		m_filesBtn.setFlexGrow(1);
+		m_filesBtn.setText(_("side_bar.files"));
+		m_filesBtn.setIcon("macros.png");
+		m_filesBtn.addClickedCallback(filesBtnEvent, this);
+		m_filesBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 
 #if SIDE_BAR_APP_DRAWER
 		m_menuBtn.setWidth(LV_PCT(100));
@@ -157,12 +157,11 @@ namespace UI
 		openScreen(&homeView.getControlView(), true);
 	}
 
-	void SideBar::macrosBtnEvent(lv_event_t*)
+	void SideBar::filesBtnEvent(lv_event_t*)
 	{
-		LOG_INFO("Macros button pressed");
-		FileView& macrosView = HomeView::instance().getMacroView();
-		macrosView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
-		openScreen(&macrosView, true);
+		LOG_INFO("Files button pressed");
+		auto& view = HomeView::instance().getFileView();
+		openScreen(&view, true);
 	}
 
 #if SIDE_BAR_APP_DRAWER

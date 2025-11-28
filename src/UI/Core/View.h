@@ -31,7 +31,6 @@ namespace UI
 			: BaseViewType(std::forward<Args>(args)...)
 			, m_presenter(std::make_shared<Presenter>(static_cast<LvObj*>(this)))
 		{
-			m_presenter->init();
 		}
 
 		virtual ~View()

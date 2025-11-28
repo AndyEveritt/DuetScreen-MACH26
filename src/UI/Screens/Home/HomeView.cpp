@@ -24,7 +24,9 @@ namespace UI
 
 		addStyle(Themes::getLvglStyles().bg_dark);
 		addStyle(Themes::getLvglStyles().pad_zero);
+		m_files.addStyle(Themes::getLvglStyles().bg_dark);
 		m_macroView.addStyle(Themes::getLvglStyles().card);
+		m_jobView.addStyle(Themes::getLvglStyles().card);
 
 		addHomeScreen(&m_dashboard);
 
@@ -39,11 +41,13 @@ namespace UI
 		m_mainWindow.setHeight(LV_PCT(100));
 		// m_mainWindow.setExtDrawSize(100); /* required for tab view outer buttons */
 
+		m_files.setSize(LV_PCT(100), LV_PCT(100));
+
 		// Main Window Layout
 		m_sideBar.moveToFront();
 		m_consoleView.hide();
 		m_controlView.hide();
-		m_macroView.hide();
+		m_files.hide();
 		m_settingsView.hide();
 #if SIDE_BAR_APP_DRAWER
 		m_moveView.hide();
@@ -54,6 +58,7 @@ namespace UI
 #endif
 
 		m_macroView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
+		m_jobView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::GCODES);
 
 		// Message Box
 		m_alert.hide();

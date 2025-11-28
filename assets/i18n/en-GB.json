@@ -98,6 +98,8 @@
       "not_loaded": "No Filament Loaded"
     },
     "file": { /* File screen */
+      "macros": "Macros",
+      "jobs": "Jobs",
       "file": "File",
       "header_prefix": "Folder: ",
       "crumb_separator": " > ",
@@ -275,7 +277,7 @@
       "control": "Control",
       "home": "Dashboard",
       "menu": "Menu",
-      "macros": "Macros",
+      "files": "Files",
       "settings": "Settings"
     },
     "slider": {

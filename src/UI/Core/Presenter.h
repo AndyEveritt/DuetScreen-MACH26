@@ -21,8 +21,8 @@ namespace UI
 	{
 	  public:
 		void init();
-		virtual void activate();
-		virtual void deactivate();
+		void activate();
+		void deactivate();
 
 		virtual std::string_view getName() const;
 
@@ -39,6 +39,7 @@ namespace UI
 		virtual void onConnect() {}
 		virtual void onDisconnect() {}
 
+		bool m_isInitialized = false;
 		volatile bool m_active = false;
 	};
 
@@ -51,9 +52,7 @@ namespace UI
 		{
 		}
 
-		void init() { BasePresenter::init(); }
-
-		virtual void activate() final
+		void activate()
 		{
 			if (m_view != nullptr)
 			{
@@ -62,7 +61,7 @@ namespace UI
 			}
 		}
 
-		virtual void deactivate() final
+		void deactivate()
 		{
 			if (m_view != nullptr)
 			{
