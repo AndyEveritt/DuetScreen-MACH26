@@ -45,6 +45,9 @@ namespace OM
 		ClearHeightmapCache();
 		Directories::Reset();
 		FileSystem::ClearFileSystem();
+		SetStatus(PrinterStatus::connecting);
+		SetPrinterName("");
+		SetPrinterUniqueId("");
 	}
 
 	static Debug::DebugCommand s_logOM(

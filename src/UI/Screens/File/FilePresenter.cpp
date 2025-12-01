@@ -267,19 +267,23 @@ namespace UI
 	void FilePresenter::onInit()
 	{
 		registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
+		registerEventListener<EventType::PrinterUniqueId>([this]() { setFolder(""); });
 		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
 				StorageHelper::getData(ID_FILE_SORT_DESCENDING, true));
 	}
 
 	void FilePresenter::onActivate()
 	{
-		// setFolder("");
+		if (OM::GetPrinterUniqueId().empty())
+		{
+			return;
+		}
 		requestFiles();
 	}
 
 	void FilePresenter::onConnect()
 	{
-		setFolder("");
+		// setFolder("");
 	}
 
 	void FilePresenter::onDisconnect()

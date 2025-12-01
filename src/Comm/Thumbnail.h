@@ -4,12 +4,13 @@
 #include <cstddef>
 #include <sys/types.h>
 
-#include "Configuration.h"
-#include "Duet3D/General/String.h"
-#include "image/bmp.h"
-#include "image/png.h"
-#include "image/qoi.h"
-#include <string>
+#  include "Configuration.h"
+#  include "Duet3D/General/String.h"
+#  include "image/bmp.h"
+#  include "image/png.h"
+#  include "image/qoi.h"
+#  include <nlohmann/json.hpp>
+#  include <string>
 
 namespace Comm
 {
@@ -37,6 +38,9 @@ namespace Comm
 
 		bool SetImageFormat(std::string_view format);
 	};
+
+	void to_json(nlohmann::json& j, const ThumbnailMeta& m);
+	void from_json(const nlohmann::json& j, ThumbnailMeta& m);
 
 	struct ThumbnailContext
 	{
@@ -89,6 +93,9 @@ namespace Comm
 		bool AboveCacheLimit() const;
 		std::string GetThumbnailPath() const;
 	};
+
+	void to_json(nlohmann::json& j, const Thumbnail& t);
+	void from_json(const nlohmann::json& j, Thumbnail& t);
 
 	struct ThumbnailBuf
 	{

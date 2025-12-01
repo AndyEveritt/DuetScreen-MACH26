@@ -4,6 +4,7 @@
 #include "LockWrapper.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "Subscribers/BoardSubscribers.h"
 #include "Subscribers/DirectoriesSubscribers.h"
 #include "Subscribers/FanSubscribers.h"
 #include "Subscribers/FileSubscribers.h"
@@ -83,6 +84,7 @@ Event listeners must be none blocking and should not take a long time to process
 	XX(EndstopData)                                                                                                    \
 	XX(SpindleData)                                                                                                    \
 	XX(NetworkName)                                                                                                    \
+	XX(PrinterUniqueId)                                                                                                \
 	XX(IpAddress, std::string)                                                                                         \
 	XX(Status, OM::PrinterStatus)                                                                                      \
 	XX(CurrentTool)                                                                                                    \
@@ -260,6 +262,7 @@ class Model
 	void connected();
 	void disconnected();
 
+	BoardSubscribers m_boardSubscribers;
 	DirectoriesSubscribers m_directoriesSubscribers;
 	FanSubscribers m_fanSubscribers;
 	FileSubscribers m_fileSubscribers;

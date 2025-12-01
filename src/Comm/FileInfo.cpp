@@ -22,23 +22,21 @@
 
 namespace Comm
 {
+	static std::recursive_mutex s_mutex;
+
 	FileInfo::FileInfo()
-		: size(0)
-		, height(0)
-		, layerHeight(0)
-		, printTime(0)
 	{
-		LOG_DBG("Created new fileinfo");
+		LOG_VERBOSE("Created new fileinfo");
 	}
 
 	FileInfo::~FileInfo()
 	{
-		LOG_DBG("Deleted fileinfo {:s}", filename.c_str());
+		LOG_VERBOSE("Deleted fileinfo {:s}", filename.c_str());
 	}
 
 	std::shared_ptr<Thumbnail> FileInfo::GetThumbnail(size_t index)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		if (index >= m_thumbnails.size())
 		{
 			return nullptr;
@@ -49,7 +47,7 @@ namespace Comm
 
 	std::shared_ptr<Thumbnail> FileInfo::GetOrCreateThumbnail(size_t index)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		if (index >= m_thumbnails.size())
 		{
 			m_thumbnails.resize(index + 1);
@@ -61,7 +59,7 @@ namespace Comm
 
 	size_t FileInfo::ClearThumbnails(size_t fromIndex)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		size_t count = m_thumbnails.size() - fromIndex;
 		m_thumbnails.resize(fromIndex);
 		return count;
@@ -74,7 +72,246 @@ namespace Comm
 		return time;
 	}
 
-	FileInfoCache::FileInfoCache() {}
+	void to_json(nlohmann::json& j, const FileInfo& c)
+	{
+		std::vector<nlohmann::json> thumbnails;
+		for (const auto& thumb : c.GetThumbnails())
+		{
+			if (thumb)
+				thumbnails.push_back(*thumb); // convert Thumbnail to json
+		}
+
+		j = nlohmann::json{{"filename", c.filename.c_str()},
+						   {"filament", c.filament},
+						   {"generatedBy", c.generatedBy.c_str()},
+						   {"height", c.height},
+						   {"lastModified", c.lastModified.c_str()},
+						   {"layerHeight", c.layerHeight},
+						   {"numLayers", c.numLayers},
+						   {"printTime", c.printTime},
+						   {"simulatedTime", c.simulatedTime},
+						   {"size", c.size},
+						   {"thumbnails", thumbnails}};
+	}
+
+	void from_json(const nlohmann::json& j, FileInfo& c)
+	{
+		if (j.contains("filename"))
+			c.filename.copy(j.at("filename").get<std::string>().c_str());
+		if (j.contains("filament"))
+			j.at("filament").get_to(c.filament);
+		if (j.contains("generatedBy"))
+			c.generatedBy.copy(j.at("generatedBy").get<std::string>().c_str());
+		if (j.contains("height"))
+			j.at("height").get_to(c.height);
+		if (j.contains("lastModified"))
+			c.lastModified.copy(j.at("lastModified").get<std::string>().c_str());
+		if (j.contains("layerHeight"))
+			j.at("layerHeight").get_to(c.layerHeight);
+		if (j.contains("numLayers"))
+			j.at("numLayers").get_to(c.numLayers);
+		if (j.contains("printTime"))
+			j.at("printTime").get_to(c.printTime);
+		if (j.contains("simulatedTime"))
+			j.at("simulatedTime").get_to(c.simulatedTime);
+		if (j.contains("size"))
+			j.at("size").get_to(c.size);
+
+		if (j.contains("thumbnails"))
+		{
+			const auto& thumbnails = j.at("thumbnails");
+			for (size_t i = 0; i < thumbnails.size(); ++i)
+			{
+				auto thumb = c.GetOrCreateThumbnail(i);
+				thumbnails[i].get_to(*thumb);
+			}
+			c.ClearThumbnails(thumbnails.size());
+		}
+	}
+
+	FileInfoCache::FileInfoCache()
+	{
+		Model::get().addEventListener<EventType::PrinterUniqueId>(
+			[this]()
+			{
+				if (!OM::GetPrinterUniqueId().empty())
+					LoadCacheFromMemory();
+			});
+	}
+
+	std::optional<std::filesystem::path> FileInfoCache::GetCachePath() const
+	{
+		std::string_view uid = OM::GetPrinterUniqueId();
+		if (uid.empty())
+		{
+			LOG_WARN("Cannot get file info cache path: printer unique ID is empty");
+			return std::nullopt;
+		}
+
+		return std::filesystem::path(NVS_FOLDER) / "fileinfo_cache" / uid;
+	}
+
+	bool FileInfoCache::LoadFileInfoFromFile(const std::filesystem::path& path, FileInfo& fileInfo)
+	{
+		nlohmann::json data;
+		try
+		{
+			std::ifstream file(path);
+			if (!file.is_open())
+			{
+				LOG_ERROR("Failed to open file info cache file: {:s}", path.string());
+				return false;
+			}
+			file >> data;
+			data.get_to(fileInfo);
+		}
+		catch (const std::exception& e)
+		{
+			LOG_ERROR("Failed to load file info from {:s}: {:s}", path.string(), e.what());
+			return false;
+		}
+
+		LOG_DBG("Loaded file info from {:s}", path.string());
+		return true;
+	}
+
+	void FileInfoCache::LoadCacheFromMemory()
+	{
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+
+		ClearCache();
+
+		GetCachePath().transform(
+			[this](const std::filesystem::path& path)
+			{
+				if (!std::filesystem::exists(path))
+				{
+					LOG_INFO("Creating file info cache directory: {:s}", path.string());
+					std::filesystem::create_directories(path);
+				}
+
+				LOG_INFO("Loading file info cache from: {:s}", path.string());
+				LoadCacheFolder(path);
+				return path;
+			});
+	}
+
+	void FileInfoCache::LoadCacheFolder(const std::filesystem::path& folderPath)
+	{
+		for (const auto& entry : std::filesystem::directory_iterator(folderPath))
+		{
+			if (entry.is_regular_file())
+			{
+				LOG_DBG("Loading cached file info from {:s}", entry.path().string());
+				auto fileInfo = std::make_shared<FileInfo>();
+
+				if (LoadFileInfoFromFile(entry.path(), *fileInfo))
+				{
+					LOG_DBG("Loaded cached file info for {:s}", entry.path().string());
+					m_cache[fileInfo->filename.c_str()] = fileInfo;
+
+					if (!::IsThumbnailCached(fileInfo->filename.c_str()))
+					{
+						FILEINFO_CACHE->QueueThumbnailRequest(fileInfo->filename.c_str());
+					}
+				}
+				else
+				{
+					LOG_WARN("Failed to load cached file info from {:s}", entry.path().string());
+				}
+			}
+			else if (entry.is_directory())
+			{
+				LoadCacheFolder(entry.path());
+			}
+		}
+	}
+
+	bool FileInfoCache::SaveCacheToFile(const FileInfo& fileInfo)
+	{
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+
+		bool ret = false;
+		GetCachePath().transform(
+			[&](const std::filesystem::path& path)
+			{
+				std::string file_path_str = fmt::format("{:s}/{:s}.json", path.string(), fileInfo.filename.c_str());
+				utils::replaceSubstring(file_path_str, ":", "\\%3A");
+
+				auto file_path = std::filesystem::path(file_path_str);
+
+				nlohmann::json data = fileInfo;
+				LOG_INFO("Saving file info cache to: {:s}", file_path_str);
+
+				if (!std::filesystem::exists(file_path.parent_path()))
+				{
+					LOG_INFO("Creating file info cache directory: {:s}", file_path.parent_path().string());
+					std::filesystem::create_directories(file_path.parent_path());
+				}
+				try
+				{
+					std::ofstream file(file_path);
+					if (!file.is_open())
+					{
+						LOG_ERROR("Failed to open file info cache file for writing: {:s}", file_path_str);
+						return path;
+					}
+					file << data.dump(4);
+					LOG_DBG("Saved cached file info to {:s}", file_path_str);
+					ret = true;
+				}
+				catch (const std::exception& e)
+				{
+					LOG_ERROR("Failed to save file info to {:s}: {:s}", file_path_str, e.what());
+				}
+				return path;
+			});
+
+		return ret;
+	}
+
+	bool FileInfoCache::SaveCache()
+	{
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+
+		bool ret = false;
+		GetCachePath().transform(
+			[this, &ret](const std::filesystem::path& path)
+			{
+				if (!std::filesystem::exists(path))
+				{
+					LOG_INFO("Creating file info cache directory: {:s}", path.string());
+					std::filesystem::create_directories(path);
+				}
+
+				LOG_INFO("Saving file info cache to: {:s}", path.string());
+				for (const auto& [filename, fileInfo] : m_cache)
+				{
+					std::filesystem::path filePath = path / (std::string(filename) + ".json");
+					nlohmann::json data = *fileInfo;
+
+					try
+					{
+						std::ofstream file(filePath);
+						if (!file.is_open())
+						{
+							LOG_ERROR("Failed to open file info cache file for writing: {:s}", filePath.string());
+							continue;
+						}
+						file << data.dump(4);
+						LOG_DBG("Saved cached file info to {:s}", filePath.string());
+						ret = true;
+					}
+					catch (const std::exception& e)
+					{
+						LOG_ERROR("Failed to save file info to {:s}: {:s}", filePath.string(), e.what());
+					}
+				}
+				return path;
+			});
+
+		return ret;
+	}
 
 	void FileInfoCache::Spin()
 	{
@@ -82,7 +319,7 @@ namespace Comm
 
 		// Timeout any request that hasn't received a response within the timeout period
 		{
-			MODEL_LOCK();
+			std::lock_guard<std::recursive_mutex> lock(s_mutex);
 			for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 			{
 				FileInfoRequestPtr request = *it;
@@ -101,7 +338,7 @@ namespace Comm
 		}
 
 		{
-			MODEL_LOCK();
+			std::lock_guard<std::recursive_mutex> lock(s_mutex);
 			for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 			{
 				ThumbnailRequestPtr request = *it;
@@ -141,11 +378,10 @@ namespace Comm
 		// Start a new request if there are no requests in progress
 		size_t fileInfoRequested = 0;
 		{
-			MODEL_LOCK();
-			for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
+			std::lock_guard<std::recursive_mutex> lock(s_mutex);
+			for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end(); it++)
 			{
 				FileInfoRequestPtr request = *it;
-				it++;
 
 				if (request->IsRequested())
 				{
@@ -166,7 +402,7 @@ namespace Comm
 		// Start a new thumbnail request if there are none in progress
 		size_t thumbnailsRequested = 0;
 		{
-			MODEL_LOCK();
+			std::lock_guard<std::recursive_mutex> lock(s_mutex);
 			for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 			{
 				ThumbnailRequestPtr request = *it;
@@ -212,131 +448,11 @@ namespace Comm
 				}
 			}
 		}
-// Check if a request has finished
-#if 0
-		if (m_thumbnailRequestInProgress)
-		{
-			if (m_currentThumbnail->context.parseErr != 0 || m_currentThumbnail->context.err != 0)
-			{
-				LOG_WARN("Thumbnail request failed for {:s}, parseErr({:d}), err({:d})",
-					 m_currentThumbnail->filename.c_str(),
-					 m_currentThumbnail->context.parseErr,
-					 m_currentThumbnail->context.err);
-				DeleteCachedThumbnail(m_currentThumbnail->filename.c_str());
-				m_thumbnailRequestInProgress = false;
-				m_currentThumbnail = nullptr;
-				return;
-			}
-
-			// Check if the request is done
-			switch (m_currentThumbnail->context.state)
-			{
-			case ThumbnailState::Init:
-				m_currentThumbnail = nullptr;
-				m_thumbnailRequestInProgress = false;
-				m_thumbnailResponseInProgress = false;
-				break;
-			case ThumbnailState::Data:
-			case ThumbnailState::DataWait:
-				LOG_VERBOSE("Thumbnail request in progress for {:s}, state={:d}",
-						m_currentThumbnail->filename.c_str(),
-						m_currentThumbnail->context.state);
-				return;
-			case ThumbnailState::DataRequest:
-				m_lastThumbnailRequestTime = TimeHelper::getCurrentTime();
-				DUET.RequestThumbnail(m_currentThumbnail->filename.c_str(), m_currentThumbnail->context.next);
-				m_currentThumbnail->context.state = ThumbnailState::DataWait;
-				return;
-			case ThumbnailState::Cached:
-				m_currentThumbnail->image.Close();
-				LOG_DBG("Updating thumbnail {:s}", m_currentThumbnail->filename.c_str());
-#  if 0
-				UI::FileList::GetThumbnail()->setText("");
-				UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
-				if (m_currentThumbnail->AboveCacheLimit())
-				{
-					UI::POPUP_WINDOW.SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
-				}
-#  endif
-				if (m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
-				{
-					if (GetFileSize(currentJobThumbnailFilePath) <
-						GetFileSize(m_currentThumbnail->GetThumbnailPath().c_str()))
-					{
-						system(fmt::format("cp {:s} {:s}",
-											 m_currentThumbnail->GetThumbnailPath(),
-											 currentJobThumbnailFilePath)
-								   .c_str());
-#  if 0
-						UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)
-							->setBackgroundPic(currentJobThumbnailFilePath);
-#  endif
-					}
-					m_currentCachedJobPath = OM::GetJobName();
-				}
-				m_thumbnailRequestInProgress = false;
-				m_currentThumbnail = nullptr;
-				break;
-			default:
-				break;
-			}
-		}
-
-		if (!OM::GetJobName().empty() && m_currentCachedJobPath != OM::GetJobName())
-		{
-			// Set the thumbnail to a small version if it exists
-#  if 0
-			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)
-				->setBackgroundPic(GetThumbnailPath(OM::GetJobName().c_str()).c_str());
-#  endif
-
-			// Queue a request for a large thumbnail
-			bool queued = QueueLargeThumbnailRequest(OM::GetJobName());
-			if (GetFileInfo(OM::GetJobName()) != nullptr && !queued)
-			{
-				// No valid thumbnail
-				m_currentCachedJobPath = OM::GetJobName();
-			}
-		}
-
-		if (m_queuedLargeThumbnail != nullptr)
-		{
-			LOG_INFO("Requesting queued large thumbnail for {:s}", m_queuedLargeThumbnail->filename.c_str());
-			if (RequestThumbnail(m_queuedLargeThumbnail))
-			{
-				m_queuedLargeThumbnail = nullptr;
-				return;
-			}
-		}
-
-		if (!m_fileInfoRequestQueue.empty() && !m_fileInfoRequestInProgress)
-		{
-			std::string filepath = m_fileInfoRequestQueue.front();
-			m_fileInfoRequestQueue.pop_front();
-			m_fileInfoRequestInProgress = true;
-			m_currentFileInfoRequest = filepath;
-			m_lastFileInfoRequestTime = TimeHelper::getCurrentTime();
-			DUET.RequestFileInfo(filepath.c_str());
-			return;
-		}
-
-		if (m_thumbnailRequestQueue.empty())
-		{
-			// LOG_DBG("Request queue is empty");
-			return;
-		}
-
-		LOG_DBG("Processing thumbnail request queue");
-		Thumbnail* thumbnail = m_thumbnailRequestQueue.front();
-		m_thumbnailRequestQueue.pop_front();
-
-		RequestThumbnail(thumbnail);
-#endif
 	}
 
 	bool FileInfoCache::IsThumbnailCached(const std::string& filepath, const char* lastModified)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		// Does a thumbnail file exist in the file system?
 		if (!::IsThumbnailCached(filepath.c_str(), false))
 		{
@@ -370,7 +486,7 @@ namespace Comm
 	 */
 	FileInfoPtr FileInfoCache::GetFileInfo(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		if (m_cache.find(filepath) == m_cache.end())
 		{
 			return nullptr;
@@ -378,9 +494,9 @@ namespace Comm
 		return m_cache[filepath];
 	}
 
-	bool FileInfoCache::FileInfoRequestInProgress()
+	bool FileInfoCache::IsFileInfoRequestInProgress()
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		return std::find_if(m_fileInfoRequestQueue.begin(),
 							m_fileInfoRequestQueue.end(),
 							[](const FileInfoRequestPtr request)
@@ -389,7 +505,7 @@ namespace Comm
 
 	void FileInfoCache::ReceivingFileInfoResponse(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
@@ -402,12 +518,11 @@ namespace Comm
 	/**
 	 * @brief Get the FileInfoRequest object for the given filepath
 	 * @param filepath
-	 * @param createIfNotFound
 	 * @return
 	 */
 	FileInfoCache::FileInfoRequestPtr FileInfoCache::GetFileInfoRequest(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		for (FileInfoRequestPtr request : m_fileInfoRequestQueue)
 		{
 			if (request->GetData()->filename.Equals(filepath.c_str()))
@@ -418,15 +533,16 @@ namespace Comm
 		return nullptr;
 	}
 
+#if 0
 	bool FileInfoCache::IsFileInfoRequestQueued(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		return GetFileInfoRequest(filepath) != nullptr;
 	}
 
 	bool FileInfoCache::IsFileInfoRequestInProgress(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
@@ -435,10 +551,11 @@ namespace Comm
 
 		return request->IsInProgress();
 	}
+#endif
 
 	void FileInfoCache::FileInfoRequestComplete(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		LOG_DBG("File info request complete for {:s}", filepath.c_str());
 
 		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
@@ -452,11 +569,13 @@ namespace Comm
 		m_cache[filepath] = request->GetData();
 
 		m_fileInfoRequestQueue.remove(request);
+
+		SaveCacheToFile(*request->GetData());
 	}
 
 	bool FileInfoCache::FileInfoRequest::RequestDataInner()
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		if (m_data == nullptr)
 		{
 			return false;
@@ -468,7 +587,7 @@ namespace Comm
 
 	bool FileInfoCache::ThumbnailRequest::RequestDataInner()
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		if (m_data == nullptr)
 		{
 			return false;
@@ -513,7 +632,7 @@ namespace Comm
 
 	void FileInfoCache::ClearCache()
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		LOG_INFO("Clearing file info cache");
 
 		m_cache.clear();
@@ -531,7 +650,7 @@ namespace Comm
 	 */
 	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath, bool next)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		LOG_DBG("Attempting to queue file info request for {:s}", filepath.c_str());
 		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
@@ -577,12 +696,11 @@ namespace Comm
 
 	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath, bool next)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		LOG_DBG("Attempting to queue thumbnail request for {:s}", filepath.c_str());
-		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
+		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end(); it++)
 		{
 			ThumbnailRequestPtr request = *it;
-			it++;
 
 			if (request->GetData()->filename.Equals(filepath.c_str()))
 			{
@@ -668,7 +786,7 @@ namespace Comm
 
 	bool FileInfoCache::QueueLargeThumbnailRequest(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 #if 0
 		m_queuedLargeThumbnail = nullptr;
 		DeleteCachedThumbnail(largeThumbnailFilename);
@@ -715,63 +833,10 @@ namespace Comm
 		return true;
 	}
 
-	bool FileInfoCache::RequestThumbnail(FileInfo& fileInfo, size_t index)
-	{
-		MODEL_LOCK();
-		if (index >= fileInfo.GetThumbnailCount())
-		{
-			LOG_WARN("Thumbnail index {:d} out of range for {:s}", index, fileInfo.filename.c_str());
-			return false;
-		}
-
-		ThumbnailPtr thumbnail = fileInfo.GetThumbnail(index);
-
-		return RequestThumbnail(thumbnail);
-	}
-
-	bool FileInfoCache::RequestThumbnail(ThumbnailPtr thumbnail)
-	{
-		MODEL_LOCK();
 #if 0
-		if (thumbnail == nullptr)
-		{
-			LOG_WARN("Thumbnail is null");
-			return false;
-		}
-
-		thumbnail->context.Init();
-		if (thumbnail->filename.IsEmpty() || thumbnail->meta.offset == 0)
-		{
-			LOG_WARN("Not enough information to request thumbnail for {:s}", thumbnail->filename.c_str());
-			return false;
-		}
-
-		if (!ThumbnailIsValid(*thumbnail))
-		{
-			LOG_ERROR("thumbnail meta invalid.\n");
-			return false;
-		}
-
-		const char* filename = thumbnail->AboveCacheLimit() ? largeThumbnailFilename : thumbnail->filename.c_str();
-
-		if (!thumbnail->image.New(thumbnail->meta, filename))
-		{
-			LOG_ERROR("Failed to create thumbnail file {:s}.", filename);
-			return false;
-		}
-
-		ThumbnailRequest* request = GetThumbnailRequest(thumbnail->filename.c_str());
-		thumbnail->context.state = ThumbnailState::DataWait;
-		DUET.RequestThumbnail(thumbnail->filename.c_str(), thumbnail->meta.offset);
-#else
-		UNUSED(thumbnail);
-#endif
-		return true;
-	}
-
 	ThumbnailPtr FileInfoCache::GetRequestedThumbnail(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 							   m_thumbnailRequestQueue.end(),
 							   [filepath](const ThumbnailRequestPtr request)
@@ -783,10 +848,11 @@ namespace Comm
 		}
 		return nullptr;
 	}
+#endif
 
-	bool FileInfoCache::ThumbnailRequestInProgress()
+	bool FileInfoCache::IsThumbnailRequestInProgress()
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		return std::find_if(m_thumbnailRequestQueue.begin(),
 							m_thumbnailRequestQueue.end(),
 							[](const ThumbnailRequestPtr request)
@@ -795,7 +861,7 @@ namespace Comm
 
 	void FileInfoCache::ThumbnailRequestComplete(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		ThumbnailRequestPtr request = GetThumbnailRequest(filepath);
 		if (request == nullptr)
 		{
@@ -808,7 +874,7 @@ namespace Comm
 
 	FileInfoCache::ThumbnailRequestPtr FileInfoCache::GetThumbnailRequest(const std::string& filepath)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 							   m_thumbnailRequestQueue.end(),
 							   [&filepath](const ThumbnailRequestPtr& request)
@@ -828,14 +894,14 @@ namespace Comm
 	 */
 	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		UNUSED(largeOnly);
 		return true;
 	}
 
 	void FileInfoCache::Debug()
 	{
-		MODEL_LOCK();
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		LOG_DBG("File info cache debug");
 		LOG_INFO("File info cache:");
 		for (auto& it : get()->m_cache)

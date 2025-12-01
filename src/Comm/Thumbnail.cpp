@@ -19,11 +19,13 @@ std::string GetThumbnailPath(std::string_view filepath)
 	std::string sanitisedFilename(filepath);
 	utils::replaceSubstring(sanitisedFilename, ":", "\\%3A");
 	// utils::replaceSubstring(sanitisedFilename, "/", "\%2F");
-	if (sanitisedFilename.rfind("/tmp/thumbnails/") == 0)
+
+	auto cache_folder = FILEINFO_CACHE->GetCachePath().value_or("/tmp/thumbnails/");
+	if (sanitisedFilename.rfind(cache_folder) == 0)
 	{
 		return sanitisedFilename;
 	}
-	return fmt::format("/tmp/thumbnails/{:s}", sanitisedFilename);
+	return cache_folder / sanitisedFilename;
 }
 
 bool CreateThumbnailDirectory(std::string_view thumbnailFilepath)
@@ -113,6 +115,49 @@ namespace Comm
 			return ::GetThumbnailPath(largeThumbnailFilename);
 		}
 		return ::GetThumbnailPath(filename.c_str());
+	}
+
+	void to_json(nlohmann::json& j, const ThumbnailMeta& m)
+	{
+		j = nlohmann::json{{"width", m.width},
+						   {"height", m.height},
+						   {"format",
+							m.imageFormat == ThumbnailMeta::ImageFormat::Qoi
+								? "qoi"
+								: (m.imageFormat == ThumbnailMeta::ImageFormat::Png ? "png" : "invalid")},
+						   {"offset", m.offset},
+						   {"size", m.size}};
+	}
+
+	void from_json(const nlohmann::json& j, ThumbnailMeta& m)
+	{
+		if (j.contains("width"))
+			j.at("width").get_to(m.width);
+		if (j.contains("height"))
+			j.at("height").get_to(m.height);
+		if (j.contains("format"))
+		{
+			std::string_view format = j.at("format").get<std::string_view>();
+			m.SetImageFormat(format);
+		}
+		if (j.contains("offset"))
+			j.at("offset").get_to(m.offset);
+		if (j.contains("size"))
+			j.at("size").get_to(m.size);
+	}
+
+	void to_json(nlohmann::json& j, const Thumbnail& t)
+	{
+		j = nlohmann::json{
+			{"filename", t.filename.c_str()},
+			{"meta", t.meta},
+		};
+	}
+
+	void from_json(const nlohmann::json& j, Thumbnail& t)
+	{
+		if (j.contains("meta"))
+			j.at("meta").get_to(t.meta);
 	}
 } // namespace Comm
 

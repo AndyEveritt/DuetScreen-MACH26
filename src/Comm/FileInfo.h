@@ -15,10 +15,13 @@
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "utils/TimeHelper.h"
+#include <filesystem>
 #include <list>
-#include <map>
 #include <memory>
+#include <mutex>
+#include <nlohmann/json.hpp>
 #include <stdint.h>
+#include <unordered_map>
 #include <vector>
 
 namespace Comm
@@ -35,25 +38,30 @@ namespace Comm
 		~FileInfo();
 
 		String<MAX_FILENAME_LENGTH> filename;
-		uint32_t size = 0;
-		String<19> lastModified;
-		float height = 0;
-		float layerHeight = 0;
-		uint32_t printTime = 0;
 		std::vector<float> filament;
 		String<64> generatedBy;
+		float height = 0;
+		String<19> lastModified;
+		float layerHeight = 0;
+		uint32_t numLayers = 0;
+		uint32_t printTime = 0;
+		uint32_t simulatedTime = 0;
+		uint32_t size = 0;
 
 		ThumbnailPtr GetThumbnail(size_t index);
 		ThumbnailPtr GetOrCreateThumbnail(size_t index);
 		size_t GetThumbnailCount() const { return m_thumbnails.size(); }
 		size_t ClearThumbnails(size_t fromIndex);
+		const auto& GetThumbnails() const { return m_thumbnails; }
 
 		tm GetPrintTime() const;
-		std::string GetReadableFileSize() const;
 
 	  private:
 		std::vector<ThumbnailPtr> m_thumbnails;
 	};
+
+	void to_json(nlohmann::json& j, const Comm::FileInfo& c);
+	void from_json(const nlohmann::json& j, Comm::FileInfo& c);
 
 	using FileInfoPtr = std::shared_ptr<FileInfo>;
 
@@ -168,6 +176,10 @@ namespace Comm
 			return &instance;
 		}
 
+		std::optional<std::filesystem::path> GetCachePath() const;
+		void LoadCacheFromMemory();
+		bool SaveCache();
+
 		void Spin(); // processes thumbnail requests
 
 		bool IsThumbnailCached(const std::string& filepath,
@@ -198,8 +210,12 @@ namespace Comm
 	  private:
 		FileInfoCache();
 
-		bool FileInfoRequestInProgress();
-		bool ThumbnailRequestInProgress();
+		void LoadCacheFolder(const std::filesystem::path& folderPath);
+		bool LoadFileInfoFromFile(const std::filesystem::path& path, FileInfo& fileInfo);
+		bool SaveCacheToFile(const FileInfo& fileInfo);
+
+		bool IsFileInfoRequestInProgress();
+		bool IsThumbnailRequestInProgress();
 
 		bool IsFileInfoRequestQueued(const std::string& filepath);
 		bool IsFileInfoRequestInProgress(const std::string& filepath);
@@ -207,13 +223,9 @@ namespace Comm
 		bool IsThumbnailRequestQueued(const std::string& filepath);
 		bool IsThumbnailRequestInProgress(const std::string& filepath);
 
-		bool RequestFileInfo(const std::string& filepath);
-		bool RequestThumbnail(FileInfo& fileInfo, size_t index);
-		bool RequestThumbnail(ThumbnailPtr thumbnail);
-
 		ThumbnailPtr GetNextThumbnail();
 
-		std::map<std::string, FileInfoPtr> m_cache; // cache of file path and their associated file info
+		std::unordered_map<std::string, FileInfoPtr> m_cache; // cache of file path and their associated file info
 		std::list<FileInfoRequestPtr> m_fileInfoRequestQueue;
 		std::list<ThumbnailRequestPtr> m_thumbnailRequestQueue;
 		std::chrono::milliseconds m_lastRequestTime = 0ms;

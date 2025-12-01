@@ -10,11 +10,13 @@
 #include "Hardware/Duet.h"
 #include "ObjectModel/Utils.h"
 #include "PrinterStatus.h"
+#include "UI/Core/Model.h"
 #include <string>
 
 namespace OM
 {
 	static std::string s_printerName;
+	static std::string s_uniqueId;
 	static PrinterStatus s_status = PrinterStatus::connecting;
 	static uint32_t s_channelIndex = 0;
 
@@ -85,6 +87,7 @@ namespace OM
 			{
 				Comm::DUET.SendGcode("M999\n");
 			}
+			Model::get().post<EventType::Status>(GetStatus());
 		}
 	}
 
@@ -95,7 +98,29 @@ namespace OM
 
 	void SetPrinterName(const char* name)
 	{
+		if (s_printerName == name)
+		{
+			return;
+		}
+
 		s_printerName = name;
+		Model::get().post<EventType::NetworkName>();
+	}
+
+	const std::string& GetPrinterUniqueId()
+	{
+		return s_uniqueId;
+	}
+
+	void SetPrinterUniqueId(const char* id)
+	{
+		if (s_uniqueId == id)
+		{
+			return;
+		}
+
+		s_uniqueId = id;
+		Model::get().post<EventType::PrinterUniqueId>();
 	}
 
 	uint32_t GetChannelIndex()

@@ -17,6 +17,13 @@
 
 using namespace std::chrono_literals;
 
+constexpr std::string_view NVS_FOLDER =
+#if SIMULATION
+	"./var/lib/duetscreen";
+#else
+	"/var/lib/duetscreen";
+#endif
+
 /* Logging */
 #if SIMULATION
 constexpr const char* DEFAULT_LOG_FILE = "DuetScreen.log";
@@ -26,7 +33,7 @@ constexpr const char* DEFAULT_LOG_FILE = "/var/log/DuetScreen.log";
 constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 5; // 5MB
 #endif
 
-constexpr size_t DEFAULT_LOG_FILE_COUNT = 3;			  // 3 files
+constexpr size_t DEFAULT_LOG_FILE_COUNT = 3; // 3 files
 
 /* UI */
 constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in milliseconds
@@ -54,8 +61,8 @@ constexpr const char* DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
 constexpr std::chrono::milliseconds FILE_CACHE_REQUEST_TIMEOUT = 5000ms;
 constexpr size_t MAX_THUMBNAIL_CACHE_PIXELS = 64; // Largest pixel width/height thumbnail that is allowed to be cached
 constexpr std::chrono::milliseconds BACKGROUND_FILE_CACHE_POLL_INTERVAL = 500ms;
-constexpr size_t MAX_FILEINFO_REQUESTS = 2;
-constexpr size_t MAX_THUMBNAIL_REQUESTS = 2;
+constexpr size_t MAX_FILEINFO_REQUESTS = 1;
+constexpr size_t MAX_THUMBNAIL_REQUESTS = 1;
 
 /* Json Decoder */
 constexpr size_t MAX_ARRAY_NESTING = 4;

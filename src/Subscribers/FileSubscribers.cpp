@@ -333,8 +333,7 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 			return false;
 		}
 
-		request->SortItems(OM::FileSystem::SortBy::DATE, true);
-
+		/* We don't care about file info (and thumbnails) for files that aren't in the Gcodes directory */
 		if (request->GetDir().find(OM::Directories::GetGcodesDirectory()) == std::string::npos)
 		{
 			return true;
@@ -342,7 +341,7 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 
 		for (size_t i = 0; i < request->GetItemCount(); i++)
 		{
-			std::shared_ptr<OM::FileSystem::FileSystemItem> item = request->GetItem(i);
+			auto item = request->GetItem(i);
 			if (item == nullptr || item->GetType() == OM::FileSystem::FileSystemItemType::folder)
 			{
 				continue;

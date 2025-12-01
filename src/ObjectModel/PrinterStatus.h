@@ -71,6 +71,8 @@ namespace OM
 	void SetStatus(const PrinterStatus status);
 	const std::string& GetPrinterName();
 	void SetPrinterName(const char* name);
+	const std::string& GetPrinterUniqueId();
+	void SetPrinterUniqueId(const char* id);
 
 	uint32_t GetChannelIndex();
 	void SetChannelIndex(uint32_t index);

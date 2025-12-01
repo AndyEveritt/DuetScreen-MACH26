@@ -14,7 +14,6 @@ bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data,
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetPrinterName(data);
-	Model::get().post<EventType::NetworkName>();
 	return true;
 }
 
@@ -30,12 +29,7 @@ bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, cons
 {
 	UNUSED(decoder);
 	UNUSED(indices);
-	OM::PrinterStatus prevStatus = OM::GetStatus();
 	OM::SetStatus(data);
-	if (prevStatus != OM::GetStatus())
-	{
-		Model::get().post<EventType::Status>(OM::GetStatus());
-	}
 	return true;
 }
 
