@@ -187,7 +187,6 @@ namespace UI
 
 	void FilePresenter::refreshFiles()
 	{
-		FILEINFO_CACHE->ClearCache();
 		requestFiles();
 	}
 
