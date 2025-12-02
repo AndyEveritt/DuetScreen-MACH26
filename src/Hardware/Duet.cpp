@@ -219,6 +219,7 @@ namespace Comm
 			return false;
 		}
 
+#if 0
 		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
 			(path != "/rr_connect" && path != "/rr_disconnect"))
@@ -227,6 +228,7 @@ namespace Comm
 			Reconnect();
 			return false;
 		}
+#endif
 
 		auto req = std::make_shared<HttpRequest>();
 		PrepareRequest(*req, path, queryParameters);
@@ -251,6 +253,7 @@ namespace Comm
 			return false;
 		}
 
+#if 0
 		if (((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			 (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout)) &&
 			(path != "/rr_connect" && path != "/rr_disconnect"))
@@ -259,6 +262,7 @@ namespace Comm
 			Reconnect();
 			return false;
 		}
+#endif
 
 		HttpRequest req;
 		PrepareRequest(req, path, queryParameters);
