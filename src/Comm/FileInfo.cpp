@@ -202,6 +202,10 @@ namespace Comm
 		{
 			if (entry.is_regular_file())
 			{
+				if (entry.path().extension() != ".json")
+				{
+					continue;
+				}
 				LOG_DBG("Loading cached file info from {:s}", entry.path().string());
 				auto fileInfo = std::make_shared<FileInfo>();
 
@@ -761,7 +765,7 @@ namespace Comm
 		}
 		if (largestValidThumbnail == nullptr)
 		{
-			LOG_WARN("No valid thumbnail found for {:s}", filepath.c_str());
+			LOG_DBG("No valid thumbnail found for {:s}", filepath.c_str());
 			return false;
 		}
 
