@@ -152,9 +152,9 @@ namespace OM
 		return s_currentJobObjectIndex;
 	}
 
-	std::shared_ptr<JobObject> GetJobObject(const int8_t index)
+	std::shared_ptr<JobObject> GetJobObject(const size_t index)
 	{
-		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
+		if (index >= MAX_TRACKED_OBJECTS)
 		{
 			LOG_WARN("JobObject index {:d} out of range\n", index);
 			return nullptr;
@@ -162,9 +162,9 @@ namespace OM
 		return GetOrCreate<JobObjectList, JobObject>(s_jobObjects, index, false);
 	}
 
-	std::shared_ptr<JobObject> GetOrCreateJobObject(const int8_t index)
+	std::shared_ptr<JobObject> GetOrCreateJobObject(const size_t index)
 	{
-		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
+		if (index >= MAX_TRACKED_OBJECTS)
 		{
 			LOG_WARN("JobObject index {:d} out of range\n", index);
 			return nullptr;

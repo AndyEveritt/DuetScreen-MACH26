@@ -398,7 +398,7 @@ bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char*
 
 	LOG_DBG("thumbnail data {:d}", strlen(data));
 	Comm::ThumbnailBuf& thumbnailBuf = request->GetBuffer();
-	thumbnailBuf.size = strnlen(data, sizeof(thumbnailBuf.buffer));
+	thumbnailBuf.size = static_cast<uint16_t>(strnlen(data, sizeof(thumbnailBuf.buffer)));
 	memcpy(thumbnailBuf.buffer, data, thumbnailBuf.size);
 
 	thumbnail->context.state = Comm::ThumbnailState::Data;

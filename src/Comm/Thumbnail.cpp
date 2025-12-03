@@ -308,7 +308,7 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 
 	LOG_DBG("*** received size {:d}, base64 decoded size {:d}\n", data.size, ret);
 
-	data.size = ret;
+	data.size = static_cast<uint16_t>(ret);
 
 	switch (thumbnail.meta.imageFormat)
 	{

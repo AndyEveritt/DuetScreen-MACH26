@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#pragma GCC diagnostic ignored "-Wconversion"
+
 #define QOI_DEBUG 0
 #if QOI_DEBUG
 #  define qoi_dbg(fmt, ...)                                                                                            \

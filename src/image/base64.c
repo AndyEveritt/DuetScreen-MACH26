@@ -160,5 +160,5 @@ base64_decode(const char *in, unsigned int inlen, unsigned char *out)
 		}
 	}
 
-	return j;
+	return (int)j;
 }

@@ -97,7 +97,7 @@ namespace OM
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
 		bool SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active);
 		uint8_t GetHeaterCount() const;
-		int8_t HasHeater(const uint8_t heaterIndex) const;
+		bool HasHeater(const uint8_t heaterIndex) const;
 		void IterateHeaters(function_ref<void(ToolHeaterPtr, size_t)> func, const size_t startAt = 0);
 		void IterateExtruders(function_ref<void(Move::ExtruderAxisPtr, size_t)> func, const size_t startAt = 0);
 		void IterateFans(function_ref<void(FanPtr, size_t)> func, const size_t startAt = 0);

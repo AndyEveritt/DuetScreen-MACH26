@@ -149,7 +149,7 @@ bool ToolSubscribers::toolArrayEnd(Comm::JsonDecoder* decoder, const size_t indi
 bool ToolSubscribers::toolHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	UNUSED(decoder);
-	if (OM::RemoveToolHeaters(indices[0], indices[1]))
+	if (OM::RemoveToolHeaters(indices[0], static_cast<uint8_t>(indices[1])))
 	{
 	}
 	Model::get().post<EventType::ToolHeaterData>(indices[0]);
@@ -159,7 +159,7 @@ bool ToolSubscribers::toolHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_
 bool ToolSubscribers::toolExtruderArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	UNUSED(decoder);
-	if (OM::RemoveToolExtruders(indices[0], indices[1]))
+	if (OM::RemoveToolExtruders(indices[0], static_cast<uint8_t>(indices[1])))
 	{
 	}
 	return true;
@@ -168,7 +168,7 @@ bool ToolSubscribers::toolExtruderArrayEnd(Comm::JsonDecoder* decoder, const siz
 bool ToolSubscribers::toolFanArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	UNUSED(decoder);
-	if (OM::RemoveToolFans(indices[0], indices[1]))
+	if (OM::RemoveToolFans(indices[0], static_cast<uint8_t>(indices[1])))
 	{
 	}
 	return true;

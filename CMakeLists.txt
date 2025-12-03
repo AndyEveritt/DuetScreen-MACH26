@@ -167,7 +167,8 @@ target_compile_options(
           -Wall
           -Wdeprecated
           -Wextra
-          # -Wconversion
+          -Wconversion
+          -Wno-error=conversion # there are lots of implicit conversions that will be resolved incrementally. Once they are all resolved this can be removed
           -Wunused
           -Wdouble-promotion
           -Wempty-body

@@ -322,13 +322,13 @@ bool FormattedPrinter::PrintLL(long long i) noexcept
 	*s = '\0';
 	while (u != 0)
 	{
-		unsigned int t = u % (unsigned int)flags.base;
-		u /= (unsigned int)flags.base;
+		unsigned int t = static_cast<unsigned int>(u % static_cast<unsigned int>(flags.base));
+		u /= static_cast<unsigned int>(flags.base);
 		if (t >= 10)
 		{
-			t += flags.u.b.letBase - ((unsigned int)'0' + 10);
+			t += flags.u.b.letBase - (static_cast<unsigned int>('0') + 10);
 		}
-		*--s = (char)(t + (unsigned int)'0');
+		*--s = (char)(t + static_cast<unsigned int>('0'));
 	}
 
 	return PutStringWithSign(s, neg);
