@@ -42,7 +42,7 @@ namespace UI
 
 		  private:
 			int32_t m_layoutColDsc[3];
-			int32_t m_layoutRowDsc[4];
+			int32_t m_layoutRowDsc[5];
 
 			LvLabel m_label{"label", getRoot()};
 #if SHOW_FILE_ITEM_SIZE
