@@ -2,10 +2,11 @@
 
 #include "FilePresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Icon/Icon.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvImage.h"
 #include "UI/Components/LVGL/LvLabel.h"
-#include "UI/Components/List/List.h"
+#include "UI/Components/List/LazyList.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Modal/Modal.h"
 #include "UI/Core/View.h"
@@ -18,33 +19,30 @@ namespace UI
 	class FileView : public View<FilePresenter>
 	{
 	  public:
-		class FileItem : public ListItem
+		class FileItem : public LvContainer
 		{
 		  public:
-			FileItem(const size_t index, LvObj& parent, FileView& view);
-			void setFileLabel(const char* name);
-			void setFileDate(const char* date);
+			FileItem(const std::string& name, LvObj& parent);
+			void setFileLabel(std::string_view name);
+			void setFileDate(std::string_view date);
 #if SHOW_FILE_ITEM_SIZE
-			void setFileSize(const char* size);
+			void setFileSize(std::string_view size);
 #endif
 			void setThumbnail(const char* thumbnail);
 			void setType(const bool isFolder);
 
-			const char* getLabel() const;
-			const char* getDate() const;
+			std::string_view getLabel() const;
+			std::string_view getDate() const;
 #if SHOW_FILE_ITEM_SIZE
-			const char* getSize() const;
+			std::string_view getSize() const;
 #endif
 
+			void setFileView(FileView* fileView) { m_fileView = fileView; }
+			void setIndex(size_t index) { m_index = index; }
+
 		  private:
-			FileView& getList() const { return m_list; }
-
-			static void onClick(lv_event_t* e);
-
-			FileView& m_list;
-
 			int32_t m_layoutColDsc[3];
-			int32_t m_layoutRowDsc[4];
+			int32_t m_layoutRowDsc[5];
 
 			LvLabel m_label{"label", getRoot()};
 #if SHOW_FILE_ITEM_SIZE
@@ -52,15 +50,38 @@ namespace UI
 #endif
 			LvLabel m_date{"date", getRoot()};
 			LvImage m_thumbnail{"thumb", getRoot()};
+			Icon m_folderIcon{"folder_icon", getRoot()};
+
+			FileView* m_fileView = nullptr;
+			size_t m_index = 0;
+			bool m_isFolder = false;
+		};
+
+		class LazyFileItem : public LazyObj<FileItem>
+		{
+		  public:
+			LazyFileItem(FileView& fileView);
+
+			lv_coord_t getSize() const override;
+			void update(size_t index, FileItem& obj) override;
+
+			std::string_view m_filename;
+			std::string_view m_date;
+#if SHOW_FILE_ITEM_SIZE
+			std::string m_size;
+#endif
+			std::string m_thumbnail;
 
 			bool m_isFolder;
+			FileView& m_fileView;
 		};
 
 		FileView(const std::string& name, LvObj& parent, LvObj* msgBoxParent = nullptr);
 
-		size_t getFileCount() const { return m_fileList.getItemCount(); }
+		auto& getList() { return m_fileList; }
+		size_t getFileCount() const { return m_fileList.getLazyItemCount(); }
 		void setFileCount(const size_t count);
-		FileView::FileItem* getFileItem(size_t index) const;
+		auto getFileItem(size_t index) const { return m_fileList.getLazyItem(index); }
 
 		void setFolder(const std::string& path);
 		bool cancelStartPrint();
@@ -85,7 +106,7 @@ namespace UI
 		void onHide() override;
 
 		LvContainer m_sideBar{"sidebar", getRoot()};
-		List<FileItem> m_fileList{"list", getRoot()}; // manages header (breadcrumbs) + items container
+		LazyList<LazyFileItem> m_fileList{"list", getRoot()}; // manages header (breadcrumbs) + items container
 		Button m_sortName{"sort_name", m_sideBar};
 		Button m_sortDate{"sort_date", m_sideBar};
 		Button m_sortSize{"sort_size", m_sideBar};
