@@ -49,7 +49,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             -Wfloat-conversion
             -Wstrict-aliasing)
             
-  if(!APPLE)
+  if(NOT APPLE)
     target_compile_options(
       lvgl
       PRIVATE 

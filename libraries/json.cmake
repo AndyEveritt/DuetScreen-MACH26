@@ -1,5 +1,6 @@
 FetchContent_Declare(
   nlohmann_json
+  SYSTEM # Mark as system to suppress warnings from this external library
   GIT_REPOSITORY https://github.com/nlohmann/json.git
   GIT_TAG v3.12.0
   CONFIGURE_COMMAND "" BUILD_COMMAND "")

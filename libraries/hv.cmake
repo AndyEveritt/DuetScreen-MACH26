@@ -3,6 +3,7 @@ set(BUILD_STATIC ON CACHE BOOL "Build static library")
 
 FetchContent_Declare(
   hv
+  SYSTEM # Mark as system to suppress warnings from this external library
   GIT_REPOSITORY https://github.com/ithewei/libhv.git
   GIT_TAG v1.3.4
 )
