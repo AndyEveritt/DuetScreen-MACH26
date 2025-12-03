@@ -396,7 +396,7 @@ namespace UI
 		if (msgBox->m_progressCb)
 		{
 			size_t progress = msgBox->m_progressCb(msgBox);
-			msgBox->setProgress(progress);
+			msgBox->setProgress(static_cast<int>(progress));
 		}
 	}
 } // namespace UI
