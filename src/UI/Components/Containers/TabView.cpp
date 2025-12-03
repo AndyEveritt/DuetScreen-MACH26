@@ -37,6 +37,7 @@ namespace UI
 		m_tabs.emplace_back(std::make_unique<LvContainer>(fmt::format("tab_{}", m_tabs.size()), m_tabContent));
 		LvContainer& new_tab = *m_tabs.back();
 
+		new_tab.addStyle(Themes::getLvglStyles().tab_card);
 		new_tab.setSize(LV_PCT(100), LV_PCT(100));
 		new_tab.setStylePad(0);
 
