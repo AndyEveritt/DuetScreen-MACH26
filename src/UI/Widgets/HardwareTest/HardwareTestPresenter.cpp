@@ -235,11 +235,13 @@ namespace UI
 			[this, &commandTest]()
 			{
 				std::string result;
+
+				// Test bootloader partition
 				std::string cmd =
 #if SIMULATION
-					"echo 'Memory test simulation output'";
+					"echo 'Test bootloader partition'";
 #else
-					"nandtest /dev/mtd0";
+					"nandtest -k /dev/mtd0";
 #endif
 				FILE* pipe = ::popen(cmd.c_str(), "r");
 				if (!pipe)
@@ -253,6 +255,65 @@ namespace UI
 				::pclose(pipe);
 
 				m_currentTest->output["result"] = result;
+
+				// Test dtb partition
+				cmd =
+#if SIMULATION
+					"echo 'Test dtb partition'";
+#else
+					"nandtest -k /dev/mtd1";
+#endif
+				pipe = ::popen(cmd.c_str(), "r");
+				if (!pipe)
+					return;
+				while (fgets(buffer, sizeof(buffer), pipe))
+				{
+					result.append(buffer);
+					commandTest.setOutput(result);
+				}
+				::pclose(pipe);
+
+				m_currentTest->output["result"] = result;
+
+				// Test optee partition
+				cmd =
+#if SIMULATION
+					"echo 'Test optee partition'";
+#else
+					"nandtest -k /dev/mtd2";
+#endif
+				pipe = ::popen(cmd.c_str(), "r");
+				if (!pipe)
+					return;
+				while (fgets(buffer, sizeof(buffer), pipe))
+				{
+					result.append(buffer);
+					commandTest.setOutput(result);
+				}
+				::pclose(pipe);
+
+				m_currentTest->output["result"] = result;
+
+				// Test kernel partition
+				cmd =
+#if SIMULATION
+					"echo 'Test kernel partition'";
+#else
+					"nandtest -k /dev/mtd3";
+#endif
+				pipe = ::popen(cmd.c_str(), "r");
+				if (!pipe)
+					return;
+				while (fgets(buffer, sizeof(buffer), pipe))
+				{
+					result.append(buffer);
+					commandTest.setOutput(result);
+				}
+				::pclose(pipe);
+
+				m_currentTest->output["result"] = result;
+
+				// Don't test ubi partition, that one has BBM
 
 				std::this_thread::sleep_for(std::chrono::seconds(2));
 				testFinished(TestId::MemoryTest);

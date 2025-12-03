@@ -15,7 +15,8 @@ namespace UI
 	{
 		setStylePad(0, LV_PART_MAIN, Padding::ALL);
 		setSize(LV_PCT(100), LV_PCT(100));
-		setStyleBgColor(lv_color_black());
+		// Don't use plain black to prevent content from fading away (bug in the SUNXI display or DMA/MMU driver)
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 	}
 
@@ -23,7 +24,7 @@ namespace UI
 		: LvContainer("serial_input_container", parent)
 		, m_parent(parent)
 	{
-		setStyleBgColor(lv_color_black());
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
 		setSize(LV_PCT(100), LV_PCT(100));
@@ -136,7 +137,7 @@ namespace UI
 		: LvContainer("dead_pixel_test_container", parent)
 		, m_parent(parent)
 	{
-		setStyleBgColor(lv_color_black());
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
 		setSize(LV_PCT(100), LV_PCT(100));
@@ -204,7 +205,7 @@ namespace UI
 
 	void HardwareTest::DeadPixelTest::onShow()
 	{
-		setStyleBgColor(lv_color_black());
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		m_hint.show();
 		m_pass.show();
 		m_fail.show();
@@ -225,7 +226,7 @@ namespace UI
 		: LvContainer("command_test_container", parent)
 		, m_parent(parent)
 	{
-		setStyleBgColor(lv_color_black());
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
 		setSize(LV_PCT(100), LV_PCT(100));
@@ -278,7 +279,7 @@ namespace UI
 		: LvContainer("buzzer_test_container", parent)
 		, m_parent(parent)
 	{
-		setStyleBgColor(lv_color_black());
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
 		setSize(LV_PCT(100), LV_PCT(100));
@@ -329,7 +330,7 @@ namespace UI
 	HardwareTest::SpeakerTest::SpeakerTest(HardwareTest& parent)
 		: CommandTest(parent)
 	{
-		setStyleBgColor(lv_color_black());
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
 		setSize(LV_PCT(100), LV_PCT(100));
@@ -383,7 +384,7 @@ namespace UI
 		: LvContainer("test_results_container", parent)
 		, m_parent(parent)
 	{
-		setStyleBgColor(lv_color_black());
+		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
 		setSize(LV_PCT(100), LV_PCT(100));
