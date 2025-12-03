@@ -96,6 +96,7 @@ namespace UI
 		m_cancelBtn.addClickedCallback(onCancelEvent, this);
 
 		m_timers.progress = lv_timer_create(onProgressTimer, 50, this);
+		lv_timer_set_auto_delete(m_timers.progress, false);
 
 		// addEventCallback(
 		// 	[](lv_event_t* e)
@@ -316,6 +317,7 @@ namespace UI
 			},
 			timeout,
 			this);
+		lv_timer_set_auto_delete(m_timers.timeout, false);
 		lv_timer_set_repeat_count(m_timers.timeout, 1);
 	}
 
