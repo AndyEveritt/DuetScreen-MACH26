@@ -219,7 +219,8 @@ TEST_F(TestTheme, Widgets)
 	FileView file_view("files", file_folder_cont);
 	file_view.hide();
 
-	FileView::FileItem file_item(0, file_folder_cont, file_view);
+	FileView::FileItem file_item("file_item", file_folder_cont);
+	file_item.setHeight(80);
 	file_item.setFlexGrow(1);
 	// file_item.setHeight(LV_PCT(100));
 	file_item.setType(false);
@@ -229,7 +230,8 @@ TEST_F(TestTheme, Widgets)
 	file_item.setFileSize("671 KB");
 #endif
 
-	FileView::FileItem folder_item(0, file_folder_cont, file_view);
+	FileView::FileItem folder_item("folder_item", file_folder_cont);
+	folder_item.setHeight(80);
 	folder_item.setFlexGrow(1);
 	// folder_item.setHeight(LV_PCT(100));
 	folder_item.setType(true);

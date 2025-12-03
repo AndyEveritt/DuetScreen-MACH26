@@ -12,16 +12,15 @@
 
 namespace UI
 {
-	FileView::FileItem::FileItem(const size_t index, LvObj& parent, FileView& view)
-		: ListItem(index, parent)
-		, m_list(view)
+	FileView::FileItem::FileItem(const std::string& name, LvObj& parent)
+		: LvContainer(name, parent)
 		, m_layoutColDsc{LV_GRID_FR(4), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 	{
 		UI_LOCK();
 
-		setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		setMaxWidth(400);
+		setWidth(LV_PCT(100));
+		// setMaxWidth(400);
 
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
@@ -29,33 +28,42 @@ namespace UI
 #if SHOW_FILE_ITEM_SIZE
 		setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 1, 1);
 #endif
-		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
-		setGridCell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 3);
+		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 2, 1);
+		setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 3);
+		setGridCell(m_folderIcon, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 3);
 
 		m_label.setHeight(LV_SIZE_CONTENT);
 		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
+		m_folderIcon.setIcon("folder.png");
 
-		addEventCallback(onClick, LV_EVENT_CLICKED, this);
+		addEventCallback(
+			[this](lv_event_t*)
+			{
+				if (!m_fileView)
+					return;
+				m_fileView->onItemClicked(m_index, m_isFolder);
+			},
+			LV_EVENT_CLICKED);
 
 		// Styles
 		addStyle(Themes::getComponentStyles().file);
 		addStyle(Themes::getComponentStyles().folder, LV_STATE_CHECKED);
 	}
 
-	void FileView::FileItem::setFileLabel(const char* name)
+	void FileView::FileItem::setFileLabel(std::string_view name)
 	{
 		UI_LOCK();
 		m_label.setText(name);
 	}
 
-	void FileView::FileItem::setFileDate(const char* date)
+	void FileView::FileItem::setFileDate(std::string_view date)
 	{
 		UI_LOCK();
 		m_date.setText(date);
 	}
 
 #if SHOW_FILE_ITEM_SIZE
-	void FileView::FileItem::setFileSize(const char* size)
+	void FileView::FileItem::setFileSize(std::string_view size)
 	{
 		UI_LOCK();
 		m_size.setText(size);
@@ -76,33 +84,57 @@ namespace UI
 		m_size.setVisible(!isFolder);
 #endif
 		setState(LV_STATE_CHECKED, isFolder);
+		m_folderIcon.setVisible(isFolder);
+		m_thumbnail.setVisible(!isFolder);
 	}
 
-	const char* FileView::FileItem::getLabel() const
+	std::string_view FileView::FileItem::getLabel() const
 	{
 		UI_LOCK();
-		return m_label.getText().data();
+		return m_label.getText();
 	}
 
-	const char* FileView::FileItem::getDate() const
+	std::string_view FileView::FileItem::getDate() const
 	{
 		UI_LOCK();
-		return m_date.getText().data();
+		return m_date.getText();
 	}
 
 #if SHOW_FILE_ITEM_SIZE
-	const char* FileView::FileItem::getSize() const
+	std::string_view FileView::FileItem::getSize() const
 	{
 		UI_LOCK();
-		return m_size.getText().data();
+		return m_size.getText();
 	}
 #endif
 
-	void FileView::FileItem::onClick(lv_event_t* e)
+	FileView::LazyFileItem::LazyFileItem(FileView& fileView)
+		: m_fileView(fileView)
+	{
+	}
+
+	lv_coord_t FileView::LazyFileItem::getSize() const
 	{
 		UI_LOCK();
-		FileItem* item = static_cast<FileItem*>(lv_event_get_user_data(e));
-		item->getList().onItemClicked(item->getIndex(), item->m_isFolder);
+		// Return a fixed size for now
+		return 80;
+	}
+
+	void FileView::LazyFileItem::update(size_t index, FileItem& obj)
+	{
+		UI_LOCK();
+
+		obj.setFileView(&m_fileView);
+		obj.setIndex(index);
+		obj.setFileLabel(m_filename);
+		std::string date(m_date);
+		std::replace(date.begin(), date.end(), 'T', ' ');
+		obj.setFileDate(date);
+#if SHOW_FILE_ITEM_SIZE
+		obj.setFileSize(m_size);
+#endif
+		obj.setThumbnail(m_thumbnail.empty() ? nullptr : m_thumbnail.c_str());
+		obj.setType(m_isFolder);
 	}
 
 	FileView::FileView(const std::string& name, LvObj& parent, LvObj* msgBoxParent)
@@ -145,8 +177,8 @@ namespace UI
 		// List container styling
 		m_fileList.setWidth(LV_PCT(100));
 		m_fileList.setFlexGrow(1);
-		m_fileList.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
-		m_fileList.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		// m_fileList.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
+		// m_fileList.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
 		// Sidebar
 		m_sideBar.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -182,12 +214,13 @@ namespace UI
 	void FileView::setFileCount(const size_t count)
 	{
 		UI_LOCK();
-		m_fileList.setItemCount(count, *this);
-	}
-
-	FileView::FileItem* FileView::getFileItem(size_t index) const
-	{
-		return m_fileList.getItem(index);
+		m_fileList.setItemCount(count,
+								[this](size_t)
+								{
+									auto item = std::make_unique<LazyFileItem>(*this);
+									return item;
+								});
+		// m_fileList.setItemCount(count, *this);
 	}
 
 	void FileView::setFolder(const std::string& folder)
@@ -291,7 +324,7 @@ namespace UI
 	void FileView::onItemClicked(size_t index, bool /* isFolder */)
 	{
 		UI_LOCK();
-		if (index >= m_fileList.getItemCount())
+		if (index >= m_fileList.getLazyItemCount())
 		{
 			return;
 		}

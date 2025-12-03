@@ -16,7 +16,7 @@ class LazyLabel : public LazyObj<LvLabel>
 {
   public:
 	int32_t getSize() const override { return 30; }
-	void update(LvLabel& obj) override { obj.setText(m_text); }
+	void update(size_t /* index */, LvLabel& obj) override { obj.setText(m_text); }
 
 	void setText(const std::string& text) { m_text = text; }
 

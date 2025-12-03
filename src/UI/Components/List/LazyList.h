@@ -33,20 +33,22 @@ namespace UI
 
 		/**
 		 * @brief Create the LVGL object for this item.
+		 * @param index The index of the item.
 		 * @param parent The parent object (the list).
 		 * @return Pointer to the created object.
 		 */
-		std::unique_ptr<ObjT> create(size_t i, LvObj& parent)
+		std::unique_ptr<ObjT> create(size_t index, LvObj& parent)
 		{
-			auto obj = std::make_unique<ObjT>(fmt::format("lazy_item_{:d}", i), parent);
+			auto obj = std::make_unique<ObjT>(fmt::format("lazy_item_{:d}", index), parent);
 			return obj;
 		}
 
 		/**
 		 * @brief Update the LVGL object with data from this LazyObj.
+		 * @param index The index of the LazyObj.
 		 * @param obj The LVGL object to update (created by create()).
 		 */
-		virtual void update(ObjT& obj) = 0;
+		virtual void update(size_t index, ObjT& obj) = 0;
 	};
 
 	template <typename LazyT>
@@ -87,12 +89,10 @@ namespace UI
 			m_sizer.setSize(1, 1);
 			m_sizer.setFlag(LV_OBJ_FLAG_CLICKABLE, false);
 			m_sizer.setFlag(LV_OBJ_FLAG_CLICK_FOCUSABLE, false);
-			m_sizer.setStyleBgColor(lv_palette_main(LV_PALETTE_RED));
-			m_sizer.setStyleBgOpa(LV_OPA_COVER);
 
 			// Events
 			addEventCallback(
-				[this](lv_event_t* e)
+				[this](lv_event_t*)
 				{
 					auto width = lv_obj_get_style_clamped_width(getRootPtr());
 					auto height = lv_obj_get_style_clamped_height(getRootPtr());
@@ -102,8 +102,8 @@ namespace UI
 					m_listCont.setFlexGrow(height == LV_SIZE_CONTENT ? 0 : 1);
 				},
 				LV_EVENT_SIZE_CHANGED);
-			m_listCont.addEventCallback([this](lv_event_t* e) { onScroll(e); }, LV_EVENT_SCROLL);
-			m_listCont.addEventCallback([this](lv_event_t* e) { updateVisibleItems(); }, LV_EVENT_SIZE_CHANGED);
+			m_listCont.addEventCallback([this](lv_event_t*) { updateVisibleItems(); }, LV_EVENT_SCROLL);
+			m_listCont.addEventCallback([this](lv_event_t*) { updateVisibleItems(); }, LV_EVENT_SIZE_CHANGED);
 		}
 
 		// List Interface methods
@@ -113,6 +113,12 @@ namespace UI
 
 		auto& getVisibleItems() { return m_items; }
 		auto& getLazyItems() { return m_pool; }
+
+		size_t getVisibleItemCount() const { return m_items.size(); }
+		size_t getLazyItemCount() const { return m_pool.size(); }
+
+		auto getVisibleItem(size_t index) const { return m_items.at(index).get(); }
+		auto getLazyItem(size_t index) const { return m_pool.at(index).get(); }
 
 		void setTitle(std::string_view title)
 		{
@@ -208,8 +214,6 @@ namespace UI
 		}
 
 	  protected:
-		void onScroll(lv_event_t* e) { updateVisibleItems(); }
-
 		void updateVisibleItems()
 		{
 			lv_coord_t scrollTop = m_listCont.getScrollTop();
@@ -252,7 +256,8 @@ namespace UI
 				{
 					objPtr = std::move(lazyObj.create(info.index, m_listCont));
 				}
-				lazyObj.update(*objPtr);
+				objPtr->setHeight(info.height);
+				lazyObj.update(info.index, *objPtr);
 
 				objPtr->setY(info.top);
 			}
