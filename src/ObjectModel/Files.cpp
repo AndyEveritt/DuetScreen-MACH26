@@ -479,6 +479,7 @@ namespace OM::FileSystem
 						 {
 
 							 MODEL_LOCK();
+							 SortFilesBy(files, SortBy::NAME, false);
 							 s_filaments.clear();
 							 s_filaments.reserve(files.size());
 							 for (const auto& item : files)
