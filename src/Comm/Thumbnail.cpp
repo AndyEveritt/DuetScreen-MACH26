@@ -326,16 +326,17 @@ bool IsThumbnailCached(std::string_view filepath, bool includeBlank)
 {
 	std::string thumbnailPath = GetThumbnailPath(filepath);
 	struct stat sb;
-	if (system(fmt::format("test -f \"{:s}\"", thumbnailPath).c_str()) == 0)
+	// Use stat directly to avoid spawning a shell
+	if (stat(thumbnailPath.c_str(), &sb) == 0)
 	{
-		if (stat(thumbnailPath.c_str(), &sb) == -1)
+		// Ensure it's a regular file
+		if (!S_ISREG(sb.st_mode))
 		{
-			// File doesn't exist
 			return false;
 		}
 		if (!includeBlank && sb.st_size <= 1)
 		{
-			// File exists but is empty
+			// File exists but is effectively empty
 			return false;
 		}
 		return true;
