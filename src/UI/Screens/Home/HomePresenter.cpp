@@ -352,7 +352,7 @@ namespace UI
 					std::string text(msgBox.getInput());
 					text = std::regex_replace(text, std::regex("\""), "\"\"");
 					text = std::regex_replace(text, std::regex("\'"), "\'\'");
-					Comm::DUET.SendGcodef("M292 R\"{:s}\" S{:d}", text, seq);
+					Comm::DUET.SendGcodef("M292 R{{\"{:s}\"}} S{:d}", text, seq);
 				});
 			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
