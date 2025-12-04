@@ -502,8 +502,8 @@ namespace Comm
 							{
 								c3 |= 0x0100;
 							}
-							m_fieldVal[i - 3] = (c3 >> 6) | 0xC0;
-							m_fieldVal[i - 2] = (c3 & 0x3F) | 0x80;
+							m_fieldVal[i - 3] = static_cast<char>((c3 >> 6) | 0xC0);
+							m_fieldVal[i - 2] = static_cast<char>((c3 & 0x3F) | 0x80);
 							m_fieldVal.Erase(i - 1);
 							--i;
 						}
@@ -596,7 +596,7 @@ namespace Comm
 	}
 
 	// This is the JSON parser state machine
-	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
+	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, size_t len)
 	{
 		LOG_DBG("checking {:d} chars", len);
 		LOG_VERBOSE("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));

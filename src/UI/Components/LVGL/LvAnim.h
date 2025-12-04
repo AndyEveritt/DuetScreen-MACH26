@@ -47,9 +47,9 @@ namespace UI
         void setRepeatDelay(uint32_t delay);
         void setEarlyApply(bool en);
         void setUserData(void* userData);
-        void setBezier3Path(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+		void setBezier3Path(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
-        /* Getters */
+		/* Getters */
 		void* getVar() const;
 		uint32_t getDelay() const;
         uint32_t getPlaytime() const;

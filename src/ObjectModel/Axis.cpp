@@ -65,7 +65,7 @@ namespace OM::Move
 		Comm::DUET.SendGcodef("M120\nG90\nG1 {:s}{:g} F{:g}\nM121\n",
 							  letter,
 							  Units::convertDisplayedDistanceToDuetUnits(position),
-							  Units::convertDisplayedSpeedToDuetUnits(feedrate));
+							  Units::convertDisplayedSpeedToDuetUnits(static_cast<float>(feedrate)));
 	}
 
 	/**
@@ -80,7 +80,7 @@ namespace OM::Move
 		Comm::DUET.SendGcodef("M120\nG91\nG1 {:s}{:g} F{:g}\nM121\n",
 							  letter,
 							  Units::convertDisplayedDistanceToDuetUnits(distance),
-							  Units::convertDisplayedSpeedToDuetUnits(feedrate));
+							  Units::convertDisplayedSpeedToDuetUnits(static_cast<float>(feedrate)));
 	}
 
 	std::vector<AxisPtr> GetAxes(const bool includeHidden)

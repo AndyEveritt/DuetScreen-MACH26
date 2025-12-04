@@ -237,7 +237,7 @@ namespace UI
 	 * @param x2        second control point X
 	 * @param y2        second control point Y
 	 */
-	void LvAnim::setBezier3Path(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+	void LvAnim::setBezier3Path(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
 	{
 		UI_LOCK();
 		lv_anim_set_bezier3_param(&m_anim, x1, y1, x2, y2);

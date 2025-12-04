@@ -122,7 +122,7 @@ bool JobSubscribers::currentObject(Comm::JsonDecoder* decoder, const int32_t& da
 {
 	UNUSED(decoder);
 	UNUSED(indices);
-	OM::SetCurrentJobObject(data);
+	OM::SetCurrentJobObject(static_cast<int8_t>(data));
 	Model::get().post<EventType::JobCurrentObject>();
 	return true;
 }

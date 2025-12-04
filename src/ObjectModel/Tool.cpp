@@ -206,16 +206,16 @@ namespace OM
 		return count;
 	}
 
-	int8_t Tool::HasHeater(const uint8_t heaterIndex) const
+	bool Tool::HasHeater(const uint8_t heaterIndex) const
 	{
 		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
 			if (heaters[i]->heater->index == (int)heaterIndex)
 			{
-				return i;
+				return true;
 			}
 		}
-		return -1;
+		return false;
 	}
 
 	void Tool::IterateHeaters(function_ref<void(ToolHeaterPtr, size_t)> func, const size_t startAt)
@@ -541,7 +541,7 @@ namespace OM
 		{
 			return false;
 		}
-		auto heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
+		auto heater = tool->GetOrCreateHeater(static_cast<uint8_t>(toolHeaterIndex), heaterIndex);
 		if (heater == nullptr)
 		{
 			LOG_ERROR("Failed to get or create tool {:d} heater {:d}={:d}", toolIndex, toolHeaterIndex, heaterIndex);
@@ -572,7 +572,7 @@ namespace OM
 		{
 			return false;
 		}
-		auto extruder = tool->GetOrCreateExtruder(toolExtruderIndex, extruderIndex);
+		auto extruder = tool->GetOrCreateExtruder(static_cast<uint8_t>(toolExtruderIndex), extruderIndex);
 		if (extruder == nullptr)
 		{
 			LOG_ERROR(
@@ -615,7 +615,7 @@ namespace OM
 		{
 			return false;
 		}
-		auto fan = tool->GetOrCreateFan(toolFanIndex, fanIndex);
+		auto fan = tool->GetOrCreateFan(static_cast<uint8_t>(toolFanIndex), fanIndex);
 		if (fan == nullptr)
 		{
 			LOG_ERROR("Failed to get or create tool {:d} fan {:d}={:d}", toolIndex, toolFanIndex, fanIndex);

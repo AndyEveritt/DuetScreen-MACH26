@@ -81,6 +81,7 @@ namespace UI::Themes
 		Style scrollbar;
 		Style scrollbar_scrolled;
 		Style card;
+		Style tab_card;
 		Style modal;
 		Style btn;
 		Style btn_checked;

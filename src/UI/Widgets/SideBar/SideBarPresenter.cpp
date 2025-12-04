@@ -31,7 +31,11 @@ namespace UI
 #if SIDE_BAR_BACK_BUTTON
 		registerEventListener<EventType::NavigationBackEnable>(this, &SideBarPresenter::enableBackButton);
 #endif
+#if 0
 		registerEventListener<EventType::NavigationHomeEnable>(this, &SideBarPresenter::enableHomeButton);
+#else
+		enableHomeButton(true);
+#endif
 	}
 
 	void SideBarPresenter::onActivate() {}

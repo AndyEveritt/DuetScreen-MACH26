@@ -98,7 +98,7 @@ namespace UI
 		{
 			return;
 		}
-		m_slider.setValue(value);
+		m_slider.setValue(static_cast<float>(value));
 	}
 
 	void FanView::ControllableFanItem::onFanOffClicked(lv_event_t* e)

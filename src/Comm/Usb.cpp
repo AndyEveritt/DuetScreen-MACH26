@@ -166,7 +166,7 @@ namespace Comm
 								  m_handle,
 								  m_outEndpoint,
 								  transferData->buffer.data(),
-								  transferData->buffer.size(),
+								  static_cast<int>(transferData->buffer.size()),
 								  sendTransferCallback,
 								  transferData,
 								  timeoutMs);
@@ -432,7 +432,7 @@ namespace Comm
 
 		if (device_count < 0)
 		{
-			LOG_ERROR("Failed to get device list: {:s}", libusb_error_name(device_count));
+			LOG_ERROR("Failed to get device list: {:s}", libusb_error_name(static_cast<int>(device_count)));
 			return false;
 		}
 

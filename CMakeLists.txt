@@ -86,7 +86,7 @@ add_dependencies(DuetScreen.lib clang-format)
     
 target_include_directories(DuetScreen.lib PUBLIC ${INCLUDE_DIR})
 target_include_directories(DuetScreen.lib PUBLIC ${SRC_DIR})
-target_include_directories(DuetScreen.lib PUBLIC ${LIBRARIES_DIR})
+target_include_directories(DuetScreen.lib SYSTEM PUBLIC ${LIBRARIES_DIR})
 
 add_subdirectory(src)
 
@@ -166,13 +166,18 @@ target_compile_options(
   PRIVATE -pedantic-errors
           -Wall
           -Wdeprecated
+          -Wextra
+          -Wconversion
+          -Wno-error=conversion # there are lots of implicit conversions that will be resolved incrementally. Once they are all resolved this can be removed
+          -Wunused
           -Wdouble-promotion
           -Wempty-body
-          -Wextra
           -Wformat-security
           -Wpointer-arith
           -Wmultichar
           -Wreturn-type
+          # There are issues with lambdas giving a shadow warning
+          # even when they don't capture the thing they are supposedly shadowing
           # -Wshadow
           -Wshift-negative-value
           -Wsizeof-pointer-memaccess
@@ -183,7 +188,7 @@ target_compile_options(
           -Wfloat-conversion
           -Wstrict-aliasing)
 
-if(!APPLE)
+if(NOT APPLE)
   # I don't have a Mac and the compiler seems to generate additional warnings so it seems unfair to make Ian suffer
   # -Wclobbered and -Wmaybe-uninitialized are not supported on macOS
   # -Werror is disabled on macOS to avoid build failures due to warnings

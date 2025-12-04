@@ -135,32 +135,30 @@ namespace UI
 			{
 				continue;
 			}
-			auto file = m_items.at(i);
+			const auto& file = m_items.at(i);
 			if (file == nullptr)
 			{
 				continue;
 			}
 
-			item->setFileLabel(file->GetName().c_str());
-			std::string date = file->GetDate();
-			std::replace(date.begin(), date.end(), 'T', ' ');
-			item->setFileDate(date.c_str());
+			item->m_filename = file->GetName();
+			item->m_date = file->GetDate();
 #if SHOW_FILE_ITEM_SIZE
-			item->setFileSize(file->GetReadableSize().c_str());
+			item->m_size = file->GetReadableSize();
 #endif
-			item->setType(file->GetType() == OM::FileSystem::FileSystemItemType::folder);
+			item->m_isFolder = file->GetType() == OM::FileSystem::FileSystemItemType::folder;
 
 			// Set thumbnail
-			if (file->GetType() == OM::FileSystem::FileSystemItemType::file &&
-				IsThumbnailCached(file->GetPath().c_str()))
+			if (file->GetType() == OM::FileSystem::FileSystemItemType::file && IsThumbnailCached(file->GetPath()))
 			{
-				item->setThumbnail(GetThumbnailPath(file->GetPath().c_str()).c_str());
+				item->m_thumbnail = GetThumbnailPath(file->GetPath());
 			}
 			else
 			{
-				item->setThumbnail(nullptr);
+				item->m_thumbnail = "";
 			}
 		}
+		getView()->getList().refresh();
 	}
 
 	void FilePresenter::requestFiles()
@@ -256,11 +254,12 @@ namespace UI
 				auto item = this->m_view->getFileItem(i);
 				if (item)
 				{
-					item->setThumbnail(GetThumbnailPath(filename.c_str()).c_str());
+					item->m_thumbnail = GetThumbnailPath(filename.c_str());
 				}
 				break;
 			}
 		}
+		getView()->getList().refresh();
 	}
 
 	void FilePresenter::onInit()

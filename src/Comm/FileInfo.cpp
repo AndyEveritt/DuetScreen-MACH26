@@ -981,7 +981,7 @@ namespace Comm
 				// File doesn't exist
 				return 0;
 			}
-			return sb.st_size;
+			return static_cast<size_t>(sb.st_size);
 		}
 		return 0;
 	}
