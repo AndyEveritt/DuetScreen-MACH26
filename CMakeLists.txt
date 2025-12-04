@@ -176,6 +176,7 @@ target_compile_options(
           -Wpointer-arith
           -Wmultichar
           -Wreturn-type
+          -Warray-bounds
           # There are issues with lambdas giving a shadow warning
           # even when they don't capture the thing they are supposedly shadowing
           # -Wshadow

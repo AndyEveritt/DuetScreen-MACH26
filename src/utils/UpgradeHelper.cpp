@@ -24,7 +24,14 @@ namespace UpgradeHelper
 {
 	static bool removeTmpFile()
 	{
-		return system("rm " TMP_FILEPATH) == 0;
+		std::error_code ec;
+		std::filesystem::remove(TMP_FILEPATH, ec);
+		if (ec)
+		{
+			LOG_ERROR("Failed to remove temporary upgrade file " TMP_FILEPATH ": {:s}", ec.message());
+			return false;
+		}
+		return true;
 	}
 
 	static bool copyFileFromUsb(const std::string& filePath)
@@ -38,47 +45,39 @@ namespace UpgradeHelper
 		// Check if the file has the correct extension
 		if (filePath.size() < UPGRADE_EXT_SIZE || filePath.substr(filePath.size() - UPGRADE_EXT_SIZE) != UPGRADE_EXT)
 		{
-			LOG_ERROR("File {:s} does not have the required " UPGRADE_EXT " extension", filePath.c_str());
+			LOG_ERROR("File {:s} does not have the required " UPGRADE_EXT " extension", filePath);
 			return false;
 		}
 
 		struct stat sb;
 		if (stat(filePath.c_str(), &sb) == -1)
 		{
-			LOG_ERROR("Failed to get file stats for {:s}", filePath.c_str());
+			LOG_ERROR("Failed to get file stats for {:s}", filePath);
 			return false;
 		}
 
 		removeTmpFile(); // Remove any previous upgrade file
-		int ret = system(fmt::format("cp \"{:s}\" " TMP_FILEPATH, filePath).c_str());
-		if (ret != 0)
+		if (!std::filesystem::copy_file(filePath, TMP_FILEPATH))
 		{
-			LOG_ERROR("Failed to copy file \"{:s}\" to /tmp, code={:d}", filePath.c_str(), ret);
+			LOG_ERROR("Failed to copy file \"{:s}\" to /tmp", filePath);
 			return false;
 		}
-		LOG_DBG("File \"{:s}\" copied to " TMP_FILEPATH ", code={:d}", filePath.c_str(), ret);
+		LOG_DBG("File \"{:s}\" copied to " TMP_FILEPATH, filePath);
 		return true;
 	}
 
 	static bool moveTmpFileToBoot()
 	{
 		struct stat sb;
-		if (system("rm " BOOT_FILEPATH) != 0)
-		{
-			LOG_WARN("Failed to remove previous upgrade file at " BOOT_FILEPATH);
-		}
+		std::filesystem::remove(BOOT_FILEPATH);
 		if (stat(TMP_FILEPATH, &sb) == -1)
 		{
 			LOG_ERROR("Failed to get file stats for " TMP_FILEPATH);
 			return false;
 		}
-		int ret = system("mv " TMP_FILEPATH " " BOOT_FILEPATH);
-		if (ret != 0)
-		{
-			LOG_ERROR("Failed to move file from " TMP_FILEPATH " to " BOOT_FILEPATH ", code={:d}", ret);
-			return false;
-		}
-		LOG_DBG("File moved from " TMP_FILEPATH " to " BOOT_FILEPATH ", code={:d}", ret);
+		std::filesystem::copy_file(TMP_FILEPATH, BOOT_FILEPATH);
+		std::filesystem::remove(TMP_FILEPATH);
+		LOG_DBG("File moved from " TMP_FILEPATH " to " BOOT_FILEPATH);
 		return true;
 	}
 
@@ -108,7 +107,7 @@ namespace UpgradeHelper
 			return false;
 		}
 
-		int ret = system("/etc/init.d/S50rootfs-upgrade start");
+		int ret = system("/etc/init.d/S50rootfs-upgrade restart");
 		return ret == 0;
 	}
 

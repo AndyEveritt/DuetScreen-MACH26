@@ -19,11 +19,8 @@ cp -r assets out/update/etc
 # mkdir -p out/update/usr/lib
 # cp ../buildroot-duetscreen/output/target/usr/lib/liblvgl* out/update/usr/lib/
 
-echo "rm -rf /etc/assets" > out/update/pre-update
-chmod +x out/update/pre-update
-
-echo "/etc/init.d/S20DuetScreen restart" > out/update/post-update
-chmod +x out/update/post-update
+cp scripts/pre-update out/update/pre-update
+cp scripts/post-update out/update/post-update
 
 cd out/update
 tar -czf ../update.tar.gz *
