@@ -236,6 +236,7 @@ namespace UI
 			{
 				std::string result;
 
+				bool passed = true;
 				// Test bootloader partition
 				std::string cmd =
 #if SIMULATION
@@ -254,7 +255,8 @@ namespace UI
 				}
 				::pclose(pipe);
 
-				m_currentTest->output["result"] = result;
+				m_currentTest->output["bootloader"]["result"] = result;
+				passed = passed && result.find("Finished pass 1 successfully") != std::string::npos;
 
 				// Test dtb partition
 				cmd =
@@ -273,7 +275,8 @@ namespace UI
 				}
 				::pclose(pipe);
 
-				m_currentTest->output["result"] = result;
+				m_currentTest->output["dtb"]["result"] = result;
+				passed = passed && result.find("Finished pass 1 successfully") != std::string::npos;
 
 				// Test optee partition
 				cmd =
@@ -292,7 +295,8 @@ namespace UI
 				}
 				::pclose(pipe);
 
-				m_currentTest->output["result"] = result;
+				m_currentTest->output["optee"]["result"] = result;
+				passed = passed && result.find("Finished pass 1 successfully") != std::string::npos;
 
 				// Test kernel partition
 				cmd =
@@ -311,9 +315,12 @@ namespace UI
 				}
 				::pclose(pipe);
 
-				m_currentTest->output["result"] = result;
+				m_currentTest->output["kernel"]["result"] = result;
+				passed = passed && result.find("Finished pass 1 successfully") != std::string::npos;
 
 				// Don't test ubi partition, that one has BBM
+
+				m_currentTest->output["result"] = passed;
 
 				std::this_thread::sleep_for(std::chrono::seconds(2));
 				testFinished(TestId::MemoryTest);
@@ -933,10 +940,13 @@ namespace UI
 			[this](TestProcedure& /* test */) { testMemory(); },
 			[this](TestProcedure& test)
 			{
-				std::string result = test.output["result"].get<std::string>();
+				bool passed = false;
+				if (test.output.contains("result"))
+				{
+					passed = test.output["result"].get<bool>();
+				}
 
-				// Check `result` for `Finished pass 1 successfully`
-				return result.find("Finished pass 1 successfully") != std::string::npos;
+				return passed;
 			});
 #endif
 
