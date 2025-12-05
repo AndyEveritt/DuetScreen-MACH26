@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include <atomic>
+#include <condition_variable>
 #include <cstring>
 #include <mutex>
 #include <thread>

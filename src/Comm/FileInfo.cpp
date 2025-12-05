@@ -17,6 +17,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/Core/Model.h"
 #include "utils/utils.h"
+#include <fstream>
 #include <sys/stat.h>
 #include <utils/TimeHelper.h>
 
