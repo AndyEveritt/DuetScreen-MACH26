@@ -56,7 +56,7 @@ namespace UI
 		}
 #endif
 
-		LOG_VERBOSE("Creating view '{}' ({})", getName(), static_cast<const void*>(m_root));
+		LOG_VERBOSE("Creating view '{:s}' ({:p})", getName(), static_cast<const void*>(m_root));
 		lv_obj_null_on_delete(&m_root);
 	}
 
@@ -83,7 +83,7 @@ namespace UI
 		UI_LOCK();
 		if (getRootPtr() != nullptr)
 		{
-			LOG_VERBOSE("Deleting obj '{}' ({})", getName(), static_cast<const void*>(getRootPtr()));
+			LOG_VERBOSE("Deleting obj '{:s}' ({:p})", getName(), static_cast<const void*>(getRootPtr()));
 			lv_obj_delete(getRootPtr());
 		}
 	}
@@ -162,7 +162,14 @@ namespace UI
 			}
 			if (!found)
 			{
-				LOG_ERROR("LvObj::getChildByName: Could not find child '{}' in '{}'", part, obj->getName());
+				/**
+				 * For some reason, using part as a string_view in the formatting causes an array-bounds error when
+				 * compiling with -O2/-O3, but only on some computers?
+				 *
+				 * If anyone knows why, please tell me!
+				 */
+				LOG_ERROR(
+					"LvObj::getChildByName: Could not find child '{}' in '{}'", std::string(part), obj->getName());
 			}
 		}
 
@@ -524,7 +531,7 @@ namespace UI
 		}
 		else
 		{
-			LOG_FATAL_THROW("Unexpected event code: {}", (int32_t)code);
+			LOG_FATAL_THROW("Unexpected event code: {:d}", (int32_t)code);
 		}
 	}
 
@@ -813,7 +820,7 @@ namespace UI
 		if (!hasFlag(LV_OBJ_FLAG_HIDDEN))
 		{
 			LOG_VERBOSE("'{:s}' is already visible", getName());
-			// return;
+			/* Don't return */
 		}
 
 		LOG_DBG("Showing '{:s}'", getName());

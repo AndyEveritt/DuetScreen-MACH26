@@ -202,7 +202,7 @@ namespace UI
 	void NumberPad::setConfirmCallback(confirm_cb_t eventCb)
 	{
 		UI_LOCK();
-		LOG_DBG(eventCb == nullptr ? "Removing confirm callback" : "Setting new confirm callback");
+		eventCb == nullptr ? LOG_DBG("Removing confirm callback") : LOG_DBG("Setting new confirm callback");
 		m_confirmCb = eventCb;
 	}
 

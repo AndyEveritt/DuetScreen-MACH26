@@ -47,22 +47,32 @@ namespace Log
 	size_t GetThreadId();
 
 	std::shared_ptr<spdlog::logger> GetLogger();
+
+	/* This is needed so we get compiler errors if the format string is invalid */
+	template <typename... Args>
+	void log(spdlog::source_loc loc, spdlog::level::level_enum lvl, fmt::format_string<Args...> fmt, Args&&... args)
+	{
+		spdlog::default_logger_raw()->log(
+			loc, lvl, std::forward<fmt::format_string<Args...>>(fmt), std::forward<Args>(args)...);
+	}
 } // namespace Log
 
-#define CUSTOM_SPDLOG_LOGGER_CALL(logger, level, ...)                                                                  \
-	(logger)->log(spdlog::source_loc{__FILE_RELPATH__, __LINE__, SPDLOG_FUNCTION}, level, __VA_ARGS__)
+/* Need to use macros here so that __FILE_RELPATH__ and __LINE__ are correct */
+
+#define CUSTOM_SPDLOG_LOGGER_CALL(level, ...)                                                                          \
+	Log::log(spdlog::source_loc{__FILE_RELPATH__, __LINE__, SPDLOG_FUNCTION}, level, __VA_ARGS__)
 
 #if DEBUG
-#  define LOG_VERBOSE(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::trace, __VA_ARGS__)
+#  define LOG_VERBOSE(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::level::trace, __VA_ARGS__)
 #else
 #  define LOG_VERBOSE(...)
 #endif
 
-#define LOG_DBG(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::debug, __VA_ARGS__)
-#define LOG_INFO(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::info, __VA_ARGS__)
-#define LOG_WARN(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::warn, __VA_ARGS__)
-#define LOG_ERROR(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::err, __VA_ARGS__);
+#define LOG_DBG(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::level::debug, __VA_ARGS__)
+#define LOG_INFO(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::level::info, __VA_ARGS__)
+#define LOG_WARN(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::level::warn, __VA_ARGS__)
+#define LOG_ERROR(...) CUSTOM_SPDLOG_LOGGER_CALL(spdlog::level::err, __VA_ARGS__);
 #define LOG_FATAL_THROW(...)                                                                                           \
-	CUSTOM_SPDLOG_LOGGER_CALL(spdlog::default_logger_raw(), spdlog::level::critical, __VA_ARGS__);                     \
+	CUSTOM_SPDLOG_LOGGER_CALL(spdlog::level::critical, __VA_ARGS__);                                                   \
 	spdlog::dump_backtrace();                                                                                          \
 	std::abort();

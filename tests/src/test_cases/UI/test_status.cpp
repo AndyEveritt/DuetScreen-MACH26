@@ -29,7 +29,7 @@ class TestStatus : public UiTestSuite
 		std::string_view filename = "0:/gcodes/ROTO-VORON-HEATSINK-FAN-DUCT v4 (T0 0.6mm HF - Prusament PETG).gcode";
 		std::string thumbnailPath = GetThumbnailPath(filename);
 		assert(CreateThumbnailDirectory(thumbnailPath));
-		system(fmt::format("cp {:s} '{:s}'", Themes::getIconPath("print_thumbnail.png"), thumbnailPath).c_str());
+		std::filesystem::copy_file(Themes::getIconPath("print_thumbnail.png"), thumbnailPath);
 
 		HomeView::setInstance(&home);
 		view.setSize(LV_PCT(36), LV_PCT(90));

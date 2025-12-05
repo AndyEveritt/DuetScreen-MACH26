@@ -20,7 +20,7 @@
 #  define EXPECT_EQUAL_SCREENSHOT(path)                                                                                \
 	  if (LV_HOR_RES != HOR_RES || LV_VER_RES != VER_RES)                                                              \
 	  {                                                                                                                \
-		  LOG_ERROR("Requires {}x{} resolution", HOR_RES, VER_RES);                                                    \
+		  LOG_ERROR("Requires {:d}x{:d} resolution", HOR_RES, VER_RES);                                                \
 	  }                                                                                                                \
 	  else                                                                                                             \
 	  {                                                                                                                \

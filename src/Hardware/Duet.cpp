@@ -1006,12 +1006,16 @@ namespace Comm
 		{
 			LOG_DBG("Attempting to connect to Duet via USB");
 			ret = connectUsbDevice();
-			LOG_DBG(ret ? "Connected to USB device" : "Failed to connect to USB device");
 			if (ret)
 			{
+				LOG_DBG("Connected to USB device");
 				m_connectionState = ConnectionState::CONNECTED; // set connected state so SendGcode actually works
 				SendGcode("M575 P0 S4\n",
 						  true); // set serial comm parameters for USB port to use JSON responses and CRC
+			}
+			else
+			{
+				LOG_ERROR("Failed to connect to Duet via USB");
 			}
 			break;
 		}

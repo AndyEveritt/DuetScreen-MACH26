@@ -92,14 +92,13 @@ namespace Log
 			s_logger = make_shared<spdlog::logger>("duetscreen", sinks);
 			s_logger->flush_on(spdlog::level::debug);
 			spdlog::set_default_logger(s_logger);
-			LOG_INFO(
-				fmt::format("\n\n\n----------------------------------------------------------------------------------\n"
-							"Program started\n"
-							"Version: " FIRMWARE_VERSION "\n"
-							"Build date: {} {}\n"
-							"----------------------------------------------------------------------------------\n\n\n",
-							BuildDateText,
-							BuildTimeSuffix));
+			LOG_INFO("\n\n\n----------------------------------------------------------------------------------\n"
+					 "Program started\n"
+					 "Version: " FIRMWARE_VERSION "\n"
+					 "Build date: {} {}\n"
+					 "----------------------------------------------------------------------------------\n\n\n",
+					 BuildDateText,
+					 BuildTimeSuffix);
 			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
 			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
 			spdlog::flush_every(std::chrono::seconds(1));
