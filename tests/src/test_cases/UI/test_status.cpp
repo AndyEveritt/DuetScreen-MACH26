@@ -26,11 +26,6 @@ class TestStatus : public UiTestSuite
 		/* Need to wait for the filesystem operations to finish fully */
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-		std::string_view filename = "0:/gcodes/ROTO-VORON-HEATSINK-FAN-DUCT v4 (T0 0.6mm HF - Prusament PETG).gcode";
-		std::string thumbnailPath = GetThumbnailPath(filename);
-		assert(CreateThumbnailDirectory(thumbnailPath));
-		std::filesystem::copy_file(Themes::getIconPath("print_thumbnail.png"), thumbnailPath);
-
 		HomeView::setInstance(&home);
 		view.setSize(LV_PCT(36), LV_PCT(90));
 		home.hide();
@@ -109,4 +104,25 @@ TEST_F(TestStatus, Cancelled)
 	view.show();
 	view.updateLayout();
 	EXPECT_EQUAL_SCREENSHOT("status_view/cancelled.png")
+}
+
+/**
+ * This test is currently bugged because lvgl does not calculate the size of the thumbnail image correctly in the test
+ * but it does in the real UI.
+ */
+TEST_F(TestStatus, Thumbnail)
+{
+	load_model_data_from_file("tests/object_model/job/model_state_printing.json");
+	load_model_data_from_file("tests/object_model/job/model_job_printing_layer_2.json");
+
+	std::string_view filename = "0:/gcodes/ROTO-VORON-HEATSINK-FAN-DUCT v4 (T0 0.6mm HF - Prusament PETG).gcode";
+	std::filesystem::path thumbnailPath = GetThumbnailPath(filename);
+	std::filesystem::create_directories(thumbnailPath.parent_path());
+	assert(std::filesystem::exists(thumbnailPath.parent_path()));
+	std::filesystem::remove(thumbnailPath);
+	std::filesystem::copy_file(Themes::getIconPath("print_thumbnail.png"), thumbnailPath);
+
+	view.show();
+	view.updateLayout();
+	EXPECT_EQUAL_SCREENSHOT("status_view/thumbnail.png");
 }

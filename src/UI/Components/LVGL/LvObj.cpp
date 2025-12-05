@@ -163,8 +163,10 @@ namespace UI
 			if (!found)
 			{
 				/**
-				 * For some reason, using part as a string_view in the formatting causes an array-bounds error when
+				 * For some reason, using `part` as a string_view in the formatting causes an array-bounds error when
 				 * compiling with -O2/-O3, but only on some computers?
+				 *
+				 * Also think it is only an issue when gtest is linked in?
 				 *
 				 * If anyone knows why, please tell me!
 				 */

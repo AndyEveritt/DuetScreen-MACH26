@@ -117,7 +117,6 @@ int ThumbnailInit(Comm::Thumbnail& thumbnail);
 int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data);
 
 std::string GetThumbnailPath(std::string_view filepath);
-bool CreateThumbnailDirectory(std::string_view thumbnailFilepath);
 bool IsThumbnailCached(std::string_view filepath, bool includeBlank = false);
 bool ClearAllCachedThumbnails();
 bool DeleteCachedThumbnail(std::string_view filepath);

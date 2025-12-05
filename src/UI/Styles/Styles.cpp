@@ -1062,7 +1062,7 @@ namespace UI::Themes
 	std::string getFixedIconPath(std::string_view folder, std::string_view icon_name)
 	{
 		UI_LOCK();
-		return fmt::format("A:" ASSETS_FOLDER "icons/{:s}/{:s}", folder, icon_name);
+		return fmt::format(ASSETS_FOLDER "icons/{:s}/{:s}", folder, icon_name);
 	}
 
 	bool iconExists(std::string_view icon_name)

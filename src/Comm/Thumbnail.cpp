@@ -28,24 +28,6 @@ std::string GetThumbnailPath(std::string_view filepath)
 	return cache_folder / sanitisedFilename;
 }
 
-bool CreateThumbnailDirectory(std::string_view thumbnailFilepath)
-{
-	std::filesystem::path directory = thumbnailFilepath.substr(0, thumbnailFilepath.find_last_of('/'));
-	if (!std::filesystem::exists(directory))
-	{
-		try
-		{
-			std::filesystem::create_directories(directory);
-		}
-		catch (const std::filesystem::filesystem_error& e)
-		{
-			LOG_ERROR("Failed to create directory {}: {:s}", directory.c_str(), e.what());
-			return false;
-		}
-	}
-	return true;
-}
-
 namespace Comm
 {
 	bool ThumbnailImage::New(ThumbnailMeta& meta, std::string_view filename)
@@ -53,10 +35,6 @@ namespace Comm
 		Close();
 		qoi.decoder_state = qoi_decoder_state::qoi_decoder_header;
 		imageFilename = GetThumbnailPath(filename);
-		// if (!CreateThumbnailDirectory(imageFilename))
-		// {
-		// 	return false;
-		// }
 		std::filesystem::create_directories(imageFilename.substr(0, imageFilename.find_last_of('/')));
 		switch (meta.imageFormat)
 		{

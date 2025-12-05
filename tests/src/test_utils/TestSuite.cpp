@@ -28,6 +28,8 @@ TestSuite::TestSuite()
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	OM::RemoveAll();
+
+	std::filesystem::remove_all("/tmp/thumbnails");
 	std::filesystem::create_directories("/tmp/thumbnails");
 }
 
