@@ -218,6 +218,7 @@
       "duet_password_prompt": "Enter Password",
       "duet_poll_interval": "Poll Interval (ms)",
       "enable_ssh": "Enable SSH",
+      "enable_system_monitor": "Enable System Monitor",
       "erase_and_restart": "Erase and Restart",
       "firmware_version": "Firmware Version: {:s}",
       "language": "Language",
