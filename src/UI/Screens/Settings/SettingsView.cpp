@@ -660,6 +660,32 @@ namespace UI
 		lv_obj_set_state(m_enableSSH, LV_STATE_CHECKED, StorageHelper::getData<bool>(ID_SSH_ENABLED, false));
 		lv_obj_add_event_cb(m_enableSSH, onEnableSSHEvent, LV_EVENT_VALUE_CHANGED, this);
 
+#if LV_USE_SYSMON
+		m_enableSystemMonitor.setText(_("settings.enable_system_monitor"));
+		m_enableSystemMonitor.setChecked(StorageHelper::getData<bool>(ID_SYSTEM_MONITOR_ENABLED, true));
+		m_enableSystemMonitor.addEventCallback(
+			[this](lv_event_t*)
+			{
+				bool checked = m_enableSystemMonitor.hasState(LV_STATE_CHECKED);
+				StorageHelper::setData<bool>(ID_SYSTEM_MONITOR_ENABLED, checked);
+
+#  if LV_USE_PERF_MONITOR
+				if (checked)
+					lv_sysmon_show_performance(NULL);
+				else
+					lv_sysmon_hide_performance(NULL);
+#  endif
+#  if LV_USE_MEM_MONITOR
+				if (checked)
+					lv_sysmon_show_memory(NULL);
+				else
+					lv_sysmon_hide_memory(NULL);
+#  endif
+			},
+			LV_EVENT_VALUE_CHANGED);
+		m_enableSystemMonitor.sendEvent(LV_EVENT_VALUE_CHANGED);
+#endif
+
 		// Power
 		m_restart.setHeight(LV_SIZE_CONTENT);
 		m_eraseAndRestart.setHeight(LV_SIZE_CONTENT);

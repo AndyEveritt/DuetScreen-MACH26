@@ -161,6 +161,9 @@ namespace UI
 		lv_obj_t* m_debugBorders;
 #endif
 		lv_obj_t* m_enableSSH;
+#if LV_USE_SYSMON
+		LvCheckbox m_enableSystemMonitor{"enable_system_monitor", getRoot()};
+#endif
 
 		Button m_restart;
 		Button m_eraseAndRestart;

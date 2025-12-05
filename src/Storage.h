@@ -61,6 +61,9 @@ constexpr const char* ID_DEBUG_LEVEL = "debug:level";
 constexpr const char* ID_LOG_FILE = "debug:file";
 constexpr const char* ID_ENABLE_UI_LOGGING = "debug:ui_logging";
 constexpr const char* ID_BURNIN_FREQUENCY = "debug:burnin_frequency";
+#if LV_USE_SYSMON
+constexpr const char* ID_SYSTEM_MONITOR_ENABLED = "debug:system_monitor_enabled";
+#endif
 
 #if DEBUG_BORDERS
 constexpr const char* ID_DEBUG_BORDERS = "debug:borders";
