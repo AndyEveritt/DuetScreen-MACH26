@@ -9,6 +9,7 @@
 
 #include "utils/utils.h"
 #include <chrono>
+#include <fmt/ranges.h>
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
