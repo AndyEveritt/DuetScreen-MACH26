@@ -162,7 +162,7 @@ namespace UI
 		UI_LOCK();
 		m_alert.setAlign(LV_ALIGN_TOP_MID, 0, show ? 5 : 0);
 		m_alert.setMaxHeight(show ? LV_PCT(45) : LV_PCT(70));
-		m_kb.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
+		m_kb.setVisible(show, true);
 	}
 
 	void HomeView::showUpdatePrompt(bool show)
