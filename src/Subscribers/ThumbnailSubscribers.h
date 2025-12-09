@@ -14,6 +14,7 @@ class ThumbnailSubscribers : public SubscriberMap
 		addSubscriber("simulatedTime", simulatedTime);
 		addSubscriber("height", height);
 		addSubscriber("layerHeight", layerHeight);
+		addSubscriber("filament^", filament);
 		addSubscriber("thumbnails^:format", thumbnailsFormat);
 		addSubscriber("thumbnails^:height", thumbnailsHeight);
 		addSubscriber("thumbnails^:offset", thumbnailsOffset);
@@ -37,6 +38,7 @@ class ThumbnailSubscribers : public SubscriberMap
 	static bool simulatedTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool layerHeight(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool filament(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool thumbnailsFormat(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool thumbnailsHeight(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool thumbnailsOffset(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);

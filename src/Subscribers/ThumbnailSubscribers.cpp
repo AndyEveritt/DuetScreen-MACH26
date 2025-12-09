@@ -169,6 +169,29 @@ bool ThumbnailSubscribers::layerHeight(Comm::JsonDecoder* decoder, const float& 
 	return true;
 }
 
+bool ThumbnailSubscribers::filament(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
+{
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
+	{
+		LOG_DBG("filament received but not in fileInfo response");
+		return false;
+	}
+	auto request = std::get<Comm::FileInfoCache::FileInfoRequestPtr>(decoder->responseData);
+	if (!request)
+	{
+		return false;
+	}
+	Comm::FileInfoPtr fileInfo = request->GetData();
+	if (!fileInfo)
+	{
+		LOG_WARN("FileInfo not found");
+		return false;
+	}
+	fileInfo->filament.resize(indices[0] + 1);
+	fileInfo->filament[indices[0]] = data;
+	return true;
+}
+
 bool ThumbnailSubscribers::thumbnailsFormat(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	LOG_VERBOSE("thumbnail format {:s}", data);
