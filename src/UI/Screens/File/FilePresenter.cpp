@@ -96,18 +96,37 @@ namespace UI
 
 		// File
 		m_gcodePath = item->GetPath();
-		if (m_gcodePath.starts_with(DEFAULT_MACROS_PATH))
+		if (m_gcodePath.starts_with(OM::Directories::GetGcodesDirectory()))
+		{
+			Comm::FileInfoPtr fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
+			FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
+			std::string date = item->GetDate();
+			std::replace(date.begin(), date.end(), 'T', ' ');
+
+			auto& modal = getView()->getConfirmModal();
+			modal.setFile(item->GetName());
+			modal.setFileDate(date);
+			modal.setFileSize(item->GetReadableSize());
+			if (fileInfo)
+			{
+				modal.getFileInfo().setVisible(true);
+				modal.setGeneratedBy(fileInfo->generatedBy.c_str());
+				const auto& printTime = fileInfo->GetPrintTime();
+				modal.setPrintTime(
+					fmt::format("{:02d}:{:02d}:{:02d}", printTime.tm_hour, printTime.tm_min, printTime.tm_sec));
+				modal.setHeight(fileInfo->height);
+				modal.setLayerHeight(fileInfo->layerHeight);
+			}
+			else
+			{
+				modal.getFileInfo().setVisible(false);
+			}
+			m_view->confirmStartPrint(item->GetName(), GetThumbnailPath(item->GetPath().c_str()));
+		}
+		else if (m_gcodePath.starts_with(OM::Directories::GetMacrosDirectory()))
 		{
 			m_view->confirmRunMacro(item->GetName().c_str());
-			return;
 		}
-
-		Comm::FileInfoPtr fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
-		FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
-		std::string date = item->GetDate();
-		std::replace(date.begin(), date.end(), 'T', ' ');
-		m_view->confirmStartPrint(
-			item->GetName(), date, item->GetReadableSize(), GetThumbnailPath(item->GetPath().c_str()));
 	}
 
 	void FilePresenter::startPrint()

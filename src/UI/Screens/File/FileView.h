@@ -76,7 +76,43 @@ namespace UI
 			FileView& m_fileView;
 		};
 
-		FileView(const std::string& name, LvObj& parent, LvObj* msgBoxParent = nullptr);
+		class StartPrintModal : public Modal<MessageBox>
+		{
+		  public:
+			StartPrintModal(const std::string& name, LvObj& parent);
+
+			void setFile(std::string_view value);
+			void setFileDate(std::string_view value);
+			void setFileSize(std::string_view value);
+			void setGeneratedBy(std::string_view value);
+			void setPrintTime(std::string_view value);
+			void setHeight(float value);
+			void setLayerHeight(float value);
+
+			auto& getFileInfo() { return m_fileInfoCont; }
+
+		  private:
+			LvContainer m_fileInfoCont{"file_info_cont", getBodyTextCont()};
+			LvLabel m_fileDateLabel{"file_date_label", m_fileInfoCont};
+			LvLabel m_fileDateValue{"file_date_value", m_fileInfoCont};
+
+			LvLabel m_fileSizeLabel{"file_size_label", m_fileInfoCont};
+			LvLabel m_fileSizeValue{"file_size_value", m_fileInfoCont};
+
+			LvLabel m_generatedByLabel{"generated_by_label", m_fileInfoCont};
+			LvLabel m_generatedByValue{"generated_by_value", m_fileInfoCont};
+
+			LvLabel m_printTimeLabel{"print_time_label", m_fileInfoCont};
+			LvLabel m_printTimeValue{"print_time_value", m_fileInfoCont};
+
+			LvLabel m_heightLabel{"height_label", m_fileInfoCont};
+			LvLabel m_heightValue{"height_value", m_fileInfoCont};
+
+			LvLabel m_layerHeightLabel{"layer_height_label", m_fileInfoCont};
+			LvLabel m_layerHeightValue{"layer_height_value", m_fileInfoCont};
+		};
+
+		FileView(const std::string& name, LvObj& parent);
 
 		auto& getList() { return m_fileList; }
 		size_t getFileCount() const { return m_fileList.getLazyItemCount(); }
@@ -85,11 +121,9 @@ namespace UI
 
 		void setFolder(const std::string& path);
 		bool cancelStartPrint();
-		void confirmStartPrint(std::string_view filename,
-							   std::string_view date,
-							   std::string_view size,
-							   std::string_view thumbnail);
+		void confirmStartPrint(std::string_view filename, std::string_view thumbnail);
 		void confirmRunMacro(std::string_view filename);
+		auto& getConfirmModal() { return m_startPrint; }
 
 		void showSort(FilePresenter::SortBy by, bool descending);
 
@@ -102,6 +136,7 @@ namespace UI
 		static void onSortClicked(lv_event_t* e);
 		static void onBreadcrumbClicked(lv_event_t* e);
 
+		void onInit() override;
 		void onShow() override;
 		void onHide() override;
 
@@ -120,6 +155,6 @@ namespace UI
 		std::vector<std::unique_ptr<Button>> m_breadcrumbButtons;
 		std::vector<std::unique_ptr<LvLabel>> m_breadcrumbLabels;
 
-		Modal<MessageBox> m_startPrint;
+		StartPrintModal m_startPrint{"messageBox", getRoot()};
 	};
 } // namespace UI

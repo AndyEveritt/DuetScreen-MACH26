@@ -27,6 +27,7 @@ namespace UI
 
 		LvContainer& getHeader() { return m_header; }
 		LvContainer& getBody() { return m_body; }
+		LvContainer& getBodyTextCont() { return m_bodyTextCont; }
 		LvContainer& getFooter() { return m_footer; }
 		LvLabel& getTitle() { return m_title; }
 		LvLabel& getText() { return m_text; }
@@ -89,7 +90,8 @@ namespace UI
 
 		// Body
 		LvContainer m_bodyTop{"body_top", getBody()};
-		LvLabel m_text{"text", m_bodyTop};
+		LvContainer m_bodyTextCont{"body_text", m_bodyTop};
+		LvLabel m_text{"text", m_bodyTextCont};
 		LvImage m_image{"image", m_bodyTop};
 
 		// Footer

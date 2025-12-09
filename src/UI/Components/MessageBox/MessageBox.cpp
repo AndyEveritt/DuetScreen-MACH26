@@ -72,12 +72,15 @@ namespace UI
 		// Body
 		m_bodyTop.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_bodyTop.setFlexFlow(LV_FLEX_FLOW_ROW);
-		m_text.setFlexGrow(1);
-		m_text.setHeight(LV_SIZE_CONTENT);
-		m_text.setStyleTextAlign(LV_TEXT_ALIGN_CENTER, 0);
+		m_bodyTextCont.setFlexGrow(1);
+		m_bodyTextCont.setHeight(LV_SIZE_CONTENT);
+		m_bodyTextCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_bodyTextCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_bodyTextCont.setStyleTextAlign(LV_TEXT_ALIGN_CENTER, 0);
+		m_text.setWidth(LV_PCT(100));
 		m_image.setMinWidth(50, LV_PART_MAIN);
-		m_image.setMinHeight(50, LV_PART_MAIN);
 		m_image.setMaxWidth(300, LV_PART_MAIN);
+		m_image.setMinHeight(50, LV_PART_MAIN);
 		m_image.setMaxHeight(300, LV_PART_MAIN);
 		m_image.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 
@@ -232,7 +235,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_image.setVisible(visible);
-		m_text.setStyleTextAlign(visible ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
+		m_bodyTextCont.setStyleTextAlign(visible ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
 	}
 
 	void MessageBox::progressVisible(bool visible)

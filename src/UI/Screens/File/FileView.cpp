@@ -137,9 +137,84 @@ namespace UI
 		obj.setType(m_isFolder);
 	}
 
-	FileView::FileView(const std::string& name, LvObj& parent, LvObj* msgBoxParent)
+	FileView::StartPrintModal::StartPrintModal(const std::string& name, LvObj& parent)
+		: Modal<MessageBox>(name, parent, layout_t(0, 0, 70, LV_SIZE_CONTENT))
+	{
+		m_fileInfoCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+
+		static const int32_t colDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static const int32_t rowDsc[] = {LV_GRID_CONTENT,
+										 LV_GRID_CONTENT,
+										 LV_GRID_CONTENT,
+										 LV_GRID_CONTENT,
+										 LV_GRID_CONTENT,
+										 LV_GRID_CONTENT,
+										 LV_GRID_TEMPLATE_LAST};
+		m_fileInfoCont.setGridDsc(colDsc, rowDsc);
+
+		setGridCell(m_fileDateLabel, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 0, 1);
+		setGridCell(m_fileDateValue, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 0, 1);
+
+		setGridCell(m_fileSizeLabel, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 1, 1);
+		setGridCell(m_fileSizeValue, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);
+
+		setGridCell(m_generatedByLabel, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 2, 1);
+		setGridCell(m_generatedByValue, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+
+		setGridCell(m_printTimeLabel, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 3, 1);
+		setGridCell(m_printTimeValue, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 3, 1);
+
+		setGridCell(m_heightLabel, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 4, 1);
+		setGridCell(m_heightValue, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 4, 1);
+
+		setGridCell(m_layerHeightLabel, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 5, 1);
+		setGridCell(m_layerHeightValue, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 5, 1);
+
+		m_fileDateLabel.setText(_("file.start_print.date"));
+		m_fileSizeLabel.setText(_("file.start_print.size"));
+		m_generatedByLabel.setText(_("file.start_print.generated_by"));
+		m_printTimeLabel.setText(_("file.start_print.print_time"));
+		m_heightLabel.setText(_("file.start_print.height"));
+		m_layerHeightLabel.setText(_("file.start_print.layer_height"));
+	}
+
+	void FileView::StartPrintModal::setFile(std::string_view value)
+	{
+		setText(value);
+	}
+
+	void FileView::StartPrintModal::setFileDate(std::string_view value)
+	{
+		m_fileDateValue.setText(value);
+	}
+
+	void FileView::StartPrintModal::setFileSize(std::string_view value)
+	{
+		m_fileSizeValue.setText(value);
+	}
+
+	void FileView::StartPrintModal::setGeneratedBy(std::string_view value)
+	{
+		m_generatedByValue.setText(value);
+	}
+
+	void FileView::StartPrintModal::setPrintTime(std::string_view value)
+	{
+		m_printTimeValue.setText(value);
+	}
+
+	void FileView::StartPrintModal::setHeight(float value)
+	{
+		m_heightValue.setText(fmt::format("{:g} {:s}", value, Units::getDisplayedDistanceUnit()));
+	}
+
+	void FileView::StartPrintModal::setLayerHeight(float value)
+	{
+		m_layerHeightValue.setText(fmt::format("{:g} {:s}", value, Units::getDisplayedDistanceUnit()));
+	}
+
+	FileView::FileView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
-		, m_startPrint("messageBox", msgBoxParent ? *msgBoxParent : getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
 		UI_LOCK();
 
@@ -343,14 +418,11 @@ namespace UI
 		return false;
 	}
 
-	void FileView::confirmStartPrint(std::string_view filename,
-									 std::string_view date,
-									 std::string_view size,
-									 std::string_view thumbnail)
+	void FileView::confirmStartPrint(std::string_view filename, std::string_view thumbnail)
 	{
 		UI_LOCK();
 		m_startPrint.setTitle(_("file.start_print_title"));
-		m_startPrint.setText(_("file.start_print_message", filename, date, size));
+		m_startPrint.setText(_("file.start_print.file", filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->startPrint(); });
 		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail.data() : nullptr);
 		openModal(&m_startPrint);
@@ -363,6 +435,7 @@ namespace UI
 		m_startPrint.setText(_("file.run_macro_message", filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });
 		m_startPrint.setImage(nullptr);
+		m_startPrint.getFileInfo().hide();
 		openModal(&m_startPrint);
 	}
 
@@ -428,6 +501,11 @@ namespace UI
 			return true;
 		}
 		return m_presenter->back();
+	}
+
+	void FileView::onInit()
+	{
+		m_startPrint.setParent(HomeView::instance().getMainWindow());
 	}
 
 	void FileView::onShow()
