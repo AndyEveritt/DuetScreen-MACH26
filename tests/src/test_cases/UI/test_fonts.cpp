@@ -54,28 +54,56 @@ TEST_F(TestFonts, LoadFreeTypeFont)
 
 	LvLabel label_libra_24 = createLabel(screen,
 										 "label_libra_24",
-										 LABEL_TXT " - libra sans regular",
+										 LABEL_TXT " - libra sans 24 regular",
 										 FONT_PATH "libra-sans.regular.ttf",
 										 24,
 										 LV_FREETYPE_FONT_STYLE_NORMAL);
 
 	LvLabel label_libra_14 = createLabel(screen,
 										 "label_libra_14",
-										 LABEL_TXT " - libra sans regular",
+										 LABEL_TXT " - libra sans 14 regular",
 										 FONT_PATH "libra-sans.regular.ttf",
 										 14,
 										 LV_FREETYPE_FONT_STYLE_NORMAL);
 
+	LvLabel label_libra_14_bold = createLabel(screen,
+											  "label_libra_14_bold",
+											  LABEL_TXT " - libra sans 14 bold",
+											  FONT_PATH "libra-sans.regular.ttf",
+											  14,
+											  LV_FREETYPE_FONT_STYLE_BOLD);
+
+	LvLabel label_libra_14_italic = createLabel(screen,
+												"label_libra_14_italic",
+												LABEL_TXT " - libra sans 14 italic",
+												FONT_PATH "libra-sans.regular.ttf",
+												14,
+												LV_FREETYPE_FONT_STYLE_ITALIC);
+
 	LvLabel label_berkshire_24 = createLabel(screen,
 											 "label_berkshire_24",
-											 LABEL_TXT " - berkshire swash regular",
+											 LABEL_TXT " - berkshire swash 24 regular",
 											 FONT_PATH "berkshire-swash.regular.ttf",
 											 24,
 											 LV_FREETYPE_FONT_STYLE_NORMAL);
 
+	LvLabel label_berkshire_24_bold = createLabel(screen,
+												  "label_berkshire_24_bold",
+												  LABEL_TXT " - berkshire swash 24 bold",
+												  FONT_PATH "berkshire-swash.regular.ttf",
+												  24,
+												  LV_FREETYPE_FONT_STYLE_BOLD);
+
+	LvLabel label_berkshire_24_italic = createLabel(screen,
+													"label_berkshire_24_italic",
+													LABEL_TXT " - berkshire swash 24 italic",
+													FONT_PATH "berkshire-swash.regular.ttf",
+													24,
+													LV_FREETYPE_FONT_STYLE_ITALIC);
+
 	LvLabel label_berkshire_14 = createLabel(screen,
 											 "label_berkshire_14",
-											 LABEL_TXT " - berkshire swash regular",
+											 LABEL_TXT " - berkshire swash 14 regular",
 											 FONT_PATH "berkshire-swash.regular.ttf",
 											 14,
 											 LV_FREETYPE_FONT_STYLE_NORMAL);
