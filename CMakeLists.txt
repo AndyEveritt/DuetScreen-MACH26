@@ -122,7 +122,7 @@ include(${LIBRARIES_DIR}/json.cmake)
 include(${LIBRARIES_DIR}/spdlog.cmake)
 
 # Include libusb headers
-target_include_directories(DuetScreen.lib PUBLIC ${LIBUSB_INCLUDE_DIRS})
+target_include_directories(DuetScreen.lib SYSTEM PUBLIC ${LIBUSB_INCLUDE_DIRS})
 if(LIBUSB_LIBRARY_DIRS)
   # Ensure libusb library directory is on the link line (needed on macOS)
   target_link_directories(DuetScreen.lib PUBLIC ${LIBUSB_LIBRARY_DIRS})
@@ -318,14 +318,14 @@ add_custom_target(
 if(CONFIG_LV_USE_DRAW_SDL)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
   find_package(SDL2_image REQUIRED)
-  target_include_directories(lvgl PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
+  target_include_directories(lvgl SYSTEM PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
   target_link_libraries(DuetScreen.lib PRIVATE ${SDL2_IMAGE_LIBRARIES})
 endif()
 
 # Conditionally include and link libpng if LV_USE_LIBPNG is enabled
 if(CONFIG_LV_USE_LIBPNG)
   find_package(PNG REQUIRED)
-  target_include_directories(lvgl PUBLIC ${PNG_INCLUDE_DIRS})
+  target_include_directories(lvgl SYSTEM PUBLIC ${PNG_INCLUDE_DIRS})
   target_link_libraries(DuetScreen.lib PRIVATE ${PNG_LIBRARIES})
 endif()
 
@@ -333,7 +333,7 @@ endif()
 # enabled
 if(CONFIG_LV_USE_LIBJPEG_TURBO)
   find_package(JPEG REQUIRED)
-  target_include_directories(lvgl PUBLIC ${JPEG_INCLUDE_DIRS})
+  target_include_directories(lvgl SYSTEM PUBLIC ${JPEG_INCLUDE_DIRS})
   target_link_libraries(DuetScreen.lib PRIVATE ${JPEG_LIBRARIES})
 endif()
 
@@ -354,7 +354,7 @@ endif()
 # Conditionally include and link FreeType if LV_USE_FREETYPE is enabled
 if(CONFIG_LV_USE_FREETYPE)
   find_package(Freetype REQUIRED)
-  target_include_directories(lvgl PUBLIC ${FREETYPE_INCLUDE_DIRS})
+  target_include_directories(lvgl SYSTEM PUBLIC ${FREETYPE_INCLUDE_DIRS})
 
   if (FREETYPE_LIBRARY_DIRS)
     # Ensure FreeType library directory is on the link line (needed on macOS)
