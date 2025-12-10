@@ -92,6 +92,12 @@ namespace Comm
 			{
 			}
 
+			virtual ~Request() = default;
+			Request(const Request& other) = default;
+			Request& operator=(const Request& other) = default;
+			Request(Request&& other) noexcept = default;
+			Request& operator=(Request&& other) noexcept = default;
+
 			std::shared_ptr<T> GetData() const { return m_data; }
 			RequestState GetState() const { return m_state; }
 
@@ -152,6 +158,12 @@ namespace Comm
 				m_data->filename.copy(filepath.c_str());
 			}
 
+			virtual ~FileInfoRequest() = default;
+			FileInfoRequest(const FileInfoRequest& other) = default;
+			FileInfoRequest& operator=(const FileInfoRequest& other) = default;
+			FileInfoRequest(FileInfoRequest&& other) noexcept = default;
+			FileInfoRequest& operator=(FileInfoRequest&& other) noexcept = default;
+
 		  protected:
 			bool RequestDataInner() override;
 		};
@@ -160,6 +172,12 @@ namespace Comm
 		{
 			using Request<Thumbnail>::Request;
 			ThumbnailBuf& GetBuffer() { return m_buf; }
+
+			virtual ~ThumbnailRequest() = default;
+			ThumbnailRequest(const ThumbnailRequest& other) = default;
+			ThumbnailRequest& operator=(const ThumbnailRequest& other) = default;
+			ThumbnailRequest(ThumbnailRequest&& other) noexcept = default;
+			ThumbnailRequest& operator=(ThumbnailRequest&& other) noexcept = default;
 
 		  protected:
 			bool RequestDataInner() override;
