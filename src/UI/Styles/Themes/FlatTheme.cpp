@@ -14,15 +14,20 @@ namespace UI::Themes
 	static const uint16_t s_primaryHue = 245;
 	static const uint16_t s_secondaryHue = 50;
 	static const float s_chroma = 0.02f;
-	static const lv_font_t* s_font = LV_FONT_DEFAULT;
 	static bool s_darkMode = true;
 	static std::string_view s_iconFolder = "material";
+	static FontConfigSet s_fontConfigs = {
+		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD},
+		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
+		.emphasis = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_BOLD},
+		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
+	};
 
 	static ThemeColors s_colors = createThemeColors(s_primaryHue, s_secondaryHue, s_chroma, s_darkMode);
 
 	static DefaultTheme s_flatTheme("flat",
 									s_colors,
-									s_font,
+									s_fontConfigs,
 									s_iconFolder,
 									[](Theme* theme)
 									{

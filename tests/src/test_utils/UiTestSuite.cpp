@@ -40,6 +40,8 @@ UiTestSuiteInner::UiTestSuiteInner()
 #  endif
 #endif
 
+	UI::FontManager::init();
+
 	i18n::init();
 	i18n::setLanguage(DEFAULT_LANGUAGE_CODE);
 

@@ -269,6 +269,7 @@
         "bg_color_list_item": "List Item",
         "text": "Text",
         "text_muted": "Text Muted",
+        "text_emphasis": "Text Emphasis",
         "text_header": "Text Header",
         "border": "Border",
         "border_muted": "Border Muted",

@@ -12,10 +12,45 @@
 
 #define FONTS_FOLDER ASSETS_FOLDER "fonts/"
 
-namespace UI::Font
+namespace UI::FontManager
 {
 	static lv_font_manager_t* s_fontManager = nullptr;
 	static std::vector<std::string> s_loadedFontNames;
+	static std::string s_activeTypeface = "libra-sans.regular"; // Default typeface
+
+	Font::Font(const lv_font_t* font)
+		: m_font(font)
+	{
+	}
+
+	Font::~Font()
+	{
+		if (m_font && m_font != LV_FONT_DEFAULT)
+		{
+			lv_font_manager_delete_font(s_fontManager, const_cast<lv_font_t*>(m_font));
+			m_font = nullptr;
+		}
+	}
+
+	Font::Font(Font&& other) noexcept
+		: m_font(other.m_font)
+	{
+		other.m_font = nullptr;
+	}
+
+	Font& Font::operator=(Font&& other) noexcept
+	{
+		if (this != &other)
+		{
+			if (m_font && m_font != LV_FONT_DEFAULT)
+			{
+				lv_font_manager_delete_font(s_fontManager, const_cast<lv_font_t*>(m_font));
+			}
+			m_font = other.m_font;
+			other.m_font = nullptr;
+		}
+		return *this;
+	}
 
 	/**
 	 * @brief Load all fonts from the fonts directory
@@ -57,7 +92,7 @@ namespace UI::Font
 		}
 	}
 
-	lv_font_t* createFont(const std::string& name, uint32_t size)
+	Font createFont(const std::string& name, uint32_t size, uint32_t style)
 	{
 		if (!s_fontManager)
 		{
@@ -65,16 +100,34 @@ namespace UI::Font
 			return nullptr;
 		}
 
-		lv_font_t* font = lv_font_manager_create_font(s_fontManager,
-													  name.c_str(),
-													  LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-													  size,
-													  LV_FREETYPE_FONT_STYLE_NORMAL,
-													  LV_FONT_KERNING_NONE);
-		if (!font)
+		Font font(lv_font_manager_create_font(
+			s_fontManager, name.c_str(), LV_FREETYPE_FONT_RENDER_MODE_BITMAP, size, style, LV_FONT_KERNING_NONE));
+		if (!font.get())
 		{
 			LOG_ERROR("Failed to create font '{:s}' with size {}", name, size);
 		}
 		return font;
 	}
-} // namespace UI::Font
+
+	const std::string& getActiveTypefaceName()
+	{
+		return s_activeTypeface;
+	}
+
+	void setActiveTypeface(const std::string& name)
+	{
+		if (name == s_activeTypeface)
+		{
+			return;
+		}
+
+		if (std::find(s_loadedFontNames.begin(), s_loadedFontNames.end(), name) == s_loadedFontNames.end())
+		{
+			LOG_ERROR("Font '{:s}' not loaded, cannot set as active typeface", name);
+			return;
+		}
+
+		s_activeTypeface = name;
+		Themes::getCurrentTheme()->setTypeface(name);
+	}
+} // namespace UI::FontManager

@@ -178,7 +178,7 @@ namespace UI
 		void setStyleRecolor(lv_color_t color, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleRecolorOpa(lv_opa_t opa, lv_style_selector_t selector = LV_PART_MAIN);
 		void setStyleTextAlign(lv_text_align_t align, lv_style_selector_t selector = LV_PART_MAIN);
-		void setStyleFont(lv_font_t* font, lv_style_selector_t selector = LV_PART_MAIN);
+		void setStyleFont(const lv_font_t* font, lv_style_selector_t selector = LV_PART_MAIN);
 
 		/* Events */
 

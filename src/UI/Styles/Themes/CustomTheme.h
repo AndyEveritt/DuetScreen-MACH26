@@ -14,7 +14,7 @@ namespace UI::Themes
 	{
 	  public:
 		CustomTheme(std::string_view name,
-					const lv_font_t* font,
+					FontConfigSet fontConfigSet,
 					std::string_view iconFolder,
 					std::function<void(Theme* theme)> styleOverrides = nullptr);
 

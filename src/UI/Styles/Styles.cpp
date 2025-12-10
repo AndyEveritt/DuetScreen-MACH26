@@ -38,8 +38,9 @@ namespace UI::Themes
 	}
 
 	static std::unique_ptr<LvglStyles> s_lvglStyles;
-
 	static std::unique_ptr<ComponentStyles> s_componentStyles;
+
+	static Fonts s_fonts;
 
 	static Theme* s_currentTheme = nullptr;
 
@@ -145,6 +146,19 @@ namespace UI::Themes
 		*s_componentStyles = styles;
 	}
 
+	const Fonts& getFonts()
+	{
+		return s_fonts;
+	}
+
+	static void setFonts(const ThemeFonts& fonts)
+	{
+		s_fonts.header = *fonts.header.get();
+		s_fonts.normal = *fonts.normal.get();
+		s_fonts.emphasis = *fonts.emphasis.get();
+		s_fonts.subdued = *fonts.subdued.get();
+	}
+
 	static bool themeExists(std::string_view name)
 	{
 		for (const auto& theme : themes())
@@ -157,8 +171,12 @@ namespace UI::Themes
 		return false;
 	}
 
-	Theme::Theme(std::string_view name, std::string_view iconFolder, std::function<void(Theme* theme)> initFunc)
+	Theme::Theme(std::string_view name,
+				 FontConfigSet fontConfigSet,
+				 std::string_view iconFolder,
+				 std::function<void(Theme* theme)> initFunc)
 		: m_name(name)
+		, m_fontConfigSet(fontConfigSet)
 		, m_iconFolder(iconFolder)
 		, m_initFunc(initFunc)
 	{
@@ -193,12 +211,13 @@ namespace UI::Themes
 		}
 	}
 
-	void Theme::setThemeActive() const
+	void Theme::setThemeActive()
 	{
 		LOG_INFO("Applying theme: {:s}", m_name);
 		setLvglStyles(getLvglStyles());
 		setComponentStyles(getComponentStyles());
 		setIconFolder(m_iconFolder);
+		setTypeface(FontManager::getActiveTypefaceName());
 
 		s_currentTheme = const_cast<Theme*>(this);
 
@@ -240,6 +259,24 @@ namespace UI::Themes
 			m_components = std::make_unique<ComponentStyles>();
 		}
 		return *m_components;
+	}
+
+	void Theme::setTypeface(const std::string& typeface)
+	{
+		LOG_INFO("Setting typeface to {:s}", typeface);
+
+		/* This will release any previously held font resources */
+		m_fonts.header =
+			UI::FontManager::createFont(typeface, m_fontConfigSet.header.size, m_fontConfigSet.header.style);
+		m_fonts.normal =
+			UI::FontManager::createFont(typeface, m_fontConfigSet.normal.size, m_fontConfigSet.normal.style);
+		m_fonts.emphasis =
+			UI::FontManager::createFont(typeface, m_fontConfigSet.emphasis.size, m_fontConfigSet.emphasis.style);
+		m_fonts.subdued =
+			UI::FontManager::createFont(typeface, m_fontConfigSet.subdued.size, m_fontConfigSet.subdued.style);
+
+		/* Copy by value to the static fonts which the styles use the addresses of */
+		setFonts(m_fonts);
 	}
 
 	/**
@@ -498,6 +535,7 @@ namespace UI::Themes
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(
 				obj, lvgl.disabled, static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_DISABLED));
+			lv_obj_add_style(obj, lvgl.text, 0);
 			lv_obj_add_style(obj, lvgl.cb_marker, LV_PART_INDICATOR);
 			lv_obj_add_style(
 				obj, lvgl.bg_color_primary, static_cast<int>(LV_PART_INDICATOR) | static_cast<int>(LV_STATE_CHECKED));
@@ -577,6 +615,7 @@ namespace UI::Themes
 			lv_obj_add_style(obj, lvgl.card, 0);
 			lv_obj_add_style(obj, lvgl.clip_corner, 0);
 			lv_obj_add_style(obj, lvgl.line_space_large, 0);
+			lv_obj_add_style(obj, lvgl.text, 0);
 			lv_obj_add_style(obj, lvgl.dropdown_list, 0);
 			lv_obj_add_style(obj, lvgl.scrollbar, LV_PART_SCROLLBAR);
 			lv_obj_add_style(obj,
@@ -666,6 +705,7 @@ namespace UI::Themes
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, lvgl.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, lvgl.disabled, static_cast<int>(LV_PART_ITEMS) | LV_STATE_DISABLED);
+			lv_obj_add_style(obj, lvgl.text, 0);
 			lv_obj_add_style(obj, lvgl.keyboard_button, LV_PART_ITEMS);
 			lv_obj_add_style(obj, lvgl.pressed, static_cast<int>(LV_PART_ITEMS) | static_cast<int>(LV_STATE_PRESSED));
 			lv_obj_add_style(obj,
@@ -701,6 +741,7 @@ namespace UI::Themes
 		}
 		else if (lv_obj_check_type(obj, &lv_list_text_class))
 		{
+			lv_obj_add_style(obj, lvgl.text_header, 0);
 			lv_obj_add_style(obj, lvgl.bg_color_header, 0);
 			lv_obj_add_style(obj, lvgl.list_item_grow, 0);
 			lv_obj_add_style(obj, lvgl.pad_small, 0);
@@ -932,7 +973,7 @@ namespace UI::Themes
 
 		lv_theme_apply(lv_screen_active());
 
-		const Theme* theme = getTheme(StorageHelper::getData<int>(ID_THEME, -1));
+		Theme* theme = getTheme(StorageHelper::getData<int>(ID_THEME, -1));
 		if (theme == nullptr)
 		{
 			LOG_INFO("Theme not found, using default theme");
@@ -969,7 +1010,7 @@ namespace UI::Themes
 		return s_currentTheme;
 	}
 
-	const Theme* getTheme(const size_t index)
+	Theme* getTheme(const size_t index)
 	{
 		if (index >= getThemeCount())
 		{
@@ -979,7 +1020,7 @@ namespace UI::Themes
 		return themes()[index];
 	}
 
-	const Theme* getThemeByName(std::string_view name)
+	Theme* getThemeByName(std::string_view name)
 	{
 		for (const auto& theme : themes())
 		{
@@ -992,9 +1033,9 @@ namespace UI::Themes
 		return nullptr;
 	}
 
-	const Theme* getDefaultTheme()
+	Theme* getDefaultTheme()
 	{
-		const Theme* theme = getThemeByName("theme_dark");
+		Theme* theme = getThemeByName("theme_dark");
 		if (theme == nullptr)
 		{
 			LOG_ERROR("Default theme not found, using first available theme");

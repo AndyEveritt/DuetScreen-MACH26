@@ -7,6 +7,7 @@
 
 #include "Screen.h"
 #include "Debug.h"
+#include "UI/Styles/Styles.h"
 
 namespace UI
 {
@@ -15,5 +16,7 @@ namespace UI
 	{
 		LOG_INFO("Creating Screen: {}", name);
 		setSize(LV_PCT(100), LV_PCT(100));
+
+		addStyle(Themes::getLvglStyles().text);
 	}
 } // namespace UI

@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 #if LV_USE_LOG
 	lv_log_register_print_cb(lvgl_log_cb);
 #endif
-	UI::Font::init();
+	UI::FontManager::init();
 	i18n::init();
 
 	Model::get(); // Initialize the model instance, this creates the subscribers

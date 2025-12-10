@@ -7,6 +7,7 @@
 
 #include "Debug.h"
 #include "UI/Components/LVGL/LvLabel.h"
+#include "UI/Styles/Font.h"
 #include "test_utils/UiTestSuite.h"
 #include <filesystem>
 #include <gtest/gtest.h>
@@ -16,7 +17,7 @@ using namespace UI;
 class TestFonts : public UiTestSuite
 {
   public:
-	TestFonts() {}
+	TestFonts() { FontManager::init(); }
 };
 
 static LvLabel createLabel(LvObj& parent,
@@ -109,4 +110,15 @@ TEST_F(TestFonts, LoadFreeTypeFont)
 											 LV_FREETYPE_FONT_STYLE_NORMAL);
 
 	EXPECT_EQUAL_SCREENSHOT("fonts/freetype.png");
+}
+
+TEST_F(TestFonts, FontManager)
+{
+	FontManager::Font font1 = FontManager::createFont("libra-sans.regular", 14, LV_FREETYPE_FONT_STYLE_NORMAL);
+	ASSERT_NE(font1.get(), nullptr);
+
+	ASSERT_EQ(FontManager::createFont("bad_font_name", 14).get(), nullptr);
+
+	FontManager::Font fallback_font = FontManager::createFont("bad_font_name,libra-sans.regular", 14);
+	ASSERT_NE(fallback_font.get(), nullptr);
 }

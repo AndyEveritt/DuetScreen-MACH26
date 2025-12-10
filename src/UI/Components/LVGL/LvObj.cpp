@@ -685,7 +685,7 @@ namespace UI
 		lv_obj_set_style_text_align(getRootPtr(), align, selector);
 	}
 
-	void LvObj::setStyleFont(lv_font_t* font, lv_style_selector_t selector)
+	void LvObj::setStyleFont(const lv_font_t* font, lv_style_selector_t selector)
 	{
 		UI_LOCK();
 		lv_obj_set_style_text_font(getRootPtr(), font, selector);

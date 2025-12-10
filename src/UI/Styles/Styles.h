@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "UI/Styles/Font.h"
 #include "lvgl/lvgl.h"
 #include <functional>
 #include <map>
@@ -67,6 +68,7 @@ namespace UI::Themes
 		/* Text */
 		Style text;
 		Style text_muted;
+		Style text_emphasis;
 		Style text_header;
 
 		/* Border */
@@ -248,16 +250,63 @@ namespace UI::Themes
 	const LvglStyles& getLvglStyles();
 	const ComponentStyles& getComponentStyles();
 
+	struct FontConfig
+	{
+		uint32_t size = 14;
+		uint32_t style = LV_FREETYPE_FONT_STYLE_NORMAL;
+	};
+
+	struct FontConfigSet
+	{
+		FontConfig header;
+		FontConfig normal;
+		FontConfig emphasis;
+		FontConfig subdued;
+	};
+
+	/**
+	 * @brief These are the lifetime-managed pointers to the fonts created by the font manager
+	 *
+	 * @note it is unclear whether
+	 */
+	struct ThemeFonts
+	{
+		FontManager::Font header;
+		FontManager::Font normal;
+		FontManager::Font emphasis;
+		FontManager::Font subdued;
+	};
+
+	/**
+	 * @brief The Theme class copies the font data into a static instance of this struct.
+	 *
+	 * @note This allows the address of these fonts to be used in `lv_style_set_text_font()` calls. Which means when the
+	 * theme is applied or the font is changed, all styles using these fonts will be updated automatically since the
+	 * address is the same.
+	 */
+	struct Fonts
+	{
+		lv_font_t header;
+		lv_font_t normal;
+		lv_font_t emphasis;
+		lv_font_t subdued;
+	};
+
+	const Fonts& getFonts();
+
 	class Theme
 	{
 	  public:
-		Theme(std::string_view name, std::string_view iconFolder, std::function<void(Theme* theme)> initFunc = nullptr);
+		Theme(std::string_view name,
+			  FontConfigSet fontConfigSet,
+			  std::string_view iconFolder,
+			  std::function<void(Theme* theme)> initFunc = nullptr);
 		~Theme();
 		Theme& operator=(const Theme&) = delete;
 
 		void init();
 
-		void setThemeActive() const;
+		void setThemeActive();
 		const LvglStyles& getLvglStyles() const;
 		const ComponentStyles& getComponentStyles() const;
 		const std::string_view getIconFolder() const { return m_iconFolder; }
@@ -266,6 +315,8 @@ namespace UI::Themes
 
 		LvglStyles& getLvglStyles();
 		ComponentStyles& getComponentStyles();
+
+		void setTypeface(const std::string& typeface);
 
 	  protected:
 		virtual void onInit() {}
@@ -278,7 +329,14 @@ namespace UI::Themes
 		std::unique_ptr<ComponentStyles> m_components;
 
 		const std::string_view m_name;
+
+		/* Fonts */
+		FontConfigSet m_fontConfigSet;
+		ThemeFonts m_fonts;
+
+		/* Icons */
 		const std::string_view m_iconFolder;
+
 		std::function<void(Theme*)> m_initFunc;
 
 		enum class DisplaySize_t
@@ -293,9 +351,9 @@ namespace UI::Themes
 	void init(lv_display_t* display);
 	const std::vector<Theme*>& getThemes();
 	Theme* getCurrentTheme();
-	const Theme* getTheme(const size_t index);
-	const Theme* getThemeByName(std::string_view name);
-	const Theme* getDefaultTheme();
+	Theme* getTheme(const size_t index);
+	Theme* getThemeByName(std::string_view name);
+	Theme* getDefaultTheme();
 	size_t getThemeCount();
 	bool refreshCurrentTheme();
 	const std::vector<std::string_view> getThemeNames();

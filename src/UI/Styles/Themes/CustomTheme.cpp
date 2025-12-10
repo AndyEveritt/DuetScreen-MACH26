@@ -17,14 +17,19 @@
 
 namespace UI::Themes
 {
-	static const lv_font_t* s_font = LV_FONT_DEFAULT;
+	static FontConfigSet s_fontConfigs = {
+		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD},
+		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
+		.emphasis = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_BOLD},
+		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
+	};
 	static std::string_view s_iconFolder = "material";
 
 	CustomTheme::CustomTheme(std::string_view name,
-							 const lv_font_t* font,
+							 FontConfigSet fontConfigSet,
 							 std::string_view iconFolder,
 							 std::function<void(Theme* theme)> styleOverrides)
-		: DefaultTheme(name, ThemeColors(), font, iconFolder, styleOverrides)
+		: DefaultTheme(name, ThemeColors(), fontConfigSet, iconFolder, styleOverrides)
 	{
 	}
 
@@ -63,5 +68,5 @@ namespace UI::Themes
 		setColors(primaryHue, secondaryHue, chroma, darkMode);
 	}
 
-	static CustomTheme s_customTheme("custom", s_font, s_iconFolder, []([[maybe_unused]] Theme* theme) {});
+	static CustomTheme s_customTheme("custom", s_fontConfigs, s_iconFolder, []([[maybe_unused]] Theme* theme) {});
 } // namespace UI::Themes

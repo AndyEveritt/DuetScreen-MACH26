@@ -46,7 +46,7 @@ class TestTheme : public UiTestSuite
 
 	~TestTheme()
 	{
-		const Themes::Theme* default_theme = Themes::getTheme(StorageHelper::getData<int>(ID_THEME, 0));
+		Themes::Theme* default_theme = Themes::getTheme(StorageHelper::getData<int>(ID_THEME, 0));
 		if (default_theme == nullptr)
 		{
 			return;
@@ -60,10 +60,15 @@ TEST_F(TestTheme, DefaultTheme)
 	constexpr uint16_t primaryHue = 210;
 	constexpr uint16_t secondaryHue = 50;
 	constexpr float chroma = 0.02f;
-	const lv_font_t* font = LV_FONT_DEFAULT;
 	constexpr bool darkMode = true;
+	static Themes::FontConfigSet fontConfigs = {
+		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD},
+		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
+		.emphasis = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_BOLD},
+		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
+	};
 
-	Themes::CustomTheme theme("test_theme", font, "material", [](Themes::Theme* theme) {});
+	Themes::CustomTheme theme("test_theme", fontConfigs, "material", [](Themes::Theme* theme) {});
 	theme.init();
 	theme.setThemeActive();
 
@@ -393,7 +398,7 @@ TEST_F(TestTheme, Widgets)
 
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{
-		const Themes::Theme* theme = Themes::getTheme(i);
+		Themes::Theme* theme = Themes::getTheme(i);
 		if (theme == nullptr)
 		{
 			continue;

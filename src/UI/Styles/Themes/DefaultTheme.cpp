@@ -52,7 +52,7 @@ namespace UI::Themes
 
 		colors.text = Color(darkMode ? 0.96f : 0.15f, chroma, primaryHue);
 		colors.text_muted = Color(darkMode ? 0.76f : 0.40f, chroma, primaryHue);
-		colors.text_header = colors.text;
+		colors.text_header = Color(darkMode ? 1.0f : 0.0f, chroma, primaryHue);
 
 		colors.border = Color(darkMode ? 0.40f : 0.6f, chroma, primaryHue);
 		colors.border_muted = Color(darkMode ? 0.30f : 0.7f, chroma, primaryHue);
@@ -82,6 +82,7 @@ namespace UI::Themes
 
 		LvglStyles& lvgl = getLvglStyles();
 		ComponentStyles& components = getComponentStyles();
+		const Fonts& fonts = getFonts(); /* These are the static fonts which the theme will copy the fonts too */
 
 		/* Backgrounds */
 
@@ -138,13 +139,16 @@ namespace UI::Themes
 		/* Text */
 
 		lv_style_set_text_color(lvgl.text, m_colors.text);
-		lv_style_set_text_font(lvgl.text, m_fontNormal);
+		lv_style_set_text_font(lvgl.text, &fonts.normal);
 
 		lv_style_set_text_color(lvgl.text_muted, m_colors.text_muted);
-		lv_style_set_text_font(lvgl.text_muted, m_fontNormal);
+		lv_style_set_text_font(lvgl.text_muted, &fonts.subdued);
+
+		lv_style_set_text_color(lvgl.text_emphasis, m_colors.text);
+		lv_style_set_text_font(lvgl.text_emphasis, &fonts.emphasis);
 
 		lv_style_set_text_color(lvgl.text_header, m_colors.text_header);
-		lv_style_set_text_font(lvgl.text_header, m_fontLarge);
+		lv_style_set_text_font(lvgl.text_header, &fonts.header);
 
 		lv_style_set_text_line_space(lvgl.line_space_large, LV_DPX_CALC(lv_display_get_dpi(NULL), 20));
 
@@ -203,8 +207,6 @@ namespace UI::Themes
 		/* Base */
 
 		lv_style_set_bg_opa(lvgl.base, LV_OPA_TRANSP);
-		lv_style_set_text_color(lvgl.base, m_colors.text);
-		lv_style_set_text_font(lvgl.base, m_fontNormal);
 
 		/* Screen */
 
@@ -380,8 +382,6 @@ namespace UI::Themes
 		lv_style_set_bg_color(lvgl.cb_marker, m_colors.bg);
 		lv_style_set_bg_opa(lvgl.cb_marker, LV_OPA_COVER);
 		lv_style_set_radius(lvgl.cb_marker, RADIUS_DEFAULT / 2);
-		lv_style_set_text_font(lvgl.cb_marker, m_fontSmall);
-		lv_style_set_text_color(lvgl.cb_marker, m_colors.text);
 
 		lv_style_set_bg_image_src(lvgl.cb_marker_checked, LV_SYMBOL_OK);
 #endif

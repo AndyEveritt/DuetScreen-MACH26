@@ -114,6 +114,7 @@ namespace UI
 #endif
 			{.name = "text", .style = styles.text, .color_prop = LV_STYLE_TEXT_COLOR},
 			{.name = "text_muted", .style = styles.text_muted, .color_prop = LV_STYLE_TEXT_COLOR},
+			{.name = "text_emphasis", .style = styles.text_emphasis, .color_prop = LV_STYLE_TEXT_COLOR},
 			{.name = "text_header", .style = styles.text_header, .color_prop = LV_STYLE_TEXT_COLOR},
 			{.name = "border", .style = styles.border, .color_prop = LV_STYLE_BORDER_COLOR},
 			{.name = "border_muted", .style = styles.border_muted, .color_prop = LV_STYLE_BORDER_COLOR},

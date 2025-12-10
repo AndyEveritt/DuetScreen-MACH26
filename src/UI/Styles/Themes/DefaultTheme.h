@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Styles/Color.h"
+#include "UI/Styles/Font.h"
 #include "UI/Styles/Styles.h"
 
 namespace UI::Themes
@@ -47,14 +48,11 @@ namespace UI::Themes
 	  public:
 		DefaultTheme(std::string_view name,
 					 ThemeColors colors,
-					 const lv_font_t* font,
+					 FontConfigSet fontConfigSet,
 					 std::string_view iconFolder,
 					 std::function<void(Theme* theme)> styleOverrides = nullptr)
-			: Theme(name, iconFolder, styleOverrides)
+			: Theme(name, fontConfigSet, iconFolder, styleOverrides)
 			, m_colors(colors)
-			, m_fontSmall(font)
-			, m_fontNormal(font)
-			, m_fontLarge(font)
 		{
 		}
 
@@ -63,11 +61,10 @@ namespace UI::Themes
 
 	  protected:
 		void onInit() override;
+		void onTypefaceChanged() override;
 
+	  private:
 		ThemeColors m_colors;
-		const lv_font_t* m_fontSmall;
-		const lv_font_t* m_fontNormal;
-		const lv_font_t* m_fontLarge;
 
 		lv_style_transition_dsc_t m_draggableTransition;
 		lv_style_transition_dsc_t m_draggingTransition;
