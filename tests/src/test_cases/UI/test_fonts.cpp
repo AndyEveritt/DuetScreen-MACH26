@@ -22,12 +22,12 @@ class TestFonts : public UiTestSuite
 
 TEST_F(TestFonts, FontManager)
 {
-	FontManager::Font font1 = FontManager::createFont("libra-sans.regular", 14, LV_FREETYPE_FONT_STYLE_NORMAL);
+	FontManager::Font font1 = FontManager::createFont("OpenSans", 14, LV_FREETYPE_FONT_STYLE_NORMAL);
 	ASSERT_NE(font1.get(), nullptr);
 
 	ASSERT_EQ(FontManager::createFont("bad_font_name", 14).get(), nullptr);
 	ASSERT_EQ(FontManager::createFont("", 14).get(), nullptr);
 
-	FontManager::Font fallback_font = FontManager::createFont("bad_font_name,libra-sans.regular", 14);
+	FontManager::Font fallback_font = FontManager::createFont("bad_font_name,OpenSans", 14);
 	ASSERT_NE(fallback_font.get(), nullptr);
 }
