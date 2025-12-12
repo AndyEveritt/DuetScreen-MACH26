@@ -23,11 +23,11 @@ class TestFonts : public UiTestSuite
 TEST_F(TestFonts, FontManager)
 {
 	FontManager::Font font1 = FontManager::createFont("OpenSans", 14, LV_FREETYPE_FONT_STYLE_NORMAL);
-	ASSERT_NE(font1.get(), nullptr);
+	ASSERT_NE(font1.get(), LV_FONT_DEFAULT);
 
-	ASSERT_EQ(FontManager::createFont("bad_font_name", 14).get(), nullptr);
-	ASSERT_EQ(FontManager::createFont("", 14).get(), nullptr);
+	ASSERT_EQ(FontManager::createFont("bad_font_name", 14).get(), LV_FONT_DEFAULT);
+	ASSERT_EQ(FontManager::createFont("", 14).get(), LV_FONT_DEFAULT);
 
 	FontManager::Font fallback_font = FontManager::createFont("bad_font_name,OpenSans", 14);
-	ASSERT_NE(fallback_font.get(), nullptr);
+	ASSERT_NE(fallback_font.get(), LV_FONT_DEFAULT);
 }

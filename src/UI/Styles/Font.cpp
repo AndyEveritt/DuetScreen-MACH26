@@ -154,16 +154,12 @@ namespace UI::FontManager
 			LOG_ERROR("Failed to create font '{:s}' with size {}", chosenName, size);
 		}
 #else
-		if (!isFontLoaded(typeface))
-		{
-			LOG_ERROR("Font '{:s}' not loaded", typeface);
-			return LV_FONT_DEFAULT;
-		}
-		Font font(lv_font_manager_create_font(
-			s_fontManager, typeface.c_str(), LV_FREETYPE_FONT_RENDER_MODE_BITMAP, size, style, LV_FONT_KERNING_NONE));
-		if (!font.get())
+		lv_font_t* font = lv_font_manager_create_font(
+			s_fontManager, typeface.c_str(), LV_FREETYPE_FONT_RENDER_MODE_BITMAP, size, style, LV_FONT_KERNING_NONE);
+		if (!font)
 		{
 			LOG_ERROR("Failed to create font '{:s}' with size {}", typeface, size);
+			return LV_FONT_DEFAULT;
 		}
 #endif
 		return font;
