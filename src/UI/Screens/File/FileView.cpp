@@ -179,6 +179,13 @@ namespace UI
 		m_printTimeLabel.setText(_("file.start_print.print_time"));
 		m_heightLabel.setText(_("file.start_print.height"));
 		m_layerHeightLabel.setText(_("file.start_print.layer_height"));
+
+		m_fileDateLabel.addStyle(Themes::getLvglStyles().text_muted);
+		m_fileSizeLabel.addStyle(Themes::getLvglStyles().text_muted);
+		m_generatedByLabel.addStyle(Themes::getLvglStyles().text_muted);
+		m_printTimeLabel.addStyle(Themes::getLvglStyles().text_muted);
+		m_heightLabel.addStyle(Themes::getLvglStyles().text_muted);
+		m_layerHeightLabel.addStyle(Themes::getLvglStyles().text_muted);
 	}
 
 	void FileView::StartPrintModal::setFile(std::string_view value)
