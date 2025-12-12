@@ -463,6 +463,7 @@ namespace UI
 	void ThemeSettingsView::onShow()
 	{
 		updateThemePreview();
+		m_font.setSelected(FontManager::getActiveTypefaceName());
 	}
 
 	NetworkSettingsView::NetworkSettingsView(LvObj& parent, SettingsView& mainSettingsView)

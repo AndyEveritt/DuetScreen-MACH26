@@ -20,6 +20,7 @@ constexpr const char* ID_DUET_BAUD_RATE = "baud_rate";
 
 /* UI */
 constexpr const char* ID_THEME = "ui:theme";
+constexpr const char* ID_FONT = "ui:font";
 
 constexpr const char* ID_SCREENSAVER_ENABLE = "ui:screensaver_enable";
 constexpr const char* ID_SCREENSAVER_TIMEOUT = "ui:screensaver_timeout";

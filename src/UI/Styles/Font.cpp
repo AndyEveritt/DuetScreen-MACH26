@@ -8,6 +8,7 @@
 #include "Font.h"
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
+#include "utils/StorageHelper.h"
 #include <filesystem>
 
 #define FONTS_FOLDER ASSETS_FOLDER "fonts/"
@@ -17,7 +18,7 @@ namespace UI::FontManager
 {
 	static lv_font_manager_t* s_fontManager = nullptr;
 	static std::vector<std::string> s_loadedFontNames;
-	static std::string s_activeTypeface = "OpenSans-VariableFont"; // Default typeface
+	static std::string s_activeTypeface = "OpenSans"; // Default typeface
 
 	Font::Font(const lv_font_t* font)
 		: m_font(font)
@@ -90,6 +91,12 @@ namespace UI::FontManager
 
 			LOG_VERBOSE("Loaded font: {:s}", name);
 			s_loadedFontNames.push_back(name);
+		}
+
+		std::string selected_font = StorageHelper::getData(ID_FONT, s_activeTypeface);
+		if (isFontLoaded(selected_font))
+		{
+			s_activeTypeface = selected_font;
 		}
 	}
 
@@ -189,8 +196,11 @@ namespace UI::FontManager
 			LOG_ERROR("Font '{:s}' not loaded, cannot set as active typeface", name);
 			return;
 		}
+		LOG_DBG("Setting typeface to '{:s}'", name);
 
 		s_activeTypeface = name;
 		Themes::getCurrentTheme()->setTypeface(name);
+		StorageHelper::setData(ID_FONT, s_activeTypeface);
+		LOG_INFO("Active typeface set to '{:s}'", name);
 	}
 } // namespace UI::FontManager
