@@ -16,7 +16,7 @@ namespace UI::FontManager
 {
 	static lv_font_manager_t* s_fontManager = nullptr;
 	static std::vector<std::string> s_loadedFontNames;
-	static std::string s_activeTypeface = "libra-sans.regular"; // Default typeface
+	static std::string s_activeTypeface = "OpenSans-VariableFont"; // Default typeface
 
 	Font::Font(const lv_font_t* font)
 		: m_font(font)
@@ -92,7 +92,7 @@ namespace UI::FontManager
 		}
 	}
 
-	Font createFont(const std::string& name, uint32_t size, uint32_t style)
+	Font createFont(const std::string& typeface, uint32_t size, uint32_t style)
 	{
 		if (!s_fontManager)
 		{
@@ -100,13 +100,61 @@ namespace UI::FontManager
 			return nullptr;
 		}
 
+		// Choose the best available face variant based on style
+		std::string chosenName = typeface;
+		const bool wantBold = (style & LV_FREETYPE_FONT_STYLE_BOLD) != 0;
+		if (wantBold)
+		{
+			std::string boldName = typeface + "-Bold";
+			if (isFontLoaded(boldName))
+			{
+				chosenName = boldName;
+			}
+			else
+			{
+				std::string regularName = typeface + "-Regular";
+				if (isFontLoaded(regularName))
+				{
+					chosenName = regularName;
+				}
+				else if (!isFontLoaded(typeface))
+				{
+					// Neither bold nor regular (nor base) loaded, fall back to default
+					return LV_FONT_DEFAULT;
+				}
+			}
+		}
+		else
+		{
+			std::string regularName = typeface + "-Regular";
+			if (isFontLoaded(regularName))
+			{
+				chosenName = regularName;
+			}
+			else if (!isFontLoaded(typeface))
+			{
+				// Neither regular nor base loaded, fall back to default
+				return LV_FONT_DEFAULT;
+			}
+		}
+
 		Font font(lv_font_manager_create_font(
-			s_fontManager, name.c_str(), LV_FREETYPE_FONT_RENDER_MODE_BITMAP, size, style, LV_FONT_KERNING_NONE));
+			s_fontManager, chosenName.c_str(), LV_FREETYPE_FONT_RENDER_MODE_BITMAP, size, style, LV_FONT_KERNING_NONE));
 		if (!font.get())
 		{
-			LOG_ERROR("Failed to create font '{:s}' with size {}", name, size);
+			LOG_ERROR("Failed to create font '{:s}' with size {}", chosenName, size);
 		}
 		return font;
+	}
+
+	const std::vector<std::string>& getLoadedFontNames()
+	{
+		return s_loadedFontNames;
+	}
+
+	bool isFontLoaded(const std::string& name)
+	{
+		return std::find(s_loadedFontNames.begin(), s_loadedFontNames.end(), name) != s_loadedFontNames.end();
 	}
 
 	const std::string& getActiveTypefaceName()

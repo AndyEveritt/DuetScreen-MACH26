@@ -32,9 +32,10 @@ namespace UI::FontManager
 	};
 
 	void init();
-	Font createFont(const std::string& name, uint32_t size, uint32_t style = LV_FREETYPE_FONT_STYLE_NORMAL);
+	Font createFont(const std::string& typeface, uint32_t size, uint32_t style = LV_FREETYPE_FONT_STYLE_NORMAL);
 
 	const std::vector<std::string>& getLoadedFontNames();
+	bool isFontLoaded(const std::string& name);
 	const std::string& getActiveTypefaceName();
 	void setActiveTypeface(const std::string& name);
 } // namespace UI::FontManager

@@ -48,6 +48,8 @@ namespace UI
 		// Styles
 		addStyle(Themes::getComponentStyles().file);
 		addStyle(Themes::getComponentStyles().folder, LV_STATE_CHECKED);
+		m_label.addStyle(Themes::getLvglStyles().text_emphasis, LV_STATE_CHECKED);
+		m_date.addStyle(Themes::getLvglStyles().text_muted);
 	}
 
 	void FileView::FileItem::setFileLabel(std::string_view name)
@@ -84,6 +86,7 @@ namespace UI
 		m_size.setVisible(!isFolder);
 #endif
 		setState(LV_STATE_CHECKED, isFolder);
+		m_label.setState(LV_STATE_CHECKED, isFolder);
 		m_folderIcon.setVisible(isFolder);
 		m_thumbnail.setVisible(!isFolder);
 	}

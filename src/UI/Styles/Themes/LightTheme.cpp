@@ -17,10 +17,10 @@ namespace UI::Themes
 	static bool s_darkMode = false;
 	static std::string_view s_iconFolder = "material";
 	static FontConfigSet s_fontConfigs = {
-		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD},
-		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
-		.emphasis = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_BOLD},
-		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
+		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
+		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL | LV_FREETYPE_FONT_STYLE_WEIGHT(400)},
+		.emphasis = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
+		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_ITALIC | LV_FREETYPE_FONT_STYLE_WEIGHT(200)},
 	};
 
 	static ThemeColors s_colors = createThemeColors(s_primaryHue, s_secondaryHue, s_chroma, s_darkMode);

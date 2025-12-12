@@ -61,7 +61,6 @@ namespace UI::Themes
 
 	  protected:
 		void onInit() override;
-		void onTypefaceChanged() override;
 
 	  private:
 		ThemeColors m_colors;
