@@ -229,6 +229,7 @@
       "enable_system_monitor": "Enable System Monitor",
       "erase_and_restart": "Erase and Restart",
       "firmware_version": "Firmware Version: {:s}",
+      "font": "Font",
       "language": "Language",
       "language_en": "English",
       "network": "Network",

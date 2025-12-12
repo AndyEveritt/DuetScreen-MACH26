@@ -396,13 +396,25 @@ namespace UI
 
 	ThemeSettingsView::ThemeSettingsView(LvObj& parent, SettingsView& mainSettingsView)
 		: SettingsSubView("screen", parent, mainSettingsView)
-		, m_theme("theme", getRoot(), layout_t(0, 0, 100, LV_SIZE_CONTENT))
-		, m_themePreview("theme_demo", getRoot())
 	{
 		UI_LOCK();
 
+		m_font.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_font.setLabel(_("settings.font"));
+		for (const auto& font : FontManager::getLoadedFontNames())
+		{
+			if (font.ends_with("-Bold"))
+			{
+				continue;
+			}
+			m_font.addOption(font);
+		}
+		m_font.setSelectedCallback([this](uint32_t /* index */, std::string_view option)
+								   { FontManager::setActiveTypeface(std::string(option)); });
+
+		m_theme.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_theme.setLabel(_("settings.theme"));
-		for (auto& theme : Themes::getThemes())
+		for (const auto& theme : Themes::getThemes())
 		{
 			m_theme.addOption(_(fmt::format("theme.id.{:s}", theme->getName())));
 		}

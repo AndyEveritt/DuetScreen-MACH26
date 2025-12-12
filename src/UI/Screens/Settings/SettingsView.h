@@ -106,8 +106,9 @@ namespace UI
 		void onInit() override;
 		void onShow() override;
 
-		DropdownMenu m_theme;
-		ThemePreview m_themePreview;
+		DropdownMenu m_font{"font", getRoot()};
+		DropdownMenu m_theme{"theme", getRoot()};
+		ThemePreview m_themePreview{"theme_preview", getRoot()};
 	};
 
 	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>

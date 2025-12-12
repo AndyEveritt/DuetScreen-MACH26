@@ -11,6 +11,7 @@
 #include <filesystem>
 
 #define FONTS_FOLDER ASSETS_FOLDER "fonts/"
+#define FONT_MANAGER_STATIC_BOLD 0
 
 namespace UI::FontManager
 {
@@ -100,6 +101,7 @@ namespace UI::FontManager
 			return nullptr;
 		}
 
+#if FONT_MANAGER_STATIC_BOLD
 		// Choose the best available face variant based on style
 		std::string chosenName = typeface;
 		const bool wantBold = (style & LV_FREETYPE_FONT_STYLE_BOLD) != 0;
@@ -144,6 +146,19 @@ namespace UI::FontManager
 		{
 			LOG_ERROR("Failed to create font '{:s}' with size {}", chosenName, size);
 		}
+#else
+		if (!isFontLoaded(typeface))
+		{
+			LOG_ERROR("Font '{:s}' not loaded", typeface);
+			return LV_FONT_DEFAULT;
+		}
+		Font font(lv_font_manager_create_font(
+			s_fontManager, typeface.c_str(), LV_FREETYPE_FONT_RENDER_MODE_BITMAP, size, style, LV_FONT_KERNING_NONE));
+		if (!font.get())
+		{
+			LOG_ERROR("Failed to create font '{:s}' with size {}", typeface, size);
+		}
+#endif
 		return font;
 	}
 
@@ -169,7 +184,7 @@ namespace UI::FontManager
 			return;
 		}
 
-		if (std::find(s_loadedFontNames.begin(), s_loadedFontNames.end(), name) == s_loadedFontNames.end())
+		if (!isFontLoaded(name))
 		{
 			LOG_ERROR("Font '{:s}' not loaded, cannot set as active typeface", name);
 			return;

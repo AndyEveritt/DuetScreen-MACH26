@@ -36,8 +36,9 @@ namespace UI
 		}
 
 		void setSwatchColor(lv_color_t color) { m_colorBox.setStyleBgColor(color, LV_PART_MAIN); }
-
 		void setLabel(std::string_view text) { m_label.setText(text); }
+
+		auto& getLabel() { return m_label; }
 
 	  private:
 		LvContainer m_colorBox;
@@ -148,6 +149,19 @@ namespace UI
 									else
 									{
 										LOG_ERROR("Failed to get color for style: {}", style.name);
+									}
+
+									if (style.name == "text_muted")
+									{
+										swatch->getLabel().addStyle(Themes::getLvglStyles().text_muted);
+									}
+									else if (style.name == "text_emphasis")
+									{
+										swatch->getLabel().addStyle(Themes::getLvglStyles().text_emphasis);
+									}
+									else if (style.name == "text_header")
+									{
+										swatch->getLabel().addStyle(Themes::getLvglStyles().text_header);
 									}
 
 									// swatch->addSwatchStyle(style.style);

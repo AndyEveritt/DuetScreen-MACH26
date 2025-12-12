@@ -157,6 +157,9 @@ namespace UI::Themes
 		s_fonts.normal = *fonts.normal.get();
 		s_fonts.emphasis = *fonts.emphasis.get();
 		s_fonts.subdued = *fonts.subdued.get();
+
+		lv_obj_report_style_change(NULL);
+		lv_obj_invalidate(lv_screen_active());
 	}
 
 	static bool themeExists(std::string_view name)
