@@ -245,6 +245,7 @@ namespace UI::Themes
 		Style temperature_bar;		 // Temperature bar style
 		Style temperature_bar_indic; // Temperature bar indicator style
 		Style tool_selected;		 // Used in tool list
+		Style tab_button;			 // Used in tabview tabs
 	};
 
 	const LvglStyles& getLvglStyles();

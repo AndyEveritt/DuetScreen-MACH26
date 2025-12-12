@@ -46,6 +46,7 @@ namespace UI
 			m_tabButtons.addItem([&](size_t index, LvObj& parent)
 								 { return std::make_unique<TabButton>(fmt::format("tab_button_{}", index), parent); });
 		tab_button.addStyle(Themes::getLvglStyles().text_header, LV_PART_MAIN);
+		tab_button.addStyle(Themes::getComponentStyles().tab_button, LV_PART_MAIN);
 		tab_button.setText(tab_name);
 		tab_button.setFlexGrow(1);
 		tab_button.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);

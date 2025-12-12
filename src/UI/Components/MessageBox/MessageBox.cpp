@@ -52,6 +52,7 @@ namespace UI
 
 		addStyle(Themes::getLvglStyles().card);
 		m_header.addStyle(Themes::getLvglStyles().bg_color_header);
+		m_header.addStyle(Themes::getLvglStyles().text_header);
 
 		// Layout
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
