@@ -44,8 +44,10 @@ namespace UI
 		lv_table_set_column_count(m_commandList.getRootPtr(), 2);
 		lv_table_set_column_width(m_commandList.getRootPtr(), 0, TABLE_GCODE_WIDTH);
 		lv_table_set_column_width(m_commandList.getRootPtr(), 1, TABLE_DESCRIPTION_WIDTH);
-		lv_table_set_row_count(m_commandList.getRootPtr(), Gcodes::getGcodeCount());
-		for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
+		lv_table_set_row_count(m_commandList.getRootPtr(), static_cast<uint32_t>(Gcodes::getGcodeCount()));
+		size_t gcode_count = Gcodes::getGcodeCount();
+		assert(gcode_count < std::numeric_limits<uint32_t>::max()); // table uses uint32_t
+		for (uint32_t i = 0; i < static_cast<uint32_t>(gcode_count); i++)
 		{
 			const gcode* g = Gcodes::getGcode(i);
 			lv_table_set_cell_value(m_commandList.getRootPtr(), i, 0, g->gcode.data());
@@ -141,8 +143,8 @@ namespace UI
 		StorageHelper::setData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, !show);
 		m_commandVisibility.setChecked(show);
 
-		int32_t start = show ? 1 : 20;
-		int32_t end = show ? 20 : 1;
+		uint8_t start = show ? 1 : 20;
+		uint8_t end = show ? 20 : 1;
 
 		if (animate)
 		{
@@ -154,7 +156,7 @@ namespace UI
 				[](void* var, int32_t value)
 				{
 					ConsoleView& view = *static_cast<ConsoleView*>(var);
-					view.m_commandList.setFlexGrow(value);
+					view.m_commandList.setFlexGrow(static_cast<uint8_t>(value));
 					view.updateBtnPos();
 				});
 			anim.setDeletedCb(
@@ -163,7 +165,7 @@ namespace UI
 					ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
 					view.m_commandList.setScrollDir(view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL
 																										: LV_DIR_VER);
-					view.m_commandList.setFlexGrow(anim->end_value);
+					view.m_commandList.setFlexGrow(static_cast<uint8_t>(anim->end_value));
 					view.updateBtnPos();
 					view.m_output.updateLayout();
 					view.m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
@@ -174,7 +176,7 @@ namespace UI
 		}
 		else
 		{
-			m_commandList.setFlexGrow(end);
+			m_commandList.setFlexGrow(static_cast<uint8_t>(end));
 			updateBtnPos();
 			m_output.updateLayout();
 			m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
