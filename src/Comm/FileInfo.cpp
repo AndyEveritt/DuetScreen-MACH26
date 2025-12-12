@@ -145,7 +145,7 @@ namespace Comm
 		std::string_view uid = OM::GetPrinterUniqueId();
 		if (uid.empty())
 		{
-			LOG_WARN("Cannot get file info cache path: printer unique ID is empty");
+			LOG_DBG("Cannot get file info cache path: printer unique ID is empty");
 			return std::nullopt;
 		}
 
@@ -215,7 +215,7 @@ namespace Comm
 					LOG_DBG("Loaded cached file info for {:s}", entry.path().string());
 					m_cache[fileInfo->filename.c_str()] = fileInfo;
 
-					if (!::IsThumbnailCached(fileInfo->filename.c_str()))
+					if (!IsThumbnailCached(fileInfo->filename.c_str(), fileInfo->lastModified.c_str()))
 					{
 						FILEINFO_CACHE->QueueThumbnailRequest(fileInfo->filename.c_str());
 					}
@@ -459,7 +459,7 @@ namespace Comm
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		// Does a thumbnail file exist in the file system?
-		if (!::IsThumbnailCached(filepath.c_str(), false))
+		if (!::IsThumbnailCached(filepath, false))
 		{
 			LOG_DBG("Thumbnail file for {:s} does not exist", filepath.c_str());
 			return false;
@@ -624,8 +624,10 @@ namespace Comm
 		{
 			m_data->context.Init();
 
-			const char* filename = m_data->AboveCacheLimit() ? largeThumbnailFilename : m_data->filename.c_str();
-			if (!m_data->image.New(m_data->meta, filename))
+			std::string_view filename = m_data->filename.c_str();
+			std::filesystem::path filepath =
+				GetThumbnailPath(filename, true); // Use temp folder for in-progress thumbnails
+			if (!m_data->image.New(m_data->meta, filepath))
 			{
 				LOG_ERROR("Failed to create thumbnail file {:s}.", filename);
 				return false;
@@ -871,6 +873,17 @@ namespace Comm
 		if (request == nullptr)
 		{
 			return;
+		}
+
+		auto temp_file = GetThumbnailPath(filepath, true);
+		auto cached_file = GetThumbnailPath(filepath, false);
+
+		if (temp_file != cached_file && std::filesystem::exists(temp_file))
+		{
+			std::filesystem::create_directories(cached_file.parent_path());
+			std::filesystem::remove(cached_file);
+			std::filesystem::rename(temp_file, cached_file);
+			LOG_DBG("Moved thumbnail from {:s} to {:s}", temp_file.string(), cached_file.string());
 		}
 
 		request->Complete();

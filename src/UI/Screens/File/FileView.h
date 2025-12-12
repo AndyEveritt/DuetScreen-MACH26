@@ -121,7 +121,7 @@ namespace UI
 
 		void setFolder(const std::string& path);
 		bool cancelStartPrint();
-		void confirmStartPrint(std::string_view filename, std::string_view thumbnail);
+		void confirmStartPrint(std::string_view filename, const std::filesystem::path& thumbnail);
 		void confirmRunMacro(std::string_view filename);
 		auto& getConfirmModal() { return m_startPrint; }
 

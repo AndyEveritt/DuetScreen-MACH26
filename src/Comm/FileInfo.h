@@ -37,7 +37,7 @@ namespace Comm
 		FileInfo();
 		~FileInfo();
 
-		String<MAX_FILENAME_LENGTH> filename;
+		String<MAX_FILENAME_LENGTH> filename; // full path of the file on the Duet
 		std::vector<float> filament;
 		String<64> generatedBy;
 		float height = 0;

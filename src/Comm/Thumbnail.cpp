@@ -14,28 +14,38 @@ extern "C"
 #include "Comm/FileInfo.h"
 #include "utils/utils.h"
 
-std::string GetThumbnailPath(std::string_view filepath)
+#define TEMP_THUMBNAIL_FOLDER "/tmp/thumbnails/"
+
+std::filesystem::path GetThumbnailPath(const std::filesystem::path& filepath, const bool temp)
 {
 	std::string sanitisedFilename(filepath);
 	utils::replaceSubstring(sanitisedFilename, ":", "\\%3A");
 	// utils::replaceSubstring(sanitisedFilename, "/", "\%2F");
 
-	auto cache_folder = FILEINFO_CACHE->GetCachePath().value_or("/tmp/thumbnails/");
-	if (sanitisedFilename.rfind(cache_folder) == 0)
+	std::filesystem::path folder;
+	if (temp)
+	{
+		folder = std::filesystem::path(TEMP_THUMBNAIL_FOLDER);
+	}
+	else
+	{
+		folder = FILEINFO_CACHE->GetCachePath().value_or(TEMP_THUMBNAIL_FOLDER);
+	}
+	if (sanitisedFilename.rfind(folder) == 0)
 	{
 		return sanitisedFilename;
 	}
-	return cache_folder / sanitisedFilename;
+	return folder / sanitisedFilename;
 }
 
 namespace Comm
 {
-	bool ThumbnailImage::New(ThumbnailMeta& meta, std::string_view filename)
+	bool ThumbnailImage::New(const ThumbnailMeta& meta, const std::filesystem::path& filepath)
 	{
 		Close();
 		qoi.decoder_state = qoi_decoder_state::qoi_decoder_header;
-		imageFilename = GetThumbnailPath(filename);
-		std::filesystem::create_directories(imageFilename.substr(0, imageFilename.find_last_of('/')));
+		imageFilename = filepath;
+		std::filesystem::create_directories(imageFilename.parent_path());
 		switch (meta.imageFormat)
 		{
 		case ThumbnailMeta::ImageFormat::Png:
@@ -86,13 +96,9 @@ namespace Comm
 		return meta.width > MAX_THUMBNAIL_CACHE_PIXELS || meta.height > MAX_THUMBNAIL_CACHE_PIXELS;
 	}
 
-	std::string Thumbnail::GetThumbnailPath() const
+	std::filesystem::path Thumbnail::GetPath() const
 	{
-		if (AboveCacheLimit())
-		{
-			return ::GetThumbnailPath(largeThumbnailFilename);
-		}
-		return ::GetThumbnailPath(filename.c_str());
+		return GetThumbnailPath(filename.c_str());
 	}
 
 	void to_json(nlohmann::json& j, const ThumbnailMeta& m)
@@ -270,12 +276,6 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 		return -2;
 	}
 
-	if (!IsThumbnailCached(thumbnail.AboveCacheLimit() ? Comm::largeThumbnailFilename : thumbnail.filename.c_str(),
-						   true))
-	{
-		return -3;
-	}
-
 	int ret = base64_decode((const char*)data.buffer, data.size, data.buffer);
 	if (ret < 0)
 	{
@@ -300,9 +300,9 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 	}
 }
 
-bool IsThumbnailCached(std::string_view filepath, bool includeBlank)
+bool IsThumbnailCached(const std::filesystem::path& filepath, bool includeBlank)
 {
-	std::string thumbnailPath = GetThumbnailPath(filepath);
+	std::filesystem::path thumbnailPath = GetThumbnailPath(filepath);
 	struct stat sb;
 	// Use stat directly to avoid spawning a shell
 	if (stat(thumbnailPath.c_str(), &sb) == 0)

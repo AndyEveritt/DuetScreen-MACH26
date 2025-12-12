@@ -351,6 +351,10 @@ bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[
 			{
 				FILEINFO_CACHE->QueueFileInfoRequest(item->GetPath());
 			}
+			else if (fileInfo && !FILEINFO_CACHE->IsThumbnailCached(item->GetPath(), item->GetDate().c_str()))
+			{
+				FILEINFO_CACHE->QueueThumbnailRequest(item->GetPath());
+			}
 		}
 	}
 	return true;

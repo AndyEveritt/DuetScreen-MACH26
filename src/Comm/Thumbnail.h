@@ -71,16 +71,16 @@ namespace Comm
 		qoi_desc qoi;
 		PNG png;
 		BMP bmp;
-		std::string imageFilename;
+		std::filesystem::path imageFilename; // Path to the image file on disk
 
-		bool New(ThumbnailMeta& meta, std::string_view filename);
+		bool New(const ThumbnailMeta& meta, const std::filesystem::path& filepath);
 		bool IsOpen() const;
 		bool Close();
 	};
 
 	struct Thumbnail
 	{
-		StringRef filename;
+		StringRef filename; // full path of the file on the Duet
 		ThumbnailMeta meta;
 		ThumbnailContext context;
 		ThumbnailImage image;
@@ -91,7 +91,7 @@ namespace Comm
 		}
 		uint32_t GetProgress() const;
 		bool AboveCacheLimit() const;
-		std::string GetThumbnailPath() const;
+		std::filesystem::path GetPath() const;
 	};
 
 	void to_json(nlohmann::json& j, const Thumbnail& t);
@@ -116,8 +116,8 @@ bool ThumbnailDataIsValid(Comm::ThumbnailBuf& data);
 int ThumbnailInit(Comm::Thumbnail& thumbnail);
 int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data);
 
-std::string GetThumbnailPath(std::string_view filepath);
-bool IsThumbnailCached(std::string_view filepath, bool includeBlank = false);
+std::filesystem::path GetThumbnailPath(const std::filesystem::path& filepath, const bool temp = false);
+bool IsThumbnailCached(const std::filesystem::path& filepath, bool includeBlank = false);
 bool ClearAllCachedThumbnails();
 bool DeleteCachedThumbnail(std::string_view filepath);
 bool CreateBlankThumbnailCache(std::string_view filepath);

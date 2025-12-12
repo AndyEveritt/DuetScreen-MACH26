@@ -428,13 +428,13 @@ namespace UI
 		return false;
 	}
 
-	void FileView::confirmStartPrint(std::string_view filename, std::string_view thumbnail)
+	void FileView::confirmStartPrint(std::string_view filename, const std::filesystem::path& thumbnail)
 	{
 		UI_LOCK();
 		m_startPrint.setTitle(_("file.start_print_title"));
 		m_startPrint.setText(_("file.start_print.file", filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->startPrint(); });
-		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail.data() : nullptr);
+		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail.c_str() : nullptr);
 		openModal(&m_startPrint);
 	}
 

@@ -121,7 +121,7 @@ namespace UI
 			{
 				modal.getFileInfo().setVisible(false);
 			}
-			m_view->confirmStartPrint(item->GetName(), GetThumbnailPath(item->GetPath().c_str()));
+			m_view->confirmStartPrint(item->GetName(), GetThumbnailPath(item->GetPath()));
 		}
 		else if (m_gcodePath.starts_with(OM::Directories::GetMacrosDirectory()))
 		{
