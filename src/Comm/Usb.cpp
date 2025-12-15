@@ -118,9 +118,19 @@ namespace Comm
 		r = setDtr(true);
 		if (r < 0)
 		{
-			LOG_ERROR("Closing device");
+			LOG_ERROR("Failed to set DTR: {:s}", libusb_error_name(r));
 			goto close_handle;
 		}
+
+#if 0
+		/* This shouldn't do anything since we are using bulk usb transfers */
+		r = setBaud(115200);
+		if (r < 0)
+		{
+			LOG_ERROR("Failed to set baud rate: {:s}", libusb_error_name(r));
+			goto close_handle;
+		}
+#endif
 
 		// Claim interface 0 (replace with your interface number)
 		r = libusb_claim_interface(m_handle, 0);
@@ -137,6 +147,7 @@ namespace Comm
 		return true;
 
 	close_handle:
+		LOG_DBG("Closing device");
 		libusb_close(m_handle);
 		m_handle = nullptr;
 		return false;
@@ -185,6 +196,59 @@ namespace Comm
 			return false;
 		}
 
+		return true;
+	}
+
+	// Convenience wrapper: set baud as 8N1 on CDC-ACM
+	bool UsbDevice::setBaud(uint32_t baud)
+	{
+		return setLineCoding(baud, /*stopBits*/ 0, /*parity*/ 0, /*dataBits*/ 8);
+	}
+
+	// CDC-ACM SET_LINE_CODING to configure baud/format
+	bool UsbDevice::setLineCoding(uint32_t baud, uint8_t stopBits, uint8_t parity, uint8_t dataBits)
+	{
+		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		if (!m_handle)
+		{
+			LOG_WARN("No USB device handle");
+			return false;
+		}
+
+#pragma pack(push, 1)
+		struct LineCoding
+		{
+			uint32_t dwDTERate;	 // Baud rate in bps (LE)
+			uint8_t bCharFormat; // Stop bits: 0=1,1=1.5,2=2
+			uint8_t bParityType; // 0=None,1=Odd,2=Even,3=Mark,4=Space
+			uint8_t bDataBits;	 // Data bits: typically 5..8
+		};
+#pragma pack(pop)
+
+		LineCoding lc{baud, stopBits, parity, dataBits};
+
+		uint8_t bmRequestType = static_cast<uint8_t>(LIBUSB_ENDPOINT_OUT) |
+								static_cast<uint8_t>(LIBUSB_REQUEST_TYPE_CLASS) |
+								static_cast<uint8_t>(LIBUSB_RECIPIENT_INTERFACE);
+		uint8_t bRequest = 0x20; // SET_LINE_CODING
+		uint16_t wValue = 0;
+		uint16_t wIndex = 0; // Control interface number; current implementation uses interface 0
+		unsigned int timeoutMs = 1000;
+
+		int err = libusb_control_transfer(m_handle,
+										  bmRequestType,
+										  bRequest,
+										  wValue,
+										  wIndex,
+										  reinterpret_cast<unsigned char*>(&lc),
+										  static_cast<uint16_t>(sizeof(lc)),
+										  timeoutMs);
+		if (err < 0)
+		{
+			LOG_ERROR("Failed to set line coding: {:s}", libusb_error_name(err));
+			return false;
+		}
+		LOG_DBG("CDC line coding set: {} bps, {} stop, parity {}, {} bits", baud, stopBits, parity, dataBits);
 		return true;
 	}
 

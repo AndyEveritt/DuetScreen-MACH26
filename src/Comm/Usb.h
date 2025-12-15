@@ -49,6 +49,13 @@ namespace Comm
 
 	  private:
 		int setDtr(bool state);
+
+		// CDC-ACM line coding helpers
+		// Convenience: set baud as 8N1
+		bool setBaud(uint32_t baud);
+		// Full control: baud, stop bits (0=1,1=1.5,2=2), parity (0=None..4=Space), data bits
+		bool setLineCoding(uint32_t baud, uint8_t stopBits, uint8_t parity, uint8_t dataBits);
+
 		bool getDeviceInterface();
 
 		static void LIBUSB_CALL sendTransferCallback(struct libusb_transfer* transfer);
