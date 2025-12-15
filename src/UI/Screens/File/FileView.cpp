@@ -14,7 +14,7 @@ namespace UI
 {
 	FileView::FileItem::FileItem(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
-		, m_layoutColDsc{LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
+		, m_layoutColDsc{LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 	{
 		UI_LOCK();
@@ -29,11 +29,12 @@ namespace UI
 		setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 2, 1);
 #endif
 		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 3, 1);
-		setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 4);
+		setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 4);
 		setGridCell(m_folderIcon, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 4);
 
 		m_label.setHeight(LV_SIZE_CONTENT);
 		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
+		m_thumbnail.setHeight(LV_PCT(100));
 		m_folderIcon.setIcon("folder.png");
 
 		addEventCallback(
@@ -76,6 +77,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_thumbnail.setSrc(thumbnail);
+		m_thumbnail.setWidth(thumbnail == nullptr ? 0 : m_thumbnail.getHeight());
 	}
 
 	void FileView::FileItem::setType(const bool isFolder)

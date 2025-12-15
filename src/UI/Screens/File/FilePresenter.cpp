@@ -94,6 +94,8 @@ namespace UI
 			return;
 		}
 
+		m_clickedItem = item->GetPath();
+
 		// File
 		m_gcodePath = item->GetPath();
 		if (m_gcodePath.starts_with(OM::Directories::GetGcodesDirectory()))
@@ -279,6 +281,13 @@ namespace UI
 			}
 		}
 		getView()->getList().refresh();
+
+		/* Update the start print modal */
+		auto& modal = getView()->getConfirmModal();
+		if (modal.isVisible() && m_clickedItem == filename)
+		{
+			modal.setImage(GetThumbnailPath(filename).c_str());
+		}
 	}
 
 	void FilePresenter::onInit()

@@ -44,8 +44,19 @@ namespace Comm
 
 	struct ThumbnailContext
 	{
+		enum class ParseErr
+		{
+			NoError = 0,
+			InvalidOffset = -1,
+			MismatchOffset = -2,
+			InvalidNext = -3,
+			InvalidSize = -4,
+			RrfError = -5,
+			Unknown = -6,
+		};
+
 		enum ThumbnailState state;
-		int16_t parseErr;
+		ParseErr parseErr;
 		int32_t err;
 		uint32_t size;
 		uint32_t offset;
@@ -56,7 +67,7 @@ namespace Comm
 		void Init()
 		{
 			state = ThumbnailState::Init;
-			parseErr = 0;
+			parseErr = ParseErr::NoError;
 			err = 0;
 			size = 0;
 			offset = 0;
@@ -110,8 +121,8 @@ typedef bool (*ThumbnailProcessCb)(const struct Thumbnail& thumbnail,
 								   const rgba_t* pixels,
 								   size_t pixels_count);
 
-bool ThumbnailIsValid(Comm::Thumbnail& thumbnail);
-bool ThumbnailDataIsValid(Comm::ThumbnailBuf& data);
+bool ThumbnailIsValid(const Comm::Thumbnail& thumbnail);
+bool ThumbnailDataIsValid(const Comm::ThumbnailBuf& data);
 
 int ThumbnailInit(Comm::Thumbnail& thumbnail);
 int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data);
@@ -120,6 +131,5 @@ std::filesystem::path GetThumbnailPath(const std::filesystem::path& filepath, co
 bool IsThumbnailCached(const std::filesystem::path& filepath, bool includeBlank = false);
 bool ClearAllCachedThumbnails();
 bool DeleteCachedThumbnail(std::string_view filepath);
-bool CreateBlankThumbnailCache(std::string_view filepath);
 
 #endif /* ifndef THUMBNAIL_HPP */

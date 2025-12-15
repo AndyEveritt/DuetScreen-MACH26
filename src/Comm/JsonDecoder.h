@@ -68,6 +68,11 @@ namespace Comm
 		const Seq* GetSeq() const { return m_seq; }
 
 		// These variables are used for the
+		void ClearResponseData()
+		{
+			responseType = ResponseType::unknown;
+			responseData = nullptr;
+		}
 		ResponseType responseType = ResponseType::unknown;
 		std::variant<void*,
 					 OM::FileSystem::FileListRequestWeakPtr,

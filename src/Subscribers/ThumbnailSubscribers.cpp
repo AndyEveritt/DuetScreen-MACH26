@@ -356,9 +356,6 @@ bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const c
 		LOG_ERROR("Invalid thumbnail");
 		return false;
 	}
-
-	LOG_DBG("Receiving thumbnail information about {:s}", thumbnail->filename.c_str());
-	request->Receiving();
 	return true;
 }
 
@@ -366,6 +363,11 @@ static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder,
 									Comm::FileInfoCache::ThumbnailRequestPtr& request,
 									Comm::ThumbnailPtr& thumbnail)
 {
+	if (decoder->responseType != Comm::JsonDecoder::ResponseType::thumbnail)
+	{
+		return false;
+	}
+
 	try
 	{
 		request = std::get<Comm::FileInfoCache::ThumbnailRequestPtr>(decoder->responseData);
@@ -399,12 +401,25 @@ bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const cha
 		return false;
 	}
 
-	if (!Comm::GetUnsignedInteger(data, thumbnail->context.offset))
+	uint32_t offset = 0;
+	if (!Comm::GetUnsignedInteger(data, offset))
 	{
 		LOG_WARN("thumbnail offset error \"{:s}\"", data);
-		thumbnail->context.parseErr = -4;
+		thumbnail->context.parseErr = Comm::ThumbnailContext::ParseErr::InvalidOffset;
 		return false;
 	}
+	if (offset != thumbnail->context.next)
+	{
+		LOG_WARN("thumbnail offset mismatch, expected {:d} got {:d}", thumbnail->context.next, offset);
+		thumbnail->context.parseErr = Comm::ThumbnailContext::ParseErr::MismatchOffset;
+		decoder->ClearResponseData();
+		request->Complete(true);
+		return false;
+	}
+
+	LOG_DBG("Receiving thumbnail information about {:s}", thumbnail->filename.c_str());
+	request->Receiving();
+
 	LOG_DBG("thumbnail receive current offset {:d}.", thumbnail->context.offset);
 	return true;
 }
@@ -441,7 +456,7 @@ bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char*
 	if (!Comm::GetUnsignedInteger(data, thumbnail->context.next))
 	{
 		LOG_WARN("thumbnail next error \"{:s}\"", data);
-		thumbnail->context.parseErr = -4;
+		thumbnail->context.parseErr = Comm::ThumbnailContext::ParseErr::InvalidNext;
 		return false;
 	}
 	LOG_DBG("thumbnail next {:d}", thumbnail->context.next);
@@ -461,18 +476,20 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 	if (!Comm::GetInteger(data, thumbnail->context.err))
 	{
 		LOG_WARN("Failed to parse thumbnail err {:s}", data);
-		thumbnail->context.parseErr = -1;
+		thumbnail->context.parseErr = Comm::ThumbnailContext::ParseErr::RrfError;
 	}
 	LOG_DBG("Thumbnail: offset({:d}), next({:d}), err({:d}), size({:d}), parseErr({:d})",
 			thumbnail->context.offset,
 			thumbnail->context.next,
 			thumbnail->context.err,
 			thumbnail->context.size,
-			thumbnail->context.parseErr);
+			static_cast<int>(thumbnail->context.parseErr));
 
-	if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
+	if (thumbnail->context.parseErr != Comm::ThumbnailContext::ParseErr::NoError || thumbnail->context.err != 0)
 	{
-		LOG_ERROR("thumbnail parseErr {:d} err {:d}.\n", thumbnail->context.parseErr, thumbnail->context.err);
+		LOG_ERROR("thumbnail parseErr {:d} err {:d}.\n",
+				  static_cast<int>(thumbnail->context.parseErr),
+				  thumbnail->context.err);
 		thumbnail->context.state = Comm::ThumbnailState::Init;
 		return false;
 	}
@@ -491,8 +508,8 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 		return false;
 	}
 
-	int ret = 0;
-	if ((ret = ThumbnailDecodeChunk(*thumbnail, thumbnailBuf)) < 0)
+	int ret = ThumbnailDecodeChunk(*thumbnail, thumbnailBuf);
+	if (ret < 0)
 	{
 		LOG_ERROR("failed to decode thumbnail chunk {:d}.\n", ret);
 		thumbnail->context.state = Comm::ThumbnailState::Init;

@@ -35,7 +35,7 @@ namespace Comm
 		LOG_VERBOSE("Deleted fileinfo {:s}", filename.c_str());
 	}
 
-	std::shared_ptr<Thumbnail> FileInfo::GetThumbnail(size_t index)
+	std::shared_ptr<Thumbnail> FileInfo::GetThumbnail(size_t index) const
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_mutex);
 		if (index >= m_thumbnails.size())
@@ -633,6 +633,7 @@ namespace Comm
 				return false;
 			}
 			m_data->context.state = ThumbnailState::DataWait;
+			m_data->context.next = m_data->meta.offset;
 			return DUET.RequestThumbnail(m_data->filename.c_str(), m_data->meta.offset);
 		}
 	}
@@ -701,10 +702,42 @@ namespace Comm
 		return true;
 	}
 
-	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath, bool next)
+	ThumbnailPtr FileInfoCache::GetLargestValidThumbnail(const FileInfo& fileInfo, size_t width, size_t height)
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_mutex);
-		LOG_DBG("Attempting to queue thumbnail request for {:s}", filepath.c_str());
+		ThumbnailPtr largestValidThumbnail;
+		size_t largestSize = 0;
+		for (size_t i = 0; i < fileInfo.GetThumbnailCount(); i++)
+		{
+			ThumbnailPtr thumbnail = fileInfo.GetThumbnail(i);
+			if (thumbnail == nullptr)
+				continue;
+
+			if ((ThumbnailIsValid(*thumbnail)) && (thumbnail->meta.width <= width) &&
+				(thumbnail->meta.height <= height) && (thumbnail->meta.width * thumbnail->meta.height > largestSize))
+			{
+				largestValidThumbnail = thumbnail;
+				largestSize = thumbnail->meta.width * thumbnail->meta.height;
+			}
+		}
+		return largestValidThumbnail;
+	}
+
+	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath, bool next)
+	{
+		return QueueThumbnailRequestInner(filepath, MAX_THUMBNAIL_CACHE_PIXELS, MAX_THUMBNAIL_CACHE_PIXELS, next);
+	}
+
+	bool FileInfoCache::QueueLargeThumbnailRequest(const std::string& filepath)
+	{
+		return QueueThumbnailRequestInner(filepath, 400, 400, true);
+	}
+
+	bool FileInfoCache::QueueThumbnailRequestInner(const std::string& filepath, size_t width, size_t height, bool next)
+	{
+
+		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		LOG_DBG("Attempting to queue thumbnail request for {:s}, max size {:d}x{:d}", filepath.c_str(), width, height);
 		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end(); it++)
 		{
 			ThumbnailRequestPtr request = *it;
@@ -714,7 +747,7 @@ namespace Comm
 				if (request->IsInProgress())
 				{
 					// Request already in progress so don't remove it from queue or add it again
-					LOG_WARN("Thumbnail request for {:s} already in progress", filepath.c_str());
+					LOG_DBG("Thumbnail request for {:s} already in progress", filepath.c_str());
 					return false;
 				}
 
@@ -727,6 +760,8 @@ namespace Comm
 
 				// Request in the queue but not in progress or at the front
 				m_thumbnailRequestQueue.remove(request);
+				std::filesystem::remove(
+					GetThumbnailPath(filepath, true)); // Remove any temp thumbnail file (none should exist)
 				break;
 			}
 		}
@@ -753,94 +788,42 @@ namespace Comm
 			fileInfo = request->GetData();
 		}
 
-		ThumbnailPtr largestValidThumbnail;
-		size_t largestSize = 0;
-		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
-		{
-			ThumbnailPtr thumbnail = fileInfo->GetThumbnail(i);
-			if (thumbnail == nullptr)
-				continue;
-			if (!thumbnail->AboveCacheLimit() && thumbnail->meta.width * thumbnail->meta.height > largestSize)
-			{
-				largestValidThumbnail = thumbnail;
-				largestSize = thumbnail->meta.width * thumbnail->meta.height;
-			}
-		}
+		ThumbnailPtr largestValidThumbnail = GetLargestValidThumbnail(*fileInfo, width, height);
 		if (largestValidThumbnail == nullptr)
 		{
 			LOG_DBG("No valid thumbnail found for {:s}", filepath.c_str());
 			return false;
 		}
+		return QueueThumbnailRequestInner(largestValidThumbnail, next);
+	}
 
-		largestValidThumbnail->context.Init();
+	bool FileInfoCache::QueueThumbnailRequestInner(const ThumbnailPtr& thumbnail, bool next)
+	{
+		if (thumbnail == nullptr)
+		{
+			return false;
+		}
+
+		thumbnail->context.Init();
 		if (next)
 		{
 			auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 								   m_thumbnailRequestQueue.end(),
 								   [](const ThumbnailRequestPtr request) { return !request->IsInProgress(); });
-			m_thumbnailRequestQueue.insert(it, std::make_shared<ThumbnailRequest>(largestValidThumbnail));
+			m_thumbnailRequestQueue.insert(it, std::make_shared<ThumbnailRequest>(thumbnail));
 		}
 		else
 		{
-			m_thumbnailRequestQueue.emplace_back(std::make_shared<ThumbnailRequest>(largestValidThumbnail));
+			m_thumbnailRequestQueue.emplace_back(std::make_shared<ThumbnailRequest>(thumbnail));
 		}
 		LOG_DBG("Queued thumbnail request for \"{:s}\", {:d}x{:d}",
-				filepath.c_str(),
-				largestValidThumbnail->meta.width,
-				largestValidThumbnail->meta.height);
+				thumbnail->filename.c_str(),
+				thumbnail->meta.width,
+				thumbnail->meta.height);
 		return true;
 	}
 
-	bool FileInfoCache::QueueLargeThumbnailRequest(const std::string& filepath)
-	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
-#if 0
-		m_queuedLargeThumbnail = nullptr;
-		DeleteCachedThumbnail(largeThumbnailFilename);
-
-		FileInfo* fileInfo = GetFileInfo(filepath);
-		if (fileInfo == nullptr)
-		{
-			QueueFileInfoRequest(filepath, true);
-			return false;
-		}
-
-		Thumbnail* largestThumbnail = nullptr;
-		LayoutPosition pos = UI::FileList::GetThumbnail()->getPosition();
-		int closestDistance = INT_MAX;
-		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
-		{
-			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
-			if (thumbnail == nullptr || !thumbnail->AboveCacheLimit())
-				continue;
-
-			int xDiff = (int)thumbnail->meta.width - pos.mWidth;
-			int yDiff = (int)thumbnail->meta.height - pos.mHeight;
-			int distance = xDiff * xDiff + yDiff * yDiff;
-
-			if (distance < closestDistance)
-			{
-				largestThumbnail = thumbnail;
-				closestDistance = distance;
-			}
-		}
-		if (largestThumbnail == nullptr)
-		{
-			LOG_WARN("No valid thumbnail found for {:s}", filepath.c_str());
-			return false;
-		}
-		LOG_INFO("Queued large thumbnail request for {:s}, size={:d}, offset={:d}",
-			 filepath.c_str(),
-			 largestThumbnail->meta.size,
-			 largestThumbnail->meta.offset);
-		m_queuedLargeThumbnail = largestThumbnail;
-#else
-		UNUSED(filepath);
-#endif
-		return true;
-	}
-
-#if 0
+#if 1
 	ThumbnailPtr FileInfoCache::GetRequestedThumbnail(const std::string& filepath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_mutex);
@@ -882,7 +865,8 @@ namespace Comm
 		{
 			std::filesystem::create_directories(cached_file.parent_path());
 			std::filesystem::remove(cached_file);
-			std::filesystem::rename(temp_file, cached_file);
+			std::filesystem::copy(temp_file, cached_file);
+			std::filesystem::remove(temp_file);
 			LOG_DBG("Moved thumbnail from {:s} to {:s}", temp_file.string(), cached_file.string());
 		}
 
@@ -951,11 +935,11 @@ namespace Comm
 				LOG_INFO("      context:");
 				LOG_INFO("        err({:d}), parseErr({:d}), size({:d}), offset({:d}), next({:d}), state({:d})",
 						 thumbnail->context.err,
-						 thumbnail->context.parseErr,
+						 static_cast<int>(thumbnail->context.parseErr),
 						 thumbnail->context.size,
 						 thumbnail->context.offset,
 						 thumbnail->context.next,
-						 (int)thumbnail->context.state);
+						 static_cast<int>(thumbnail->context.state));
 			}
 		}
 

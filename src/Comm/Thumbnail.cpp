@@ -145,7 +145,7 @@ namespace Comm
 	}
 } // namespace Comm
 
-bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)
+bool ThumbnailIsValid(const Comm::Thumbnail& thumbnail)
 {
 	if (thumbnail.filename.IsEmpty())
 	{
@@ -172,7 +172,7 @@ bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)
 	return true;
 }
 
-bool ThumbnailDataIsValid(Comm::ThumbnailBuf& data)
+bool ThumbnailDataIsValid(const Comm::ThumbnailBuf& data)
 {
 	if (data.size == 0)
 	{
@@ -325,19 +325,14 @@ bool IsThumbnailCached(const std::filesystem::path& filepath, bool includeBlank)
 bool ClearAllCachedThumbnails()
 {
 	LOG_INFO("Clearing all cached thumbnails");
-	return std::filesystem::remove_all("/tmp/thumbnails") != static_cast<std::uintmax_t>(-1);
+	return std::filesystem::remove_all("/tmp/thumbnails") > 0;
 }
 
 bool DeleteCachedThumbnail(std::string_view filepath)
 {
 	LOG_INFO("Deleting thumbnail for {:s}", filepath);
-	std::string thumbnailPath = GetThumbnailPath(filepath);
-	return std::filesystem::remove(thumbnailPath);
-}
-
-bool CreateBlankThumbnailCache(std::string_view filepath)
-{
-	LOG_INFO("Creating blank thumbnail for {:s}", filepath);
-	std::string thumbnailPath = GetThumbnailPath(filepath);
-	return system(fmt::format("echo \"\" > \"{:s}\"", thumbnailPath).c_str()) == 0;
+	bool ret = true;
+	ret &= std::filesystem::remove(GetThumbnailPath(filepath, false));
+	ret &= std::filesystem::remove(GetThumbnailPath(filepath, true));
+	return ret;
 }

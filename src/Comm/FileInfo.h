@@ -26,9 +26,6 @@
 
 namespace Comm
 {
-	constexpr const char* largeThumbnailFilename = "largeThumbnail";
-	constexpr const char* currentJobThumbnailFilePath = "/tmp/currentJobThumbnail";
-
 	using ThumbnailPtr = std::shared_ptr<Thumbnail>;
 
 	struct FileInfo
@@ -48,7 +45,7 @@ namespace Comm
 		uint32_t simulatedTime = 0;
 		uint32_t size = 0;
 
-		ThumbnailPtr GetThumbnail(size_t index);
+		ThumbnailPtr GetThumbnail(size_t index) const;
 		ThumbnailPtr GetOrCreateThumbnail(size_t index);
 		size_t GetThumbnailCount() const { return m_thumbnails.size(); }
 		size_t ClearThumbnails(size_t fromIndex);
@@ -241,7 +238,10 @@ namespace Comm
 		bool IsThumbnailRequestQueued(const std::string& filepath);
 		bool IsThumbnailRequestInProgress(const std::string& filepath);
 
-		ThumbnailPtr GetNextThumbnail();
+		ThumbnailPtr GetLargestValidThumbnail(const FileInfo& fileInfo, size_t width, size_t height);
+		bool QueueThumbnailRequestInner(const std::string& filepath, size_t width, size_t height, bool next);
+		bool QueueThumbnailRequestInner(const ThumbnailPtr& thumbnail,
+										bool next = false); // returns true if the request was queued
 
 		std::unordered_map<std::string, FileInfoPtr> m_cache; // cache of file path and their associated file info
 		std::list<FileInfoRequestPtr> m_fileInfoRequestQueue;

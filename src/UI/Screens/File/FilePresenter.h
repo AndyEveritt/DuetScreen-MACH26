@@ -51,5 +51,6 @@ namespace UI
 		SortBy m_sortBy = SortBy::DATE;
 		bool m_sortOrder = true;
 		std::vector<OM::FileSystem::ItemPtr> m_items;
+		std::string m_clickedItem;
 	};
 } // namespace UI
