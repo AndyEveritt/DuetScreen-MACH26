@@ -32,13 +32,16 @@ namespace UI
 		m_footer.setSize(LV_PCT(100), LV_PCT(20));
 
 		// Header
-		static const int32_t header_col_dsc[] = {LV_GRID_FR(5), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static const int32_t header_col_dsc[] = {LV_GRID_FR(5), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		static const int32_t header_row_dsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		m_header.setGridDsc(header_col_dsc, header_row_dsc);
 		m_header.setGridCell(m_filename, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-		m_header.setGridCell(m_thumbnail, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-		m_header.setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
+		m_header.setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_CENTER, 0, 2);
+		m_header.setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
+		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
+		m_thumbnail.setHeight(LV_PCT(100));
+		m_thumbnail.setMaxWidth(LV_PCT(30));
 		m_progress.setRange(0, 100);
 
 		// Footer
@@ -145,6 +148,7 @@ namespace UI
 		UI_LOCK();
 		LOG_DBG("'{:s}'", img);
 		m_thumbnail.setSrc(img);
+		m_thumbnail.setWidth(img == nullptr ? 0 : m_thumbnail.getHeight());
 		m_header.updateLayout();
 	}
 
