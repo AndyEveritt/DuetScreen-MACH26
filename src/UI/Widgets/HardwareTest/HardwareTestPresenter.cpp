@@ -346,7 +346,7 @@ namespace UI
 		commandTest.setMessage("Running internal WiFi test...");
 
 		commandTest.setOutput("Setting USB-C MUX to use internal WiFi...\n");
-		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::InternalWiFi);
+		setUsbMode(Comm::UsbMode::InternalWiFi);
 
 		commandTest.appendOutput("Enabling internal WiFi...\n");
 		NetworkHelper::enable(true);
@@ -400,7 +400,7 @@ namespace UI
 
 		auto& usbTest = getView()->getUsbTest();
 
-		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::Host);
+		setUsbMode(Comm::UsbMode::Host);
 
 		getView()->showTest(&usbTest);
 		usbTest.setMessage("Please disconnect all USB flash drives");
@@ -526,7 +526,7 @@ namespace UI
 			return;
 		}
 
-		HomeView::instance().getSettingsView().getPresenter()->setUsbMode(UsbMode::Device);
+		setUsbMode(Comm::UsbMode::Device);
 
 		auto& usbTest = getView()->getUsbTest();
 		usbTest.setMessage("Connect USB-A port to either USB-C port");
@@ -1060,9 +1060,13 @@ namespace UI
 		if (isActive())
 			return;
 
+		m_usbMode = Comm::getUsbMode();
 		updateUsbMounts();
 		restartTests();
 	}
 
-	void HardwareTestPresenter::onDeactivate() {}
+	void HardwareTestPresenter::onDeactivate()
+	{
+		Comm::setUsbMode(m_usbMode);
+	}
 } // namespace UI

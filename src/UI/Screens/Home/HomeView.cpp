@@ -80,7 +80,6 @@ namespace UI
 		m_updatePrompt.setMaxHeight(LV_PCT(70));
 
 		// Extrusion Factor Modal
-		m_extrusionFactorModal.hide();
 		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
 
 		// Keyboard
@@ -88,8 +87,6 @@ namespace UI
 		m_kb.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_kb.setAlign(LV_ALIGN_BOTTOM_MID, 0, 0);
 		m_kb.setSize(LV_PCT(100), LV_PCT(50));
-
-		m_numberpad.hide();
 	}
 
 	HomeView::~HomeView()

@@ -2,7 +2,7 @@
 
 #include "HeaterSliderPresenter.h"
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/LVGL/LvBar.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
@@ -23,7 +23,7 @@ namespace UI
 		void setActiveTemperature(int32_t temperature, bool dragging = false);
 		void setStandbyTemperature(int32_t temperature, bool dragging = false);
 
-		void setNumberPad(NumberPad* numberPad);
+		void setNumberPad(ModalNumberPad* numberPad);
 
 	  private:
 		static void drawCurrentTemperatureEvent(lv_event_t* e);
@@ -52,6 +52,6 @@ namespace UI
 		float m_minTempValue = 0.0f;
 		float m_maxTempValue = 0.0f;
 
-		NumberPad* m_numberPad = nullptr;
+		ModalNumberPad* m_numberPad = nullptr;
 	};
 } // namespace UI

@@ -88,7 +88,34 @@ namespace UI::Themes
 	{
 		UI_LOCK();
 		lv_style_copy(&style, &other.style);
-		lv_obj_report_style_change(&style);
+	}
+
+	Style& Style::operator=(const Style& other)
+	{
+		UI_LOCK();
+		lv_style_copy(&style, &other.style);
+		return *this;
+	}
+
+	Style::Style(Style&& other)
+	{
+		UI_LOCK();
+		style = other.style;
+		other.m_moved = true;
+	}
+
+	Style& Style::operator=(Style&& other)
+	{
+		UI_LOCK();
+		style = other.style;
+		other.m_moved = true;
+		return *this;
+	}
+
+	Style::~Style()
+	{
+		if (!m_moved)
+			lv_style_reset(&style);
 	}
 
 	void Style::init()
@@ -98,14 +125,6 @@ namespace UI::Themes
 			initFunc(&style);
 			initFunc = nullptr;
 		}
-	}
-
-	Style& Style::operator=(const Style& other)
-	{
-		UI_LOCK();
-		lv_style_copy(&style, &other.style);
-		lv_obj_report_style_change(&style);
-		return *this;
 	}
 
 	LvglStyles::LvglStyles() {}
@@ -121,6 +140,7 @@ namespace UI::Themes
 
 	void setLvglStyles(const LvglStyles& styles)
 	{
+		LOG_DBG("Setting lvgl styles");
 		if (!s_lvglStyles)
 		{
 			s_lvglStyles = std::make_unique<LvglStyles>();
@@ -139,6 +159,7 @@ namespace UI::Themes
 
 	void setComponentStyles(const ComponentStyles& styles)
 	{
+		LOG_DBG("Setting component styles");
 		if (!s_componentStyles)
 		{
 			s_componentStyles = std::make_unique<ComponentStyles>();
@@ -153,13 +174,11 @@ namespace UI::Themes
 
 	static void setFonts(const ThemeFonts& fonts)
 	{
+		LOG_DBG("Setting fonts");
 		s_fonts.header = *fonts.header.get();
 		s_fonts.normal = *fonts.normal.get();
 		s_fonts.emphasis = *fonts.emphasis.get();
 		s_fonts.subdued = *fonts.subdued.get();
-
-		lv_obj_report_style_change(NULL);
-		lv_obj_invalidate(lv_screen_active());
 	}
 
 	static bool themeExists(std::string_view name)
@@ -534,6 +553,7 @@ namespace UI::Themes
 #  if LV_USE_CHECKBOX
 		else if (lv_obj_check_type(obj, &lv_checkbox_class))
 		{
+			lv_obj_add_style(obj, lvgl.pad_base, 0);
 			lv_obj_add_style(obj, lvgl.pad_gap, 0);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(
@@ -606,12 +626,16 @@ namespace UI::Themes
 			lv_obj_add_style(obj, lvgl.card, 0);
 			lv_obj_add_style(obj, lvgl.pad_small, 0);
 			lv_obj_add_style(obj, lvgl.transition_delayed, 0);
+			lv_obj_add_style(obj, lvgl.input, 0);
+			lv_obj_add_style(obj, lvgl.dropdown, 0);
 			lv_obj_add_style(obj, lvgl.transition_normal, LV_STATE_PRESSED);
 			lv_obj_add_style(obj, lvgl.pressed, LV_STATE_PRESSED);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, lvgl.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, lvgl.transition_normal, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, lvgl.disabled, LV_STATE_DISABLED);
+			[[maybe_unused]] const int32_t pad = lv_obj_get_style_pad_top(obj, LV_PART_MAIN);
+			LOG_DBG("Pad {:d}", pad);
 		}
 		else if (lv_obj_check_type(obj, &lv_dropdownlist_class))
 		{
@@ -665,6 +689,8 @@ namespace UI::Themes
 		{
 			lv_obj_add_style(obj, lvgl.card, 0);
 			lv_obj_add_style(obj, lvgl.pad_small, 0);
+			lv_obj_add_style(obj, lvgl.input, 0);
+			lv_obj_add_style(obj, lvgl.text_area, 0);
 			lv_obj_add_style(obj, lvgl.disabled, LV_STATE_DISABLED);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, lvgl.outline_secondary, LV_STATE_EDITED);
@@ -990,7 +1016,7 @@ namespace UI::Themes
 					break;
 				}
 			}
-			StorageHelper::setData<int>(ID_THEME, theme_id);
+			StorageHelper::setData(ID_THEME, theme_id);
 		}
 		if (theme != nullptr)
 		{

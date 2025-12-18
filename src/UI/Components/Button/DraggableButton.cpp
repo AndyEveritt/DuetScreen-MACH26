@@ -58,7 +58,7 @@ namespace UI
 
 		lv_coord_t distSqr = dx * dx + dy * dy;
 
-		float pct = (float)distSqr / (m_dragThresholdSqr);
+		float pct = static_cast<float>(distSqr) / static_cast<float>(m_dragThresholdSqr);
 
 		pct = pct > 1.0f ? 1.0f : (pct < 0.0f ? 0.0f : pct);
 		return pct;

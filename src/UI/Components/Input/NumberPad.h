@@ -12,6 +12,7 @@
 #include "UI/Components/LVGL/LvButtonMatrix.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Core/View.h"
+#include <variant>
 
 namespace UI
 {
@@ -25,7 +26,8 @@ namespace UI
 	{
 
 	  public:
-		using confirm_cb_t = std::function<void(float value)>;
+		using confirm_cb_t =
+			std::optional<std::variant<std::function<void(float value)>, std::function<void(std::string_view)>>>;
 
 		NumberPad(const std::string& name, LvObj& parent, layout_t layout);
 		NumberPad(const std::string& name, LvObj& parent, layout_t layout, const NumberPadConfig& config);
@@ -40,6 +42,8 @@ namespace UI
 		void setRange(float minValue, float maxValue);
 		void setValue(float value);
 		float getValue() const;
+		void setText(std::string_view text);
+		std::string_view getText() const;
 		bool validateInput();
 		void setConfirmIsAction(bool isAction);
 
@@ -59,7 +63,7 @@ namespace UI
 		Button m_clearBtn{"Clear", m_textCont, LV_SYMBOL_TRASH, layout_t(75, 0, 20, 80)};
 		LvButtonMatrix m_btnMatrix{"btnmatrix", getRoot()};
 
-		confirm_cb_t m_confirmCb = nullptr;
+		confirm_cb_t m_confirmCb = std::nullopt;
 
 		float m_minValue = INT16_MIN;
 		float m_maxValue = INT16_MAX;

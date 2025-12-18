@@ -114,7 +114,7 @@ namespace UI
 	}
 
 	ModalExtrusionFactor::ModalExtrusionFactor(const std::string& name, LvObj& parent)
-		: View(name, parent)
+		: Modal(name, parent)
 	{
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);

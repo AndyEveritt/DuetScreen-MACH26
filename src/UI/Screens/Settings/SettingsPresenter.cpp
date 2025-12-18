@@ -1,59 +1,22 @@
 #include "SettingsPresenter.h"
-#include "Pins.h"
+#include "Comm/Usb.h"
 #include "SettingsView.h"
-#include "utils/GpioHelper.h"
 #include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
 #include <fstream>
 
 namespace UI
 {
-	void SettingsPresenter::setUsbMode(UsbMode mode)
+	void ConnectionSettingsPresenter::onInit()
 	{
-		LOG_DBG("Setting USB mode to {:d}", static_cast<int>(mode));
-		switch (mode)
-		{
-		case UsbMode::Host:
-			setUsbHost(true);
-			setUsbMux(true);
-			setUsbState(true);
-			break;
-		case UsbMode::Device:
-			setUsbHost(false);
-			setUsbMux(true);
-			setUsbState(false);
-			break;
-		case UsbMode::InternalWiFi:
-			setUsbHost(true);
-			setUsbMux(false);
-			setUsbState(false);
-			NetworkHelper::enable(true);
-			break;
-		}
-		LOG_INFO("USB mode set to {:d}", static_cast<int>(mode));
-		StorageHelper::setData(ID_USB_MODE, static_cast<int>(mode));
+		// Set the USB mode based on the stored value
+		Comm::UsbMode usbMode = Comm::getUsbMode();
+		setUsbMode(usbMode);
 	}
 
-	void SettingsPresenter::setUsbHost(bool host)
+	void DeveloperSettingsPresenter::startHardwareTest()
 	{
-		std::ofstream ofs(USB_OTG_ROLE_PATH);
-		ofs << (host ? "usb_host" : "usb_device");
-		ofs.close();
-	}
-
-	void SettingsPresenter::setUsbMux(bool usbc)
-	{
-		GpioHelper::setPinValue(GPIO_USB_SELECT, usbc ? 1 : 0);
-	}
-
-	void SettingsPresenter::setUsbState(bool state)
-	{
-		GpioHelper::setPinValue(GPIO_USB_STATE, state ? 1 : 0);
-	}
-
-	void SettingsPresenter::startHardwareTest()
-	{
-		auto& hardwareTest = m_view->getHardwareTest();
+		auto& hardwareTest = getView()->getHardwareTest();
 		hardwareTest.show(true);
 
 		/* Skip the serial number entry screen since the end user won't know this */
@@ -62,13 +25,7 @@ namespace UI
 		hardwareTest.getPresenter()->nextTest();
 	}
 
-	void SettingsPresenter::onInit()
-	{
-		// Set the USB mode based on the stored value
-		int usbMode = StorageHelper::getData(ID_USB_MODE, 0);
-		setUsbMode(static_cast<UsbMode>(usbMode));
-	}
-
+#if 0
 	void NetworkSettingsPresenter::setWifiEnabled(bool enabled)
 	{
 		NetworkHelper::enable(enabled);
@@ -95,12 +52,12 @@ namespace UI
 
 	void NetworkSettingsPresenter::scanWifi()
 	{
-#if SIMULATION
+#  if SIMULATION
 		std::vector<WiFiNetwork> networks = {
 			{"Network 1", 100, 1}, {"Network 2", 75, 2}, {"Network 3", 50, 3}, {"Network 4", 25, -1}};
-#else
+#  else
 		std::vector<WiFiNetwork> networks = NetworkHelper::scanWiFiNetworks();
-#endif
+#  endif
 
 		m_view->setNetworkCount(networks.size());
 		for (size_t i = 0; i < networks.size(); ++i)
@@ -142,4 +99,5 @@ namespace UI
 	{
 		lv_timer_pause(m_scanTimer);
 	}
+#endif
 } // namespace UI

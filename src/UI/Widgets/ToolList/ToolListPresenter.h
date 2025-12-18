@@ -50,7 +50,7 @@ namespace UI
 			int32_t initialValue = 0;
 			float min = 0.0f;
 			float max = 0.0f;
-			NumberPad::confirm_cb_t confirmCb = nullptr;
+			NumberPad::confirm_cb_t confirmCb = std::nullopt;
 		};
 
 		void configureNumberPad(const NumberPadConfig& config);

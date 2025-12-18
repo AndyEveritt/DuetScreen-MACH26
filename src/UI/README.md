@@ -18,13 +18,9 @@ The UI is split into multiple sections, each of which is responsible for a diffe
 
 ## Components
 These are reusable components that can be used in multiple screens.
-A component can either "dumb", or it can have some business logic associated with it.
-- If a component is "dumb", and interactivity is not defined by the component itself but is instead passed in as a callback by the view that uses the component.
-    - For example, a button component should not contain the logic for what happens when the button is clicked, but should instead call a callback function that is passed in as a prop.
-    - These components should inherit from the `BaseView` class
-- If a component has business logic, it will have its own `Presenter` class that will handle the logic for the component.
-    - For example, a component that displays a list of items may have a `Presenter` that fetches the data to display in the list.
-    - These components should inherit from the `View` class
+A component is "dumb", or it can have some business logic associated with it. Interactivity is not defined by the component itself but is instead passed in as a callback by the view that uses the component.
+- For example, a button component should not contain the logic for what happens when the button is clicked, but should instead call a callback function that is passed in as a prop.
+- These components should inherit from the `BaseView` class
 
 ## Core
 This is where the MVP structure is implemented. It contains the base `Model`, `View`, and `Presenter` classes which will be inherited by the other classes in the UI.
@@ -34,3 +30,8 @@ These are the different screens that the user can navigate to. Each screen will 
 
 ## Styles
 This is where the styles for the UI are defined. This includes things like colors, fonts, and sizes.
+
+## Widgets
+Like a [component](#components) but has its own `Presenter` class that will handle the logic for the widget.
+- For example, a component that displays a list of items may have a `Presenter` that fetches the data to display in the list.
+- Widgets should inherit from the `View` class, which takes a `Presenter` and an optional `BaseViewType` as template arguments

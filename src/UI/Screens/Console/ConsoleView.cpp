@@ -71,10 +71,10 @@ namespace UI
 
 #if ENABLE_CONSOLE_SHELL
 		m_shellToggle.setText(_("console.shell"));
-		m_shellToggle.setChecked(false);
 		m_shellToggle.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		m_shellToggle.setAlign(LV_ALIGN_TOP_RIGHT, -30, 20);
 		m_shellToggle.setCheckedCallback([this](bool checked) { getPresenter()->enableShell(checked); });
+		m_shellToggle.setChecked(false);
 #endif
 
 		m_topCont.addStyle(Themes::getLvglStyles().no_border);

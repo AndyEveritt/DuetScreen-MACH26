@@ -196,6 +196,10 @@ namespace UI::FontManager
 
 		s_activeTypeface = name;
 		Themes::getCurrentTheme()->setTypeface(name);
+
+		lv_obj_report_style_change(NULL);
+		lv_obj_invalidate(lv_screen_active());
+
 		StorageHelper::setData(ID_FONT, s_activeTypeface);
 		LOG_INFO("Active typeface set to '{:s}'", name);
 	}

@@ -373,6 +373,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_DROPDOWN
+		lv_style_set_pad_ver(lvgl.dropdown, PAD_DEF);
 		lv_style_set_max_height(lvgl.dropdown_list, LV_DPI_DEF * 2);
 #endif
 #if LV_USE_CHECKBOX
@@ -570,6 +571,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_SLIDER
+		lv_style_set_height(lvgl.slider, 10);
 		lv_style_set_bg_color(lvgl.slider, m_colors.highlight);
 		lv_style_set_bg_opa(lvgl.slider, LV_OPA_COVER);
 		lv_style_set_radius(lvgl.slider, LV_RADIUS_CIRCLE);
@@ -604,5 +606,7 @@ namespace UI::Themes
 		lv_style_set_shadow_width(components.tool_selected, 0);
 		lv_style_set_shadow_offset_x(components.tool_selected, -SHADOW_OFFSET);
 		lv_style_set_shadow_offset_y(components.tool_selected, SHADOW_OFFSET);
+
+		lv_style_merge(components.list_title, lvgl.text_emphasis);
 	}
 } // namespace UI::Themes

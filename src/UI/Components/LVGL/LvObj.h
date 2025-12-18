@@ -7,12 +7,17 @@
 
 #pragma once
 
+#include "Debug.h"
 #include "LockWrapper.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/lv_conf_internal.h"
 #include <functional>
 #include <list>
 #include <vector>
+
+#define UI_LOCK()                                                                                                      \
+	LOG_VERBOSE("UI_LOCK requested by thread {}", Log::GetThreadId());                                                 \
+	auto uiLock = ScopedLock(mutexUi);
 
 namespace UI
 {
@@ -107,7 +112,22 @@ namespace UI
 		lv_coord_t getSelfHeight() const;
 		lv_style_value_t getStyleProp(lv_style_prop_t prop, lv_part_t part = LV_PART_MAIN) const;
 
-		void iterateChildren(const std::function<void(size_t i, LvObj&)>& func);
+		template <typename F>
+			requires(std::is_invocable_v<F, size_t, LvObj&>)
+		void iterateChildren(F&& func)
+		{
+			UI_LOCK();
+			uint32_t count = getChildCount();
+			for (uint32_t i = 0; i < count; i++)
+			{
+				LvObj* child = getChild(i);
+				if (child == nullptr)
+				{
+					continue;
+				}
+				std::invoke(func, i, *child);
+			}
+		}
 
 		void setUserData(void* user_data);
 		void* getUserData() const;
@@ -183,15 +203,7 @@ namespace UI
 		/* Events */
 
 		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
-
-		template <typename F>
-			requires(std::is_invocable_v<F, lv_event_t*>)
-		void addEventCallback(F&& cb, lv_event_code_t code)
-		{
-			/* This template wrapper exists to reduce the number of moves/copies done when adding event callbacks */
-			addEventCallbackInternal(std::forward<F>(cb), code);
-		}
-
+		void addEventCallback(const std::function<void(lv_event_t*)>& cb, lv_event_code_t code);
 		bool removeEvent(size_t index);
 		uint32_t removeEventCallback(lv_event_cb_t cb);
 		uint32_t removeEventCallbackWithUserData(lv_event_cb_t cb, void* userData);
@@ -219,8 +231,6 @@ namespace UI
 		virtual void refresh() {}
 
 	  private:
-		void addEventCallbackInternal(std::function<void(lv_event_t*)> cb, lv_event_code_t code);
-
 		lv_obj_t* m_root;
 		std::string m_name;
 
@@ -238,7 +248,3 @@ namespace UI
 		static void genericEventCallback(lv_event_t* e);
 	};
 } // namespace UI
-
-#define UI_LOCK()                                                                                                      \
-	LOG_VERBOSE("UI_LOCK requested by thread {}", Log::GetThreadId());                                                 \
-	auto uiLock = ScopedLock(mutexUi);

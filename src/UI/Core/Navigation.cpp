@@ -126,57 +126,6 @@ namespace UI
 	}
 
 	/**
-	 * @brief Adds a view to the list of home screens.
-	 *
-	 * @param view The view to be added.
-	 */
-	void addHomeScreen(LvObjPtr view)
-	{
-		UI_LOCK();
-		if (view == nullptr)
-		{
-			return;
-		}
-		if (inVector(s_homeScreens, view))
-		{
-			LOG_WARN("Home screen {:s} already exists", view->getName());
-			return;
-		}
-
-		bool removed = false;
-		if (inVector(s_openScreens, view))
-		{
-			removed = removeFromVector(s_openScreens, view);
-		}
-		s_homeScreens.push_back(view);
-
-		if (removed && s_openScreens.empty() && s_openModals.empty())
-		{
-			/* Home screen was previously visible so it should remain visible */
-			home();
-		}
-		notifySideBar();
-	}
-
-	void removeHomeScreen(LvObjPtr view, bool close)
-	{
-		UI_LOCK();
-		if (removeFromVector(s_homeScreens, view))
-		{
-			if (s_openScreens.empty())
-			{
-				/* Home screen was previously visible so it should remain visible */
-				openScreen(view, false);
-			}
-			else if (close)
-			{
-				closeScreen(view, false);
-			}
-			notifySideBar();
-		}
-	}
-
-	/**
 	 * @brief Clears all home screens.
 	 */
 	void clearHomeScreens()
@@ -203,46 +152,6 @@ namespace UI
 			return nullptr;
 		}
 		return s_openScreens.back();
-	}
-
-	/**
-	 * @brief Opens a specified screen and optionally closes the previous screen.
-	 *
-	 * This function attempts to open the screen specified by the `view` parameter.
-	 * If `closePrevious` is true, the last opened screen will be closed before opening the new one.
-	 *
-	 * @param view The screen to be opened. Must not be nullptr.
-	 * @param closePrevious If true, the last opened screen will be closed before opening the new one.
-	 *
-	 * @note If `view` is nullptr, a warning will be logged and the function will return without opening any screen.
-	 * @note If the screen is already visible, it will not be shown again.
-	 * @note The screen will be removed from the list of returnable screens and added to the list of open screens if it
-	 * is not a home screen.
-	 */
-	void openScreen(LvObjPtr view, bool closePrevious)
-	{
-		UI_LOCK();
-		if (view == nullptr)
-		{
-			LOG_WARN("Trying to open a nullptr screen");
-			return;
-		}
-
-		closeAllModals();
-
-		if (closePrevious)
-		{
-			closeLastScreen();
-		}
-
-		LOG_INFO("Opening screen '{:s}'", view->getName());
-		removeFromVector(s_returnableScreens, view);
-		if (!inVector(s_homeScreens, view))
-		{
-			addToVector(s_openScreens, view);
-		}
-		view->show(true);
-		notifySideBar();
 	}
 
 	/**
@@ -274,66 +183,184 @@ namespace UI
 		return true;
 	}
 
-	/**
-	 * @brief Closes the specified screen and updates screen vectors accordingly.
-	 *
-	 * This function hides the given screen if it is currently visible, removes it from the list of open screens,
-	 * and optionally adds it to the list of returnable screens.
-	 *
-	 * @param view The screen to be closed.
-	 * @param returnable If true, the screen will be added to the list of returnable screens.
-	 */
-	bool closeScreen(LvObjPtr view, bool returnable)
+	namespace detail
 	{
-		UI_LOCK();
-		LOG_INFO("Closing screen '{:s}'", view->getName());
-		if (view == nullptr)
+		/**
+		 * @brief Adds a view to the list of home screens.
+		 *
+		 * @param view The view to be added.
+		 */
+		void addHomeScreenImpl(LvObjPtr view)
 		{
-			LOG_WARN("Trying to close a nullptr screen");
-			return false;
-		}
-
-		if (inVector(s_openModals, view))
-		{
-			return closeModal(view);
-		}
-
-		if (view->isVisible())
-		{
-			view->hide();
-		}
-		bool removed = removeFromVector(s_openScreens, view);
-		if (returnable)
-		{
-			addToVector(s_returnableScreens, view);
-		}
-
-		if (s_openScreens.empty() && removed)
-		{
-			for (auto& home : s_homeScreens)
+			UI_LOCK();
+			if (view == nullptr)
 			{
-				home->show();
+				return;
+			}
+			if (inVector(s_homeScreens, view))
+			{
+				LOG_WARN("Home screen {:s} already exists", view->getName());
+				return;
+			}
+
+			bool removed = false;
+			if (inVector(s_openScreens, view))
+			{
+				removed = removeFromVector(s_openScreens, view);
+			}
+			s_homeScreens.push_back(view);
+
+			if (removed && s_openScreens.empty() && s_openModals.empty())
+			{
+				/* Home screen was previously visible so it should remain visible */
+				home();
+			}
+			notifySideBar();
+		}
+
+		void removeHomeScreenImpl(LvObjPtr view, bool close)
+		{
+			UI_LOCK();
+			if (removeFromVector(s_homeScreens, view))
+			{
+				if (s_openScreens.empty())
+				{
+					/* Home screen was previously visible so it should remain visible */
+					openScreenImpl(view, false);
+				}
+				else if (close)
+				{
+					closeScreenImpl(view, false);
+				}
+				notifySideBar();
 			}
 		}
-		notifySideBar();
-		return removed;
-	}
 
-	void openModal(LvObj* view)
-	{
-		UI_LOCK();
-		if (view == nullptr)
+		/**
+		 * @brief Opens a specified screen and optionally closes the previous screen.
+		 *
+		 * This function attempts to open the screen specified by the `view` parameter.
+		 * If `closePrevious` is true, the last opened screen will be closed before opening the new one.
+		 *
+		 * @param view The screen to be opened. Must not be nullptr.
+		 * @param closePrevious If true, the last opened screen will be closed before opening the new one.
+		 *
+		 * @note If `view` is nullptr, a warning will be logged and the function will return without opening any screen.
+		 * @note If the screen is already visible, it will not be shown again.
+		 * @note The screen will be removed from the list of returnable screens and added to the list of open screens if
+		 * it is not a home screen.
+		 */
+		void openScreenImpl(LvObjPtr view, bool closePrevious)
 		{
-			LOG_WARN("Trying to open a nullptr modal screen");
-			return;
+			UI_LOCK();
+			if (view == nullptr)
+			{
+				LOG_WARN("Trying to open a nullptr screen");
+				return;
+			}
+
+			closeAllModals();
+
+			if (closePrevious)
+			{
+				closeLastScreen();
+			}
+
+			LOG_INFO("Opening screen '{:s}'", view->getName());
+			removeFromVector(s_returnableScreens, view);
+			if (!inVector(s_homeScreens, view))
+			{
+				addToVector(s_openScreens, view);
+			}
+			view->show(true);
+			notifySideBar();
 		}
 
-		LOG_INFO("Opening modal '{:s}'", view->getName());
+		/**
+		 * @brief Closes the specified screen and updates screen vectors accordingly.
+		 *
+		 * This function hides the given screen if it is currently visible, removes it from the list of open screens,
+		 * and optionally adds it to the list of returnable screens.
+		 *
+		 * @param view The screen to be closed.
+		 * @param returnable If true, the screen will be added to the list of returnable screens.
+		 */
+		bool closeScreenImpl(LvObjPtr view, bool returnable)
+		{
+			UI_LOCK();
+			LOG_INFO("Closing screen '{:s}'", view->getName());
+			if (view == nullptr)
+			{
+				LOG_WARN("Trying to close a nullptr screen");
+				return false;
+			}
 
-		addToVector(s_openModals, view);
-		view->show(true);
-		notifySideBar();
-	}
+			closeAllModals();
+
+			if (view->isVisible())
+			{
+				view->hide();
+			}
+			bool removed = removeFromVector(s_openScreens, view);
+			if (returnable)
+			{
+				addToVector(s_returnableScreens, view);
+			}
+
+			if (s_openScreens.empty() && removed)
+			{
+				for (auto& home : s_homeScreens)
+				{
+					home->show();
+				}
+			}
+			notifySideBar();
+			return removed;
+		}
+
+		void openModalImpl(LvObj* view)
+		{
+			UI_LOCK();
+			if (view == nullptr)
+			{
+				LOG_WARN("Trying to open a nullptr modal screen");
+				return;
+			}
+
+			LOG_INFO("Opening modal '{:s}'", view->getName());
+
+			addToVector(s_openModals, view);
+			view->show(true);
+			notifySideBar();
+		}
+
+		bool closeModalImpl(LvObj* view)
+		{
+			UI_LOCK();
+			if (view == nullptr)
+			{
+				LOG_WARN("Trying to close a nullptr modal");
+				return false;
+			}
+
+			if (s_openModals.empty())
+			{
+				LOG_WARN("No open modals");
+				return false;
+			}
+
+			if (!removeFromVector(s_openModals, view))
+			{
+				LOG_WARN("Modal '{:s}' not found in open modals", view->getName());
+				return false;
+			}
+
+			LOG_INFO("Closing modal '{:s}'", view->getName());
+			view->hide();
+			notifySideBar();
+			return true;
+		}
+	} // namespace detail
 
 	void closeAllModals()
 	{
@@ -346,33 +373,6 @@ namespace UI
 		}
 		s_openModals.clear();
 		notifySideBar();
-	}
-
-	bool closeModal(LvObj* view)
-	{
-		UI_LOCK();
-		if (view == nullptr)
-		{
-			LOG_WARN("Trying to close a nullptr modal");
-			return false;
-		}
-
-		if (s_openModals.empty())
-		{
-			LOG_WARN("No open modals");
-			return false;
-		}
-
-		if (!removeFromVector(s_openModals, view))
-		{
-			LOG_WARN("Modal '{:s}' not found in open modals", view->getName());
-			return false;
-		}
-
-		LOG_INFO("Closing modal '{:s}'", view->getName());
-		view->hide();
-		notifySideBar();
-		return true;
 	}
 
 	bool closeLastModal()

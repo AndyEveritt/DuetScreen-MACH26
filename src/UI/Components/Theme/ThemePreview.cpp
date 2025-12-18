@@ -214,7 +214,7 @@ namespace UI
 		m_darkMode.setVisible(show);
 	}
 
-	void ThemePreview::setNumberPad(NumberPad* numberPad)
+	void ThemePreview::setNumberPad(ModalNumberPad* numberPad)
 	{
 		m_numberPad = numberPad;
 

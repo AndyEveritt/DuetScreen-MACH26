@@ -8,7 +8,7 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/List/List.h"
@@ -38,8 +38,8 @@ namespace UI
 
 		void setStorageKey(std::string_view key);
 
-		void setNumberPad(NumberPad* np) { m_numberPad = np; }
-		NumberPad* getNumberPad() const { return m_numberPad; }
+		void setNumberPad(ModalNumberPad* np) { m_numberPad = np; }
+		ModalNumberPad* getNumberPad() const { return m_numberPad; }
 
 	  private:
 		void saveValues() const;
@@ -52,7 +52,7 @@ namespace UI
 		Button m_incrementBtn{"increment", m_topRow};
 		List<Button> m_valueBtns{"values", getRoot()};
 
-		NumberPad* m_numberPad = nullptr;
+		ModalNumberPad* m_numberPad = nullptr;
 
 		float m_incrementValue = 1.0f;
 		float m_value = std::numeric_limits<float>::max(); // this is set to 0.0f in constructor to update label

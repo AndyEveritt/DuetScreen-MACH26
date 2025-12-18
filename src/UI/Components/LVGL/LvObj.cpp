@@ -285,21 +285,6 @@ namespace UI
 		return lv_obj_get_style_prop(getRootPtr(), part, prop);
 	}
 
-	void LvObj::iterateChildren(const std::function<void(size_t, LvObj&)>& func)
-	{
-		UI_LOCK();
-		uint32_t count = getChildCount();
-		for (uint32_t i = 0; i < count; i++)
-		{
-			LvObj* child = getChild(i);
-			if (child == nullptr)
-			{
-				continue;
-			}
-			func(i, *child);
-		}
-	}
-
 	void LvObj::setUserData(void* user_data)
 	{
 		UI_LOCK();
@@ -697,7 +682,7 @@ namespace UI
 		return lv_obj_add_event_cb(getRootPtr(), cb, code, userData);
 	}
 
-	void LvObj::addEventCallbackInternal(std::function<void(lv_event_t*)> cb, lv_event_code_t code)
+	void LvObj::addEventCallback(const std::function<void(lv_event_t*)>& cb, lv_event_code_t code)
 	{
 		UI_LOCK();
 		if (!cb)
@@ -730,7 +715,7 @@ namespace UI
 				 */
 				const auto& cb = obj->m_eventCallbacks[i].cb;
 				if (cb)
-					cb(e);
+					std::invoke(cb, e);
 			}
 		}
 	}
@@ -833,14 +818,12 @@ namespace UI
 		}
 
 #if LV_NESTED_SHOW_HIDE
-		for (size_t i = 0; i < getChildCount(); i++)
-		{
-			if (auto child = getChild(i))
+		iterateChildren(
+			[](size_t /* index */, LvObj& child)
 			{
-				if (child && child->isVisible())
-					child->show(false);
-			}
-		}
+				if (child.isVisible())
+					child.show(false);
+			});
 #endif
 
 		setFlag(LV_OBJ_FLAG_HIDDEN, false);
@@ -874,17 +857,17 @@ namespace UI
 		}
 
 #if LV_NESTED_SHOW_HIDE
-		for (size_t i = 0; i < getChildCount(); i++)
-		{
-			auto child = getChild(i);
-			if (child && child->isVisible())
+		iterateChildren(
+			[](size_t, LvObj& child)
 			{
-				/* want to run `deactivate` on any children with presenters, and onHide(), but also want the child to be
-				 * visible again when obj is shown */
-				child->hide();
-				child->setFlag(LV_OBJ_FLAG_HIDDEN, false);
-			}
-		}
+				if (child.isVisible())
+				{
+					/* want to run `deactivate` on any children with presenters, and onHide(), but also want the child
+					 * to be visible again when obj is shown */
+					child.hide();
+					child.setFlag(LV_OBJ_FLAG_HIDDEN, false);
+				}
+			});
 #endif
 
 		setFlag(LV_OBJ_FLAG_HIDDEN, true);

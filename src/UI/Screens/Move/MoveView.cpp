@@ -264,9 +264,6 @@ namespace UI
 										 LV_EVENT_LONG_PRESSED);
 									 return btn;
 								 });
-
-		/* Numberpad */
-		m_numberpad.hide();
 	}
 
 	void MoveView::onHomeAllEvent(lv_event_t* e)

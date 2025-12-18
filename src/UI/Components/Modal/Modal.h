@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvObj.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
+#include <concepts>
 
 namespace UI
 {
@@ -18,6 +20,7 @@ namespace UI
 	class Modal : public T
 	{
 	  public:
+		using modal_base_marker = void; // tag to identify Modal-derived types
 		template <typename... Args>
 			requires(std::is_constructible_v<T, const std::string&, LvObj&, Args...>)
 		Modal(const std::string& name, LvObj& parent, Args&&... args)
@@ -34,32 +37,34 @@ namespace UI
 			this->hide();
 
 			m_modalBg.setFlag(LV_OBJ_FLAG_FLOATING, true);
-			m_modalBg.addEventCallback(modalBgEventHandler, LV_EVENT_CLICKED, this);
+			m_modalBg.addEventCallback(
+				[this](lv_event_t*)
+				{
+					if (!isBlocking())
+						close();
+				},
+				LV_EVENT_CLICKED);
 			m_modalBg.addStyle(Themes::getLvglStyles().bg_modal);
 		}
 
-		void close()
-		{
-			if (closeModal(this) || closeScreen(this, false))
-			{
-				return;
-			}
-			this->hide();
-		}
+		void open() { openModal(this); }
+		void close() { closeModal(this); }
 
 		void setParent(LvObj& parent) { m_modalBg.setParent(parent); }
 
-	  private:
-		static void modalBgEventHandler(lv_event_t* e)
-		{
-			UI_LOCK();
+		void setBlocking(bool blocking) { m_blocking = blocking; }
+		bool isBlocking() const { return m_blocking; }
 
-			Modal* modal = (Modal*)lv_event_get_user_data(e);
-			if (modal)
-			{
-				modal->close();
-			}
-		}
+	  private:
+		/**
+		 * @warning private to prevent accidental calls (use this->open() or openModal() instead)
+		 */
+		void show(bool move_to_front = false) override { T::show(move_to_front); }
+
+		/**
+		 * @warning private to prevent accidental calls (use this->close() or closeModal() instead)
+		 */
+		void hide(bool move_to_front = false) override { T::hide(move_to_front); }
 
 		void onShow() override
 		{
@@ -73,5 +78,6 @@ namespace UI
 		}
 
 		LvContainer m_modalBg;
+		bool m_blocking = false;
 	};
 } // namespace UI

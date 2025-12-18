@@ -7,6 +7,8 @@
 
 #include "TextBox.h"
 #include "Debug.h"
+#include "UI/Components/Input/ModalNumberPad.h"
+#include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 
@@ -46,6 +48,30 @@ namespace UI
 		// m_textArea.setMinHeight(20);
 		m_textArea.setFlexGrow(1);
 		m_textArea.setCursorClickPos(true);
+		m_textArea.addEventCallback(
+			[this](lv_event_t*)
+			{
+				if (m_keyboard)
+				{
+					m_keyboard->setTextArea(&m_textArea);
+				}
+				else if (m_numberPad)
+				{
+					switch (m_mode)
+					{
+					case Mode::TEXT:
+						m_numberPad->setConfirmCallback([this](std::string_view text) { setText(text); });
+						break;
+					case Mode::NUMBER:
+						m_numberPad->setConfirmCallback([this](float value) { setText(fmt::format("{:g}", value)); });
+						break;
+					}
+					m_numberPad->setText(m_textArea.getText());
+					m_textArea.sendEvent(LV_EVENT_DEFOCUSED); // stop cursor blinking
+					openModal(m_numberPad);
+				}
+			},
+			LV_EVENT_CLICKED);
 
 		// Show Password Button
 		m_showPassword.setSize(LV_SIZE_CONTENT, LV_PCT(100));
@@ -63,8 +89,6 @@ namespace UI
 				// lv_group_focus_obj(tb->m_textArea);
 			},
 			this);
-
-		m_textArea.addStyle(Themes::getLvglStyles().input);
 	}
 
 	void TextBox::setLabel(const std::string& label)
@@ -77,6 +101,7 @@ namespace UI
 		m_textArea.setText(text);
 		m_textArea.setCursorPos(0);
 		m_textArea.scrollToX(0, LV_ANIM_OFF);
+		sendEvent(LV_EVENT_VALUE_CHANGED);
 	}
 	std::string_view TextBox::getText() const
 	{
@@ -248,23 +273,19 @@ namespace UI
 		m_textArea.cursorDown();
 	}
 
-	void TextBox::addConfirmEventCallback(lv_event_cb_t cb, void* userData)
+	void TextBox::addConfirmEventCallback(std::function<void(lv_event_t*)> cb)
 	{
 		UI_LOCK();
-		m_textArea.setUserData(reinterpret_cast<void*>(cb));
 		m_textArea.addEventCallback(
-			[](lv_event_t* e)
+			[cb](lv_event_t* e)
 			{
 				UI_LOCK();
 				lv_event_code_t code = lv_event_get_code(e);
 				if (code == LV_EVENT_READY || code == LV_EVENT_DEFOCUSED)
 				{
-					auto callback =
-						reinterpret_cast<lv_event_cb_t>(LvObj::fromPtr(lv_event_get_target_obj(e))->getUserData());
-					callback(e);
+					std::invoke(cb, e);
 				}
 			},
-			LV_EVENT_ALL,
-			userData);
+			LV_EVENT_ALL);
 	}
 } // namespace UI

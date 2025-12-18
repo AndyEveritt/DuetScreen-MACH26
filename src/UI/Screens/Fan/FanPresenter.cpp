@@ -10,12 +10,16 @@ namespace UI
 	void FanPresenter::setFanSpeed(size_t slot, uint32_t value)
 	{
 		auto& fan = m_controllableFans.at(slot);
-		if (fan == nullptr || value == std::round(100 * fan->requestedValue))
+		if (fan == nullptr)
+			return;
+
+		const uint32_t currentValue = static_cast<uint32_t>(std::round(100 * fan->requestedValue));
+		if (value == currentValue)
 		{
 			return;
 		}
 
-		Comm::DUET.SendGcodef("M106 P{:d} S{:d}\n", fan->index, (uint32_t)std::round(2.55 * value));
+		Comm::DUET.SendGcodef("M106 P{:d} S{:d}\n", fan->index, (255 * value / 100));
 	}
 
 	void FanPresenter::newFanData()

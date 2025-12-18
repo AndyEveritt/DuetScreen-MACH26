@@ -54,13 +54,15 @@ namespace UI
 			m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 			m_header.setFlexFlow(LV_FLEX_FLOW_ROW);
 			m_header.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-			m_header.addStyle(Themes::getLvglStyles().bg_color_header, LV_PART_MAIN);
+			m_header.addStyle(Themes::getLvglStyles().bg_color_header);
+			m_header.addStyle(Themes::getComponentStyles().list_header);
 
 			m_listCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 			m_listCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 			m_listCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 			m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+			m_title.addStyle(Themes::getComponentStyles().list_title);
 
 			showTitle(false);
 		}

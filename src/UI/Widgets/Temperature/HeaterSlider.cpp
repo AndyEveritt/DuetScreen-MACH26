@@ -55,6 +55,7 @@ namespace UI
 		m_currentTemperature.addEventCallback(drawCurrentTemperatureEvent, LV_EVENT_DRAW_MAIN_END, this);
 
 		// Add styles
+		m_heaterName.addStyle(Themes::getLvglStyles().actionBtn);
 		m_activeTemperature.addStyle(Themes::getLvglStyles().pad_normal);
 		m_standbyTemperature.addStyle(Themes::getLvglStyles().pad_normal);
 		m_activeTemperature.addStyle(Themes::getLvglStyles().input);
@@ -142,7 +143,7 @@ namespace UI
 		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
-	void HeaterSlider::setNumberPad(NumberPad* numberPad)
+	void HeaterSlider::setNumberPad(ModalNumberPad* numberPad)
 	{
 		UI_LOCK();
 		m_numberPad = numberPad;

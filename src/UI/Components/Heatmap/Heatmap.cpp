@@ -158,7 +158,7 @@ namespace UI
 		m_colorBar.getResolution(barWidth, barHeight);
 		for (uint32_t y = 0; y < barHeight; y++)
 		{
-			float percent = 1.0f - static_cast<float>(y) / barHeight;
+			float percent = 1.0f - static_cast<float>(y) / static_cast<float>(barHeight);
 			lv_color_t color = GetColorForPercent(percent);
 			m_colorBar.drawPx(0, y, color, LV_OPA_COVER);
 		}

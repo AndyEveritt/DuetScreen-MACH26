@@ -103,7 +103,7 @@ namespace NetworkHelper
 			return "";
 		}
 
-		LOG_INFO("Sending command: {:s}", cmd);
+		LOG_DBG("Sending command: {:s}", cmd);
 		char buf[4096];
 		size_t len = sizeof(buf) - 1;
 
@@ -220,6 +220,13 @@ namespace NetworkHelper
 	std::vector<WiFiNetwork> scanWiFiNetworks()
 	{
 		LOG_INFO("Scanning for WiFi networks");
+#if SIMULATION
+		std::vector<WiFiNetwork> networks = {{.ssid = "Network 1", .signal_level = 100, .id = 1, .connected = true},
+											 {.ssid = "Network 2", .signal_level = 75, .id = 2, .connected = false},
+											 {.ssid = "Network 3", .signal_level = 50, .id = 3, .connected = false},
+											 {.ssid = "Network 4", .signal_level = 25, .id = -1, .connected = false}};
+		return networks;
+#else
 		std::vector<WiFiNetwork> networks;
 		std::vector<WiFiNetwork> knownNetworks = getKnownWiFiNetworks();
 
@@ -291,6 +298,7 @@ namespace NetworkHelper
 				  });
 
 		return networks;
+#endif
 	}
 
 	bool isNetworkKnown(std::string_view ssid)

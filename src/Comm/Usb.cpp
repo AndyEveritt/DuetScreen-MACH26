@@ -2,6 +2,10 @@
 #include "Comm/JsonDecoder.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "Pins.h"
+#include "utils/GpioHelper.h"
+#include "utils/NetworkHelper.h"
+#include "utils/StorageHelper.h"
 #include <atomic>
 #include <condition_variable>
 #include <cstring>
@@ -10,8 +14,13 @@
 
 namespace Comm
 {
+	static void setUsbHost(bool host);
+	static void setUsbMux(bool usbc);
+	static void setUsbState(bool state);
+
 	static UsbDevice s_currentUsbDevice;
 	static libusb_context* s_context = nullptr;
+	static UsbMode s_usbMode = UsbMode::Unknown;
 
 	using vendor_id_t = uint16_t;
 	using product_id_t = uint16_t;
@@ -540,5 +549,56 @@ namespace Comm
 			return -1;
 		}
 		return s_currentUsbDevice.send(data);
+	}
+
+	void setUsbMode(const UsbMode mode)
+	{
+		LOG_DBG("Setting USB mode to {:d}", static_cast<int>(mode));
+		switch (mode)
+		{
+		case UsbMode::Host:
+			setUsbHost(true);
+			setUsbMux(true);
+			setUsbState(true);
+			break;
+		case UsbMode::Device:
+			setUsbHost(false);
+			setUsbMux(true);
+			setUsbState(false);
+			break;
+		case UsbMode::InternalWiFi:
+			setUsbHost(true);
+			setUsbMux(false);
+			setUsbState(false);
+			NetworkHelper::enable(true);
+			break;
+		default:
+			LOG_FATAL_THROW("Unknown USB mode");
+		}
+		LOG_INFO("USB mode set to {:d}", static_cast<int>(mode));
+		StorageHelper::setData(ID_USB_MODE, static_cast<int>(mode));
+		s_usbMode = mode;
+	}
+
+	UsbMode getUsbMode()
+	{
+		return StorageHelper::getData(ID_USB_MODE, s_usbMode);
+	}
+
+	static void setUsbHost(bool host)
+	{
+		std::ofstream ofs(USB_OTG_ROLE_PATH);
+		ofs << (host ? "usb_host" : "usb_device");
+		ofs.close();
+	}
+
+	static void setUsbMux(bool usbc)
+	{
+		GpioHelper::setPinValue(GPIO_USB_SELECT, usbc ? 1 : 0);
+	}
+
+	static void setUsbState(bool state)
+	{
+		GpioHelper::setPinValue(GPIO_USB_STATE, state ? 1 : 0);
 	}
 } // namespace Comm

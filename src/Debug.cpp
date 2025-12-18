@@ -166,7 +166,7 @@ namespace Log
 		}
 		else
 		{
-			auto sinks = s_logger->sinks();
+			auto& sinks = s_logger->sinks();
 			for (auto it = sinks.begin(); it != sinks.end(); ++it)
 			{
 				if (*it == s_uiSink)

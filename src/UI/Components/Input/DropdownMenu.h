@@ -53,6 +53,12 @@ namespace UI
 
 		void setSelectedCallback(selected_cb_t cb);
 		void addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
+		template <typename F>
+			requires(std::is_invocable_v<F, lv_event_t*>)
+		void addEventCallback(F&& cb, lv_event_code_t code)
+		{
+			m_dropdown.addEventCallback(std::forward<F>(cb), code);
+		}
 
 	  private:
 		void init();

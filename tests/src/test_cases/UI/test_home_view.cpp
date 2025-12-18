@@ -83,7 +83,6 @@ TEST_F(TestHomeView, BlankJobView)
 TEST_F(TestHomeView, BlankSettingsView)
 {
 	openScreen(&view.getSettingsView(), false);
-	view.getSettingsView().getDuetSettingsView().show(true);
 	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_blank.png")
 }
 
@@ -256,8 +255,8 @@ TEST_F(TestHomeViewWithData, MacroView)
 
 TEST_F(TestHomeViewWithData, SettingsView)
 {
-	openScreen(&view.getSettingsView());
-	view.getSettingsView().getDuetSettingsView().show(true);
+	auto& settings = view.getSettingsView();
+	openScreen(&settings);
 	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view.png")
 }
 

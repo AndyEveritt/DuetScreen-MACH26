@@ -3,6 +3,7 @@
 #include "Hardware/Duet.h"
 #include "SettingsPresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Containers/TabView.h"
 #include "UI/Components/Input/DropdownMenu.h"
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/Slider.h"
@@ -11,24 +12,143 @@
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Core/View.h"
 #include "UI/Widgets/HardwareTest/HardwareTest.h"
+#include "UI/Widgets/Network/WifiSelector.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {
-	class SettingsView;
-
-	class SettingsSubView : public Card
+	class SettingsTab : public LvContainer
 	{
 	  public:
-		SettingsSubView(const std::string& name, LvObj& parent, SettingsView& mainSettingsView);
-
-		SettingsView& getMainSettingsView() const { return m_mainSettingsView; }
-		std::shared_ptr<SettingsPresenter> getMainSettingsPresenter() const;
+		SettingsTab(const std::string& name, LvObj& parent);
 
 	  protected:
-		static void onTextAreaEvent(lv_event_t* e);
-		SettingsView& m_mainSettingsView;
+		void createHeader(std::string_view text);
+		void createRow(std::string_view label, LvObj& obj);
+		void createSpanRow(LvObj& obj);
+		void setRowVisibility(LvObj& obj, bool show);
+
+		static constexpr int32_t m_maxRowCount = 10;
+		size_t m_rowCount = 0;
+
+		std::array<std::unique_ptr<LvLabel>, m_maxRowCount> m_labels;
+		std::array<int32_t, 3> m_colDsc;
+		std::array<int32_t, m_maxRowCount + 1> m_rowDsc;
 	};
 
+	class GeneralSettings : public View<GeneralSettingsPresenter, SettingsTab>
+	{
+	  public:
+		GeneralSettings(const std::string& name, LvObj& parent);
+
+	  private:
+		void onInit() override;
+		void onShow() override;
+
+		/* General */
+		LvLabel m_buildTime{"build_time", getRoot()};
+		DropdownMenu m_language{"language", getRoot()};
+		Slider m_brightness{"brightness", getRoot()};
+		Slider m_screensaverTimeout{"screensaver_timeout", getRoot()};
+
+		/* Notifications */
+		LvCheckbox m_displayConnectedMessage{"display_connected_message", getRoot()};
+		LvCheckbox m_notificationAutoCloseError{"notification_auto_close_error", getRoot()};
+		DropdownMenu m_notificationLevel{"notification_level", getRoot()};
+		Slider m_notificationTimeout{"info_timeout", getRoot()};
+	};
+
+	class ConnectionSettings : public View<ConnectionSettingsPresenter, SettingsTab>
+	{
+	  public:
+		ConnectionSettings(const std::string& name, LvObj& parent);
+
+		void setKeyboard(LvKeyboard* keyboard);
+
+	  private:
+		void showConnectionMethodSettings(const Comm::CommunicationType method);
+
+		void onInit() override;
+		void onShow() override;
+
+		DropdownMenu m_connectionMethod{"connection_method", getRoot()};
+		DropdownMenu m_usbMode{"usb_mode", getRoot()};
+		Slider m_pollInterval{"poll_interval", getRoot()};
+
+		/* USB Settings */
+		// None
+
+		/* Wifi Settings */
+		TextBox m_duetIpAddress{"duet_ip_address", getRoot()};
+		TextBox m_duetPassword{"duet_password", getRoot()};
+
+		/* UART Settings */
+		// None
+
+		/* Network */
+		WifiSelector m_wifiSelector{"wifi_selector", getRoot()};
+
+		LvKeyboard* m_keyboard;
+	};
+
+	class DisplaySettings : public View<DisplaySettingsPresenter, SettingsTab>
+	{
+	  public:
+		DisplaySettings(const std::string& name, LvObj& parent);
+
+	  private:
+		void updateThemePreview();
+
+		void onInit() override;
+		void onShow() override;
+
+		DropdownMenu m_theme{"theme", getRoot()};
+		DropdownMenu m_font{"font", getRoot()};
+		ThemePreview m_themePreview{"theme_preview", getRoot()};
+	};
+
+	class DeveloperSettings : public View<DeveloperSettingsPresenter, SettingsTab>
+	{
+	  public:
+		DeveloperSettings(const std::string& name, LvObj& parent);
+
+		HardwareTest& getHardwareTest() { return m_hardwareTest; }
+
+	  private:
+		static void onDebugLevelEvent(lv_event_t* e);
+#if DEBUG_BORDERS
+		static void onDebugBordersEvent(lv_event_t* e);
+#endif
+		static void onEnableSSHEvent(lv_event_t* e);
+		static void onRestartEvent(lv_event_t* e);
+		static void onEraseAndRestartEvent(lv_event_t* e);
+		static void onRebootEvent(lv_event_t* e);
+
+		void onInit() override;
+		void onShow() override;
+
+		DropdownMenu m_debugLevel{"debug_level", getRoot()};
+		LvCheckbox m_enableAdvancedSettings{"enable_advanced_settings", getRoot()};
+#if DEBUG_BORDERS
+		LvCheckbox m_debugBorders{"debug_borders", getRoot()};
+#endif
+		LvCheckbox m_enableSSH{"enable_ssh", getRoot()};
+#if LV_USE_SYSMON
+		LvCheckbox m_enableSystemMonitor{"enable_system_monitor", getRoot()};
+#endif
+		LvCheckbox m_systemLogging{"system_logging", getRoot()};
+
+		/* Controls */
+		LvContainer m_controls{"controls", getRoot()};
+		Button m_restart{"restart", m_controls};
+		Button m_eraseAndRestart{"erase_and_restart", m_controls};
+		Button m_reboot{"reboot", m_controls};
+		Button m_startHardwareTest{"start_hardware_test", m_controls};
+
+		HardwareTest m_hardwareTest;
+	};
+
+#if 0
 	class DuetSettingsView : public SettingsSubView
 	{
 	  public:
@@ -146,9 +266,9 @@ namespace UI
 
 	  private:
 		static void onDebugLevelEvent(lv_event_t* e);
-#if DEBUG_BORDERS
+#  if DEBUG_BORDERS
 		static void onDebugBordersEvent(lv_event_t* e);
-#endif
+#  endif
 		static void onEnableSSHEvent(lv_event_t* e);
 		static void onRestartEvent(lv_event_t* e);
 		static void onEraseAndRestartEvent(lv_event_t* e);
@@ -158,19 +278,20 @@ namespace UI
 		lv_obj_t* m_debugLevelLabel;
 		lv_obj_t* m_debugLevel;
 
-#if DEBUG_BORDERS
+#  if DEBUG_BORDERS
 		lv_obj_t* m_debugBorders;
-#endif
+#  endif
 		lv_obj_t* m_enableSSH;
-#if LV_USE_SYSMON
+#  if LV_USE_SYSMON
 		LvCheckbox m_enableSystemMonitor{"enable_system_monitor", getRoot()};
-#endif
+#  endif
 
 		Button m_restart;
 		Button m_eraseAndRestart;
 		Button m_reboot;
 		Button m_startHardwareTest;
 	};
+#endif
 
 	/**
 	 * @brief View to configure the screen settings
@@ -202,46 +323,21 @@ namespace UI
 						  LvTextArea* textArea = nullptr);
 		void setKeyboardTextArea(LvTextArea* textArea);
 
-		DuetSettingsView& getDuetSettingsView() { return m_duetSettingsView; }
-		NetworkSettingsView& getNetworkSettingsView() { return m_networkSettingsView; }
-		DeveloperSettingsView& getDeveloperSettingsView() { return m_developerSettingsView; }
-
-		HardwareTest& getHardwareTest() { return m_hardwareTest; }
-
 		bool back() override;
 
 	  protected:
-		static void onWindowSelectEvent(lv_event_t* e);
-
 		LvKeyboard& getKeyboard() { return m_keyboard; }
 
 		void onShow() override;
 		void onHide() override;
 
-		int32_t m_layoutColDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(4), LV_GRID_TEMPLATE_LAST};
-		int32_t m_layoutRowDsc[3] = {LV_GRID_FR(2), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+		TabView m_tabs{"tabs", getRoot()};
 
-		lv_obj_t* m_settingsList;
-		LvContainer m_subWindow;
-		LvKeyboard m_keyboard;
+		GeneralSettings m_generalSettings{"general_settings", m_tabs.addTab(_("settings.tabs.general"))};
+		ConnectionSettings m_connectionSettings{"connection_settings", m_tabs.addTab(_("settings.tabs.connection"))};
+		DisplaySettings m_displaySettings{"display_settings", m_tabs.addTab(_("settings.tabs.display"))};
+		DeveloperSettings m_developerSettings{"developer_settings", m_tabs.addTab(_("settings.tabs.developer"))};
 
-		lv_obj_t* m_screenHeader;
-		lv_obj_t* m_screenSettings;
-		lv_obj_t* m_themeSettings;
-		lv_obj_t* m_connectivityHeader;
-		lv_obj_t* m_duetSettings;
-		lv_obj_t* m_networkSettings;
-		lv_obj_t* m_devHeader;
-		lv_obj_t* m_developerSettings;
-
-		DuetSettingsView m_duetSettingsView;
-		ScreenSettingsView m_deviceSettingsView;
-		ThemeSettingsView m_themeSettingsView;
-		NetworkSettingsView m_networkSettingsView;
-		DeveloperSettingsView m_developerSettingsView;
-
-		HardwareTest m_hardwareTest;
-
-		SettingsSubView* m_currentSubView;
+		LvKeyboard m_keyboard{"keyboard", getRoot()};
 	};
 } // namespace UI
