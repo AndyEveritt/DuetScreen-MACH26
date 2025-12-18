@@ -371,12 +371,13 @@ namespace UI
 	void ConnectionSettings::onShow()
 	{
 		// Update USB mode selection
-		m_connectionMethod.setSelected(StorageHelper::getData(ID_DUET_COMMUNICATION_TYPE, DEFAULT_COMMUNICATION_TYPE));
+		auto communicationType = Comm::DUET.GetCommunicationType();
+		m_connectionMethod.setSelected(static_cast<uint32_t>(communicationType));
 		m_usbMode.setSelected(static_cast<uint32_t>(Comm::getUsbMode()));
 		m_pollInterval.setValue(static_cast<float>(Comm::DUET.GetPollInterval().count()));
 		m_duetIpAddress.setText(Comm::DUET.GetHostname());
 		m_duetPassword.setText(Comm::DUET.GetPassword());
-		showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
+		showConnectionMethodSettings(communicationType);
 	}
 
 	DisplaySettings::DisplaySettings(const std::string& name, LvObj& parent)
