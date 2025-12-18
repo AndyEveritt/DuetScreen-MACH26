@@ -338,7 +338,7 @@ namespace UI
 											   { Comm::DUET.SetPassword(m_duetPassword.getText()); });
 
 		createHeader(_("settings.headers.screen_networking"));
-		createRow(_("settings.wifi"), m_wifiSelector);
+		createSpanRow(m_wifiSelector);
 		m_wifiSelector.setHeight(LV_SIZE_CONTENT);
 	}
 
