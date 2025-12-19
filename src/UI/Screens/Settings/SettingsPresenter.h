@@ -54,27 +54,4 @@ namespace UI
 
 	  private:
 	};
-
-#if 0
-	class NetworkSettingsPresenter : public Presenter<NetworkSettingsView>
-	{
-	  public:
-		PRESENTER_CONSTRUCTOR(NetworkSettingsPresenter, NetworkSettingsView)
-
-		// Actions
-		void setWifiEnabled(bool enabled);
-		void scanWifi();
-		void connectToNetwork(std::string_view ssid);
-		void connectToNetwork(std::string_view ssid, std::string_view password);
-		void forgetNetwork(std::string_view ssid);
-		void refresh();
-
-	  private:
-		void onInit() override;
-		void onActivate() override;
-		void onDeactivate() override;
-
-		lv_timer_t* m_scanTimer = nullptr;
-	};
-#endif
 } // namespace UI

@@ -148,165 +148,10 @@ namespace UI
 		HardwareTest m_hardwareTest;
 	};
 
-#if 0
-	class DuetSettingsView : public SettingsSubView
-	{
-	  public:
-		DuetSettingsView(LvObj& parent, SettingsView& mainSettingsView);
-
-		class UsbSettings : public LvContainer
-		{
-		  public:
-			UsbSettings(DuetSettingsView& parent);
-
-		  private:
-		};
-
-		class WifiSettings : public LvContainer
-		{
-		  public:
-			WifiSettings(DuetSettingsView& parent);
-
-		  private:
-			TextBox m_hostname{"hostname", getRoot()};
-			TextBox m_password{"password", getRoot()};
-		};
-
-		class UartSettings : public LvContainer
-		{
-		  public:
-			UartSettings(DuetSettingsView& parent);
-
-		  private:
-		};
-
-	  private:
-		static void onConnectionMethodEvent(lv_event_t* e);
-
-		void showConnectionMethodSettings(const Comm::CommunicationType method);
-		void onInit() override;
-		void onShow() override;
-
-		DropdownMenu m_connectionMethod{"connection_method", getRoot()};
-		UsbSettings m_usbSettings;
-		WifiSettings m_wifiSettings;
-		UartSettings m_uartSettings;
-		Slider m_pollInterval{"poll_interval", getRoot()};
-	};
-
-	class ScreenSettingsView : public SettingsSubView
-	{
-	  public:
-		ScreenSettingsView(LvObj& parent, SettingsView& mainSettingsView);
-
-	  private:
-		void onInit() override;
-		void onShow() override;
-
-		LvLabel m_firmwareVersion{"firmware_version", getRoot()};
-		LvLabel m_buildTime{"build_time", getRoot()};
-		DropdownMenu m_language{"language", getRoot()};
-		DropdownMenu m_usbMode{"usb_mode", getRoot()};
-		Slider m_brightness{"brightness", getRoot()};
-		Slider m_screensaverTimeout{"screensaver_timeout", getRoot()};
-		LvCheckbox m_systemLogging{"system_logging", getRoot()};
-		LvCheckbox m_displayConnectedMessage{"display_connected_message", getRoot()};
-		DropdownMenu m_notificationLevel{"notification_level", getRoot()};
-		Slider m_notificationTimeout{"info_timeout", getRoot()};
-		LvCheckbox m_notificationAutoCloseError{"notification_auto_close_error", getRoot()};
-	};
-
-	class ThemeSettingsView : public SettingsSubView
-	{
-	  public:
-		ThemeSettingsView(LvObj& parent, SettingsView& mainSettingsView);
-
-	  private:
-		void updateThemePreview();
-		void onInit() override;
-		void onShow() override;
-
-		DropdownMenu m_font{"font", getRoot()};
-		DropdownMenu m_theme{"theme", getRoot()};
-		ThemePreview m_themePreview{"theme_preview", getRoot()};
-	};
-
-	class NetworkSettingsView : public View<NetworkSettingsPresenter, SettingsSubView>
-	{
-	  public:
-		NetworkSettingsView(LvObj& parent, SettingsView& mainSettingsView);
-
-		void setIpAddress(const std::string& ipAddress);
-		void setEnabled(bool enabled);
-		void setNetworkCount(size_t count);
-		void setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected);
-
-	  private:
-		static void onNetworkSelectionEvent(lv_event_t* e);
-		static void onRefreshEvent(lv_event_t* e);
-		void onPasswordCloseEvent();
-		void onPasswordConfirmEvent();
-
-		void onShow() override;
-		void onHide() override;
-
-		LvContainer m_topBar;
-		LvLabel m_ipAddress;
-		Button m_refresh;
-
-		lv_obj_t* m_networkList;
-		Modal<MessageBox> m_passwordWindow;
-		TextBox m_passwordInput;
-	};
-
-	class DeveloperSettingsView : public SettingsSubView
-	{
-	  public:
-		DeveloperSettingsView(LvObj& parent, SettingsView& mainSettingsView);
-
-	  private:
-		static void onDebugLevelEvent(lv_event_t* e);
-#  if DEBUG_BORDERS
-		static void onDebugBordersEvent(lv_event_t* e);
-#  endif
-		static void onEnableSSHEvent(lv_event_t* e);
-		static void onRestartEvent(lv_event_t* e);
-		static void onEraseAndRestartEvent(lv_event_t* e);
-		static void onRebootEvent(lv_event_t* e);
-
-		lv_obj_t* m_debugLevelCont;
-		lv_obj_t* m_debugLevelLabel;
-		lv_obj_t* m_debugLevel;
-
-#  if DEBUG_BORDERS
-		lv_obj_t* m_debugBorders;
-#  endif
-		lv_obj_t* m_enableSSH;
-#  if LV_USE_SYSMON
-		LvCheckbox m_enableSystemMonitor{"enable_system_monitor", getRoot()};
-#  endif
-
-		Button m_restart;
-		Button m_eraseAndRestart;
-		Button m_reboot;
-		Button m_startHardwareTest;
-	};
-#endif
-
 	/**
 	 * @brief View to configure the screen settings
 	 *
 	 * This class provides a user interface for configuring various screen settings.
-	 *
-	 * @note The following subviews are defined:
-	 * @note - DuetSettingsView
-	 * @note - DisplaySettingsView
-	 * @note - LanguageSettingsView
-	 * @note - NetworkSettingsView
-	 * @note - DeveloperSettingsView.
-	 * @note - ThemeSettingsView.
-	 *
-	 * @param parent The parent LVGL object.
 	 */
 	class SettingsView : public View<SettingsPresenter>
 	{
@@ -320,6 +165,11 @@ namespace UI
 
 		void setKeyboard(LvKeyboard* keyboard);
 		bool back() override;
+
+		void showGeneralSettings() { m_tabs.setActiveTab(0); }
+		void showConnectionSettings() { m_tabs.setActiveTab(1); }
+		void showDisplaySettings() { m_tabs.setActiveTab(2); }
+		void showDeveloperSettings() { m_tabs.setActiveTab(3); }
 
 	  protected:
 		void onShow() override;

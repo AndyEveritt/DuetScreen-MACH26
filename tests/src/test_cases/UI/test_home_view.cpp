@@ -258,6 +258,18 @@ TEST_F(TestHomeViewWithData, SettingsView)
 	auto& settings = view.getSettingsView();
 	openScreen(&settings);
 	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view.png")
+
+	settings.showGeneralSettings();
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_general.png")
+
+	settings.showConnectionSettings();
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_connection.png")
+
+	settings.showDisplaySettings();
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_display.png")
+
+	settings.showDeveloperSettings();
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_developer.png")
 }
 
 TEST_F(TestHomeViewWithData, StatusView)

@@ -488,6 +488,7 @@ namespace Comm
 	int usbInit()
 	{
 		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		setUsbMode(StorageHelper::getData(ID_USB_MODE, UsbMode::Host));
 		return libusb_init(&s_context);
 	}
 
