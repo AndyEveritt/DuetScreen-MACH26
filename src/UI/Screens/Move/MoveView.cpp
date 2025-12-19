@@ -566,6 +566,11 @@ namespace UI
 		m_xyControl.setDisableMotorsDisabled(disabled);
 	}
 
+	void MoveView::onShow()
+	{
+		closeAllModals();
+	}
+
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)
 	{
 		openModal(&m_numberpad);

@@ -39,6 +39,8 @@ namespace UI
 		static void onDistanceEvent(lv_event_t* e);
 		static void onFeedrateEvent(lv_event_t* e);
 
+		void onShow() override;
+
 		void configureNumberpadForAxis(char axis_letter, float position);
 
 		// Axis Control
