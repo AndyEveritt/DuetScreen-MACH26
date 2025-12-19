@@ -318,16 +318,10 @@ namespace UI
 	  public:
 		SettingsView(const std::string& name, LvObj& parent);
 
-		void showKeyboard(bool show,
-						  lv_keyboard_mode_t mode = LV_KEYBOARD_MODE_TEXT_LOWER,
-						  LvTextArea* textArea = nullptr);
-		void setKeyboardTextArea(LvTextArea* textArea);
-
+		void setKeyboard(LvKeyboard* keyboard);
 		bool back() override;
 
 	  protected:
-		LvKeyboard& getKeyboard() { return m_keyboard; }
-
 		void onShow() override;
 		void onHide() override;
 
@@ -338,6 +332,6 @@ namespace UI
 		DisplaySettings m_displaySettings{"display_settings", m_tabs.addTab(_("settings.tabs.display"))};
 		DeveloperSettings m_developerSettings{"developer_settings", m_tabs.addTab(_("settings.tabs.developer"))};
 
-		LvKeyboard m_keyboard{"keyboard", getRoot()};
+		LvKeyboard* m_keyboard = nullptr;
 	};
 } // namespace UI

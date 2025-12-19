@@ -10,8 +10,8 @@ These instructions guide Copilot (and AI agents) when proposing code or edits in
 ## Architecture & Data Flow
 - **Binary + Library**: `DuetScreen` executable links `DuetScreen.lib`; see `src/CMakeLists.txt` for core sources and submodules.
 - **Comm** (`src/Comm/`): Connection orchestration to Duet mainboard via USB/WiFi/UART with request/response handling. Key files: `Communication.*`, `Network.*`, `Usb.*`, `Commands.*`, `JsonDecoder.*`, `Thumbnail.*`, `FileInfo.*`.
-- **Object Model** (`src/ObjectModel/`): Structured printer state (e.g., `Job`, `Tool`, `Heat`, `Sensor`, `PrinterStatus`) updated by Comm. UI reads via subscribers.
-- **Subscribers** (`src/Subscribers/`): Lightweight observer bridge from Object Model to UI components; prefer callback lists over heavy event buses.
+- **Object Model** (`src/ObjectModel/`): Structured printer state (e.g., `Job`, `Tool`, `Heat`, `Sensor`, `PrinterStatus`) updated by Comm. UI reads via subscribers to be notified of changes.
+- **Subscribers** (`src/Subscribers/`): Lightweight observer bridge from Object Model to UI components.
 - **UI** (`src/UI/`): LVGL-based views. Structure: `Core/` (screen/root management), `Screens/`, `Components/`, `Widgets/`, `Styles/`. Follow existing patterns in `src/UI/README.md` and component READMEs.
 - **i18n** (`assets/i18n/`): JSON language files loaded at runtime (PC: `assets/i18n`, device: `/etc/assets/i18n`). Use nested keys; formatting via `fmt`. Reference `en-GB.json`.
 - **Utils/Infrastructure**: `Debug.*` (logging), `DeadlockDetector.*`, `LockWrapper.*`, `BuildDate.*`. Avoid allocations in render/ISR paths.
@@ -24,7 +24,7 @@ These instructions guide Copilot (and AI agents) when proposing code or edits in
 	- Start service: `Start DuetScreen on remote`; start gdb: `Start gdbserver on DuetScreen`.
 	- Assets: `Push Assets - SSH`; libraries: `Push Libraries - SSH`.
 	- Package update: `Create update.tar.gz`; print notes: `Print Release Notes`.
-- **Testing**: Run `scripts/run_tests.py` or task `Run Tests`. UI image tests under `tests/src/test_cases/UI/` compare against `tests/ref_imgs/` with `_err` diffs and a review GUI.
+- **Testing**: Run `env/bin/python scripts/run_tests.py`. UI image tests under `tests/src/test_cases/UI/` compare against `tests/ref_imgs/` with `_err` diffs and a review GUI.
 - **Logs**: Default log file `DuetScreen.log` (PC: CWD; device: `/var/log/`). Filter with `scripts/filter_logs.py`.
 
 ## Integration & Assets
@@ -74,13 +74,9 @@ These instructions guide Copilot (and AI agents) when proposing code or edits in
 - Use `std::atomic` where needed with clear memory orders; avoid locks in ISRs.
 - Use `std::chrono` types; avoid ad-hoc units.
 
-## Build, Run, and Tooling (VS Code)
-- Formatting: run the task `Clang Format` for changed C++ files.
-- Local build: use `CMake: configure` then `CMake: build` (Simulation preset) for host runs.
-
 ## Tests
 - Prefer adding or updating focused tests for changed logic under `tests/`.
-- Run tests with the `Run Tests` task; get coverage via `Run Test Coverage`.
+- Run tests with the `env/bin/python scripts/run_tests.py` command; get coverage via `env/bin/python scripts/run_tests.py --coverage`.
 - Keep tests deterministic and fast; avoid external dependencies in unit tests.
 
 ## File Hygiene

@@ -229,11 +229,11 @@
         "enable": "Enable WiFi",
         "password_for": "Enter Password for: {:s}",
         "refresh": "Refresh",
-        "enter_password": "Enter Password",
+        "enter_password_title": "Password",
+        "enter_password_hint": "Enter Password",
         "forget": "Forget",
         "ip_address": "IP Address: {:s}",
         "known": "Known",
-        "password_title": "Password",
         "signal": "Signal",
         "ssid": "SSID"
       },

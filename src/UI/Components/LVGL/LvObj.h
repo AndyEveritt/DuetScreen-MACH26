@@ -129,6 +129,25 @@ namespace UI
 			}
 		}
 
+		template <typename F>
+			requires(std::is_invocable_v<F, size_t, LvObj&> &&
+					 std::is_same_v<std::invoke_result_t<F, size_t, LvObj&>, bool>)
+		void iterateChildrenWhile(F&& func)
+		{
+			UI_LOCK();
+			uint32_t count = getChildCount();
+			for (uint32_t i = 0; i < count; i++)
+			{
+				LvObj* child = getChild(i);
+				if (child == nullptr)
+				{
+					continue;
+				}
+				if (!std::invoke(func, i, *child))
+					break;
+			}
+		}
+
 		void setUserData(void* user_data);
 		void* getUserData() const;
 

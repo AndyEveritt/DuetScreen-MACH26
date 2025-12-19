@@ -27,38 +27,22 @@ namespace UI
 		addStyle(Themes::getLvglStyles().bg_dark);
 
 		m_tabs.setSize(LV_PCT(100), LV_PCT(100));
+	}
 
-		/* Keyboard */
-		m_keyboard.setSize(LV_PCT(100), LV_PCT(40));
-		m_keyboard.addEventCallback(
-			[this](lv_event_t*)
-			{
-				m_keyboard.hide();
-				if (auto ta = m_keyboard.getTextArea())
-					ta->sendEvent(LV_EVENT_DEFOCUSED);
-			},
-			LV_EVENT_CANCEL);
-		m_connectionSettings.setKeyboard(&m_keyboard);
+	void SettingsView::setKeyboard(LvKeyboard* keyboard)
+	{
+		m_keyboard = keyboard;
+		m_connectionSettings.setKeyboard(m_keyboard);
 	}
 
 	bool SettingsView::back()
 	{
-		UI_LOCK();
-		if (!m_keyboard.hasFlag(LV_OBJ_FLAG_HIDDEN))
-		{
-			m_keyboard.hide();
-			return true;
-		}
-
 		return false;
 	}
 
-	void SettingsView::onHide() {}
+	void SettingsView::onShow() {}
 
-	void SettingsView::onShow()
-	{
-		m_keyboard.hide();
-	}
+	void SettingsView::onHide() {}
 
 	SettingsTab::SettingsTab(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent, layout_t(0, 0, 100, 100))

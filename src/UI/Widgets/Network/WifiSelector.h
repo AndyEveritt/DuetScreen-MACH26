@@ -27,7 +27,7 @@ namespace UI
 		void setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected);
 		void setIpAddress(std::string_view ip_address);
 
-		void setKeyboard(LvKeyboard* keyboard) { m_keyboard = keyboard; }
+		void setKeyboard(LvKeyboard* keyboard);
 
 	  private:
 		class WifiListItem : public ListItem
@@ -68,7 +68,7 @@ namespace UI
 		Button m_refresh{"refresh", m_list.getHeader(), "Refresh"};
 
 		// Simple password modal composed with MessageBox + TextBox
-		Modal<MessageBox> m_passwordModal{"wifi_password_modal", getRoot(), layout_t(40, 20, 60, 60)};
+		Modal<MessageBox> m_passwordModal{"wifi_password_modal", getRoot(), layout_t(40, 20, 80, LV_SIZE_CONTENT)};
 		TextBox m_passwordInput{"wifi_password_input", m_passwordModal.getBody()};
 
 		LvKeyboard* m_keyboard = nullptr;

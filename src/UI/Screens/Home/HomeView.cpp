@@ -87,6 +87,15 @@ namespace UI
 		m_kb.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_kb.setAlign(LV_ALIGN_BOTTOM_MID, 0, 0);
 		m_kb.setSize(LV_PCT(100), LV_PCT(50));
+		m_kb.addEventCallback(
+			[this](lv_event_t*)
+			{
+				m_kb.hide();
+				if (auto ta = m_kb.getTextArea())
+					ta->sendEvent(LV_EVENT_DEFOCUSED);
+			},
+			LV_EVENT_CANCEL);
+		m_settingsView.setKeyboard(&m_kb);
 	}
 
 	HomeView::~HomeView()

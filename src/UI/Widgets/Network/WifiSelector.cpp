@@ -30,21 +30,47 @@ namespace UI
 
 		// Setup password modal
 		m_passwordModal.setTitle(_("settings.network.enter_password_title"));
-		m_passwordModal.setText(_("settings.network.enter_password_text"));
-		m_passwordModal.setOkBtnText(_("common.ok"));
-		m_passwordModal.setCancelBtnText(_("common.cancel"));
+		// m_passwordModal.setText("");
 		m_passwordModal.okVisible(true);
 		m_passwordModal.cancelVisible(true);
-		m_passwordModal.updateVisibility();
+		m_passwordModal.getBodyTextCont().hide();
+		// m_passwordModal.updateVisibility();
 
-		m_passwordInput.setLabel(_("settings.network.password"));
+		m_passwordInput.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_passwordInput.setPlaceholderText(_("settings.network.enter_password_hint"));
 		m_passwordInput.setPasswordMode(true);
-		m_passwordInput.getTextArea().setAlign(LV_ALIGN_TOP_LEFT, 0, 0);
-		m_passwordModal.getBody().setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		m_passwordModal.getBody().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-		// m_passwordModal.setCancelCallback([this]() { m_passwordModal.close(); });
+		m_passwordModal.setCloseCallback(
+			[this]()
+			{
+				m_passwordModal.close();
+				if (auto kb = m_passwordInput.getKeyboard())
+					kb->hide();
+			});
 		m_passwordModal.setOkCallback([this]()
 									  { getPresenter()->connectToNetwork(m_pendingSsid, m_passwordInput.getText()); });
+		m_passwordInput.getTextArea().addEventCallback(
+			[this](lv_event_t* e)
+			{
+				if (auto kb = m_passwordInput.getKeyboard())
+				{
+					auto code = lv_event_get_code(e);
+					switch (code)
+					{
+					case LV_EVENT_CLICKED:
+						m_passwordModal.setAlign(LV_ALIGN_TOP_MID, 0, 50);
+						kb->show(true);
+						break;
+					case LV_EVENT_DEFOCUSED:
+					case LV_EVENT_READY:
+						m_passwordModal.setAlign(LV_ALIGN_CENTER, 0, 0);
+						kb->hide();
+						break;
+					default:
+						break;
+					}
+				}
+			},
+			LV_EVENT_ALL);
 	}
 
 	void WifiSelector::setNetworkCount(size_t count)
@@ -68,6 +94,7 @@ namespace UI
 										else
 										{
 											openPasswordModal(ssid);
+											m_passwordInput.getTextArea().sendEvent(LV_EVENT_CLICKED);
 										}
 									},
 									LV_EVENT_CLICKED);
@@ -90,6 +117,12 @@ namespace UI
 	void WifiSelector::setIpAddress(std::string_view ip_address)
 	{
 		m_ipAddress.setText(_("settings.network.ip_address", ip_address));
+	}
+
+	void WifiSelector::setKeyboard(LvKeyboard* keyboard)
+	{
+		m_keyboard = keyboard;
+		m_passwordInput.setKeyboard(m_keyboard);
 	}
 
 	WifiSelector::WifiListItem::WifiListItem(size_t index, LvObj& parent)
