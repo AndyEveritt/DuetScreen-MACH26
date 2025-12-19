@@ -14,6 +14,7 @@
 
 Model::Model()
 {
+	LOG_INFO("Initializing Model...");
 	// Timers
 	if (lv_is_initialized())
 	{

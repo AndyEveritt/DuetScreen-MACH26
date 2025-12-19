@@ -94,7 +94,6 @@ namespace UI
 		setRange(0, 100);
 		setOutOfRangeMode(OutOfRange::NONE);
 
-		m_input.setStylePad(2);
 		m_input.setOneLine(true);
 		m_input.setCursorClickPos(false);
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);

@@ -688,7 +688,7 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_textarea_class))
 		{
 			lv_obj_add_style(obj, lvgl.card, 0);
-			lv_obj_add_style(obj, lvgl.pad_small, 0);
+			lv_obj_add_style(obj, lvgl.pad_base, 0); // normally overridden by `input` or `text_area` styles
 			lv_obj_add_style(obj, lvgl.input, 0);
 			lv_obj_add_style(obj, lvgl.text_area, 0);
 			lv_obj_add_style(obj, lvgl.disabled, LV_STATE_DISABLED);

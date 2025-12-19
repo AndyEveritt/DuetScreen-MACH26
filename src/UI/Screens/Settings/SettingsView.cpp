@@ -258,7 +258,6 @@ namespace UI
 				showConnectionMethodSettings(Comm::DUET.GetCommunicationType());
 			},
 			LV_EVENT_VALUE_CHANGED);
-		m_connectionMethod.setSelected((uint32_t)Comm::DUET.GetCommunicationType());
 
 		/* USB mode */
 		createRow(_("settings.usb_mode"), m_usbMode);
@@ -545,11 +544,10 @@ namespace UI
 		m_reboot.setText(_("settings.reboot"));
 		m_startHardwareTest.setText(_("settings.start_hardware_test"));
 
-		m_restart.addEventCallback([](lv_event_t*) { Restart(); }, LV_EVENT_VALUE_CHANGED);
-		m_eraseAndRestart.addEventCallback([](lv_event_t*) { EraseAndRestart(); }, LV_EVENT_VALUE_CHANGED);
-		m_reboot.addEventCallback([](lv_event_t*) { Reboot(); }, LV_EVENT_VALUE_CHANGED);
-		m_startHardwareTest.addEventCallback([this](lv_event_t*) { getPresenter()->startHardwareTest(); },
-											 LV_EVENT_VALUE_CHANGED);
+		m_restart.addClickedCallback([](lv_event_t*) { Restart(); });
+		m_eraseAndRestart.addClickedCallback([](lv_event_t*) { EraseAndRestart(); });
+		m_reboot.addClickedCallback([](lv_event_t*) { Reboot(); });
+		m_startHardwareTest.addClickedCallback([this](lv_event_t*) { getPresenter()->startHardwareTest(); });
 
 		/* Hardware test */
 		m_hardwareTest.hide();
@@ -593,7 +591,7 @@ namespace UI
 		{
 		case LV_EVENT_FOCUSED:
 			kb->setMode(mode);
-			kb->show();
+			kb->show(true);
 			break;
 		case LV_EVENT_DEFOCUSED:
 		case LV_EVENT_READY:

@@ -312,7 +312,7 @@ namespace UI::Themes
 
 		lv_style_set_border_color(lvgl.input, m_colors.border);
 		lv_style_set_border_width(lvgl.input, 1);
-		lv_style_set_pad_all(lvgl.input, 20);
+		lv_style_set_pad_hor(lvgl.input, 20);
 		// lv_style_set_radius(lvgl.input, 2);
 		lv_style_set_pad_ver(lvgl.input, 0);
 		lv_style_set_text_align(lvgl.input, LV_TEXT_ALIGN_CENTER);
@@ -485,6 +485,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_TEXTAREA
+		lv_style_set_pad_all(lvgl.text_area, PAD_DEF);
 		lv_style_set_border_color(lvgl.ta_cursor, m_colors.text);
 		lv_style_set_border_width(lvgl.ta_cursor, LV_DPX_CALC(lv_display_get_dpi(NULL), 2));
 		lv_style_set_pad_left(lvgl.ta_cursor, -LV_DPX_CALC(lv_display_get_dpi(NULL), 1));

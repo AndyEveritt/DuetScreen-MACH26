@@ -12,6 +12,13 @@
 
 namespace UI
 {
+	WifiSelectorPresenter::~WifiSelectorPresenter()
+	{
+		m_runScanThread = false;
+		if (m_scanThread.joinable())
+			m_scanThread.join();
+	}
+
 	void WifiSelectorPresenter::refresh()
 	{
 		if (!getView())
@@ -21,7 +28,7 @@ namespace UI
 		for (size_t i = 0; i < networks.size(); ++i)
 		{
 			const auto& network = networks[i];
-			getView()->setNetworkDetails(i, network.ssid, network.signal_level, network.id != -1, network.connected);
+			getView()->setNetworkDetails(i, network.ssid, network.signal_level, network.isKnown(), network.connected);
 		}
 		getView()->setIpAddress(NetworkHelper::getIpAddress());
 	}
@@ -38,33 +45,36 @@ namespace UI
 		refresh();
 	}
 
-	void WifiSelectorPresenter::disconnectFromNetwork() {}
-
-	void WifiSelectorPresenter::onInit()
+	void WifiSelectorPresenter::disconnectFromNetwork()
 	{
-		m_scanTimer = lv_timer_create(
-			[](lv_timer_t* timer)
-			{
-				auto* presenter = static_cast<WifiSelectorPresenter*>(lv_timer_get_user_data(timer));
-				if (presenter)
-					presenter->refresh();
-			},
-			3000,
-			this);
-		lv_timer_pause(m_scanTimer);
+		NetworkHelper::disconnect();
+		refresh();
 	}
+
+	void WifiSelectorPresenter::onInit() {}
 
 	void WifiSelectorPresenter::onActivate()
 	{
 		refresh();
-		if (m_scanTimer)
-			lv_timer_resume(m_scanTimer);
+
+		if (m_scanThread.joinable())
+			m_scanThread.join();
+
+		m_runScanThread = true;
+		m_scanThread = std::thread(
+			[this]()
+			{
+				while (m_runScanThread)
+				{
+					refresh();
+					std::this_thread::sleep_for(std::chrono::seconds(3));
+				}
+			});
 	}
 
 	void WifiSelectorPresenter::onDeactivate()
 	{
-		if (m_scanTimer)
-			lv_timer_pause(m_scanTimer);
+		m_runScanThread = false;
 	}
 
 } // namespace UI

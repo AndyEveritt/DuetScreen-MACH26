@@ -10,6 +10,7 @@
 #include "Debug.h"
 
 #include <cstdlib>
+#include <filesystem>
 #include <sys/reboot.h>
 #include <unistd.h>
 
@@ -49,12 +50,12 @@ extern "C"
 	void EraseAndRestart() noexcept
 	{
 #if SIMULATION
-		if (system("rm -rf config.json") != 0)
+		if (!std::filesystem::remove("config.json"))
 		{
 			LOG_ERROR("Failed to remove config.json file");
 		}
 #else
-	if (system("rm -rf /etc/duetscreen.json") != 0)
+	if (!std::filesystem::remove("/etc/duetscreen.json"))
 	{
 		LOG_ERROR("Failed to remove /etc/duetscreen.json file");
 	}

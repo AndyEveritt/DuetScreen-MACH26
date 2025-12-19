@@ -440,6 +440,7 @@ namespace Comm
 
 	void init()
 	{
+		LOG_INFO("Initializing Communication Module...");
 		// Sort the fieldTable prior searching using binary search
 		std::filesystem::create_directories("/tmp/thumbnails");
 		std::filesystem::create_directories("/tmp/heightmaps");

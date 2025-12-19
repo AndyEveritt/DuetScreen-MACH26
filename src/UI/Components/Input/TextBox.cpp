@@ -15,19 +15,13 @@
 namespace UI
 {
 	TextBox::TextBox(const std::string& name, LvObj& parent)
-		: LvObj(lv_obj_create, name, parent)
-		, m_label("label", *this)
-		, m_textArea("textarea", *this)
-		, m_showPassword("show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
+		: LvContainer(name, parent)
 	{
 		init();
 	}
 
 	TextBox::TextBox(const std::string& name, LvObj& parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
-		, m_label("label", getRoot())
-		, m_textArea("textarea", getRoot())
-		, m_showPassword("show_password", m_textArea, LV_SYMBOL_EYE_OPEN)
+		: LvContainer(name, parent, layout)
 	{
 		init();
 	}
@@ -44,7 +38,8 @@ namespace UI
 		setLabel("");
 
 		// TextArea
-		m_textArea.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_textArea.setSize(LV_PCT(100), LV_PCT(100));
+		m_textArea.setMinHeight(LV_SIZE_CONTENT);
 		// m_textArea.setMinHeight(20);
 		m_textArea.setFlexGrow(1);
 		m_textArea.setCursorClickPos(true);
@@ -75,6 +70,7 @@ namespace UI
 
 		// Show Password Button
 		m_showPassword.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_showPassword.setMinHeight(LV_SIZE_CONTENT);
 		m_showPassword.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_showPassword.hide();
 		m_showPassword.setCheckable(true);

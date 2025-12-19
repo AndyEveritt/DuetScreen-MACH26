@@ -194,25 +194,61 @@ namespace NetworkHelper
 				continue;
 			}
 
-			std::istringstream iss(line);
+			// LIST_NETWORKS columns are tab-separated: id\tssid\tbssid\tflags
 			std::string idStr, ssid, bssid, flags;
-			if (iss >> idStr >> ssid >> bssid >> flags)
 			{
-				WiFiNetwork network;
-				// Remove quotes if present
-				if (ssid.size() >= 2 && ssid.front() == '"' && ssid.back() == '"')
+				// Split by tabs to preserve spaces inside SSID
+				std::array<std::string, 4> cols;
+				std::string::size_type start = 0;
+
+				size_t count = 0;
+				for (size_t i = 0; i < cols.size(); ++i)
 				{
-					ssid = ssid.substr(1, ssid.size() - 2);
+					++count;
+					auto pos = line.find('\t', start);
+					if (pos == std::string::npos)
+					{
+						cols[i] = (line.substr(start));
+						break;
+					}
+					cols[i] = (line.substr(start, pos - start));
+					start = pos + 1;
 				}
-				network.ssid = ssid;
-				network.id = std::stoi(idStr);
-				network.connected = (flags.find("[CURRENT]") != std::string::npos);
-				networks.push_back(network);
-				LOG_INFO("Found known network: \"{:s}\", id: {:d}, current: {:d}",
-						 network.ssid.c_str(),
-						 network.id,
-						 network.connected);
+
+				if (count < 4)
+				{
+					LOG_WARN("Unexpected LIST_NETWORKS format");
+					continue;
+				}
+
+				idStr = std::move(cols[0]);
+				ssid = std::move(cols[1]);
+				bssid = std::move(cols[2]);
+				flags = std::move(cols[3]);
 			}
+
+			WiFiNetwork network;
+			// Remove quotes if present (wpa_supplicant may quote SSID)
+			if (ssid.size() >= 2 && ssid.front() == '"' && ssid.back() == '"')
+			{
+				ssid = ssid.substr(1, ssid.size() - 2);
+			}
+			network.ssid = ssid;
+			// Guard id parsing
+			try
+			{
+				network.id = std::stoi(idStr);
+			}
+			catch (...)
+			{
+				continue;
+			}
+			network.connected = (flags.find("[CURRENT]") != std::string::npos);
+			networks.push_back(network);
+			LOG_INFO("Found known network: \"{:s}\", id: {:d}{:s}",
+					 network.ssid.c_str(),
+					 network.id,
+					 network.connected ? " [CURRENT]" : "");
 		}
 		return networks;
 	}
@@ -276,11 +312,13 @@ namespace NetworkHelper
 					}
 
 					networks.push_back(network);
-					LOG_INFO("Found network: \"{:s}\", signal: {:d} dBm, id: {:d}, {:s}",
+					LOG_INFO("Found network: \"{:s}\", signal: {:d} dBm, id: {:d}{:s}",
 							 network.ssid.c_str(),
 							 network.signal_level,
 							 network.id,
-							 network.connected ? "connected" : "disconnected");
+							 network.connected	 ? " [CURRENT]"
+							 : network.isKnown() ? " [KNOWN]"
+												 : "");
 				}
 			}
 		}

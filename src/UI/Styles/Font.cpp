@@ -59,6 +59,7 @@ namespace UI::FontManager
 	 */
 	void init()
 	{
+		LOG_INFO("Initializing Font Manager...");
 		s_fontManager = lv_font_manager_create(8);
 
 		std::filesystem::directory_iterator dir_iter(FONTS_FOLDER);

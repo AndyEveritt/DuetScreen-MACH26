@@ -17,7 +17,7 @@ namespace UI
 {
 	class ModalNumberPad;
 
-	class TextBox : public LvObj
+	class TextBox : public LvContainer
 	{
 	  public:
 		enum class Mode
@@ -84,9 +84,9 @@ namespace UI
 	  private:
 		void init();
 
-		LvLabel m_label;
-		LvTextArea m_textArea;
-		Button m_showPassword;
+		LvLabel m_label{"label", getRoot()};
+		LvTextArea m_textArea{"textarea", getRoot()};
+		Button m_showPassword{"show_password", getRoot(), LV_SYMBOL_EYE_OPEN};
 
 		LvKeyboard* m_keyboard = nullptr;
 		ModalNumberPad* m_numberPad = nullptr;

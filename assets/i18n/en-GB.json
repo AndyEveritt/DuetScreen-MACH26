@@ -221,7 +221,7 @@
         "screen_networking": "Screen Networking"
       },
       "network": {
-        "available_wifi": "Availabel WiFi Networks",
+        "available_wifi": "Available WiFi Networks",
         "connect": "Connect",
         "connected": "Connected",
         "disconnect": "Disconnect",

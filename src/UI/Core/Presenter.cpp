@@ -22,26 +22,28 @@ namespace UI
 	void BasePresenter::activate()
 	{
 		UI_LOCK();
-		if (!m_isInitialized)
+		if (m_state == State::UNINITIALISED)
 		{
 			init();
-			m_isInitialized = true;
+			m_state = State::DEACTIVE;
 		}
 
 		LOG_DBG("Activating presenter '{}'", getName());
 
+		m_state = State::ACTIVATING;
 		onActivate();
-		m_active = true;
+		m_state = State::ACTIVE;
 	}
 
 	void BasePresenter::deactivate()
 	{
 		UI_LOCK();
 		LOG_DBG("Deactivating presenter '{}'", getName());
-		if (m_active)
+		if (m_state == State::ACTIVE || m_state == State::ACTIVATING)
 		{
+			m_state = State::DEACTIVATING;
 			onDeactivate();
-			m_active = false;
+			m_state = State::DEACTIVE;
 		}
 	}
 

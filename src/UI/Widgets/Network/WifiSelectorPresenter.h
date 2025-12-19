@@ -9,6 +9,7 @@
 
 #include "UI/Core/Presenter.h"
 #include <string>
+#include <thread>
 
 namespace UI
 {
@@ -18,6 +19,7 @@ namespace UI
 	{
 	  public:
 		PRESENTER_CONSTRUCTOR(WifiSelectorPresenter, WifiSelector);
+		~WifiSelectorPresenter() override;
 
 		// Actions
 		void refresh();
@@ -33,6 +35,7 @@ namespace UI
 		void onConnect() override {}
 		void onDisconnect() override {}
 
-		lv_timer_t* m_scanTimer = nullptr;
+		std::thread m_scanThread;
+		bool m_runScanThread = false;
 	};
 } // namespace UI
