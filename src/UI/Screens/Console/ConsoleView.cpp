@@ -39,6 +39,7 @@ namespace UI
 		m_commandList.setHeight(LV_PCT(100));
 		m_output.setHeight(LV_PCT(100));
 		m_output.setCursorClickPos(false);
+		m_output.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 
 		// Command List
 		lv_table_set_column_count(m_commandList.getRootPtr(), 2);
@@ -61,7 +62,7 @@ namespace UI
 		m_input.setFlexGrow(1);
 		m_input.setOneLine(true);
 		m_input.setPlaceholderText(_("console.input_placeholder"));
-		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT, 0);
+		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 		m_input.setHeight(LV_SIZE_CONTENT);
 		m_clear.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
 		m_enter.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
