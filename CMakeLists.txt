@@ -307,12 +307,20 @@ else()
 endif()
 # target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
 
-# Custom target to run the executable
-add_custom_target(
-  binary_size ALL
-  DEPENDS DuetScreen
-  COMMAND size -A ${PROJECT_BINARY_DIR}/DuetScreen
-  COMMENT "Running size on DuetScreen")
+# Custom target to show binary size (GNU vs macOS compatibility)
+if(APPLE)
+  add_custom_target(
+    binary_size ALL
+    DEPENDS DuetScreen
+    COMMAND size ${PROJECT_BINARY_DIR}/DuetScreen
+    COMMENT "Running size on DuetScreen (macOS)")
+else()
+  add_custom_target(
+    binary_size ALL
+    DEPENDS DuetScreen
+    COMMAND size -A ${PROJECT_BINARY_DIR}/DuetScreen
+    COMMENT "Running size on DuetScreen")
+endif()
 
 # Conditionally include and link SDL2_image if LV_USE_DRAW_SDL is enabled
 if(CONFIG_LV_USE_DRAW_SDL)
