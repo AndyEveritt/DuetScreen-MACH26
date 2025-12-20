@@ -263,6 +263,7 @@ TEST_F(TestHomeViewWithData, SettingsView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_general.png")
 
 	settings.showConnectionSettings();
+	std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait for wifi networks to load
 	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_connection.png")
 
 	settings.showDisplaySettings();

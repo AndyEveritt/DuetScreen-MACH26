@@ -8,6 +8,9 @@
 #pragma once
 
 #include "UI/Core/Presenter.h"
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -35,7 +38,9 @@ namespace UI
 		void onConnect() override {}
 		void onDisconnect() override {}
 
-		std::thread m_scanThread;
-		bool m_runScanThread = false;
+		std::jthread m_scanThread;
+		std::atomic<bool> m_scanActive{false};
+		std::mutex m_scanMutex;
+		std::condition_variable_any m_scanCv;
 	};
 } // namespace UI

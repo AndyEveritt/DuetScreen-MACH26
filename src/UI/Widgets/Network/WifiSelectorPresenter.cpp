@@ -14,13 +14,16 @@ namespace UI
 {
 	WifiSelectorPresenter::~WifiSelectorPresenter()
 	{
-		m_runScanThread = false;
 		if (m_scanThread.joinable())
+		{
+			m_scanThread.request_stop();
 			m_scanThread.join();
+		}
 	}
 
 	void WifiSelectorPresenter::refresh()
 	{
+		UI_LOCK();
 		if (!getView())
 			return;
 		std::vector<WiFiNetwork> networks = NetworkHelper::scanWiFiNetworks();
@@ -51,30 +54,50 @@ namespace UI
 		refresh();
 	}
 
-	void WifiSelectorPresenter::onInit() {}
+	void WifiSelectorPresenter::onInit()
+	{
+		if (!m_scanThread.joinable())
+		{
+			m_scanThread = std::jthread(
+				[this](std::stop_token st)
+				{
+					std::unique_lock<std::mutex> lk(m_scanMutex);
+					for (;;)
+					{
+						m_scanCv.wait(lk, st, [this] { return m_scanActive.load(); });
+						if (st.stop_requested())
+							break;
+
+						lk.unlock();
+						refresh();
+						lk.lock();
+
+						// Wait for interval, or pause/stop
+						m_scanCv.wait_for(lk, st, std::chrono::seconds(3), [this] { return !m_scanActive.load(); });
+						if (st.stop_requested())
+							break;
+						// If paused, loop back to wait for activation again; if timed out, refresh again
+					}
+				});
+		}
+	}
 
 	void WifiSelectorPresenter::onActivate()
 	{
-		refresh();
-
-		if (m_scanThread.joinable())
-			m_scanThread.join();
-
-		m_runScanThread = true;
-		m_scanThread = std::thread(
-			[this]()
-			{
-				while (m_runScanThread)
-				{
-					refresh();
-					std::this_thread::sleep_for(std::chrono::seconds(3));
-				}
-			});
+		{
+			std::lock_guard<std::mutex> lk(m_scanMutex);
+			m_scanActive.store(true);
+		}
+		m_scanCv.notify_all();
 	}
 
 	void WifiSelectorPresenter::onDeactivate()
 	{
-		m_runScanThread = false;
+		{
+			std::lock_guard<std::mutex> lk(m_scanMutex);
+			m_scanActive.store(false);
+		}
+		m_scanCv.notify_all();
 	}
 
 } // namespace UI
