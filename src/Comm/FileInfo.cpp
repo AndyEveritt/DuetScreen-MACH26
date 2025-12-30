@@ -320,6 +320,7 @@ namespace Comm
 
 	void FileInfoCache::Spin()
 	{
+		ZoneScoped;
 		auto now = TimeHelper::getCurrentTime();
 
 		// Timeout any request that hasn't received a response within the timeout period

@@ -2,6 +2,7 @@
 #include "Comm/JsonDecoder.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "tracy/Tracy.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <cstring>
@@ -415,6 +416,7 @@ namespace Comm
 
 	void UsbDevice::eventLoop()
 	{
+		tracy::SetThreadName("USB Event Loop");
 		timeval tv = {0, 50'000}; // 50 ms
 		while (m_eventThreadRunning)
 		{

@@ -1,5 +1,6 @@
 #include "UartController.h"
 #include "Debug.h"
+#include "tracy/Tracy.hpp"
 #include <cstring>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -229,6 +230,7 @@ ssize_t UartController::_send(const uint8_t* data, size_t length)
 
 void UartController::readLoop()
 {
+	tracy::SetThreadName("UartController::readLoop");
 	std::vector<uint8_t> buffer(m_bufferSize);
 #if SIMULATION
 	while (m_running)

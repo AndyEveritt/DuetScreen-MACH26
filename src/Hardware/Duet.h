@@ -171,9 +171,6 @@ namespace Comm
 			CONNECTED
 		} m_connectionState = ConnectionState::DISCONNECTED;
 
-		// UART
-		std::thread m_uartConnectionThread;
-
 		static constexpr uint32_t sm_noSessionKey = 0;
 	};
 

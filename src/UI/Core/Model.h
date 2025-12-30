@@ -19,6 +19,8 @@
 #include "Subscribers/ThumbnailSubscribers.h"
 #include "Subscribers/ToolSubscribers.h"
 #include "lvgl/lvgl.h"
+#include "nameof.hpp"
+#include "tracy/Tracy.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <fmt/ostream.h>
@@ -142,6 +144,7 @@ struct EventWrapper
 	{
 	}
 	tuple_type tup;
+	constexpr static std::string_view eventName = nameof::nameof_enum<E>();
 };
 
 // Variant holding all event payload wrappers
@@ -222,6 +225,8 @@ class Model
 	template <EventType E, typename... Args>
 	void post(Args&&... args)
 	{
+		constexpr auto eventName = nameof::nameof_enum<E>();
+		ZoneScopedNC(eventName.data(), tracy::Color::Red);
 		using Wrapper = EventWrapper<E>;
 		using Tuple = typename Wrapper::tuple_type;
 		using ExpectedTuple = Tuple;

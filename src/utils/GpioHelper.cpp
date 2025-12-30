@@ -233,6 +233,7 @@ int GpioHelper::monitorPin(int pin, PinChangeCallback callback)
 	monitor.thread = std::thread(
 		[pin, line, chip]()
 		{
+			tracy::SetThreadName("GPIO Monitor");
 			struct gpiod_line_event event;
 			MonitorData& mon = monitors[pin];
 			timespec ts;

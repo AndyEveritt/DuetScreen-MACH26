@@ -22,6 +22,7 @@
 #include "i18n/i18n.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/core/lv_global.h"
+#include "tracy/Tracy.hpp"
 #include "utils/DisplayHelper.h"
 #include "utils/GpioHelper.h"
 #include "utils/StorageHelper.h"
@@ -167,6 +168,7 @@ int main(int argc, char** argv)
 	s_requestThread = std::thread(
 		[]()
 		{
+			tracy::SetThreadName("Request Thread");
 #  if SET_THREAD_PRIORITY
 			// Set high priority for request thread
 			set_thread_priority(pthread_self(), SCHED_RR, 90);
@@ -183,6 +185,7 @@ int main(int argc, char** argv)
 	s_thumbnailThread = std::thread(
 		[]()
 		{
+			tracy::SetThreadName("FileInfo Cache Thread");
 #  if SET_THREAD_PRIORITY
 			// Set low priority for thumbnail thread
 			set_thread_priority(pthread_self(), SCHED_RR, 70);
@@ -201,6 +204,7 @@ int main(int argc, char** argv)
 	lv_timer_t* screensaver_timer = lv_timer_create(
 		[](lv_timer_t* timer)
 		{
+			ZoneScopedN("Screensaver Timer");
 			static bool screensaver_enabled = false;
 #if BURNIN_TEST
 			static bool first_run = true;
@@ -284,6 +288,7 @@ int main(int argc, char** argv)
 	lv_timer_create(
 		[](lv_timer_t* timer)
 		{
+			ZoneScopedN("Watchdog Timer");
 			if (system("touch /tmp/duetscreen-watchdog") != 0)
 			{
 				LOG_ERROR("Failed to update watchdog timestamp");
@@ -307,7 +312,9 @@ int main(int argc, char** argv)
 	{
 		{
 			UI_LOCK();
+			ZoneScopedN("lv_timer_handler");
 			lv_timer_handler();
+			FrameMark;
 		}
 
 		nextRunTime += targetInterval;
