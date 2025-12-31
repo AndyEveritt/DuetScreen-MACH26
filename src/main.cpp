@@ -134,6 +134,7 @@ int main(int argc, char** argv)
 	USB::UsbMonitor::getInstance().registerCallback(
 		[](const std::string& path, bool mounted)
 		{
+			ZoneScopedN("Upgrade USB Callback");
 			if (mounted)
 			{
 				LOG_INFO("USB drive mounted: {:s}", path.c_str());

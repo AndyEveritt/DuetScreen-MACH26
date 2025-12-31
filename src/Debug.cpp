@@ -50,6 +50,7 @@ using std::vector;
 #define LOG_FILE_PATTERN LOG_TIMESTAMP_FMT "[%l] [%t] %@ %!() %v"
 
 #define LOG_UI_PATTERN LOG_UI_TIMESTAMP_FMT "[%l] %v"
+#define LOG_TRACY_PATTERN "[%L] %v"
 
 namespace Log
 {
@@ -71,6 +72,63 @@ namespace Log
 
 	using UiSink_mt = UiSink<std::mutex>;
 
+#if TRACY_ENABLE
+	template <typename Mutex>
+	class TracySink : public spdlog::sinks::base_sink<Mutex>
+	{
+	  protected:
+		void sink_it_(const spdlog::details::log_msg& msg) override
+		{
+			// mutex is locked by base_sink
+			spdlog::memory_buf_t formatted;
+			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
+#  if 1
+			uint32_t color;
+			tracy::MessageSeverity severity;
+			switch (msg.level)
+			{
+			case spdlog::level::trace:
+				color = tracy::Color::LightGrey;
+				severity = tracy::MessageSeverity::Trace;
+				break;
+			case spdlog::level::debug:
+				color = tracy::Color::LightBlue;
+				severity = tracy::MessageSeverity::Debug;
+				break;
+			case spdlog::level::info:
+				color = tracy::Color::Green;
+				severity = tracy::MessageSeverity::Info;
+				break;
+			case spdlog::level::warn:
+				color = tracy::Color::Yellow;
+				severity = tracy::MessageSeverity::Warning;
+				break;
+			case spdlog::level::err:
+				color = tracy::Color::Red;
+				severity = tracy::MessageSeverity::Error;
+				break;
+			case spdlog::level::critical:
+				color = tracy::Color::Purple;
+				severity = tracy::MessageSeverity::Fatal;
+				break;
+			default:
+				color = tracy::Color::White;
+				severity = tracy::MessageSeverity::Info;
+			}
+
+			tracy::Profiler::LogString(
+				tracy::MessageSourceType::User, severity, color, TRACY_CALLSTACK, formatted.size(), formatted.data());
+#  else
+			TracyMessage(formatted.data(), formatted.size());
+#  endif
+		}
+
+		void flush_() override {}
+	};
+
+	using TracySink_mt = TracySink<std::mutex>;
+#endif
+
 	static DebugLevel s_debugLevel = DebugLevel::Info;
 	static shared_ptr<spdlog::logger> s_logger;
 	static shared_ptr<UiSink_mt> s_uiSink;
@@ -88,7 +146,17 @@ namespace Log
 				DEFAULT_LOG_FILE_COUNT - 1);
 			file_sink->set_pattern(LOG_FILE_PATTERN);
 
-			spdlog::sinks_init_list sinks{console_sink, file_sink};
+#if TRACY_ENABLE
+			auto tracy_sink = make_shared<TracySink_mt>();
+			tracy_sink->set_pattern(LOG_TRACY_PATTERN);
+#endif
+			spdlog::sinks_init_list sinks{std::move(console_sink),
+										  std::move(file_sink)
+#if TRACY_ENABLE
+											  ,
+										  std::move(tracy_sink)
+#endif
+			};
 			s_logger = make_shared<spdlog::logger>("duetscreen", sinks);
 			s_logger->flush_on(spdlog::level::debug);
 			spdlog::set_default_logger(s_logger);

@@ -15,6 +15,7 @@
 
 Model::Model()
 {
+	ZoneScoped;
 	// Timers
 	if (lv_is_initialized())
 	{
@@ -44,6 +45,7 @@ Model::Model()
 
 void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 {
+	ZoneScoped;
 	UI_LOCK();
 	if (presenter.expired())
 	{
@@ -57,6 +59,7 @@ void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 
 void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 {
+	ZoneScoped;
 	UI_LOCK();
 	if (presenter.expired())
 	{
@@ -83,6 +86,7 @@ void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 
 void Model::startEventLoop()
 {
+	ZoneScoped;
 	if (m_running)
 	{
 		LOG_WARN("Event loop already running");
@@ -94,6 +98,7 @@ void Model::startEventLoop()
 
 void Model::stopEventLoop()
 {
+	ZoneScoped;
 	if (!m_running)
 	{
 		LOG_WARN("Event loop not running");
@@ -219,6 +224,7 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 		LOG_DBG("found {:d} subscribers for '{:s}'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
+			ZoneScopedN("Running subscriber");
 			subscriber.run(decoder, data, indices);
 		}
 	}
@@ -233,6 +239,7 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 		LOG_DBG("found {:d} array end subscribers for '{:s}'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
+			ZoneScopedN("Running subscriber");
 			subscriber.run(decoder, indices);
 		}
 	}
