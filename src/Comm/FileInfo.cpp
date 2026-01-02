@@ -23,7 +23,7 @@
 
 namespace Comm
 {
-	static std::recursive_mutex s_mutex;
+	static TracyLockable(std::recursive_mutex, s_mutex);
 
 	FileInfo::FileInfo()
 	{
@@ -37,7 +37,8 @@ namespace Comm
 
 	std::shared_ptr<Thumbnail> FileInfo::GetThumbnail(size_t index) const
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		if (index >= m_thumbnails.size())
 		{
 			return nullptr;
@@ -48,7 +49,8 @@ namespace Comm
 
 	std::shared_ptr<Thumbnail> FileInfo::GetOrCreateThumbnail(size_t index)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		if (index >= m_thumbnails.size())
 		{
 			m_thumbnails.resize(index + 1);
@@ -60,7 +62,8 @@ namespace Comm
 
 	size_t FileInfo::ClearThumbnails(size_t fromIndex)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		size_t count = m_thumbnails.size() - fromIndex;
 		m_thumbnails.resize(fromIndex);
 		return count;
@@ -68,6 +71,7 @@ namespace Comm
 
 	tm FileInfo::GetPrintTime() const
 	{
+		ZoneScoped;
 		tm time = ParseSeconds(printTime);
 		LOG_DBG("Print time ({:d}): {:d}:{:2d}:{:2d}", printTime, time.tm_hour, time.tm_min, time.tm_sec);
 		return time;
@@ -75,6 +79,7 @@ namespace Comm
 
 	void to_json(nlohmann::json& j, const FileInfo& c)
 	{
+		ZoneScoped;
 		std::vector<nlohmann::json> thumbnails;
 		for (const auto& thumb : c.GetThumbnails())
 		{
@@ -97,6 +102,7 @@ namespace Comm
 
 	void from_json(const nlohmann::json& j, FileInfo& c)
 	{
+		ZoneScoped;
 		if (j.contains("filename"))
 			c.filename.copy(j.at("filename").get<std::string>().c_str());
 		if (j.contains("filament"))
@@ -132,6 +138,7 @@ namespace Comm
 
 	FileInfoCache::FileInfoCache()
 	{
+		ZoneScoped;
 		Model::get().addEventListener<EventType::PrinterUniqueId>(
 			[this]()
 			{
@@ -142,6 +149,7 @@ namespace Comm
 
 	std::optional<std::filesystem::path> FileInfoCache::GetCachePath() const
 	{
+		ZoneScoped;
 		std::string_view uid = OM::GetPrinterUniqueId();
 		if (uid.empty())
 		{
@@ -154,6 +162,7 @@ namespace Comm
 
 	bool FileInfoCache::LoadFileInfoFromFile(const std::filesystem::path& path, FileInfo& fileInfo)
 	{
+		ZoneScoped;
 		nlohmann::json data;
 		try
 		{
@@ -178,7 +187,8 @@ namespace Comm
 
 	void FileInfoCache::LoadCacheFromMemory()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 
 		ClearCache();
 
@@ -199,6 +209,7 @@ namespace Comm
 
 	void FileInfoCache::LoadCacheFolder(const std::filesystem::path& folderPath)
 	{
+		ZoneScoped;
 		for (const auto& entry : std::filesystem::directory_iterator(folderPath))
 		{
 			if (entry.is_regular_file())
@@ -234,7 +245,8 @@ namespace Comm
 
 	bool FileInfoCache::SaveCacheToFile(const FileInfo& fileInfo)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 
 		bool ret = false;
 		GetCachePath().transform(
@@ -277,7 +289,8 @@ namespace Comm
 
 	bool FileInfoCache::SaveCache()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 
 		bool ret = false;
 		GetCachePath().transform(
@@ -320,11 +333,12 @@ namespace Comm
 
 	void FileInfoCache::Spin()
 	{
+		ZoneScoped;
 		auto now = TimeHelper::getCurrentTime();
 
 		// Timeout any request that hasn't received a response within the timeout period
 		{
-			std::lock_guard<std::recursive_mutex> lock(s_mutex);
+			std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 			for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 			{
 				FileInfoRequestPtr request = *it;
@@ -343,7 +357,7 @@ namespace Comm
 		}
 
 		{
-			std::lock_guard<std::recursive_mutex> lock(s_mutex);
+			std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 			for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 			{
 				ThumbnailRequestPtr request = *it;
@@ -383,7 +397,7 @@ namespace Comm
 		// Start a new request if there are no requests in progress
 		size_t fileInfoRequested = 0;
 		{
-			std::lock_guard<std::recursive_mutex> lock(s_mutex);
+			std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 			for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end(); it++)
 			{
 				FileInfoRequestPtr request = *it;
@@ -407,7 +421,7 @@ namespace Comm
 		// Start a new thumbnail request if there are none in progress
 		size_t thumbnailsRequested = 0;
 		{
-			std::lock_guard<std::recursive_mutex> lock(s_mutex);
+			std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 			for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end();)
 			{
 				ThumbnailRequestPtr request = *it;
@@ -457,7 +471,8 @@ namespace Comm
 
 	bool FileInfoCache::IsThumbnailCached(const std::string& filepath, const char* lastModified)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		// Does a thumbnail file exist in the file system?
 		if (!::IsThumbnailCached(filepath, false))
 		{
@@ -491,7 +506,8 @@ namespace Comm
 	 */
 	FileInfoPtr FileInfoCache::GetFileInfo(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		if (m_cache.find(filepath) == m_cache.end())
 		{
 			return nullptr;
@@ -501,7 +517,8 @@ namespace Comm
 
 	bool FileInfoCache::IsFileInfoRequestInProgress()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		return std::find_if(m_fileInfoRequestQueue.begin(),
 							m_fileInfoRequestQueue.end(),
 							[](const FileInfoRequestPtr request)
@@ -510,7 +527,8 @@ namespace Comm
 
 	void FileInfoCache::ReceivingFileInfoResponse(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
@@ -527,7 +545,8 @@ namespace Comm
 	 */
 	FileInfoCache::FileInfoRequestPtr FileInfoCache::GetFileInfoRequest(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		for (FileInfoRequestPtr request : m_fileInfoRequestQueue)
 		{
 			if (request->GetData()->filename.Equals(filepath.c_str()))
@@ -541,13 +560,15 @@ namespace Comm
 #if 0
 	bool FileInfoCache::IsFileInfoRequestQueued(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		return GetFileInfoRequest(filepath) != nullptr;
 	}
 
 	bool FileInfoCache::IsFileInfoRequestInProgress(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
 		if (request == nullptr)
 		{
@@ -560,7 +581,8 @@ namespace Comm
 
 	void FileInfoCache::FileInfoRequestComplete(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		LOG_DBG("File info request complete for {:s}", filepath.c_str());
 
 		FileInfoRequestPtr request = GetFileInfoRequest(filepath);
@@ -580,7 +602,8 @@ namespace Comm
 
 	bool FileInfoCache::FileInfoRequest::RequestDataInner()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		if (m_data == nullptr)
 		{
 			return false;
@@ -592,7 +615,8 @@ namespace Comm
 
 	bool FileInfoCache::ThumbnailRequest::RequestDataInner()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		if (m_data == nullptr)
 		{
 			return false;
@@ -640,7 +664,8 @@ namespace Comm
 
 	void FileInfoCache::ClearCache()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		LOG_INFO("Clearing file info cache");
 
 		m_cache.clear();
@@ -658,7 +683,8 @@ namespace Comm
 	 */
 	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath, bool next)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		LOG_DBG("Attempting to queue file info request for {:s}", filepath.c_str());
 		for (auto it = m_fileInfoRequestQueue.begin(); it != m_fileInfoRequestQueue.end();)
 		{
@@ -704,7 +730,8 @@ namespace Comm
 
 	ThumbnailPtr FileInfoCache::GetLargestValidThumbnail(const FileInfo& fileInfo, size_t width, size_t height)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		ThumbnailPtr largestValidThumbnail;
 		size_t largestSize = 0;
 		for (size_t i = 0; i < fileInfo.GetThumbnailCount(); i++)
@@ -725,18 +752,20 @@ namespace Comm
 
 	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath, bool next)
 	{
+		ZoneScoped;
 		return QueueThumbnailRequestInner(filepath, MAX_THUMBNAIL_CACHE_PIXELS, MAX_THUMBNAIL_CACHE_PIXELS, next);
 	}
 
 	bool FileInfoCache::QueueLargeThumbnailRequest(const std::string& filepath)
 	{
+		ZoneScoped;
 		return QueueThumbnailRequestInner(filepath, 400, 400, true);
 	}
 
 	bool FileInfoCache::QueueThumbnailRequestInner(const std::string& filepath, size_t width, size_t height, bool next)
 	{
-
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		LOG_DBG("Attempting to queue thumbnail request for {:s}, max size {:d}x{:d}", filepath.c_str(), width, height);
 		for (auto it = m_thumbnailRequestQueue.begin(); it != m_thumbnailRequestQueue.end(); it++)
 		{
@@ -799,6 +828,7 @@ namespace Comm
 
 	bool FileInfoCache::QueueThumbnailRequestInner(const ThumbnailPtr& thumbnail, bool next)
 	{
+		ZoneScoped;
 		if (thumbnail == nullptr)
 		{
 			return false;
@@ -826,7 +856,8 @@ namespace Comm
 #if 1
 	ThumbnailPtr FileInfoCache::GetRequestedThumbnail(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 							   m_thumbnailRequestQueue.end(),
 							   [filepath](const ThumbnailRequestPtr request)
@@ -842,7 +873,8 @@ namespace Comm
 
 	bool FileInfoCache::IsThumbnailRequestInProgress()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		return std::find_if(m_thumbnailRequestQueue.begin(),
 							m_thumbnailRequestQueue.end(),
 							[](const ThumbnailRequestPtr request)
@@ -851,7 +883,8 @@ namespace Comm
 
 	void FileInfoCache::ThumbnailRequestComplete(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		ThumbnailRequestPtr request = GetThumbnailRequest(filepath);
 		if (request == nullptr)
 		{
@@ -876,7 +909,8 @@ namespace Comm
 
 	FileInfoCache::ThumbnailRequestPtr FileInfoCache::GetThumbnailRequest(const std::string& filepath)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		auto it = std::find_if(m_thumbnailRequestQueue.begin(),
 							   m_thumbnailRequestQueue.end(),
 							   [&filepath](const ThumbnailRequestPtr& request)
@@ -896,14 +930,15 @@ namespace Comm
 	 */
 	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		UNUSED(largeOnly);
 		return true;
 	}
 
 	void FileInfoCache::Debug()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_mutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_mutex);
 		LOG_DBG("File info cache debug");
 		LOG_INFO("File info cache:");
 		for (auto& it : get()->m_cache)
@@ -961,6 +996,7 @@ namespace Comm
 
 	tm ParseSeconds(uint32_t seconds)
 	{
+		ZoneScoped;
 		tm time;
 		time.tm_hour = static_cast<int>(seconds / 3600);
 		time.tm_min = static_cast<int>((seconds - time.tm_hour * 3600) / 60);
@@ -970,6 +1006,7 @@ namespace Comm
 
 	size_t GetFileSize(const char* filepath)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		struct stat sb;
 		if (system(fmt::format("test -f \"{:s}\"", filepath).c_str()) == 0)

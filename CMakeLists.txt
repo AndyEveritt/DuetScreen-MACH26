@@ -120,6 +120,7 @@ include(${LIBRARIES_DIR}/json.cmake)
 
 # Logging
 include(${LIBRARIES_DIR}/spdlog.cmake)
+include(${LIBRARIES_DIR}/tracy.cmake)
 
 # Include libusb headers
 target_include_directories(DuetScreen.lib SYSTEM PUBLIC ${LIBUSB_INCLUDE_DIRS})
@@ -266,7 +267,8 @@ target_link_libraries(
           nlohmann_json::nlohmann_json
           nameof::nameof
           spdlog::spdlog
-          fmt::fmt)
+          fmt::fmt
+          Tracy::TracyClient)
 
 if(PROCESSOR STREQUAL "T113")
   target_link_libraries(DuetScreen.lib PRIVATE gpiod wpa_client)

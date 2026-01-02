@@ -12,6 +12,7 @@
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "termios.h"
+#include "tracy/Tracy.hpp"
 #include "utils/utils.h"
 #include <fmt/format.h>
 #include <hv/requests.h>
@@ -155,7 +156,7 @@ namespace Comm
 		std::chrono::milliseconds m_lastRequestTime;
 		float m_pollIntervalScale;
 		uint32_t m_nextLineNumber = 0;
-		std::mutex m_sendLock;
+		TracyLockable(std::mutex, m_sendLock);
 
 		// USB
 
@@ -170,9 +171,6 @@ namespace Comm
 			CONNECTING,
 			CONNECTED
 		} m_connectionState = ConnectionState::DISCONNECTED;
-
-		// UART
-		std::thread m_uartConnectionThread;
 
 		static constexpr uint32_t sm_noSessionKey = 0;
 	};

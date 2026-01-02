@@ -79,7 +79,7 @@ namespace USB
 
 		std::thread monitor_thread;
 		std::atomic<bool> running;
-		mutable std::mutex callback_mutex;
+		mutable TracyLockable(std::mutex, callback_mutex);
 		std::vector<UsbDriveCallback> callbacks;
 		std::vector<std::string> current_mounts;
 	};

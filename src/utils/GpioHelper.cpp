@@ -7,6 +7,7 @@
 
 #include "GpioHelper.h"
 #include "Debug.h"
+#include "tracy/Tracy.hpp"
 #if T113
 #  include <atomic>
 #  include <gpiod.h>
@@ -27,12 +28,13 @@ namespace
 	};
 
 	std::map<int, MonitorData> monitors;
-	std::mutex monitorMutex;
+	TracyLockable(std::mutex, monitorMutex);
 } // namespace
 #endif
 
 int GpioHelper::togglePin(int pin)
 {
+	ZoneScoped;
 	LOG_DBG("Toggling GPIO pin {:d}", pin);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
@@ -74,6 +76,7 @@ int GpioHelper::togglePin(int pin)
 
 int GpioHelper::setPinValue(int pin, int value)
 {
+	ZoneScoped;
 	LOG_DBG("Setting GPIO pin {:d} to value {:d}", pin, value);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
@@ -113,6 +116,7 @@ int GpioHelper::setPinValue(int pin, int value)
 
 int GpioHelper::getPinValue(int pin)
 {
+	ZoneScoped;
 	LOG_DBG("Getting GPIO pin {:d} value", pin);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
@@ -154,11 +158,13 @@ int GpioHelper::getPinValue(int pin)
 
 int GpioHelper::getPortOffset(char port)
 {
+	ZoneScoped;
 	return (port - 'A') * 32;
 }
 
 int GpioHelper::pinNameToNumber(const std::string& pinName)
 {
+	ZoneScoped;
 	if (pinName.empty())
 	{
 		LOG_ERROR("Empty pin name");
@@ -191,6 +197,7 @@ int GpioHelper::pinNameToNumber(const std::string& pinName)
 
 int GpioHelper::monitorPin(int pin, PinChangeCallback callback)
 {
+	ZoneScoped;
 	LOG_DBG("Monitoring GPIO pin {:d}", pin);
 #if T113
 	const char* chip_path = "/dev/gpiochip0";
@@ -226,13 +233,14 @@ int GpioHelper::monitorPin(int pin, PinChangeCallback callback)
 		return -1;
 	}
 
-	std::lock_guard<std::mutex> lock(monitorMutex);
+	std::lock_guard<LockableBase(std::mutex)> lock(monitorMutex);
 	auto& monitor = monitors[pin];
 	monitor.callback = callback;
 	monitor.line = line;
 	monitor.thread = std::thread(
 		[pin, line, chip]()
 		{
+			tracy::SetThreadName("GPIO Monitor");
 			struct gpiod_line_event event;
 			MonitorData& mon = monitors[pin];
 			timespec ts;
@@ -251,6 +259,7 @@ int GpioHelper::monitorPin(int pin, PinChangeCallback callback)
 					continue; // Timeout
 				}
 
+				ZoneScoped;
 				ret = gpiod_line_event_read(mon.line, &event);
 				if (ret == 0 && mon.callback)
 				{
@@ -279,7 +288,7 @@ void GpioHelper::stopMonitoring(int pin)
 {
 	LOG_DBG("Stopping monitoring GPIO pin {:d}", pin);
 #if T113
-	std::lock_guard<std::mutex> lock(monitorMutex);
+	std::lock_guard<LockableBase(std::mutex)> lock(monitorMutex);
 	auto it = monitors.find(pin);
 	if (it != monitors.end())
 	{

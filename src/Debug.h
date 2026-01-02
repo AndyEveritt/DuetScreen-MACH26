@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "tracy/Tracy.hpp"
 #include "utils/utils.h"
 #include <chrono>
 #include <fmt/ranges.h>

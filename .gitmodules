@@ -1,3 +1,6 @@
 [submodule "lvgl"]
 	path = libraries/lvgl
 	url = https://github.com/AndyEveritt/lvgl
+[submodule "libraries/tracy"]
+	path = libraries/tracy
+	url = https://github.com/wolfpld/tracy.git

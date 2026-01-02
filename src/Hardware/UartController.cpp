@@ -1,5 +1,6 @@
 #include "UartController.h"
 #include "Debug.h"
+#include "tracy/Tracy.hpp"
 #include <cstring>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -206,7 +207,7 @@ ssize_t UartController::_send(const uint8_t* data, size_t length)
 		return 0;
 	}
 
-	std::lock_guard<std::mutex> lock(m_writeMutex);
+	std::lock_guard<LockableBase(std::mutex)> lock(m_writeMutex);
 	ssize_t written = 0;
 	while (written < (ssize_t)length)
 	{
@@ -229,6 +230,7 @@ ssize_t UartController::_send(const uint8_t* data, size_t length)
 
 void UartController::readLoop()
 {
+	tracy::SetThreadName("UartController::readLoop");
 	std::vector<uint8_t> buffer(m_bufferSize);
 #if SIMULATION
 	while (m_running)
@@ -273,7 +275,7 @@ void UartController::readLoop()
 		{
 			DataCallback callback;
 			{
-				std::lock_guard<std::mutex> lock(m_callbackMutex);
+				std::lock_guard<LockableBase(std::mutex)> lock(m_callbackMutex);
 				callback = m_receiveCallback;
 			}
 

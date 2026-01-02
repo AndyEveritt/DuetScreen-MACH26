@@ -16,6 +16,7 @@ namespace UI
 
 	static OM::Directories::DirectoryType getBaseFolderType(FilePresenter::BaseFolder folder)
 	{
+		ZoneScoped;
 		switch (folder)
 		{
 		case FilePresenter::BaseFolder::GCODES:
@@ -30,6 +31,7 @@ namespace UI
 
 	std::string_view FilePresenter::getBaseFolderPath() const
 	{
+		ZoneScoped;
 		std::string_view baseFolder;
 		switch (m_baseFolder)
 		{
@@ -52,6 +54,7 @@ namespace UI
 
 	void FilePresenter::setFolder(std::string_view folder)
 	{
+		ZoneScoped;
 		if (!folder.empty() && folder.starts_with(getBaseFolderPath()))
 		{
 			m_currentFolder = folder.substr(getBaseFolderPath().length());
@@ -72,6 +75,7 @@ namespace UI
 
 	void FilePresenter::itemClicked(const size_t index)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		if (index >= m_items.size())
 		{
@@ -133,6 +137,7 @@ namespace UI
 
 	void FilePresenter::startPrint()
 	{
+		ZoneScoped;
 		OM::FileSystem::StartPrint(m_gcodePath);
 		HomeView::instance().getDashboard().disableJobsTab(true);
 		home();
@@ -140,11 +145,13 @@ namespace UI
 
 	void FilePresenter::runMacro()
 	{
+		ZoneScoped;
 		OM::FileSystem::RunMacro(m_gcodePath);
 	}
 
 	void FilePresenter::displayFiles()
 	{
+		ZoneScoped;
 		m_view->setFileCount(m_items.size());
 		m_view->showSort(m_sortBy, m_sortOrder);
 
@@ -184,6 +191,7 @@ namespace UI
 
 	void FilePresenter::requestFiles()
 	{
+		ZoneScoped;
 		LOG_DBG("Requesting files for folder {:s}{:s}", getBaseFolderPath(), m_currentFolder);
 		UI_LOCK();
 		OM::FileSystem::RequestFiles(
@@ -191,6 +199,7 @@ namespace UI
 			m_currentFolder,
 			[this](OM::FileSystem::ItemList files)
 			{
+				ZoneScoped;
 				LOG_DBG("Received {:d} files for folder {:s}{:s}",
 						files.size(),
 						getBaseFolderPath(),
@@ -206,17 +215,20 @@ namespace UI
 
 	void FilePresenter::refreshFiles()
 	{
+		ZoneScoped;
 		requestFiles();
 	}
 
 	void FilePresenter::sortFiles()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		OM::FileSystem::SortFilesBy(m_items, m_sortBy, m_sortOrder);
 	}
 
 	void FilePresenter::setSort(SortBy by, bool descending)
 	{
+		ZoneScoped;
 		m_sortBy = by;
 		m_sortOrder = descending;
 		StorageHelper::setData(ID_FILE_SORT_BY, by);
@@ -227,6 +239,7 @@ namespace UI
 
 	bool FilePresenter::back()
 	{
+		ZoneScoped;
 		if (m_currentFolder == DEFAULT_GCODES_PATH)
 		{
 			return false; // Already at the root folder
@@ -257,6 +270,7 @@ namespace UI
 
 	void FilePresenter::newThumbnailData(const std::string& filename)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		for (size_t i = 0; i < this->m_view->getFileCount(); i++)
 		{
@@ -292,6 +306,7 @@ namespace UI
 
 	void FilePresenter::onInit()
 	{
+		ZoneScoped;
 		registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
 		registerEventListener<EventType::PrinterUniqueId>([this]() { setFolder(""); });
 		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
@@ -300,6 +315,7 @@ namespace UI
 
 	void FilePresenter::onActivate()
 	{
+		ZoneScoped;
 		if (OM::GetPrinterUniqueId().empty())
 		{
 			return;
@@ -309,11 +325,13 @@ namespace UI
 
 	void FilePresenter::onConnect()
 	{
+		ZoneScoped;
 		// setFolder("");
 	}
 
 	void FilePresenter::onDisconnect()
 	{
+		ZoneScoped;
 		LOG_DBG("Clearing files");
 		UI_LOCK();
 		m_items.clear();

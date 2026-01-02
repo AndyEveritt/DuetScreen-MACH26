@@ -7,6 +7,7 @@
 
 #include "Usb.h"
 #include "sys/stat.h"
+#include "tracy/Tracy.hpp"
 #include "utils/utils.h"
 #include <algorithm>
 #include <chrono>
@@ -19,6 +20,7 @@ namespace USB
 #if 1
 	std::vector<FileInfo> ListEntriesInDirectory(const std::string& directoryPath)
 	{
+		ZoneScoped;
 		std::vector<FileInfo> files;
 
 		// Open the directory
@@ -70,6 +72,7 @@ namespace USB
 
 	bool ReadUsbFileContents(const std::string& filePath, std::string& contents)
 	{
+		ZoneScoped;
 		std::string fullPath;
 		if (filePath.rfind("/mnt/usb") == 0)
 		{
@@ -85,6 +88,7 @@ namespace USB
 
 	bool ReadFileContents(const std::string& filePath, std::string& contents)
 	{
+		ZoneScoped;
 		LOG_INFO("Reading file {:s}", filePath.c_str());
 		std::ifstream file(filePath.c_str(), std::ios::in | std::ios::ate);
 
@@ -110,11 +114,13 @@ namespace USB
 
 	UsbMonitor::~UsbMonitor()
 	{
+		ZoneScoped;
 		stopMonitoring();
 	}
 
 	void UsbMonitor::startMonitoring()
 	{
+		ZoneScoped;
 		if (!running)
 		{
 			running = true;
@@ -124,6 +130,7 @@ namespace USB
 
 	void UsbMonitor::stopMonitoring()
 	{
+		ZoneScoped;
 		if (running)
 		{
 			running = false;
@@ -136,7 +143,8 @@ namespace USB
 
 	void UsbMonitor::registerCallback(UsbDriveCallback callback, bool initialNotify)
 	{
-		std::lock_guard<std::mutex> lock(callback_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::mutex)> lock(callback_mutex);
 		callbacks.push_back(callback);
 
 		if (running && initialNotify)
@@ -151,11 +159,13 @@ namespace USB
 
 	std::vector<std::string> UsbMonitor::getMountedDrives() const
 	{
+		ZoneScoped;
 		return current_mounts;
 	}
 
 	std::vector<std::string> UsbMonitor::getUsbMounts()
 	{
+		ZoneScoped;
 		std::vector<std::string> mounts;
 		FILE* fp = popen("grep \"/media/usb\" /proc/mounts | awk '{print $2}'", "r");
 		if (fp == nullptr)
@@ -182,7 +192,8 @@ namespace USB
 
 	void UsbMonitor::notifyCallbacks(const std::string& path, bool connected)
 	{
-		std::lock_guard<std::mutex> lock(callback_mutex);
+		ZoneScoped;
+		std::lock_guard<LockableBase(std::mutex)> lock(callback_mutex);
 		for (const auto& callback : callbacks)
 		{
 			callback(path, connected);
@@ -191,35 +202,39 @@ namespace USB
 
 	void UsbMonitor::monitorThread()
 	{
+		tracy::SetThreadName("USB Monitor Thread");
 		LOG_VERBOSE("USB monitor thread started");
 
 		while (running)
 		{
-			auto new_mounts = getUsbMounts();
-
-			const auto old_mounts = getMountedDrives();
 			{
-				std::lock_guard<std::mutex> lock(callback_mutex);
-				current_mounts = new_mounts;
-			}
+				ZoneScoped;
+				auto new_mounts = getUsbMounts();
 
-			// Find new mounts
-			for (const auto& mount : new_mounts)
-			{
-				if (std::find(old_mounts.begin(), old_mounts.end(), mount) == old_mounts.end())
+				const auto old_mounts = getMountedDrives();
 				{
-					LOG_INFO("USB drive mounted at: {:s}", mount.c_str());
-					notifyCallbacks(mount, true);
+					std::lock_guard<LockableBase(std::mutex)> lock(callback_mutex);
+					current_mounts = new_mounts;
 				}
-			}
 
-			// Find removed mounts
-			for (const auto& mount : old_mounts)
-			{
-				if (std::find(new_mounts.begin(), new_mounts.end(), mount) == new_mounts.end())
+				// Find new mounts
+				for (const auto& mount : new_mounts)
 				{
-					LOG_INFO("USB drive unmounted from: {:s}", mount.c_str());
-					notifyCallbacks(mount, false);
+					if (std::find(old_mounts.begin(), old_mounts.end(), mount) == old_mounts.end())
+					{
+						LOG_INFO("USB drive mounted at: {:s}", mount.c_str());
+						notifyCallbacks(mount, true);
+					}
+				}
+
+				// Find removed mounts
+				for (const auto& mount : old_mounts)
+				{
+					if (std::find(new_mounts.begin(), new_mounts.end(), mount) == new_mounts.end())
+					{
+						LOG_INFO("USB drive unmounted from: {:s}", mount.c_str());
+						notifyCallbacks(mount, false);
+					}
 				}
 			}
 

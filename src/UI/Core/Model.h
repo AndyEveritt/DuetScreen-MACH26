@@ -19,6 +19,8 @@
 #include "Subscribers/ThumbnailSubscribers.h"
 #include "Subscribers/ToolSubscribers.h"
 #include "lvgl/lvgl.h"
+#include "nameof.hpp"
+#include "tracy/Tracy.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <fmt/ostream.h>
@@ -142,6 +144,7 @@ struct EventWrapper
 	{
 	}
 	tuple_type tup;
+	constexpr static std::string_view eventName = nameof::nameof_enum<E>();
 };
 
 // Variant holding all event payload wrappers
@@ -222,6 +225,8 @@ class Model
 	template <EventType E, typename... Args>
 	void post(Args&&... args)
 	{
+		[[maybe_unused]] constexpr auto eventName = nameof::nameof_enum<E>();
+		ZoneScopedNC(eventName.data(), tracy::Color::Red);
 		using Wrapper = EventWrapper<E>;
 		using Tuple = typename Wrapper::tuple_type;
 		using ExpectedTuple = Tuple;
@@ -229,7 +234,7 @@ class Model
 		static_assert(std::is_same_v<ExpectedTuple, ProvidedTuple>,
 					  "post() argument types mismatch for event, expected");
 
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		m_eventQueue.emplace(E, EventData(std::in_place_type<Wrapper>, Tuple(std::forward<Args>(args)...)));
 		m_eventCondition.notify_one();
 	}
@@ -282,7 +287,7 @@ class Model
 	std::condition_variable m_eventCondition;
 	std::thread m_eventThread;
 	std::atomic<bool> m_running{false};
-	std::mutex m_mutex;
+	TracyLockable(std::mutex, m_mutex);
 
 	struct
 	{
@@ -294,4 +299,4 @@ class Model
 
 #define MODEL_LOCK()                                                                                                   \
 	LOG_VERBOSE("MODEL_LOCK requested in thread {}", Log::GetThreadId());                                              \
-	auto modelLock = ScopedLock(mutexModel);
+	std::lock_guard<LockableBase(DeadlockDetectingMutex<std::recursive_mutex>)> modelLock(mutexModel);
