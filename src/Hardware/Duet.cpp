@@ -353,7 +353,7 @@ namespace Comm
 		case CommunicationType::uart:
 		case CommunicationType::usb:
 		{
-			std::lock_guard<std::mutex> lock(m_sendLock);
+			std::lock_guard<LockableBase(std::mutex)> lock(m_sendLock);
 			CRC16 crc;
 			size_t len = 0;
 			std::string_view line;

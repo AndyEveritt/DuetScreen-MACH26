@@ -151,7 +151,7 @@ void Model::runEventLoop()
 					for (auto& handler : handlers)
 					{
 						ZoneScoped;
-						const auto eventName = nameof::nameof_enum(event.first);
+						[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
 						ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
 						ZoneColor(tracy::Color::Yellow);
 						std::invoke(handler, event.second);
@@ -182,7 +182,7 @@ void Model::runEventLoop()
 								nameof::nameof_enum(event.first));
 
 						ZoneScoped;
-						const auto eventName = nameof::nameof_enum(event.first);
+						[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
 						ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
 						ZoneColor(tracy::Color::Red);
 						std::invoke(handler, event.second);

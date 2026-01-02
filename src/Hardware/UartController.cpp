@@ -207,7 +207,7 @@ ssize_t UartController::_send(const uint8_t* data, size_t length)
 		return 0;
 	}
 
-	std::lock_guard<std::mutex> lock(m_writeMutex);
+	std::lock_guard<LockableBase(std::mutex)> lock(m_writeMutex);
 	ssize_t written = 0;
 	while (written < (ssize_t)length)
 	{
@@ -275,7 +275,7 @@ void UartController::readLoop()
 		{
 			DataCallback callback;
 			{
-				std::lock_guard<std::mutex> lock(m_callbackMutex);
+				std::lock_guard<LockableBase(std::mutex)> lock(m_callbackMutex);
 				callback = m_receiveCallback;
 			}
 

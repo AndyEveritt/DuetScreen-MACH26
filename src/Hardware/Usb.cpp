@@ -144,7 +144,7 @@ namespace USB
 	void UsbMonitor::registerCallback(UsbDriveCallback callback, bool initialNotify)
 	{
 		ZoneScoped;
-		std::lock_guard<std::mutex> lock(callback_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(callback_mutex);
 		callbacks.push_back(callback);
 
 		if (running && initialNotify)
@@ -193,7 +193,7 @@ namespace USB
 	void UsbMonitor::notifyCallbacks(const std::string& path, bool connected)
 	{
 		ZoneScoped;
-		std::lock_guard<std::mutex> lock(callback_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(callback_mutex);
 		for (const auto& callback : callbacks)
 		{
 			callback(path, connected);
@@ -213,7 +213,7 @@ namespace USB
 
 				const auto old_mounts = getMountedDrives();
 				{
-					std::lock_guard<std::mutex> lock(callback_mutex);
+					std::lock_guard<LockableBase(std::mutex)> lock(callback_mutex);
 					current_mounts = new_mounts;
 				}
 

@@ -241,4 +241,4 @@ namespace UI
 
 #define UI_LOCK()                                                                                                      \
 	LOG_VERBOSE("UI_LOCK requested by thread {}", Log::GetThreadId());                                                 \
-	auto uiLock = ScopedLock(mutexUi);
+	std::lock_guard<LockableBase(DeadlockDetectingMutex<std::recursive_mutex>)> uiLock(mutexUi);

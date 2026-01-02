@@ -1,6 +1,7 @@
 #ifndef UART_CONTROLLER_H
 #define UART_CONTROLLER_H
 
+#include "tracy/Tracy.hpp"
 #include <atomic>
 #include <functional>
 #include <mutex>
@@ -44,8 +45,8 @@ class UartController
 	DataCallback m_receiveCallback;
 	size_t m_bufferSize;
 	speed_t m_currentBaudRate;
-	std::mutex m_writeMutex;
-	std::mutex m_callbackMutex;
+	TracyLockable(std::mutex, m_writeMutex);
+	TracyLockable(std::mutex, m_callbackMutex);
 
 	void readLoop();
 	bool configurePort();

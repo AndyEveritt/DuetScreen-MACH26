@@ -89,7 +89,7 @@ namespace OM::FileSystem
 
 	ItemPtr FileListRequest::AddFolder()
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		auto folder = std::make_shared<FileSystemItem>(FileSystemItemType::folder);
 		m_items.push_back(folder);
 		return folder;
@@ -97,7 +97,7 @@ namespace OM::FileSystem
 
 	ItemPtr FileListRequest::AddFile()
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		auto file = std::make_shared<FileSystemItem>(FileSystemItemType::file);
 		m_items.push_back(file);
 		return file;
@@ -105,24 +105,24 @@ namespace OM::FileSystem
 
 	void FileListRequest::SortItems(const SortBy by, const bool descending)
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		SortFilesBy(m_items, by, descending);
 	}
 
 	ItemList FileListRequest::GetItemsCopy() const
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		return m_items;
 	}
 	size_t FileListRequest::GetItemCount() const
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		return m_items.size();
 	}
 
 	ItemPtr FileListRequest::GetLastItem() const
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		if (m_items.empty())
 		{
 			return nullptr;
@@ -132,7 +132,7 @@ namespace OM::FileSystem
 
 	ItemPtr FileListRequest::GetItem(const size_t index) const
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		if (index >= m_items.size())
 		{
 			return nullptr;

@@ -31,6 +31,12 @@ using std::vector;
 #define LOG_FORMAT_UNDERLINE_START "\033[4m"
 #define LOG_FORMAT_UNDERLINE_END "\033[24m"
 
+#ifdef TRACY_ENABLE
+#  define TRACE_LOG_MESSAGES 1
+#else
+#  define TRACE_LOG_MESSAGES 0
+#endif
+
 #if LOG_TIMESTAMPS
 #  define LOG_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S.%e] "
 #  if DEBUG
@@ -72,7 +78,7 @@ namespace Log
 
 	using UiSink_mt = UiSink<std::mutex>;
 
-#if TRACY_ENABLE
+#if TRACE_LOG_MESSAGES
 	template <typename Mutex>
 	class TracySink : public spdlog::sinks::base_sink<Mutex>
 	{
@@ -82,7 +88,6 @@ namespace Log
 			// mutex is locked by base_sink
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
-#  if 1
 			uint32_t color;
 			tracy::MessageSeverity severity;
 			switch (msg.level)
@@ -118,9 +123,6 @@ namespace Log
 
 			tracy::Profiler::LogString(
 				tracy::MessageSourceType::User, severity, color, TRACY_CALLSTACK, formatted.size(), formatted.data());
-#  else
-			TracyMessage(formatted.data(), formatted.size());
-#  endif
 		}
 
 		void flush_() override {}
@@ -146,13 +148,13 @@ namespace Log
 				DEFAULT_LOG_FILE_COUNT - 1);
 			file_sink->set_pattern(LOG_FILE_PATTERN);
 
-#if TRACY_ENABLE
+#if TRACE_LOG_MESSAGES
 			auto tracy_sink = make_shared<TracySink_mt>();
 			tracy_sink->set_pattern(LOG_TRACY_PATTERN);
 #endif
 			spdlog::sinks_init_list sinks{std::move(console_sink),
 										  std::move(file_sink)
-#if TRACY_ENABLE
+#if TRACE_LOG_MESSAGES
 											  ,
 										  std::move(tracy_sink)
 #endif

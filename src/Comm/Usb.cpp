@@ -21,8 +21,8 @@ namespace Comm
 		{0x1d50, {{0x60ec, "Duet 2"}, {0x60ed, "Duet 2 Maestro"}, {0x60ee, "Duet 3"}}},
 		{0x16c0, {{0x27dd, "CDC-ACM Device"}}}};
 
-	static std::recursive_mutex s_usbMutex;
-	static std::mutex s_transferMutex;
+	static TracyLockable(std::recursive_mutex, s_usbMutex);
+	static TracyLockable(std::mutex, s_transferMutex);
 	static std::condition_variable s_completionCondition;
 
 	static constexpr int32_t s_usbTimeoutMs = 1000;
@@ -44,7 +44,7 @@ namespace Comm
 
 	bool UsbDevice::init(const char* name, libusb_device* device, receive_cb_t callback)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		m_name = name;
 		m_device = device;
 		m_receiveCallback = callback;
@@ -58,7 +58,7 @@ namespace Comm
 
 	void UsbDevice::reset()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		LOG_DBG("Resetting USB device {:s}", m_name);
 		if (m_handle)
 		{
@@ -88,7 +88,7 @@ namespace Comm
 
 	bool UsbDevice::connect()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		int r;
 
 		if (!m_device)
@@ -156,7 +156,7 @@ namespace Comm
 
 	bool UsbDevice::send(std::string_view data, unsigned int timeoutMs)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
@@ -209,7 +209,7 @@ namespace Comm
 	// CDC-ACM SET_LINE_CODING to configure baud/format
 	bool UsbDevice::setLineCoding(uint32_t baud, uint8_t stopBits, uint8_t parity, uint8_t dataBits)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
@@ -290,7 +290,7 @@ namespace Comm
 
 	int UsbDevice::setDtr(bool state)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
@@ -315,7 +315,7 @@ namespace Comm
 
 	bool UsbDevice::getDeviceInterface()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		libusb_config_descriptor* config_desc;
 		libusb_get_active_config_descriptor(m_device, &config_desc);
 
@@ -358,7 +358,7 @@ namespace Comm
 		TransferData* transferData = static_cast<TransferData*>(transfer->user_data);
 
 		// Notify completion for any pending transfers
-		std::unique_lock<std::mutex> lock(s_transferMutex);
+		std::unique_lock<LockableBase(std::mutex)> lock(s_transferMutex);
 		transferData->completed = true;
 
 		if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
@@ -385,7 +385,7 @@ namespace Comm
 		auto device = static_cast<UsbDevice*>(transfer->user_data);
 
 		// Notify completion for any pending transfers
-		std::unique_lock<std::mutex> lock(s_transferMutex);
+		std::unique_lock<LockableBase(std::mutex)> lock(s_transferMutex);
 
 		if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
 		{
@@ -439,7 +439,7 @@ namespace Comm
 								  const char** found_device_name,
 								  libusb_device** found_device)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		for (ssize_t i = 0; i < device_count; ++i)
 		{
 			libusb_device* device = device_list[i];
@@ -480,13 +480,13 @@ namespace Comm
 
 	int usbInit()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		return libusb_init(&s_context);
 	}
 
 	bool connectUsbDevice()
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		// Reset any existing connection first
 		s_currentUsbDevice.reset();
 
@@ -535,7 +535,7 @@ namespace Comm
 
 	ssize_t sendUsbData(std::string_view data)
 	{
-		std::lock_guard<std::recursive_mutex> lock(s_usbMutex);
+		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!s_currentUsbDevice.isConnected())
 		{
 			LOG_WARN("USB device not connected");

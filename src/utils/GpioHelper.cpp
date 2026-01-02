@@ -28,7 +28,7 @@ namespace
 	};
 
 	std::map<int, MonitorData> monitors;
-	std::mutex monitorMutex;
+	TracyLockable(std::mutex, monitorMutex);
 } // namespace
 #endif
 
@@ -233,7 +233,7 @@ int GpioHelper::monitorPin(int pin, PinChangeCallback callback)
 		return -1;
 	}
 
-	std::lock_guard<std::mutex> lock(monitorMutex);
+	std::lock_guard<LockableBase(std::mutex)> lock(monitorMutex);
 	auto& monitor = monitors[pin];
 	monitor.callback = callback;
 	monitor.line = line;
@@ -288,7 +288,7 @@ void GpioHelper::stopMonitoring(int pin)
 {
 	LOG_DBG("Stopping monitoring GPIO pin {:d}", pin);
 #if T113
-	std::lock_guard<std::mutex> lock(monitorMutex);
+	std::lock_guard<LockableBase(std::mutex)> lock(monitorMutex);
 	auto it = monitors.find(pin);
 	if (it != monitors.end())
 	{
