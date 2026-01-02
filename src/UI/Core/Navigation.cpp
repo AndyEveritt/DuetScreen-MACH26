@@ -15,11 +15,13 @@ namespace UI
 
 	static bool inVector(ViewList_t& vec, LvObjPtr item)
 	{
+		ZoneScoped;
 		return std::find(vec.begin(), vec.end(), item) != vec.end();
 	}
 
 	static bool removeFromVector(ViewList_t& vec, LvObjPtr item)
 	{
+		ZoneScoped;
 		auto it = std::find(vec.begin(), vec.end(), item);
 		if (it != vec.end())
 		{
@@ -32,6 +34,7 @@ namespace UI
 
 	static bool addToVector(ViewList_t& vec, LvObjPtr item)
 	{
+		ZoneScoped;
 		removeFromVector(vec, item);
 		LOG_DBG("Adding screen {:s} to vector", item->getName());
 		vec.push_back(item);
@@ -40,6 +43,7 @@ namespace UI
 
 	static void notifySideBar()
 	{
+		ZoneScoped;
 		Model::get().post<EventType::NavigationHomeEnable>(s_openScreens.size() > 0);
 		Model::get().post<EventType::NavigationBackEnable>(s_openScreens.size() > 0 || s_openModals.size() > 0);
 	}
@@ -95,6 +99,7 @@ namespace UI
 	 */
 	void home()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Home button pressed");
 		closeAllModals();
@@ -131,6 +136,7 @@ namespace UI
 	 */
 	void clearHomeScreens()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		s_homeScreens.clear();
 	}
@@ -146,6 +152,7 @@ namespace UI
 	 */
 	LvObjPtr getCurrentScreen()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (s_openScreens.empty())
 		{
@@ -164,6 +171,7 @@ namespace UI
 	 */
 	bool closeLastScreen()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Closing last screen");
 #if 0
@@ -193,6 +201,7 @@ namespace UI
 		 */
 		void addHomeScreenImpl(LvObjPtr view)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			if (view == nullptr)
 			{
@@ -221,6 +230,7 @@ namespace UI
 
 		void removeHomeScreenImpl(LvObjPtr view, bool close)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			if (removeFromVector(s_homeScreens, view))
 			{
@@ -253,6 +263,7 @@ namespace UI
 		 */
 		void openScreenImpl(LvObjPtr view, bool closePrevious)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			if (view == nullptr)
 			{
@@ -288,6 +299,7 @@ namespace UI
 		 */
 		bool closeScreenImpl(LvObjPtr view, bool returnable)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			LOG_INFO("Closing screen '{:s}'", view->getName());
 			if (view == nullptr)
@@ -321,6 +333,7 @@ namespace UI
 
 		void openModalImpl(LvObj* view)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			if (view == nullptr)
 			{
@@ -337,6 +350,7 @@ namespace UI
 
 		bool closeModalImpl(LvObj* view)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			if (view == nullptr)
 			{
@@ -365,6 +379,7 @@ namespace UI
 
 	void closeAllModals()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Closing all modals");
 		for (auto modal : s_openModals)
@@ -378,6 +393,7 @@ namespace UI
 
 	bool closeLastModal()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (s_openModals.empty())
 		{
