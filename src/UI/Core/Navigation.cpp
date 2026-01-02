@@ -61,6 +61,7 @@ namespace UI
 	 */
 	void back()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Back button pressed");
 

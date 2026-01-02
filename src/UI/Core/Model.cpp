@@ -10,10 +10,12 @@
 #include "i18n/i18n.h"
 #include "lvgl/src/osal/lv_os.h"
 #include "nameof.hpp"
+#include "tracy/Tracy.hpp"
 #include "utils/StorageHelper.h"
 
 Model::Model()
 {
+	ZoneScoped;
 	LOG_INFO("Initializing Model...");
 	// Timers
 	if (lv_is_initialized())
@@ -44,6 +46,7 @@ Model::Model()
 
 void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 {
+	ZoneScoped;
 	UI_LOCK();
 	if (presenter.expired())
 	{
@@ -57,6 +60,7 @@ void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 
 void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 {
+	ZoneScoped;
 	UI_LOCK();
 	if (presenter.expired())
 	{
@@ -83,6 +87,7 @@ void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 
 void Model::startEventLoop()
 {
+	ZoneScoped;
 	if (m_running)
 	{
 		LOG_WARN("Event loop already running");
@@ -94,13 +99,14 @@ void Model::startEventLoop()
 
 void Model::stopEventLoop()
 {
+	ZoneScoped;
 	if (!m_running)
 	{
 		LOG_WARN("Event loop not running");
 		return;
 	}
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		m_running = false;
 	}
 	m_eventCondition.notify_all();
@@ -112,75 +118,91 @@ void Model::stopEventLoop()
 
 void Model::runEventLoop()
 {
+	tracy::SetThreadName("Model Event Loop");
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
 	while (true)
 	{
-		std::pair<EventType, EventData> event;
 		{
-			std::unique_lock<std::mutex> lock(m_mutex);
-			m_eventCondition.wait(lock, [this] { return !m_eventQueue.empty() || !m_running; });
-			if (!m_running && m_eventQueue.empty())
+			ZoneScoped;
+			std::pair<EventType, EventData> event;
 			{
-				LOG_DBG("Stopping event loop");
-				break;
-			}
-			event = std::move(m_eventQueue.front());
-			m_eventQueue.pop();
-		}
-
-		bool found = false;
-
-		UI_LOCK();
-		{
-			auto it = m_handlers.find(event.first);
-			if (it != m_handlers.end())
-			{
-				found = true;
-				auto& handlers = it->second;
-				for (auto& handler : handlers)
+				std::unique_lock<LockableBase(std::mutex)> lock(m_mutex);
+				m_eventCondition.wait(lock, [this] { return !m_eventQueue.empty() || !m_running; });
+				if (!m_running && m_eventQueue.empty())
 				{
-					handler(event.second);
+					LOG_DBG("Stopping event loop");
+					break;
 				}
+				event = std::move(m_eventQueue.front());
+				m_eventQueue.pop();
 			}
-		}
 
-		{
-			auto it = m_presenters.begin();
-			std::shared_ptr<UI::BasePresenter> presenter;
-			while (it != m_presenters.end())
+			bool found = false;
+
+			UI_LOCK();
 			{
-				presenter = (*it).lock();
-				if (!presenter)
-				{
-					it = m_presenters.erase(it);
-					continue;
-				}
-				auto handler = presenter->getEventHandler(event.first);
-				if (handler)
+				ZoneScopedN("Model Event Handlers");
+				auto it = m_handlers.find(event.first);
+				if (it != m_handlers.end())
 				{
 					found = true;
-					LOG_DBG("Notifying presenter '{:s}' for event '{:s}'",
-							presenter->getName(),
-							nameof::nameof_enum(event.first));
-
-					handler(event.second);
+					auto& handlers = it->second;
+					for (auto& handler : handlers)
+					{
+						ZoneScoped;
+						[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
+						ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
+						ZoneColor(tracy::Color::Yellow);
+						std::invoke(handler, event.second);
+					}
 				}
-				++it;
+			}
+
+			{
+				ZoneScopedN("Presenter Event Handlers");
+				auto it = m_presenters.begin();
+				std::shared_ptr<UI::BasePresenter> presenter;
+				while (it != m_presenters.end())
+				{
+					presenter = (*it).lock();
+					if (!presenter)
+					{
+						it = m_presenters.erase(it);
+						continue;
+					}
+					ZoneScoped;
+					ZoneName(presenter->getName().data(), presenter->getName().size());
+					auto handler = presenter->getEventHandler(event.first);
+					if (handler)
+					{
+						found = true;
+						LOG_DBG("Notifying presenter '{:s}' for event '{:s}'",
+								presenter->getName(),
+								nameof::nameof_enum(event.first));
+
+						ZoneScoped;
+						[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
+						ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
+						ZoneColor(tracy::Color::Red);
+						std::invoke(handler, event.second);
+					}
+					++it;
+				}
+			}
+
+			if (!found)
+			{
+				LOG_VERBOSE("No handler for event type {:s}", nameof::nameof_enum(event.first));
 			}
 		}
-
-		if (!found)
-		{
-			LOG_VERBOSE("No handler for event type {:s}", nameof::nameof_enum(event.first));
-		}
-
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 }
 
 std::chrono::milliseconds Model::requestNewData()
 {
+	ZoneScoped;
 	bool seqAvailable = Comm::sendNext();
 #if 0
 	if (seqAvailable && Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
@@ -195,12 +217,14 @@ std::chrono::milliseconds Model::requestNewData()
 
 void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	auto& subscribers = getSubscribers(key);
 	if (subscribers.size() != 0)
 	{
 		LOG_DBG("found {:d} subscribers for '{:s}'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
+			ZoneScopedN("Running subscriber");
 			subscriber.run(decoder, data, indices);
 		}
 	}
@@ -208,12 +232,14 @@ void Model::runSubscribers(const char* key, Comm::JsonDecoder* decoder, const ch
 
 void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	auto& subscribers = getArrayEndSubscribers(key);
 	if (subscribers.size() != 0)
 	{
 		LOG_DBG("found {:d} array end subscribers for '{:s}'", subscribers.size(), key);
 		for (auto& subscriber : subscribers)
 		{
+			ZoneScopedN("Running subscriber");
 			subscriber.run(decoder, indices);
 		}
 	}
@@ -221,6 +247,7 @@ void Model::runArrayEndSubscribers(const char* key, Comm::JsonDecoder* decoder, 
 
 void Model::connected()
 {
+	ZoneScoped;
 	LOG_DBG("Connected event");
 	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
 	{
@@ -230,6 +257,7 @@ void Model::connected()
 
 void Model::disconnected()
 {
+	ZoneScoped;
 	LOG_DBG("Disconnected event");
 	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
 	{

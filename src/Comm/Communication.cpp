@@ -27,6 +27,7 @@
 #include "ObjectModel/Spindle.h"
 #include "ObjectModel/Tool.h"
 #include "ObjectModel/Utils.h"
+#include "tracy/Tracy.hpp"
 #include "utils/TimeHelper.h"
 #include <filesystem>
 
@@ -157,6 +158,7 @@ namespace Comm
 
 	struct Seq* GetNextSeq(struct Seq* current)
 	{
+		ZoneScoped;
 		if (current == nullptr)
 		{
 			current = seqs;
@@ -194,6 +196,7 @@ namespace Comm
 
 	Seq* FindSeqByKey(const char* key)
 	{
+		ZoneScoped;
 		LOG_VERBOSE("key {:s}\n", key);
 
 		for (size_t i = 0; i < ARRAY_SIZE(seqs); ++i)
@@ -209,6 +212,7 @@ namespace Comm
 
 	void UpdateSeq(const ReceivedDataEvent seqid, int32_t val)
 	{
+		ZoneScoped;
 		for (size_t i = 0; i < ARRAY_SIZE(seqs); ++i)
 		{
 			if (seqs[i].seqid == seqid)
@@ -225,6 +229,7 @@ namespace Comm
 
 	void ResetSeqs()
 	{
+		ZoneScoped;
 		for (size_t i = 0; i < ARRAY_SIZE(seqs); ++i)
 		{
 			seqs[i].lastSeq = 0;
@@ -235,6 +240,7 @@ namespace Comm
 
 	static void RequestSeq(Seq* seq)
 	{
+		ZoneScoped;
 		if (seq == nullptr)
 		{
 			LOG_ERROR("RequestSeq called with null seq");
@@ -259,6 +265,7 @@ namespace Comm
 	// by the RRFLibraries because of the uClibc++ library not providing the things we need for that.
 	bool GetInteger(const char s[], int32_t& rslt)
 	{
+		ZoneScoped;
 		if (!s || s[0] == 0)
 			return false; // empty string
 
@@ -295,6 +302,7 @@ namespace Comm
 	// by the RRFLibraries because of the uClibc++ library not providing the things we need for that.
 	bool GetUnsignedInteger(const char s[], uint32_t& rslt)
 	{
+		ZoneScoped;
 		if (!s || s[0] == 0)
 			return false; // empty string
 
@@ -334,6 +342,7 @@ namespace Comm
 	// by the RRFLibraries because of the uClibc++ library not providing the things we need for that.
 	bool GetFloat(const char s[], float& rslt)
 	{
+		ZoneScoped;
 		if (!s || s[0] == 0)
 			return false; // empty string
 
@@ -363,6 +372,7 @@ namespace Comm
 	// Try to get a bool value from a string.
 	bool GetBool(const char s[], bool& rslt)
 	{
+		ZoneScoped;
 		if (!s || s[0] == 0)
 			return false; // empty string
 
@@ -372,6 +382,7 @@ namespace Comm
 
 	void Reconnect()
 	{
+		ZoneScoped;
 		LOG_DBG("Reconnecting");
 		KickWatchdog();
 		//		lastOutOfBufferResponse = 0;
@@ -384,6 +395,7 @@ namespace Comm
 
 	void KickWatchdog()
 	{
+		ZoneScoped;
 		const std::chrono::milliseconds now = TimeHelper::getCurrentTime();
 		if (now > s_lastResponseTime)
 		{
@@ -408,6 +420,7 @@ namespace Comm
 	 */
 	bool sendNext()
 	{
+		ZoneScoped;
 		if (!DUET.IsConnected() && !DUET.IsConnecting())
 		{
 			Reconnect();
@@ -440,6 +453,7 @@ namespace Comm
 
 	void init()
 	{
+		ZoneScoped;
 		LOG_INFO("Initializing Communication Module...");
 		// Sort the fieldTable prior searching using binary search
 		std::filesystem::create_directories("/tmp/thumbnails");

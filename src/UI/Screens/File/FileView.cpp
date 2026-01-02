@@ -17,6 +17,7 @@ namespace UI
 		, m_layoutColDsc{LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 		, m_layoutRowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		setWidth(LV_PCT(100));
@@ -55,12 +56,14 @@ namespace UI
 
 	void FileView::FileItem::setFileLabel(std::string_view name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_label.setText(name);
 	}
 
 	void FileView::FileItem::setFileDate(std::string_view date)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_date.setText(date);
 	}
@@ -68,6 +71,7 @@ namespace UI
 #if SHOW_FILE_ITEM_SIZE
 	void FileView::FileItem::setFileSize(std::string_view size)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_size.setText(size);
 	}
@@ -75,6 +79,7 @@ namespace UI
 
 	void FileView::FileItem::setThumbnail(const char* thumbnail)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_thumbnail.setSrc(thumbnail);
 		m_thumbnail.setWidth(thumbnail == nullptr ? 0 : m_thumbnail.getHeight());
@@ -82,6 +87,7 @@ namespace UI
 
 	void FileView::FileItem::setType(const bool isFolder)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_isFolder = isFolder;
 #if SHOW_FILE_ITEM_SIZE
@@ -95,12 +101,14 @@ namespace UI
 
 	std::string_view FileView::FileItem::getLabel() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return m_label.getText();
 	}
 
 	std::string_view FileView::FileItem::getDate() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return m_date.getText();
 	}
@@ -108,6 +116,7 @@ namespace UI
 #if SHOW_FILE_ITEM_SIZE
 	std::string_view FileView::FileItem::getSize() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return m_size.getText();
 	}
@@ -116,10 +125,12 @@ namespace UI
 	FileView::LazyFileItem::LazyFileItem(FileView& fileView)
 		: m_fileView(fileView)
 	{
+		ZoneScoped;
 	}
 
 	lv_coord_t FileView::LazyFileItem::getSize() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// Return a fixed size for now
 		return 90;
@@ -127,6 +138,7 @@ namespace UI
 
 	void FileView::LazyFileItem::update(size_t index, FileItem& obj)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		obj.setFileView(&m_fileView);
@@ -145,6 +157,7 @@ namespace UI
 	FileView::StartPrintModal::StartPrintModal(const std::string& name, LvObj& parent)
 		: Modal<MessageBox>(name, parent, layout_t(0, 0, 70, LV_SIZE_CONTENT))
 	{
+		ZoneScoped;
 		m_fileInfoCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		static const int32_t colDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -192,42 +205,50 @@ namespace UI
 
 	void FileView::StartPrintModal::setFile(std::string_view value)
 	{
+		ZoneScoped;
 		setText(value);
 	}
 
 	void FileView::StartPrintModal::setFileDate(std::string_view value)
 	{
+		ZoneScoped;
 		m_fileDateValue.setText(value);
 	}
 
 	void FileView::StartPrintModal::setFileSize(std::string_view value)
 	{
+		ZoneScoped;
 		m_fileSizeValue.setText(value);
 	}
 
 	void FileView::StartPrintModal::setGeneratedBy(std::string_view value)
 	{
+		ZoneScoped;
 		m_generatedByValue.setText(value);
 	}
 
 	void FileView::StartPrintModal::setPrintTime(std::string_view value)
 	{
+		ZoneScoped;
 		m_printTimeValue.setText(value);
 	}
 
 	void FileView::StartPrintModal::setHeight(float value)
 	{
+		ZoneScoped;
 		m_heightValue.setText(fmt::format("{:g} {:s}", value, Units::getDisplayedDistanceUnit()));
 	}
 
 	void FileView::StartPrintModal::setLayerHeight(float value)
 	{
+		ZoneScoped;
 		m_layerHeightValue.setText(fmt::format("{:g} {:s}", value, Units::getDisplayedDistanceUnit()));
 	}
 
 	FileView::FileView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
@@ -299,6 +320,7 @@ namespace UI
 
 	void FileView::setFileCount(const size_t count)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_fileList.setItemCount(count,
 								[this](size_t)
@@ -311,6 +333,7 @@ namespace UI
 
 	void FileView::setFolder(const std::string& folder)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// Clear previous breadcrumb elements
 		m_breadcrumbButtons.clear();
@@ -395,6 +418,7 @@ namespace UI
 
 	void FileView::onBreadcrumbClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
@@ -409,6 +433,7 @@ namespace UI
 
 	void FileView::onItemClicked(size_t index, bool /* isFolder */)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= m_fileList.getLazyItemCount())
 		{
@@ -420,6 +445,7 @@ namespace UI
 
 	bool FileView::cancelStartPrint()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_startPrint.isVisible())
 		{
@@ -431,6 +457,7 @@ namespace UI
 
 	void FileView::confirmStartPrint(std::string_view filename, const std::filesystem::path& thumbnail)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_startPrint.setTitle(_("file.start_print_title"));
 		m_startPrint.setText(_("file.start_print.file", filename));
@@ -441,6 +468,7 @@ namespace UI
 
 	void FileView::confirmRunMacro(std::string_view filename)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_startPrint.setTitle(_("file.run_macro_title"));
 		m_startPrint.setText(_("file.run_macro_message", filename));
@@ -452,6 +480,7 @@ namespace UI
 
 	void FileView::showSort(FilePresenter::SortBy by, bool descending)
 	{
+		ZoneScoped;
 		m_sortName.setChecked(false);
 		m_sortDate.setChecked(false);
 		m_sortSize.setChecked(false);
@@ -482,6 +511,7 @@ namespace UI
 
 	void FileView::onRefreshClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		view->cancelStartPrint();
@@ -490,6 +520,7 @@ namespace UI
 
 	void FileView::onSortClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
 		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
@@ -506,6 +537,7 @@ namespace UI
 
 	bool FileView::back()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (cancelStartPrint())
 		{
@@ -516,14 +548,19 @@ namespace UI
 
 	void FileView::onInit()
 	{
+		ZoneScoped;
 		m_startPrint.setParent(HomeView::instance().getMainWindow());
 	}
 
 	void FileView::onShow()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		cancelStartPrint();
 	}
 
-	void FileView::onHide() {}
+	void FileView::onHide()
+	{
+		ZoneScoped;
+	}
 } // namespace UI

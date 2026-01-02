@@ -9,6 +9,7 @@
 #define JNI_OBJECTMODEL_FILES_HPP_
 
 #include "ObjectModel/Directories.h"
+#include "tracy/Tracy.hpp"
 #include "utils/TimeHelper.h"
 #include <atomic>
 #include <functional>
@@ -114,7 +115,7 @@ namespace OM::FileSystem
 		ItemPtr AddFile();
 		void ClearItems()
 		{
-			std::lock_guard<std::mutex> lk(m_mutex);
+			std::lock_guard<LockableBase(std::mutex)> lk(m_mutex);
 			m_items.clear();
 		}
 		void SortItems(const SortBy by, const bool descending);
@@ -137,7 +138,7 @@ namespace OM::FileSystem
 		std::string m_path;
 		request_files_cb_t m_callback;
 		bool m_runEveryTime;
-		mutable std::mutex m_mutex;
+		mutable TracyLockable(std::mutex, m_mutex);
 		ItemList m_items;
 		size_t m_first = 0;
 		size_t m_next = 0;

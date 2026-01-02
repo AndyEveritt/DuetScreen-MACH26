@@ -69,6 +69,7 @@ namespace UI
 			, m_listCont("list", getRoot())
 			, m_sizer(lv_obj_create, "sizer", m_listCont)
 		{
+			ZoneScoped;
 			// Setup layout similar to List
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
@@ -123,6 +124,7 @@ namespace UI
 
 		void setTitle(std::string_view title)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_title.setText(title);
 			showTitle(!title.empty());
@@ -130,12 +132,14 @@ namespace UI
 
 		void showHeader(bool show)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_header.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 		}
 
 		void showTitle(bool show)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_title.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 			if (show)
@@ -150,6 +154,7 @@ namespace UI
 
 		void clear()
 		{
+			ZoneScoped;
 			m_items.clear();
 			m_pool.clear();
 			m_sizer.setHeight(0);
@@ -158,6 +163,7 @@ namespace UI
 		template <typename... Args>
 		TRef addItem(Args&&... args)
 		{
+			ZoneScoped;
 			auto item = std::make_unique<T>(std::forward<Args>(args)...);
 			m_items.push_back(std::move(item));
 			refresh();
@@ -166,6 +172,7 @@ namespace UI
 
 		size_t setItemCount(const size_t count, std::function<LazyTPtr(size_t)> constructor)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			const size_t currentCount = m_pool.size();
 			if (count == currentCount)
@@ -192,11 +199,13 @@ namespace UI
 		template <typename F, typename = std::enable_if_t<std::is_invocable_r_v<LazyTPtr, F, size_t>>>
 		size_t setItemCount(const size_t count, F&& constructor)
 		{
+			ZoneScoped;
 			return setItemCount(count, std::function<LazyTPtr(size_t)>(std::forward<F>(constructor)));
 		}
 
 		void refresh()
 		{
+			ZoneScoped;
 			int32_t totalHeight = 0;
 			int32_t itemPad = m_listCont.getStyleProp(LV_STYLE_PAD_ROW).num;
 			bool first = true;
@@ -217,6 +226,7 @@ namespace UI
 	  protected:
 		void updateVisibleItems()
 		{
+			ZoneScoped;
 			lv_coord_t scrollTop = m_listCont.getScrollTop();
 			lv_coord_t listHeight = m_listCont.getHeight();
 			lv_coord_t scrollBottom = scrollTop + listHeight;

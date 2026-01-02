@@ -29,6 +29,7 @@ namespace Comm
 {
 	void to_json(nlohmann::json& j, const DuetConfig& c)
 	{
+		ZoneScoped;
 		j = nlohmann::json{
 			{ID_DUET_HOSTNAME, c.hostname},
 			{ID_DUET_PASSWORD, c.password},
@@ -40,6 +41,7 @@ namespace Comm
 
 	void from_json(const nlohmann::json& j, DuetConfig& c)
 	{
+		ZoneScoped;
 		j.at(ID_DUET_HOSTNAME).get_to(c.hostname);
 		j.at(ID_DUET_PASSWORD).get_to(c.password);
 		j.at(ID_DUET_COMMUNICATION_TYPE).get_to(c.communicationType);
@@ -58,6 +60,7 @@ namespace Comm
 
 	void Duet::Init()
 	{
+		ZoneScoped;
 		DuetConfig config = StorageHelper::getData<DuetConfig>(ID_DUET, DuetConfig());
 
 		SetPollInterval(config.pollInterval);
@@ -72,6 +75,7 @@ namespace Comm
 
 	void Duet::Reset()
 	{
+		ZoneScoped;
 		LOG_VERBOSE("Resetting Duet");
 		m_sessionKey = sm_noSessionKey;
 		m_sbcMode = false;
@@ -87,6 +91,7 @@ namespace Comm
 
 	void Duet::Reconnect()
 	{
+		ZoneScoped;
 		LOG_INFO("Reconnecting...");
 		Disconnect();
 		Connect();
@@ -94,11 +99,13 @@ namespace Comm
 
 	void Duet::saveConfig()
 	{
+		ZoneScoped;
 		StorageHelper::setData(ID_DUET, m_config);
 	}
 
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
+		ZoneScoped;
 		if (type == m_config.communicationType)
 			return;
 		LOG_INFO("Setting communication type to {:d}", (int)type);
@@ -114,11 +121,13 @@ namespace Comm
 
 	CommunicationType Duet::GetCommunicationType() const
 	{
+		ZoneScoped;
 		return m_config.communicationType;
 	}
 
 	std::string_view Duet::GetCommunicationTypeName() const
 	{
+		ZoneScoped;
 		CommunicationType type = m_config.communicationType;
 		if (type >= CommunicationType::COUNT || type <= CommunicationType::none)
 		{
@@ -129,6 +138,7 @@ namespace Comm
 
 	void Duet::SetPollInterval(std::chrono::milliseconds interval)
 	{
+		ZoneScoped;
 		if (interval < MIN_PRINTER_POLL_INTERVAL)
 		{
 			LOG_WARN("Poll interval too low, setting to {}", MIN_PRINTER_POLL_INTERVAL);
@@ -145,6 +155,7 @@ namespace Comm
 
 	void Duet::ScalePollIntervalScale(float scale)
 	{
+		ZoneScoped;
 		if (scale <= 0.0f)
 		{
 			LOG_WARN("Invalid scale factor {:g}", scale);
@@ -163,16 +174,19 @@ namespace Comm
 
 	std::chrono::milliseconds Duet::GetPollInterval() const
 	{
+		ZoneScoped;
 		return m_config.pollInterval;
 	}
 
 	std::chrono::milliseconds Duet::GetScaledPollInterval() const
 	{
+		ZoneScoped;
 		return std::chrono::duration_cast<std::chrono::milliseconds>(m_config.pollInterval * m_pollIntervalScale);
 	}
 
 	void Duet::PrepareRequest(HttpRequest& req, std::string_view subUrl, hv::QueryParams& queryParameters)
 	{
+		ZoneScoped;
 		req.method = HTTP_GET;
 		req.host = GetBaseUrl();
 		req.path = subUrl;
@@ -192,6 +206,7 @@ namespace Comm
 
 	void Duet::AsyncGetInner(const HttpRequestPtr& req, HttpResponseCallback callback)
 	{
+		ZoneScoped;
 		m_cli.sendAsync(req,
 						[this, req, callback](const HttpResponsePtr& resp) { AsyncGetCallback(req, resp, callback); });
 		m_lastRequestTime = TimeHelper::getCurrentTime();
@@ -199,6 +214,7 @@ namespace Comm
 
 	bool Duet::AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback)
 	{
+		ZoneScoped;
 		if (r == NULL)
 		{
 			LOG_ERROR("request \"{:s}\" failed!", req->url.c_str());
@@ -213,6 +229,7 @@ namespace Comm
 
 	bool Duet::AsyncGet(std::string_view path, hv::QueryParams& queryParameters, HttpResponseCallback callback)
 	{
+		ZoneScoped;
 		if (!IsConnected() && path != "/rr_connect")
 		{
 			LOG_DBG("Not connected to Duet, cannot send get request {:s}", path);
@@ -247,6 +264,7 @@ namespace Comm
 	*/
 	bool Duet::Get(std::string_view path, HttpResponse& r, hv::QueryParams& queryParameters)
 	{
+		ZoneScoped;
 		if (!IsConnected() && path != "/rr_connect")
 		{
 			LOG_DBG("Not connected to Duet, cannot send get request {:s}", path);
@@ -289,6 +307,7 @@ namespace Comm
 	*/
 	bool Duet::Post(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters, std::string_view data)
 	{
+		ZoneScoped;
 #if 0
 		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
 			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
@@ -321,6 +340,7 @@ namespace Comm
 
 	void Duet::SendGcode(std::string_view gcode, bool force)
 	{
+		ZoneScoped;
 		if (!IsConnected() && !force)
 		{
 			LOG_DBG("Not connected to Duet, cannot send gcode: {:s}", gcode);
@@ -333,7 +353,7 @@ namespace Comm
 		case CommunicationType::uart:
 		case CommunicationType::usb:
 		{
-			std::lock_guard<std::mutex> lock(m_sendLock);
+			std::lock_guard<LockableBase(std::mutex)> lock(m_sendLock);
 			CRC16 crc;
 			size_t len = 0;
 			std::string_view line;
@@ -396,6 +416,7 @@ namespace Comm
 
 	bool Duet::UploadFile(std::string_view filename, const std::string& contents)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot upload file {:s}", filename);
@@ -452,6 +473,7 @@ namespace Comm
 
 	bool Duet::DownloadFile(std::string_view filename, std::string& contents)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot download file {:s}", filename);
@@ -485,6 +507,7 @@ namespace Comm
 
 	void Duet::RequestModel(std::string_view flags)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot request model with flags: {:s}", flags);
@@ -537,6 +560,7 @@ namespace Comm
 
 	void Duet::RequestModel(std::string_view key, std::string_view flags)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot request model with key: {:s}, flags: {:s}", key, flags);
@@ -595,6 +619,7 @@ namespace Comm
 
 	bool Duet::RequestFileList(std::string_view dir, const size_t first)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot request file list for dir: {:s}", dir);
@@ -641,6 +666,7 @@ namespace Comm
 
 	bool Duet::RequestFileInfo(std::string_view filename)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot request file info for file: {:s}", filename);
@@ -800,6 +826,7 @@ namespace Comm
 
 	bool Duet::RequestThumbnail(std::string_view filename, uint32_t offset)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot request thumbnail for file: {:s}", filename);
@@ -847,6 +874,7 @@ namespace Comm
 
 	void Duet::ProcessReply(HttpResponse& reply)
 	{
+		ZoneScoped;
 		if (m_config.communicationType != CommunicationType::network)
 			return;
 
@@ -896,6 +924,7 @@ namespace Comm
 
 	void Duet::RequestReply(HttpResponse& r)
 	{
+		ZoneScoped;
 		if (!IsConnected())
 		{
 			LOG_DBG("Not connected to Duet, cannot request reply");
@@ -908,6 +937,7 @@ namespace Comm
 
 	bool Duet::Connect(bool useSessionKey)
 	{
+		ZoneScoped;
 		Disconnect();
 		Reset();
 		bool ret = false;
@@ -1040,6 +1070,7 @@ namespace Comm
 
 	bool Duet::Disconnect()
 	{
+		ZoneScoped;
 		if (m_connectionState == ConnectionState::DISCONNECTED)
 		{
 			return true;
@@ -1101,6 +1132,7 @@ namespace Comm
 
 	const std::string_view Duet::GetBaseUrl() const
 	{
+		ZoneScoped;
 		if (!m_config.ipAddress.empty())
 		{
 			LOG_VERBOSE("Using IP address {:s}", m_config.ipAddress.c_str());
@@ -1112,6 +1144,7 @@ namespace Comm
 
 	void Duet::SetBaudRate(const unsigned int baudRateCode)
 	{
+		ZoneScoped;
 		for (unsigned int i = 0; i < std::size(baudRates); i++)
 		{
 			if (baudRates[i].internal == baudRateCode)
@@ -1125,6 +1158,7 @@ namespace Comm
 
 	void Duet::SetBaudRate(const baudrate_t& baudRate)
 	{
+		ZoneScoped;
 		LOG_INFO("Setting baud rate to {:d} ({:d})", baudRate.rate, baudRate.internal);
 		SerialIo::SetBaudRate(baudRate.internal);
 		m_config.baudRate = baudRate.internal;
@@ -1133,6 +1167,7 @@ namespace Comm
 
 	const baudrate_t& Duet::GetBaudRate() const
 	{
+		ZoneScoped;
 		for (auto& baud : baudRates)
 		{
 			if (baud.internal == m_config.baudRate)
@@ -1146,23 +1181,27 @@ namespace Comm
 
 	void Duet::SetIPAddress(std::string_view ipAddress)
 	{
+		ZoneScoped;
 		m_config.ipAddress = ipAddress;
 		saveConfig();
 	}
 
 	const std::string_view Duet::GetIPAddress() const
 	{
+		ZoneScoped;
 		return m_config.ipAddress;
 	}
 
 	void Duet::ClearIPAddress()
 	{
+		ZoneScoped;
 		m_config.ipAddress.clear();
 		LOG_DBG("IP address cleared \"{:s}\"", m_config.ipAddress.c_str());
 	}
 
 	void Duet::SetHostname(std::string_view hostname)
 	{
+		ZoneScoped;
 		if (hostname == m_config.hostname)
 		{
 			return;
@@ -1196,22 +1235,26 @@ namespace Comm
 
 	const std::string_view Duet::GetHostname() const
 	{
+		ZoneScoped;
 		return m_config.hostname;
 	}
 
 	void Duet::SetPassword(std::string_view password)
 	{
+		ZoneScoped;
 		m_config.password = password;
 		saveConfig();
 	}
 
 	const std::string_view Duet::GetPassword() const
 	{
+		ZoneScoped;
 		return m_config.password;
 	}
 
 	void Duet::SetSessionKey(const uint32_t key)
 	{
+		ZoneScoped;
 		m_sessionKey = key;
 		LOG_INFO("Set Duet session key = {:d}", m_sessionKey);
 	}

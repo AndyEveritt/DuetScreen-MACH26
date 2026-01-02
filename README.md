@@ -110,10 +110,9 @@ Several methods are available to update the Duet3D screen.
 
 > [!warning]
 > Occasionally, an update may require the whole microSD card to be reflashed. This will be indicated in the release notes.
-> ![Buildroot Version](docs/buildroot_version.png)
+> ![Buildroot Version](docs/images/buildroot_version.png)
 >
 > In this case, follow the instructions in the [Flashing a new Duet3D screen](#flashing-a-new-duet3d-screen) section above.
-
 
 ## USB Ports
 The Duet3D screen has two USB ports:

@@ -24,6 +24,7 @@ namespace UI
 			: LvContainer(fmt::format("{}", index), parent)
 			, m_index(index)
 		{
+			ZoneScoped;
 			// addStyle(Themes::getLvglStyles().bg_color_list_item, 0);
 			// addStyle(Themes::getLvglStyles().bg_color_secondary, LV_STATE_CHECKED);
 		}
@@ -35,7 +36,7 @@ namespace UI
 	};
 
 	template <typename T>
-	// requires(std::is_base_of_v<LvObj, T>)
+	// requires(std::is_base_of_v<LvObj, T>) // Disabled because it prevents forward declaration use
 	class List : public LvObj
 	{
 		using TPtr = std::unique_ptr<T>;
@@ -48,6 +49,7 @@ namespace UI
 			, m_title("title", m_header)
 			, m_listCont("list", getRoot())
 		{
+			ZoneScoped;
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 			m_header.setMinWidth(LV_SIZE_CONTENT);
@@ -73,6 +75,7 @@ namespace UI
 
 		void setTitle(std::string_view title)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_title.setText(title);
 			showTitle(!title.empty());
@@ -80,12 +83,14 @@ namespace UI
 
 		void showHeader(bool show)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_header.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 		}
 
 		void showTitle(bool show)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_title.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 			if (show)
@@ -118,6 +123,7 @@ namespace UI
 
 		TRef addItem()
 		{
+			ZoneScoped;
 			UI_LOCK();
 			LOG_DBG("Adding item to list \"{:s}\"", getName());
 			auto item = std::make_unique<T>(getItemCount(), m_listCont);
@@ -127,6 +133,7 @@ namespace UI
 
 		TRef addItem(std::function<TPtr(size_t, LvObj&)> constructor)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			LOG_DBG("Adding item to list \"{:s}\"", getName());
 			auto item = constructor(getItemCount(), m_listCont);
@@ -136,6 +143,7 @@ namespace UI
 
 		size_t setItemCount(const size_t count, std::function<TPtr(size_t, LvObj&)> constructor)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			const size_t currentCount = getItemCount();
 			if (count == currentCount)
@@ -165,6 +173,7 @@ namespace UI
 			requires std::is_constructible_v<std::function<TPtr(size_t, LvObj&)>, F>
 		size_t setItemCount(const size_t count, F&& constructor)
 		{
+			ZoneScoped;
 			return setItemCount(count, std::function<TPtr(size_t, LvObj&)>(std::forward<F>(constructor)));
 		}
 
@@ -174,6 +183,7 @@ namespace UI
 							TPtr (Class::*constructor)(const size_t index, LvObj& parent, Args...),
 							Args&&... args)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			const size_t currentCount = getItemCount();
 			if (count == currentCount)
@@ -205,6 +215,7 @@ namespace UI
 			requires std::is_constructible_v<T, size_t, LvObj&, Args...>
 		size_t setItemCount(const size_t count, Args&&... args)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			const size_t currentCount = getItemCount();
 			if (count == currentCount)
@@ -230,10 +241,15 @@ namespace UI
 			return count > currentCount ? count - currentCount : 0;
 		}
 
-		size_t getItemCount() const { return m_list.size(); }
+		size_t getItemCount() const
+		{
+			ZoneScoped;
+			return m_list.size();
+		}
 
 		T* getItem(const size_t index) const
 		{
+			ZoneScoped;
 			UI_LOCK();
 			if (index >= m_list.size())
 			{
@@ -242,10 +258,15 @@ namespace UI
 			return m_list.at(index).get();
 		}
 
-		const std::vector<TPtr>& getItems() const { return m_list; }
+		const std::vector<TPtr>& getItems() const
+		{
+			ZoneScoped;
+			return m_list;
+		}
 
 		void iterateListItems(const std::function<void(size_t index, TRef item)>& func)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			for (size_t i = 0; i < m_list.size(); i++)
 			{

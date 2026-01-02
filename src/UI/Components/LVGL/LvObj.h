@@ -17,7 +17,7 @@
 
 #define UI_LOCK()                                                                                                      \
 	LOG_VERBOSE("UI_LOCK requested by thread {}", Log::GetThreadId());                                                 \
-	auto uiLock = ScopedLock(mutexUi);
+	std::lock_guard<LockableBase(DeadlockDetectingMutex<std::recursive_mutex>)> uiLock(mutexUi);
 
 namespace UI
 {
@@ -116,6 +116,7 @@ namespace UI
 			requires(std::is_invocable_v<F, size_t, LvObj&>)
 		void iterateChildren(F&& func)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			uint32_t count = getChildCount();
 			for (uint32_t i = 0; i < count; i++)
@@ -134,6 +135,7 @@ namespace UI
 					 std::is_same_v<std::invoke_result_t<F, size_t, LvObj&>, bool>)
 		void iterateChildrenWhile(F&& func)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			uint32_t count = getChildCount();
 			for (uint32_t i = 0; i < count; i++)
