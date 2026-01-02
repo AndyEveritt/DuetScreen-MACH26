@@ -12,7 +12,12 @@ set(LV_CONF_PATH ${PROJECT_SOURCE_DIR}/lv_conf.h
 # Add LVGL subdirectory
 add_subdirectory(${LIBRARIES_DIR}/lvgl)
 target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
-                                       ${SDL2_INCLUDE_DIRS} ${LIBRARIES_DIR})
+                                       ${SDL2_INCLUDE_DIRS}
+                                       ${LIBRARIES_DIR}
+                                      #  ${LIBRARIES_DIR}/tracy/public
+)
+
+target_link_libraries(lvgl PUBLIC Tracy::TracyClient)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(lvgl PUBLIC
@@ -22,6 +27,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                               LV_USE_SYSMON=1
                               LV_USE_PERF_MONITOR=1
                               LV_USE_MEM_MONITOR=1
+                              LV_USE_PROFILER=1
+                              LV_PROFILER_INCLUDE="tracy/TracyC.h"
   )
 
   target_compile_options(

@@ -60,4 +60,16 @@
 #define LV_BUILD_EXAMPLES 0
 #define LV_BUILD_DEMOS 0
 
+/* Profiling */
+#define LV_PROFILER_BEGIN TracyCZone(tracy_ctx, true)
+#define LV_PROFILER_END TracyCZoneEnd(tracy_ctx)
+
+#if 1
+#  define LV_PROFILER_BEGIN_TAG(tag)
+#  define LV_PROFILER_END_TAG(tag)
+#else
+#  define LV_PROFILER_BEGIN_TAG(tag) TracyCZoneN(ctx, tag, true)
+#  define LV_PROFILER_END_TAG(tag) TracyCZoneEnd(ctx)
+#endif
+
 #endif /*LV_CONF_H*/

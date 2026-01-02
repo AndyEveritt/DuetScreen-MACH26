@@ -820,7 +820,7 @@ namespace UI
 		lv_obj_move_background(getRootPtr());
 	}
 
-	void LvObj::moveToIndex(size_t index)
+	void LvObj::moveToIndex(int32_t index)
 	{
 		ZoneScoped;
 		UI_LOCK();

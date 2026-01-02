@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 project(DuetScreen C CXX)
 include(FetchContent)
 include(ExternalProject)
@@ -99,9 +99,6 @@ include (${LIBRARIES_DIR}/colorm.cmake)
 
 # option(BUILD_SHARED_LIBS "Set default library type to shared" OFF)
 
-# LVGL
-include(${LIBRARIES_DIR}/lvgl.cmake)
-
 # Networking
 include(${LIBRARIES_DIR}/hv.cmake)
 
@@ -121,6 +118,9 @@ include(${LIBRARIES_DIR}/json.cmake)
 # Logging
 include(${LIBRARIES_DIR}/spdlog.cmake)
 include(${LIBRARIES_DIR}/tracy.cmake)
+
+# LVGL
+include(${LIBRARIES_DIR}/lvgl.cmake)
 
 # Include libusb headers
 target_include_directories(DuetScreen.lib SYSTEM PUBLIC ${LIBUSB_INCLUDE_DIRS})
