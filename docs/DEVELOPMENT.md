@@ -252,7 +252,7 @@ The script will:
 - Controls: Previous [←], Next [→], Update [Y], Skip [N], Update All [A], Quit [Q/Esc]
 - “Update” replaces the reference image with the `_err` image and removes the `_err` file.
 
-![Example of a failed UI test](docs/ui_test_example.png)
+![Example of a failed UI test](images/DEVELOPMENT/ui_test_example.png)
 
 #### Prerequisites
 - Build tools: cmake, ninja, SDL2, etc. (see Simulating section above)
@@ -357,3 +357,35 @@ python scripts/filter_logs.py "My Filter" "Another Filter"
 ### Download logs from the Duet3D screen
 1. Enable SSH on the Duet3D screen
 2. Run `scp root@<ip_address>:/var/log/DuetScreen.log .` to download the log file to the current directory.
+
+### Tracing
+Tracing support has been incorporated into the program using [tracy](https://github.com/wolfpld/tracy.git).
+
+This allows the performance and timing of the program to be analysed in real time without using breakpoints or pausing the program. The tracy profiler adds minimal overhead to the DuetScreen program and is only active when a tracy server is connected.
+
+All log messages are also sent to tracy for easy viewing and filtering.
+
+![alt text](images/DEVELOPMENT/tracy.png)
+
+Tracy can be used when simulating on PC or when running on the physical Duet3D screen.
+
+> [!NOTE]
+> The screen must be connected to the same network as the machine running the tracy server.
+
+> [!NOTE]
+> Tracy support is only enabled in `Debug` builds by default. To enable tracy support in `Release` builds, set the cmake cache variable `TRACY_ENABLE` to `ON`.
+
+#### Building tracy server
+The tracy server can be built from source in the [libraries/tracy/](../libraries/tracy/) directory. Instructions for building the tracy server can be found in the [tracy repository](../libraries/tracy/manual/tracy.md#buildingserver)
+
+To build on Ubuntu 24.04 LTS the following commands worked for me but your mileage may vary:
+```bash
+cd libraries/tracy
+cmake -B ./profiler/build -S ./profiler -DCMAKE_BUILD_TYPE=Release -DLEGACY=1
+cmake --build ./profiler/build --config Release
+```
+
+Then run the tracy server using:
+```bash
+./libraries/tracy/profiler/build/tracy-profiler
+```

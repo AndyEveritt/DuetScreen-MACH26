@@ -50,7 +50,7 @@ using std::vector;
 #define LOG_FILE_PATTERN LOG_TIMESTAMP_FMT "[%l] [%t] %@ %!() %v"
 
 #define LOG_UI_PATTERN LOG_UI_TIMESTAMP_FMT "[%l] %v"
-#define LOG_TRACY_PATTERN "[%L] %v"
+#define LOG_TRACY_PATTERN "[%@ %!()] %v"
 
 namespace Log
 {
