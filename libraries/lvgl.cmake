@@ -20,7 +20,13 @@ target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
 # LVGL + Tracy integration helpers
 add_subdirectory(${LIBRARIES_DIR}/lvgl_tracy)
 
-target_link_libraries(lvgl PUBLIC lvgl_tracy::lvgl_tracy)
+if (DUETSCREEN_ENABLE_LV_PROFILING)
+  target_link_libraries(lvgl PUBLIC lvgl_tracy::lvgl_tracy)
+  target_compile_definitions(lvgl PUBLIC
+                              LV_USE_PROFILER=1
+                              LV_PROFILER_INCLUDE="tracing.h"
+  )
+endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(lvgl PUBLIC
@@ -30,8 +36,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                               LV_USE_SYSMON=1
                               LV_USE_PERF_MONITOR=1
                               LV_USE_MEM_MONITOR=1
-                              LV_USE_PROFILER=1
-                              LV_PROFILER_INCLUDE="tracing.h"
   )
 
   target_compile_options(

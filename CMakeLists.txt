@@ -45,6 +45,8 @@ option(DUETSCREEN_HARDWARE_TEST "Enable hardware test" OFF)
 option(DUETSCREEN_BURNIN_TEST "Enable burnin test" OFF)
 option(DUETSCREEN_ENABLE_CONSOLE_SHELL "Enable sending shell commands via the GUI console" OFF)
 option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" ON)
+option(DUETSCREEN_ENABLE_PROFILING "Enable profiling using Tracy" OFF)
+option(DUETSCREEN_ENABLE_LV_PROFILING "Enable lvgl profiling" ${DUETSCREEN_ENABLE_PROFILING})
 
 if(NOT DEFINED PROCESSOR)
   message(

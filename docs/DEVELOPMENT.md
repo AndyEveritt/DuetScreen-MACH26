@@ -373,7 +373,7 @@ Tracy can be used when simulating on PC or when running on the physical Duet3D s
 > The screen must be connected to the same network as the machine running the tracy server.
 
 > [!NOTE]
-> Tracy support is only enabled in `Debug` builds by default. To enable tracy support in `Release` builds, set the cmake cache variable `TRACY_ENABLE` to `ON`.
+> Tracy support is only enabled in `Debug` builds by default. To enable tracy support in `Release` builds, set the cmake cache variable `DUETSCREEN_ENABLE_PROFILING` to `ON`. To enable lvgl profiling, set the cmake cache variable `DUETSCREEN_ENABLE_LV_PROFILING` to `ON`.
 
 #### Building tracy server
 The tracy server can be built from source in the [libraries/tracy/](../libraries/tracy/) directory. Instructions for building the tracy server can be found in the [tracy repository](../libraries/tracy/manual/tracy.md#buildingserver)

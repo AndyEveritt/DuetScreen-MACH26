@@ -9,6 +9,8 @@
 #include <string_view>
 #include <vector>
 
+#if defined TRACY_ENABLE && TRACY_ENABLE
+
 struct ZoneInfo
 {
 	std::string_view tag;
@@ -58,3 +60,5 @@ extern "C" void _lv_tracy_end_zone(const char* tag)
 	}
 	return;
 }
+
+#endif
