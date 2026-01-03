@@ -767,7 +767,12 @@ namespace UI
 				 */
 				const auto& cb = obj->m_eventCallbacks[i].cb;
 				if (cb)
+				{
+					ZoneScoped;
+					[[maybe_unused]] auto tag = lv_event_code_get_name(code);
+					ZoneName(tag, strlen(tag));
 					std::invoke(cb, e);
+				}
 			}
 		}
 	}

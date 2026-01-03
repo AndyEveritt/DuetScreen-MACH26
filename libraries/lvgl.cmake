@@ -17,7 +17,10 @@ target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
                                       #  ${LIBRARIES_DIR}/tracy/public
 )
 
-target_link_libraries(lvgl PUBLIC Tracy::TracyClient)
+# LVGL + Tracy integration helpers
+add_subdirectory(${LIBRARIES_DIR}/lvgl_tracy)
+
+target_link_libraries(lvgl PUBLIC lvgl_tracy::lvgl_tracy)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(lvgl PUBLIC
@@ -28,7 +31,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                               LV_USE_PERF_MONITOR=1
                               LV_USE_MEM_MONITOR=1
                               LV_USE_PROFILER=1
-                              LV_PROFILER_INCLUDE="tracy/TracyC.h"
+                              LV_PROFILER_INCLUDE="tracing.h"
   )
 
   target_compile_options(
