@@ -164,11 +164,13 @@ namespace Comm
 		, m_inError(false)
 		, m_arrayDepth(0)
 	{
+		ZoneScoped;
 		Reset();
 	}
 
 	void JsonDecoder::Reset()
 	{
+		ZoneScoped;
 		m_fieldPrefix.Clear();
 		m_fieldId.Clear();
 		m_fieldVal.Clear();
@@ -184,10 +186,14 @@ namespace Comm
 		}
 	}
 
-	void JsonDecoder::StartReceivedMessage() {}
+	void JsonDecoder::StartReceivedMessage()
+	{
+		ZoneScoped;
+	}
 
 	void JsonDecoder::EndReceivedMessage()
 	{
+		ZoneScoped;
 		KickWatchdog();
 
 		if (m_seq != nullptr)
@@ -209,6 +215,7 @@ namespace Comm
 	// Public functions called by the SerialIo module
 	void JsonDecoder::ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
+		ZoneScoped;
 		LOG_VERBOSE("{:s} (indices [{:d}|{:d}|{:d}|{:d}]) = '{:s}'",
 					id.c_str(),
 					indices[0],
@@ -325,6 +332,7 @@ namespace Comm
 	// Public function called when the serial I/O module finishes receiving an array of values
 	void JsonDecoder::ProcessArrayEnd(const char id[], const size_t indices[])
 	{
+		ZoneScoped;
 		// search for key in subscribers
 		// LOG_VERBOSE("searching for array end subscribers for '{:s}'", id);
 		Model::get().runArrayEndSubscribers(id, this, indices);
@@ -332,6 +340,7 @@ namespace Comm
 
 	void JsonDecoder::ParserErrorEncountered(int currentState, const char* id, int errors)
 	{
+		ZoneScoped;
 		(void)currentState;
 
 		if (errors > parserMinErrors)
@@ -348,6 +357,7 @@ namespace Comm
 
 	void JsonDecoder::RemoveLastId()
 	{
+		ZoneScoped;
 		// LOG_VERBOSE("{:s}, len: {:d}", m_fieldId.c_str(), m_fieldId.strlen());
 		size_t index = m_fieldId.strlen();
 		while (index != 0 && m_fieldId[index - 1] != '^' && m_fieldId[index - 1] != ':')
@@ -361,6 +371,7 @@ namespace Comm
 
 	void JsonDecoder::RemoveLastIdChar()
 	{
+		ZoneScoped;
 		if (m_fieldId.strlen() != 0)
 		{
 			m_fieldId.Truncate(m_fieldId.strlen() - 1);
@@ -369,11 +380,13 @@ namespace Comm
 
 	bool JsonDecoder::InArray()
 	{
+		ZoneScoped;
 		return m_fieldId.strlen() > 0 && m_fieldId[m_fieldId.strlen() - 1] == '^';
 	}
 
 	void JsonDecoder::ProcessField()
 	{
+		ZoneScoped;
 		if (m_state == jsCharsVal)
 		{
 			if (m_fieldVal.Equals("null"))
@@ -387,6 +400,7 @@ namespace Comm
 
 	void JsonDecoder::EndArray()
 	{
+		ZoneScoped;
 		LOG_VERBOSE("id {:s}, arrayIndices [{:d}|{:d}|{:d}|{:d}], arrayDepth {:d}",
 					m_fieldId.c_str(),
 					m_arrayIndices[0],
@@ -408,6 +422,7 @@ namespace Comm
 	// Look for combining characters in the string value and convert them if possible
 	void JsonDecoder::ConvertUnicode()
 	{
+		ZoneScoped;
 		unsigned int numContinuationBytesLeft = 0;
 		uint32_t charVal;
 		for (size_t i = 0; i < m_fieldVal.strlen();)
@@ -521,6 +536,7 @@ namespace Comm
 	// Check whether the incoming character signals the end of the value. If it does, process it and return true.
 	bool JsonDecoder::CheckValueCompleted(char c, bool doProcess)
 	{
+		ZoneScoped;
 		switch (c)
 		{
 		case ',':
@@ -598,6 +614,7 @@ namespace Comm
 	// This is the JSON parser state machine
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, size_t len)
 	{
+		ZoneScoped;
 		LOG_DBG("checking {:d} chars", len);
 		LOG_VERBOSE("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
 		m_nextOut = 0;
@@ -1011,6 +1028,7 @@ namespace Comm
 	// Called by the ISR to signify an error. We wait for the next end of line.
 	void JsonDecoder::receiveError()
 	{
+		ZoneScoped;
 		m_inError = true;
 	}
 } // namespace Comm
