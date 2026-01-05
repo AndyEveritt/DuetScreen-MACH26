@@ -53,14 +53,6 @@ The following steps are required to run the GUI on PC:
 ./scripts/install_prerequisites.sh
 ```
 
-### Create a `version.h` file
-The `version.h` file is required to build the project. Run the following command to create it:
-```bash
-./scripts/update_version.sh dev
-```
-
-This will create a `version.h` file with the version set to `dev`.
-
 ### Setup udev rules for USB communications
 > [!NOTE]
 > This step is only required if you want to communicate between the PC and the Duet3D mainboard via USB. This is not required for simulating the GUI on PC.

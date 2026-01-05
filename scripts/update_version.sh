@@ -2,12 +2,15 @@
 
 # Check if version argument is provided
 if [ $# -eq 0 ]; then
-    echo "Error: Version argument is required"
-    echo "Usage: $0 <version>"
-    exit 1
+    VERSION=$(git describe --tags --dirty --always --match="v*")
+    if [ -z "$VERSION" ]; then
+        echo "Warning: Could not determine version from git tags."
+        exit 0
+    fi
+else
+    VERSION=$1
 fi
 
-VERSION=$1
 VERSION_FILE="./version.h"
 
 # Update the version in version.h

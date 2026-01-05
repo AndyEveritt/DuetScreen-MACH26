@@ -61,13 +61,10 @@
 #define LV_BUILD_DEMOS 0
 
 /* Profiling */
-#define LV_PROFILER_BEGIN LvZoneStart
-#define LV_PROFILER_END LvZoneEnd
+#if defined LV_USE_PROFILER && LV_USE_PROFILER
+#  define LV_PROFILER_BEGIN LvZoneStart
+#  define LV_PROFILER_END LvZoneEnd
 
-#if 0
-#  define LV_PROFILER_BEGIN_TAG(tag)
-#  define LV_PROFILER_END_TAG(tag)
-#else
 #  define LV_PROFILER_BEGIN_TAG(tag) LvZoneStartTag(tag)
 #  define LV_PROFILER_END_TAG(tag) LvZoneEndTag(tag)
 #endif

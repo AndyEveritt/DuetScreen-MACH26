@@ -74,6 +74,16 @@ list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
 add_library(DuetScreen.lib ${MAIN_SOURCES})
 add_executable(DuetScreen)
 
+
+# Update DuetScreen version.h
+add_custom_target(
+  update_version_h
+  COMMAND "${CMAKE_SOURCE_DIR}/scripts/update_version.sh"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  COMMENT "Updating version.h"
+)
+add_dependencies(DuetScreen.lib update_version_h)
+
 # Find clang-format-19
 include(${LIBRARIES_DIR}/clang-format.cmake)
 add_dependencies(DuetScreen.lib clang-format)
