@@ -64,12 +64,19 @@ jobs:
               id: detect_err_images
               if: always()
               run: |
-                ERR_COUNT=$(find tests/ref_imgs -type f -name "*_err.*" | wc -l || true)
+                ERR_FILES=$(find tests/ref_imgs -type f -name "*_err.*" || true)
+                ERR_COUNT=$(printf "%s\n" "$ERR_FILES" | sed '/^$/d' | wc -l)
                 if [ "$ERR_COUNT" -gt 0 ]; then
                   echo "has_errors=true" >> "$GITHUB_OUTPUT"
                   echo "Found $ERR_COUNT error image(s)."
                   # List them for the log
-                  find tests/ref_imgs -type f -name "*_err.*"
+                  printf "%s\n" "$ERR_FILES"
+                  # Expose a multiline output with all error image paths
+                  {
+                    echo "error_files<<EOF"
+                    printf "%s\n" "$ERR_FILES"
+                    echo "EOF"
+                  } >> "$GITHUB_OUTPUT"
                 else
                   echo "has_errors=false" >> "$GITHUB_OUTPUT"
                   echo "No error images found."
@@ -80,8 +87,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: ctest-error-images
-                path: |
-                  tests/ref_imgs/*_err.*
+                path: ${{ steps.detect_err_images.outputs.error_files }}
                 if-no-files-found: error
   
             
