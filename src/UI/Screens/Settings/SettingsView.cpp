@@ -146,7 +146,11 @@ namespace UI
 	{
 		/* Firmware version */
 		createRow(_("settings.firmware_version"), m_buildTime);
+#if USE_FIXED_TEST_BUILD_TIME
+		m_buildTime.setText(_("settings.build_time", "vX.Y.Z", "YYYY-MM-DD", "HH:mm::ss"));
+#else
 		m_buildTime.setText(_("settings.build_time", FIRMWARE_VERSION, BuildDateText, BuildTimeSuffix));
+#endif
 
 		/* Language */
 		createRow(_("settings.language"), m_language);
