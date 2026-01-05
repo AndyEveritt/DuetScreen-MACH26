@@ -584,11 +584,32 @@ namespace UI
 		lv_obj_get_click_area(getRootPtr(), area);
 	}
 
+	void LvObj::setScrollbarMode(lv_scrollbar_mode_t mode)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		lv_obj_set_scrollbar_mode(getRootPtr(), mode);
+	}
+
+	lv_scrollbar_mode_t LvObj::getScrollbarMode() const
+	{
+		ZoneScoped;
+		UI_LOCK();
+		return lv_obj_get_scrollbar_mode(getRootPtr());
+	}
+
 	void LvObj::scrollBy(int32_t dx, int32_t dy, lv_anim_enable_t anim)
 	{
 		ZoneScoped;
 		UI_LOCK();
 		lv_obj_scroll_by(getRootPtr(), dx, dy, anim);
+	}
+
+	void LvObj::scrollByBounded(int32_t dx, int32_t dy, lv_anim_enable_t anim)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		lv_obj_scroll_by_bounded(getRootPtr(), dx, dy, anim);
 	}
 
 	void LvObj::scrollToX(lv_coord_t x, lv_anim_enable_t anim)

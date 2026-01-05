@@ -47,6 +47,7 @@ option(DUETSCREEN_ENABLE_CONSOLE_SHELL "Enable sending shell commands via the GU
 option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" ON)
 option(DUETSCREEN_ENABLE_PROFILING "Enable profiling using Tracy" OFF)
 option(DUETSCREEN_ENABLE_LV_PROFILING "Enable lvgl profiling" ${DUETSCREEN_ENABLE_PROFILING})
+option(DUETSCREEN_USE_FIXED_TEST_BUILD_TIME "Use fixed build date/time for unit tests" OFF)
 
 if(NOT DEFINED PROCESSOR)
   message(

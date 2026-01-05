@@ -75,7 +75,8 @@
             "inherits": "Simulation-Release",
             "cacheVariables": {
                 "BUILD_TESTING": "ON",
-                "ENABLE_COVERAGE": "ON"
+                "ENABLE_COVERAGE": "ON",
+                "DUETSCREEN_USE_FIXED_TEST_BUILD_TIME": "ON"
             }
         },
         {

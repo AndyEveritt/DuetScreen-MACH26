@@ -168,8 +168,9 @@ namespace UI
 
 		size_t index = getSeriesCount();
 
-		std::shared_ptr<legend_obj_t> legendObj = std::make_shared<legend_obj_t>(
-			fmt::format("legend_obj_{}", index), m_legend, displayName.c_str(), layout_t(0, 0, 100, 20));
+		auto legendObj = std::make_shared<legend_obj_t>(fmt::format("legend_obj_{}", index), m_legend);
+		legendObj->setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		legendObj->setText(displayName);
 		legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
 		legendObj->addStyle(Themes::getLvglStyles().border);
 		legendObj->addStyle(Themes::getLvglStyles().bg_light, LV_STATE_DEFAULT);
