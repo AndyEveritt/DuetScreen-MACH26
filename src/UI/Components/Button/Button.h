@@ -17,6 +17,7 @@ namespace UI
 		void setText(std::string_view text);
 		std::string_view getText() const { return m_label.getText(); }
 		void addClickedCallback(lv_event_cb_t event_cb, void* user_data);
+		void addClickedCallback(std::function<void(lv_event_t*)> event_cb);
 		void setIcon(std::string_view icon_path);
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);

@@ -312,7 +312,7 @@ namespace UI::Themes
 
 		lv_style_set_border_color(lvgl.input, m_colors.border);
 		lv_style_set_border_width(lvgl.input, 1);
-		lv_style_set_pad_all(lvgl.input, 20);
+		lv_style_set_pad_hor(lvgl.input, 20);
 		// lv_style_set_radius(lvgl.input, 2);
 		lv_style_set_pad_ver(lvgl.input, 0);
 		lv_style_set_text_align(lvgl.input, LV_TEXT_ALIGN_CENTER);
@@ -373,6 +373,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_DROPDOWN
+		lv_style_set_pad_ver(lvgl.dropdown, PAD_DEF);
 		lv_style_set_max_height(lvgl.dropdown_list, LV_DPI_DEF * 2);
 #endif
 #if LV_USE_CHECKBOX
@@ -484,6 +485,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_TEXTAREA
+		lv_style_set_pad_all(lvgl.text_area, PAD_DEF);
 		lv_style_set_border_color(lvgl.ta_cursor, m_colors.text);
 		lv_style_set_border_width(lvgl.ta_cursor, LV_DPX_CALC(lv_display_get_dpi(NULL), 2));
 		lv_style_set_pad_left(lvgl.ta_cursor, -LV_DPX_CALC(lv_display_get_dpi(NULL), 1));
@@ -570,6 +572,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_SLIDER
+		lv_style_set_height(lvgl.slider, 10);
 		lv_style_set_bg_color(lvgl.slider, m_colors.highlight);
 		lv_style_set_bg_opa(lvgl.slider, LV_OPA_COVER);
 		lv_style_set_radius(lvgl.slider, LV_RADIUS_CIRCLE);
@@ -604,5 +607,7 @@ namespace UI::Themes
 		lv_style_set_shadow_width(components.tool_selected, 0);
 		lv_style_set_shadow_offset_x(components.tool_selected, -SHADOW_OFFSET);
 		lv_style_set_shadow_offset_y(components.tool_selected, SHADOW_OFFSET);
+
+		lv_style_merge(components.list_title, lvgl.text_emphasis);
 	}
 } // namespace UI::Themes

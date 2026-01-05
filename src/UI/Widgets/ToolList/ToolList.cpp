@@ -31,9 +31,6 @@ namespace UI
 		m_tools.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_beds.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_chambers.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-
-		/* Number Pad */
-		m_numberPad.hide();
 	}
 
 	size_t ToolList::setToolCount(size_t count)

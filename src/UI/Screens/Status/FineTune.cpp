@@ -49,8 +49,6 @@ namespace UI
 		m_extruders.setTitle(_("fine_tune.extruder_header"));
 		m_fans.setTitle(_("fine_tune.fan_header"));
 
-		m_numberPad.hide();
-
 		m_speed.setLabel(_("fine_tune.speed_factor"));
 		m_speed.setFocusedCallback(
 			[this](bool focused)

@@ -52,6 +52,7 @@ constexpr const char* ID_SYS_LANG_CODE_KEY = "sys:lang_code";
 constexpr const char* ID_SYS_BRIGHTNESS_KEY = "sys:brightness";
 constexpr const char* ID_USB_MODE = "sys:usb_mode";
 constexpr const char* ID_DISPLAY_CONNECTED_MESSAGE = "sys:display_connected_message";
+constexpr const char* ID_ENABLE_ADVANCED_SETTINGS = "sys:enable_advanced_settings";
 
 constexpr const char* ID_WEBCAM_URL = "webcam:url_%d";
 constexpr const char* ID_ACTIVE_WEBCAM_INDEX = "webcam:active_index";

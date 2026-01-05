@@ -73,6 +73,7 @@ namespace UI
 		// Body
 		m_bodyTop.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_bodyTop.setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_bodyTop.setStylePad(0);
 		m_bodyTextCont.setFlexGrow(1);
 		m_bodyTextCont.setHeight(LV_SIZE_CONTENT);
 		m_bodyTextCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -167,6 +168,7 @@ namespace UI
 	{
 		UI_LOCK();
 		m_text.setText(text);
+		m_text.setVisible(!text.empty());
 	}
 
 	void MessageBox::setImage(const char* imagePath)
@@ -237,6 +239,7 @@ namespace UI
 		UI_LOCK();
 		m_image.setVisible(visible);
 		m_bodyTextCont.setStyleTextAlign(visible ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
+		updateVisibility();
 	}
 
 	void MessageBox::progressVisible(bool visible)
@@ -249,27 +252,29 @@ namespace UI
 	{
 		UI_LOCK();
 		bool visible = false;
-		for (size_t i = 0; i < m_body.getChildCount(); i++)
-		{
-			LvObj* child = m_body.getChild(i);
-			if (!child->hasFlag(LV_OBJ_FLAG_HIDDEN))
+		m_body.iterateChildrenWhile(
+			[&visible](size_t /* index */, LvObj& child)
 			{
-				visible = true;
-				break;
-			}
-		}
+				if (!child.hasFlag(LV_OBJ_FLAG_HIDDEN))
+				{
+					visible = true;
+					return false;
+				}
+				return true;
+			});
 		m_body.setVisible(visible);
 
 		visible = false;
-		for (size_t i = 0; i < m_footer.getChildCount(); i++)
-		{
-			LvObj* child = m_footer.getChild(i);
-			if (!child->hasFlag(LV_OBJ_FLAG_HIDDEN))
+		m_footer.iterateChildrenWhile(
+			[&visible](size_t /* index */, LvObj& child)
 			{
-				visible = true;
-				break;
-			}
-		}
+				if (!child.hasFlag(LV_OBJ_FLAG_HIDDEN))
+				{
+					visible = true;
+					return false;
+				}
+				return true;
+			});
 		m_footer.setVisible(visible);
 	}
 

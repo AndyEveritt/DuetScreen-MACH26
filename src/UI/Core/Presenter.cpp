@@ -13,6 +13,7 @@ namespace UI
 {
 	void BasePresenter::init()
 	{
+		ZoneScoped;
 		LOG_DBG("Initializing presenter '{}'", getName());
 		onInit();
 		registerEventListener<EventType::Connected>(this, &BasePresenter::connected);
@@ -21,27 +22,31 @@ namespace UI
 
 	void BasePresenter::activate()
 	{
+		ZoneScoped;
 		UI_LOCK();
-		if (!m_isInitialized)
+		if (m_state == State::UNINITIALISED)
 		{
 			init();
-			m_isInitialized = true;
+			m_state = State::DEACTIVE;
 		}
 
 		LOG_DBG("Activating presenter '{}'", getName());
 
+		m_state = State::ACTIVATING;
 		onActivate();
-		m_active = true;
+		m_state = State::ACTIVE;
 	}
 
 	void BasePresenter::deactivate()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("Deactivating presenter '{}'", getName());
-		if (m_active)
+		if (m_state == State::ACTIVE || m_state == State::ACTIVATING)
 		{
+			m_state = State::DEACTIVATING;
 			onDeactivate();
-			m_active = false;
+			m_state = State::DEACTIVE;
 		}
 	}
 
@@ -53,6 +58,7 @@ namespace UI
 
 	void BasePresenter::connected()
 	{
+		ZoneScoped;
 		LOG_DBG("{} connected", getName());
 		onConnect();
 		onActivate();
@@ -60,6 +66,7 @@ namespace UI
 
 	void BasePresenter::disconnected()
 	{
+		ZoneScoped;
 		LOG_DBG("{} disconnected", getName());
 		onDisconnect();
 	}

@@ -22,6 +22,7 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
+		m_label.hide(); // will be shown if `setLabel()` is called
 		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_sliderCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
@@ -41,9 +42,13 @@ namespace UI
 
 		m_input.setMinWidth(50);
 		m_input.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_slider.setHeight(LV_SIZE_CONTENT);
+		m_slider.setMinHeight(LV_SIZE_CONTENT);
 		m_slider.setFlexGrow(1);
-		m_slider.setStylePad(2);
+		// m_slider.setStylePad(2);
+
+		m_sliderCont.addEventCallback([this](lv_event_t*) { m_slider.setExtClickArea(m_sliderCont.getHeight() / 4); },
+									  LV_EVENT_SIZE_CHANGED);
+		m_sliderCont.setStylePad(20, 0, Padding::COLUMN);
 
 		m_decrement.addEventCallback(
 			[](lv_event_t* e)
@@ -89,7 +94,6 @@ namespace UI
 		setRange(0, 100);
 		setOutOfRangeMode(OutOfRange::NONE);
 
-		m_input.setStylePad(2);
 		m_input.setOneLine(true);
 		m_input.setCursorClickPos(false);
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
@@ -97,8 +101,6 @@ namespace UI
 
 		m_slider.addEventCallback(onValueChanged, LV_EVENT_ALL, this);
 		m_input.addEventCallback(onInputEvent, LV_EVENT_ALL, this);
-
-		m_input.addStyle(Themes::getLvglStyles().input);
 	}
 
 	void Slider::setOutOfRangeMode(OutOfRange mode)
@@ -183,7 +185,7 @@ namespace UI
 			break;
 		case LV_EVENT_VALUE_CHANGED:
 		{
-			slider->m_value = (slider->m_slider.getValue() - slider->m_slider.getMinValue()) /
+			slider->m_value = static_cast<float>(slider->m_slider.getValue() - slider->m_slider.getMinValue()) /
 								  static_cast<float>(slider->m_slider.getMaxValue() - slider->m_slider.getMinValue()) *
 								  (slider->getMax() - slider->getMin()) +
 							  slider->getMin();
@@ -337,7 +339,9 @@ namespace UI
 			const int32_t slider_min = m_slider.getMinValue();
 			const int32_t slider_max = m_slider.getMaxValue();
 			const int32_t slider_range = slider_max - slider_min;
-			return static_cast<int32_t>((slider_range * (value - getMin())) / (getMax() - getMin())) + slider_min;
+			return static_cast<int32_t>((static_cast<float>(slider_range) * (value - getMin())) /
+										(getMax() - getMin())) +
+				   slider_min;
 		}
 	}
 

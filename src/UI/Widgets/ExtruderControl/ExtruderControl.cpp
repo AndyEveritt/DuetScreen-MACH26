@@ -99,7 +99,7 @@ namespace UI
 		return m_feedrateSelector.getValue();
 	}
 
-	void ExtruderControl::setNumberPad(NumberPad* np)
+	void ExtruderControl::setNumberPad(ModalNumberPad* np)
 	{
 		UI_LOCK();
 		m_numberPad = np;

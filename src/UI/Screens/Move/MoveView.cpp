@@ -264,9 +264,6 @@ namespace UI
 										 LV_EVENT_LONG_PRESSED);
 									 return btn;
 								 });
-
-		/* Numberpad */
-		m_numberpad.hide();
 	}
 
 	void MoveView::onHomeAllEvent(lv_event_t* e)
@@ -567,6 +564,11 @@ namespace UI
 	void MoveView::setDisableMotorsDisabled(bool disabled)
 	{
 		m_xyControl.setDisableMotorsDisabled(disabled);
+	}
+
+	void MoveView::onShow()
+	{
+		closeAllModals();
 	}
 
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)

@@ -171,6 +171,17 @@ namespace UI
 		return static_cast<float>(atof(m_textBox.getText().data()));
 	}
 
+	void NumberPad::setText(std::string_view text)
+	{
+		m_textBox.setText(text);
+		m_textBox.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
+	}
+
+	std::string_view NumberPad::getText() const
+	{
+		return m_textBox.getText();
+	}
+
 	bool NumberPad::validateInput()
 	{
 		UI_LOCK();
@@ -202,8 +213,7 @@ namespace UI
 	void NumberPad::setConfirmCallback(confirm_cb_t eventCb)
 	{
 		UI_LOCK();
-		eventCb == nullptr ? LOG_DBG("Removing confirm callback") : LOG_DBG("Setting new confirm callback");
-		m_confirmCb = eventCb;
+		m_confirmCb = std::move(eventCb);
 	}
 
 	void NumberPad::clearBtnEventHandler(lv_event_t* e)
@@ -217,17 +227,26 @@ namespace UI
 	{
 		UI_LOCK();
 		NumberPad& np = *(NumberPad*)lv_event_get_user_data(e);
-		if (np.validateInput())
+		if (np.m_confirmCb.has_value())
 		{
-			if (np.m_confirmCb)
-			{
-				float value = np.getValue();
-				np.m_confirmCb(value);
-			}
-			if (np.getCloseOnConfirm())
-			{
-				np.close();
-			}
+			std::visit(overloaded{[&](const std::function<void(float)>& cb)
+								  {
+									  if (np.validateInput())
+									  {
+										  float value = np.getValue();
+										  std::invoke(cb, value);
+									  }
+								  },
+								  [&](const std::function<void(std::string_view)>& cb)
+								  {
+									  std::string_view text = np.getText();
+									  std::invoke(cb, text);
+								  }},
+					   np.m_confirmCb.value());
+		}
+		if (np.getCloseOnConfirm())
+		{
+			np.close();
 		}
 	}
 

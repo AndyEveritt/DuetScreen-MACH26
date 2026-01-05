@@ -8,7 +8,7 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
-#include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/LVGL/LvLabel.h"
@@ -47,7 +47,7 @@ namespace UI
 		float getMin() const { return m_min; }
 		float getMax() const { return m_max; }
 		LvTextArea& getInput() { return m_input; }
-		NumberPad* getNumberPad() const { return m_numberPad; }
+		ModalNumberPad* getNumberPad() const { return m_numberPad; }
 
 		bool isFocused() const { return m_focused; }
 
@@ -59,7 +59,7 @@ namespace UI
 		void setDefaultValue(float value);
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
-		void setNumberPad(NumberPad* numberPad) { m_numberPad = numberPad; }
+		void setNumberPad(ModalNumberPad* numberPad) { m_numberPad = numberPad; }
 		void setValueChangedCallback(value_changed_callback_t callback) { m_valueChangedCallback = callback; }
 
 		/**
@@ -87,7 +87,7 @@ namespace UI
 		Button m_reset{"reset", getRoot()};
 
 		float m_incrementValue = 1;
-		NumberPad* m_numberPad = nullptr;
+		ModalNumberPad* m_numberPad = nullptr;
 
 		float m_min;
 		float m_max;

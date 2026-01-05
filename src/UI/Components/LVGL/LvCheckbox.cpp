@@ -20,6 +20,8 @@ namespace UI
 	{
 		UI_LOCK();
 
+		setText("");
+
 		addEventCallback(
 			[](lv_event_t* e)
 			{
@@ -57,7 +59,15 @@ namespace UI
 
 	void LvCheckbox::setChecked(bool checked)
 	{
+		const bool prev = hasState(LV_STATE_CHECKED);
+
 		setState(LV_STATE_CHECKED, checked);
+
+		if (!m_checkedInitialised || (prev != checked))
+		{
+			m_checkedInitialised = true;
+			sendEvent(LV_EVENT_VALUE_CHANGED);
+		}
 	}
 
 	void LvCheckbox::setCheckedCallback(checked_callback_t cb)

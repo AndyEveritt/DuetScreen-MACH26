@@ -24,6 +24,7 @@
 	  }                                                                                                                \
 	  else                                                                                                             \
 	  {                                                                                                                \
+		  UI_LOCK();                                                                                                   \
 		  EXPECT_TRUE(lv_test_screenshot_compare(path));                                                               \
 	  }
 #endif

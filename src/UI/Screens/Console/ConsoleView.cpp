@@ -39,6 +39,7 @@ namespace UI
 		m_commandList.setHeight(LV_PCT(100));
 		m_output.setHeight(LV_PCT(100));
 		m_output.setCursorClickPos(false);
+		m_output.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 
 		// Command List
 		lv_table_set_column_count(m_commandList.getRootPtr(), 2);
@@ -61,7 +62,7 @@ namespace UI
 		m_input.setFlexGrow(1);
 		m_input.setOneLine(true);
 		m_input.setPlaceholderText(_("console.input_placeholder"));
-		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT, 0);
+		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 		m_input.setHeight(LV_SIZE_CONTENT);
 		m_clear.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
 		m_enter.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
@@ -71,10 +72,10 @@ namespace UI
 
 #if ENABLE_CONSOLE_SHELL
 		m_shellToggle.setText(_("console.shell"));
-		m_shellToggle.setChecked(false);
 		m_shellToggle.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		m_shellToggle.setAlign(LV_ALIGN_TOP_RIGHT, -30, 20);
 		m_shellToggle.setCheckedCallback([this](bool checked) { getPresenter()->enableShell(checked); });
+		m_shellToggle.setChecked(false);
 #endif
 
 		m_topCont.addStyle(Themes::getLvglStyles().no_border);

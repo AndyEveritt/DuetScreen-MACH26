@@ -43,7 +43,7 @@ namespace UI
 		focus_cb_t m_inputFocusCb = nullptr;
 	};
 
-	class ModalExtrusionFactor : public View<ModalExtrusionFactorPresenter, Modal<LvContainer>>
+	class ModalExtrusionFactor : public Modal<View<ModalExtrusionFactorPresenter>>
 	{
 	  public:
 		ModalExtrusionFactor(const std::string& name, LvObj& parent);

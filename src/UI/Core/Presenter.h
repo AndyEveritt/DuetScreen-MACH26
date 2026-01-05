@@ -20,13 +20,23 @@ namespace UI
 	class BasePresenter : public ModelListener
 	{
 	  public:
+		enum class State
+		{
+			UNINITIALISED = 0,
+			DEACTIVE,
+			DEACTIVATING,
+			ACTIVATING,
+			ACTIVE
+		};
+
 		void init();
 		void activate();
 		void deactivate();
 
 		virtual std::string_view getName() const;
 
-		bool isActive() const { return m_active; }
+		State getState() const { return m_state; }
+		bool isActive() const { return m_state == State::ACTIVE; }
 
 		void connected();
 		void disconnected();
@@ -39,8 +49,7 @@ namespace UI
 		virtual void onConnect() {}
 		virtual void onDisconnect() {}
 
-		bool m_isInitialized = false;
-		volatile bool m_active = false;
+		volatile State m_state = State::UNINITIALISED;
 	};
 
 	template <class V>

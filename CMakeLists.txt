@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 project(DuetScreen C CXX)
 include(FetchContent)
 include(ExternalProject)
@@ -45,6 +45,9 @@ option(DUETSCREEN_HARDWARE_TEST "Enable hardware test" OFF)
 option(DUETSCREEN_BURNIN_TEST "Enable burnin test" OFF)
 option(DUETSCREEN_ENABLE_CONSOLE_SHELL "Enable sending shell commands via the GUI console" OFF)
 option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" ON)
+option(DUETSCREEN_ENABLE_PROFILING "Enable profiling using Tracy" OFF)
+option(DUETSCREEN_ENABLE_LV_PROFILING "Enable lvgl profiling" ${DUETSCREEN_ENABLE_PROFILING})
+option(DUETSCREEN_USE_FIXED_TEST_BUILD_TIME "Use fixed build date/time for unit tests" OFF)
 
 if(NOT DEFINED PROCESSOR)
   message(
@@ -70,6 +73,16 @@ list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
 
 add_library(DuetScreen.lib ${MAIN_SOURCES})
 add_executable(DuetScreen)
+
+
+# Update DuetScreen version.h
+add_custom_target(
+  update_version_h
+  COMMAND "${CMAKE_SOURCE_DIR}/scripts/update_version.sh"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  COMMENT "Updating version.h"
+)
+add_dependencies(DuetScreen.lib update_version_h)
 
 # Find clang-format-19
 include(${LIBRARIES_DIR}/clang-format.cmake)
@@ -99,9 +112,6 @@ include (${LIBRARIES_DIR}/colorm.cmake)
 
 # option(BUILD_SHARED_LIBS "Set default library type to shared" OFF)
 
-# LVGL
-include(${LIBRARIES_DIR}/lvgl.cmake)
-
 # Networking
 include(${LIBRARIES_DIR}/hv.cmake)
 
@@ -121,6 +131,9 @@ include(${LIBRARIES_DIR}/json.cmake)
 # Logging
 include(${LIBRARIES_DIR}/spdlog.cmake)
 include(${LIBRARIES_DIR}/tracy.cmake)
+
+# LVGL
+include(${LIBRARIES_DIR}/lvgl.cmake)
 
 # Include libusb headers
 target_include_directories(DuetScreen.lib SYSTEM PUBLIC ${LIBUSB_INCLUDE_DIRS})

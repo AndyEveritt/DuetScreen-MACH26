@@ -87,7 +87,7 @@ namespace UI
 
 		auto& getNumberPad() { return m_numberPad; }
 		void showNumberPad();
-		void hideNumberPad() { m_numberPad.hide(); }
+		void hideNumberPad() { m_numberPad.close(); }
 
 		void onHide() override { hideNumberPad(); }
 

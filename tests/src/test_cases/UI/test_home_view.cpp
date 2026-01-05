@@ -83,7 +83,6 @@ TEST_F(TestHomeView, BlankJobView)
 TEST_F(TestHomeView, BlankSettingsView)
 {
 	openScreen(&view.getSettingsView(), false);
-	view.getSettingsView().getDuetSettingsView().show(true);
 	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_blank.png")
 }
 
@@ -256,9 +255,22 @@ TEST_F(TestHomeViewWithData, MacroView)
 
 TEST_F(TestHomeViewWithData, SettingsView)
 {
-	openScreen(&view.getSettingsView());
-	view.getSettingsView().getDuetSettingsView().show(true);
+	auto& settings = view.getSettingsView();
+	openScreen(&settings);
 	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view.png")
+
+	settings.showGeneralSettings();
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_general.png")
+
+	settings.showConnectionSettings();
+	std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait for wifi networks to load
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_connection.png")
+
+	settings.showDisplaySettings();
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_display.png")
+
+	settings.showDeveloperSettings();
+	EXPECT_EQUAL_SCREENSHOT("home_view/settings_view_developer.png")
 }
 
 TEST_F(TestHomeViewWithData, StatusView)

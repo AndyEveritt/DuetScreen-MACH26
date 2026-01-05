@@ -18,6 +18,8 @@ struct WiFiNetwork
 	int32_t id = -1;
 	bool connected = false;
 
+	bool isKnown() const { return id != -1; }
+
 	void clear()
 	{
 		ssid.clear();

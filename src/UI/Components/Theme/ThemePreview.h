@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "UI/Components/Input/NumberPad.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
@@ -32,7 +32,7 @@ namespace UI
 
 		void showControls(bool show);
 
-		void setNumberPad(NumberPad* numberPad);
+		void setNumberPad(ModalNumberPad* numberPad);
 
 	  private:
 		void updateThemeColors();
@@ -43,6 +43,6 @@ namespace UI
 		Slider m_chromaSlider;
 		LvCheckbox m_darkMode;
 
-		NumberPad* m_numberPad = nullptr;
+		ModalNumberPad* m_numberPad = nullptr;
 	};
 } // namespace UI

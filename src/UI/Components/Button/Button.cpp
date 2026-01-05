@@ -133,6 +133,11 @@ namespace UI
 		addEventCallback(event_cb, LV_EVENT_CLICKED, user_data);
 	}
 
+	void Button::addClickedCallback(std::function<void(lv_event_t*)> event_cb)
+	{
+		addEventCallback(std::move(event_cb), LV_EVENT_CLICKED);
+	}
+
 	void Button::setIcon(std::string_view icon)
 	{
 		UI_LOCK();

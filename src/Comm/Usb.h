@@ -84,4 +84,14 @@ namespace Comm
 	bool connectUsbDevice();
 	UsbDevice& getCurrentUsbDevice();
 	ssize_t sendUsbData(std::string_view data);
+
+	enum class UsbMode
+	{
+		Host,
+		Device,
+		InternalWiFi,
+		Unknown
+	};
+	void setUsbMode(const UsbMode mode);
+	UsbMode getUsbMode();
 } // namespace Comm

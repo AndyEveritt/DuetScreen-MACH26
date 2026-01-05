@@ -30,6 +30,7 @@ namespace UI
 		bool getChecked() const;
 
 	  private:
-      checked_callback_t m_checkedCallback;
+		checked_callback_t m_checkedCallback;
+		bool m_checkedInitialised = false;
 	};
 } // namespace UI

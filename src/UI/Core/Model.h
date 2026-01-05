@@ -284,7 +284,7 @@ class Model
 
 	std::queue<std::pair<EventType, EventData>> m_eventQueue;
 	std::map<EventType, std::vector<EventCallback>> m_handlers;
-	std::condition_variable m_eventCondition;
+	std::condition_variable_any m_eventCondition;
 	std::thread m_eventThread;
 	std::atomic<bool> m_running{false};
 	TracyLockable(std::mutex, m_mutex);

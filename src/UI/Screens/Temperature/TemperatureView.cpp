@@ -51,7 +51,7 @@ namespace UI
 
 	void TemperatureView::onShow()
 	{
-		m_numberPad.hide();
+		m_numberPad.close();
 	}
 
 	void TemperatureView::onHide() {}

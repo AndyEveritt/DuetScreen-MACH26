@@ -22,6 +22,12 @@ namespace UI
 	{
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
+		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_label.setMinWidth(LV_SIZE_CONTENT);
+		m_label.addStyle(Themes::getLvglStyles().bg_color_header);
+		m_label.addStyle(Themes::getComponentStyles().list_header);
+		m_label.addStyle(Themes::getComponentStyles().list_title);
+
 		m_topRow.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_topRow.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_topRow.setSize(LV_PCT(100), LV_SIZE_CONTENT);

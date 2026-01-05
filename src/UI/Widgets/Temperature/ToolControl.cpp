@@ -22,6 +22,7 @@ namespace UI
 		m_toolInfoCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_name.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_state.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_name.addStyle(Themes::getLvglStyles().actionBtn);
 
 		m_toolInfoSpacer.setHeight(0);
 		m_toolInfoSpacer.setFlexGrow(1);
@@ -64,7 +65,7 @@ namespace UI
 		m_state.setText(str);
 	}
 
-	void ToolControl::setNumberPad(NumberPad* numberPad)
+	void ToolControl::setNumberPad(ModalNumberPad* numberPad)
 	{
 		UI_LOCK();
 		m_numberPad = numberPad;

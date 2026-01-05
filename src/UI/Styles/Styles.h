@@ -28,16 +28,25 @@ namespace UI::Themes
 		Style();
 		Style(const char* name);
 		Style(const char* name, std::function<void(lv_style_t*)> initFunc);
-		Style(const Style&);
-		void init();
 
-		Style& operator=(const Style& other);
+		/* Copy */
+		Style(const Style&);
+		Style& operator=(const Style&);
+
+		/* Move */
+		Style(Style&&);
+		Style& operator=(Style&&);
+
+		~Style();
+
+		void init();
 
 		operator lv_style_t*() { return &style; }
 		operator const lv_style_t*() const { return &style; }
 
 	  private:
 		lv_style_t style;
+		bool m_moved = false;
 		const char* name;
 		std::function<void(lv_style_t*)> initFunc;
 	};
@@ -150,6 +159,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_DROPDOWN
+		Style dropdown;
 		Style dropdown_list;
 #endif
 
@@ -173,6 +183,7 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_TEXTAREA
+		Style text_area;
 		Style ta_cursor;
 		Style ta_placeholder;
 #endif
@@ -246,6 +257,10 @@ namespace UI::Themes
 		Style temperature_bar_indic; // Temperature bar indicator style
 		Style tool_selected;		 // Used in tool list
 		Style tab_button;			 // Used in tabview tabs
+
+		/* List */
+		Style list_header;
+		Style list_title;
 	};
 
 	const LvglStyles& getLvglStyles();

@@ -71,10 +71,10 @@ namespace UI
 		lv_keyboard_set_map(getRootPtr(), mode, map, ctrl_map);
 	}
 
-	lv_obj_t* LvKeyboard::getTextArea() const
+	LvTextArea* LvKeyboard::getTextArea() const
 	{
 		UI_LOCK();
-		return lv_keyboard_get_textarea(getRootPtr());
+		return static_cast<LvTextArea*>(LvObj::fromPtr(lv_keyboard_get_textarea(getRootPtr())));
 	}
 
 	lv_keyboard_mode_t LvKeyboard::getMode() const

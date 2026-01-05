@@ -28,7 +28,8 @@
                 "DUETSCREEN_LOG_TIMESTAMPS": "ON",
                 "DUETSCREEN_LOG_THREAD": "ON",
                 "DUETSCREEN_DEBUG_BORDERS": "ON",
-                "DUETSCREEN_ENABLE_CONSOLE_SHELL": "ON"
+                "DUETSCREEN_ENABLE_CONSOLE_SHELL": "ON",
+                "DUETSCREEN_ENABLE_PROFILING": "ON"
             }
         },
         {
@@ -74,7 +75,8 @@
             "inherits": "Simulation-Release",
             "cacheVariables": {
                 "BUILD_TESTING": "ON",
-                "ENABLE_COVERAGE": "ON"
+                "ENABLE_COVERAGE": "ON",
+                "DUETSCREEN_USE_FIXED_TEST_BUILD_TIME": "ON"
             }
         },
         {

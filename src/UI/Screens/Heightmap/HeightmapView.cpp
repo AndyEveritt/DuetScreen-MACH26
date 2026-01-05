@@ -169,13 +169,7 @@ namespace UI
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-		for (size_t i = 0; i < getChildCount(); i++)
-		{
-			auto child = getChild(i);
-			if (!child)
-				continue;
-			child->setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		}
+		iterateChildren([](size_t /* index */, LvObj& child) { child.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT); });
 	}
 
 	void HeightmapStatistics::setStatistics(

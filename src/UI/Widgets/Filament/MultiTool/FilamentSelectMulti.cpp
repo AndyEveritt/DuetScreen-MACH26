@@ -238,8 +238,5 @@ namespace UI
 		control.m_confirmation.getOkBtn().show();
 	}
 
-	void FilamentSelectMulti::onShow()
-	{
-		m_confirmation.hide();
-	}
+	void FilamentSelectMulti::onShow() {}
 } // namespace UI

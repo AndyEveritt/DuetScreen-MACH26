@@ -8,15 +8,24 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvObj.h"
 #include "UI/Components/LVGL/LvTextArea.h"
 
 namespace UI
 {
-	class TextBox : public LvObj
+	class ModalNumberPad;
+
+	class TextBox : public LvContainer
 	{
 	  public:
+		enum class Mode
+		{
+			TEXT,
+			NUMBER
+		};
+
 		TextBox(const std::string& name, LvObj& parent);
 		TextBox(const std::string& name, LvObj& parent, layout_t layout);
 
@@ -59,17 +68,30 @@ namespace UI
 		void cursorUp();
 		void cursorDown();
 
-		void addConfirmEventCallback(lv_event_cb_t cb, void* userData);
+		void addConfirmEventCallback(std::function<void(lv_event_t*)> cb);
 
 		void showPassword(bool show);
+
+		void setMode(Mode mode) { m_mode = mode; }
+		Mode getMode() const { return m_mode; }
+
+		void setKeyboard(LvKeyboard* keyboard) { m_keyboard = keyboard; }
+		LvKeyboard* getKeyboard() const { return m_keyboard; }
+
+		void setNumberPad(ModalNumberPad* numberpad) { m_numberPad = numberpad; }
+		ModalNumberPad* getNumberPad() const { return m_numberPad; }
 
 	  private:
 		void init();
 
-		LvLabel m_label;
-		LvTextArea m_textArea;
-		Button m_showPassword;
+		LvLabel m_label{"label", getRoot()};
+		LvTextArea m_textArea{"textarea", getRoot()};
+		Button m_showPassword{"show_password", getRoot(), LV_SYMBOL_EYE_OPEN};
 
+		LvKeyboard* m_keyboard = nullptr;
+		ModalNumberPad* m_numberPad = nullptr;
+
+		Mode m_mode = Mode::TEXT;
 		bool m_passwordMode = false;
 	};
 } // namespace UI

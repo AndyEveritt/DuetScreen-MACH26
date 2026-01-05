@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Comm/Usb.h"
 #include "UI/Core/Presenter.h"
 #include <nlohmann/json.hpp>
 
@@ -68,7 +69,7 @@ namespace UI
 	class HardwareTestPresenter : public Presenter<HardwareTest>
 	{
 	  public:
-		friend class SettingsPresenter;
+		friend class DeveloperSettingsPresenter;
 
 		PRESENTER_CONSTRUCTOR(HardwareTestPresenter, HardwareTest);
 
@@ -154,5 +155,7 @@ namespace UI
 											{lv_color_hex(0xFFFFFF), "White", false}};
 
 		std::string m_usbMountPath;
+
+		Comm::UsbMode m_usbMode; // mode to restore once tests finish
 	};
 } // namespace UI

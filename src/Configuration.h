@@ -122,7 +122,7 @@ constexpr const char* DEFAULT_LANGUAGE_CODE = "en-GB";
 
 /* Popup */
 constexpr uint32_t DEFAULT_NOTIFICATION_TIMEOUT = 5000;
-constexpr size_t DEFAULT_NOTIFICATION_LEVEL = 0;
+constexpr uint32_t DEFAULT_NOTIFICATION_LEVEL = 0;
 constexpr bool DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR = false;
 
 /* Alert */

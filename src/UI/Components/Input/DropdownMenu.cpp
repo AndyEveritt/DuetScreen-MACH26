@@ -54,8 +54,6 @@ namespace UI
 			LV_EVENT_VALUE_CHANGED,
 			this);
 
-		m_dropdown.addStyle(Themes::getLvglStyles().input);
-
 		setLabel("");
 	}
 

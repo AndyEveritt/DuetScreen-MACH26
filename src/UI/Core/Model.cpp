@@ -16,6 +16,7 @@
 Model::Model()
 {
 	ZoneScoped;
+	LOG_INFO("Initializing Model...");
 	// Timers
 	if (lv_is_initialized())
 	{
@@ -105,7 +106,7 @@ void Model::stopEventLoop()
 		return;
 	}
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		m_running = false;
 	}
 	m_eventCondition.notify_all();
@@ -126,8 +127,7 @@ void Model::runEventLoop()
 			ZoneScoped;
 			std::pair<EventType, EventData> event;
 			{
-				ZoneScopedN("Wait for event");
-				std::unique_lock<std::mutex> lock(m_mutex);
+				std::unique_lock<LockableBase(std::mutex)> lock(m_mutex);
 				m_eventCondition.wait(lock, [this] { return !m_eventQueue.empty() || !m_running; });
 				if (!m_running && m_eventQueue.empty())
 				{

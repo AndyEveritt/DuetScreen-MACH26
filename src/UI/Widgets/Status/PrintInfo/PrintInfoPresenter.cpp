@@ -95,7 +95,7 @@ namespace UI
 			return;
 		}
 		// TODO show all extruder multipliers
-		size_t extruderCount = 0;
+		uint32_t extruderCount = 0;
 		uint32_t flowMultiplier = 0;
 		tool->IterateExtruders(
 			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t /* index */)

@@ -118,8 +118,10 @@ TEST_F(TestTheme, Widgets)
 	cont.setFlexGrow(1);
 	cont.setFlexFlow(LV_FLEX_FLOW_COLUMN_WRAP);
 	cont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+	cont.setScrollbarMode(LV_SCROLLBAR_MODE_OFF);
 
-	constexpr size_t col_width = LV_PCT(20);
+	cont.updateLayout();
+	const size_t col_width = cont.getWidth() / 5;
 
 	/* LvBar */
 	LvBar bar("bar", cont);
@@ -140,6 +142,8 @@ TEST_F(TestTheme, Widgets)
 	/* LvCheckbox */
 	LvCheckbox checkbox("checkbox", cont);
 	LvCheckbox checkbox2("checkbox2", cont);
+	checkbox.setText("Checkbox");
+	checkbox2.setText("Checkbox");
 	checkbox2.setChecked(true);
 
 	/* LvImage */
@@ -149,12 +153,13 @@ TEST_F(TestTheme, Widgets)
 	label.setText("Label");
 
 	/* LvSlider */
-	LvSlider slider("slider", cont);
-	slider.setWidth(col_width);
-	slider.setValue(50);
+	LvSlider lv_slider("lv_slider", cont);
+	lv_slider.setWidth(col_width);
+	lv_slider.setValue(50);
 
 	/* LvDropdown */
 	LvDropdown dropdown("dropdown", cont);
+	dropdown.setFlag(LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true); // so dropdown menu doesn't render over other widgets
 	dropdown.open();
 
 	/* LvTextArea */
@@ -271,7 +276,7 @@ TEST_F(TestTheme, Widgets)
 
 	/* lv_table */
 	lv_obj_t* table = lv_table_create(cont.getRootPtr());
-	lv_obj_set_size(table, col_width, LV_SIZE_CONTENT);
+	lv_obj_set_size(table, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 	const size_t table_cols = 3;
 	const size_t table_rows = 3;
 	lv_table_set_column_count(table, table_cols);
@@ -282,33 +287,12 @@ TEST_F(TestTheme, Widgets)
 		lv_table_set_cell_value(table, i % table_cols, i / table_cols, fmt::format("Cell {}", i).c_str());
 	}
 
-	/* Page 2 */
-
-	LvContainer cont2("container", screen);
-	cont2.setWidth(LV_PCT(100));
-	cont2.setFlexGrow(1);
-	int32_t cont2_cols[11];
-	for (int i = 0; i < std::size(cont2_cols) - 1; ++i)
-	{
-		cont2_cols[i] = LV_GRID_FR(1);
-	}
-	cont2_cols[std::size(cont2_cols) - 1] = LV_GRID_TEMPLATE_LAST;
-	int32_t cont2_rows[5] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-	cont2.setGridDsc(cont2_cols, cont2_rows);
-
 	/* Numberpad */
-	NumberPad numberpad("numberpad", cont2, layout_t{0, 0, 20, 100});
-	cont2.setGridCell(numberpad, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 4);
-	numberpad.setHeader("Numberpad");
-
-	/* Sidebar */
-	SideBar sidebar("sidebar", cont2);
-	cont2.setGridCell(sidebar, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 0, 4);
+	NumberPad numberpad("numberpad", cont, layout_t{0, 0, 20, 100});
 
 	/* Message Box */
 	UI::Themes::setIconFolder("examples");
-	MessageBox message_box("message_box", cont2, layout_t(0, 0, 0, 0));
-	cont2.setGridCell(message_box, LV_GRID_ALIGN_STRETCH, 3, 2, LV_GRID_ALIGN_STRETCH, 0, 2);
+	MessageBox message_box("message_box", cont, layout_t(0, 0, 40, 50));
 	message_box.setTitle("Message Box Title");
 	message_box.setText("Message Box Text");
 	message_box.cancelVisible(true);
@@ -320,8 +304,8 @@ TEST_F(TestTheme, Widgets)
 	UI::Themes::resetIconFolder();
 
 	/* Heater Slider */
-	HeaterSlider heater_slider("heater_slider", cont2);
-	cont2.setGridCell(heater_slider, LV_GRID_ALIGN_STRETCH, 3, 2, LV_GRID_ALIGN_STRETCH, 2, 1);
+	HeaterSlider heater_slider("heater_slider", cont);
+	heater_slider.setSize(LV_PCT(40), LV_SIZE_CONTENT);
 	heater_slider.setHeaterName("Heater");
 	heater_slider.setHeaterMinTemperature(0);
 	heater_slider.setHeaterMaxTemperature(300);
@@ -332,15 +316,14 @@ TEST_F(TestTheme, Widgets)
 
 	/* Icon */
 	UI::Themes::setIconFolder("examples");
-	Icon icon("icon", cont2);
-	cont2.setGridCell(icon, LV_GRID_ALIGN_STRETCH, 3, 1, LV_GRID_ALIGN_STRETCH, 3, 1);
-	icon.setFlag(LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
+	Icon icon("icon", cont);
+	icon.setSize(col_width, col_width);
 	icon.setIcon("example_full_color.png");
 	UI::Themes::resetIconFolder();
 
 	/* Axis Control */
-	LvContainer axis_cont("axis_cont", cont2);
-	cont2.setGridCell(axis_cont, LV_GRID_ALIGN_STRETCH, 5, 2, LV_GRID_ALIGN_STRETCH, 0, 2);
+	LvContainer axis_cont("axis_cont", cont);
+	axis_cont.setSize(LV_PCT(25), LV_PCT(100));
 	axis_cont.setFlexFlow(LV_FLEX_FLOW_ROW);
 	axis_cont.addStyle(Themes::getLvglStyles().pad_zero);
 
@@ -356,8 +339,8 @@ TEST_F(TestTheme, Widgets)
 	generic_axis.setDisabled(true);
 
 	/* Tool List */
-	ToolList tool_list("tool_list", cont2);
-	cont2.setGridCell(tool_list, LV_GRID_ALIGN_STRETCH, 5, 5, LV_GRID_ALIGN_STRETCH, 2, 2);
+	ToolList tool_list("tool_list", cont);
+	tool_list.setSize(LV_PCT(40), LV_SIZE_CONTENT);
 	tool_list.setToolCount(2);
 	for (size_t i = 0; i < tool_list.getToolCount(); ++i)
 	{
@@ -385,19 +368,31 @@ TEST_F(TestTheme, Widgets)
 	}
 
 	/* Text Box */
-	TextBox text_box("text_box", cont2);
-	cont2.setGridCell(text_box, LV_GRID_ALIGN_STRETCH, 7, 3, LV_GRID_ALIGN_STRETCH, 0, 1);
+	TextBox empty_text_box("empty_text_box", cont);
+	empty_text_box.setSize(LV_PCT(40), LV_SIZE_CONTENT);
+	empty_text_box.setLabel("Text box label");
+	empty_text_box.setPlaceholderText("Placeholder");
+
+	TextBox text_box("text_box", cont);
+	text_box.setSize(LV_PCT(30), LV_SIZE_CONTENT);
 	text_box.setLabel("Text box label");
 	text_box.setPlaceholderText("Placeholder");
+	text_box.setText("This is some sample text in the text box.");
 
 	/* Slider */
-	Slider slider2("slider2", cont2);
-	cont2.setGridCell(slider2, LV_GRID_ALIGN_STRETCH, 7, 3, LV_GRID_ALIGN_STRETCH, 1, 1);
-	slider2.setValue(40);
-	slider2.setLabel("Slider label");
+	Slider slider("slider", cont);
+	slider.setSize(LV_PCT(30), LV_SIZE_CONTENT);
+	slider.setValue(40);
+	slider.setLabel("Slider label");
+	numberpad.setHeader("Numberpad");
+
+	/* Sidebar */
+	SideBar sidebar("sidebar", cont);
+	sidebar.setSize(LV_PCT(10), LV_PCT(100));
 
 	for (size_t i = 0; i < Themes::getThemeCount(); ++i)
 	{
+		ZoneScopedN("Testing Theme");
 		Themes::Theme* theme = Themes::getTheme(i);
 		if (theme == nullptr)
 		{
@@ -406,16 +401,58 @@ TEST_F(TestTheme, Widgets)
 		LOG_INFO("Testing theme: {}", theme->getName());
 		theme->setThemeActive();
 		preview.updateSwatches();
+
+		cont.scrollToX(0, LV_ANIM_OFF);
+
+		/* Reset canvas */
 		canvas.clear();
 		canvas.drawLine({0, 0}, {99, 99}, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
 		canvas.drawLabelPx({75, 20}, "Label", lv_palette_main(LV_PALETTE_BLUE), LV_OPA_COVER);
 
-		cont.setFlag(LV_OBJ_FLAG_HIDDEN, false);
-		cont2.setFlag(LV_OBJ_FLAG_HIDDEN, true);
-		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme/widgets_{}.png", theme->getName()).c_str());
+		/* Open dropdown */
+		dropdown.open();
 
-		cont.setFlag(LV_OBJ_FLAG_HIDDEN, true);
-		cont2.setFlag(LV_OBJ_FLAG_HIDDEN, false);
-		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme/widgets_{}_2.png", theme->getName()).c_str());
+		/**
+		 * The container is variable width based on each themes styles.
+		 * More padding could make the widgets overflow etc.
+		 */
+		const auto width = cont.getWidth();
+		const auto screen_width = cont.getParent()->getWidth();
+
+		size_t iteration = 0;
+		EXPECT_EQUAL_SCREENSHOT(fmt::format("theme/{:s}/widgets_{:d}.png", theme->getName(), iteration++).c_str());
+
+		/* Close dropdown */
+		dropdown.close();
+
+		/**
+		 * Scroll the container so each child is tested while it is fully visible.
+		 */
+		while (cont.getScrollRight() > 0)
+		{
+			lv_coord_t cont_x2 = cont.getX2();
+			lv_coord_t x_snap = LV_COORD_MAX;
+			cont.iterateChildren(
+				[&](size_t /* index */, LvObj& child)
+				{
+					auto child_coords = child.getCoords();
+					if (child_coords.x1 > cont_x2)
+					{
+						/* Child is completely to the right of the container */
+						return;
+					}
+
+					if (child_coords.x2 <= cont_x2)
+					{
+						/* Child has already been fully processed */
+						return;
+					}
+
+					/* Child is only partially visible */
+					x_snap = std::min(child_coords.x1, x_snap);
+				});
+			cont.scrollByBounded(-x_snap, LV_ANIM_OFF);
+			EXPECT_EQUAL_SCREENSHOT(fmt::format("theme/{:s}/widgets_{:d}.png", theme->getName(), iteration++).c_str());
+		}
 	}
 }

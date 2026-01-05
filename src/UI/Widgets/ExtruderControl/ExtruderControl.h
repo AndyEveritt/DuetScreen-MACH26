@@ -32,8 +32,8 @@ namespace UI
 		float getDistanceValue() const;
 		float getFeedrateValue() const;
 
-		void setNumberPad(NumberPad* np);
-		NumberPad* getNumberPad() const { return m_numberPad; }
+		void setNumberPad(ModalNumberPad* np);
+		ModalNumberPad* getNumberPad() const { return m_numberPad; }
 
 	  private:
 		static void onRetractEvent(lv_event_t* event);
@@ -46,6 +46,6 @@ namespace UI
 		MultiValueSelector m_distanceSelector{"distance_selector", m_controlsContainer};
 		MultiValueSelector m_feedrateSelector{"feedrate_selector", m_controlsContainer};
 
-		NumberPad* m_numberPad = nullptr; // used for long press callbacks
+		ModalNumberPad* m_numberPad = nullptr; // used for long press callbacks
 	};
 } // namespace UI

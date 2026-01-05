@@ -10,6 +10,7 @@
 #include "HeaterSlider.h"
 #include "ToolControlPresenter.h"
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
@@ -30,7 +31,7 @@ namespace UI
 		FilamentSelectDropdown& getFilamentDropdown() { return m_filament; }
 		List<HeaterSlider>& getHeaters() { return m_heaters; }
 
-		void setNumberPad(NumberPad* numberPad);
+		void setNumberPad(ModalNumberPad* numberPad);
 		auto getNumberPad() { return m_numberPad; }
 
 		void setExtrusionModal(ModalExtrusionFactor* modal);
@@ -45,7 +46,7 @@ namespace UI
 		FilamentSelectDropdown m_filament{"filament_select", m_toolInfoCont};
 		List<HeaterSlider> m_heaters{"heaters", getRoot()};
 
-		NumberPad* m_numberPad = nullptr;
+		ModalNumberPad* m_numberPad = nullptr;
 		ModalExtrusionFactor* m_extrusionFactorModal = nullptr;
 	};
 } // namespace UI

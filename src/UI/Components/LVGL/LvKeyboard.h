@@ -22,7 +22,7 @@ namespace UI
 		void setMode(lv_keyboard_mode_t mode);
 		void setPopovers(bool enable);
 		void setMap(lv_keyboard_mode_t mode, const char* map[], const lv_buttonmatrix_ctrl_t ctrl_map[]);
-		lv_obj_t* getTextArea() const;
+		LvTextArea* getTextArea() const;
 		lv_keyboard_mode_t getMode() const;
 		bool getPopovers() const;
 		const char* const* getMapArray() const;

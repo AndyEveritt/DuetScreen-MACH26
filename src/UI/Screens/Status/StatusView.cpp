@@ -74,7 +74,6 @@ namespace UI
 		m_confirmCancel.okVisible(true);
 		m_confirmCancel.cancelVisible(true);
 		m_confirmCancel.setOkCallback([this]() { m_presenter->cancelPrint(); });
-		m_confirmCancel.hide();
 
 		// Callbacks
 		m_pauseBtn.addClickedCallback(onPauseClicked, this);
@@ -114,18 +113,12 @@ namespace UI
 	{
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
-		view->m_confirmCancel.show();
+		openModal(&view->m_confirmCancel);
 	}
 
-	void StatusView::onShow()
-	{
-		m_printInfo.show();
-	}
+	void StatusView::onShow() {}
 
-	void StatusView::onHide()
-	{
-		m_confirmCancel.hide();
-	}
+	void StatusView::onHide() {}
 
 	void StatusView::setFilename(std::string_view filename)
 	{

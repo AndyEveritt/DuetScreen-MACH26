@@ -59,6 +59,7 @@ namespace UI::FontManager
 	 */
 	void init()
 	{
+		LOG_INFO("Initializing Font Manager...");
 		s_fontManager = lv_font_manager_create(8);
 
 		std::filesystem::directory_iterator dir_iter(FONTS_FOLDER);
@@ -196,6 +197,10 @@ namespace UI::FontManager
 
 		s_activeTypeface = name;
 		Themes::getCurrentTheme()->setTypeface(name);
+
+		lv_obj_report_style_change(NULL);
+		lv_obj_invalidate(lv_screen_active());
+
 		StorageHelper::setData(ID_FONT, s_activeTypeface);
 		LOG_INFO("Active typeface set to '{:s}'", name);
 	}
