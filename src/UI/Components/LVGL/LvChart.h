@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvChart : public LvChartGen
-    {
-      public:
-        using LvChartGen::LvChartGen;
-    };
-}
+	class LvChart : public LvChartGen
+	{
+	  public:
+		using LvChartGen::LvChartGen;
+	};
+} // namespace UI

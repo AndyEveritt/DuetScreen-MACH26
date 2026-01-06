@@ -266,8 +266,8 @@ namespace UI
 		std::string m_name;
 
 		uint8_t m_initialized : 1 = 0; // 1 = initialized, 0 = not initialized
-		uint8_t m_showing : 1 = 0; // 1 = showing, 0 = hidden
-		uint8_t m_hidding : 1 = 0; // 1 = hiding, 0 = not hiding
+		uint8_t m_showing : 1 = 0;	   // 1 = showing, 0 = hidden
+		uint8_t m_hidding : 1 = 0;	   // 1 = hiding, 0 = not hiding
 		void* m_userData = nullptr;
 
 		struct EventCallbackInfo

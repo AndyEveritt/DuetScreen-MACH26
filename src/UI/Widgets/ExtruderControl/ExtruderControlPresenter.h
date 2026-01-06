@@ -26,7 +26,7 @@ namespace UI
 		void extrude(float distance, float feedrate);
 
 		// Observers
-        void newToolData();
+		void newToolData();
 
 	  protected:
 		void onInit() override;

@@ -49,7 +49,7 @@ namespace UI
 	void LvCheckbox::setCheckedCallback(checked_callback_t cb)
 	{
 		UI_LOCK();
-		m_checkedCallback = cb;
+		m_checkedCallback = std::move(cb);
 	}
 
 	bool LvCheckbox::getChecked() const

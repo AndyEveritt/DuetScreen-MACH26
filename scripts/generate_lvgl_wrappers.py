@@ -29,6 +29,8 @@ from __future__ import annotations
 import argparse
 import re
 from pathlib import Path
+import subprocess
+import shutil
 from datetime import datetime
 from typing import List, Tuple, Dict, Optional
 
@@ -631,6 +633,33 @@ def update_generated_cmake(new_gen_cpp_files: List[str]) -> None:
         GEN_CMAKE_FILE.write_text(content, encoding="utf-8")
 
 
+def run_clang_format(files: List[Path]) -> None:
+    """Run clang-format -i on the provided files if clang-format is available."""
+    if not files:
+        return
+    clang = shutil.which("clang-format")
+    if not clang:
+        print("[fmt] clang-format not found in PATH; skipping formatting")
+        return
+    # Deduplicate and ensure absolute paths
+    unique_files = []
+    seen = set()
+    for f in files:
+        p = str(Path(f).resolve())
+        if p not in seen:
+            seen.add(p)
+            unique_files.append(p)
+    try:
+        # Run in chunks to avoid command line limits
+        chunk = 100
+        for i in range(0, len(unique_files), chunk):
+            sub = unique_files[i : i + chunk]
+            subprocess.run([clang, "-i", *sub], check=False)
+        print(f"[fmt] clang-format applied to {len(unique_files)} files")
+    except Exception as e:
+        print(f"[fmt] clang-format failed: {e}")
+
+
 def discover_widget_headers() -> Dict[str, Path]:
     widgets: Dict[str, Path] = {}
     for hdr in WIDGETS_DIR.rglob("lv_*.h"):
@@ -675,6 +704,7 @@ def main() -> None:
     OUTPUT_GEN_DIR.mkdir(parents=True, exist_ok=True)
 
     generated_cpp: List[str] = []
+    generated_files_for_format: List[Path] = []
 
     for token in selected:
         hdr = discovered.get(token)
@@ -704,6 +734,7 @@ def main() -> None:
 
         if wrote_h:
             print(f"[gen] {class_gen} -> {gen_h_rel}")
+            generated_files_for_format.append(gen_h_path)
         else:
             print(f"[keep] {gen_h_rel} (existing)")
 
@@ -722,6 +753,8 @@ def main() -> None:
     # Ensure parent refers to generated subdir and update its CMake file
     ensure_parent_references_generated()
     update_generated_cmake(generated_cpp)
+    # Format generated files
+    run_clang_format(generated_files_for_format)
 
 
 if __name__ == "__main__":

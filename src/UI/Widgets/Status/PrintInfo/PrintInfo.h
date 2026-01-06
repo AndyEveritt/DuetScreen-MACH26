@@ -12,9 +12,9 @@
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
 #include "UI/Components/Modal/Modal.h"
-#include "UI/Widgets/Control/ExtrusionFactor/ExtrusionFactor.h"
 #include "UI/Core/View.h"
 #include "UI/Widgets/BabyStep/BabyStep.h"
+#include "UI/Widgets/Control/ExtrusionFactor/ExtrusionFactor.h"
 #include "UI/Widgets/Control/SpeedFactor/SpeedFactor.h"
 
 namespace UI

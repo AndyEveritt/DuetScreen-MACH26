@@ -34,6 +34,6 @@ namespace UI::Themes
 		float m_chroma;
 		bool m_darkMode;
 
-        bool m_initialized = false;
+		bool m_initialized = false;
 	};
 } // namespace UI::Themes

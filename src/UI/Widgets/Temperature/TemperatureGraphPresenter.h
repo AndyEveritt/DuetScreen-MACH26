@@ -25,12 +25,10 @@ namespace UI
 		// Actions
 
 		// Observers
-        void tick();
+		void tick();
 
 	  protected:
-		void onInit() override {
-            registerEventListener<EventType::Tick>(this, &TemperatureGraphPresenter::tick);
-        }
+		void onInit() override { registerEventListener<EventType::Tick>(this, &TemperatureGraphPresenter::tick); }
 		void onActivate() override {}
 		void onDeactivate() override {}
 

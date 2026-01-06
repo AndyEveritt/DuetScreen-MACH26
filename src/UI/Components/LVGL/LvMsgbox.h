@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvMsgbox : public LvMsgboxGen
-    {
-      public:
-        using LvMsgboxGen::LvMsgboxGen;
-    };
-}
+	class LvMsgbox : public LvMsgboxGen
+	{
+	  public:
+		using LvMsgboxGen::LvMsgboxGen;
+	};
+} // namespace UI

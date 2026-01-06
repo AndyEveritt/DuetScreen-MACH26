@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvCalendar : public LvCalendarGen
-    {
-      public:
-        using LvCalendarGen::LvCalendarGen;
-    };
-}
+	class LvCalendar : public LvCalendarGen
+	{
+	  public:
+		using LvCalendarGen::LvCalendarGen;
+	};
+} // namespace UI

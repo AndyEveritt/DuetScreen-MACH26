@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvBar : public LvBarGen
-    {
-      public:
-        using LvBarGen::LvBarGen;
-    };
-}
+	class LvBar : public LvBarGen
+	{
+	  public:
+		using LvBarGen::LvBarGen;
+	};
+} // namespace UI

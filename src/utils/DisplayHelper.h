@@ -25,7 +25,7 @@ class DisplayHelper
 	DisplayHelper(const char* device = "/dev/disp", unsigned int screen = 0);
 	~DisplayHelper();
 
-    static DisplayHelper& instance();
+	static DisplayHelper& instance();
 
 	bool setBrightnessInner(unsigned int percentage);
 

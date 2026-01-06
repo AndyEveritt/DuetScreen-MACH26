@@ -8,7 +8,8 @@
 #ifndef JNI_INCLUDE_LIBRARY_PIXEL_H_
 #define JNI_INCLUDE_LIBRARY_PIXEL_H_
 
-typedef union {
+typedef union
+{
 	struct
 	{
 		unsigned char b, g, r, a;
@@ -16,7 +17,8 @@ typedef union {
 	unsigned int v;
 } rgba_t;
 
-typedef union {
+typedef union
+{
 	struct
 	{
 		unsigned char b, g, r;

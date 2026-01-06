@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvSpinner : public LvSpinnerGen
-    {
-      public:
-        using LvSpinnerGen::LvSpinnerGen;
-    };
-}
+	class LvSpinner : public LvSpinnerGen
+	{
+	  public:
+		using LvSpinnerGen::LvSpinnerGen;
+	};
+} // namespace UI

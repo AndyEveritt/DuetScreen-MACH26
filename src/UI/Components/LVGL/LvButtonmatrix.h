@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvButtonmatrix : public LvButtonmatrixGen
-    {
-      public:
-        using LvButtonmatrixGen::LvButtonmatrixGen;
-    };
-}
+	class LvButtonmatrix : public LvButtonmatrixGen
+	{
+	  public:
+		using LvButtonmatrixGen::LvButtonmatrixGen;
+	};
+} // namespace UI

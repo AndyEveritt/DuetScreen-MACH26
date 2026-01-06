@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvLottie : public LvLottieGen
-    {
-      public:
-        using LvLottieGen::LvLottieGen;
-    };
-}
+	class LvLottie : public LvLottieGen
+	{
+	  public:
+		using LvLottieGen::LvLottieGen;
+	};
+} // namespace UI

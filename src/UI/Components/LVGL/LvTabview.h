@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvTabview : public LvTabviewGen
-    {
-      public:
-        using LvTabviewGen::LvTabviewGen;
-    };
-}
+	class LvTabview : public LvTabviewGen
+	{
+	  public:
+		using LvTabviewGen::LvTabviewGen;
+	};
+} // namespace UI

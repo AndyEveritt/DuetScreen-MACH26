@@ -12,10 +12,7 @@
 class BoardSubscribers : public SubscriberMap
 {
   public:
-	BoardSubscribers()
-	{
-		addSubscriber("boards^:uniqueId", uniqueId);
-	}
+	BoardSubscribers() { addSubscriber("boards^:uniqueId", uniqueId); }
 
   private:
 	static bool uniqueId(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);

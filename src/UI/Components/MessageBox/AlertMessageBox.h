@@ -20,7 +20,7 @@
 
 namespace UI
 {
-    class AlertMessageBox : public MessageBox
+	class AlertMessageBox : public MessageBox
 	{
 	  public:
 		class AxisJog : public LvObj
@@ -51,7 +51,7 @@ namespace UI
 		virtual ~AlertMessageBox() = default;
 
 		void setMode(OM::Alert::Mode mode);
-        
+
 		void setChoiceCallback(std::function<void(size_t)> cb) { m_choiceCb = cb; }
 		void setInputValidationCallback(std::function<bool(std::string_view)> cb);
 		void setShowKeyboardCallback(std::function<void(bool)> cb) { m_showKeyboardCb = cb; }
@@ -60,7 +60,7 @@ namespace UI
 
 		bool isBlocking() const;
 		bool isResponse() const;
-        void clear();
+		void clear();
 
 		void setMinText(std::string_view format);
 		void setMaxText(std::string_view format);
@@ -112,7 +112,7 @@ namespace UI
 
 		// Central Container
 		LvContainer m_inputCont;
-        
+
 		List<AxisJog> m_axisJogList;
 		List<Button> m_choicesList;
 

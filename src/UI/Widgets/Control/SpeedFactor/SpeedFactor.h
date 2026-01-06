@@ -8,9 +8,9 @@
 #pragma once
 
 #include "SpeedFactorPresenter.h"
+#include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Core/View.h"
-#include "UI/Components/Input/NumberPad.h"
 
 namespace UI
 {

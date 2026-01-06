@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvImagebutton : public LvImagebuttonGen
-    {
-      public:
-        using LvImagebuttonGen::LvImagebuttonGen;
-    };
-}
+	class LvImagebutton : public LvImagebuttonGen
+	{
+	  public:
+		using LvImagebuttonGen::LvImagebuttonGen;
+	};
+} // namespace UI

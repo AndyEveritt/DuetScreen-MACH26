@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class Lv3dtexture : public Lv3dtextureGen
-    {
-      public:
-        using Lv3dtextureGen::Lv3dtextureGen;
-    };
-}
+	class Lv3dtexture : public Lv3dtextureGen
+	{
+	  public:
+		using Lv3dtextureGen::Lv3dtextureGen;
+	};
+} // namespace UI

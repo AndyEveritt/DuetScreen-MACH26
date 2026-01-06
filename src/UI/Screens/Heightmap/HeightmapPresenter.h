@@ -40,8 +40,8 @@ namespace UI
 		void newCompensationFile();
 		void newDirectories();
 		void newAxesData();
-		
-		private:
+
+	  private:
 		void onActivate() override;
 		void onInit() override
 		{

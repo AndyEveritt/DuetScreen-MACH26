@@ -11,10 +11,11 @@
 
 namespace UI
 {
-    class Screen : public LvObj
-    {
-      public:
-        Screen(const std::string& name);
-      private:
-    };
+	class Screen : public LvObj
+	{
+	  public:
+		Screen(const std::string& name);
+
+	  private:
+	};
 } // namespace UI

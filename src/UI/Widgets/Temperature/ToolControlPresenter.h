@@ -19,7 +19,7 @@ namespace UI
 	  public:
 		PRESENTER_CONSTRUCTOR(ToolControlPresenter, ToolControl);
 
-        using tool_state_t = OM::ToolStatus;
+		using tool_state_t = OM::ToolStatus;
 
 		// Setters
 		void reset();
@@ -31,7 +31,7 @@ namespace UI
 		void toggleToolState();
 
 		// Observers
-        void newToolData();
+		void newToolData();
 		void newToolHeaterData(size_t toolIndex);
 
 	  protected:

@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvList : public LvListGen
-    {
-      public:
-        using LvListGen::LvListGen;
-    };
-}
+	class LvList : public LvListGen
+	{
+	  public:
+		using LvListGen::LvListGen;
+	};
+} // namespace UI

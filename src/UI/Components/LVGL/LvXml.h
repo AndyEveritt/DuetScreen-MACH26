@@ -24,7 +24,7 @@ namespace UI
 
 	  private:
 		std::string m_componentId;
-        lv_xml_component_scope_t* m_scope;
+		lv_xml_component_scope_t* m_scope;
 	};
 } // namespace UI
 

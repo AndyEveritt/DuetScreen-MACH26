@@ -150,9 +150,9 @@ namespace UI
 			bool result;
 		};
 		std::vector<color_test_t> m_colors = {{lv_color_hex(0xFF0000), "Red", false},
-											{lv_color_hex(0x00FF00), "Green", false},
-											{lv_color_hex(0x0000FF), "Blue", false},
-											{lv_color_hex(0xFFFFFF), "White", false}};
+											  {lv_color_hex(0x00FF00), "Green", false},
+											  {lv_color_hex(0x0000FF), "Blue", false},
+											  {lv_color_hex(0xFFFFFF), "White", false}};
 
 		std::string m_usbMountPath;
 

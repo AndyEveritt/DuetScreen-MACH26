@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvScale : public LvScaleGen
-    {
-      public:
-        using LvScaleGen::LvScaleGen;
-    };
-}
+	class LvScale : public LvScaleGen
+	{
+	  public:
+		using LvScaleGen::LvScaleGen;
+	};
+} // namespace UI

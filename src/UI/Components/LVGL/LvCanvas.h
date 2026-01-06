@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvCanvas : public LvCanvasGen
-    {
-      public:
-        using LvCanvasGen::LvCanvasGen;
-    };
-}
+	class LvCanvas : public LvCanvasGen
+	{
+	  public:
+		using LvCanvasGen::LvCanvasGen;
+	};
+} // namespace UI

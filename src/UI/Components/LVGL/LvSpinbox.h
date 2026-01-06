@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvSpinbox : public LvSpinboxGen
-    {
-      public:
-        using LvSpinboxGen::LvSpinboxGen;
-    };
-}
+	class LvSpinbox : public LvSpinboxGen
+	{
+	  public:
+		using LvSpinboxGen::LvSpinboxGen;
+	};
+} // namespace UI

@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvTileview : public LvTileviewGen
-    {
-      public:
-        using LvTileviewGen::LvTileviewGen;
-    };
-}
+	class LvTileview : public LvTileviewGen
+	{
+	  public:
+		using LvTileviewGen::LvTileviewGen;
+	};
+} // namespace UI

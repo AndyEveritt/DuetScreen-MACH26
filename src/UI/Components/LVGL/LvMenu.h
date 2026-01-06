@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvMenu : public LvMenuGen
-    {
-      public:
-        using LvMenuGen::LvMenuGen;
-    };
-}
+	class LvMenu : public LvMenuGen
+	{
+	  public:
+		using LvMenuGen::LvMenuGen;
+	};
+} // namespace UI

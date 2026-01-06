@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvWin : public LvWinGen
-    {
-      public:
-        using LvWinGen::LvWinGen;
-    };
-}
+	class LvWin : public LvWinGen
+	{
+	  public:
+		using LvWinGen::LvWinGen;
+	};
+} // namespace UI

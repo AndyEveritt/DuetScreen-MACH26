@@ -8,7 +8,7 @@
 #ifndef SRC_OBJECTMODEL_UTILS_HPP_
 #define SRC_OBJECTMODEL_UTILS_HPP_
 
-//#include <cstdint>
+// #include <cstdint>
 #include "Configuration.h"
 #include <Duet3D/General/Vector.h>
 #include <cstring>

@@ -15,7 +15,7 @@ namespace UI
 {
 	class VerticalButtonPanel : public LvObj
 	{
-      public:
+	  public:
 		VerticalButtonPanel(const std::string& name, LvObj& parent);
 		void setIncrementIcon(std::string_view icon);
 		void setDecrementIcon(std::string_view icon);
@@ -26,10 +26,10 @@ namespace UI
 		void setIncrementValues(const std::vector<float>& values);
 
 		float getSelectedValue() const;
-        void setSelectedValueIndex(uint8_t index);
+		void setSelectedValueIndex(uint8_t index);
 
-        void setValueChangeCallback(std::function<void(float)> callback);
-        void setResetCallback(std::function<void()> callback);
+		void setValueChangeCallback(std::function<void(float)> callback);
+		void setResetCallback(std::function<void()> callback);
 
 		Button& getResetButton() { return m_reset; }
 		Button& getIncrementButton() { return m_increment; }

@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvLine : public LvLineGen
-    {
-      public:
-        using LvLineGen::LvLineGen;
-    };
-}
+	class LvLine : public LvLineGen
+	{
+	  public:
+		using LvLineGen::LvLineGen;
+	};
+} // namespace UI

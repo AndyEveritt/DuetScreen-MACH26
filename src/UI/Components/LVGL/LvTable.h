@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvTable : public LvTableGen
-    {
-      public:
-        using LvTableGen::LvTableGen;
-    };
-}
+	class LvTable : public LvTableGen
+	{
+	  public:
+		using LvTableGen::LvTableGen;
+	};
+} // namespace UI

@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvSlider : public LvSliderGen
-    {
-      public:
-        using LvSliderGen::LvSliderGen;
-    };
-}
+	class LvSlider : public LvSliderGen
+	{
+	  public:
+		using LvSliderGen::LvSliderGen;
+	};
+} // namespace UI

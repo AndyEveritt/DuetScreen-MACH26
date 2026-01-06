@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvRoller : public LvRollerGen
-    {
-      public:
-        using LvRollerGen::LvRollerGen;
-    };
-}
+	class LvRoller : public LvRollerGen
+	{
+	  public:
+		using LvRollerGen::LvRollerGen;
+	};
+} // namespace UI

@@ -4,9 +4,9 @@
 
 namespace UI
 {
-    class LvArc : public LvArcGen
-    {
-      public:
-        using LvArcGen::LvArcGen;
-    };
-}
+	class LvArc : public LvArcGen
+	{
+	  public:
+		using LvArcGen::LvArcGen;
+	};
+} // namespace UI

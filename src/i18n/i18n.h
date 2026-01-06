@@ -15,13 +15,13 @@
 
 namespace i18n
 {
-    /* Load translation files from `assets/i18n` */
-    void init();
+	/* Load translation files from `assets/i18n` */
+	void init();
 
-    std::string_view getCurrentLanguage();
-    void refreshLanguageFiles();
-    const std::map<std::string, std::string>& getAvailableLanguages();
-    int32_t getLanguageIndex(std::string_view lang);
+	std::string_view getCurrentLanguage();
+	void refreshLanguageFiles();
+	const std::map<std::string, std::string>& getAvailableLanguages();
+	int32_t getLanguageIndex(std::string_view lang);
 
 	bool setLanguage(const std::string_view lang);
 

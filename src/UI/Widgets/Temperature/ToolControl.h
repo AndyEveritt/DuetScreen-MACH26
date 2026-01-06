@@ -26,7 +26,7 @@ namespace UI
 		ToolControl(const std::string& name, LvObj& parent);
 
 		void setToolName(std::string_view name);
-        void setToolState(ToolControlPresenter::tool_state_t state, std::string_view str);
+		void setToolState(ToolControlPresenter::tool_state_t state, std::string_view str);
 		List<Button>& getExtrusionFactors() { return m_extrusionFactors; }
 		FilamentSelectDropdown& getFilamentDropdown() { return m_filament; }
 		List<HeaterSlider>& getHeaters() { return m_heaters; }

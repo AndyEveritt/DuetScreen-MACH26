@@ -11,6 +11,6 @@
 
 namespace UpgradeHelper
 {
-    bool upgradeFromUSB(const std::string& filePath);
-    bool upgradeFromDuet();
+	bool upgradeFromUSB(const std::string& filePath);
+	bool upgradeFromDuet();
 } // namespace UpgradeHelper

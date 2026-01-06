@@ -11,11 +11,11 @@
 
 namespace UI
 {
-    class Row : public LvContainer
-    {
-      public:
+	class Row : public LvContainer
+	{
+	  public:
 		Row(const std::string& name, LvObj& parent);
 
 	  private:
-    };
+	};
 } // namespace UI
