@@ -1,20 +1,16 @@
+add_subdirectory(generated)
+
 target_sources(
   DuetScreen.lib
   PRIVATE 
   ${CMAKE_CURRENT_SOURCE_DIR}/LvAnim.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvBar.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LvCheckbox.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvContainer.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvButtonMatrix.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvDropdown.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LvImage.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvKeyboard.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvLabel.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvImage.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvObj.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvCheckbox.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvArc.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvArcLabel.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvList.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvSlider.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvTextArea.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LvTextarea.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvXml.cpp
 )

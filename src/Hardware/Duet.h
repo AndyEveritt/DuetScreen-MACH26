@@ -125,17 +125,17 @@ namespace Comm
 		bool IsConnecting() const { return m_connectionState == ConnectionState::CONNECTING; }
 		bool IsSbcMode() const { return m_sbcMode; }
 
-		const std::string_view GetBaseUrl() const;
+		const std::string& GetBaseUrl() const;
 
 		void SetIPAddress(std::string_view ipAddress);
-		const std::string_view GetIPAddress() const;
+		const std::string& GetIPAddress() const;
 		void ClearIPAddress();
 
 		void SetHostname(std::string_view hostname);
-		const std::string_view GetHostname() const;
+		const std::string& GetHostname() const;
 
 		void SetPassword(std::string_view password);
-		const std::string_view GetPassword() const;
+		const std::string& GetPassword() const;
 
 		void SetSessionKey(const uint32_t sessionKey);
 

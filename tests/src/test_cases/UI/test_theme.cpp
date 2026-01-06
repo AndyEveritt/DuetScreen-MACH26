@@ -12,9 +12,9 @@
 #include "UI/Components/Graph/Graph.h"
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/LVGL/LvArc.h"
-#include "UI/Components/LVGL/LvArcLabel.h"
+#include "UI/Components/LVGL/LvArclabel.h"
 #include "UI/Components/LVGL/LvBar.h"
-#include "UI/Components/LVGL/LvButtonMatrix.h"
+#include "UI/Components/LVGL/LvButtonmatrix.h"
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvDropdown.h"
@@ -23,7 +23,7 @@
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvList.h"
 #include "UI/Components/LVGL/LvSlider.h"
-#include "UI/Components/LVGL/LvTextArea.h"
+#include "UI/Components/LVGL/LvTextarea.h"
 #include "UI/Components/MessageBox/AlertMessageBox.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Theme/ThemePreview.h"
@@ -128,8 +128,8 @@ TEST_F(TestTheme, Widgets)
 	bar.setWidth(col_width);
 	bar.setValue(40);
 
-	/* LvButtonMatrix */
-	LvButtonMatrix button_matrix("button_matrix", cont);
+	/* LvButtonmatrix */
+	LvButtonmatrix button_matrix("button_matrix", cont);
 	const char* btnm_map[] = {"Default", "Checked", "\0"};
 	const lv_buttonmatrix_ctrl_t btnm_ctrl_map[] = {
 		LV_BUTTONMATRIX_CTRL_WIDTH_1,
@@ -162,8 +162,8 @@ TEST_F(TestTheme, Widgets)
 	dropdown.setFlag(LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true); // so dropdown menu doesn't render over other widgets
 	dropdown.open();
 
-	/* LvTextArea */
-	LvTextArea text_area("text_area", cont);
+	/* LvTextarea */
+	LvTextarea text_area("text_area", cont);
 	text_area.setFlag(LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
 	text_area.setSize(col_width, LV_SIZE_CONTENT);
 	text_area.setText("This is a text area. You can type here.");
@@ -181,7 +181,7 @@ TEST_F(TestTheme, Widgets)
 	LvArc arc("arc", arc_cont);
 	arc.setSize(LV_PCT(40), LV_PCT(100));
 
-	LvArcLabel arc_label("arc_label", arc_cont);
+	LvArclabel arc_label("arc_label", arc_cont);
 	arc_label.setRadius(30);
 	arc_label.setAngleStart(270);
 	arc_label.setAngleSize(180);

@@ -56,7 +56,14 @@ namespace UI
 		}
 
 		setState(LV_STATE_DISABLED, disabled, true);
-		m_selection.setOptions(disabled ? std::vector<std::string>() : m_filamentOptions);
+		if (disabled)
+		{
+			m_selection.clearOptions();
+		}
+		else
+		{
+			m_selection.setOptions(m_filamentOptions);
+		}
 		// m_selection.setText(disabled ? "" : m_loadedFilament);
 	}
 
@@ -65,7 +72,7 @@ namespace UI
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
 		m_filamentOptions = options;
-		m_selection.setOptions(options);
+		m_selection.setOptions(m_filamentOptions);
 	}
 
 	void FilamentSelectDropdown::setFilamentSelected(const std::string& filament, bool forceUpdate)

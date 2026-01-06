@@ -39,7 +39,7 @@ namespace UI
 	// clang-format on
 
 	LvKeyboard::LvKeyboard(const std::string& name, LvObj& parent)
-		: LvObj(lv_keyboard_create, name, parent)
+		: LvKeyboardGen(name, parent)
 	{
 		UI_LOCK();
 
@@ -47,63 +47,15 @@ namespace UI
 		setMap(LV_KEYBOARD_MODE_TEXT_UPPER, default_kb_map_uc, default_kb_ctrl_lc_map);
 	}
 
-	void LvKeyboard::setTextArea(LvTextArea* textArea)
+	void LvKeyboard::setTextarea(LvTextarea* ta)
 	{
 		UI_LOCK();
-		lv_keyboard_set_textarea(getRootPtr(), textArea ? textArea->getRootPtr() : nullptr);
+		LvKeyboardGen::setTextarea(ta ? ta->getRootPtr() : nullptr);
 	}
 
-	void LvKeyboard::setMode(lv_keyboard_mode_t mode)
+	LvTextarea* LvKeyboard::getTextarea() const
 	{
 		UI_LOCK();
-		lv_keyboard_set_mode(getRootPtr(), mode);
-	}
-
-	void LvKeyboard::setPopovers(bool enable)
-	{
-		UI_LOCK();
-		lv_keyboard_set_popovers(getRootPtr(), enable);
-	}
-
-	void LvKeyboard::setMap(lv_keyboard_mode_t mode, const char* map[], const lv_buttonmatrix_ctrl_t ctrl_map[])
-	{
-		UI_LOCK();
-		lv_keyboard_set_map(getRootPtr(), mode, map, ctrl_map);
-	}
-
-	LvTextArea* LvKeyboard::getTextArea() const
-	{
-		UI_LOCK();
-		return static_cast<LvTextArea*>(LvObj::fromPtr(lv_keyboard_get_textarea(getRootPtr())));
-	}
-
-	lv_keyboard_mode_t LvKeyboard::getMode() const
-	{
-		UI_LOCK();
-		return lv_keyboard_get_mode(getRootPtr());
-	}
-
-	bool LvKeyboard::getPopovers() const
-	{
-		UI_LOCK();
-		return lv_keyboard_get_popovers(getRootPtr());
-	}
-
-	const char* const* LvKeyboard::getMapArray() const
-	{
-		UI_LOCK();
-		return lv_keyboard_get_map_array(getRootPtr());
-	}
-
-	uint32_t LvKeyboard::getSelectedButton() const
-	{
-		UI_LOCK();
-		return lv_buttonmatrix_get_selected_button(getRootPtr());
-	}
-
-	const char* LvKeyboard::getButtonText(uint32_t index) const
-	{
-		UI_LOCK();
-		return lv_buttonmatrix_get_button_text(getRootPtr(), index);
+		return static_cast<LvTextarea*>(LvObj::fromPtr(lv_keyboard_get_textarea(getRootPtr())));
 	}
 } // namespace UI

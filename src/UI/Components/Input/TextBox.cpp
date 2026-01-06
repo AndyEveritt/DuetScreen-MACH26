@@ -37,32 +37,32 @@ namespace UI
 		m_label.setMaxWidth(LV_PCT(50));
 		setLabel("");
 
-		// TextArea
-		m_textArea.setSize(LV_PCT(100), LV_PCT(100));
-		m_textArea.setMinHeight(LV_SIZE_CONTENT);
-		// m_textArea.setMinHeight(20);
-		m_textArea.setFlexGrow(1);
-		m_textArea.setCursorClickPos(true);
-		m_textArea.addEventCallback(
+		// Textarea
+		m_textarea.setSize(LV_PCT(100), LV_PCT(100));
+		m_textarea.setMinHeight(LV_SIZE_CONTENT);
+		// m_textarea.setMinHeight(20);
+		m_textarea.setFlexGrow(1);
+		m_textarea.setCursorClickPos(true);
+		m_textarea.addEventCallback(
 			[this](lv_event_t*)
 			{
 				if (m_keyboard)
 				{
-					m_keyboard->setTextArea(&m_textArea);
+					m_keyboard->setTextarea(&m_textarea);
 				}
 				else if (m_numberPad)
 				{
 					switch (m_mode)
 					{
 					case Mode::TEXT:
-						m_numberPad->setConfirmCallback([this](std::string_view text) { setText(text); });
+						m_numberPad->setConfirmCallback([this](std::string_view text) { setText(std::string(text)); });
 						break;
 					case Mode::NUMBER:
 						m_numberPad->setConfirmCallback([this](float value) { setText(fmt::format("{:g}", value)); });
 						break;
 					}
-					m_numberPad->setText(m_textArea.getText());
-					m_textArea.sendEvent(LV_EVENT_DEFOCUSED); // stop cursor blinking
+					m_numberPad->setText(std::string(m_textarea.getText()));
+					m_textarea.sendEvent(LV_EVENT_DEFOCUSED); // stop cursor blinking
 					openModal(m_numberPad);
 				}
 			},
@@ -80,9 +80,9 @@ namespace UI
 				UI_LOCK();
 				TextBox* tb = static_cast<TextBox*>(lv_event_get_user_data(e));
 
-				bool passwordMode = tb->m_textArea.getPasswordModeEnabled();
+				bool passwordMode = tb->m_textarea.getPasswordMode();
 				tb->showPassword(passwordMode);
-				// lv_group_focus_obj(tb->m_textArea);
+				// lv_group_focus_obj(tb->m_textarea);
 			},
 			this);
 	}
@@ -92,51 +92,51 @@ namespace UI
 		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, label.empty());
 		m_label.setText(label);
 	}
-	void TextBox::setText(std::string_view text)
+	void TextBox::setText(const std::string& text)
 	{
-		m_textArea.setText(text);
-		m_textArea.setCursorPos(0);
-		m_textArea.scrollToX(0, LV_ANIM_OFF);
+		m_textarea.setText(text);
+		m_textarea.setCursorPos(0);
+		m_textarea.scrollToX(0, LV_ANIM_OFF);
 		sendEvent(LV_EVENT_VALUE_CHANGED);
 	}
 	std::string_view TextBox::getText() const
 	{
-		return m_textArea.getText();
+		return m_textarea.getText();
 	}
 
 	void TextBox::addChar(uint32_t c)
 	{
-		m_textArea.addChar(c);
+		m_textarea.addChar(c);
 	}
 
 	void TextBox::addText(const std::string& text)
 	{
-		m_textArea.addText(text);
+		m_textarea.addText(text);
 	}
 
 	void TextBox::deleteChar()
 	{
-		m_textArea.deleteChar();
+		m_textarea.deleteChar();
 	}
 
 	void TextBox::deleteCharForward()
 	{
-		m_textArea.deleteCharForward();
+		m_textarea.deleteCharForward();
 	}
 
 	void TextBox::setPlaceholderText(const std::string& text)
 	{
-		m_textArea.setPlaceholderText(text);
+		m_textarea.setPlaceholderText(text);
 	}
 
 	void TextBox::setCursorPos(uint32_t pos)
 	{
-		m_textArea.setCursorPos(pos);
+		m_textarea.setCursorPos(pos);
 	}
 
 	void TextBox::setCursorClickPos(bool clickPos)
 	{
-		m_textArea.setCursorClickPos(clickPos);
+		m_textarea.setCursorClickPos(clickPos);
 	}
 
 	void TextBox::setPasswordMode(bool passwordMode)
@@ -144,17 +144,17 @@ namespace UI
 		m_passwordMode = passwordMode;
 		m_showPassword.setChecked(false);
 		m_showPassword.setVisible(passwordMode);
-		m_textArea.setPasswordMode(passwordMode);
+		m_textarea.setPasswordMode(passwordMode);
 	}
 
 	void TextBox::setPasswordBullet(const char* bullet)
 	{
-		m_textArea.setPasswordBullet(bullet);
+		m_textarea.setPasswordBullet(bullet);
 	}
 
 	void TextBox::setPasswordShowTime(uint32_t time)
 	{
-		m_textArea.setPasswordShowTime(time);
+		m_textarea.setPasswordShowTime(time);
 	}
 
 	void TextBox::showPassword(bool show)
@@ -162,117 +162,118 @@ namespace UI
 		UI_LOCK();
 		if (!m_passwordMode)
 			return;
-		m_textArea.setPasswordMode(!show);
+		m_textarea.setPasswordMode(!show);
 		m_showPassword.setChecked(show);
 	}
 
 	void TextBox::setOneLine(bool oneLine)
 	{
-		m_textArea.setOneLine(oneLine);
+		m_textarea.setOneLine(oneLine);
 	}
 	void TextBox::setAcceptedChars(const char* chars)
 	{
-		m_textArea.setAcceptedChars(chars);
+		m_textarea.setAcceptedChars(chars);
 	}
 	void TextBox::setMaxLength(uint32_t length)
 	{
-		m_textArea.setMaxLength(length);
+		m_textarea.setMaxLength(length);
 	}
 
 	void TextBox::setTextSelection(bool enable)
 	{
-		m_textArea.setTextSelection(enable);
+		m_textarea.setTextSelection(enable);
 	}
 
 	const char* TextBox::getPlaceholderText() const
 	{
-		return m_textArea.getPlaceholderText();
+		return m_textarea.getPlaceholderText();
 	}
 
 	uint32_t TextBox::getCursorPos() const
 	{
-		return m_textArea.getCursorPos();
+		return m_textarea.getCursorPos();
 	}
 
 	bool TextBox::getCursorClickPosEnabled() const
 	{
-		return m_textArea.getCursorClickPosEnabled();
+		return m_textarea.getCursorClickPos();
 	}
 
 	bool TextBox::getPasswordModeEnabled() const
 	{
-		return m_textArea.getPasswordModeEnabled();
+		return m_textarea.getPasswordMode();
 	}
 
 	const char* TextBox::getPasswordBullet() const
 	{
-		return m_textArea.getPasswordBullet();
+		return m_textarea.getPasswordBullet();
 	}
 
 	bool TextBox::getOneLineEnabled() const
 	{
-		return m_textArea.getOneLineEnabled();
+		return m_textarea.getOneLine();
 	}
 
 	const char* TextBox::getAcceptedChars() const
 	{
-		return m_textArea.getAcceptedChars();
+		return m_textarea.getAcceptedChars();
 	}
 
 	uint32_t TextBox::getMaxLength() const
 	{
-		return m_textArea.getMaxLength();
+		return m_textarea.getMaxLength();
 	}
 
 	bool TextBox::isTextSelected() const
 	{
-		return m_textArea.isTextSelected();
+		// because of lvgl API naming this isn't marked as const by the generator so we const_cast
+		return const_cast<TextBox*>(this)->m_textarea.textIsSelected();
 	}
 
 	bool TextBox::getTextSelectionEnabled() const
 	{
-		return m_textArea.getTextSelectionEnabled();
+		return m_textarea.getTextSelection();
 	}
 
 	uint32_t TextBox::getPasswordShowTime() const
 	{
-		return m_textArea.getPasswordShowTime();
+		return m_textarea.getPasswordShowTime();
 	}
 
 	uint32_t TextBox::getCurrentChar() const
 	{
-		return m_textArea.getCurrentChar();
+		return m_textarea.getCurrentChar();
 	}
 
 	void TextBox::clearSelection()
 	{
-		m_textArea.clearSelection();
+		m_textarea.clearSelection();
 	}
 
 	void TextBox::cursorRight()
 	{
-		m_textArea.cursorRight();
+		m_textarea.cursorRight();
 	}
 
 	void TextBox::cursorLeft()
 	{
-		m_textArea.cursorLeft();
+		m_textarea.cursorLeft();
 	}
 
 	void TextBox::cursorUp()
 	{
-		m_textArea.cursorUp();
+		m_textarea.cursorUp();
 	}
 
 	void TextBox::cursorDown()
 	{
-		m_textArea.cursorDown();
+		m_textarea.cursorDown();
 	}
 
 	void TextBox::addConfirmEventCallback(std::function<void(lv_event_t*)> cb)
 	{
 		UI_LOCK();
-		m_textArea.addEventCallback(
+		m_textarea.addEventCallback(
 			[cb](lv_event_t* e)
 			{
 				UI_LOCK();

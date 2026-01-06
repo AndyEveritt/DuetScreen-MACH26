@@ -171,7 +171,7 @@ namespace UI
 		return static_cast<float>(atof(m_textBox.getText().data()));
 	}
 
-	void NumberPad::setText(std::string_view text)
+	void NumberPad::setText(const std::string& text)
 	{
 		m_textBox.setText(text);
 		m_textBox.setCursorPos(LV_TEXTAREA_CURSOR_LAST);

@@ -276,6 +276,15 @@
                 "${input:gtest_filter}",
                 "--skip_configure"
             ]
+        },
+        {
+            "name": "Python: LVGL Wrapper Generator",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "scripts/generate_lvgl_wrappers.py",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
+            // "args": "--widgets tabview"
         }
     ],
 }

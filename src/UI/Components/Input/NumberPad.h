@@ -9,7 +9,7 @@
 
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/TextBox.h"
-#include "UI/Components/LVGL/LvButtonMatrix.h"
+#include "UI/Components/LVGL/LvButtonmatrix.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Core/View.h"
 #include <variant>
@@ -42,7 +42,7 @@ namespace UI
 		void setRange(float minValue, float maxValue);
 		void setValue(float value);
 		float getValue() const;
-		void setText(std::string_view text);
+		void setText(const std::string& text);
 		std::string_view getText() const;
 		bool validateInput();
 		void setConfirmIsAction(bool isAction);
@@ -61,7 +61,7 @@ namespace UI
 		LvContainer m_textCont{"textcont", getRoot()};
 		TextBox m_textBox{"textarea", m_textCont};
 		Button m_clearBtn{"Clear", m_textCont, LV_SYMBOL_TRASH, layout_t(75, 0, 20, 80)};
-		LvButtonMatrix m_btnMatrix{"btnmatrix", getRoot()};
+		LvButtonmatrix m_btnMatrix{"btnmatrix", getRoot()};
 
 		confirm_cb_t m_confirmCb = std::nullopt;
 

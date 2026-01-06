@@ -39,7 +39,7 @@ namespace UI
 		m_serialInput.setFlexGrow(1);
 		m_serialInput.setCursorClickPos(true);
 		m_kb.setSize(LV_PCT(100), LV_PCT(50));
-		m_kb.setTextArea(&m_serialInput.getTextArea());
+		m_kb.setTextarea(&m_serialInput.getTextarea());
 		m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
 
 		m_kb.addEventCallback(
@@ -246,7 +246,7 @@ namespace UI
 		m_message.setText(message);
 	}
 
-	void HardwareTest::CommandTest::setOutput(std::string_view output)
+	void HardwareTest::CommandTest::setOutput(const std::string& output)
 	{
 		m_output.setText(output);
 	}
@@ -441,7 +441,7 @@ namespace UI
 		m_failed.clear();
 	}
 
-	void HardwareTest::TestResults::addResult(std::string_view name, std::string_view output, bool passed)
+	void HardwareTest::TestResults::addResult(std::string_view name, const std::string& output, bool passed)
 	{
 		auto& list = passed ? m_passed : m_failed;
 		auto& item = list.addItem();
@@ -472,7 +472,7 @@ namespace UI
 		m_name.setText(name);
 	}
 
-	void HardwareTest::TestResults::TestResult::setOutput(std::string_view output)
+	void HardwareTest::TestResults::TestResult::setOutput(const std::string& output)
 	{
 		m_output.setText(output);
 	}

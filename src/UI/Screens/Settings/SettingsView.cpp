@@ -17,7 +17,7 @@
 
 namespace UI
 {
-	static void onTextAreaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode);
+	static void onTextareaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode);
 
 	SettingsView::SettingsView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
@@ -155,7 +155,10 @@ namespace UI
 		/* Language */
 		createRow(_("settings.language"), m_language);
 		m_language.setHeight(LV_SIZE_CONTENT);
-		m_language.setOptions(_("settings.language_en"));
+		{
+			std::array languages = {_("settings.language_en")};
+			m_language.setOptions(languages);
+		}
 
 		/* Brightness */
 		createRow(_("settings.brightness"), m_brightness);
@@ -266,8 +269,14 @@ namespace UI
 		/* USB mode */
 		createRow(_("settings.usb_mode"), m_usbMode);
 		m_usbMode.setHeight(LV_SIZE_CONTENT);
-		m_usbMode.setOptions(
-			{_("settings.usb_mode_host"), _("settings.usb_mode_device"), _("settings.usb_mode_internal_wifi")});
+		{
+			std::array usbModeOptions = {
+				_("settings.usb_mode_host"),
+				_("settings.usb_mode_device"),
+				_("settings.usb_mode_internal_wifi"),
+			};
+			m_usbMode.setOptions(usbModeOptions);
+		}
 		m_usbMode.setSelectedCallback([this](uint32_t index, std::string_view /* option */)
 									  { setUsbMode(Comm::UsbMode(index)); });
 
@@ -286,7 +295,7 @@ namespace UI
 		m_duetIpAddress.setPlaceholderText(_("settings.duet_ip_address_prompt"));
 		m_duetIpAddress.setAcceptedChars("0123456789.");
 #if USE_MODAL_NUMBERPAD_FOR_IP_ADDRESS
-		m_duetIpAddress.getTextArea().addEventCallback(
+		m_duetIpAddress.getTextarea().addEventCallback(
 			[this](lv_event_t*)
 			{
 				if (auto np = m_duetIpAddress.getNumberPad())
@@ -296,8 +305,8 @@ namespace UI
 			},
 			LV_EVENT_CLICKED);
 #else
-		m_duetIpAddress.getTextArea().addEventCallback(
-			[this](lv_event_t* e) { onTextAreaEvent(e, m_duetIpAddress, LV_KEYBOARD_MODE_NUMBER); }, LV_EVENT_ALL);
+		m_duetIpAddress.getTextarea().addEventCallback(
+			[this](lv_event_t* e) { onTextareaEvent(e, m_duetIpAddress, LV_KEYBOARD_MODE_NUMBER); }, LV_EVENT_ALL);
 #endif
 
 // A bit gross but the callback is the same and this way it means it can't accidentally do different things if updated
@@ -319,8 +328,8 @@ namespace UI
 		m_duetPassword.setOneLine(true);
 		m_duetPassword.setPlaceholderText(_("settings.duet_password_prompt"));
 		m_duetPassword.setPasswordMode(true);
-		m_duetPassword.getTextArea().addEventCallback(
-			[this](lv_event_t* e) { onTextAreaEvent(e, m_duetPassword, LV_KEYBOARD_MODE_TEXT_LOWER); }, LV_EVENT_ALL);
+		m_duetPassword.getTextarea().addEventCallback(
+			[this](lv_event_t* e) { onTextareaEvent(e, m_duetPassword, LV_KEYBOARD_MODE_TEXT_LOWER); }, LV_EVENT_ALL);
 		m_duetPassword.addConfirmEventCallback([this](lv_event_t*)
 											   { Comm::DUET.SetPassword(m_duetPassword.getText()); });
 
@@ -574,7 +583,7 @@ namespace UI
 		m_systemLogging.setChecked(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
 	}
 
-	static void onTextAreaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode)
+	static void onTextareaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode)
 	{
 		UI_LOCK();
 

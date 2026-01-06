@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "UI/Components/Button/DraggableButton.h"
-#include "UI/Components/LVGL/LvArcLabel.h"
-#include "UI/Core/View.h"
 #include "EStopPresenter.h"
+#include "UI/Components/Button/DraggableButton.h"
+#include "UI/Components/LVGL/LvArclabel.h"
+#include "UI/Core/View.h"
 
 namespace UI
 {
@@ -22,6 +22,6 @@ namespace UI
 	  private:
 		static void eStopDraggedEvent(float pct, void* user_data);
 
-		LvArcLabel m_label{"label", getRoot()};
+		LvArclabel m_label{"label", getRoot()};
 	};
 } // namespace UI

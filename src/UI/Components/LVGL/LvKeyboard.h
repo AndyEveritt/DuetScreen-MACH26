@@ -7,27 +7,19 @@
 
 #pragma once
 
-#include "UI/Components/LVGL/LvObj.h"
-#include "UI/Components/LVGL/LvTextArea.h"
+#include "UI/Components/LVGL/LvTextarea.h"
+#include "UI/Components/LVGL/generated/LvKeyboard.gen.h"
 
 namespace UI
 {
 
-	class LvKeyboard : public LvObj
+	class LvKeyboard : public LvKeyboardGen
 	{
 	  public:
 		LvKeyboard(const std::string& name, LvObj& parent);
 
-		void setTextArea(LvTextArea* textArea);
-		void setMode(lv_keyboard_mode_t mode);
-		void setPopovers(bool enable);
-		void setMap(lv_keyboard_mode_t mode, const char* map[], const lv_buttonmatrix_ctrl_t ctrl_map[]);
-		LvTextArea* getTextArea() const;
-		lv_keyboard_mode_t getMode() const;
-		bool getPopovers() const;
-		const char* const* getMapArray() const;
-		uint32_t getSelectedButton() const;
-		const char* getButtonText(uint32_t index) const;
+		void setTextarea(LvTextarea* ta);
+		LvTextarea* getTextarea() const;
 
 	  private:
 	};

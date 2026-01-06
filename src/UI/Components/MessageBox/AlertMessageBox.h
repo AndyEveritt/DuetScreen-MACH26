@@ -12,7 +12,7 @@
 #include "ObjectModel/Axis.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
-#include "UI/Components/LVGL/LvTextArea.h"
+#include "UI/Components/LVGL/LvTextarea.h"
 #include "UI/Components/List/List.h"
 #include <functional>
 #include <map>
@@ -67,7 +67,7 @@ namespace UI
 		void setWarningText(std::string_view format);
 		void setInput(int32_t val);
 		void setInput(float val);
-		void setInput(std::string_view text);
+		void setInput(const std::string& text);
 
 		void selectionVisible(bool visible);
 		void inputVisible(bool visible);
@@ -120,7 +120,7 @@ namespace UI
 		LvLabel m_warningText;
 		LvLabel m_minText;
 		LvLabel m_maxText;
-		LvTextArea m_input;
+		LvTextarea m_input;
 
 		LvKeyboard* m_kb; // Keyboard
 

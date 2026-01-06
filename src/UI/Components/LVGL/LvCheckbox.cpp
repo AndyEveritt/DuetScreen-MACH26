@@ -16,45 +16,21 @@ namespace UI
 	 * - Locks UI mutex during creation
 	 */
 	LvCheckbox::LvCheckbox(const std::string& name, LvObj& parent)
-		: LvObj(lv_checkbox_create, name, parent)
+		: LvCheckboxGen(name, parent)
 	{
 		UI_LOCK();
 
 		setText("");
 
 		addEventCallback(
-			[](lv_event_t* e)
+			[this](lv_event_t*)
 			{
-				auto checkbox = static_cast<LvCheckbox*>(lv_event_get_user_data(e));
-				if (checkbox->m_checkedCallback)
+				if (m_checkedCallback)
 				{
-					checkbox->m_checkedCallback(checkbox->getChecked());
+					m_checkedCallback(getChecked());
 				}
 			},
-			LV_EVENT_VALUE_CHANGED,
-			this);
-	}
-
-	/**
-	 * Set the text of the checkbox. The text is copied by LVGL and can be freed after the call.
-	 * Equivalent to lv_checkbox_set_text.
-	 * @param txt The text to display
-	 */
-	void LvCheckbox::setText(std::string_view txt)
-	{
-		UI_LOCK();
-		lv_checkbox_set_text(getRootPtr(), txt.data());
-	}
-
-	/**
-	 * Set the text of the checkbox using a static string. The pointer must remain valid
-	 * for the lifetime of the checkbox. Equivalent to lv_checkbox_set_text_static.
-	 * @param txt The static string pointer to use as label text.
-	 */
-	void LvCheckbox::setTextStatic(const char* txt)
-	{
-		UI_LOCK();
-		lv_checkbox_set_text_static(getRootPtr(), txt);
+			LV_EVENT_VALUE_CHANGED);
 	}
 
 	void LvCheckbox::setChecked(bool checked)
@@ -74,17 +50,6 @@ namespace UI
 	{
 		UI_LOCK();
 		m_checkedCallback = cb;
-	}
-
-	/**
-	 * Get the text associated with the checkbox.
-	 * Equivalent to lv_checkbox_get_text.
-	 * @return const char* Pointer to the internal text buffer managed by LVGL.
-	 */
-	std::string_view LvCheckbox::getText() const
-	{
-		UI_LOCK();
-		return lv_checkbox_get_text(getRootPtr());
 	}
 
 	bool LvCheckbox::getChecked() const

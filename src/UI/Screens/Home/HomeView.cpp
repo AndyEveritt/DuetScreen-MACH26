@@ -91,7 +91,7 @@ namespace UI
 			[this](lv_event_t*)
 			{
 				m_kb.hide();
-				if (auto ta = m_kb.getTextArea())
+				if (auto ta = m_kb.getTextarea())
 					ta->sendEvent(LV_EVENT_DEFOCUSED);
 			},
 			LV_EVENT_CANCEL);

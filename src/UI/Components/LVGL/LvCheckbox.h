@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "UI/Components/LVGL/LvObj.h"
+#include "UI/Components/LVGL/generated/LvCheckbox.gen.h"
 
 namespace UI
 {
-	class LvCheckbox : public LvObj
+	class LvCheckbox : public LvCheckboxGen
 	{
 	  public:
 		using checked_callback_t = std::function<void(bool)>;
@@ -20,13 +20,13 @@ namespace UI
 		LvCheckbox(const std::string& name, LvObj& parent);
 
 		// Setters
-		void setText(std::string_view txt);
-		void setTextStatic(const char* txt);
+		void setText(const std::string& text) { LvCheckboxGen::setText(text.c_str()); }
+		void setTextStatic(const std::string& text) { LvCheckboxGen::setTextStatic(text.c_str()); }
 		void setChecked(bool checked);
 		void setCheckedCallback(checked_callback_t cb);
 
 		// Getters
-		std::string_view getText() const;
+		std::string_view getText() const { return LvCheckboxGen::getText(); }
 		bool getChecked() const;
 
 	  private:

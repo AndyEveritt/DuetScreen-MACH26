@@ -1130,7 +1130,7 @@ namespace Comm
 		return ret;
 	}
 
-	const std::string_view Duet::GetBaseUrl() const
+	const std::string& Duet::GetBaseUrl() const
 	{
 		ZoneScoped;
 		if (!m_config.ipAddress.empty())
@@ -1186,7 +1186,7 @@ namespace Comm
 		saveConfig();
 	}
 
-	const std::string_view Duet::GetIPAddress() const
+	const std::string& Duet::GetIPAddress() const
 	{
 		ZoneScoped;
 		return m_config.ipAddress;
@@ -1233,7 +1233,7 @@ namespace Comm
 		saveConfig();
 	}
 
-	const std::string_view Duet::GetHostname() const
+	const std::string& Duet::GetHostname() const
 	{
 		ZoneScoped;
 		return m_config.hostname;
@@ -1246,7 +1246,7 @@ namespace Comm
 		saveConfig();
 	}
 
-	const std::string_view Duet::GetPassword() const
+	const std::string& Duet::GetPassword() const
 	{
 		ZoneScoped;
 		return m_config.password;

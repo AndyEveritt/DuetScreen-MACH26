@@ -11,7 +11,7 @@
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvObj.h"
-#include "UI/Components/LVGL/LvTextArea.h"
+#include "UI/Components/LVGL/LvTextarea.h"
 
 namespace UI
 {
@@ -30,9 +30,9 @@ namespace UI
 		TextBox(const std::string& name, LvObj& parent, layout_t layout);
 
 		void setLabel(const std::string& label);
-		void setText(std::string_view text);
+		void setText(const std::string& text);
 		std::string_view getText() const;
-		LvTextArea& getTextArea() { return m_textArea; }
+		LvTextarea& getTextarea() { return m_textarea; }
 
 		void addChar(uint32_t c);
 		void addText(const std::string& text);
@@ -85,7 +85,7 @@ namespace UI
 		void init();
 
 		LvLabel m_label{"label", getRoot()};
-		LvTextArea m_textArea{"textarea", getRoot()};
+		LvTextarea m_textarea{"textarea", getRoot()};
 		Button m_showPassword{"show_password", getRoot(), LV_SYMBOL_EYE_OPEN};
 
 		LvKeyboard* m_keyboard = nullptr;

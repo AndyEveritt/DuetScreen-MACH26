@@ -5,7 +5,7 @@
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
-#include "UI/Components/LVGL/LvTextArea.h"
+#include "UI/Components/LVGL/LvTextarea.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -40,9 +40,9 @@ namespace UI
 		LvContainer m_topCont{"top_cont", getRoot()};
 		LvObj m_commandList{lv_table_create, "command_list", m_topCont};
 		Button m_commandVisibility{"command_visibility", m_topCont, LV_SYMBOL_LIST};
-		LvTextArea m_output{"output", m_topCont};
+		LvTextarea m_output{"output", m_topCont};
 		LvContainer m_inputCont{"input_cont", getRoot()};
-		LvTextArea m_input{"input", m_inputCont};
+		LvTextarea m_input{"input", m_inputCont};
 		Button m_clear{"clear", m_inputCont};
 		Button m_enter{"enter", m_inputCont};
 		LvKeyboard m_kb{"keyboard", getRoot()};

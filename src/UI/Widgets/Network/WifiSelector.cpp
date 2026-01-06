@@ -48,7 +48,7 @@ namespace UI
 			});
 		m_passwordModal.setOkCallback([this]()
 									  { getPresenter()->connectToNetwork(m_pendingSsid, m_passwordInput.getText()); });
-		m_passwordInput.getTextArea().addEventCallback(
+		m_passwordInput.getTextarea().addEventCallback(
 			[this](lv_event_t* e)
 			{
 				if (auto kb = m_passwordInput.getKeyboard())
@@ -94,7 +94,7 @@ namespace UI
 										else
 										{
 											openPasswordModal(ssid);
-											m_passwordInput.getTextArea().sendEvent(LV_EVENT_CLICKED);
+											m_passwordInput.getTextarea().sendEvent(LV_EVENT_CLICKED);
 										}
 									},
 									LV_EVENT_CLICKED);

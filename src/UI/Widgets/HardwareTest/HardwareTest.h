@@ -87,14 +87,14 @@ namespace UI
 			CommandTest(HardwareTest& parent);
 
 			void setMessage(std::string_view message);
-			void setOutput(std::string_view output);
+			void setOutput(const std::string& output);
 			void appendOutput(std::string_view output);
 
 			std::string_view getOutput() const { return m_output.getText(); }
 
 		  protected:
 			LvLabel m_message{"message", getRoot()};
-			LvTextArea m_output{"output", getRoot()};
+			LvTextarea m_output{"output", getRoot()};
 
 			HardwareTest& m_parent;
 		};
@@ -152,17 +152,17 @@ namespace UI
 				TestResult(size_t index, LvObj& parent);
 
 				void setName(std::string_view name);
-				void setOutput(std::string_view output);
+				void setOutput(const std::string& output);
 				void setPassed(bool passed);
 
 			  private:
 				LvLabel m_name{"name", getRoot()};
-				LvTextArea m_output{"output", getRoot()};
+				LvTextarea m_output{"output", getRoot()};
 			};
 
 			TestResults(HardwareTest& parent);
 
-			void addResult(std::string_view name, std::string_view output, bool passed);
+			void addResult(std::string_view name, const std::string& output, bool passed);
 			void clearResults();
 
 		  private:

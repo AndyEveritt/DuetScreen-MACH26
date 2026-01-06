@@ -66,7 +66,7 @@ namespace UI
 	{
 		m_dropdown.setText(text);
 	}
-	const std::string& DropdownMenu::getText() const
+	std::string_view DropdownMenu::getText() const
 	{
 		return m_dropdown.getText();
 	}
@@ -76,12 +76,7 @@ namespace UI
 		m_dropdown.clearText();
 	}
 
-	void DropdownMenu::setOptions(const std::string& options)
-	{
-		m_dropdown.setOptions(options);
-	}
-
-	void DropdownMenu::setOptions(const std::vector<std::string>& options)
+	void DropdownMenu::setOptions(std::span<std::string> options)
 	{
 		m_dropdown.setOptions(options);
 	}
@@ -121,7 +116,7 @@ namespace UI
 		m_dropdown.setSelectedHighlight(en);
 	}
 
-	const char* DropdownMenu::getOptions() const
+	std::string_view DropdownMenu::getOptions() const
 	{
 		return m_dropdown.getOptions();
 	}

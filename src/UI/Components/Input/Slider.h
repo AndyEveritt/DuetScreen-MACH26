@@ -13,7 +13,7 @@
 #include "UI/Components/LVGL/LvKeyboard.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvSlider.h"
-#include "UI/Components/LVGL/LvTextArea.h"
+#include "UI/Components/LVGL/LvTextarea.h"
 #include "UI/Core/View.h"
 #include <functional>
 
@@ -46,7 +46,7 @@ namespace UI
 		float getValue() const { return m_value; }
 		float getMin() const { return m_min; }
 		float getMax() const { return m_max; }
-		LvTextArea& getInput() { return m_input; }
+		LvTextarea& getInput() { return m_input; }
 		ModalNumberPad* getNumberPad() const { return m_numberPad; }
 
 		bool isFocused() const { return m_focused; }
@@ -83,7 +83,7 @@ namespace UI
 		Button m_decrement{"decrement", m_sliderCont};
 		LvSlider m_slider{"slider", m_sliderCont};
 		Button m_increment{"increment", m_sliderCont};
-		LvTextArea m_input{"input", m_sliderCont};
+		LvTextarea m_input{"input", m_sliderCont};
 		Button m_reset{"reset", getRoot()};
 
 		float m_incrementValue = 1;

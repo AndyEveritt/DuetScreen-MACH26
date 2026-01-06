@@ -93,7 +93,7 @@ namespace UI
 
 		if (m_kb)
 		{
-			m_kb->setTextArea(&m_input);
+			m_kb->setTextarea(&m_input);
 		}
 	}
 
@@ -368,7 +368,7 @@ namespace UI
 		m_input.setText(buf);
 	}
 
-	void AlertMessageBox::setInput(std::string_view text)
+	void AlertMessageBox::setInput(const std::string& text)
 	{
 		UI_LOCK();
 		m_input.setText(text);
@@ -410,7 +410,7 @@ namespace UI
 		case LV_EVENT_FOCUSED:
 			if (msgBox->m_kb)
 			{
-				msgBox->m_kb->setTextArea(&msgBox->m_input);
+				msgBox->m_kb->setTextarea(&msgBox->m_input);
 			}
 			if (msgBox->m_showKeyboardCb)
 			{
@@ -420,7 +420,7 @@ namespace UI
 		case LV_EVENT_DEFOCUSED:
 			if (msgBox->m_kb)
 			{
-				msgBox->m_kb->setTextArea(nullptr);
+				msgBox->m_kb->setTextarea(nullptr);
 			}
 			if (msgBox->m_showKeyboardCb)
 			{

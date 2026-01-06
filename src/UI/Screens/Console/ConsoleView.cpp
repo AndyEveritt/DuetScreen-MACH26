@@ -186,7 +186,7 @@ namespace UI
 
 	void ConsoleView::showKeyboard(bool show)
 	{
-		m_kb.setTextArea(show ? &m_input : nullptr);
+		m_kb.setTextarea(show ? &m_input : nullptr);
 		m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
 		m_kb.setVisible(show, true);
 	}

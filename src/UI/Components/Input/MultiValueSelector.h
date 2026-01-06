@@ -48,7 +48,7 @@ namespace UI
 		LvLabel m_label{"label", getRoot()};
 		LvContainer m_topRow{"topRow", getRoot()};
 		Button m_decrementBtn{"decrement", m_topRow};
-		LvTextArea m_valueDisplay{"valueDisplay", m_topRow};
+		LvTextarea m_valueDisplay{"valueDisplay", m_topRow};
 		Button m_incrementBtn{"increment", m_topRow};
 		List<Button> m_valueBtns{"values", getRoot()};
 

@@ -23,13 +23,12 @@ namespace UI
 
 		void setLabel(const std::string& label);
 		void setText(const std::string& text);
-		const std::string& getText() const;
+		std::string_view getText() const;
 		void clearText();
 		LvLabel& getLabel() { return m_label; }
 		LvDropdown& getDropdownMenu() { return m_dropdown; }
 
-		void setOptions(const std::string& options);
-		void setOptions(const std::vector<std::string>& options);
+		void setOptions(std::span<std::string> options);
 		void addOption(const std::string& option, uint32_t pos = LV_DROPDOWN_POS_LAST);
 		void clearOptions();
 		void setSelected(uint32_t selected);
@@ -38,7 +37,7 @@ namespace UI
 		void setSymbol(const void* symbol);
 		void setSelectedHighlight(bool en);
 
-		const char* getOptions() const;
+		std::string_view getOptions() const;
 		uint32_t getSelected() const;
 		uint32_t getOptionCount() const;
 		std::string getSelectedString() const;
