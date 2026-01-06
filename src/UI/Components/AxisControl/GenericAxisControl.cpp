@@ -119,7 +119,7 @@ namespace UI
 		UI_LOCK();
 		auto* control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
 
-		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+		lv_obj_t* target = lv_event_get_target_obj(event);
 		bool forward = target == control->m_decrementButton.getButton() ? false : true;
 		if (control && control->m_positionCallback && control->m_axisLetter != '\0')
 		{

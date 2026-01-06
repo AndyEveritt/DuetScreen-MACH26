@@ -1,7 +1,7 @@
 /*
  * LvMsgbox.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,83 +15,136 @@ namespace UI
 
     #if LV_USE_MSGBOX
 
-    class LvMsgboxGen : public LvObj
+    class LvMsgbox;
+
+    template <typename Derived>
+    class LvMsgboxMethodsGen
     {
       public:
-        LvMsgboxGen(const std::string& name, LvObj& parent);
-
         /**
          * Add title to the message box. It also creates a header for the title.
          * @param title         the text of the tile
          * @return              the created title label
          */
-        lv_obj_t * addTitle(const char * title);
+        lv_obj_t * addTitle(const char * title) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_add_title(static_cast<Derived*>(this)->getRootPtr(), title);
+        }
 
         /**
          * Add a button to the header of to the message box. It also creates a header.
          * @param icon          the icon of the button
          * @return              the created button
          */
-        lv_obj_t * addHeaderButton(const void * icon);
+        lv_obj_t * addHeaderButton(const void * icon) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_add_header_button(static_cast<Derived*>(this)->getRootPtr(), icon);
+        }
 
         /**
          * Add a text to the content area of message box. Multiple texts will be created below each other.
          * @param text          text to add
          * @return              the created button
          */
-        lv_obj_t * addText(const char * text);
+        lv_obj_t * addText(const char * text) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_add_text(static_cast<Derived*>(this)->getRootPtr(), text);
+        }
 
         /**
          * Add a button to the footer of to the message box. It also creates a footer.
          * @param text          the text of the button
          * @return              the created button
          */
-        lv_obj_t * addFooterButton(const char * text);
+        lv_obj_t * addFooterButton(const char * text) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_add_footer_button(static_cast<Derived*>(this)->getRootPtr(), text);
+        }
 
         /**
          * Add a close button to the message box. It also creates a header.
          * @return              the created close button
          */
-        lv_obj_t * addCloseButton();
+        lv_obj_t * addCloseButton() requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_add_close_button(static_cast<Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the header widget
          * @return              the header, or NULL if not exists
          */
-        lv_obj_t * getHeader() const;
+        lv_obj_t * getHeader() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_get_header(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the footer widget
          * @return              the footer, or NULL if not exists
          */
-        lv_obj_t * getFooter() const;
+        lv_obj_t * getFooter() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_get_footer(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the content widget
          * @return              the content
          */
-        lv_obj_t * getContent() const;
+        lv_obj_t * getContent() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_get_content(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the title label
          * @return              the title, or NULL if it does not exist
          */
-        lv_obj_t * getTitle() const;
+        lv_obj_t * getTitle() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_msgbox_get_title(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Close a message box
          * @param mbox           pointer to a message box
          */
-        void close();
+        void close() requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_msgbox_close(static_cast<Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Close a message box in the next call of the message box
          * @param mbox           pointer to a message box
          */
-        void closeAsync();
+        void closeAsync() requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_msgbox_close_async(static_cast<Derived*>(this)->getRootPtr());
+        }
 
+    };
 
-      private:
+    class LvMsgboxGen : public LvObj, public LvMsgboxMethodsGen<LvMsgbox>
+    {
+      public:
+        LvMsgboxGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_msgbox_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

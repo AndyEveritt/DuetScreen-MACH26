@@ -1,7 +1,7 @@
 /*
  * LvCheckbox.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,33 +15,54 @@ namespace UI
 
     #if LV_USE_CHECKBOX
 
-    class LvCheckboxGen : public LvObj
+    class LvCheckbox;
+
+    template <typename Derived>
+    class LvCheckboxMethodsGen
     {
       public:
-        LvCheckboxGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the text of a check box. `txt` will be copied and may be deallocated
          * after this function returns.
          * @param txt   the text of the check box. NULL to refresh with the current text.
          */
-        void setText(const char * txt);
+        void setText(const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_checkbox_set_text(static_cast<Derived*>(this)->getRootPtr(), txt);
+        }
 
         /**
          * Set the text of a check box. `txt` must not be deallocated during the life
          * of this checkbox.
          * @param txt   the text of the check box.
          */
-        void setTextStatic(const char * txt);
+        void setTextStatic(const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_checkbox_set_text_static(static_cast<Derived*>(this)->getRootPtr(), txt);
+        }
 
         /**
          * Get the text of a check box
          * @return      pointer to the text of the check box
          */
-        const char * getText() const;
+        const char * getText() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_checkbox_get_text(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
+    };
 
-      private:
+    class LvCheckboxGen : public LvObj, public LvCheckboxMethodsGen<LvCheckbox>
+    {
+      public:
+        LvCheckboxGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_checkbox_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

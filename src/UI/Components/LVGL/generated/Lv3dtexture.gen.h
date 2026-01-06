@@ -1,7 +1,7 @@
 /*
  * Lv3dtexture.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,28 +15,45 @@ namespace UI
 
     #if LV_USE_3DTEXTURE
 
-    class Lv3dtextureGen : public LvObj
+    class Lv3dtexture;
+
+    template <typename Derived>
+    class Lv3dtextureMethodsGen
     {
       public:
-        Lv3dtextureGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the source texture of the widget.
          * The object size should be manually set to match.
          * @param id     the texture handle from the 3D graphics backend.
          *               I.e., an `unsigned int` texture for OpenGL.
          */
-        void setSrc(lv_3dtexture_id_t id);
+        void setSrc(lv_3dtexture_id_t id) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_3dtexture_set_src(static_cast<Derived*>(this)->getRootPtr(), id);
+        }
 
         /**
          * Set the flipping behavior of the widget.
          * @param h_flip   true to flip horizontally.
          * @param v_flip   true to flip vertically.
          */
-        void setFlip(bool h_flip, bool v_flip);
+        void setFlip(bool h_flip, bool v_flip) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_3dtexture_set_flip(static_cast<Derived*>(this)->getRootPtr(), h_flip, v_flip);
+        }
 
+    };
 
-      private:
+    class Lv3dtextureGen : public LvObj, public Lv3dtextureMethodsGen<Lv3dtexture>
+    {
+      public:
+        Lv3dtextureGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_3dtexture_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

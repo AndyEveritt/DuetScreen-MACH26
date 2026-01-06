@@ -1,7 +1,7 @@
 /*
  * LvTileview.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,11 +15,12 @@ namespace UI
 
     #if LV_USE_TILEVIEW
 
-    class LvTileviewGen : public LvObj
+    class LvTileview;
+
+    template <typename Derived>
+    class LvTileviewMethodsGen
     {
       public:
-        LvTileviewGen(const std::string& name, LvObj& parent);
-
         /**
          * Add a tile to the tileview
          * @param tv          pointer to the tileview object
@@ -28,7 +29,11 @@ namespace UI
          * @param dir         direction to move to the next tile
          * @return            pointer to the added tile object
          */
-        lv_obj_t * addTile(uint8_t col_id, uint8_t row_id, lv_dir_t dir);
+        lv_obj_t * addTile(uint8_t col_id, uint8_t row_id, lv_dir_t dir) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_tileview_add_tile(static_cast<Derived*>(this)->getRootPtr(), col_id, row_id, dir);
+        }
 
         /**
          * Set the active tile in the tileview.
@@ -36,7 +41,11 @@ namespace UI
          * @param tile_obj    pointer to the tile object to be set as active
          * @param anim_en     animation enable flag (LV_ANIM_ON or LV_ANIM_OFF)
          */
-        void setTile(lv_obj_t * tile_obj, lv_anim_enable_t anim_en = LV_ANIM_ON);
+        void setTile(lv_obj_t * tile_obj, lv_anim_enable_t anim_en = LV_ANIM_ON) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_tileview_set_tile(static_cast<Derived*>(this)->getRootPtr(), tile_obj, anim_en);
+        }
 
         /**
          * Set the active tile by index in the tileview
@@ -45,16 +54,32 @@ namespace UI
          * @param row_id      row id of the tile to be set as active
          * @param anim_en     animation enable flag (LV_ANIM_ON or LV_ANIM_OFF)
          */
-        void setTileByIndex(uint32_t col_id, uint32_t row_id, lv_anim_enable_t anim_en = LV_ANIM_ON);
+        void setTileByIndex(uint32_t col_id, uint32_t row_id, lv_anim_enable_t anim_en = LV_ANIM_ON) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_tileview_set_tile_by_index(static_cast<Derived*>(this)->getRootPtr(), col_id, row_id, anim_en);
+        }
 
         /**
          * Get the currently active tile in the tileview
          * @return            pointer to the currently active tile object
          */
-        lv_obj_t * getTileActive() const;
+        lv_obj_t * getTileActive() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_tileview_get_tile_active(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
+    };
 
-      private:
+    class LvTileviewGen : public LvObj, public LvTileviewMethodsGen<LvTileview>
+    {
+      public:
+        LvTileviewGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_tileview_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

@@ -8,6 +8,8 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/LVGL/LvChart.h"
+#include "UI/Components/LVGL/LvScale.h"
 #include "UI/Core/View.h"
 #include <map>
 #include <memory>
@@ -15,7 +17,7 @@
 namespace UI
 {
 
-	class Graph : public LvObj
+	class Graph : public LvContainer
 	{
 	  public:
 		typedef Button legend_obj_t;
@@ -61,10 +63,10 @@ namespace UI
 		void init();
 		void setSeriesColor(series_t& series, lv_color_t color);
 
-		lv_obj_t* m_chart;
-		lv_obj_t* m_vScale;
-		lv_obj_t* m_hScale;
-		LvContainer m_legend;
+		LvChart m_chart{"chart", getRoot()};
+		LvScale m_vScale{"vscale", getRoot()};
+		LvScale m_hScale{"hscale", getRoot()};
+		LvContainer m_legend{"legend", getRoot()};
 
 		int32_t m_columnDsc[4];
 		int32_t m_rowDsc[3];

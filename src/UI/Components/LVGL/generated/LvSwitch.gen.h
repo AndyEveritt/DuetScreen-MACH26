@@ -1,7 +1,7 @@
 /*
  * LvSwitch.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,25 +15,42 @@ namespace UI
 
     #if LV_USE_SWITCH
 
-    class LvSwitchGen : public LvObj
+    class LvSwitch;
+
+    template <typename Derived>
+    class LvSwitchMethodsGen
     {
       public:
-        LvSwitchGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the orientation of switch.
          * @param orientation   switch orientation from `lv_switch_orientation_t`
          */
-        void setOrientation(lv_switch_orientation_t orientation);
+        void setOrientation(lv_switch_orientation_t orientation) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_switch_set_orientation(static_cast<Derived*>(this)->getRootPtr(), orientation);
+        }
 
         /**
          * Get the orientation of switch.
          * @return          switch orientation from ::lv_switch_orientation_t
          */
-        lv_switch_orientation_t getOrientation() const;
+        lv_switch_orientation_t getOrientation() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_switch_get_orientation(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
+    };
 
-      private:
+    class LvSwitchGen : public LvObj, public LvSwitchMethodsGen<LvSwitch>
+    {
+      public:
+        LvSwitchGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_switch_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

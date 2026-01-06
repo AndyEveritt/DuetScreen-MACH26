@@ -1,7 +1,7 @@
 /*
  * LvBar.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,24 +15,33 @@ namespace UI
 
     #if LV_USE_BAR
 
-    class LvBarGen : public LvObj
+    class LvBar;
+
+    template <typename Derived>
+    class LvBarMethodsGen
     {
       public:
-        LvBarGen(const std::string& name, LvObj& parent);
-
         /**
          * Set a new value on the bar
          * @param value         new value
          * @param anim          LV_ANIM_ON: set the value with an animation; LV_ANIM_OFF: change the value immediately
          */
-        void setValue(int32_t value, lv_anim_enable_t anim = LV_ANIM_ON);
+        void setValue(int32_t value, lv_anim_enable_t anim = LV_ANIM_ON) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_bar_set_value(static_cast<Derived*>(this)->getRootPtr(), value, anim);
+        }
 
         /**
          * Set a new start value on the bar
          * @param start_value     new start value
          * @param anim            LV_ANIM_ON: set the value with an animation; LV_ANIM_OFF: change the value immediately
          */
-        void setStartValue(int32_t start_value, lv_anim_enable_t anim = LV_ANIM_ON);
+        void setStartValue(int32_t start_value, lv_anim_enable_t anim = LV_ANIM_ON) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_bar_set_start_value(static_cast<Derived*>(this)->getRootPtr(), start_value, anim);
+        }
 
         /**
          * Set minimum and the maximum values of a bar
@@ -40,73 +49,121 @@ namespace UI
          * @param max       maximum value
          * @note If min is greater than max, the drawing direction becomes to the opposite direction.
          */
-        void setRange(int32_t min, int32_t max);
+        void setRange(int32_t min, int32_t max) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_bar_set_range(static_cast<Derived*>(this)->getRootPtr(), min, max);
+        }
 
         /**
          * Set minimum value of a bar
          * @param min       minimum value
          */
-        void setMinValue(int32_t min);
+        void setMinValue(int32_t min) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_bar_set_min_value(static_cast<Derived*>(this)->getRootPtr(), min);
+        }
 
         /**
          * Set maximum value of a bar
          * @param max       maximum value
          */
-        void setMaxValue(int32_t max);
+        void setMaxValue(int32_t max) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_bar_set_max_value(static_cast<Derived*>(this)->getRootPtr(), max);
+        }
 
         /**
          * Set the type of bar.
          * @param mode      bar type from `lv_bar_mode_t`
          */
-        void setMode(lv_bar_mode_t mode);
+        void setMode(lv_bar_mode_t mode) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_bar_set_mode(static_cast<Derived*>(this)->getRootPtr(), mode);
+        }
 
         /**
          * Set the orientation of bar.
          * @param orientation   bar orientation from `lv_bar_orientation_t`
          */
-        void setOrientation(lv_bar_orientation_t orientation);
+        void setOrientation(lv_bar_orientation_t orientation) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_bar_set_orientation(static_cast<Derived*>(this)->getRootPtr(), orientation);
+        }
 
         /**
          * Get the value of a bar
          * @return          the value of the bar
          */
-        int32_t getValue() const;
+        int32_t getValue() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_get_value(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the start value of a bar
          * @return          the start value of the bar
          */
-        int32_t getStartValue() const;
+        int32_t getStartValue() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_get_start_value(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the minimum value of a bar
          * @return          the minimum value of the bar
          */
-        int32_t getMinValue() const;
+        int32_t getMinValue() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_get_min_value(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the maximum value of a bar
          * @return          the maximum value of the bar
          */
-        int32_t getMaxValue() const;
+        int32_t getMaxValue() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_get_max_value(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the type of bar.
          * @return          bar type from `lv_bar_mode_t`
          */
-        lv_bar_mode_t getMode() const;
+        lv_bar_mode_t getMode() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_get_mode(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the orientation of bar.
          * @return          bar orientation from `lv_bar_orientation_t`
          */
-        lv_bar_orientation_t getOrientation() const;
+        lv_bar_orientation_t getOrientation() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_get_orientation(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Give the bar is in symmetrical mode or not
          * @return          true: in symmetrical mode false : not in
         */
-        bool isSymmetrical() const;
+        bool isSymmetrical() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_is_symmetrical(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         #if LV_USE_OBSERVER
 
@@ -115,11 +172,23 @@ namespace UI
          * @param subject   pointer to Subject
          * @return          pointer to newly-created Observer
          */
-        lv_observer_t * bindValue(lv_subject_t * subject);
+        lv_observer_t * bindValue(lv_subject_t * subject) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_bar_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
+        }
 
         #endif
+    };
 
-      private:
+    class LvBarGen : public LvObj, public LvBarMethodsGen<LvBar>
+    {
+      public:
+        LvBarGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_bar_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

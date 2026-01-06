@@ -1,7 +1,7 @@
 /*
  * LvList.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,18 +15,23 @@ namespace UI
 
     #if LV_USE_LIST
 
-    class LvListGen : public LvObj
+    class LvList;
+
+    template <typename Derived>
+    class LvListMethodsGen
     {
       public:
-        LvListGen(const std::string& name, LvObj& parent);
-
         /**
          * Add text to a list
          * @param list      pointer to a list, it will be the parent of the new label
          * @param txt       text of the new label
          * @return          pointer to the created label
          */
-        lv_obj_t * addText(const char * txt);
+        lv_obj_t * addText(const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_list_add_text(static_cast<Derived*>(this)->getRootPtr(), txt);
+        }
 
         /**
          * Add button to a list
@@ -35,7 +40,11 @@ namespace UI
          * @param txt       text of the new button, when NULL no text will be added
          * @return          pointer to the created button
          */
-        lv_obj_t * addButton(const void * icon, const char * txt);
+        lv_obj_t * addButton(const void * icon, const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_list_add_button(static_cast<Derived*>(this)->getRootPtr(), icon, txt);
+        }
 
         /**
          * Get text of a given list button
@@ -43,7 +52,11 @@ namespace UI
          * @param btn       pointer to the button
          * @return          text of btn, if btn doesn't have text "" will be returned
          */
-        const char * getButtonText(lv_obj_t * btn) const;
+        const char * getButtonText(lv_obj_t * btn) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_list_get_button_text(static_cast<const Derived*>(this)->getRootPtr(), btn);
+        }
 
         /**
          * Set text of a given list button
@@ -51,7 +64,11 @@ namespace UI
          * @param btn       pointer to the button
          * @param txt       pointer to the text
          */
-        void setButtonText(lv_obj_t * btn, const char * txt);
+        void setButtonText(lv_obj_t * btn, const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_list_set_button_text(static_cast<Derived*>(this)->getRootPtr(), btn, txt);
+        }
 
         #if LV_USE_TRANSLATION
 
@@ -61,7 +78,11 @@ namespace UI
          * @param tag       translation tag of the new label
          * @return          pointer to the created label
          */
-        lv_obj_t * addTranslationTag(const char * tag);
+        lv_obj_t * addTranslationTag(const char * tag) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_list_add_translation_tag(static_cast<Derived*>(this)->getRootPtr(), tag);
+        }
 
         /**
          * Add translation tag button to a list
@@ -70,7 +91,11 @@ namespace UI
          * @param tag       translation tag of the new button, when NULL no translation tag will be added
          * @return          pointer to the created button
          */
-        lv_obj_t * addButtonTranslationTag(const void * icon, const char * tag);
+        lv_obj_t * addButtonTranslationTag(const void * icon, const char * tag) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_list_add_button_translation_tag(static_cast<Derived*>(this)->getRootPtr(), icon, tag);
+        }
 
         /**
          * Set translation tag text of a given list button
@@ -78,11 +103,23 @@ namespace UI
          * @param btn       pointer to the button
          * @param tag       pointer to the translation tag
          */
-        void setButtonTranslationTag(lv_obj_t * btn, const char * tag);
+        void setButtonTranslationTag(lv_obj_t * btn, const char * tag) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_list_set_button_translation_tag(static_cast<Derived*>(this)->getRootPtr(), btn, tag);
+        }
 
         #endif
+    };
 
-      private:
+    class LvListGen : public LvObj, public LvListMethodsGen<LvList>
+    {
+      public:
+        LvListGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_list_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

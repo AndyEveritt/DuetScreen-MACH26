@@ -1,7 +1,7 @@
 /*
  * LvImage.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,31 +15,44 @@ namespace UI
 
     #if LV_USE_IMAGE
 
-    class LvImageGen : public LvObj
+    class LvImage;
+
+    template <typename Derived>
+    class LvImageMethodsGen
     {
       public:
-        LvImageGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the image data to display on the object
          * @param src       1) pointer to an ::lv_image_dsc_t descriptor (converted by LVGL's image converter) (e.g. &my_img) or
          *                  2) path to an image file (e.g. "S:/dir/img.bin")or
          *                  3) a SYMBOL (e.g. LV_SYMBOL_OK)
          */
-        void setSrc(const void * src);
+        void setSrc(const void * src) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_src(static_cast<Derived*>(this)->getRootPtr(), src);
+        }
 
         /**
          * Set an offset for the source of an image so the image will be displayed from the new origin.
          * @param x         the new offset along x axis.
          */
-        void setOffsetX(int32_t x);
+        void setOffsetX(int32_t x) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_offset_x(static_cast<Derived*>(this)->getRootPtr(), x);
+        }
 
         /**
          * Set an offset for the source of an image.
          * so the image will be displayed from the new origin.
          * @param y         the new offset along y axis.
          */
-        void setOffsetY(int32_t y);
+        void setOffsetY(int32_t y) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_offset_y(static_cast<Derived*>(this)->getRootPtr(), y);
+        }
 
         /**
          * Set the rotation angle of the image.
@@ -50,7 +63,11 @@ namespace UI
          *                  rotation will be set to 0 automatically.
          *
          */
-        void setRotation(int32_t angle);
+        void setRotation(int32_t angle) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_rotation(static_cast<Derived*>(this)->getRootPtr(), angle);
+        }
 
         /**
          * Set the rotation center of the image.
@@ -59,19 +76,31 @@ namespace UI
          * @param x         rotation center x of the image
          * @param y         rotation center y of the image
          */
-        void setPivot(int32_t x, int32_t y);
+        void setPivot(int32_t x, int32_t y) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_pivot(static_cast<Derived*>(this)->getRootPtr(), x, y);
+        }
 
         /**
          * Set the rotation horizontal center of the image.
          * @param x         rotation center x of the image, or lv_pct()
          */
-        void setPivotX(int32_t x);
+        void setPivotX(int32_t x) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_pivot_x(static_cast<Derived*>(this)->getRootPtr(), x);
+        }
 
         /**
          * Set the rotation vertical center of the image.
          * @param y         rotation center y of the image, or lv_pct()
          */
-        void setPivotY(int32_t y);
+        void setPivotY(int32_t y) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_pivot_y(static_cast<Derived*>(this)->getRootPtr(), y);
+        }
 
         /**
          * Set the zoom factor of the image.
@@ -83,7 +112,11 @@ namespace UI
          *                      - 128:  half size
          *                      - 512:  double size
          */
-        void setScale(uint32_t zoom);
+        void setScale(uint32_t zoom) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_scale(static_cast<Derived*>(this)->getRootPtr(), zoom);
+        }
 
         /**
          * Set the horizontal zoom factor of the image.
@@ -95,7 +128,11 @@ namespace UI
          *                      - 128:  half size
          *                      - 512:  double size
          */
-        void setScaleX(uint32_t zoom);
+        void setScaleX(uint32_t zoom) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_scale_x(static_cast<Derived*>(this)->getRootPtr(), zoom);
+        }
 
         /**
          * Set the vertical zoom factor of the image.
@@ -107,20 +144,32 @@ namespace UI
          *                      - 128:  half size
          *                      - 512:  double size
          */
-        void setScaleY(uint32_t zoom);
+        void setScaleY(uint32_t zoom) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_scale_y(static_cast<Derived*>(this)->getRootPtr(), zoom);
+        }
 
         /**
          * Set the blend mode of an image.
          * @param blend_mode    the new blend mode
          */
-        void setBlendMode(lv_blend_mode_t blend_mode);
+        void setBlendMode(lv_blend_mode_t blend_mode) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_blend_mode(static_cast<Derived*>(this)->getRootPtr(), blend_mode);
+        }
 
         /**
          * Enable/disable anti-aliasing for the transformations (rotate, zoom) or not.
          * The quality is better with anti-aliasing looks better but slower.
          * @param antialias true: anti-aliased; false: not anti-aliased
          */
-        void setAntialias(bool antialias);
+        void setAntialias(bool antialias) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_antialias(static_cast<Derived*>(this)->getRootPtr(), antialias);
+        }
 
         /**
          * Set the image object size mode.
@@ -128,31 +177,51 @@ namespace UI
          * @note            if image_align is `LV_IMAGE_ALIGN_STRETCH` or `LV_IMAGE_ALIGN_FIT`
          *                  rotation, scale and pivot will be overwritten and controlled internally.
          */
-        void setInnerAlign(lv_image_align_t align);
+        void setInnerAlign(lv_image_align_t align) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_inner_align(static_cast<Derived*>(this)->getRootPtr(), align);
+        }
 
         /**
          * Set an A8 bitmap mask for the image.
          * @param src       an lv_image_dsc_t bitmap mask source.
          */
-        void setBitmapMapSrc(const lv_image_dsc_t * src);
+        void setBitmapMapSrc(const lv_image_dsc_t * src) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_set_bitmap_map_src(static_cast<Derived*>(this)->getRootPtr(), src);
+        }
 
         /**
          * Get the source of the image
          * @return          the image source (symbol, file name or ::lv-img_dsc_t for C arrays)
          */
-        const void * getSrc() const;
+        const void * getSrc() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_src(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the offset's x attribute of the image object.
          * @return          offset X value.
          */
-        int32_t getOffsetX() const;
+        int32_t getOffsetX() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_offset_x(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the offset's y attribute of the image object.
          * @return          offset Y value.
          */
-        int32_t getOffsetY() const;
+        int32_t getOffsetY() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_offset_y(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the rotation of the image.
@@ -160,80 +229,132 @@ namespace UI
          * @note            if image_align is `LV_IMAGE_ALIGN_STRETCH` or  `LV_IMAGE_ALIGN_FIT`
          *                  rotation will be set to 0 automatically.
          */
-        int32_t getRotation() const;
+        int32_t getRotation() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_rotation(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the pivot (rotation center) of the image.
          * If pivot is set with LV_PCT, convert it to px before return.
          * @param pivot     store the rotation center here
          */
-        void getPivot(lv_point_t * pivot) const;
+        void getPivot(lv_point_t * pivot) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_image_get_pivot(static_cast<const Derived*>(this)->getRootPtr(), pivot);
+        }
 
         /**
          * Get the zoom factor of the image.
          * @return          zoom factor (256: no zoom)
          */
-        int32_t getScale() const;
+        int32_t getScale() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_scale(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the horizontal zoom factor of the image.
          * @return          zoom factor (256: no zoom)
          */
-        int32_t getScaleX() const;
+        int32_t getScaleX() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_scale_x(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the vertical zoom factor of the image.
          * @return          zoom factor (256: no zoom)
          */
-        int32_t getScaleY() const;
+        int32_t getScaleY() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_scale_y(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the width of an image before any transformations.
          * @return The width of the image.
          */
-        int32_t getSrcWidth() const;
+        int32_t getSrcWidth() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_src_width(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the height of an image before any transformations.
          * @return The height of the image.
          */
-        int32_t getSrcHeight() const;
+        int32_t getSrcHeight() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_src_height(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the transformed width of an image object.
          * @return The transformed width of the image.
          */
-        int32_t getTransformedWidth() const;
+        int32_t getTransformedWidth() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_transformed_width(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the transformed height of an image object.
          * @return The transformed height of the image.
          */
-        int32_t getTransformedHeight() const;
+        int32_t getTransformedHeight() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_transformed_height(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the current blend mode of the image
          * @return          the current blend mode
          */
-        lv_blend_mode_t getBlendMode() const;
+        lv_blend_mode_t getBlendMode() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_blend_mode(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get whether the transformations (rotate, zoom) are anti-aliased or not
          * @return          true: anti-aliased; false: not anti-aliased
          */
-        bool getAntialias() const;
+        bool getAntialias() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_antialias(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the size mode of the image
          * @return          element of `lv_image_align_t`
          */
-        lv_image_align_t getInnerAlign() const;
+        lv_image_align_t getInnerAlign() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_inner_align(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the bitmap mask source.
          * @return          an lv_image_dsc_t bitmap mask source.
          */
-        const lv_image_dsc_t * getBitmapMapSrc() const;
+        const lv_image_dsc_t * getBitmapMapSrc() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_get_bitmap_map_src(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         #if LV_USE_OBSERVER
 
@@ -242,11 +363,23 @@ namespace UI
          * @param subject   pointer to Subject
          * @return          pointer to newly-created Observer
          */
-        lv_observer_t * bindSrc(lv_subject_t * subject);
+        lv_observer_t * bindSrc(lv_subject_t * subject) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_image_bind_src(static_cast<Derived*>(this)->getRootPtr(), subject);
+        }
 
         #endif
+    };
 
-      private:
+    class LvImageGen : public LvObj, public LvImageMethodsGen<LvImage>
+    {
+      public:
+        LvImageGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_image_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

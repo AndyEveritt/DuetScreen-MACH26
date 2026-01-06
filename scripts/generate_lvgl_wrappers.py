@@ -373,7 +373,52 @@ def build_methods(widget_token: str, protos: List[Tuple[str, str, str, str, List
     return methods
 
 
-def emit_header_gen(class_base_name: str, class_gen_name: str, widget_token: str, methods: List[MethodMeta]) -> str:
+def _find_widget_c_file(widget_token: str) -> Optional[Path]:
+    """Locate the LVGL C implementation file for a widget token (lv_<token>.c)."""
+    for cfile in (ROOT / "libraries" / "lvgl" / "src").rglob(f"lv_{widget_token}.c"):
+        return cfile
+    # Some widgets may live under subfolders with different naming; attempt a broader search
+    for cfile in (ROOT / "libraries" / "lvgl" / "src").rglob(f"**/*{widget_token}*.c"):
+        if cfile.name == f"lv_{widget_token}.c":
+            return cfile
+    return None
+
+
+def discover_widget_base(widget_token: str) -> Optional[str]:
+    """
+    Parse the widget's C file to discover its base class token via
+    `.base_class = &lv_<base>_class`. Returns the base token (e.g., 'image')
+    or None if not found or base is lv_obj_class.
+    """
+    cfile = _find_widget_c_file(widget_token)
+    if not cfile or not cfile.exists():
+        return None
+    try:
+        txt = cfile.read_text(encoding="utf-8", errors="ignore")
+    except Exception:
+        return None
+    # Simple, robust scan: locate 'lv_<token>_class', then search for '.base_class = &lv_<base>_class'
+    anchor = f"lv_{widget_token}_class"
+    idx = txt.find(anchor)
+    if idx < 0:
+        return None
+    window = txt[idx: idx + 4000]  # scan ahead within reasonable window
+    m = re.search(r"\.base_class\s*=\s*&lv_([a-z0-9]+)_class", window)
+    if not m:
+        return None
+    base = m.group(1)
+    if base == "obj":
+        return None
+    return base
+
+
+def emit_header_gen(
+    class_base_name: str,
+    class_gen_name: str,
+    widget_token: str,
+    methods: List[MethodMeta],
+    base_widget_token: Optional[str],
+) -> str:
     lines: List[str] = []
     lines.extend(banner_lines(f"{class_base_name}.gen.h"))
     lines.append("#pragma once")
@@ -383,7 +428,17 @@ def emit_header_gen(class_base_name: str, class_gen_name: str, widget_token: str
     if any(m.array_count_pairs or any(is_arr for (_, _, is_arr) in m.args[1:]) for m in methods):
         lines.append("#include <span>")
     # No std::string or string_view conversions; keep only <span> if needed
+    # If any method uses varargs, include <cstdarg> for va_list usage in header (templates must be header-only)
+    if any(m.has_varargs for m in methods):
+        lines.append("#include <cstdarg>")
     lines.append("")
+    # Emit base include (outside namespace) if inheriting MethodsGen from a base widget
+    base_methods_tmpl = None
+    if base_widget_token:
+        base_class_base = f"Lv{to_pascal(base_widget_token)}"
+        lines.append(f"#include \"UI/Components/LVGL/generated/{base_class_base}.gen.h\"")
+        lines.append("")
+
     lines.append("namespace UI")
     lines.append("{")
     lines.append(f"    {MARKER}")
@@ -400,46 +455,97 @@ def emit_header_gen(class_base_name: str, class_gen_name: str, widget_token: str
     if class_guards:
         lines.append("")
 
-    lines.append(f"    class {class_gen_name} : public LvObj")
-    lines.append("    {")
-    lines.append("      public:")
-    lines.append(f"        {class_gen_name}(const std::string& name, LvObj& parent);")
+    # Forward declare the public non-generated class so we can reference it as the Derived parameter
+    lines.append(f"    class {class_base_name};")
     lines.append("")
 
-    # Stream methods, grouping by guard sets beyond class-wide guards
+    # Emit MethodsGen template, inheriting from base widget's MethodsGen if available
+    if base_widget_token:
+        base_methods_tmpl = f"Lv{to_pascal(base_widget_token)}MethodsGen<Derived>"
+
+    inherit_clause = f" : public {base_methods_tmpl}" if base_methods_tmpl else ""
+    lines.append(f"    template <typename Derived>")
+    lines.append(f"    class {class_base_name}MethodsGen{inherit_clause}")
+    lines.append("    {")
+    lines.append("      public:")
+
+    # Stream inline methods inside template, with per-method guards
     active_method_guards: List[str] = []
     for m in methods:
-        if m.name == "refresh":
-            lines.append("        void refresh();")
-            lines.append("")
-            continue
         extra_guards = [g for g in m.guards if g not in class_guards]
         if active_method_guards != extra_guards:
-            # close previous
             for _ in reversed(active_method_guards):
                 lines.append("        #endif")
             if active_method_guards:
                 lines.append("")
-            # open new
             for g in extra_guards:
                 lines.append(f"        #if {g}")
             if extra_guards:
                 lines.append("")
             active_method_guards = extra_guards
-        # Emit Doxygen docstring if available, indented to class scope, with @param obj removed
         if getattr(m, 'doc', None):
             for dl in sanitize_doc(m.doc).splitlines():
                 lines.append("        " + dl)
         const_str = " const" if m.is_const else ""
-        lines.append(f"        {m.ret_type_cpp()} {m.name}({m.decl_args_str()}){const_str};")
-        lines.append("")
+        # Emit inline body calling C API with UI_LOCK
+        lines.append(
+            f"        {m.ret_type_cpp()} {m.name}({m.decl_args_str()}){const_str} requires HasGetRootPtr<Derived>")
+        lines.append("        {")
+        lines.append("            UI_LOCK();")
+        root_expr = ("static_cast<const Derived*>(this)->getRootPtr()" if m.is_const else
+                     "static_cast<Derived*>(this)->getRootPtr()")
+        if m.ret_type.strip() == "void":
+            if m.has_varargs and m.vfmt_full:
+                fmt_name = None
+                for (t, n, _) in m.args[::-1]:
+                    if t.strip() == "...":
+                        continue
+                    if n:
+                        fmt_name = n
+                        break
+                if fmt_name is None:
+                    fmt_name = "fmt"
+                lines.append("            va_list args;")
+                lines.append(f"            va_start(args, {fmt_name});")
+                call_args = ", ".join([
+                    root_expr,
+                    fmt_name,
+                    "args",
+                ])
+                lines.append(f"            {m.vfmt_full}({call_args});")
+                lines.append("            va_end(args);")
+            else:
+                call_args = ", ".join([
+                    root_expr,
+                    m.call_args_str(),
+                ]) if m.call_args_str() else root_expr
+                lines.append(f"            {m.full_c}({call_args});")
+            lines.append("        }")
+            lines.append("")
+        else:
+            call_args = ", ".join([
+                root_expr,
+                m.call_args_str(),
+            ]) if m.call_args_str() else root_expr
+            lines.append("            return " + f"{m.full_c}({call_args});")
+            lines.append("        }")
+            lines.append("")
 
-    # Close any lingering method guard blocks
     for _ in reversed(active_method_guards):
         lines.append("        #endif")
 
+    lines.append("    };")
     lines.append("")
-    lines.append("      private:")
+
+    # Emit the generated concrete class inheriting LvObj and MethodsGen specialized on the public class
+    lines.append(f"    class {class_gen_name} : public LvObj, public {class_base_name}MethodsGen<{class_base_name}>")
+    lines.append("    {")
+    lines.append("      public:")
+    lines.append(f"        {class_gen_name}(const std::string& name, LvObj& parent)")
+    lines.append(f"            : LvObj(lv_{widget_token}_create, name, parent)")
+    lines.append("        {")
+    lines.append("            UI_LOCK();")
+    lines.append("        }")
     lines.append("    };")
 
     if class_guards:
@@ -453,108 +559,9 @@ def emit_header_gen(class_base_name: str, class_gen_name: str, widget_token: str
     return "\n".join(lines)
 
 
-def emit_source_gen(class_base_name: str, class_gen_name: str, widget_token: str, methods: List[MethodMeta]) -> str:
-    c_prefix = f"lv_{widget_token}_"
-    lines: List[str] = []
-    lines.extend(banner_lines(f"{class_base_name}.gen.cpp"))
-    lines.append(f"#include \"{class_base_name}.gen.h\"")
-    lines.append("#include \"Debug.h\"")
-    # If any method uses varargs, include <cstdarg>
-    if any(m.has_varargs for m in methods):
-        lines.append("#include <cstdarg>")
-    lines.append("")
-    lines.append("namespace UI")
-    lines.append("{")
-    lines.append(f"    {MARKER}")
-    # Determine class-wide guards present on all methods
-    if methods:
-        class_guards = sorted(set.intersection(*(set(m.guards) for m in methods)))
-    else:
-        class_guards = []
-    if class_guards:
-        lines.append("")
-    for g in class_guards:
-        lines.append(f"    #if {g}")
-    if class_guards:
-        lines.append("")
-    lines.append(f"    {class_gen_name}::{class_gen_name}(const std::string& name, LvObj& parent)")
-    lines.append(f"        : LvObj({c_prefix}create, name, parent)")
-    lines.append("    {")
-    lines.append("        UI_LOCK();")
-    lines.append("    }")
-    lines.append("")
-    # Stream methods, grouping by guard sets beyond class-wide guards
-    active_method_guards: List[str] = []
-    for m in methods:
-        # Build method signature in source
-        if m.name == "refresh":
-            lines.append(f"    void {class_gen_name}::refresh()")
-            lines.append("    {")
-            lines.append("        UI_LOCK();")
-            lines.append(f"        {c_prefix}refresh(getRootPtr());")
-            lines.append("    }")
-            lines.append("")
-            continue
-        # Use implementation args (no defaults) in source definitions
-        sig_args = m.impl_args_str()
-        extra_guards = [g for g in m.guards if g not in class_guards]
-        if active_method_guards != extra_guards:
-            for _ in reversed(active_method_guards):
-                lines.append("    #endif")
-            if active_method_guards:
-                lines.append("")
-            for g in extra_guards:
-                lines.append(f"    #if {g}")
-            if extra_guards:
-                lines.append("")
-            active_method_guards = extra_guards
-        if m.ret_type == "void":
-            const_str = " const" if m.is_const else ""
-            lines.append(f"    void {class_gen_name}::{m.name}({sig_args}){const_str}")
-            lines.append("    {")
-            lines.append("        UI_LOCK();")
-            if m.has_varargs and m.vfmt_full:
-                # Find the name of the last named parameter (format string) preceding '...'
-                fmt_name = None
-                for (t, n, _) in m.args[::-1]:
-                    if t.strip() == "...":
-                        continue
-                    if n:
-                        fmt_name = n
-                        break
-                if fmt_name is None:
-                    fmt_name = "fmt"  # fallback
-                lines.append("        va_list args;")
-                lines.append(f"        va_start(args, {fmt_name});")
-                # Pass C format string directly
-                call_args = ", ".join(["getRootPtr()", fmt_name, "args"]
-                                      ) if fmt_name else ", ".join(["getRootPtr()", "args"])
-                lines.append(f"        {m.vfmt_full}({call_args});")
-                lines.append("        va_end(args);")
-            else:
-                call_args = ", ".join(["getRootPtr()", m.call_args_str()]) if m.call_args_str() else "getRootPtr()"
-                lines.append(f"        {m.full_c}({call_args});")
-            lines.append("    }")
-            lines.append("")
-        else:
-            const_str = " const" if m.is_const else ""
-            lines.append(f"    {m.ret_type_cpp()} {class_gen_name}::{m.name}({sig_args}){const_str}")
-            lines.append("    {")
-            lines.append("        UI_LOCK();")
-            call_args = ", ".join(["getRootPtr()", m.call_args_str()]) if m.call_args_str() else "getRootPtr()"
-            lines.append(f"        return {m.full_c}({call_args});")
-            lines.append("    }")
-            lines.append("")
-    # Close any lingering method guard blocks
-    for _ in reversed(active_method_guards):
-        lines.append("    #endif")
-    for _ in reversed(class_guards):
-        lines.append("    #endif")
-    if class_guards:
-        lines.append("")
-    lines.append("}")
-    lines.append("")
-    return "\n".join(lines)
+def emit_source_gen(*args, **kwargs) -> str:
+    # No longer generating .gen.cpp; constructor is inline in header.
+    return ""
 
 
 def emit_derived_header_if_missing(class_base_name: str) -> Optional[str]:
@@ -609,26 +616,15 @@ def update_generated_cmake(new_gen_cpp_files: List[str]) -> None:
     Maintain src/UI/Components/LVGL/generated/CMakeLists.txt with the list of generated sources.
     Entries should be of the form: ${CMAKE_CURRENT_SOURCE_DIR}/Lv<Widget>.gen.cpp
     """
-    if not new_gen_cpp_files:
-        return
     # Normalize to basenames within generated dir
     new_files = [Path(p).name for p in new_gen_cpp_files]
-    existing_entries: List[str] = []
     header = """target_sources(
   DuetScreen.lib
   PRIVATE
 """
     footer = ")\n"
-    if GEN_CMAKE_FILE.exists():
-        txt = GEN_CMAKE_FILE.read_text(encoding="utf-8")
-        # Extract existing lines with CURRENT_SOURCE_DIR
-        for line in txt.splitlines():
-            m = re.search(r"\$\{CMAKE_CURRENT_SOURCE_DIR\}/(.+\.gen\.cpp)$", line.strip())
-            if m:
-                # Normalize to basename to avoid duplicating 'generated/' prefix
-                existing_entries.append(Path(m.group(1)).name)
-    # Merge and sort unique
-    merged = sorted(set(existing_entries) | set(new_files), key=lambda s: s.lower())
+    # Sort unique list
+    merged = sorted(set(new_files), key=lambda s: s.lower())
     body_lines = [f"  ${{CMAKE_CURRENT_SOURCE_DIR}}/{fname}" for fname in merged]
     content = header + "\n".join(body_lines) + "\n" + footer
     if not GEN_CMAKE_FILE.exists() or GEN_CMAKE_FILE.read_text(encoding="utf-8") != content:
@@ -693,28 +689,25 @@ def main() -> None:
         class_base = f"Lv{mappings.get(token, to_pascal(token))}"
         class_gen = f"{class_base}Gen"
 
-        header_text = emit_header_gen(class_base, class_gen, token, methods)
-        source_text = emit_source_gen(class_base, class_gen, token, methods)
+        base_widget = discover_widget_base(token)
+
+        header_text = emit_header_gen(class_base, class_gen, token, methods, base_widget)
+        # source_text = emit_source_gen()
 
         # Generated paths
         gen_h_rel = f"generated/{class_base}.gen.h"
-        gen_cpp_rel = f"generated/{class_base}.gen.cpp"
+        gen_cpp_rel = None
         gen_h_path = OUTPUT_DIR / gen_h_rel
-        gen_cpp_path = OUTPUT_DIR / gen_cpp_rel
 
         wrote_h = write_if_allowed(gen_h_path, header_text, args.force_overwrite)
-        wrote_cpp = write_if_allowed(gen_cpp_path, source_text, args.force_overwrite)
+        wrote_cpp = False
 
         if wrote_h:
             print(f"[gen] {class_gen} -> {gen_h_rel}")
         else:
             print(f"[keep] {gen_h_rel} (existing)")
 
-        if wrote_cpp:
-            generated_cpp.append(gen_cpp_rel)
-            print(f"[gen] {class_gen} -> {gen_cpp_rel}")
-        else:
-            print(f"[keep] {gen_cpp_rel} (existing)")
+        # We no longer generate .gen.cpp files (constructor is inline)
 
         # Create thin derived header if not present
         derived_h_path = OUTPUT_DIR / f"{class_base}.h"

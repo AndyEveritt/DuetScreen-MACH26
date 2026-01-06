@@ -1,7 +1,7 @@
 /*
  * LvMenu.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,11 +15,12 @@ namespace UI
 
     #if LV_USE_MENU
 
-    class LvMenuGen : public LvObj
+    class LvMenu;
+
+    template <typename Derived>
+    class LvMenuMethodsGen
     {
       public:
-        LvMenuGen(const std::string& name, LvObj& parent);
-
         /**
          * Create a menu page object.
          *
@@ -30,41 +31,65 @@ namespace UI
          * @param title     pointer to text for title in header (NULL to not display title)
          * @return          pointer to the created menu page
          */
-        lv_obj_t * pageCreate(char const * const title);
+        lv_obj_t * pageCreate(char const * const title) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_page_create(static_cast<Derived*>(this)->getRootPtr(), title);
+        }
 
         /**
          * Create a menu cont object
          * @param parent    pointer to a menu page or menu section object, it will be the parent of the new menu cont object
          * @return          pointer to the created menu cont
          */
-        lv_obj_t * contCreate();
+        lv_obj_t * contCreate() requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_cont_create(static_cast<Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Create a menu section object
          * @param parent    pointer to a menu page object, it will be the parent of the new menu section object
          * @return          pointer to the created menu section
          */
-        lv_obj_t * sectionCreate();
+        lv_obj_t * sectionCreate() requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_section_create(static_cast<Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Create a menu separator object
          * @param parent    pointer to a menu page object, it will be the parent of the new menu separator object
          * @return          pointer to the created menu separator
          */
-        lv_obj_t * separatorCreate();
+        lv_obj_t * separatorCreate() requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_separator_create(static_cast<Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Set menu page to display in main
          * @param page      pointer to the menu page to set (NULL to clear main and clear menu history)
          */
-        void setPage(lv_obj_t * page);
+        void setPage(lv_obj_t * page) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_set_page(static_cast<Derived*>(this)->getRootPtr(), page);
+        }
 
         /**
          * Set menu page title
          * @param page      pointer to the menu page
          * @param title     pointer to text for title in header (NULL to not display title)
          */
-        void setPageTitle(char const * const title);
+        void setPageTitle(char const * const title) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_set_page_title(static_cast<Derived*>(this)->getRootPtr(), title);
+        }
 
         /**
          * Set menu page title with a static text. It will not be saved by the label so the 'text' variable
@@ -72,83 +97,143 @@ namespace UI
          * @param page      pointer to the menu page
          * @param title     pointer to text for title in header (NULL to not display title)
          */
-        void setPageTitleStatic(char const * const title);
+        void setPageTitleStatic(char const * const title) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_set_page_title_static(static_cast<Derived*>(this)->getRootPtr(), title);
+        }
 
         /**
          * Set menu page to display in sidebar
          * @param page      pointer to the menu page to set (NULL to clear sidebar)
          */
-        void setSidebarPage(lv_obj_t * page);
+        void setSidebarPage(lv_obj_t * page) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_set_sidebar_page(static_cast<Derived*>(this)->getRootPtr(), page);
+        }
 
         /**
          * Set the how the header should behave and its position
          * @param mode      LV_MENU_HEADER_TOP_FIXED/TOP_UNFIXED/BOTTOM_FIXED
          */
-        void setModeHeader(lv_menu_mode_header_t mode);
+        void setModeHeader(lv_menu_mode_header_t mode) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_set_mode_header(static_cast<Derived*>(this)->getRootPtr(), mode);
+        }
 
         /**
          * Set whether back button should appear at root
          * @param mode      LV_MENU_ROOT_BACK_BUTTON_DISABLED/ENABLED
          */
-        void setModeRootBackButton(lv_menu_mode_root_back_button_t mode);
+        void setModeRootBackButton(lv_menu_mode_root_back_button_t mode) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_set_mode_root_back_button(static_cast<Derived*>(this)->getRootPtr(), mode);
+        }
 
         /**
          * Add menu to the menu item
          * @param menu      pointer to the menu
          * @param page      pointer to the page to load when obj is clicked
          */
-        void setLoadPageEvent(lv_obj_t * obj, lv_obj_t * page);
+        void setLoadPageEvent(lv_obj_t * obj, lv_obj_t * page) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_set_load_page_event(static_cast<Derived*>(this)->getRootPtr(), obj, page);
+        }
 
         /**
         * Get a pointer to menu page that is currently displayed in main
         * @return           pointer to current page
         */
-        lv_obj_t * getCurMainPage() const;
+        lv_obj_t * getCurMainPage() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_get_cur_main_page(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
         * Get a pointer to menu page that is currently displayed in sidebar
         * @return           pointer to current page
         */
-        lv_obj_t * getCurSidebarPage() const;
+        lv_obj_t * getCurSidebarPage() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_get_cur_sidebar_page(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
         * Get a pointer to main header obj
         * @return           pointer to main header obj
         */
-        lv_obj_t * getMainHeader() const;
+        lv_obj_t * getMainHeader() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_get_main_header(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
         * Get a pointer to main header back btn obj
         * @return           pointer to main header back btn obj
         */
-        lv_obj_t * getMainHeaderBackButton() const;
+        lv_obj_t * getMainHeaderBackButton() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_get_main_header_back_button(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
         * Get a pointer to sidebar header obj
         * @return           pointer to sidebar header obj
         */
-        lv_obj_t * getSidebarHeader() const;
+        lv_obj_t * getSidebarHeader() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_get_sidebar_header(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
         * Get a pointer to sidebar header obj
         * @return           pointer to sidebar header back btn obj
         */
-        lv_obj_t * getSidebarHeaderBackButton() const;
+        lv_obj_t * getSidebarHeaderBackButton() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_get_sidebar_header_back_button(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Check if an obj is a root back btn
          * @param menu      pointer to the menu
          * @return          true if it is a root back btn
          */
-        bool backButtonIsRoot(lv_obj_t * obj);
+        bool backButtonIsRoot(lv_obj_t * obj) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_menu_back_button_is_root(static_cast<Derived*>(this)->getRootPtr(), obj);
+        }
 
         /**
          * Clear menu history
          */
-        void clearHistory();
+        void clearHistory() requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_menu_clear_history(static_cast<Derived*>(this)->getRootPtr());
+        }
 
+    };
 
-      private:
+    class LvMenuGen : public LvObj, public LvMenuMethodsGen<LvMenu>
+    {
+      public:
+        LvMenuGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_menu_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

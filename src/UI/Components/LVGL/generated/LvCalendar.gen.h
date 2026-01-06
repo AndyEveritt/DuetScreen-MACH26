@@ -1,7 +1,7 @@
 /*
  * LvCalendar.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -16,55 +16,84 @@ namespace UI
 
     #if LV_USE_CALENDAR
 
-    class LvCalendarGen : public LvObj
+    class LvCalendar;
+
+    template <typename Derived>
+    class LvCalendarMethodsGen
     {
       public:
-        LvCalendarGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the today's year, month and day at once
          * @param year      today's year
          * @param month     today's month [1..12]
          * @param day       today's day [1..31]
          */
-        void setTodayDate(uint32_t year, uint32_t month, uint32_t day);
+        void setTodayDate(uint32_t year, uint32_t month, uint32_t day) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_today_date(static_cast<Derived*>(this)->getRootPtr(), year, month, day);
+        }
 
         /**
          * Set the today's year
          * @param year      today's year
          */
-        void setTodayYear(uint32_t year);
+        void setTodayYear(uint32_t year) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_today_year(static_cast<Derived*>(this)->getRootPtr(), year);
+        }
 
         /**
          * Set the today's year
          * @param month     today's month [1..12]
          */
-        void setTodayMonth(uint32_t month);
+        void setTodayMonth(uint32_t month) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_today_month(static_cast<Derived*>(this)->getRootPtr(), month);
+        }
 
         /**
          * Set the today's year
          * @param day       today's day [1..31]
          */
-        void setTodayDay(uint32_t day);
+        void setTodayDay(uint32_t day) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_today_day(static_cast<Derived*>(this)->getRootPtr(), day);
+        }
 
         /**
          * Set the currently shown year and month at once
          * @param year          shown year
          * @param month         shown month [1..12]
          */
-        void setMonthShown(uint32_t year, uint32_t month);
+        void setMonthShown(uint32_t year, uint32_t month) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_month_shown(static_cast<Derived*>(this)->getRootPtr(), year, month);
+        }
 
         /**
          * Set the currently shown year
          * @param year          shown year
          */
-        void setShownYear(uint32_t year);
+        void setShownYear(uint32_t year) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_shown_year(static_cast<Derived*>(this)->getRootPtr(), year);
+        }
 
         /**
          * Set the currently shown month
          * @param month         shown month [1..12]
          */
-        void setShownMonth(uint32_t month);
+        void setShownMonth(uint32_t month) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_shown_month(static_cast<Derived*>(this)->getRootPtr(), month);
+        }
 
         /**
          * Set the highlighted dates
@@ -72,7 +101,11 @@ namespace UI
          *                      Only the pointer will be saved so this variable can't be local which will be destroyed later.
          * @param date_num number of dates in the array
          */
-        void setHighlightedDates(std::span<lv_calendar_date_t> highlighted);
+        void setHighlightedDates(std::span<lv_calendar_date_t> highlighted) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_highlighted_dates(static_cast<Derived*>(this)->getRootPtr(), highlighted.data(), highlighted.size());
+        }
 
         /**
          * Set the name of the days
@@ -80,42 +113,66 @@ namespace UI
          *                      E.g. `const char * days[7] = {"Sun", "Mon", ...}`
          *                      Only the pointer will be saved so this variable can't be local which will be destroyed later.
          */
-        void setDayNames(const char ** day_names);
+        void setDayNames(const char ** day_names) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_calendar_set_day_names(static_cast<Derived*>(this)->getRootPtr(), day_names);
+        }
 
         /**
          * Get the button matrix object of the calendar.
          * It shows the dates and day names.
          * @return          pointer to a the button matrix
          */
-        lv_obj_t * getBtnmatrix() const;
+        lv_obj_t * getBtnmatrix() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_calendar_get_btnmatrix(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the today's date
          * @param calendar  pointer to a calendar object
          * @return          return pointer to an `lv_calendar_date_t` variable containing the date of today.
          */
-        const lv_calendar_date_t * getTodayDate() const;
+        const lv_calendar_date_t * getTodayDate() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_calendar_get_today_date(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the currently showed
          * @param calendar  pointer to a calendar object
          * @return          pointer to an `lv_calendar_date_t` variable containing the date is being shown.
          */
-        const lv_calendar_date_t * getShowedDate() const;
+        const lv_calendar_date_t * getShowedDate() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_calendar_get_showed_date(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the highlighted dates
          * @param calendar  pointer to a calendar object
          * @return          pointer to an `lv_calendar_date_t` array containing the dates.
          */
-        lv_calendar_date_t * getHighlightedDates() const;
+        lv_calendar_date_t * getHighlightedDates() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_calendar_get_highlighted_dates(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the number of the highlighted dates
          * @param calendar  pointer to a calendar object
          * @return          number of highlighted days
          */
-        size_t getHighlightedDatesNum() const;
+        size_t getHighlightedDatesNum() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_calendar_get_highlighted_dates_num(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the currently pressed day
@@ -124,10 +181,22 @@ namespace UI
          * @return          LV_RESULT_OK: there is a valid pressed date
          *                  LV_RESULT_INVALID: there is no pressed data
          */
-        lv_result_t getPressedDate(lv_calendar_date_t * date) const;
+        lv_result_t getPressedDate(lv_calendar_date_t * date) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_calendar_get_pressed_date(static_cast<const Derived*>(this)->getRootPtr(), date);
+        }
 
+    };
 
-      private:
+    class LvCalendarGen : public LvObj, public LvCalendarMethodsGen<LvCalendar>
+    {
+      public:
+        LvCalendarGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_calendar_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

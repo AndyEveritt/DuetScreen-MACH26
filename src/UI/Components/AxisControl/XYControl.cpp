@@ -237,7 +237,7 @@ namespace UI
 		UI_LOCK();
 		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
 
-		lv_obj_t* target = static_cast<lv_obj_t*>(lv_event_get_target(event));
+		lv_obj_t* target = lv_event_get_target_obj(event);
 
 		char axisLetter = '\0';
 		bool forward = true;

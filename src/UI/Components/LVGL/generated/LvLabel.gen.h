@@ -1,13 +1,14 @@
 /*
  * LvLabel.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
 #pragma once
 
 #include "UI/Components/LVGL/LvObj.h"
+#include <cstdarg>
 
 namespace UI
 {
@@ -15,18 +16,23 @@ namespace UI
 
     #if LV_USE_LABEL
 
-    class LvLabelGen : public LvObj
+    class LvLabel;
+
+    template <typename Derived>
+    class LvLabelMethodsGen
     {
       public:
-        LvLabelGen(const std::string& name, LvObj& parent);
-
         /**
          * Set a new text for a label. Memory will be allocated to store the text by the label.
          * @param text          '\0' terminated character string. NULL to refresh with the current text.
          * @note If `LV_USE_ARABIC_PERSIAN_CHARS` is enabled the text will be modified to have the correct Arabic
          * characters in it.
          */
-        void setText(const char * text);
+        void setText(const char * text) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_text(static_cast<Derived*>(this)->getRootPtr(), text);
+        }
 
         /**
          * Set a new formatted text for a label. Memory will be allocated to store the text by the label.
@@ -37,7 +43,14 @@ namespace UI
          * @endcode
          * @note If `LV_USE_ARABIC_PERSIAN_CHARS` is enabled the text will be modified to have the correct Arabic characters in it.
          */
-        void setTextFmt(const char * fmt, ...);
+        void setTextFmt(const char * fmt, ...) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            va_list args;
+            va_start(args, fmt);
+            lv_label_set_text_vfmt(static_cast<Derived*>(this)->getRootPtr(), fmt, args);
+            va_end(args);
+        }
 
         /**
          * Set a new formatted text for a label. Memory will be allocated to store the text by the label.
@@ -53,7 +66,11 @@ namespace UI
          * @endcode
          * @note It ignores `LV_USE_ARABIC_PERSIAN_CHARS`
          */
-        void setTextVfmt(const char * fmt, va_list args);
+        void setTextVfmt(const char * fmt, va_list args) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_text_vfmt(static_cast<Derived*>(this)->getRootPtr(), fmt, args);
+        }
 
         /**
          * Set a static text. It will not be saved by the label so the 'text' variable
@@ -61,33 +78,53 @@ namespace UI
          * @param text          pointer to a text. NULL to refresh with the current text.
          * @note It ignores `LV_USE_ARABIC_PERSIAN_CHARS`
          */
-        void setTextStatic(const char * text);
+        void setTextStatic(const char * text) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_text_static(static_cast<Derived*>(this)->getRootPtr(), text);
+        }
 
         /**
          * Set the behavior of the label with text longer than the object size
          * @param long_mode     the new mode from 'lv_label_long_mode' enum.
          *                      In LV_LONG_WRAP/DOT/SCROLL/SCROLL_CIRC the size of the label should be set AFTER this function
          */
-        void setLongMode(lv_label_long_mode_t long_mode);
+        void setLongMode(lv_label_long_mode_t long_mode) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_long_mode(static_cast<Derived*>(this)->getRootPtr(), long_mode);
+        }
 
         /**
          * Set where text selection should start
          * @param index     character index from where selection should start. `LV_LABEL_TEXT_SELECTION_OFF` for no selection
          */
-        void setTextSelectionStart(uint32_t index);
+        void setTextSelectionStart(uint32_t index) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_text_selection_start(static_cast<Derived*>(this)->getRootPtr(), index);
+        }
 
         /**
          * Set where text selection should end
          * @param index     character index where selection should end. `LV_LABEL_TEXT_SELECTION_OFF` for no selection
          */
-        void setTextSelectionEnd(uint32_t index);
+        void setTextSelectionEnd(uint32_t index) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_text_selection_end(static_cast<Derived*>(this)->getRootPtr(), index);
+        }
 
         /**
          * Enable the recoloring by in-line commands
          * @param en            true: enable recoloring, false: disable
          * Example: "This is a #ff0000 red# word"
          */
-        void setRecolor(bool en);
+        void setRecolor(bool en) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_recolor(static_cast<Derived*>(this)->getRootPtr(), en);
+        }
 
         #if LV_USE_TRANSLATION
 
@@ -96,7 +133,11 @@ namespace UI
          * The label text will automatically update when the language is changed via `lv_translation_set_language`.
          * @param tag          '\0' terminated character string.
          */
-        void setTranslationTag(const char * tag);
+        void setTranslationTag(const char * tag) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_set_translation_tag(static_cast<Derived*>(this)->getRootPtr(), tag);
+        }
 
         #endif
 
@@ -104,13 +145,21 @@ namespace UI
          * Get the text of a label
          * @return          the text of the label
          */
-        char * getText() const;
+        char * getText() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_get_text(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the long mode of a label
          * @return          the current long mode
          */
-        lv_label_long_mode_t getLongMode() const;
+        lv_label_long_mode_t getLongMode() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_get_long_mode(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the relative x and y coordinates of a letter
@@ -118,7 +167,11 @@ namespace UI
          *                  Expressed in character index, not byte index (different in UTF-8)
          * @param pos       store the result here (E.g. index = 0 gives 0;0 coordinates if the text if aligned to the left)
          */
-        void getLetterPos(uint32_t char_id, lv_point_t * pos) const;
+        void getLetterPos(uint32_t char_id, lv_point_t * pos) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_get_letter_pos(static_cast<const Derived*>(this)->getRootPtr(), char_id, pos);
+        }
 
         /**
          * Get the index of letter on a relative point of a label.
@@ -127,32 +180,52 @@ namespace UI
          * @return          The index of the letter on the 'pos_p' point (E.g. on 0;0 is the 0. letter if aligned to the left)
          *                  Expressed in character index and not byte index (different in UTF-8)
          */
-        uint32_t getLetterOn(lv_point_t * pos_in, bool bidi) const;
+        uint32_t getLetterOn(lv_point_t * pos_in, bool bidi) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_get_letter_on(static_cast<const Derived*>(this)->getRootPtr(), pos_in, bidi);
+        }
 
         /**
          * Check if a character is drawn under a point.
          * @param pos       Point to check for character under
          * @return          whether a character is drawn under the point
          */
-        bool isCharUnderPos(lv_point_t * pos) const;
+        bool isCharUnderPos(lv_point_t * pos) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_is_char_under_pos(static_cast<const Derived*>(this)->getRootPtr(), pos);
+        }
 
         /**
          * @brief Get the selection start index.
          * @return          selection start index. `LV_LABEL_TEXT_SELECTION_OFF` if nothing is selected.
          */
-        uint32_t getTextSelectionStart() const;
+        uint32_t getTextSelectionStart() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_get_text_selection_start(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * @brief Get the selection end index.
          * @return          selection end index. `LV_LABEL_TXT_SEL_OFF` if nothing is selected.
          */
-        uint32_t getTextSelectionEnd() const;
+        uint32_t getTextSelectionEnd() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_get_text_selection_end(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * @brief Get the recoloring attribute
          * @return          true: recoloring is enabled, false: recoloring is disabled
          */
-        bool getRecolor() const;
+        bool getRecolor() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_get_recolor(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         #if LV_USE_OBSERVER
 
@@ -165,7 +238,11 @@ namespace UI
          * @note            If `fmt == NULL` strings and pointers (`\0` terminated string) will be shown
          *                  as text as they are, integers as %d, floats as %0.1f
          */
-        lv_observer_t * bindText(lv_subject_t * subject, const char * fmt);
+        lv_observer_t * bindText(lv_subject_t * subject, const char * fmt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_label_bind_text(static_cast<Derived*>(this)->getRootPtr(), subject, fmt);
+        }
 
         #endif
 
@@ -175,7 +252,11 @@ namespace UI
          *                  0: before first char. LV_LABEL_POS_LAST: after last char.
          * @param txt       pointer to the text to insert
          */
-        void insText(uint32_t pos, const char * txt);
+        void insText(uint32_t pos, const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_ins_text(static_cast<Derived*>(this)->getRootPtr(), pos, txt);
+        }
 
         /**
          * Delete characters from a label. The label text cannot be static.
@@ -183,10 +264,22 @@ namespace UI
          *                  0: start in front of the first character
          * @param cnt       number of characters to cut
          */
-        void cutText(uint32_t pos, uint32_t cnt);
+        void cutText(uint32_t pos, uint32_t cnt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_label_cut_text(static_cast<Derived*>(this)->getRootPtr(), pos, cnt);
+        }
 
+    };
 
-      private:
+    class LvLabelGen : public LvObj, public LvLabelMethodsGen<LvLabel>
+    {
+      public:
+        LvLabelGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_label_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

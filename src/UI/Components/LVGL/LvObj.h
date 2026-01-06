@@ -11,6 +11,7 @@
 #include "LockWrapper.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/src/lv_conf_internal.h"
+#include <concepts>
 #include <functional>
 #include <list>
 #include <vector>
@@ -21,6 +22,13 @@
 
 namespace UI
 {
+	// Concept to ensure wrappers' Derived expose getRootPtr() returning lv_obj_t*
+	template <typename T>
+	concept HasGetRootPtr = requires(T& t, const T& ct) {
+		{ t.getRootPtr() } -> std::same_as<lv_obj_t*>;
+		{ ct.getRootPtr() } -> std::same_as<lv_obj_t*>;
+	};
+
 	void lv_timer_delete_safe(lv_timer_t* timer);
 
 	/**
@@ -252,7 +260,6 @@ namespace UI
 		virtual void onInit() {}
 		virtual void onShow() {}
 		virtual void onHide() {}
-		virtual void refresh() {}
 
 	  private:
 		lv_obj_t* m_root;

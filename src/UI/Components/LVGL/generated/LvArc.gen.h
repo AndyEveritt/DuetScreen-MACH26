@@ -1,7 +1,7 @@
 /*
  * LvArc.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,157 +15,254 @@ namespace UI
 
     #if LV_USE_ARC
 
-    class LvArcGen : public LvObj
+    class LvArc;
+
+    template <typename Derived>
+    class LvArcMethodsGen
     {
       public:
-        LvArcGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the start angle of an arc. 0 deg: right, 90 bottom, etc.
          * @param start     the start angle. (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        void setStartAngle(lv_value_precise_t start);
+        void setStartAngle(lv_value_precise_t start) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_start_angle(static_cast<Derived*>(this)->getRootPtr(), start);
+        }
 
         /**
          * Set the end angle of an arc. 0 deg: right, 90 bottom, etc.
          * @param end       the end angle  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        void setEndAngle(lv_value_precise_t end);
+        void setEndAngle(lv_value_precise_t end) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_end_angle(static_cast<Derived*>(this)->getRootPtr(), end);
+        }
 
         /**
          * Set the start and end angles
          * @param start     the start angle  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          * @param end       the end angle  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        void setAngles(lv_value_precise_t start, lv_value_precise_t end);
+        void setAngles(lv_value_precise_t start, lv_value_precise_t end) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_angles(static_cast<Derived*>(this)->getRootPtr(), start, end);
+        }
 
         /**
          * Set the start angle of an arc background. 0 deg: right, 90 bottom, etc.
          * @param start     the start angle  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        void setBgStartAngle(lv_value_precise_t start);
+        void setBgStartAngle(lv_value_precise_t start) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_bg_start_angle(static_cast<Derived*>(this)->getRootPtr(), start);
+        }
 
         /**
          * Set the start angle of an arc background. 0 deg: right, 90 bottom etc.
          * @param end       the end angle  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        void setBgEndAngle(lv_value_precise_t end);
+        void setBgEndAngle(lv_value_precise_t end) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_bg_end_angle(static_cast<Derived*>(this)->getRootPtr(), end);
+        }
 
         /**
          * Set the start and end angles of the arc background
          * @param start     the start angle  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          * @param end       the end angle  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        void setBgAngles(lv_value_precise_t start, lv_value_precise_t end);
+        void setBgAngles(lv_value_precise_t start, lv_value_precise_t end) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_bg_angles(static_cast<Derived*>(this)->getRootPtr(), start, end);
+        }
 
         /**
          * Set the rotation for the whole arc
          * @param rotation      rotation angle
          */
-        void setRotation(int32_t rotation);
+        void setRotation(int32_t rotation) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_rotation(static_cast<Derived*>(this)->getRootPtr(), rotation);
+        }
 
         /**
          * Set in which direction the indicator should grow.
          * @param type      arc's mode
          */
-        void setMode(lv_arc_mode_t type);
+        void setMode(lv_arc_mode_t type) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_mode(static_cast<Derived*>(this)->getRootPtr(), type);
+        }
 
         /**
          * Set a new value on the arc
          * @param value     new value
          */
-        void setValue(int32_t value);
+        void setValue(int32_t value) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_value(static_cast<Derived*>(this)->getRootPtr(), value);
+        }
 
         /**
          * Set minimum and the maximum values of an arc
          * @param min       minimum value
          * @param max       maximum value
          */
-        void setRange(int32_t min, int32_t max);
+        void setRange(int32_t min, int32_t max) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_range(static_cast<Derived*>(this)->getRootPtr(), min, max);
+        }
 
         /**
          * Set the minimum values of an arc
          * @param min       minimum value
          */
-        void setMinValue(int32_t min);
+        void setMinValue(int32_t min) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_min_value(static_cast<Derived*>(this)->getRootPtr(), min);
+        }
 
         /**
          * Set the maximum values of an arc
          * @param max       maximum value
          */
-        void setMaxValue(int32_t max);
+        void setMaxValue(int32_t max) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_max_value(static_cast<Derived*>(this)->getRootPtr(), max);
+        }
 
         /**
          * Set a change rate to limit the speed how fast the arc should reach the pressed point.
          * @param rate      the change rate
          */
-        void setChangeRate(uint32_t rate);
+        void setChangeRate(uint32_t rate) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_change_rate(static_cast<Derived*>(this)->getRootPtr(), rate);
+        }
 
         /**
          * Set an offset angle for the knob
          * @param offset    knob offset from main arc in degrees
          */
-        void setKnobOffset(int32_t offset);
+        void setKnobOffset(int32_t offset) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_set_knob_offset(static_cast<Derived*>(this)->getRootPtr(), offset);
+        }
 
         /**
          * Get the start angle of an arc.
          * @return          the start angle [0..360]  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        lv_value_precise_t getAngleStart() const;
+        lv_value_precise_t getAngleStart() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_angle_start(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the end angle of an arc.
          * @return          the end angle [0..360]  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        lv_value_precise_t getAngleEnd() const;
+        lv_value_precise_t getAngleEnd() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_angle_end(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the start angle of an arc background.
          * @return          the  start angle [0..360]  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        lv_value_precise_t getBgAngleStart() const;
+        lv_value_precise_t getBgAngleStart() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_bg_angle_start(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the end angle of an arc background.
          * @return          the end angle [0..360]  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
          */
-        lv_value_precise_t getBgAngleEnd() const;
+        lv_value_precise_t getBgAngleEnd() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_bg_angle_end(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the value of an arc
          * @return          the value of the arc
          */
-        int32_t getValue() const;
+        int32_t getValue() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_value(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the minimum value of an arc
          * @return          the minimum value of the arc
          */
-        int32_t getMinValue() const;
+        int32_t getMinValue() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_min_value(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the maximum value of an arc
          * @return          the maximum value of the arc
          */
-        int32_t getMaxValue() const;
+        int32_t getMaxValue() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_max_value(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get whether the arc is type or not.
          * @return          arc's mode
          */
-        lv_arc_mode_t getMode() const;
+        lv_arc_mode_t getMode() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_mode(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the rotation for the whole arc
          * @return          arc's current rotation
          */
-        int32_t getRotation() const;
+        int32_t getRotation() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_rotation(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the current knob angle offset
          * @return          arc's current knob offset
          */
-        int32_t getKnobOffset() const;
+        int32_t getKnobOffset() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_get_knob_offset(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         #if LV_USE_OBSERVER
 
@@ -174,7 +271,11 @@ namespace UI
          * @param subject   pointer to Subject
          * @return          pointer to newly-created Observer
          */
-        lv_observer_t * bindValue(lv_subject_t * subject);
+        lv_observer_t * bindValue(lv_subject_t * subject) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_arc_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
+        }
 
         #endif
 
@@ -183,17 +284,33 @@ namespace UI
          * @param obj_to_align  pointer to an object to align
          * @param r_offset      consider the radius larger with this value (< 0: for smaller radius)
          */
-        void alignObjToAngle(lv_obj_t * obj_to_align, int32_t r_offset);
+        void alignObjToAngle(lv_obj_t * obj_to_align, int32_t r_offset) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_align_obj_to_angle(static_cast<Derived*>(this)->getRootPtr(), obj_to_align, r_offset);
+        }
 
         /**
          * Rotate an object to the current position of the arc (knob)
          * @param obj_to_rotate  pointer to an object to rotate
          * @param r_offset       consider the radius larger with this value (< 0: for smaller radius)
          */
-        void rotateObjToAngle(lv_obj_t * obj_to_rotate, int32_t r_offset);
+        void rotateObjToAngle(lv_obj_t * obj_to_rotate, int32_t r_offset) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_arc_rotate_obj_to_angle(static_cast<Derived*>(this)->getRootPtr(), obj_to_rotate, r_offset);
+        }
 
+    };
 
-      private:
+    class LvArcGen : public LvObj, public LvArcMethodsGen<LvArc>
+    {
+      public:
+        LvArcGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_arc_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

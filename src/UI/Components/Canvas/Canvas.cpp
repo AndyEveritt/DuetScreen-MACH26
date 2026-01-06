@@ -20,22 +20,6 @@ namespace UI
 		: LvObj(lv_obj_create, name, parent)
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_title("title", getRoot())
-		, m_canvas(lv_canvas_create(getRootPtr()))
-		, m_vScale(lv_scale_create(getRootPtr()))
-		, m_hScale(lv_scale_create(getRootPtr()))
-	{
-		init();
-	}
-
-	Canvas::Canvas(const std::string& name, LvObj& parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
-		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_title("title", getRoot())
-		, m_canvas(lv_canvas_create(getRootPtr()))
-		, m_vScale(lv_scale_create(getRootPtr()))
-		, m_hScale(lv_scale_create(getRootPtr()))
 	{
 		init();
 	}
@@ -57,34 +41,34 @@ namespace UI
 		// Layout
 		setGridDsc(m_columnDsc, m_rowDsc);
 		setGridCell(m_title, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		lv_obj_set_grid_cell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
-		lv_obj_set_grid_cell(m_canvas, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
+		setGridCell(m_canvas, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		lv_obj_set_style_pad_top(getRootPtr(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_right(getRootPtr(), 20, LV_PART_MAIN);
-		lv_obj_set_style_pad_left(getRootPtr(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_bottom(getRootPtr(), 5, LV_PART_MAIN);
+		setStylePad(10, LV_PART_MAIN, Padding::TOP);
+		setStylePad(20, LV_PART_MAIN, Padding::RIGHT);
+		setStylePad(10, LV_PART_MAIN, Padding::LEFT);
+		setStylePad(5, LV_PART_MAIN, Padding::BOTTOM);
 
 		// Title
 		m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 		// Horizontal scale
-		lv_obj_set_height(m_hScale, LV_SIZE_CONTENT);
-		lv_scale_set_mode(m_hScale, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
-		lv_scale_set_label_show(m_hScale, true);
-		lv_scale_set_total_tick_count(m_hScale, 17);
-		lv_scale_set_major_tick_every(m_hScale, 4);
+		m_hScale.setHeight(LV_SIZE_CONTENT);
+		m_hScale.setMode(LV_SCALE_MODE_HORIZONTAL_BOTTOM);
+		m_hScale.setLabelShow(true);
+		m_hScale.setTotalTickCount(17);
+		m_hScale.setMajorTickEvery(4);
 
 		// Vertical scale
-		lv_obj_set_width(m_vScale, LV_SIZE_CONTENT);
-		lv_scale_set_mode(m_vScale, LV_SCALE_MODE_VERTICAL_LEFT);
-		lv_scale_set_label_show(m_vScale, true);
-		lv_scale_set_total_tick_count(m_vScale, 17);
-		lv_scale_set_major_tick_every(m_vScale, 4);
+		m_vScale.setWidth(LV_SIZE_CONTENT);
+		m_vScale.setMode(LV_SCALE_MODE_VERTICAL_LEFT);
+		m_vScale.setLabelShow(true);
+		m_vScale.setTotalTickCount(17);
+		m_vScale.setMajorTickEvery(4);
 
 		// Canvas
-		lv_image_set_inner_align(m_canvas, LV_IMAGE_ALIGN_STRETCH);
+		m_canvas.setInnerAlign(LV_IMAGE_ALIGN_STRETCH);
 	}
 
 	void Canvas::setTitle(std::string_view title)
@@ -102,14 +86,14 @@ namespace UI
 	void Canvas::showXScale(const bool show)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(m_hScale, LV_OBJ_FLAG_HIDDEN, !show);
+		m_hScale.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 		m_rowDsc[2] = show ? s_scaleSize : 0;
 	}
 
 	void Canvas::showYScale(const bool show)
 	{
 		UI_LOCK();
-		lv_obj_set_flag(m_vScale, LV_OBJ_FLAG_HIDDEN, !show);
+		m_vScale.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 		m_columnDsc[0] = show ? s_scaleSize : 0;
 	}
 
@@ -117,8 +101,8 @@ namespace UI
 	{
 		UI_LOCK();
 		range_t range;
-		range.min = lv_scale_get_range_min_value(m_hScale);
-		range.max = lv_scale_get_range_max_value(m_hScale);
+		range.min = m_hScale.getRangeMinValue();
+		range.max = m_hScale.getRangeMaxValue();
 		return range;
 	}
 
@@ -126,82 +110,65 @@ namespace UI
 	{
 		UI_LOCK();
 		range_t range;
-		range.min = lv_scale_get_range_min_value(m_vScale);
-		range.max = lv_scale_get_range_max_value(m_vScale);
+		range.min = m_vScale.getRangeMinValue();
+		range.max = m_vScale.getRangeMaxValue();
 		return range;
 	}
 
 	void Canvas::setXRange(Canvas::range_t range)
 	{
 		UI_LOCK();
-		m_xLabels.clear();
-		if (m_xLabelPtr != nullptr)
-		{
-			delete[] m_xLabelPtr;
-			m_xLabelPtr = nullptr;
-		}
-		lv_scale_set_text_src(m_hScale, nullptr);
-		lv_scale_set_range(m_hScale, range.min, range.max);
+		m_xLabelPtr.clear();
+		m_hScale.setTextSrc(m_xLabelPtr);
+		m_hScale.setRange(range.min, range.max);
 	}
 
 	void Canvas::setYRange(Canvas::range_t range)
 	{
 		UI_LOCK();
-		m_yLabels.clear();
-		if (m_yLabelPtr != nullptr)
-		{
-			delete[] m_yLabelPtr;
-			m_yLabelPtr = nullptr;
-		}
-		lv_scale_set_text_src(m_vScale, nullptr);
-		lv_scale_set_range(m_vScale, range.min, range.max);
+		m_yLabelPtr.clear();
+		m_vScale.setTextSrc(m_yLabelPtr);
+		m_vScale.setRange(range.min, range.max);
 	}
 
-	void Canvas::createLabels(Canvas::range_float_t range,
-							  uint32_t ticks,
-							  std::vector<std::string>& vec,
-							  const char**& labels)
+	void Canvas::createLabels(Canvas::range_float_t range, uint32_t ticks, std::vector<const char*>& labels)
 	{
 		UI_LOCK();
-		vec.clear();
-		vec.reserve(ticks);
+
+		for (const char* label : labels)
+		{
+			delete[] label;
+		}
+
+		labels.clear();
+		labels.reserve(ticks + 1);
 		float step = (range.max - range.min) / (float)(ticks - 1);
 		for (uint32_t i = 0; i < ticks; ++i)
 		{
-			vec.emplace_back(fmt::format("{:g}", range.min + step * (float)i));
+			std::string label_txt = fmt::format("{:g}", range.min + step * (float)i);
+			char* label_cstr = new char[label_txt.size() + 1];
+			std::strncpy(label_cstr, label_txt.c_str(), label_txt.size() + 1);
+			labels.push_back(label_cstr);
 		}
-
-		// Delete existing labels if any
-		if (labels != nullptr)
-		{
-			delete[] labels;
-			labels = nullptr;
-		}
-
-		labels = new const char*[vec.size() + 1];
-		for (size_t i = 0; i < vec.size(); ++i)
-		{
-			labels[i] = vec[i].c_str();
-		}
-		labels[vec.size()] = nullptr;
+		labels.push_back(nullptr);
 	}
 
 	void Canvas::setXRange(Canvas::range_float_t range)
 	{
 		UI_LOCK();
-		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_hScale) / lv_scale_get_major_tick_every(m_hScale);
-		createLabels(range, ticks, m_xLabels, m_xLabelPtr);
-		lv_scale_set_range(m_hScale, static_cast<int32_t>(range.min), static_cast<int32_t>(range.max));
-		lv_scale_set_text_src(m_hScale, m_xLabelPtr);
+		uint32_t ticks = 1 + m_hScale.getTotalTickCount() / m_hScale.getMajorTickEvery();
+		createLabels(range, ticks, m_xLabelPtr);
+		m_hScale.setRange(static_cast<int32_t>(range.min), static_cast<int32_t>(range.max));
+		m_hScale.setTextSrc(m_xLabelPtr);
 	}
 
 	void Canvas::setYRange(Canvas::range_float_t range)
 	{
 		UI_LOCK();
-		uint32_t ticks = 1 + lv_scale_get_total_tick_count(m_vScale) / lv_scale_get_major_tick_every(m_vScale);
-		createLabels(range, ticks, m_yLabels, m_yLabelPtr);
-		lv_scale_set_range(m_vScale, static_cast<int32_t>(range.min), static_cast<int32_t>(range.max));
-		lv_scale_set_text_src(m_vScale, m_yLabelPtr);
+		uint32_t ticks = 1 + m_vScale.getTotalTickCount() / m_vScale.getMajorTickEvery();
+		createLabels(range, ticks, m_yLabelPtr);
+		m_vScale.setRange(static_cast<int32_t>(range.min), static_cast<int32_t>(range.max));
+		m_vScale.setTextSrc(m_yLabelPtr);
 	}
 
 	bool Canvas::pxToPos(size_t px, size_t py, float& x, float& y) const
@@ -301,7 +268,7 @@ namespace UI
 		width = std::max(width, 1u);
 		height = std::max(height, 1u);
 		m_buf = lv_draw_buf_create(width, height, lv_display_get_color_format(getDisplayPtr()), 0);
-		lv_canvas_set_draw_buf(m_canvas, m_buf);
+		m_canvas.setDrawBuf(m_buf);
 		clear();
 	}
 
@@ -334,10 +301,9 @@ namespace UI
 
 	void Canvas::drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa)
 	{
-		UNUSED(opa);
 		UI_LOCK();
 		// Draw the pixel
-		lv_canvas_set_px(getCanvasObj(), px, py, color, LV_OPA_COVER);
+		m_canvas.setPx(px, py, color, opa);
 	}
 
 	void Canvas::drawRect(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa)
@@ -371,7 +337,7 @@ namespace UI
 		dsc.radius = radius;
 
 		lv_layer_t layer;
-		lv_canvas_init_layer(m_canvas, &layer);
+		m_canvas.initLayer(&layer);
 
 		uint32_t res_x, res_y;
 		getResolution(res_x, res_y);
@@ -384,7 +350,7 @@ namespace UI
 
 		lv_draw_rect(&layer, &dsc, &area);
 
-		lv_canvas_finish_layer(m_canvas, &layer);
+		m_canvas.finishLayer(&layer);
 	}
 
 	void Canvas::drawLine(lv_point_t p1, lv_point_t p2, lv_color_t color, lv_opa_t opa)
@@ -430,11 +396,11 @@ namespace UI
 		line_dsc.color = color;
 
 		lv_layer_t layer;
-		lv_canvas_init_layer(m_canvas, &layer);
+		m_canvas.initLayer(&layer);
 
 		lv_draw_line(&layer, &line_dsc);
 
-		lv_canvas_finish_layer(m_canvas, &layer);
+		m_canvas.finishLayer(&layer);
 	}
 
 	void Canvas::drawCircle(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa)
@@ -477,7 +443,7 @@ namespace UI
 		dsc.align = LV_TEXT_ALIGN_CENTER;
 
 		lv_layer_t layer;
-		lv_canvas_init_layer(m_canvas, &layer);
+		m_canvas.initLayer(&layer);
 
 		uint32_t res_x, res_y;
 		getResolution(res_x, res_y);
@@ -500,12 +466,12 @@ namespace UI
 
 		lv_draw_label(&layer, &dsc, &area);
 
-		lv_canvas_finish_layer(m_canvas, &layer);
+		m_canvas.finishLayer(&layer);
 	}
 
 	lv_color_t Canvas::getPx(size_t px, size_t py) const
 	{
-		lv_color32_t color32 = lv_canvas_get_px(m_canvas, px, py);
+		lv_color32_t color32 = m_canvas.getPx(px, py);
 		lv_color_t color = {color32.blue, color32.green, color32.red};
 		return color;
 	}
@@ -515,6 +481,6 @@ namespace UI
 		UI_LOCK();
 		lv_style_value_t bg_color;
 		lv_style_get_prop(Themes::getLvglStyles().canvas, LV_STYLE_BG_COLOR, &bg_color);
-		lv_canvas_fill_bg(m_canvas, bg_color.color, LV_OPA_TRANSP);
+		m_canvas.fillBg(bg_color.color, LV_OPA_TRANSP);
 	}
 } // namespace UI

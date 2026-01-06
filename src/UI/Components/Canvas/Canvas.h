@@ -8,6 +8,8 @@
 #pragma once
 
 #include "UI/Components/Button/Button.h"
+#include "UI/Components/LVGL/LvCanvas.h"
+#include "UI/Components/LVGL/LvScale.h"
 #include "UI/Core/View.h"
 #include <map>
 #include <memory>
@@ -30,7 +32,6 @@ namespace UI
 		};
 
 		Canvas(const std::string& name, LvObj& parent);
-		Canvas(const std::string& name, LvObj& parent, layout_t layout);
 		virtual ~Canvas();
 
 		range_t getXRange() const;
@@ -67,28 +68,26 @@ namespace UI
 
 		lv_color_t getPx(size_t px, size_t py) const;
 
-		lv_obj_t* getCanvasObj() const { return m_canvas; }
+		LvCanvas& getCanvas() { return m_canvas; }
 
 		void clear();
 
 	  private:
 		void init();
 
-		void createLabels(range_float_t range, uint32_t ticks, std::vector<std::string>& vec, const char**& labels);
+		void createLabels(range_float_t range, uint32_t ticks, std::vector<const char*>& labels);
 
 		int32_t m_columnDsc[3];
 		int32_t m_rowDsc[4];
 
 		lv_draw_buf_t* m_buf = nullptr;
 
-		LvLabel m_title;
-		lv_obj_t* m_canvas;
-		lv_obj_t* m_vScale;
-		lv_obj_t* m_hScale;
+		LvLabel m_title{"title", getRoot()};
+		LvCanvas m_canvas{"canvas", getRoot()};
+		LvScale m_vScale{"vscale", getRoot()};
+		LvScale m_hScale{"hscale", getRoot()};
 
-		std::vector<std::string> m_xLabels;
-		std::vector<std::string> m_yLabels;
-		const char** m_xLabelPtr = nullptr;
-		const char** m_yLabelPtr = nullptr;
+		std::vector<const char*> m_xLabelPtr;
+		std::vector<const char*> m_yLabelPtr;
 	};
 } // namespace UI

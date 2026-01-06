@@ -1,7 +1,7 @@
 /*
  * LvImagebutton.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,11 +15,12 @@ namespace UI
 
     #if LV_USE_IMAGEBUTTON
 
-    class LvImagebuttonGen : public LvObj
+    class LvImagebutton;
+
+    template <typename Derived>
+    class LvImagebuttonMethodsGen
     {
       public:
-        LvImagebuttonGen(const std::string& name, LvObj& parent);
-
         /**
          * Set images for a state of the image button
          * @param state         for which state set the new image
@@ -30,7 +31,11 @@ namespace UI
          * @param src_right     pointer to an image source for the right side of the button (a C array or path
          * to a file)
          */
-        void setSrc(lv_imagebutton_state_t state, const void * src_left, const void * src_mid, const void * src_right);
+        void setSrc(lv_imagebutton_state_t state, const void * src_left, const void * src_mid, const void * src_right) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_imagebutton_set_src(static_cast<Derived*>(this)->getRootPtr(), state, src_left, src_mid, src_right);
+        }
 
         /**
          * Set the left image for a state of the image button
@@ -38,7 +43,11 @@ namespace UI
          * @param src_left      pointer to an image source for the left side of the button
          *                      (a C array or path to a file)
          */
-        void setSrcLeft(lv_imagebutton_state_t state, const void * src_left);
+        void setSrcLeft(lv_imagebutton_state_t state, const void * src_left) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_imagebutton_set_src_left(static_cast<Derived*>(this)->getRootPtr(), state, src_left);
+        }
 
         /**
          * Set the right image for a state of the image button
@@ -46,7 +55,11 @@ namespace UI
          * @param src_right      pointer to an image source for the right side of the button
          *                      (a C array or path to a file)
          */
-        void setSrcRight(lv_imagebutton_state_t state, const void * src_right);
+        void setSrcRight(lv_imagebutton_state_t state, const void * src_right) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_imagebutton_set_src_right(static_cast<Derived*>(this)->getRootPtr(), state, src_right);
+        }
 
         /**
          * Set the middle image for a state of the image button
@@ -54,37 +67,65 @@ namespace UI
          * @param src_mid       pointer to an image source for the middle of the button
          *                      (a C array or path to a file)
          */
-        void setSrcMid(lv_imagebutton_state_t state, const void * src_mid);
+        void setSrcMid(lv_imagebutton_state_t state, const void * src_mid) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_imagebutton_set_src_mid(static_cast<Derived*>(this)->getRootPtr(), state, src_mid);
+        }
 
         /**
          * Use this function instead of `lv_obj_add/remove_state` to set a state manually
          * @param state         the new state
          */
-        void setState(lv_imagebutton_state_t state);
+        void setState(lv_imagebutton_state_t state) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_imagebutton_set_state(static_cast<Derived*>(this)->getRootPtr(), state);
+        }
 
         /**
          * Get the left image in a given state
          * @param state         the state where to get the image (from `lv_button_state_t`) `
          * @return              pointer to the left image source (a C array or path to a file)
          */
-        const void * getSrcLeft(lv_imagebutton_state_t state) const;
+        const void * getSrcLeft(lv_imagebutton_state_t state) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_imagebutton_get_src_left(static_cast<const Derived*>(this)->getRootPtr(), state);
+        }
 
         /**
          * Get the middle image in a given state
          * @param state         the state where to get the image (from `lv_button_state_t`) `
          * @return              pointer to the middle image source (a C array or path to a file)
          */
-        const void * getSrcMiddle(lv_imagebutton_state_t state) const;
+        const void * getSrcMiddle(lv_imagebutton_state_t state) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_imagebutton_get_src_middle(static_cast<const Derived*>(this)->getRootPtr(), state);
+        }
 
         /**
          * Get the right image in a given state
          * @param state         the state where to get the image (from `lv_button_state_t`) `
          * @return              pointer to the left image source (a C array or path to a file)
          */
-        const void * getSrcRight(lv_imagebutton_state_t state) const;
+        const void * getSrcRight(lv_imagebutton_state_t state) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_imagebutton_get_src_right(static_cast<const Derived*>(this)->getRootPtr(), state);
+        }
 
+    };
 
-      private:
+    class LvImagebuttonGen : public LvObj, public LvImagebuttonMethodsGen<LvImagebutton>
+    {
+      public:
+        LvImagebuttonGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_imagebutton_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

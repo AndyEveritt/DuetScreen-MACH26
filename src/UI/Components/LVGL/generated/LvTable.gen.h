@@ -1,7 +1,7 @@
 /*
  * LvTable.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,11 +15,12 @@ namespace UI
 
     #if LV_USE_TABLE
 
-    class LvTableGen : public LvObj
+    class LvTable;
+
+    template <typename Derived>
+    class LvTableMethodsGen
     {
       public:
-        LvTableGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the value of a cell.
          * @param row           id of the row [0 .. row_cnt -1]
@@ -27,26 +28,42 @@ namespace UI
          * @param txt           text to display in the cell. It will be copied and saved so this variable is not required after this function call.
          * @note                New roes/columns are added automatically if required
          */
-        void setCellValue(uint32_t row, uint32_t col, const char * txt);
+        void setCellValue(uint32_t row, uint32_t col, const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_set_cell_value(static_cast<Derived*>(this)->getRootPtr(), row, col, txt);
+        }
 
         /**
          * Set the number of rows
          * @param row_cnt       number of rows
          */
-        void setRowCount(uint32_t row_cnt);
+        void setRowCount(uint32_t row_cnt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_set_row_count(static_cast<Derived*>(this)->getRootPtr(), row_cnt);
+        }
 
         /**
          * Set the number of columns
          * @param col_cnt   number of columns.
          */
-        void setColumnCount(uint32_t col_cnt);
+        void setColumnCount(uint32_t col_cnt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_set_column_count(static_cast<Derived*>(this)->getRootPtr(), col_cnt);
+        }
 
         /**
          * Set the width of a column
          * @param col_id    id of the column [0 .. LV_TABLE_COL_MAX -1]
          * @param w         width of the column
          */
-        void setColumnWidth(uint32_t col_id, int32_t w);
+        void setColumnWidth(uint32_t col_id, int32_t w) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_set_column_width(static_cast<Derived*>(this)->getRootPtr(), col_id, w);
+        }
 
         /**
          * Add control bits to the cell.
@@ -54,7 +71,11 @@ namespace UI
          * @param col       id of the column [0 .. col_cnt -1]
          * @param ctrl      OR-ed values from ::lv_table_cell_ctrl_t
          */
-        void setCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl);
+        void setCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_set_cell_ctrl(static_cast<Derived*>(this)->getRootPtr(), row, col, ctrl);
+        }
 
         /**
          * Clear control bits of the cell.
@@ -62,7 +83,11 @@ namespace UI
          * @param col       id of the column [0 .. col_cnt -1]
          * @param ctrl      OR-ed values from ::lv_table_cell_ctrl_t
          */
-        void clearCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl);
+        void clearCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_clear_cell_ctrl(static_cast<Derived*>(this)->getRootPtr(), row, col, ctrl);
+        }
 
         /**
          * Add custom user data to the cell.
@@ -73,14 +98,22 @@ namespace UI
          *                  and it will be freed automatically when the table is deleted or
          *                  when the cell is dropped due to lower row or column count.
          */
-        void setCellUserData(uint16_t row, uint16_t col, void * user_data);
+        void setCellUserData(uint16_t row, uint16_t col, void * user_data) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_set_cell_user_data(static_cast<Derived*>(this)->getRootPtr(), row, col, user_data);
+        }
 
         /**
          * Set the selected cell
          * @param row       id of the cell row to select
          * @param col       id of the cell column to select
          */
-        void setSelectedCell(uint16_t row, uint16_t col);
+        void setSelectedCell(uint16_t row, uint16_t col) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_set_selected_cell(static_cast<Derived*>(this)->getRootPtr(), row, col);
+        }
 
         /**
          * Get the value of a cell.
@@ -88,26 +121,42 @@ namespace UI
          * @param col       id of the column [0 .. col_cnt -1]
          * @return          text in the cell
          */
-        const char * getCellValue(uint32_t row, uint32_t col) const;
+        const char * getCellValue(uint32_t row, uint32_t col) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_table_get_cell_value(static_cast<const Derived*>(this)->getRootPtr(), row, col);
+        }
 
         /**
          * Get the number of rows.
          * @return          number of rows.
          */
-        uint32_t getRowCount() const;
+        uint32_t getRowCount() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_table_get_row_count(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the number of columns.
          * @return          number of columns.
          */
-        uint32_t getColumnCount() const;
+        uint32_t getColumnCount() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_table_get_column_count(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the width of a column
          * @param col       id of the column [0 .. LV_TABLE_COL_MAX -1]
          * @return          width of the column
          */
-        int32_t getColumnWidth(uint32_t col) const;
+        int32_t getColumnWidth(uint32_t col) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_table_get_column_width(static_cast<const Derived*>(this)->getRootPtr(), col);
+        }
 
         /**
          * Get whether a cell has the control bits
@@ -116,24 +165,44 @@ namespace UI
          * @param ctrl      OR-ed values from ::lv_table_cell_ctrl_t
          * @return          true: all control bits are set; false: not all control bits are set
          */
-        bool hasCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl) const;
+        bool hasCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_table_has_cell_ctrl(static_cast<const Derived*>(this)->getRootPtr(), row, col, ctrl);
+        }
 
         /**
          * Get the selected cell (pressed and or focused)
          * @param row       pointer to variable to store the selected row (LV_TABLE_CELL_NONE: if no cell selected)
          * @param col       pointer to variable to store the selected column  (LV_TABLE_CELL_NONE: if no cell selected)
          */
-        void getSelectedCell(uint32_t * row, uint32_t * col) const;
+        void getSelectedCell(uint32_t * row, uint32_t * col) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_table_get_selected_cell(static_cast<const Derived*>(this)->getRootPtr(), row, col);
+        }
 
         /**
          * Get custom user data to the cell.
          * @param row       id of the row [0 .. row_cnt -1]
          * @param col       id of the column [0 .. col_cnt -1]
          */
-        void * getCellUserData(uint16_t row, uint16_t col) const;
+        void * getCellUserData(uint16_t row, uint16_t col) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_table_get_cell_user_data(static_cast<const Derived*>(this)->getRootPtr(), row, col);
+        }
 
+    };
 
-      private:
+    class LvTableGen : public LvObj, public LvTableMethodsGen<LvTable>
+    {
+      public:
+        LvTableGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_table_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

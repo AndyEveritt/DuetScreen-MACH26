@@ -1,35 +1,5 @@
 target_sources(
   DuetScreen.lib
   PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/Lv3dtexture.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvArc.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvArclabel.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvBar.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvButtonmatrix.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvCalendar.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvCanvas.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvChart.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvCheckbox.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvDropdown.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvImage.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvImagebutton.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvKeyboard.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvLabel.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvLed.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvLine.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvList.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvLottie.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvMenu.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvMsgbox.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvRoller.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvScale.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvSlider.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvSpinbox.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvSpinner.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvSwitch.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvTable.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvTabview.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvTextarea.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvTileview.gen.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/LvWin.gen.cpp
+
 )

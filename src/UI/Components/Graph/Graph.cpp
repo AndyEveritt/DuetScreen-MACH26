@@ -16,21 +16,7 @@ namespace UI
 	static lv_color_t s_hiddenColor = lv_color_darken(lv_color_white(), 50);
 
 	Graph::Graph(const std::string& name, LvObj& parent)
-		: LvObj(lv_obj_create, name, parent)
-		, m_chart(lv_chart_create(getRootPtr()))
-		, m_vScale(lv_scale_create(getRootPtr()))
-		, m_hScale(lv_scale_create(getRootPtr()))
-		, m_legend("legend", getRoot())
-	{
-		init();
-	}
-
-	Graph::Graph(const std::string& name, LvObj& parent, layout_t layout)
-		: LvObj(lv_obj_create, name, parent, layout)
-		, m_chart(lv_chart_create(getRootPtr()))
-		, m_vScale(lv_scale_create(getRootPtr()))
-		, m_hScale(lv_scale_create(getRootPtr()))
-		, m_legend("legend", getRoot())
+		: LvContainer(name, parent)
 	{
 		init();
 	}
@@ -49,9 +35,9 @@ namespace UI
 		m_rowDsc[1] = s_scaleSize;
 		m_rowDsc[2] = LV_GRID_TEMPLATE_LAST;
 		setGridDsc(m_columnDsc, m_rowDsc);
-		lv_obj_set_grid_cell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		lv_obj_set_grid_cell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		lv_obj_set_grid_cell(m_chart, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_chart, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 		setGridCell(m_legend, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 
 		lv_obj_set_style_pad_top(getRootPtr(), 20, LV_PART_MAIN);
@@ -61,18 +47,18 @@ namespace UI
 
 		// Chart
 		// Horizontal scale
-		lv_scale_set_mode(m_hScale, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
-		lv_scale_set_label_show(m_hScale, true);
+		m_hScale.setMode(LV_SCALE_MODE_HORIZONTAL_BOTTOM);
+		m_hScale.setLabelShow(true);
 
 		// Vertical scale
-		lv_scale_set_mode(m_vScale, LV_SCALE_MODE_VERTICAL_LEFT);
-		lv_scale_set_label_show(m_vScale, true);
-		lv_scale_set_total_tick_count(m_vScale, 21);
-		lv_scale_set_major_tick_every(m_vScale, 4);
+		m_vScale.setMode(LV_SCALE_MODE_VERTICAL_LEFT);
+		m_vScale.setLabelShow(true);
+		m_vScale.setTotalTickCount(21);
+		m_vScale.setMajorTickEvery(4);
 
 		// Chart
-		lv_chart_set_type(m_chart, LV_CHART_TYPE_LINE);
-		lv_chart_set_update_mode(m_chart, LV_CHART_UPDATE_MODE_SHIFT);
+		m_chart.setType(LV_CHART_TYPE_LINE);
+		m_chart.setUpdateMode(LV_CHART_UPDATE_MODE_SHIFT);
 
 		// Legend
 		m_legend.setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -92,8 +78,8 @@ namespace UI
 	{
 		UI_LOCK();
 		range_t range;
-		range.min = lv_scale_get_range_min_value(m_hScale);
-		range.max = lv_scale_get_range_max_value(m_hScale);
+		range.min = m_hScale.getRangeMinValue();
+		range.max = m_hScale.getRangeMaxValue();
 		return range;
 	}
 
@@ -101,29 +87,29 @@ namespace UI
 	{
 		UI_LOCK();
 		range_t range;
-		range.min = lv_scale_get_range_min_value(m_vScale);
-		range.max = lv_scale_get_range_max_value(m_vScale);
+		range.min = m_vScale.getRangeMinValue();
+		range.max = m_vScale.getRangeMaxValue();
 		return range;
 	}
 
 	void Graph::setXRange(Graph::range_t range)
 	{
 		UI_LOCK();
-		lv_scale_set_range(m_hScale, range.min, range.max);
-		lv_chart_set_axis_range(m_chart, LV_CHART_AXIS_PRIMARY_X, range.min, range.max);
+		m_hScale.setRange(range.min, range.max);
+		m_chart.setAxisRange(LV_CHART_AXIS_PRIMARY_X, range.min, range.max);
 	}
 
 	void Graph::setYRange(Graph::range_t range)
 	{
 		UI_LOCK();
-		lv_scale_set_range(m_vScale, range.min, range.max);
-		lv_chart_set_axis_range(m_chart, LV_CHART_AXIS_PRIMARY_Y, range.min, range.max);
+		m_vScale.setRange(range.min, range.max);
+		m_chart.setAxisRange(LV_CHART_AXIS_PRIMARY_Y, range.min, range.max);
 	}
 
 	void Graph::setXCount(int32_t count)
 	{
 		UI_LOCK();
-		lv_chart_set_point_count(m_chart, count);
+		m_chart.setPointCount(count);
 	}
 
 	void Graph::setSeriesCount(size_t count)
@@ -137,7 +123,7 @@ namespace UI
 		{
 			for (size_t i = count; i < m_series.size(); ++i)
 			{
-				lv_chart_remove_series(m_chart, m_series[i].series);
+				m_chart.removeSeries(m_series[i].series);
 			}
 			m_series.resize(count);
 			return;
@@ -158,7 +144,7 @@ namespace UI
 	bool Graph::createSeries(lv_color_t color, const std::string& displayName)
 	{
 		UI_LOCK();
-		lv_chart_series_t* series = lv_chart_add_series(m_chart, color, LV_CHART_AXIS_PRIMARY_Y);
+		lv_chart_series_t* series = m_chart.addSeries(color, LV_CHART_AXIS_PRIMARY_Y);
 
 		if (series == nullptr)
 		{
@@ -218,7 +204,7 @@ namespace UI
 			LOG_WARN("Cannot show/hide series, series not found");
 			return;
 		}
-		lv_chart_hide_series(m_chart, series->series, !show);
+		m_chart.hideSeries(series->series, !show);
 		series->legendObj->setChecked(show);
 	}
 
@@ -227,9 +213,9 @@ namespace UI
 		UI_LOCK();
 		for (auto& series : m_series)
 		{
-			lv_chart_remove_series(m_chart, series.series);
+			m_chart.removeSeries(series.series);
 		}
-		lv_chart_refresh(m_chart);
+		m_chart.refresh();
 		m_series.clear();
 	}
 
@@ -242,8 +228,8 @@ namespace UI
 			LOG_WARN("Cannot clear series, series not found");
 			return;
 		}
-		lv_chart_remove_series(m_chart, series->series);
-		lv_chart_refresh(m_chart);
+		m_chart.removeSeries(series->series);
+		m_chart.refresh();
 		m_series.erase(m_series.begin() + index);
 	}
 
@@ -256,7 +242,7 @@ namespace UI
 			LOG_WARN("Cannot add data to series, series not found");
 			return;
 		}
-		lv_chart_set_next_value(m_chart, series->series, value);
+		m_chart.setNextValue(series->series, value);
 	}
 
 	void Graph::legendEvent(lv_event_t* e)
@@ -273,11 +259,10 @@ namespace UI
 	void Graph::setSeriesColor(series_t& series, lv_color_t color)
 	{
 		UI_LOCK();
-		lv_chart_set_series_color(m_chart, series.series, color);
+		m_chart.setSeriesColor(series.series, color);
 		series.color = color;
 
-		auto legendObj = series.legendObj->getRootPtr();
-		lv_obj_set_style_bg_color(legendObj, color, LV_STATE_CHECKED);
-		lv_obj_set_style_bg_color(legendObj, s_hiddenColor, LV_STATE_DEFAULT);
+		series.legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
+		series.legendObj->setStyleBgColor(s_hiddenColor, LV_STATE_DEFAULT);
 	}
 } // namespace UI

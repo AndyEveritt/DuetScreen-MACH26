@@ -1,7 +1,7 @@
 /*
  * LvRoller.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,24 +15,33 @@ namespace UI
 
     #if LV_USE_ROLLER
 
-    class LvRollerGen : public LvObj
+    class LvRoller;
+
+    template <typename Derived>
+    class LvRollerMethodsGen
     {
       public:
-        LvRollerGen(const std::string& name, LvObj& parent);
-
         /**
          * Set the options on a roller
          * @param options   a string with '\n' separated options. E.g. "One\nTwo\nThree"
          * @param mode      `LV_ROLLER_MODE_NORMAL` or `LV_ROLLER_MODE_INFINITE`
          */
-        void setOptions(const char * options, lv_roller_mode_t mode);
+        void setOptions(const char * options, lv_roller_mode_t mode) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_roller_set_options(static_cast<Derived*>(this)->getRootPtr(), options, mode);
+        }
 
         /**
          * Set the selected option
          * @param sel_opt   index of the selected option (0 ... number of option - 1);
          * @param anim   LV_ANIM_ON: set with animation; LV_ANIM_OFF set immediately
          */
-        void setSelected(uint32_t sel_opt, lv_anim_enable_t anim = LV_ANIM_ON);
+        void setSelected(uint32_t sel_opt, lv_anim_enable_t anim = LV_ANIM_ON) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_roller_set_selected(static_cast<Derived*>(this)->getRootPtr(), sel_opt, anim);
+        }
 
         /**
          * Sets the given string as the selection on the roller. Does not alter the current selection on failure.
@@ -40,38 +49,62 @@ namespace UI
          * @param anim          LV_ANIM_ON: set with animation; LV_ANIM_OFF set immediately
          * @return                  `true` if set successfully and `false` if the given string does not exist as an option in the roller
          */
-        bool setSelectedStr(const char * sel_opt, lv_anim_enable_t anim = LV_ANIM_ON);
+        bool setSelectedStr(const char * sel_opt, lv_anim_enable_t anim = LV_ANIM_ON) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_roller_set_selected_str(static_cast<Derived*>(this)->getRootPtr(), sel_opt, anim);
+        }
 
         /**
          * Set the height to show the given number of rows (options)
          * @param row_cnt   number of desired visible rows
          */
-        void setVisibleRowCount(uint32_t row_cnt);
+        void setVisibleRowCount(uint32_t row_cnt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_roller_set_visible_row_count(static_cast<Derived*>(this)->getRootPtr(), row_cnt);
+        }
 
         /**
          * Get the index of the selected option
          * @return          index of the selected option (0 ... number of option - 1);
          */
-        uint32_t getSelected() const;
+        uint32_t getSelected() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_roller_get_selected(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the current selected option as a string.
          * @param buf       pointer to an array to store the string
          * @param buf_size  size of `buf` in bytes. 0: to ignore it.
          */
-        void getSelectedStr(char * buf, uint32_t buf_size) const;
+        void getSelectedStr(char * buf, uint32_t buf_size) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            lv_roller_get_selected_str(static_cast<const Derived*>(this)->getRootPtr(), buf, buf_size);
+        }
 
         /**
          * Get the options of a roller
          * @return          the options separated by '\n'-s (E.g. "Option1\nOption2\nOption3")
          */
-        const char * getOptions() const;
+        const char * getOptions() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_roller_get_options(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the total number of options
          * @return      the total number of options
          */
-        uint32_t getOptionCount() const;
+        uint32_t getOptionCount() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_roller_get_option_count(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get an option as a string.
@@ -80,7 +113,11 @@ namespace UI
          * @param buf_size  size of `buf` in bytes. 0: to ignore it.
          * @return          LV_RESULT_OK if option found
          */
-        lv_result_t getOptionStr(uint32_t option, char * buf, uint32_t buf_size) const;
+        lv_result_t getOptionStr(uint32_t option, char * buf, uint32_t buf_size) const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_roller_get_option_str(static_cast<const Derived*>(this)->getRootPtr(), option, buf, buf_size);
+        }
 
         #if LV_USE_OBSERVER
 
@@ -89,11 +126,23 @@ namespace UI
          * @param subject   pointer to Subject
          * @return          pointer to newly-created Observer
          */
-        lv_observer_t * bindValue(lv_subject_t * subject);
+        lv_observer_t * bindValue(lv_subject_t * subject) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_roller_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
+        }
 
         #endif
+    };
 
-      private:
+    class LvRollerGen : public LvObj, public LvRollerMethodsGen<LvRoller>
+    {
+      public:
+        LvRollerGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_roller_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif

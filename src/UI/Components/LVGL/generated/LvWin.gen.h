@@ -1,7 +1,7 @@
 /*
  * LvWin.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T14:56:28 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-06T18:42:45 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -15,17 +15,22 @@ namespace UI
 
     #if LV_USE_WIN
 
-    class LvWinGen : public LvObj
+    class LvWin;
+
+    template <typename Derived>
+    class LvWinMethodsGen
     {
       public:
-        LvWinGen(const std::string& name, LvObj& parent);
-
         /**
          * Add a title to the window
          * @param txt       the text of the title
          * @return          the widget where the content of the title can be created
          */
-        lv_obj_t * addTitle(const char * txt);
+        lv_obj_t * addTitle(const char * txt) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_win_add_title(static_cast<Derived*>(this)->getRootPtr(), txt);
+        }
 
         /**
          * Add a button to the window
@@ -33,24 +38,44 @@ namespace UI
          * @param btn_w     width of the button
          * @return          the widget where the content of the button can be created
          */
-        lv_obj_t * addButton(const void * icon, int32_t btn_w);
+        lv_obj_t * addButton(const void * icon, int32_t btn_w) requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_win_add_button(static_cast<Derived*>(this)->getRootPtr(), icon, btn_w);
+        }
 
         /**
          * Get the header of the window
          * @param win       pointer to a window widget
          * @return          the header of the window
          */
-        lv_obj_t * getHeader() const;
+        lv_obj_t * getHeader() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_win_get_header(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
         /**
          * Get the content of the window
          * @param win       pointer to a window widget
          * @return          the content of the window
          */
-        lv_obj_t * getContent() const;
+        lv_obj_t * getContent() const requires HasGetRootPtr<Derived>
+        {
+            UI_LOCK();
+            return lv_win_get_content(static_cast<const Derived*>(this)->getRootPtr());
+        }
 
+    };
 
-      private:
+    class LvWinGen : public LvObj, public LvWinMethodsGen<LvWin>
+    {
+      public:
+        LvWinGen(const std::string& name, LvObj& parent)
+            : LvObj(lv_win_create, name, parent)
+        {
+            UI_LOCK();
+        }
     };
 
     #endif
