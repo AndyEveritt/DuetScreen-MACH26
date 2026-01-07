@@ -42,6 +42,7 @@ option(DUETSCREEN_LOG_TIMESTAMPS "Enable timestamps in log messages" ON)
 option(DUETSCREEN_LOG_THREAD "Enable logging thread id in log messages" OFF)
 option(DUETSCREEN_ASYNC_RR_MODEL "Enable asynchronous rr_model requests" OFF)
 option(DUETSCREEN_HARDWARE_TEST "Enable hardware test" OFF)
+set(DUETSCREEN_HARDWARE_TEST_SERIAL_NUMBER "" CACHE STRING "Default serial number to use in hardware test mode")
 option(DUETSCREEN_BURNIN_TEST "Enable burnin test" OFF)
 option(DUETSCREEN_ENABLE_CONSOLE_SHELL "Enable sending shell commands via the GUI console" OFF)
 option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" ON)
@@ -221,20 +222,31 @@ get_cmake_property(_cache_vars CACHE_VARIABLES)
 foreach(_var ${_cache_vars})
   if(_var MATCHES "^DUETSCREEN_")
     string(REPLACE "DUETSCREEN_" "" _short "${_var}")
-
-    # Normalize ON/OFF to 1/0
+    # Determine cache entry type to handle BOOL vs STRING/paths
+    get_property(_type CACHE "${_var}" PROPERTY TYPE)
     set(_val "${${_var}}")
-    string(TOUPPER "${_val}" _val_upper)
-    if(_val_upper STREQUAL "ON" OR _val_upper STREQUAL "TRUE" OR _val_upper STREQUAL "1" OR _val_upper STREQUAL "YES")
-      set(_int 1)
-    else()
-      set(_int 0)
-    endif()
 
-    # Mirror to local variable and define for compilation
-    set(${_short} ${_int})
-    message("Setting DuetScreen compile definition ${_short} to ${_int}")
-    target_compile_definitions(DuetScreen.lib PUBLIC ${_short}=${_int})
+    if(_type STREQUAL "BOOL")
+      # Normalize ON/OFF to 1/0
+      string(TOUPPER "${_val}" _val_upper)
+      if(_val_upper STREQUAL "ON" OR _val_upper STREQUAL "TRUE" OR _val_upper STREQUAL "1" OR _val_upper STREQUAL "YES")
+        set(_int 1)
+      else()
+        set(_int 0)
+      endif()
+
+      # Mirror to local variable and define for compilation
+      set(${_short} ${_int})
+      message("Setting DuetScreen compile definition ${_short} to ${_int}")
+      target_compile_definitions(DuetScreen.lib PUBLIC ${_short}=${_int})
+    else()
+      # Treat non-BOOL cache types (STRING, PATH, FILEPATH, etc.) as string values
+      # Escape embedded quotes to keep definition well-formed
+      string(REPLACE "\"" "\\\"" _val_escaped "${_val}")
+      set(${_short} "${_val}")
+      message("Setting DuetScreen compile definition ${_short} to \"${_val}\"")
+      target_compile_definitions(DuetScreen.lib PUBLIC ${_short}="${_val_escaped}")
+    endif()
   endif()
 endforeach()
 

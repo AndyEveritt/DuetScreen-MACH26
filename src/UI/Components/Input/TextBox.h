@@ -39,7 +39,7 @@ namespace UI
 		void deleteChar();
 		void deleteCharForward();
 		void setPlaceholderText(const std::string& text);
-		void setCursorPos(uint32_t pos);
+		void setCursorPos(int32_t pos);
 		void setCursorClickPos(bool clickPos);
 		void setPasswordMode(bool passwordMode);
 		void setPasswordBullet(const char* bullet);

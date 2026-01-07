@@ -8,6 +8,10 @@
 #include "HardwareTest.h"
 #include "Debug.h"
 
+#ifndef HARDWARE_TEST_SERIAL_NUMBER
+#  define HARDWARE_TEST_SERIAL_NUMBER ""
+#endif
+
 namespace UI
 {
 	HardwareTest::HardwareTest()
@@ -60,11 +64,9 @@ namespace UI
 	void HardwareTest::SerialInput::onShow()
 	{
 		m_warning.hide(true);
-#if DEBUG
-		m_serialInput.setText("AC-04-01_0001");
-#else
-		m_serialInput.setText("");
-#endif
+
+		m_serialInput.setText(HARDWARE_TEST_SERIAL_NUMBER);
+		m_serialInput.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
 		m_serialInput.setPlaceholderText("Enter serial number");
 	}
 

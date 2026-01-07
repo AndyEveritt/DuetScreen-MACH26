@@ -129,7 +129,7 @@ namespace UI
 		m_textarea.setPlaceholderText(text);
 	}
 
-	void TextBox::setCursorPos(uint32_t pos)
+	void TextBox::setCursorPos(int32_t pos)
 	{
 		m_textarea.setCursorPos(pos);
 	}
