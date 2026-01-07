@@ -35,7 +35,9 @@ endif()
 
 set(MAIN_SOURCES "")
 
+# --------------------------------------------------------------------------------------------------------
 # Options. These are mirrored as PUBLIC DuetScreen.lib compile definitions without the DUETSCREEN_ prefix.
+# --------------------------------------------------------------------------------------------------------
 set(PROCESSOR "T113" CACHE STRING "Target processor, 'T113' or 'Simulation'")
 option(DUETSCREEN_DEBUG_BORDERS "Enable debug borders" OFF)
 option(DUETSCREEN_LOG_TIMESTAMPS "Enable timestamps in log messages" ON)
@@ -49,6 +51,10 @@ option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj"
 option(DUETSCREEN_ENABLE_PROFILING "Enable profiling using Tracy" OFF)
 option(DUETSCREEN_ENABLE_LV_PROFILING "Enable lvgl profiling" ${DUETSCREEN_ENABLE_PROFILING})
 option(DUETSCREEN_USE_FIXED_TEST_BUILD_TIME "Use fixed build date/time for unit tests" OFF)
+
+# UI Options
+set(DUETSCREEN_UI_SETTINGS_TOGGLE_WIDGET "LvCheckbox" CACHE STRING "Widget type for settings toggles: 'LvCheckbox' or 'LvSwitch'")
+set_property(CACHE DUETSCREEN_UI_SETTINGS_TOGGLE_WIDGET PROPERTY STRINGS LvCheckbox LvSwitch) # constrain valid values
 
 if(NOT DEFINED PROCESSOR)
   message(

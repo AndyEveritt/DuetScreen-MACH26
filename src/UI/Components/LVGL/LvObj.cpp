@@ -340,11 +340,11 @@ namespace UI
 		lv_obj_set_flex_align(getRootPtr(), main, cross, mid);
 	}
 
-	void LvObj::setGridDsc(const int32_t col_dsc[], const int32_t row_dsc[])
+	void LvObj::setGridDsc(const std::span<const int32_t> col_dsc, const std::span<const int32_t> row_dsc)
 	{
 		ZoneScoped;
 		UI_LOCK();
-		lv_obj_set_grid_dsc_array(getRootPtr(), col_dsc, row_dsc);
+		lv_obj_set_grid_dsc_array(getRootPtr(), col_dsc.data(), row_dsc.data());
 	}
 
 	void LvObj::setGridCell(LvObj& obj,

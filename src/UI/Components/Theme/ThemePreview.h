@@ -11,6 +11,7 @@
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvSwitch.h"
 #include "UI/Components/List/List.h"
 
 namespace UI
@@ -20,6 +21,8 @@ namespace UI
 	class ThemePreview : public LvContainer
 	{
 	  public:
+		using ToggleWidget = UI_SETTINGS_TOGGLE_WIDGET;
+
 		ThemePreview(const std::string& name, LvObj& parent);
 		virtual ~ThemePreview(); // = default but Swatch is forward declared;
 
@@ -37,11 +40,16 @@ namespace UI
 	  private:
 		void updateThemeColors();
 
+		LvLabel m_primaryHueLabel{"primary_hue_label", getRoot()};
+		LvLabel m_secondaryHueLabel{"secondary_hue_label", getRoot()};
+		LvLabel m_chromaLabel{"chroma_label", getRoot()};
+		LvLabel m_darkModeLabel{"dark_mode_label", getRoot()};
+
 		List<Swatch> m_swatches;
-		Slider m_primaryHueSlider;
-		Slider m_secondaryHueSlider;
-		Slider m_chromaSlider;
-		LvCheckbox m_darkMode;
+		Slider m_primaryHueSlider{"primary_hue_slider", getRoot()};
+		Slider m_secondaryHueSlider{"secondary_hue_slider", getRoot()};
+		Slider m_chromaSlider{"chroma_slider", getRoot()};
+		ToggleWidget m_darkMode{"dark_mode", getRoot()};
 
 		ModalNumberPad* m_numberPad = nullptr;
 	};

@@ -29,8 +29,9 @@ namespace UI
 			m_colorBox.setWidth(LV_PCT(100));
 			m_colorBox.setFlexGrow(1);
 			m_colorBox.setMinHeight(20);
+			m_colorBox.setMinWidth(20);
 			m_colorBox.setStyleBgOpa(LV_OPA_COVER);
-			m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+			m_label.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 			m_label.setMinWidth(LV_SIZE_CONTENT);
 			m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
 		}
@@ -56,38 +57,56 @@ namespace UI
 	ThemePreview::ThemePreview(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 		, m_swatches("swatches", getRoot())
-		, m_primaryHueSlider("primary_hue_slider", getRoot())
-		, m_secondaryHueSlider("secondary_hue_slider", getRoot())
-		, m_chromaSlider("chroma_slider", getRoot())
-		, m_darkMode("dark_mode", getRoot())
 	{
-		setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+		static const int32_t s_col_dsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static const int32_t s_row_dsc[] = {
+			LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+		setGridDsc(s_col_dsc, s_row_dsc);
+
+		setGridCell(m_swatches, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_CENTER, 0, 1);
+
+		setGridCell(m_primaryHueLabel, LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+		setGridCell(m_primaryHueSlider, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+
+		setGridCell(m_secondaryHueLabel, LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_CENTER, 2, 1);
+		setGridCell(m_secondaryHueSlider, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 2, 1);
+
+		setGridCell(m_chromaLabel, LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_CENTER, 3, 1);
+		setGridCell(m_chromaSlider, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 3, 1);
+
+		setGridCell(m_darkModeLabel, LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_CENTER, 4, 1);
+		setGridCell(m_darkMode, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_CENTER, 4, 1);
 
 		m_swatches.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_swatches.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
 		m_swatches.getListContainer().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
-		m_primaryHueSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_primaryHueLabel.setText(_("theme.primary_hue"));
+		m_primaryHueSlider.setLabel(_("theme.primary_hue")); // for the numberpad
+		m_primaryHueSlider.getLabel().hide();
+		m_primaryHueSlider.setHeight(LV_SIZE_CONTENT);
 		m_primaryHueSlider.setRange(0, 360);
 		m_primaryHueSlider.setValue(0);
-		m_primaryHueSlider.setLabel(_("theme.primary_hue"));
 		m_primaryHueSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
 
-		m_secondaryHueSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_secondaryHueLabel.setText(_("theme.secondary_hue"));
+		m_secondaryHueSlider.setLabel(_("theme.secondary_hue")); // for the numberpad
+		m_secondaryHueSlider.getLabel().hide();
+		m_secondaryHueSlider.setHeight(LV_SIZE_CONTENT);
 		m_secondaryHueSlider.setRange(0, 360);
 		m_secondaryHueSlider.setValue(0);
-		m_secondaryHueSlider.setLabel(_("theme.secondary_hue"));
 		m_secondaryHueSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
 
-		m_chromaSlider.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_chromaLabel.setText(_("theme.chroma"));
+		m_chromaSlider.setLabel(_("theme.chroma")); // for the numberpad
+		m_chromaSlider.getLabel().hide();
+		m_chromaSlider.setHeight(LV_SIZE_CONTENT);
 		m_chromaSlider.setRange(0.0f, 0.4f);
 		m_chromaSlider.setIncrementValue(0.01f);
 		m_chromaSlider.setValue(0.2f);
-		m_chromaSlider.setLabel(_("theme.chroma"));
 		m_chromaSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
 
-		m_darkMode.setText(_("theme.dark_mode"));
+		m_darkModeLabel.setText(_("theme.dark_mode"));
 		m_darkMode.setChecked(true);
 		m_darkMode.setCheckedCallback([this](bool) { updateThemeColors(); });
 
@@ -136,7 +155,7 @@ namespace UI
 								[this, &swatch_styles](size_t index, LvObj& parent)
 								{
 									auto swatch = std::make_unique<Swatch>(fmt::format("{:d}", index), parent);
-									swatch->setSize(180, LV_SIZE_CONTENT);
+									swatch->setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 									swatch->setMaxWidth(LV_PCT(100));
 									auto& style = swatch_styles[index];
 									swatch->setLabel(_(fmt::format("settings.style.{:s}", style.name)));
@@ -208,9 +227,13 @@ namespace UI
 
 	void ThemePreview::showControls(bool show)
 	{
+		m_primaryHueLabel.setVisible(show);
 		m_primaryHueSlider.setVisible(show);
+		m_secondaryHueLabel.setVisible(show);
 		m_secondaryHueSlider.setVisible(show);
+		m_chromaLabel.setVisible(show);
 		m_chromaSlider.setVisible(show);
+		m_darkModeLabel.setVisible(show);
 		m_darkMode.setVisible(show);
 	}
 

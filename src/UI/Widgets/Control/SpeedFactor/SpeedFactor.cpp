@@ -23,7 +23,7 @@ namespace UI
 			{
 				if (!focused || !m_numberPad)
 					return;
-				m_numberPad->setHeader(m_speed.getLabel());
+				m_numberPad->setHeader(m_speed.getLabelText());
 				m_numberPad->setValue(m_speed.getValue());
 				m_numberPad->setMinValue(m_speed.getMin());
 				m_numberPad->setMaxValue(m_speed.getMax());

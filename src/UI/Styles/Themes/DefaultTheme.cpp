@@ -221,9 +221,9 @@ namespace UI::Themes
 		lv_style_set_pad_column(lvgl.card, PAD_SMALL);
 
 		lv_style_set_bg_opa(lvgl.card, LV_OPA_COVER);
-		lv_style_set_bg_color(lvgl.card, m_colors.bg_light);
-		lv_style_set_bg_grad_color(lvgl.card, m_colors.bg);
-		lv_style_set_bg_grad_dir(lvgl.card, LV_GRAD_DIR_VER);
+		lv_style_set_bg_color(lvgl.card, m_colors.bg);
+		// lv_style_set_bg_grad_color(lvgl.card, m_colors.bg);
+		// lv_style_set_bg_grad_dir(lvgl.card, LV_GRAD_DIR_VER);
 
 		lv_style_set_border_color(lvgl.card, m_colors.border);
 		lv_style_set_border_width(lvgl.card, BORDER_WIDTH);
@@ -236,16 +236,16 @@ namespace UI::Themes
 
 		lv_style_set_bg_opa(lvgl.btn, LV_OPA_COVER);
 		lv_style_set_bg_color(lvgl.btn, m_colors.primary);
-		lv_style_set_bg_grad_color(lvgl.btn, m_colors.primary_muted);
-		lv_style_set_bg_grad_dir(lvgl.btn, LV_GRAD_DIR_VER);
+		// lv_style_set_bg_grad_color(lvgl.btn, m_colors.primary_muted);
+		// lv_style_set_bg_grad_dir(lvgl.btn, LV_GRAD_DIR_VER);
 
 		lv_style_set_bg_grad_dir(lvgl.btn_checked, LV_GRAD_DIR_NONE);
 		lv_style_merge(lvgl.btn_checked, lvgl.border_highlight);
 
 		lv_style_set_bg_opa(lvgl.actionBtn, LV_OPA_COVER);
 		lv_style_set_bg_color(lvgl.actionBtn, m_colors.secondary);
-		lv_style_set_bg_grad_color(lvgl.actionBtn, m_colors.secondary_muted);
-		lv_style_set_bg_grad_dir(lvgl.actionBtn, LV_GRAD_DIR_VER);
+		// lv_style_set_bg_grad_color(lvgl.actionBtn, m_colors.secondary_muted);
+		// lv_style_set_bg_grad_dir(lvgl.actionBtn, LV_GRAD_DIR_VER);
 
 		/* Icons */
 		lv_style_set_recolor(lvgl.icon_recolor, m_colors.text);
@@ -572,15 +572,16 @@ namespace UI::Themes
 #endif
 
 #if LV_USE_SLIDER
-		lv_style_set_height(lvgl.slider, 10);
+		lv_style_set_height(lvgl.slider, 20);
 		lv_style_set_bg_color(lvgl.slider, m_colors.highlight);
 		lv_style_set_bg_opa(lvgl.slider, LV_OPA_COVER);
-		lv_style_set_radius(lvgl.slider, LV_RADIUS_CIRCLE);
-		lv_style_set_radius(lvgl.slider_indic, LV_RADIUS_CIRCLE);
+		lv_style_set_radius(lvgl.slider, RADIUS_DEFAULT);
+		lv_style_set_radius(lvgl.slider_indic, RADIUS_DEFAULT);
+		lv_style_set_radius(lvgl.slider_knob, RADIUS_DEFAULT);
 #endif
 
 		lv_style_set_bg_color(components.estop, lv_palette_main(LV_PALETTE_RED));
-		lv_style_set_bg_grad_color(components.estop, lv_palette_darken(LV_PALETTE_RED, 4));
+		// lv_style_set_bg_grad_color(components.estop, lv_palette_darken(LV_PALETTE_RED, 4));
 		lv_style_set_text_color(components.estop, lv_color_white());
 		lv_style_set_radius(components.estop, LV_RADIUS_CIRCLE);
 
@@ -609,5 +610,8 @@ namespace UI::Themes
 		lv_style_set_shadow_offset_y(components.tool_selected, SHADOW_OFFSET);
 
 		lv_style_merge(components.list_title, lvgl.text_emphasis);
+
+		lv_style_set_width(components.slider_buttons, 40);
+		lv_style_set_height(components.slider_buttons, 40);
 	}
 } // namespace UI::Themes

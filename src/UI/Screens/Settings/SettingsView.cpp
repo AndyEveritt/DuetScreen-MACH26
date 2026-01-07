@@ -19,6 +19,12 @@ namespace UI
 {
 	static void onTextareaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode);
 
+	static void setSliderNumberpadLabel(Slider& slider, std::string_view label)
+	{
+		slider.setLabel(label);
+		slider.getLabel().hide();
+	}
+
 	SettingsView::SettingsView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
@@ -51,7 +57,7 @@ namespace UI
 		addStyle(Themes::getLvglStyles().card);
 
 		m_rowDsc.at(1) = LV_GRID_TEMPLATE_LAST;
-		setGridDsc(m_colDsc.data(), m_rowDsc.data());
+		setGridDsc(m_colDsc, m_rowDsc);
 	}
 
 	void SettingsTab::createHeader(std::string_view text)
@@ -162,6 +168,7 @@ namespace UI
 
 		/* Brightness */
 		createRow(_("settings.brightness"), m_brightness);
+		setSliderNumberpadLabel(m_brightness, _("settings.brightness"));
 		m_brightness.setHeight(LV_SIZE_CONTENT);
 		m_brightness.setRange(0, 100);
 		m_brightness.setValueChangedCallback([](float value)
@@ -170,6 +177,7 @@ namespace UI
 
 		/* Screensaver Timeout */
 		createRow(_("settings.screensaver_timeout"), m_screensaverTimeout);
+		setSliderNumberpadLabel(m_screensaverTimeout, _("settings.screensaver_timeout"));
 		m_screensaverTimeout.setHeight(LV_SIZE_CONTENT);
 		m_screensaverTimeout.setRange(0, 5 * 60); // seconds
 		m_screensaverTimeout.setValueChangedCallback(
@@ -198,6 +206,7 @@ namespace UI
 
 		/* Info Timeout */
 		createRow(_("settings.notification_timeout"), m_notificationTimeout);
+		setSliderNumberpadLabel(m_notificationTimeout, _("settings.notification_timeout"));
 		m_notificationTimeout.setHeight(LV_SIZE_CONTENT);
 		m_notificationTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_notificationTimeout.setRange(0, 5000);
@@ -282,6 +291,7 @@ namespace UI
 
 		/* Poll Interval */
 		createRow(_("settings.duet_poll_interval"), m_pollInterval);
+		setSliderNumberpadLabel(m_pollInterval, _("settings.duet_poll_interval"));
 		m_pollInterval.setHeight(LV_SIZE_CONTENT);
 		m_pollInterval.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_pollInterval.setRange(MIN_PRINTER_POLL_INTERVAL.count(), 2000);

@@ -34,8 +34,8 @@ namespace UI
 		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		m_decrement.setSize(BUTTON_SIZE, BUTTON_SIZE);
-		m_increment.setSize(BUTTON_SIZE, BUTTON_SIZE);
+		m_decrement.addStyle(Themes::getComponentStyles().slider_buttons); // sets the size
+		m_increment.addStyle(Themes::getComponentStyles().slider_buttons); // sets the size
 		m_increment.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_decrement.setIcon("decrement.png");
 		m_increment.setIcon("increment.png");
@@ -233,7 +233,7 @@ namespace UI
 			slider->m_focused = true;
 			if (slider->m_numberPad)
 			{
-				slider->m_numberPad->setHeader(slider->getLabel());
+				slider->m_numberPad->setHeader(slider->getLabelText());
 				slider->m_numberPad->setValue(slider->getValue());
 				slider->m_numberPad->setMinValue(slider->getMin());
 				slider->m_numberPad->setMaxValue(slider->getMax());

@@ -170,7 +170,7 @@ namespace UI
 		void setFlexGrow(uint8_t grow);
 		void setFlexFlow(lv_flex_flow_t flow);
 		void setFlexAlign(lv_flex_align_t main, lv_flex_align_t cross, lv_flex_align_t mid);
-		void setGridDsc(const int32_t col_dsc[], const int32_t row_dsc[]);
+		void setGridDsc(const std::span<const int32_t> col_dsc, const std::span<const int32_t> row_dsc);
 		void setGridCell(LvObj& obj,
 						 lv_grid_align_t x_align,
 						 int32_t col_pos,

@@ -8,6 +8,8 @@
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/Input/TextBox.h"
+#include "UI/Components/LVGL/LvCheckbox.h"
+#include "UI/Components/LVGL/LvSwitch.h"
 #include "UI/Components/Modal/Modal.h"
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Core/View.h"
@@ -17,6 +19,8 @@
 
 namespace UI
 {
+	using LvSettingsToggle = UI_SETTINGS_TOGGLE_WIDGET;
+
 	class SettingsTab : public LvContainer
 	{
 	  public:
@@ -52,8 +56,8 @@ namespace UI
 		Slider m_screensaverTimeout{"screensaver_timeout", getRoot()};
 
 		/* Notifications */
-		LvCheckbox m_displayConnectedMessage{"display_connected_message", getRoot()};
-		LvCheckbox m_notificationAutoCloseError{"notification_auto_close_error", getRoot()};
+		LvSettingsToggle m_displayConnectedMessage{"display_connected_message", getRoot()};
+		LvSettingsToggle m_notificationAutoCloseError{"notification_auto_close_error", getRoot()};
 		DropdownMenu m_notificationLevel{"notification_level", getRoot()};
 		Slider m_notificationTimeout{"info_timeout", getRoot()};
 	};
@@ -128,15 +132,15 @@ namespace UI
 		void onShow() override;
 
 		DropdownMenu m_debugLevel{"debug_level", getRoot()};
-		LvCheckbox m_enableAdvancedSettings{"enable_advanced_settings", getRoot()};
+		LvSettingsToggle m_enableAdvancedSettings{"enable_advanced_settings", getRoot()};
 #if DEBUG_BORDERS
-		LvCheckbox m_debugBorders{"debug_borders", getRoot()};
+		LvSettingsToggle m_debugBorders{"debug_borders", getRoot()};
 #endif
-		LvCheckbox m_enableSSH{"enable_ssh", getRoot()};
+		LvSettingsToggle m_enableSSH{"enable_ssh", getRoot()};
 #if LV_USE_SYSMON
-		LvCheckbox m_enableSystemMonitor{"enable_system_monitor", getRoot()};
+		LvSettingsToggle m_enableSystemMonitor{"enable_system_monitor", getRoot()};
 #endif
-		LvCheckbox m_systemLogging{"system_logging", getRoot()};
+		LvSettingsToggle m_systemLogging{"system_logging", getRoot()};
 
 		/* Controls */
 		LvContainer m_controls{"controls", getRoot()};

@@ -188,7 +188,7 @@ namespace UI
 
 	void FineTune::configureNumberPad(Slider* slider)
 	{
-		m_numberPad.setHeader(slider->getLabel());
+		m_numberPad.setHeader(slider->getLabelText());
 		m_numberPad.setValue(slider->getValue());
 		m_numberPad.setMinValue(slider->getMin());
 		m_numberPad.setMaxValue(slider->getMax());

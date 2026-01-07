@@ -517,7 +517,7 @@ namespace UI::Themes
 			lv_obj_add_style(obj, lvgl.slider, 0);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, lvgl.outline_secondary, LV_STATE_EDITED);
-			lv_obj_add_style(obj, lvgl.bg_color_primary, LV_PART_INDICATOR);
+			lv_obj_add_style(obj, lvgl.bg_color_primary_muted, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, lvgl.slider_indic, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, lvgl.knob, LV_PART_KNOB);
 			lv_obj_add_style(obj, lvgl.slider_knob, LV_PART_KNOB);
@@ -576,7 +576,9 @@ namespace UI::Themes
 #  if LV_USE_SWITCH
 		else if (lv_obj_check_type(obj, &lv_switch_class))
 		{
-			lv_obj_add_style(obj, lvgl.bg_switch, 0);
+			lv_obj_add_style(obj, lvgl.pad_base, 0);
+			lv_obj_add_style(obj, lvgl.pad_gap, 0);
+			lv_obj_add_style(obj, lvgl.bg_switch, LV_PART_INDICATOR);
 			lv_obj_add_style(obj, lvgl.anim_fast, 0);
 			lv_obj_add_style(obj, lvgl.disabled, LV_STATE_DISABLED);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
