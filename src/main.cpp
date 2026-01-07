@@ -212,39 +212,52 @@ int main(int argc, char** argv)
 			static lv_timer_t* burnin_timer = lv_timer_create(
 				[](lv_timer_t* timer)
 				{
-					static size_t screen_index = 0;
+					static size_t index = 0;
 					auto& home = UI::HomeView::instance();
-					static const std::vector<UI::LvObj*> screens{nullptr,
-																 nullptr,
-																 &home.getConsoleView(),
-																 &home.getMacroView(),
-#  if SIDE_BAR_APP_DRAWER
-																 &home.getMoveView(),
-																 &home.getTemperatureView(),
-																 &home.getFineTuneView(),
-																 &home.getHeightmapView(),
-#  endif
-																 &home.getSettingsView()};
-
-					auto screen = screens[screen_index];
-					if (screen == nullptr)
-					{
-						if (screen_index == 0)
+					static const std::function<void()> cbs[] = {
+						[&]()
 						{
 							UI::home();
 							home.getDashboard().showJobsTab();
-						}
-						else if (screen_index == 1)
+						},
+						[&]()
 						{
+							UI::home();
 							home.getDashboard().showStatusTab();
-						}
-					}
-					else
-					{
-						UI::openScreen(screen, true);
-					}
+						},
+						[&]()
+						{
+							UI::openScreen(&home.getControlView(), true);
+							home.getControlView().showMoveView();
+						},
+						[&]() { home.getControlView().showTemperatureView(); },
+						[&]() { home.getControlView().showHeightmapView(); },
+						[&]() { home.getControlView().showFanView(); },
+						[&]()
+						{
+							UI::openScreen(&home.getFileView(), true);
+							home.getFileView().setActiveTab(0);
+						},
+						[&]() { home.getFileView().setActiveTab(1); },
+						[&]() { UI::openScreen(&home.getConsoleView(), true); },
+#  if SIDE_BAR_APP_DRAWER
+						[&]() { UI::openScreen(&home.getMoveView(), true); },
+						[&]() { UI::openScreen(&home.getTemperatureView(), true); },
+						[&]() { UI::openScreen(&home.getFineTuneView(), true); },
+						[&]() { UI::openScreen(&home.getHeightmapView(), true); },
+#  endif
+						[&]()
+						{
+							UI::openScreen(&home.getSettingsView(), true);
+							home.getSettingsView().showGeneralSettings();
+						},
+						[&]() { home.getSettingsView().showConnectionSettings(); },
+						[&]() { home.getSettingsView().showDisplaySettings(); },
+						[&]() { home.getSettingsView().showDeveloperSettings(); },
+					};
 
-					screen_index = (screen_index + 1) % std::size(screens);
+					std::invoke(cbs[index]);
+					index = (index + 1) % std::size(cbs);
 				},
 				StorageHelper::getData(ID_BURNIN_FREQUENCY, 2000),
 				NULL);

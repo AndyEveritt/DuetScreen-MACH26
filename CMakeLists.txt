@@ -42,7 +42,7 @@ option(DUETSCREEN_LOG_TIMESTAMPS "Enable timestamps in log messages" ON)
 option(DUETSCREEN_LOG_THREAD "Enable logging thread id in log messages" OFF)
 option(DUETSCREEN_ASYNC_RR_MODEL "Enable asynchronous rr_model requests" OFF)
 option(DUETSCREEN_HARDWARE_TEST "Enable hardware test" OFF)
-set(DUETSCREEN_HARDWARE_TEST_SERIAL_NUMBER "" CACHE STRING "Default serial number to use in hardware test mode")
+set(DUETSCREEN_HARDWARE_TEST_SERIAL_NUMBER "\"\"" CACHE STRING "Default serial number to use in hardware test mode")
 option(DUETSCREEN_BURNIN_TEST "Enable burnin test" OFF)
 option(DUETSCREEN_ENABLE_CONSOLE_SHELL "Enable sending shell commands via the GUI console" OFF)
 option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj" ON)
@@ -217,6 +217,10 @@ if(NOT APPLE)
             )
 endif()
 
+if(PROCESSOR STREQUAL "T113" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_options(DuetScreen.lib PRIVATE -Wno-error=cpp) # required because of fortify_source warnings
+endif()
+
 # Set DUETSCREEN_* cache options as compile definitions without the prefix
 get_cmake_property(_cache_vars CACHE_VARIABLES)
 foreach(_var ${_cache_vars})
@@ -241,11 +245,9 @@ foreach(_var ${_cache_vars})
       target_compile_definitions(DuetScreen.lib PUBLIC ${_short}=${_int})
     else()
       # Treat non-BOOL cache types (STRING, PATH, FILEPATH, etc.) as string values
-      # Escape embedded quotes to keep definition well-formed
-      string(REPLACE "\"" "\\\"" _val_escaped "${_val}")
       set(${_short} "${_val}")
-      message("Setting DuetScreen compile definition ${_short} to \"${_val}\"")
-      target_compile_definitions(DuetScreen.lib PUBLIC ${_short}="${_val_escaped}")
+      message("Setting DuetScreen compile definition ${_short} to ${_val}")
+      target_compile_definitions(DuetScreen.lib PUBLIC ${_short}=${_val})
     endif()
   endif()
 endforeach()

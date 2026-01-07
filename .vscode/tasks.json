@@ -77,7 +77,7 @@
 		{
 			"label": "Build DuetScreen for Remote",
 			"type": "shell",
-			"command": "make duetscreen-rebuild",
+			"command": "make duetscreen-reconfigure",
 			"args": [],
 			"options": {
 				"cwd": "${config:buildroot_path}",
@@ -99,14 +99,14 @@
 		{
 			"label": "Build DuetScreen for Remote - Release",
 			"type": "shell",
-			"command": "make duetscreen-rebuild",
+			"command": "make duetscreen-reconfigure",
 			"args": [],
 			"options": {
 				"cwd": "${config:buildroot_path}",
 				"env": {
 					"DUETSCREEN_SRC": "${workspaceFolder}",
-					// "DUETSCREEN_BURNIN_TEST": "1",
-					// "DUETSCREEN_HARDWARE_TEST": "1",
+					// "DUETSCREEN_EXTRA_CONF_OPTS": "-DDUETSCREEN_HARDWARE_TEST=ON -DDUETSCREEN_HARDWARE_TEST_SERIAL_NUMBER=\"AD-04-01_\"",
+					// "DUETSCREEN_EXTRA_CONF_OPTS": "-DDUETSCREEN_BURNIN_TEST=ON",
 					"PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 				}
 			},

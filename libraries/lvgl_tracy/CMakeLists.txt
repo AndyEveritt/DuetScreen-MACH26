@@ -17,6 +17,10 @@ target_compile_options(lvgl_tracy PRIVATE
 	-Wno-unused-parameter
 )
 
+if(PROCESSOR STREQUAL "T113" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_options(lvgl_tracy PRIVATE -Wno-error=cpp) # required because of fortify_source warnings
+endif()
+
 # Public headers (for include in consumers)
 target_include_directories(lvgl_tracy
 	PUBLIC
