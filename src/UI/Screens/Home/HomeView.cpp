@@ -61,13 +61,9 @@ namespace UI
 		m_jobView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::GCODES);
 
 		// Message Box
-		m_alert.hide();
-		m_alert.setFlag(LV_OBJ_FLAG_FLOATING, true);
-		m_alert.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_alert.setMaxHeight(LV_PCT(70));
 
 		// Update Prompt
-		m_updatePrompt.hide();
 		m_updatePrompt.setTitle(_("message.update_available"));
 		m_updatePrompt.setText(_("message.update_available_text"));
 		m_updatePrompt.setOkBtnText(_("message.update_confirm"));
@@ -75,8 +71,6 @@ namespace UI
 		m_updatePrompt.setOkCallback([this]() { m_presenter->update(); });
 		m_updatePrompt.okVisible(true);
 		m_updatePrompt.cancelVisible(true);
-		m_updatePrompt.setFlag(LV_OBJ_FLAG_FLOATING, true);
-		m_updatePrompt.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_updatePrompt.setMaxHeight(LV_PCT(70));
 
 		// Extrusion Factor Modal
@@ -174,6 +168,6 @@ namespace UI
 	void HomeView::showUpdatePrompt(bool show)
 	{
 		UI_LOCK();
-		m_updatePrompt.setVisible(show, true);
+		m_updatePrompt.setVisible(show);
 	}
 } // namespace UI

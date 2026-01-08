@@ -38,6 +38,11 @@ namespace UI
 			});
 	}
 
+	void HomePresenter::onActivate()
+	{
+		newAxesData();
+	}
+
 	void HomePresenter::clear()
 	{
 		UI_LOCK();
@@ -150,40 +155,41 @@ namespace UI
 
 	void HomePresenter::newAlertData(const OM::Alert& alert)
 	{
-		AlertMessageBox& msgBox = m_view->m_alert;
+		auto& modalAlert = m_view->m_alert;
 
 		// First clear any existing alert state
 		m_alertAxes.clear();
 
 		if (alert.mode == OM::Alert::Mode::None)
 		{
-			if (msgBox.isVisible())
+			if (modalAlert.isVisible())
 			{
-				msgBox.close();
-				msgBox.hide();
+				modalAlert.AlertMessageBox::close();
+				modalAlert.close();
 			}
 			return;
 		}
 
 		// Configure the message box before showing it to prevent partial updates
-		msgBox.clear();
-		msgBox.setTitle(alert.title.c_str());
-		msgBox.setText(alert.text.c_str());
-		msgBox.setChoiceCount(alert.choices_count);
+		modalAlert.clear();
+		modalAlert.setTitle(alert.title.c_str());
+		modalAlert.setText(alert.text.c_str());
+		modalAlert.setChoiceCount(alert.choices_count);
 
 		for (size_t i = 0; i < alert.choices_count; i++)
 		{
-			msgBox.setChoice(i, alert.choices[i].c_str());
+			modalAlert.setChoice(i, alert.choices[i].c_str());
 		}
 
-		msgBox.setMode(alert.mode);
+		modalAlert.setMode(alert.mode);
+		modalAlert.setBlocking(true);
 
 		// Set up close callback first to ensure proper cleanup
-		msgBox.setCloseCallback(
+		modalAlert.setCloseCallback(
 			[this]()
 			{
 				UI_LOCK();
-				m_view->m_alert.hide();
+				m_view->m_alert.close();
 				if (m_view->getMessageBoxCount() > 0)
 				{
 					auto msgBox = m_view->getMessageBox(0);
@@ -204,9 +210,9 @@ namespace UI
 		case OM::Alert::Mode::InfoClose:
 		case OM::Alert::Mode::InfoConfirm:
 		case OM::Alert::Mode::ConfirmCancel:
-			msgBox.setOkBtnText(alert.mode == OM::Alert::Mode::InfoClose ? _("msgbox.close") : _("msgbox.ok"));
-			msgBox.okVisible(true);
-			msgBox.setOkCallback(
+			modalAlert.setOkBtnText(alert.mode == OM::Alert::Mode::InfoClose ? _("msgbox.close") : _("msgbox.ok"));
+			modalAlert.okVisible(true);
+			modalAlert.setOkCallback(
 				[seq]()
 				{
 					LOG_INFO("MessageBox OK callback");
@@ -215,7 +221,7 @@ namespace UI
 			break;
 
 		case OM::Alert::Mode::Choices:
-			msgBox.setChoiceCallback(
+			modalAlert.setChoiceCallback(
 				[seq](size_t index)
 				{
 					LOG_INFO("MessageBox Choice callback");
@@ -226,135 +232,135 @@ namespace UI
 		case OM::Alert::Mode::NumberInt:
 		{
 			UI_LOCK();
-			m_view->m_kb.setMode(LV_KEYBOARD_MODE_NUMBER);
-			msgBox.setKeyboard(&m_view->m_kb);
+			m_view->getKeyboard().setMode(LV_KEYBOARD_MODE_NUMBER);
+			modalAlert.setKeyboard(&m_view->getKeyboard());
 
 			if (alert.limits.numberInt.min > INT32_MIN)
 			{
-				msgBox.setMinText(fmt::format("{:d}", alert.limits.numberInt.min));
-				msgBox.minTextVisible(true);
+				modalAlert.setMinText(fmt::format("{:d}", alert.limits.numberInt.min));
+				modalAlert.minTextVisible(true);
 			}
 			else
 			{
-				msgBox.minTextVisible(false);
+				modalAlert.minTextVisible(false);
 			}
 
 			if (alert.limits.numberInt.max < INT32_MAX)
 			{
-				msgBox.setMaxText(fmt::format("{:d}", alert.limits.numberInt.max));
-				msgBox.maxTextVisible(true);
+				modalAlert.setMaxText(fmt::format("{:d}", alert.limits.numberInt.max));
+				modalAlert.maxTextVisible(true);
 			}
 			else
 			{
-				msgBox.maxTextVisible(false);
+				modalAlert.maxTextVisible(false);
 			}
 
-			msgBox.setInput(alert.limits.numberInt.valueDefault);
+			modalAlert.setInput(alert.limits.numberInt.valueDefault);
 
 			// Store validation limits locally
 			const int32_t min = alert.limits.numberInt.min;
 			const int32_t max = alert.limits.numberInt.max;
-			msgBox.setInputValidationCallback(
-				[min, max, &msgBox](std::string_view text) -> bool
+			modalAlert.setInputValidationCallback(
+				[min, max, &modalAlert](std::string_view text) -> bool
 				{
 					UI_LOCK();
 					int value = std::atoi(text.data());
 					bool valid = value >= min && value <= max;
-					msgBox.warningTextVisible(!valid);
+					modalAlert.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(_("msgbox.warning_int_range", min, max));
+						modalAlert.setWarningText(_("msgbox.warning_int_range", min, max));
 					}
 					return valid;
 				});
 
-			msgBox.setOkCallback(
-				[seq, &msgBox]()
+			modalAlert.setOkCallback(
+				[seq, &modalAlert]()
 				{
 					UI_LOCK();
-					int value = std::atoi(msgBox.getInput().data());
+					int value = std::atoi(modalAlert.getInput().data());
 					Comm::DUET.SendGcodef("M292 R{{{:d}}} S{:d}", value, seq);
 				});
-			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
+			modalAlert.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 		}
 		break;
 
 		case OM::Alert::Mode::NumberFloat:
-			m_view->m_kb.setMode(LV_KEYBOARD_MODE_NUMBER);
-			msgBox.setKeyboard(&m_view->m_kb);
+			m_view->getKeyboard().setMode(LV_KEYBOARD_MODE_NUMBER);
+			modalAlert.setKeyboard(&m_view->getKeyboard());
 
 			if (alert.limits.numberFloat.min > -FLT_MAX)
 			{
-				msgBox.setMinText(fmt::format("{:g}", alert.limits.numberFloat.min));
-				msgBox.minTextVisible(true);
+				modalAlert.setMinText(fmt::format("{:g}", alert.limits.numberFloat.min));
+				modalAlert.minTextVisible(true);
 			}
 			else
 			{
-				msgBox.minTextVisible(false);
+				modalAlert.minTextVisible(false);
 			}
 
 			if (alert.limits.numberFloat.max < FLT_MAX)
 			{
-				msgBox.setMaxText(fmt::format("{:g}", alert.limits.numberFloat.max));
-				msgBox.maxTextVisible(true);
+				modalAlert.setMaxText(fmt::format("{:g}", alert.limits.numberFloat.max));
+				modalAlert.maxTextVisible(true);
 			}
 			else
 			{
-				msgBox.maxTextVisible(false);
+				modalAlert.maxTextVisible(false);
 			}
 
-			msgBox.setInput(alert.limits.numberFloat.valueDefault);
-			msgBox.setInputValidationCallback(
-				[alert, &msgBox](std::string_view text) -> bool
+			modalAlert.setInput(alert.limits.numberFloat.valueDefault);
+			modalAlert.setInputValidationCallback(
+				[alert, &modalAlert](std::string_view text) -> bool
 				{
 					UI_LOCK();
 					float value = static_cast<float>(std::atof(text.data()));
 					bool valid = value >= alert.limits.numberFloat.min && value <= alert.limits.numberFloat.max;
-					msgBox.warningTextVisible(!valid);
+					modalAlert.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(_(
+						modalAlert.setWarningText(_(
 							"msgbox.warning_float_range", alert.limits.numberFloat.min, alert.limits.numberFloat.max));
 					}
 					return valid;
 				});
-			msgBox.setOkCallback(
-				[seq, &msgBox]()
+			modalAlert.setOkCallback(
+				[seq, &modalAlert]()
 				{
-					float value = static_cast<float>(std::atof(msgBox.getInput().data()));
+					float value = static_cast<float>(std::atof(modalAlert.getInput().data()));
 					Comm::DUET.SendGcodef("M292 R{{{:g}}} S{:d}", value, seq);
 				});
-			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
+			modalAlert.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
 		case OM::Alert::Mode::Text:
 		{
-			m_view->m_kb.setMode(LV_KEYBOARD_MODE_TEXT_LOWER);
-			msgBox.setKeyboard(&m_view->m_kb);
+			m_view->getKeyboard().setMode(LV_KEYBOARD_MODE_TEXT_LOWER);
+			modalAlert.setKeyboard(&m_view->getKeyboard());
 
-			msgBox.setInput(alert.limits.text.valueDefault.c_str());
-			msgBox.setInputValidationCallback(
-				[alert, &msgBox](std::string_view text) -> bool
+			modalAlert.setInput(alert.limits.text.valueDefault.c_str());
+			modalAlert.setInputValidationCallback(
+				[alert, &modalAlert](std::string_view text) -> bool
 				{
 					UI_LOCK();
 					int32_t len = (int32_t)text.length();
 					bool valid = len >= alert.limits.text.min && len <= alert.limits.text.max;
-					msgBox.warningTextVisible(!valid);
+					modalAlert.warningTextVisible(!valid);
 					if (!valid)
 					{
-						msgBox.setWarningText(
+						modalAlert.setWarningText(
 							_("msgbox.warning_text_length", alert.limits.text.min, alert.limits.text.max));
 					}
 					return valid;
 				});
-			msgBox.setOkCallback(
-				[seq, &msgBox]()
+			modalAlert.setOkCallback(
+				[seq, &modalAlert]()
 				{
-					std::string text(msgBox.getInput());
+					std::string text(modalAlert.getInput());
 					text = std::regex_replace(text, std::regex("\""), "\"\"");
 					text = std::regex_replace(text, std::regex("\'"), "\'\'");
 					Comm::DUET.SendGcodef("M292 R{{\"{:s}\"}} S{:d}", text, seq);
 				});
-			msgBox.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
+			modalAlert.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
 		}
 		default:
@@ -375,18 +381,20 @@ namespace UI
 				if (axis == nullptr)
 					continue;
 				m_alertAxes.push_back(axis->letter[0]);
-				msgBox.setJogAxisLetter(count, axis->letter[0]);
+				modalAlert.setJogAxisLetter(count, axis->letter[0]);
+				modalAlert.setJogAxisPosition(count, axis->userPosition);
+				modalAlert.setJogAxisEnabled(count, axis->homed);
 				count++;
 				LOG_DBG("Axis {:d}, count {:d}", i, count);
 			}
-			msgBox.axisJogVisible(true);
+			modalAlert.axisJogVisible(true);
 		}
 
 		// Set up cancel button if needed
 		if (alert.cancelButton)
 		{
-			msgBox.cancelVisible(true);
-			msgBox.setCancelCallback(
+			modalAlert.cancelVisible(true);
+			modalAlert.setCancelCallback(
 				[seq]()
 				{
 					LOG_INFO("MessageBox Cancel callback");
@@ -395,14 +403,15 @@ namespace UI
 		}
 
 		// Configure timeout and progress last
-		msgBox.setTimeout(static_cast<uint32_t>(alert.timeout));
-		msgBox.progressVisible(alert.timeout > 0);
+		modalAlert.setTimeout(static_cast<uint32_t>(alert.timeout));
+		modalAlert.progressVisible(alert.timeout > 0);
 		if (alert.timeout > 0)
 		{
-			msgBox.setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
+			modalAlert.setProgressCallback([](MessageBox* msgBox) -> uint32_t
+										   { return msgBox->getTimeOutPercentage(); });
 		}
 
 		// Finally show the message box
-		msgBox.show();
+		modalAlert.open();
 	}
 } // namespace UI

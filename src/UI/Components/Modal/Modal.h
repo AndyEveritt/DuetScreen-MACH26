@@ -40,8 +40,8 @@ namespace UI
 			m_modalBg.addEventCallback(
 				[this](lv_event_t*)
 				{
-					if (!isBlocking())
-						close();
+					if (!Modal::isBlocking())
+						Modal::close();
 				},
 				LV_EVENT_CLICKED);
 			m_modalBg.addStyle(Themes::getLvglStyles().bg_modal);
@@ -49,6 +49,14 @@ namespace UI
 
 		void open() { openModal(this); }
 		void close() { closeModal(this); }
+
+		void setVisible(bool visible)
+		{
+			if (visible)
+				open();
+			else
+				close();
+		}
 
 		void setParent(LvObj& parent) { m_modalBg.setParent(parent); }
 

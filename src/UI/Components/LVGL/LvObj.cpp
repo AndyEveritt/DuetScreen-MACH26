@@ -139,48 +139,75 @@ namespace UI
 	 * @param name Name of the child to search for, or a path of names separated by `.`.
 	 * @return Pointer to the found LvObj, or nullptr if not found.
 	 */
-	LvObj* LvObj::getChildByName(std::string_view name) const
+	LvObj* LvObj::getChildByName(std::string_view path) const
 	{
 		ZoneScoped;
 		UI_LOCK();
 
-		const LvObj* obj = this;
-		bool found = true;
+		// Depth-first search helper with a single children loop.
+		// Track most specific failure for accurate error reporting.
+		const LvObj* failNode = this;
+		std::string_view failSeg{};
+		size_t failDepth = 0;
 
-		while (!name.empty() && found)
+		auto dfs = [&](auto&& self, const LvObj* node, std::string_view remaining, size_t depth) -> LvObj*
 		{
-			std::string_view part = name.substr(0, name.find('.'));
-			name.remove_prefix(std::min(name.size(), part.size() + (name.size() > part.size() ? 1 : 0)));
+			const size_t dot = remaining.find('.');
+			const std::string_view seg = remaining.substr(0, dot);
+			const bool has_rest = dot != std::string_view::npos;
+			const std::string_view rest = has_rest ? remaining.substr(dot + 1) : std::string_view{};
 
-			found = false;
-			for (size_t i = 0; i < obj->getChildCount(); i++)
+			for (size_t i = 0, n = node->getChildCount(); i < n; ++i)
 			{
-				const LvObj* child = obj->getChild(i);
+				const LvObj* child = node->getChild(static_cast<int32_t>(i));
+				if (child == nullptr)
+					continue;
 				char name_buf[64];
 				lv_obj_get_name_resolved(child->getRootPtr(), name_buf, sizeof(name_buf));
-				if (child != nullptr && part == name_buf)
+
+				// If this child matches the current segment, either return it or continue with the rest.
+				if (seg == name_buf)
 				{
-					obj = child;
-					found = true;
-					break;
+					if (!has_rest)
+					{
+						return const_cast<LvObj*>(child);
+					}
+					if (LvObj* deeper = self(self, child, rest, depth + 1))
+					{
+						return deeper;
+					}
 				}
 			}
-			if (!found)
+
+			// Update failure for the current node if nothing found at this level.
+
+			if (depth >= failDepth)
 			{
-				/**
-				 * For some reason, using `part` as a string_view in the formatting causes an array-bounds error when
-				 * compiling with -O2/-O3, but only on some computers?
-				 *
-				 * Also think it is only an issue when gtest is linked in?
-				 *
-				 * If anyone knows why, please tell me!
-				 */
-				LOG_ERROR(
-					"LvObj::getChildByName: Could not find child '{}' in '{}'", std::string(part), obj->getName());
+				failDepth = depth;
+				failNode = node;
+				failSeg = seg;
 			}
+			return nullptr;
+		};
+
+		if (LvObj* result = dfs(dfs, this, path, 0))
+		{
+			return result;
 		}
 
-		return found ? const_cast<LvObj*>(obj) : nullptr;
+		// Log a single error if not found using the most specific failure context.
+		char parent_buf[64]{};
+		lv_obj_get_name_resolved(failNode->getRootPtr(), parent_buf, sizeof(parent_buf));
+		/**
+		 * For some reason, using string_view in the formatting causes an array-bounds error when
+		 * compiling with -O2/-O3, but only on some computers?
+		 *
+		 * Also think it is only an issue when gtest is linked in?
+		 *
+		 * If anyone knows why, please tell me!
+		 */
+		LOG_ERROR("LvObj::getChildByName: Could not find child '{}' in '{}'", std::string(failSeg), parent_buf);
+		return nullptr;
 	}
 
 	uint32_t LvObj::getChildCount() const

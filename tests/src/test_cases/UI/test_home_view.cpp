@@ -143,6 +143,143 @@ TEST_F(TestHomeView, ErrorResponse)
 	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/response_error.png");
 }
 
+TEST_F(TestHomeView, AlertS0)
+{
+	load_model_data_from_file("tests/object_model/m291/s0.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s0.png");
+}
+
+TEST_F(TestHomeView, AlertS1)
+{
+	load_model_data_from_file("tests/object_model/m291/s1.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s1.png");
+}
+
+TEST_F(TestHomeView, AlertS2)
+{
+	load_model_data_from_file("tests/object_model/m291/s2.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s2.png");
+}
+
+TEST_F(TestHomeView, AlertS3)
+{
+	load_model_data_from_file("tests/object_model/m291/s3.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s3.png");
+
+	load_model_data_from_file("tests/object_model/test_bench/model_move_vn.json");
+	load_model_data_from_file("tests/object_model/m291/s3_axis.json");
+	view.show();
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s3_axis.png");
+}
+
+TEST_F(TestHomeView, AlertS4)
+{
+	load_model_data_from_file("tests/object_model/m291/s4.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s4.png");
+
+	load_model_data_from_file("tests/object_model/m291/s4_j1.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s4_j1.png");
+}
+
+TEST_F(TestHomeView, AlertS5)
+{
+	load_model_data_from_file("tests/object_model/m291/s5.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5.png");
+
+	load_model_data_from_file("tests/object_model/m291/s5_j1.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5_j1.png");
+
+	load_model_data_from_file("tests/object_model/m291/s5_limits.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5_limits.png");
+
+	auto input_obj = view.getChildByName("modal_bg.alert.body.input_cont.input");
+	ASSERT_NE(input_obj, nullptr);
+	input_obj->sendEvent(LV_EVENT_FOCUSED);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5_limits_input.png");
+
+	auto& input = static_cast<UI::LvTextarea&>(*input_obj);
+	input.setText("-1");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5_limits_min.png");
+
+	input.setText("11");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5_limits_max.png");
+
+	input.setText("10");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5_limits_ok.png");
+
+	input.setText("5.5");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s5_limits_float.png");
+}
+
+TEST_F(TestHomeView, AlertS6)
+{
+	load_model_data_from_file("tests/object_model/m291/s6.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6.png");
+
+	load_model_data_from_file("tests/object_model/m291/s6_j1.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6_j1.png");
+
+	load_model_data_from_file("tests/object_model/m291/s6_limits.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6_limits.png");
+
+	auto input_obj = view.getChildByName("modal_bg.alert.body.input_cont.input");
+	ASSERT_NE(input_obj, nullptr);
+	input_obj->sendEvent(LV_EVENT_FOCUSED);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6_limits_input.png");
+
+	auto& input = static_cast<UI::LvTextarea&>(*input_obj);
+	input.setText("-0.1");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6_limits_min.png");
+
+	input.setText("10.1");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6_limits_max.png");
+
+	input.setText("10");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6_limits_ok.png");
+
+	input.setText("5.5");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s6_limits_float.png");
+}
+
+TEST_F(TestHomeView, AlertS7)
+{
+	load_model_data_from_file("tests/object_model/m291/s7_j1.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s7_j1.png");
+
+	load_model_data_from_file("tests/object_model/m291/s7_limits.json");
+	view.getPresenter()->newAlertData(OM::g_currentAlert);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s7_limits.png");
+
+	auto input_obj = view.getChildByName("modal_bg.alert.body.input_cont.input");
+	ASSERT_NE(input_obj, nullptr);
+	input_obj->sendEvent(LV_EVENT_FOCUSED);
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s7_limits_input.png");
+
+	auto& input = static_cast<UI::LvTextarea&>(*input_obj);
+	input.setText("short");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s7_limits_min.png");
+
+	input.setText("too long..........");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s7_limits_max.png");
+
+	input.setText("this is ok");
+	EXPECT_EQUAL_SCREENSHOT("home_view/m291/s7_limits_ok.png");
+}
+
 class TestHomeViewWithData : public TestHomeView
 {
   protected:

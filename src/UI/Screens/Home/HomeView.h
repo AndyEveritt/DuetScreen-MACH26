@@ -101,15 +101,15 @@ namespace UI
 
 		// Message box
 		std::list<std::shared_ptr<MessageBox>> m_messageBoxList;
-		AlertMessageBox m_alert{"alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
+		Modal<AlertMessageBox> m_alert{"alert", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
 
 		// Update prompt
-		MessageBox m_updatePrompt{"update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
+		Modal<MessageBox> m_updatePrompt{"update_prompt", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
 
 		ModalExtrusionFactor m_extrusionFactorModal{"extrusion_factor_modal", m_mainWindow};
 
 		// Input
 		ModalNumberPad m_numberpad{"numberpad", m_mainWindow};
-		LvKeyboard m_kb{"keyboard", m_mainWindow};
+		LvKeyboard m_kb{"keyboard", getRoot()};
 	};
 } // namespace UI
