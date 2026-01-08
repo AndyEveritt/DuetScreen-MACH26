@@ -9,6 +9,7 @@
 
 #include "UI/Styles/Font.h"
 #include "lvgl/lvgl.h"
+#include <filesystem>
 #include <functional>
 #include <map>
 #include <memory>
@@ -314,10 +315,7 @@ namespace UI::Themes
 	class Theme
 	{
 	  public:
-		Theme(std::string_view name,
-			  FontConfigSet fontConfigSet,
-			  std::string_view iconFolder,
-			  std::function<void(Theme* theme)> initFunc = nullptr);
+		Theme(std::string_view name, FontConfigSet fontConfigSet, std::function<void(Theme* theme)> initFunc = nullptr);
 		~Theme();
 		Theme& operator=(const Theme&) = delete;
 
@@ -326,7 +324,6 @@ namespace UI::Themes
 		void setThemeActive();
 		const LvglStyles& getLvglStyles() const;
 		const ComponentStyles& getComponentStyles() const;
-		const std::string_view getIconFolder() const { return m_iconFolder; }
 
 		const std::string_view getName() const { return m_name; }
 
@@ -351,9 +348,6 @@ namespace UI::Themes
 		FontConfigSet m_fontConfigSet;
 		ThemeFonts m_fonts;
 
-		/* Icons */
-		const std::string_view m_iconFolder;
-
 		std::function<void(Theme*)> m_initFunc;
 
 		enum class DisplaySize_t
@@ -377,7 +371,9 @@ namespace UI::Themes
 
 	/* Icons */
 	void resetIconFolder();
+	const std::string& getIconFolder();
 	void setIconFolder(std::string_view folder);
+	std::vector<std::string> getIconSets();
 	std::string getIconPath(std::string_view icon_name);
 	std::string getFixedIconPath(std::string_view folder, std::string_view icon_name);
 	bool iconExists(std::string_view icon_name);
@@ -388,6 +384,7 @@ namespace UI::Themes
 #endif
 } // namespace UI::Themes
 
+void lv_obj_refresh(lv_obj_t*);
 bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style);
 void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);
 void lv_obj_remove_style(lv_obj_t* obj, const lv_style_t* style, lv_style_selector_t selector, const bool recursive);

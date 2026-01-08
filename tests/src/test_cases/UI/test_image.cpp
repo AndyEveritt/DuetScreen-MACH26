@@ -18,7 +18,6 @@ class TestImage : public UiTestSuite
 	TestImage()
 		: img("image", screen)
 	{
-		UI::Themes::setIconFolder("examples");
 		screen.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 	}
 
@@ -28,14 +27,14 @@ class TestImage : public UiTestSuite
 TEST_F(TestImage, Bmp)
 {
 	img.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	img.setSrc(UI::Themes::getIconPath("example.bmp").c_str());
+	img.setSrc(UI::Themes::getFixedIconPath("examples", "example.bmp").c_str());
 	EXPECT_EQUAL_SCREENSHOT("image/bmp.png");
 }
 
 TEST_F(TestImage, Png)
 {
 	img.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	img.setSrc(UI::Themes::getIconPath("example_full_color.png").c_str());
+	img.setSrc(UI::Themes::getFixedIconPath("examples", "example_full_color.png").c_str());
 	EXPECT_EQUAL_SCREENSHOT("image/png.png");
 }
 
@@ -45,15 +44,15 @@ TEST_F(TestImage, PngRecolor)
 	screen.setStyleBgOpa(LV_OPA_COVER, 0);
 
 	img.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	img.setSrc(UI::Themes::getIconPath("example.png").c_str());
+	img.setSrc(UI::Themes::getFixedIconPath("examples", "example.png").c_str());
 
 	UI::LvImage img_white("recolor_white", screen);
-	img_white.setSrc(UI::Themes::getIconPath("example.png").c_str());
+	img_white.setSrc(UI::Themes::getFixedIconPath("examples", "example.png").c_str());
 	img_white.setStyleRecolor(lv_color_white(), 0);
 	img_white.setStyleRecolorOpa(LV_OPA_COVER, 0);
 
 	UI::LvImage img_blue("recolor_blue", screen);
-	img_blue.setSrc(UI::Themes::getIconPath("example.png").c_str());
+	img_blue.setSrc(UI::Themes::getFixedIconPath("examples", "example.png").c_str());
 	img_blue.setStyleRecolor(lv_palette_main(LV_PALETTE_BLUE), 0);
 	img_blue.setStyleRecolorOpa(LV_OPA_COVER, 0);
 
@@ -64,7 +63,7 @@ TEST_F(TestImage, PngRecolor)
 TEST_F(TestImage, Svg)
 {
 	img.setSize(100, 100);
-	img.setSrc(UI::Themes::getIconPath("example.svg").c_str());
+	img.setSrc(UI::Themes::getFixedIconPath("examples", "example.svg").c_str());
 	img.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 	img.addStyle(UI::Themes::getLvglStyles().bg_light);
 	// lv_obj_set_style_image_recolor(img, lv_color_white(), 0);

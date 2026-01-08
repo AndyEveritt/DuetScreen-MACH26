@@ -19,6 +19,8 @@ namespace UI
 		void addClickedCallback(lv_event_cb_t event_cb, void* user_data);
 		void addClickedCallback(std::function<void(lv_event_t*)> event_cb);
 		void setIcon(std::string_view icon_path);
+		void setFixedIcon(const std::string& icon_path);
+		void clearIcon();
 		void setCheckable(bool checkable);
 		void setChecked(const bool checked);
 		bool getChecked() const;
@@ -30,6 +32,7 @@ namespace UI
 
 	  private:
 		void init(std::string_view text);
+		void updateIconVisibility();
 
 		Icon m_icon;
 		LvLabel m_label;

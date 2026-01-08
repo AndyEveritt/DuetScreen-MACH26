@@ -115,6 +115,8 @@ namespace UI
 			},
 			static_cast<lv_event_code_t>(LV_EVENT_STYLE_CHANGED),
 			this);
+
+		m_icon.addEventCallback([this](lv_event_t*) { updateIconVisibility(); }, LV_EVENT_REFRESH);
 	}
 
 	void Button::setText(std::string_view text)
@@ -143,12 +145,31 @@ namespace UI
 		UI_LOCK();
 		// If the icon is null, remove the icon and center the label
 		m_icon.setIcon(icon);
+		updateIconVisibility();
+	}
 
+	void Button::setFixedIcon(const std::string& icon_path)
+	{
+		UI_LOCK();
+		m_icon.setFixedIcon(icon_path);
+		updateIconVisibility();
+	}
+
+	void Button::clearIcon()
+	{
+		UI_LOCK();
+		m_icon.clearIcon();
+		updateIconVisibility();
+	}
+
+	void Button::updateIconVisibility()
+	{
+		UI_LOCK();
 		// Check the icon has loaded correctly
 		bool icon_loaded = m_icon.getSrc() != nullptr;
-		if (!icon.empty() && !icon_loaded)
+		if (!icon_loaded)
 		{
-			LOG_ERROR("Failed to load icon from path: {}", icon);
+			LOG_WARN("Failed to load icon from path: {}", m_icon.getIconName());
 		}
 		m_icon.setVisible(icon_loaded);
 	}

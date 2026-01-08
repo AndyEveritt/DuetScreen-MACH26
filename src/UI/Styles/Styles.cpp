@@ -58,6 +58,7 @@ namespace UI::Themes
 		: name(nullptr)
 		, initFunc(nullptr)
 	{
+		ZoneScoped;
 		lv_style_init(&style);
 	}
 
@@ -65,12 +66,14 @@ namespace UI::Themes
 		: name(name)
 		, initFunc(nullptr)
 	{
+		ZoneScoped;
 		lv_style_init(&style);
 	}
 
 	Style::Style(const char* name, std::function<void(lv_style_t*)> initFunc)
 		: Style(name)
 	{
+		ZoneScoped;
 		if (!lv_is_initialized())
 		{
 			LOG_DBG("LVGL not initialized, deferring style initialization");
@@ -86,12 +89,14 @@ namespace UI::Themes
 	Style::Style(const Style& other)
 		: name(other.name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		lv_style_copy(&style, &other.style);
 	}
 
 	Style& Style::operator=(const Style& other)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		lv_style_copy(&style, &other.style);
 		return *this;
@@ -99,6 +104,7 @@ namespace UI::Themes
 
 	Style::Style(Style&& other)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		style = other.style;
 		other.m_moved = true;
@@ -106,6 +112,7 @@ namespace UI::Themes
 
 	Style& Style::operator=(Style&& other)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		style = other.style;
 		other.m_moved = true;
@@ -114,12 +121,14 @@ namespace UI::Themes
 
 	Style::~Style()
 	{
+		ZoneScoped;
 		if (!m_moved)
 			lv_style_reset(&style);
 	}
 
 	void Style::init()
 	{
+		ZoneScoped;
 		if (initFunc)
 		{
 			initFunc(&style);
@@ -131,6 +140,7 @@ namespace UI::Themes
 
 	const LvglStyles& getLvglStyles()
 	{
+		ZoneScoped;
 		if (!s_lvglStyles)
 		{
 			s_lvglStyles = std::make_unique<LvglStyles>();
@@ -140,6 +150,7 @@ namespace UI::Themes
 
 	void setLvglStyles(const LvglStyles& styles)
 	{
+		ZoneScoped;
 		LOG_DBG("Setting lvgl styles");
 		if (!s_lvglStyles)
 		{
@@ -150,6 +161,7 @@ namespace UI::Themes
 
 	const ComponentStyles& getComponentStyles()
 	{
+		ZoneScoped;
 		if (!s_componentStyles)
 		{
 			s_componentStyles = std::make_unique<ComponentStyles>();
@@ -159,6 +171,7 @@ namespace UI::Themes
 
 	void setComponentStyles(const ComponentStyles& styles)
 	{
+		ZoneScoped;
 		LOG_DBG("Setting component styles");
 		if (!s_componentStyles)
 		{
@@ -169,11 +182,13 @@ namespace UI::Themes
 
 	const Fonts& getFonts()
 	{
+		ZoneScoped;
 		return s_fonts;
 	}
 
 	static void setFonts(const ThemeFonts& fonts)
 	{
+		ZoneScoped;
 		LOG_DBG("Setting fonts");
 		s_fonts.header = *fonts.header.get();
 		s_fonts.normal = *fonts.normal.get();
@@ -183,6 +198,7 @@ namespace UI::Themes
 
 	static bool themeExists(std::string_view name)
 	{
+		ZoneScoped;
 		for (const auto& theme : themes())
 		{
 			if (theme->getName() == name)
@@ -193,15 +209,12 @@ namespace UI::Themes
 		return false;
 	}
 
-	Theme::Theme(std::string_view name,
-				 FontConfigSet fontConfigSet,
-				 std::string_view iconFolder,
-				 std::function<void(Theme* theme)> initFunc)
+	Theme::Theme(std::string_view name, FontConfigSet fontConfigSet, std::function<void(Theme* theme)> initFunc)
 		: m_name(name)
 		, m_fontConfigSet(fontConfigSet)
-		, m_iconFolder(iconFolder)
 		, m_initFunc(initFunc)
 	{
+		ZoneScoped;
 		if (themeExists(name))
 		{
 			LOG_FATAL_THROW("Theme with name {:s} already exists", name);
@@ -213,12 +226,14 @@ namespace UI::Themes
 
 	Theme::~Theme()
 	{
+		ZoneScoped;
 		LOG_INFO("Destroying theme: {:s}", m_name);
 		themes().erase(std::remove(themes().begin(), themes().end(), this), themes().end());
 	}
 
 	void Theme::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Initializing theme: {:s}", m_name);
 
@@ -235,10 +250,10 @@ namespace UI::Themes
 
 	void Theme::setThemeActive()
 	{
+		ZoneScoped;
 		LOG_INFO("Applying theme: {:s}", m_name);
 		setLvglStyles(getLvglStyles());
 		setComponentStyles(getComponentStyles());
-		setIconFolder(m_iconFolder);
 		setTypeface(FontManager::getActiveTypefaceName());
 
 		s_currentTheme = const_cast<Theme*>(this);
@@ -249,6 +264,7 @@ namespace UI::Themes
 
 	const LvglStyles& Theme::getLvglStyles() const
 	{
+		ZoneScoped;
 		if (!m_lvgl)
 		{
 			LOG_FATAL_THROW("LVGL styles not initialized");
@@ -258,6 +274,7 @@ namespace UI::Themes
 
 	const ComponentStyles& Theme::getComponentStyles() const
 	{
+		ZoneScoped;
 		if (!m_components)
 		{
 			LOG_FATAL_THROW("Component styles not initialized");
@@ -267,6 +284,7 @@ namespace UI::Themes
 
 	LvglStyles& Theme::getLvglStyles()
 	{
+		ZoneScoped;
 		if (!m_lvgl)
 		{
 			m_lvgl = std::make_unique<LvglStyles>();
@@ -276,6 +294,7 @@ namespace UI::Themes
 
 	ComponentStyles& Theme::getComponentStyles()
 	{
+		ZoneScoped;
 		if (!m_components)
 		{
 			m_components = std::make_unique<ComponentStyles>();
@@ -285,6 +304,7 @@ namespace UI::Themes
 
 	void Theme::setTypeface(const std::string& typeface)
 	{
+		ZoneScoped;
 		LOG_INFO("Setting typeface to {:s}", typeface);
 
 		/* This will release any previously held font resources */
@@ -318,6 +338,7 @@ namespace UI::Themes
 	 */
 	static void applyThemeCb(lv_theme_t* th, lv_obj_t* obj)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LV_UNUSED(th);
 
@@ -961,6 +982,7 @@ namespace UI::Themes
 
 	void init(lv_display_t* display)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Initializing themes");
 
@@ -1025,6 +1047,10 @@ namespace UI::Themes
 			theme->setThemeActive();
 		}
 
+		/* Set icon folder */
+		std::string_view iconFolder = StorageHelper::getData<std::string_view>(ID_ICON_FOLDER, DEFAULT_ICON_SET);
+		setIconFolder(iconFolder);
+
 #if DEBUG_BORDERS
 		bool debugBordersEnabeled = StorageHelper::getData<bool>(ID_DEBUG_BORDERS, false);
 		showDebugBorders(lv_screen_active(), debugBordersEnabeled);
@@ -1033,16 +1059,19 @@ namespace UI::Themes
 
 	const std::vector<Theme*>& getThemes()
 	{
+		ZoneScoped;
 		return themes();
 	}
 
 	Theme* getCurrentTheme()
 	{
+		ZoneScoped;
 		return s_currentTheme;
 	}
 
 	Theme* getTheme(const size_t index)
 	{
+		ZoneScoped;
 		if (index >= getThemeCount())
 		{
 			LOG_ERROR("Theme with index {:d} not found", index);
@@ -1053,6 +1082,7 @@ namespace UI::Themes
 
 	Theme* getThemeByName(std::string_view name)
 	{
+		ZoneScoped;
 		for (const auto& theme : themes())
 		{
 			if (theme->getName() == name)
@@ -1066,6 +1096,7 @@ namespace UI::Themes
 
 	Theme* getDefaultTheme()
 	{
+		ZoneScoped;
 		Theme* theme = getThemeByName("theme_dark");
 		if (theme == nullptr)
 		{
@@ -1078,11 +1109,13 @@ namespace UI::Themes
 
 	size_t getThemeCount()
 	{
+		ZoneScoped;
 		return themes().size();
 	}
 
 	bool refreshCurrentTheme()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (s_currentTheme)
 		{
@@ -1098,6 +1131,7 @@ namespace UI::Themes
 
 	const std::vector<std::string_view> getThemeNames()
 	{
+		ZoneScoped;
 		std::vector<std::string_view> names(getThemeCount());
 		for (const auto& theme : themes())
 		{
@@ -1106,39 +1140,74 @@ namespace UI::Themes
 		return names;
 	}
 
-	static std::string_view s_iconFolder;
+	static std::string s_iconFolder(DEFAULT_ICON_SET);
 
 	void resetIconFolder()
 	{
+		ZoneScoped;
 		UI_LOCK();
-		Theme* currentTheme = getCurrentTheme();
-		if (currentTheme == nullptr)
-		{
-			s_iconFolder = "material";
-			return;
-		}
-		s_iconFolder = currentTheme->getIconFolder();
+		setIconFolder(DEFAULT_ICON_SET);
+	}
+
+	const std::string& getIconFolder()
+	{
+		ZoneScoped;
+		UI_LOCK();
+		return s_iconFolder;
 	}
 
 	void setIconFolder(std::string_view folder)
 	{
+		ZoneScoped;
 		UI_LOCK();
+		if (s_iconFolder == folder)
+			return;
+
+		LOG_INFO("Setting icon folder to {:s}", folder);
+
+		auto sets = getIconSets();
+		if (std::find(sets.begin(), sets.end(), folder) == sets.end())
+		{
+			LOG_WARN("Icon set {:s} not found, keeping current icon set {:s}", folder, s_iconFolder);
+			return;
+		}
+
 		s_iconFolder = folder;
+		StorageHelper::setData(ID_ICON_FOLDER, s_iconFolder);
+		lv_obj_refresh(lv_screen_active());
+	}
+
+	std::vector<std::string> getIconSets()
+	{
+		ZoneScoped;
+		std::vector<std::string> sets;
+		for (const auto& entry : std::filesystem::directory_iterator(ASSETS_FOLDER "icons/"))
+		{
+			if (!entry.is_directory())
+				continue;
+			if (entry.path().filename() == "examples" || entry.path().filename() == "hardware_test")
+				continue;
+			sets.push_back(entry.path().filename().string());
+		}
+		return sets;
 	}
 
 	std::string getIconPath(std::string_view icon_name)
 	{
+		ZoneScoped;
 		return getFixedIconPath(s_iconFolder, icon_name);
 	}
 
 	std::string getFixedIconPath(std::string_view folder, std::string_view icon_name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return fmt::format(ASSETS_FOLDER "icons/{:s}/{:s}", folder, icon_name);
 	}
 
 	bool iconExists(std::string_view icon_name)
 	{
+		ZoneScoped;
 		std::string path = getIconPath(icon_name);
 		return std::filesystem::exists(path);
 	}
@@ -1146,12 +1215,14 @@ namespace UI::Themes
 #if DEBUG_BORDERS
 	bool isdebugBorderVisible(lv_obj_t* obj)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return lv_obj_has_style(obj, s_debugBorders);
 	}
 
 	static void _showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
 	{
+		ZoneScoped;
 		if (show)
 		{
 			lv_obj_add_style(obj, s_debugBorders, LV_PART_MAIN, recursive);
@@ -1164,6 +1235,7 @@ namespace UI::Themes
 
 	void showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		_showDebugBorders(obj, show, recursive);
 		lv_obj_refresh_style(obj, LV_PART_ANY, LV_STYLE_PROP_ANY);
@@ -1172,8 +1244,25 @@ namespace UI::Themes
 
 } // namespace UI::Themes
 
+/**
+ * @brief Send LV_EVENT_REFRESH to obj and all its children recursively
+ * @param obj
+ */
+void lv_obj_refresh(lv_obj_t* obj)
+{
+	lv_obj_tree_walk(
+		obj,
+		[](lv_obj_t* obj, void*)
+		{
+			lv_obj_send_event(obj, LV_EVENT_REFRESH, NULL);
+			return LV_OBJ_TREE_WALK_NEXT;
+		},
+		NULL);
+}
+
 bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style)
 {
+	ZoneScoped;
 	UI_LOCK();
 
 	for (size_t i = 0; i < obj->style_cnt; i++)
@@ -1188,6 +1277,7 @@ bool lv_obj_has_style(lv_obj_t* obj, const lv_style_t* style)
 
 void lv_obj_add_style(lv_obj_t* obj, const lv_style_t* style, const lv_style_selector_t selector, const bool recursive)
 {
+	ZoneScoped;
 	UI_LOCK();
 	if (recursive)
 	{
@@ -1208,6 +1298,7 @@ void lv_obj_remove_style(lv_obj_t* obj,
 						 const lv_style_selector_t selector,
 						 const bool recursive)
 {
+	ZoneScoped;
 	UI_LOCK();
 	if (recursive)
 	{

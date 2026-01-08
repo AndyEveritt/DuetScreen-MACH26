@@ -258,6 +258,7 @@
       "erase_and_restart": "Erase and Restart",
       "firmware_version": "Firmware Version:",
       "font": "Font",
+      "icons": "Icons",
       "language": "Language:",
       "language_en": "English",
       "notification_auto_close_error": "Do not close error messages automatically:",
@@ -369,6 +370,9 @@
         "grey": "Greyscale",
         "light": "Light",
         "flat": "Flat"
+      },
+      "icon_sets": {
+        "material": "Material"
       },
       "primary_hue": "Primary Hue",
       "secondary_hue": "Secondary Hue",

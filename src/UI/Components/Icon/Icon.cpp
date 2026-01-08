@@ -20,9 +20,40 @@ namespace UI
 		enableRecolor(true);
 
 		setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
+
+		addEventCallback(
+			[this](lv_event_t*)
+			{
+				/* Refresh the icon when the event is triggered */
+				if (m_iconName.empty())
+					return;
+				refreshIcon(m_iconName);
+			},
+			LV_EVENT_REFRESH);
 	}
 
 	void Icon::setIcon(std::string_view icon)
+	{
+		UI_LOCK();
+		m_iconName = icon;
+		refreshIcon(m_iconName);
+	}
+
+	void Icon::setFixedIcon(const std::string& icon_path)
+	{
+		UI_LOCK();
+		m_iconName.clear();
+		setSrc(icon_path.empty() ? nullptr : icon_path.c_str());
+	}
+
+	void Icon::clearIcon()
+	{
+		UI_LOCK();
+		m_iconName.clear();
+		setSrc(nullptr);
+	}
+
+	void Icon::refreshIcon(std::string_view icon)
 	{
 		UI_LOCK();
 		setSrc(icon.empty() ? nullptr : Themes::getIconPath(icon).c_str());

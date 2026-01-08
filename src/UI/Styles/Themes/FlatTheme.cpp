@@ -15,7 +15,6 @@ namespace UI::Themes
 	static const uint16_t s_secondaryHue = 50;
 	static const float s_chroma = 0.02f;
 	static bool s_darkMode = true;
-	static std::string_view s_iconFolder = "material";
 	static FontConfigSet s_fontConfigs = {
 		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
 		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL | LV_FREETYPE_FONT_STYLE_WEIGHT(400)},
@@ -28,7 +27,6 @@ namespace UI::Themes
 	static DefaultTheme s_flatTheme("flat",
 									s_colors,
 									s_fontConfigs,
-									s_iconFolder,
 									[](Theme* theme)
 									{
 										auto t = static_cast<DefaultTheme*>(theme);

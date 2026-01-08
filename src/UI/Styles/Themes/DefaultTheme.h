@@ -49,9 +49,8 @@ namespace UI::Themes
 		DefaultTheme(std::string_view name,
 					 ThemeColors colors,
 					 FontConfigSet fontConfigSet,
-					 std::string_view iconFolder,
 					 std::function<void(Theme* theme)> styleOverrides = nullptr)
-			: Theme(name, fontConfigSet, iconFolder, styleOverrides)
+			: Theme(name, fontConfigSet, styleOverrides)
 			, m_colors(colors)
 		{
 		}

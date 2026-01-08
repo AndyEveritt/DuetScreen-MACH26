@@ -15,7 +15,6 @@ namespace UI::Themes
 	  public:
 		CustomTheme(std::string_view name,
 					FontConfigSet fontConfigSet,
-					std::string_view iconFolder,
 					std::function<void(Theme* theme)> styleOverrides = nullptr);
 
 		void setColors(uint16_t primaryHue, uint16_t secondaryHue, float chroma, bool darkMode);

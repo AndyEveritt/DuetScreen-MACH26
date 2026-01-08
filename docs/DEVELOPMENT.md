@@ -182,6 +182,14 @@ Where:
 > [!NOTE]
 > The language files are loaded at runtime without need to be compiled into the binary. When simulating on PC, the language files are loaded from the `assets/i18n/` directory in the project. When running on the Duet3D screen, the language files are loaded from the `/etc/assets/i18n/` directory.
 
+## Adding a new icon set
+- Icon sets are located in the `assets/icons/` directory.
+- Each icon set is a subdirectory in the `assets/icons/` directory.
+- To add a new icon set, create a new subdirectory in the `assets/icons/` directory and add the icons to it.
+- Icons should be PNG format with transparent backgrounds
+- Icon colour does not matter as the icons are recoloured at runtime to match the current theme.
+- The icon set can be selected in the GUI settings under `Settings > Display > Icons`
+- The filenames of the icons should match the filenames used in the code. If in doubt look at the existing icon sets for reference.
 
 ## Testing
 

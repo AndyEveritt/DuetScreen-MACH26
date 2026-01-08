@@ -39,6 +39,7 @@ constexpr size_t DEFAULT_LOG_FILE_COUNT = 3; // 3 files
 constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in milliseconds
 constexpr size_t MODEL_TICK_HZ = 1000 / MODEL_TICK_INTERVAL;
 constexpr uint32_t DEFAULT_SCREEN_TIMEOUT = 5 * 60 * 1000; // milliseconds
+constexpr std::string_view DEFAULT_ICON_SET = "material";
 
 /* Duet */
 constexpr const char* DEFAULT_GCODES_PATH = "0:/gcodes";

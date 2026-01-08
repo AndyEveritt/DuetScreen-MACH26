@@ -429,6 +429,20 @@ namespace UI
 		m_font.setSelectedCallback([this](uint32_t /* index */, std::string_view option)
 								   { FontManager::setActiveTypeface(std::string(option)); });
 
+		/* Icons */
+		createRow(_("settings.icons"), m_icons);
+		m_icons.setHeight(LV_SIZE_CONTENT);
+		for (const auto& iconSet : Themes::getIconSets())
+		{
+			m_icons.addOption(_(fmt::format("theme.icon_sets.{:s}", iconSet)));
+		}
+		m_icons.setSelectedCallback(
+			[this](uint32_t index, std::string_view)
+			{
+				LOG_INFO("Changing icon set");
+				Themes::setIconFolder(Themes::getIconSets().at(index));
+			});
+
 		/* Theme preview */
 		createSpanRow(m_themePreview);
 		m_themePreview.setHeight(LV_SIZE_CONTENT);
@@ -464,6 +478,7 @@ namespace UI
 	{
 		updateThemePreview();
 		m_font.setSelected(FontManager::getActiveTypefaceName());
+		m_icons.setSelected(_(fmt::format("theme.icon_sets.{:s}", Themes::getIconFolder())));
 	}
 
 	DeveloperSettings::DeveloperSettings(const std::string& name, LvObj& parent)

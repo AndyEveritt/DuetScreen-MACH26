@@ -23,13 +23,11 @@ namespace UI::Themes
 		.emphasis = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
 		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_ITALIC | LV_FREETYPE_FONT_STYLE_WEIGHT(200)},
 	};
-	static std::string_view s_iconFolder = "material";
 
 	CustomTheme::CustomTheme(std::string_view name,
 							 FontConfigSet fontConfigSet,
-							 std::string_view iconFolder,
 							 std::function<void(Theme* theme)> styleOverrides)
-		: DefaultTheme(name, ThemeColors(), fontConfigSet, iconFolder, styleOverrides)
+		: DefaultTheme(name, ThemeColors(), fontConfigSet, styleOverrides)
 	{
 	}
 
@@ -68,5 +66,5 @@ namespace UI::Themes
 		setColors(primaryHue, secondaryHue, chroma, darkMode);
 	}
 
-	static CustomTheme s_customTheme("custom", s_fontConfigs, s_iconFolder, []([[maybe_unused]] Theme* theme) {});
+	static CustomTheme s_customTheme("custom", s_fontConfigs, []([[maybe_unused]] Theme* theme) {});
 } // namespace UI::Themes

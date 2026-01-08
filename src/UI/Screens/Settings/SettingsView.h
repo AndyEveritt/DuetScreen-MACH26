@@ -108,6 +108,7 @@ namespace UI
 
 		DropdownMenu m_theme{"theme", getRoot()};
 		DropdownMenu m_font{"font", getRoot()};
+		DropdownMenu m_icons{"icons", getRoot()};
 		ThemePreview m_themePreview{"theme_preview", getRoot()};
 	};
 

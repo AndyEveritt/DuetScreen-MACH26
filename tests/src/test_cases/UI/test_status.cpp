@@ -21,7 +21,6 @@ class TestStatus : public UiTestSuite
 	{
 		// TODO: there is a race condition between the filesystem operations and the test execution when tests are run
 		// in parallel
-		UI::Themes::setIconFolder("examples");
 
 		/* Need to wait for the filesystem operations to finish fully */
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -50,7 +49,7 @@ TEST_F(TestStatus, Header)
 
 	view.setFilename("test.gcode");
 	view.updateProgress(50);
-	view.setThumbnail(UI::Themes::getIconPath("example.bmp").c_str());
+	view.setThumbnail(UI::Themes::getFixedIconPath("examples", "example.bmp").c_str());
 	view.updateLayout();
 
 	EXPECT_EQUAL_SCREENSHOT("status_view/header.png")
@@ -120,7 +119,7 @@ TEST_F(TestStatus, Thumbnail)
 	std::filesystem::create_directories(thumbnailPath.parent_path());
 	assert(std::filesystem::exists(thumbnailPath.parent_path()));
 	std::filesystem::remove(thumbnailPath);
-	std::filesystem::copy_file(Themes::getIconPath("print_thumbnail.png"), thumbnailPath);
+	std::filesystem::copy_file(Themes::getFixedIconPath("examples", "print_thumbnail.png"), thumbnailPath);
 
 	view.show();
 	view.updateLayout();

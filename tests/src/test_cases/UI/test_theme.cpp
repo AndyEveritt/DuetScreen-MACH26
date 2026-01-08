@@ -68,7 +68,7 @@ TEST_F(TestTheme, DefaultTheme)
 		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
 	};
 
-	Themes::CustomTheme theme("test_theme", fontConfigs, "material", [](Themes::Theme* theme) {});
+	Themes::CustomTheme theme("test_theme", fontConfigs, [](Themes::Theme* theme) {});
 	theme.init();
 	theme.setThemeActive();
 
@@ -298,7 +298,7 @@ TEST_F(TestTheme, Widgets)
 	message_box.cancelVisible(true);
 	message_box.okVisible(true);
 	message_box.imageVisible(true);
-	message_box.setImage(Themes::getIconPath("example.bmp").c_str());
+	message_box.setImage(Themes::getFixedIconPath("examples", "small_print_thumbnail.png").c_str());
 	message_box.progressVisible(true);
 	message_box.setProgress(40);
 	UI::Themes::resetIconFolder();
@@ -315,11 +315,9 @@ TEST_F(TestTheme, Widgets)
 	heater_slider.setHeaterState(HeaterSliderPresenter::heater_state_t::active, "Active");
 
 	/* Icon */
-	UI::Themes::setIconFolder("examples");
 	Icon icon("icon", cont);
 	icon.setSize(col_width, col_width);
-	icon.setIcon("example_full_color.png");
-	UI::Themes::resetIconFolder();
+	icon.setFixedIcon(Themes::getFixedIconPath("examples", "example_full_color.png"));
 
 	/* Axis Control */
 	LvContainer axis_cont("axis_cont", cont);
