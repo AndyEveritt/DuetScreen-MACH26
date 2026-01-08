@@ -578,6 +578,8 @@ namespace UI::Themes
 		lv_style_set_radius(lvgl.slider, RADIUS_DEFAULT);
 		lv_style_set_radius(lvgl.slider_indic, RADIUS_DEFAULT);
 		lv_style_set_radius(lvgl.slider_knob, RADIUS_DEFAULT);
+		lv_style_set_border_color(lvgl.slider_knob, m_colors.primary_muted);
+		lv_style_set_border_width(lvgl.slider_knob, BORDER_WIDTH);
 #endif
 
 		lv_style_set_bg_color(components.estop, lv_palette_main(LV_PALETTE_RED));
