@@ -302,12 +302,20 @@ namespace UI
 	{
 		m_primaryHueLabel.setVisible(show);
 		m_primaryHueSlider.setVisible(show);
+		m_primaryColorPreview.setVisible(show);
 		m_secondaryHueLabel.setVisible(show);
 		m_secondaryHueSlider.setVisible(show);
+		m_secondaryColorPreview.setVisible(show);
 		m_chromaLabel.setVisible(show);
 		m_chromaSlider.setVisible(show);
 		m_darkModeLabel.setVisible(show);
 		m_darkMode.setVisible(show);
+
+		if (show)
+		{
+			m_primaryHueSlider.getLvSlider().sendEvent(LV_EVENT_SIZE_CHANGED);
+			m_secondaryHueSlider.getLvSlider().sendEvent(LV_EVENT_SIZE_CHANGED);
+		}
 	}
 
 	void ThemePreview::setNumberPad(ModalNumberPad* numberPad)
