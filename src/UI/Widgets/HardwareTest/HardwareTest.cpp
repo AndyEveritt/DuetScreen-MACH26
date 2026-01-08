@@ -37,7 +37,7 @@ namespace UI
 		m_warning.setText("Invalid serial number");
 		m_warning.hide();
 		m_warning.setWidth(LV_PCT(100));
-		m_warning.setAlign(LV_ALIGN_BOTTOM_MID);
+		m_warning.setAlign(LV_ALIGN_BOTTOM_MID, 0, 0);
 		m_serialInput.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_serialInput.setOneLine(true);
 		m_serialInput.setFlexGrow(1);
@@ -149,7 +149,7 @@ namespace UI
 		m_pass.setText("Pass");
 		m_fail.setText("Fail");
 		m_start.setText("Start");
-		m_start.setAlign(LV_ALIGN_CENTER);
+		m_start.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_start.setSize(LV_PCT(20), LV_PCT(20));
 
 		m_start.addClickedCallback(
@@ -394,7 +394,7 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 
 		m_title.setText("Test Results");
-		m_title.setAlign(LV_ALIGN_TOP_MID);
+		m_title.setAlign(LV_ALIGN_TOP_MID, 0, 0);
 
 		m_passed.setTitle("Passed Tests");
 		m_passed.setWidth(LV_PCT(100));

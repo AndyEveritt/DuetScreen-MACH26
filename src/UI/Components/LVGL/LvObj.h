@@ -191,7 +191,9 @@ namespace UI
 		void setPos(lv_coord_t x, lv_coord_t y);
 		void setFlag(lv_obj_flag_t flag, bool enable, bool recursive = false);
 		void setState(lv_state_t state, bool enable, bool recursive = false);
-		void setAlign(lv_align_t align, lv_coord_t x = 0, lv_coord_t y = 0);
+		void setAlign(lv_align_t align);
+		void setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y);
+		void setAlignTo(LvObj& target, lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs);
 		void setLocalStyleProp(lv_style_prop_t prop,
 							   lv_style_value_t value,
 							   lv_style_selector_t selector = LV_PART_MAIN);

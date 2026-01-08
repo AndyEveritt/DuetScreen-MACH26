@@ -189,7 +189,7 @@ namespace UI
 
 		/* Display Connected Message */
 		createRow(_("settings.display_connected_message"), m_displayConnectedMessage);
-		m_displayConnectedMessage.setAlign(LV_ALIGN_CENTER);
+		m_displayConnectedMessage.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_displayConnectedMessage.setCheckedCallback(
 			[](bool checked) { StorageHelper::setData(ID_DISPLAY_CONNECTED_MESSAGE, checked); });
 		m_displayConnectedMessage.setChecked(StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true));

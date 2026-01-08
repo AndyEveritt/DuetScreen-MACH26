@@ -7,6 +7,7 @@
 
 #include "ThemePreview.h"
 #include "Debug.h"
+#include "UI/Styles/Color.h"
 #include "UI/Styles/Styles.h"
 #include "UI/Styles/Themes/CustomTheme.h"
 #include "i18n/i18n.h"
@@ -88,6 +89,8 @@ namespace UI
 		m_primaryHueSlider.setRange(0, 360);
 		m_primaryHueSlider.setValue(0);
 		m_primaryHueSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
+		m_primaryHueSlider.getLvSlider().setStyleBgOpa(LV_OPA_0);
+		m_primaryHueSlider.getLvSlider().setStyleBgOpa(LV_OPA_0, LV_PART_INDICATOR);
 
 		m_secondaryHueLabel.setText(_("theme.secondary_hue"));
 		m_secondaryHueSlider.setLabel(_("theme.secondary_hue")); // for the numberpad
@@ -96,6 +99,8 @@ namespace UI
 		m_secondaryHueSlider.setRange(0, 360);
 		m_secondaryHueSlider.setValue(0);
 		m_secondaryHueSlider.setValueChangedCallback([this](float) { updateThemeColors(); });
+		m_secondaryHueSlider.getLvSlider().setStyleBgOpa(LV_OPA_0);
+		m_secondaryHueSlider.getLvSlider().setStyleBgOpa(LV_OPA_0, LV_PART_INDICATOR);
 
 		m_chromaLabel.setText(_("theme.chroma"));
 		m_chromaSlider.setLabel(_("theme.chroma")); // for the numberpad
@@ -109,6 +114,74 @@ namespace UI
 		m_darkModeLabel.setText(_("theme.dark_mode"));
 		m_darkMode.setChecked(true);
 		m_darkMode.setCheckedCallback([this](bool) { updateThemeColors(); });
+
+		m_primaryHueSlider.getLvSlider().addEventCallback(
+			[this](lv_event_t* e)
+			{
+				const lv_event_code_t code = lv_event_get_code(e);
+
+				switch (code)
+				{
+				case LV_EVENT_SIZE_CHANGED:
+				case LV_EVENT_STYLE_CHANGED:
+				{
+					auto& slider = m_primaryHueSlider.getLvSlider();
+					const auto width = slider.getWidth();
+					const auto height = slider.getHeight();
+					m_primaryColorPreview.setSize(width, height);
+					m_primaryColorPreview.setAlignTo(slider, LV_ALIGN_TOP_LEFT, 0, 0);
+					m_primaryColorPreview.getCanvas().setLocalStyleProp(LV_STYLE_RADIUS,
+																		slider.getStyleProp(LV_STYLE_RADIUS));
+					break;
+				}
+				default:
+					break;
+				}
+			},
+			LV_EVENT_ALL);
+		m_primaryColorPreview.setResolution(static_cast<uint32_t>(m_primaryHueSlider.getMax()), 1u);
+		m_primaryColorPreview.showTitle(false);
+		m_primaryColorPreview.showXScale(false);
+		m_primaryColorPreview.showYScale(false);
+		m_primaryColorPreview.setStylePad(0);
+		m_primaryColorPreview.setStylePad(0, LV_PART_MAIN, Padding::ROW);
+		m_primaryColorPreview.setStylePad(0, LV_PART_MAIN, Padding::COLUMN);
+		// m_primaryColorPreview.moveToFront();
+		m_primaryColorPreview.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
+
+		m_secondaryHueSlider.getLvSlider().addEventCallback(
+			[this](lv_event_t* e)
+			{
+				const lv_event_code_t code = lv_event_get_code(e);
+
+				switch (code)
+				{
+				case LV_EVENT_SIZE_CHANGED:
+				case LV_EVENT_STYLE_CHANGED:
+				{
+					auto& slider = m_secondaryHueSlider.getLvSlider();
+					const auto width = slider.getWidth();
+					const auto height = slider.getHeight();
+					m_secondaryColorPreview.setSize(width, height);
+					m_secondaryColorPreview.setAlignTo(slider, LV_ALIGN_TOP_LEFT, 0, 0);
+					m_secondaryColorPreview.getCanvas().setLocalStyleProp(LV_STYLE_RADIUS,
+																		  slider.getStyleProp(LV_STYLE_RADIUS));
+					break;
+				}
+				default:
+					break;
+				}
+			},
+			LV_EVENT_ALL);
+		m_secondaryColorPreview.setResolution(static_cast<uint32_t>(m_secondaryHueSlider.getMax()), 1u);
+		m_secondaryColorPreview.showTitle(false);
+		m_secondaryColorPreview.showXScale(false);
+		m_secondaryColorPreview.showYScale(false);
+		m_secondaryColorPreview.setStylePad(0);
+		m_secondaryColorPreview.setStylePad(0, LV_PART_MAIN, Padding::ROW);
+		m_secondaryColorPreview.setStylePad(0, LV_PART_MAIN, Padding::COLUMN);
+		// m_secondaryColorPreview.moveToFront();
+		m_secondaryColorPreview.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 
 		updateSwatches();
 	}
@@ -198,7 +271,7 @@ namespace UI
 		m_primaryHueSlider.setValue(static_cast<float>(primaryHue));
 		m_secondaryHueSlider.setValue(static_cast<float>(secondaryHue));
 		m_chromaSlider.setValue(chroma);
-		m_darkMode.setChecked(darkMode); // this will call the updateThemeColors() callback
+		m_darkMode.setChecked(darkMode);
 
 		m_primaryHueSlider.setSendMode(Slider::SendMode::VALUE_CONFIRMED);
 		m_secondaryHueSlider.setSendMode(Slider::SendMode::VALUE_CONFIRMED);
@@ -269,7 +342,44 @@ namespace UI
 							   m_darkMode.getChecked());
 
 		UI::Themes::refreshCurrentTheme();
+
+		const auto colors = customTheme->getColors();
+		renderColorPreview(m_primaryColorPreview, colors.primary.getL(), colors.primary.getC());
+		renderColorPreview(m_secondaryColorPreview, colors.secondary.getL(), colors.secondary.getC());
 		updateSwatches();
 	}
 
+	void ThemePreview::renderColorPreview(Canvas& canvas, float luminance, float chroma)
+	{
+		uint32_t barWidth, barHeight;
+		canvas.getResolution(barWidth, barHeight);
+		for (uint32_t x = 0; x < barWidth; x++)
+		{
+			canvas.drawPx(x, 0, static_cast<lv_color_t>(Color(luminance, chroma, static_cast<float>(x))), LV_OPA_COVER);
+		}
+	}
+
+	void ThemePreview::onShow()
+	{
+		m_primaryHueSlider.getLvSlider().sendEvent(LV_EVENT_SIZE_CHANGED);
+		m_secondaryHueSlider.getLvSlider().sendEvent(LV_EVENT_SIZE_CHANGED);
+		UI::Themes::Theme* theme = Themes::getCurrentTheme();
+
+		if (!theme)
+		{
+			LOG_ERROR("No current theme set");
+			return;
+		}
+
+		auto customTheme = dynamic_cast<UI::Themes::CustomTheme*>(theme);
+		if (!customTheme)
+		{
+			return;
+		}
+
+		const auto colors = customTheme->getColors();
+		renderColorPreview(m_primaryColorPreview, colors.primary.getL(), colors.primary.getC());
+		renderColorPreview(m_secondaryColorPreview, colors.secondary.getL(), colors.secondary.getC());
+		updateSwatches();
+	}
 } // namespace UI

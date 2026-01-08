@@ -25,7 +25,7 @@ namespace UI
 		m_label.setText(_("estop.prompt"));
 		m_label.setAngleStart(200);
 		m_label.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
-		m_label.setAlign(LV_ALIGN_CENTER);
+		m_label.setAlign(LV_ALIGN_CENTER, 0, 0);
 
 		addEventCallback(
 			[](lv_event_t* e)

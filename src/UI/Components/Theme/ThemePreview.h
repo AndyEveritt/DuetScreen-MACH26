@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "UI/Components/Canvas/Canvas.h"
 #include "UI/Components/Input/ModalNumberPad.h"
 #include "UI/Components/Input/Slider.h"
 #include "UI/Components/LVGL/LvCheckbox.h"
@@ -38,7 +39,10 @@ namespace UI
 		void setNumberPad(ModalNumberPad* numberPad);
 
 	  private:
+		void onShow() override;
+
 		void updateThemeColors();
+		void renderColorPreview(Canvas& canvas, float luminance, float chroma);
 
 		LvLabel m_primaryHueLabel{"primary_hue_label", getRoot()};
 		LvLabel m_secondaryHueLabel{"secondary_hue_label", getRoot()};
@@ -46,7 +50,9 @@ namespace UI
 		LvLabel m_darkModeLabel{"dark_mode_label", getRoot()};
 
 		List<Swatch> m_swatches;
+		Canvas m_primaryColorPreview{"primary_color_preview", getRoot()};
 		Slider m_primaryHueSlider{"primary_hue_slider", getRoot()};
+		Canvas m_secondaryColorPreview{"secondary_color_preview", getRoot()};
 		Slider m_secondaryHueSlider{"secondary_hue_slider", getRoot()};
 		Slider m_chromaSlider{"chroma_slider", getRoot()};
 		ToggleWidget m_darkMode{"dark_mode", getRoot()};

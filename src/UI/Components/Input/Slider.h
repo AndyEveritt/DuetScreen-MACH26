@@ -47,6 +47,7 @@ namespace UI
 		float getValue() const { return m_value; }
 		float getMin() const { return m_min; }
 		float getMax() const { return m_max; }
+		LvSlider& getLvSlider() { return m_slider; }
 		LvTextarea& getInput() { return m_input; }
 		ModalNumberPad* getNumberPad() const { return m_numberPad; }
 

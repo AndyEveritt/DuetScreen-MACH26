@@ -510,11 +510,25 @@ namespace UI
 		return lv_obj_has_style_prop(getRootPtr(), selector, prop);
 	}
 
+	void LvObj::setAlign(lv_align_t align)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		lv_obj_set_align(getRootPtr(), align);
+	}
+
 	void LvObj::setAlign(lv_align_t align, lv_coord_t x, lv_coord_t y)
 	{
 		ZoneScoped;
 		UI_LOCK();
 		lv_obj_align(getRootPtr(), align, x, y);
+	}
+
+	void LvObj::setAlignTo(LvObj& target, lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		lv_obj_align_to(getRootPtr(), target.getRootPtr(), align, x_ofs, y_ofs);
 	}
 
 	void LvObj::setLocalStyleProp(lv_style_prop_t prop, lv_style_value_t value, lv_style_selector_t selector)

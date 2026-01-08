@@ -16,9 +16,9 @@ namespace UI
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		m_duetStatus.setAlign(LV_ALIGN_LEFT_MID);
-		m_duetName.setAlign(LV_ALIGN_CENTER);
-		m_time.setAlign(LV_ALIGN_RIGHT_MID);
+		m_duetStatus.setAlign(LV_ALIGN_LEFT_MID, 0, 0);
+		m_duetName.setAlign(LV_ALIGN_CENTER, 0, 0);
+		m_time.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 	}
 
 	void StatusBar::setDuetName(std::string_view name)
