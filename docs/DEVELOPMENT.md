@@ -190,6 +190,7 @@ Where:
 - Icon colour does not matter as the icons are recoloured at runtime to match the current theme.
 - The icon set can be selected in the GUI settings under `Settings > Display > Icons`
 - The filenames of the icons should match the filenames used in the code. If in doubt look at the existing icon sets for reference.
+- A translation key is used to provide a human readable name for the icon set in the GUI. This key should be added to the `i18n` language files under the `theme.icon_sets.{icon_set_folder_name}` key. For example, for an icon set called `example`, the translation key would be `theme.icon_sets.example`.
 
 ## Testing
 
