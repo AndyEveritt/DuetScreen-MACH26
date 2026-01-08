@@ -100,7 +100,7 @@ namespace UI
 		// Graph
 		Heatmap m_heightmap{"heightmap", getRoot(), layout_t(0, 0, 100, 100)};
 
-		LvContainer m_btnCont{"control_buttons", getRoot()};
+		Card m_btnCont{"control_buttons", getRoot()};
 		Button m_trueBedLevel{"true_bed_level", m_btnCont};
 		Button m_meshBedLevel{"mesh_bed_level", m_btnCont};
 

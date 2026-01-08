@@ -30,6 +30,7 @@ namespace UI
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
+		m_babystep.addStyle(Themes::getLvglStyles().card);
 
 		/* Layout */
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -145,7 +146,7 @@ namespace UI
 		m_genericAxisControls.getListContainer().addStyle(Themes::getLvglStyles().pad_zero);
 
 		/* Babystepping */
-		m_babystep.setSize(LV_PCT(20), LV_PCT(100));
+		m_babystep.setSize(LV_PCT(22), LV_PCT(100));
 
 		/* Bottom Bar */
 		m_bottomBarCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);

@@ -11,5 +11,10 @@ namespace UI
 		addStyle(Themes::getLvglStyles().bg_dark);
 
 		m_tabs.setSize(LV_PCT(100), LV_PCT(100));
+
+		m_moveView.setStylePad(0);
+		m_temperatureView.setStylePad(0);
+		m_heightmapView.setStylePad(0);
+		m_fanView.setStylePad(0);
 	}
 } // namespace UI
