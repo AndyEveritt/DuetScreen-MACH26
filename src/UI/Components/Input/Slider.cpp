@@ -40,8 +40,9 @@ namespace UI
 		m_decrement.setIcon("decrement.png");
 		m_increment.setIcon("increment.png");
 
-		m_input.setMinWidth(50);
 		m_input.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_input.setMinWidth(50);
+
 		m_slider.setMinHeight(LV_SIZE_CONTENT);
 		m_slider.setFlexGrow(1);
 		// m_slider.setStylePad(2);
@@ -102,6 +103,8 @@ namespace UI
 		m_slider.addEventCallback(onValueChanged, LV_EVENT_ALL, this);
 		m_input.addEventCallback(onInputEvent, LV_EVENT_ALL, this);
 	}
+
+	void Slider::onShow() {}
 
 	void Slider::setOutOfRangeMode(OutOfRange mode)
 	{
@@ -349,5 +352,11 @@ namespace UI
 	{
 		UI_LOCK();
 		m_input.setText(fmt::format("{:g}", getValue()));
+
+		/* Hack to fix this issue
+		 * https://github.com/Duet3D/DuetScreen/blob/8353026c07a67cc76d88f99729db56378fcf1890/tests/ref_imgs/home_view/control_view/fan.png
+		 */
+		lv_obj_set_width(m_input.getLabel(), LV_PCT(100));
+		lv_obj_set_width(m_input.getLabel(), LV_SIZE_CONTENT);
 	}
 } // namespace UI

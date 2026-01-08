@@ -335,8 +335,8 @@
       "remaining_time": "Remaining: {:s}",
       "speed_detailed": "Speed: {:g}/{:g} mm/s",
       "speed_header": "Speed",
-      "current_speed": "Current Speed: {:g}mm/s",
-      "requested_speed": "Requested Speed: {:g}mm/s",
+      "current_speed": "Current Speed: {:g} mm/s",
+      "requested_speed": "Requested Speed: {:g} mm/s",
       "speed_multiplier": "Speed Factor: {:d}%",
       "z_offset": "Z Offset: {:g} mm"
     },

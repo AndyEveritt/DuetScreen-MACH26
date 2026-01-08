@@ -79,6 +79,8 @@ namespace UI
 		bool hasDefaultValue() const { return !std::isnan(m_defaultValue); }
 
 	  private:
+		void onShow() override;
+
 		LvLabel m_label{"label", getRoot()};
 		LvContainer m_sliderCont{"slider_cont", getRoot()};
 
