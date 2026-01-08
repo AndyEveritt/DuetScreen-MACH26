@@ -25,7 +25,7 @@ namespace UI
 		{
 			lv_chart_series_t* series;
 			lv_color_t color;
-			std::shared_ptr<legend_obj_t> legendObj;
+			std::unique_ptr<legend_obj_t> legendObj;
 		};
 		typedef std::vector<series_t> series_list_t;
 		struct range_t
@@ -63,13 +63,14 @@ namespace UI
 		void init();
 		void setSeriesColor(series_t& series, lv_color_t color);
 
-		LvChart m_chart{"chart", getRoot()};
-		LvScale m_vScale{"vscale", getRoot()};
-		LvScale m_hScale{"hscale", getRoot()};
+		LvContainer m_chartCont{"chart_cont", getRoot()};
+		LvChart m_chart{"chart", m_chartCont};
+		LvScale m_vScale{"vscale", m_chartCont};
+		LvScale m_hScale{"hscale", m_chartCont};
 		LvContainer m_legend{"legend", getRoot()};
 
-		int32_t m_columnDsc[4];
-		int32_t m_rowDsc[3];
+		std::array<int32_t, 3> m_columnDsc;
+		std::array<int32_t, 3> m_rowDsc;
 
 		series_list_t m_series;
 	};

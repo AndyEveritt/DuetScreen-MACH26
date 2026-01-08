@@ -263,6 +263,9 @@ namespace UI::Themes
 		/* List */
 		Style list_header;
 		Style list_title;
+
+		/* Graph */
+		Style graph_legend;
 	};
 
 	const LvglStyles& getLvglStyles();

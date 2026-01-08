@@ -45,13 +45,16 @@ namespace UI::Themes
 		colors.bg = Color(darkMode ? 0.15f : 0.96f, bgChroma, primaryHue);
 		colors.bg_light = Color(darkMode ? 0.25f : 1.0f, bgChroma, primaryHue);
 
-		colors.primary = Color(darkMode ? 0.56f : 0.8f, colorChroma, primaryHue);
-		colors.primary_muted = Color(colors.primary.getL() - mutedDiff, colorChroma, primaryHue);
-		colors.secondary = Color(darkMode ? 0.56f : 0.8f, colorChroma, secondaryHue);
-		colors.secondary_muted = Color(colors.secondary.getL() - mutedDiff, colorChroma, secondaryHue);
+		const float colorL = darkMode ? 0.45f : 0.7f;
+		const float mutedL = colorL - mutedDiff;
+
+		colors.primary = Color(colorL, colorChroma, primaryHue);
+		colors.primary_muted = Color(mutedL, colorChroma, primaryHue);
+		colors.secondary = Color(colorL, colorChroma, secondaryHue);
+		colors.secondary_muted = Color(mutedL, colorChroma, secondaryHue);
 
 		colors.text = Color(darkMode ? 0.96f : 0.15f, chroma, primaryHue);
-		colors.text_muted = Color(darkMode ? 0.76f : 0.40f, chroma, primaryHue);
+		colors.text_muted = Color(darkMode ? 0.82f : 0.25f, chroma, primaryHue);
 		colors.text_header = Color(darkMode ? 1.0f : 0.0f, chroma, primaryHue);
 
 		colors.border = Color(darkMode ? 0.40f : 0.6f, chroma, primaryHue);
@@ -59,9 +62,9 @@ namespace UI::Themes
 		colors.highlight = Color(darkMode ? 0.70f : 1.0f, chroma, primaryHue);
 		colors.shadow = Color(darkMode ? 0.2f : 0.4f, bgChroma, primaryHue);
 
-		colors.success = Color(darkMode ? 0.6f : 0.8f, std::max(0.075f, chroma), 160);
-		colors.warning = Color(darkMode ? 0.6f : 0.8f, std::max(0.075f, chroma), 100);
-		colors.error = Color(darkMode ? 0.6f : 0.8f, std::max(0.075f, chroma), 30);
+		colors.success = Color(darkMode ? 0.6f : 0.8f, std::max(0.15f, chroma), 144);
+		colors.warning = Color(darkMode ? 0.75f : 0.85f, std::max(0.17f, chroma), 78);
+		colors.error = Color(darkMode ? 0.6f : 0.8f, std::max(0.2f, chroma), 27);
 
 		if (customizer)
 		{
@@ -615,5 +618,10 @@ namespace UI::Themes
 
 		lv_style_set_width(components.slider_buttons, 40);
 		lv_style_set_height(components.slider_buttons, 40);
+
+		/* Graph */
+
+		lv_style_set_min_width(components.graph_legend, 150);
+		// lv_style_set_max_width(components.graph_legend, 200);
 	}
 } // namespace UI::Themes

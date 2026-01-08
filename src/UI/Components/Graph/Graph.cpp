@@ -12,7 +12,6 @@
 namespace UI
 {
 	static constexpr lv_coord_t s_scaleSize = 30;
-	static constexpr lv_coord_t s_legendSize = 100;
 	static lv_color_t s_hiddenColor = lv_color_darken(lv_color_white(), 50);
 
 	Graph::Graph(const std::string& name, LvObj& parent)
@@ -26,26 +25,26 @@ namespace UI
 		UI_LOCK();
 
 		// Layout
-		m_columnDsc[0] = s_scaleSize;
-		m_columnDsc[1] = LV_GRID_FR(1);
-		m_columnDsc[2] = s_legendSize;
-		m_columnDsc[3] = LV_GRID_TEMPLATE_LAST;
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		m_chartCont.setSize(LV_PCT(100), LV_PCT(100));
+		m_chartCont.setFlexGrow(1);
+		m_chartCont.setStylePad(20, LV_PART_MAIN, Padding::TOP);
+		m_chartCont.setStylePad(20, LV_PART_MAIN, Padding::RIGHT);
+		m_chartCont.setStylePad(10, LV_PART_MAIN, Padding::LEFT);
+		m_chartCont.setStylePad(5, LV_PART_MAIN, Padding::BOTTOM);
 
-		m_rowDsc[0] = LV_GRID_FR(1);
-		m_rowDsc[1] = s_scaleSize;
-		m_rowDsc[2] = LV_GRID_TEMPLATE_LAST;
-		setGridDsc(m_columnDsc, m_rowDsc);
-		setGridCell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		setGridCell(m_chart, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_legend, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+		m_legend.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_legend.addStyle(Themes::getComponentStyles().graph_legend);
 
-		lv_obj_set_style_pad_top(getRootPtr(), 20, LV_PART_MAIN);
-		lv_obj_set_style_pad_right(getRootPtr(), 20, LV_PART_MAIN);
-		lv_obj_set_style_pad_left(getRootPtr(), 10, LV_PART_MAIN);
-		lv_obj_set_style_pad_bottom(getRootPtr(), 5, LV_PART_MAIN);
+		m_columnDsc = {s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		m_rowDsc = {LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST};
 
-		// Chart
+		m_chartCont.setGridDsc(m_columnDsc, m_rowDsc);
+		m_chartCont.setGridCell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		m_chartCont.setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		m_chartCont.setGridCell(m_chart, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+
+		/* Chart */
 		// Horizontal scale
 		m_hScale.setMode(LV_SCALE_MODE_HORIZONTAL_BOTTOM);
 		m_hScale.setLabelShow(true);
@@ -69,9 +68,7 @@ namespace UI
 	void Graph::showLegend(const bool show)
 	{
 		UI_LOCK();
-		m_columnDsc[2] = show ? s_legendSize : 0;
 		m_legend.setVisible(show);
-		setGridDsc(m_columnDsc, m_rowDsc);
 	}
 
 	Graph::range_t Graph::getXRange() const
@@ -154,7 +151,15 @@ namespace UI
 
 		size_t index = getSeriesCount();
 
-		auto legendObj = std::make_shared<legend_obj_t>(fmt::format("legend_obj_{}", index), m_legend);
+		auto legendObj = std::make_unique<legend_obj_t>(fmt::format("legend_obj_{}", index), m_legend);
+
+		/**
+		 * Spent some time on this to make the legend buttons all the same width but shrink to the smallest required
+		 * width to display the text without wrapping. Couldn't get lvgl to play ball so am leaving that for now.
+		 *
+		 * Currently the legend options will all be the width of the legend container which has is min width set in
+		 * `DefaultTheme.cpp`.
+		 */
 		legendObj->setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		legendObj->setText(displayName);
 		legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
@@ -164,7 +169,7 @@ namespace UI
 		legendObj->setChecked(true);
 		legendObj->addClickedCallback(legendEvent, this);
 		legendObj->setUserData((void*)(uintptr_t)index);
-		m_series.push_back(series_t(series, color, legendObj));
+		m_series.emplace_back(series, color, std::move(legendObj));
 		return true;
 	}
 
@@ -190,7 +195,7 @@ namespace UI
 			LOG_WARN("Cannot update series, series not found");
 			return false;
 		}
-		auto legendObj = series->legendObj;
+		auto& legendObj = series->legendObj;
 		legendObj->setText(displayName.c_str());
 		return true;
 	}
