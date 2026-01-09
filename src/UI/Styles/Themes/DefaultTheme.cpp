@@ -597,6 +597,7 @@ namespace UI::Themes
 		lv_style_merge(components.file, lvgl.border);
 
 		lv_style_set_bg_color(components.unhomed, lv_color_hex(0xfb9514));
+		lv_style_set_border_width(components.unhomed, 0);
 
 		lv_style_set_bg_opa(components.temperature_bar, LV_OPA_COVER);
 		lv_style_set_bg_color(components.temperature_bar, lv_palette_main(LV_PALETTE_BLUE));

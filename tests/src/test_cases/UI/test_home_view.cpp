@@ -17,6 +17,7 @@ class TestHomeView : public UiTestSuite
   protected:
 	TestHomeView()
 	{
+		ZoneScoped;
 		// Override the singleton so code using HomeView::instance() uses our local view
 		UI::HomeView::setInstance(&view);
 	}
@@ -285,6 +286,7 @@ class TestHomeViewWithData : public TestHomeView
   protected:
 	TestHomeViewWithData()
 	{
+		ZoneScoped;
 		load_model_data_from_file("tests/object_model/test_bench/model_boards_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_directories_v.json");
 		load_model_data_from_file("tests/object_model/test_bench/model_fans_v.json");
@@ -306,6 +308,7 @@ class TestHomeViewWithData : public TestHomeView
 
 TEST_F(TestHomeViewWithData, HomeView)
 {
+	ZoneScoped;
 	EXPECT_EQ(OM::Heat::GetHeaterCount(), 4);
 	EXPECT_EQ(OM::GetToolCount(), 4);
 
@@ -327,6 +330,7 @@ TEST_F(TestHomeViewWithData, HomeView)
 
 TEST_F(TestHomeViewWithData, ConsoleView)
 {
+	ZoneScoped;
 	openScreen(&view.getConsoleView());
 
 	auto presenter = view.getConsoleView().getPresenter();
@@ -350,6 +354,7 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 
 TEST_F(TestHomeViewWithData, ControlView)
 {
+	ZoneScoped;
 	auto& control = view.getControlView();
 
 	openScreen(&control);

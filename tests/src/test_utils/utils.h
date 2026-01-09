@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Debug.h"
+#include "UI/Core/Model.h"
 #include "lvgl/lvgl.h"
 #include <gtest/gtest.h>
 
@@ -24,6 +25,8 @@
 	  }                                                                                                                \
 	  else                                                                                                             \
 	  {                                                                                                                \
+		  Model::get().startEventLoop();                                                                               \
+		  Model::get().stopEventLoop();                                                                                \
 		  UI_LOCK();                                                                                                   \
 		  EXPECT_TRUE(lv_test_screenshot_compare(path));                                                               \
 	  }

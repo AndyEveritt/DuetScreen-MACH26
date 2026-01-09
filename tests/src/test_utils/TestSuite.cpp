@@ -19,6 +19,7 @@
 
 TestSuite::TestSuite()
 {
+	ZoneScoped;
 	/* Run at start of each test */
 	std::filesystem::remove("tests/config.json");
 	StorageHelper::setConfigFile("tests/config.json");
@@ -37,6 +38,7 @@ TestSuite::TestSuite()
 
 TestSuite::~TestSuite()
 {
+	ZoneScoped;
 	/* Run at end of each test */
 	OM::RemoveAll();
 	std::filesystem::remove_all("/tmp/thumbnails");
@@ -44,6 +46,7 @@ TestSuite::~TestSuite()
 
 bool TestSuite::load_model_data_from_file(std::string_view filename)
 {
+	ZoneScoped;
 	// Read from file and send data to JsonDecoder
 
 	std::ifstream file(filename.data());
@@ -56,6 +59,7 @@ bool TestSuite::load_model_data_from_file(std::string_view filename)
 
 bool TestSuite::load_model_data(std::string_view data)
 {
+	ZoneScoped;
 	Comm::JsonDecoder decoder;
 	decoder.CheckInput(reinterpret_cast<const unsigned char*>(data.data()), static_cast<unsigned int>(data.size()));
 	return true;

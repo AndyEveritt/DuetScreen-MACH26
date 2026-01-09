@@ -15,6 +15,7 @@
 UiTestSuiteInner::UiTestSuiteInner()
 	: TestSuite()
 {
+	ZoneScoped;
 	/* Run at start of each test */
 	LOG_INFO("Setting up UI test");
 	lv_init();
@@ -53,6 +54,7 @@ UiTestSuiteInner::UiTestSuiteInner()
 
 UiTestSuiteInner::~UiTestSuiteInner()
 {
+	ZoneScoped;
 	/* Run at end of each test */
 	// Cleanup
 	LOG_INFO("Tearing down UI test");
@@ -62,6 +64,7 @@ UiTestSuiteInner::~UiTestSuiteInner()
 UiTestSuite::UiTestSuite()
 	: UiTestSuiteInner()
 {
+	ZoneScoped;
 	screen.setStylePad(0);
 	screen.setFlexFlow(LV_FLEX_FLOW_COLUMN_WRAP);
 }
