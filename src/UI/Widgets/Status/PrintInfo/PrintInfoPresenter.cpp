@@ -100,7 +100,7 @@ namespace UI
 		tool->IterateExtruders(
 			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t /* index */)
 			{
-				flowMultiplier += static_cast<uint32_t>(100 * extruder->factor);
+				flowMultiplier += static_cast<uint32_t>(std::lround(100 * extruder->factor));
 				extruderCount++;
 			});
 
@@ -115,7 +115,7 @@ namespace UI
 
 	void PrintInfoPresenter::newSpeedFactor()
 	{
-		m_view->updateSpeedMultiplier(static_cast<uint32_t>(100 * OM::Move::GetSpeedFactor()));
+		m_view->updateSpeedMultiplier(static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())));
 	}
 
 	void PrintInfoPresenter::newJobDuration()

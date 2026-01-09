@@ -44,15 +44,18 @@ namespace Comm
 		, m_outEndpoint(0)
 		, m_packetSize(0)
 	{
+		ZoneScoped;
 	}
 
 	UsbDevice::~UsbDevice()
 	{
+		ZoneScoped;
 		reset();
 	}
 
 	bool UsbDevice::init(const char* name, libusb_device* device, receive_cb_t callback)
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		m_name = name;
 		m_device = device;
@@ -67,6 +70,7 @@ namespace Comm
 
 	void UsbDevice::reset()
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		LOG_DBG("Resetting USB device {:s}", m_name);
 		if (m_handle)
@@ -97,6 +101,7 @@ namespace Comm
 
 	bool UsbDevice::connect()
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		int r;
 
@@ -165,6 +170,7 @@ namespace Comm
 
 	bool UsbDevice::send(std::string_view data, unsigned int timeoutMs)
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
@@ -212,12 +218,14 @@ namespace Comm
 	// Convenience wrapper: set baud as 8N1 on CDC-ACM
 	bool UsbDevice::setBaud(uint32_t baud)
 	{
+		ZoneScoped;
 		return setLineCoding(baud, /*stopBits*/ 0, /*parity*/ 0, /*dataBits*/ 8);
 	}
 
 	// CDC-ACM SET_LINE_CODING to configure baud/format
 	bool UsbDevice::setLineCoding(uint32_t baud, uint8_t stopBits, uint8_t parity, uint8_t dataBits)
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
@@ -264,6 +272,7 @@ namespace Comm
 
 	UsbDevice::receive_err_t UsbDevice::receive(unsigned int timeoutMs)
 	{
+		ZoneScoped;
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
@@ -299,6 +308,7 @@ namespace Comm
 
 	int UsbDevice::setDtr(bool state)
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
@@ -324,6 +334,7 @@ namespace Comm
 
 	bool UsbDevice::getDeviceInterface()
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		libusb_config_descriptor* config_desc;
 		libusb_get_active_config_descriptor(m_device, &config_desc);
@@ -364,6 +375,7 @@ namespace Comm
 
 	void LIBUSB_CALL UsbDevice::sendTransferCallback(struct libusb_transfer* transfer)
 	{
+		ZoneScoped;
 		TransferData* transferData = static_cast<TransferData*>(transfer->user_data);
 
 		// Notify completion for any pending transfers
@@ -391,6 +403,7 @@ namespace Comm
 
 	void LIBUSB_CALL UsbDevice::receiveTransferCallback(struct libusb_transfer* transfer)
 	{
+		ZoneScoped;
 		auto device = static_cast<UsbDevice*>(transfer->user_data);
 
 		// Notify completion for any pending transfers
@@ -429,10 +442,13 @@ namespace Comm
 		timeval tv = {0, 50'000}; // 50 ms
 		while (m_eventThreadRunning)
 		{
-			int r = libusb_handle_events_timeout(s_context, &tv); // blocking call
-			if (r == LIBUSB_ERROR_INTERRUPTED)
 			{
-				continue;
+				ZoneScoped;
+				int r = libusb_handle_events_timeout(s_context, &tv); // blocking call
+				if (r == LIBUSB_ERROR_INTERRUPTED)
+				{
+					continue;
+				}
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Prevent busy-waiting
 		}
@@ -440,6 +456,7 @@ namespace Comm
 
 	UsbDevice& getCurrentUsbDevice()
 	{
+		ZoneScoped;
 		return s_currentUsbDevice;
 	}
 
@@ -448,6 +465,7 @@ namespace Comm
 								  const char** found_device_name,
 								  libusb_device** found_device)
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		for (ssize_t i = 0; i < device_count; ++i)
 		{
@@ -489,6 +507,7 @@ namespace Comm
 
 	int usbInit()
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		setUsbMode(StorageHelper::getData(ID_USB_MODE, UsbMode::Host));
 		return libusb_init(&s_context);
@@ -496,6 +515,7 @@ namespace Comm
 
 	bool connectUsbDevice()
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		// Reset any existing connection first
 		s_currentUsbDevice.reset();
@@ -527,6 +547,7 @@ namespace Comm
 								device,
 								[](unsigned char* buf, size_t len)
 								{
+									ZoneScopedN("USB Receive Callback");
 									static Comm::JsonDecoder s_decoder;
 									s_decoder.CheckInput(buf, len);
 								});
@@ -545,6 +566,7 @@ namespace Comm
 
 	ssize_t sendUsbData(std::string_view data)
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!s_currentUsbDevice.isConnected())
 		{
@@ -556,6 +578,7 @@ namespace Comm
 
 	void setUsbMode(const UsbMode mode)
 	{
+		ZoneScoped;
 		LOG_DBG("Setting USB mode to {:d}", static_cast<int>(mode));
 		switch (mode)
 		{
@@ -585,11 +608,13 @@ namespace Comm
 
 	UsbMode getUsbMode()
 	{
+		ZoneScoped;
 		return StorageHelper::getData(ID_USB_MODE, s_usbMode);
 	}
 
 	static void setUsbHost(bool host)
 	{
+		ZoneScoped;
 		std::ofstream ofs(USB_OTG_ROLE_PATH);
 		ofs << (host ? "usb_host" : "usb_device");
 		ofs.close();
@@ -597,11 +622,13 @@ namespace Comm
 
 	static void setUsbMux(bool usbc)
 	{
+		ZoneScoped;
 		GpioHelper::setPinValue(GPIO_USB_SELECT, usbc ? 1 : 0);
 	}
 
 	static void setUsbState(bool state)
 	{
+		ZoneScoped;
 		GpioHelper::setPinValue(GPIO_USB_STATE, state ? 1 : 0);
 	}
 } // namespace Comm
