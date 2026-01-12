@@ -69,6 +69,7 @@ namespace UI
 		lv_color_t getPx(size_t px, size_t py) const;
 
 		LvCanvas& getCanvas() { return m_canvas; }
+		lv_draw_buf_t* getDrawBuf() const { return m_canvas.getDrawBuf(); }
 
 		void clear();
 

@@ -78,6 +78,8 @@ namespace UI
 		void addMeasurementPoint(float x, float y);
 		void clear();
 
+		Heatmap& getHeightmap() { return m_heightmap; }
+
 		/* Statistics */
 		void setStatistics(
 			size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev);
@@ -90,8 +92,6 @@ namespace UI
 		static void onMeshBedLevelEvent(lv_event_t* e);
 
 		void onShow() override;
-
-		Heatmap& getHeightmap() { return m_heightmap; }
 
 		int32_t m_layoutColDsc[3] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		int32_t m_layoutRowDsc[5] = {

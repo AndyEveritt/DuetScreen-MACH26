@@ -17,6 +17,7 @@ namespace UI
 			, m_label("label", getRoot())
 			, m_load("load", getRoot(), "", layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		{
+			ZoneScoped;
 			UI_LOCK();
 
 			setFlexFlow(LV_FLEX_FLOW_ROW);
@@ -29,6 +30,7 @@ namespace UI
 			addEventCallback(
 				[](lv_event_t* event)
 				{
+					ZoneScopedN("HeightmapItem::click");
 					UI_LOCK();
 					auto item = static_cast<HeightmapItem*>(lv_event_get_user_data(event));
 					if (item == nullptr)
@@ -44,6 +46,7 @@ namespace UI
 			m_load.addClickedCallback(
 				[](lv_event_t* event)
 				{
+					ZoneScopedN("HeightmapItem::load");
 					UI_LOCK();
 					auto item = static_cast<HeightmapItem*>(lv_event_get_user_data(event));
 					if (item == nullptr)
@@ -64,12 +67,14 @@ namespace UI
 
 		void setLabel(std::string_view label)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_label.setText(label);
 		}
 
 		void setSelected(bool selected)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			setState(LV_STATE_CHECKED, selected);
 			m_load.setText(selected ? _("heightmap.unload") : _("heightmap.load"));
@@ -91,6 +96,7 @@ namespace UI
 		, m_fixed("heightmap_fixed", m_btns, _("heightmap.fixed"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 		, m_auto("heightmap_auto", m_btns, _("heightmap.auto"), layout_t(0, 0, LV_SIZE_CONTENT, LV_SIZE_CONTENT))
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_title.setText(_("heightmap.render_mode"));
@@ -111,6 +117,7 @@ namespace UI
 		m_fixed.addClickedCallback(
 			[](lv_event_t* event)
 			{
+				ZoneScopedN("HeightmapRenderMode::fixed");
 				UI_LOCK();
 				auto mode = static_cast<HeightmapRenderMode*>(lv_event_get_user_data(event));
 				if (mode == nullptr)
@@ -126,6 +133,7 @@ namespace UI
 		m_auto.addClickedCallback(
 			[](lv_event_t* event)
 			{
+				ZoneScopedN("HeightmapRenderMode::auto");
 				UI_LOCK();
 				auto mode = static_cast<HeightmapRenderMode*>(lv_event_get_user_data(event));
 				if (mode == nullptr)
@@ -141,6 +149,7 @@ namespace UI
 
 	void HeightmapRenderMode::setRenderMode(HeightmapPresenter::HeightmapRenderMode mode)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		switch (mode)
 		{
@@ -166,6 +175,7 @@ namespace UI
 		, m_meanError("mean_error", getRoot())
 		, m_stdDev("std_dev", getRoot())
 	{
+		ZoneScoped;
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
@@ -175,6 +185,7 @@ namespace UI
 	void HeightmapStatistics::setStatistics(
 		size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_numPoints.setText(_("heightmap.num_points", numPoints));
 		m_area.setText(_("heightmap.area", area));
@@ -188,6 +199,7 @@ namespace UI
 		: View(name, parent, layout_t(0, 0, 100, 100))
 		, m_heightmapList("heightmap_list", getRoot())
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
@@ -232,18 +244,21 @@ namespace UI
 
 	size_t HeightmapView::getHeightmapCount() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return m_heightmapList.getItemCount();
 	}
 
 	void HeightmapView::setHeightmapCount(const size_t count)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_heightmapList.setItemCount(count, *this);
 	}
 
 	void HeightmapView::setHeightmapName(const size_t index, const std::string& name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		auto item = m_heightmapList.getItem(index);
@@ -258,6 +273,7 @@ namespace UI
 
 	void HeightmapView::setSelectedHeightmap(const size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		for (auto& item : m_heightmapList)
 		{
@@ -272,12 +288,14 @@ namespace UI
 
 	void HeightmapView::setShownHeightmapName(std::string_view name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_heightmap.setTitle(_("heightmap.title", name));
 	}
 
 	void HeightmapView::addMeasurementPoint(float x, float y)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		size_t px, py;
 		if (!m_heightmap.posToPx(x, y, px, py))
@@ -293,6 +311,7 @@ namespace UI
 
 	void HeightmapView::clear()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_heightmap.clear();
 
@@ -304,12 +323,14 @@ namespace UI
 	void HeightmapView::setStatistics(
 		size_t numPoints, double area, double minError, double maxError, double meanError, double stdDev)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_statistics.setStatistics(numPoints, area, minError, maxError, meanError, stdDev);
 	}
 
 	void HeightmapView::onTrueBedLevelEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto view = static_cast<HeightmapView*>(lv_event_get_user_data(e));
 		view->m_presenter->trueBedLevel();
@@ -317,6 +338,7 @@ namespace UI
 
 	void HeightmapView::onMeshBedLevelEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto view = static_cast<HeightmapView*>(lv_event_get_user_data(e));
 		view->m_presenter->meshBedLevel();

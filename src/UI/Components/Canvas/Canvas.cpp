@@ -21,11 +21,13 @@ namespace UI
 		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
 		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
 	{
+		ZoneScoped;
 		init();
 	}
 
 	Canvas::~Canvas()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (!lv_is_initialized() || m_buf == nullptr)
 		{
@@ -36,6 +38,7 @@ namespace UI
 
 	void Canvas::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		// Layout
@@ -73,11 +76,13 @@ namespace UI
 
 	void Canvas::setTitle(std::string_view title)
 	{
+		ZoneScoped;
 		m_title.setText(title);
 	}
 
 	void Canvas::showTitle(const bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_title.setVisible(show);
 		m_rowDsc[0] = show ? LV_GRID_CONTENT : 0;
@@ -85,6 +90,7 @@ namespace UI
 
 	void Canvas::showXScale(const bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_hScale.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 		m_rowDsc[2] = show ? s_scaleSize : 0;
@@ -92,6 +98,7 @@ namespace UI
 
 	void Canvas::showYScale(const bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_vScale.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
 		m_columnDsc[0] = show ? s_scaleSize : 0;
@@ -99,6 +106,7 @@ namespace UI
 
 	Canvas::range_t Canvas::getXRange() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		range_t range;
 		range.min = m_hScale.getRangeMinValue();
@@ -108,6 +116,7 @@ namespace UI
 
 	Canvas::range_t Canvas::getYRange() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		range_t range;
 		range.min = m_vScale.getRangeMinValue();
@@ -117,6 +126,7 @@ namespace UI
 
 	void Canvas::setXRange(Canvas::range_t range)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_xLabelPtr.clear();
 		m_hScale.setTextSrc(m_xLabelPtr);
@@ -125,6 +135,7 @@ namespace UI
 
 	void Canvas::setYRange(Canvas::range_t range)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_yLabelPtr.clear();
 		m_vScale.setTextSrc(m_yLabelPtr);
@@ -133,6 +144,7 @@ namespace UI
 
 	void Canvas::createLabels(Canvas::range_float_t range, uint32_t ticks, std::vector<const char*>& labels)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		for (const char* label : labels)
@@ -155,6 +167,7 @@ namespace UI
 
 	void Canvas::setXRange(Canvas::range_float_t range)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		uint32_t ticks = 1 + m_hScale.getTotalTickCount() / m_hScale.getMajorTickEvery();
 		createLabels(range, ticks, m_xLabelPtr);
@@ -164,6 +177,7 @@ namespace UI
 
 	void Canvas::setYRange(Canvas::range_float_t range)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		uint32_t ticks = 1 + m_vScale.getTotalTickCount() / m_vScale.getMajorTickEvery();
 		createLabels(range, ticks, m_yLabelPtr);
@@ -173,6 +187,7 @@ namespace UI
 
 	bool Canvas::pxToPos(size_t px, size_t py, float& x, float& y) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		uint32_t res_x, res_y;
 		getResolution(res_x, res_y);
@@ -193,12 +208,14 @@ namespace UI
 
 	bool Canvas::pxToPos(lv_point_t p, float& x, float& y) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return pxToPos(p.x, p.y, x, y);
 	}
 
 	bool Canvas::posToPx(float x, float y, size_t& px, size_t& py) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		range_t xRange = getXRange();
 		range_t yRange = getYRange();
@@ -219,6 +236,7 @@ namespace UI
 
 	bool Canvas::posToPx(float x, float y, int32_t& px, int32_t& py) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		size_t pxSize, pySize;
 		if (!posToPx(x, y, pxSize, pySize))
@@ -232,6 +250,7 @@ namespace UI
 
 	bool Canvas::posToPx(float x, float y, lv_point_t& p) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		size_t pxSize, pySize;
 		if (!posToPx(x, y, pxSize, pySize))
@@ -245,6 +264,7 @@ namespace UI
 
 	bool Canvas::getResolution(uint32_t& width, uint32_t& height) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_buf == nullptr)
 		{
@@ -260,6 +280,7 @@ namespace UI
 
 	void Canvas::setResolution(uint32_t width, uint32_t height)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_buf != nullptr)
 		{
@@ -274,6 +295,7 @@ namespace UI
 
 	void Canvas::drawGrid()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("Drawing grid");
 
@@ -301,6 +323,7 @@ namespace UI
 
 	void Canvas::drawPx(size_t px, size_t py, lv_color_t color, lv_opa_t opa)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// Draw the pixel
 		m_canvas.setPx(px, py, color, opa);
@@ -308,6 +331,7 @@ namespace UI
 
 	void Canvas::drawRect(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("area: ({:d}, {:d}), ({:d}, {:d}), radius: {:d}", area.x1, area.y1, area.x2, area.y2, radius);
 
@@ -327,6 +351,7 @@ namespace UI
 
 	void Canvas::drawRectPx(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("area: ({:d}, {:d}), ({:d}, {:d}), radius: {:d}", area.x1, area.y1, area.x2, area.y2, radius);
 
@@ -355,6 +380,7 @@ namespace UI
 
 	void Canvas::drawLine(lv_point_t p1, lv_point_t p2, lv_color_t color, lv_opa_t opa)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("p1: ({}, {}), p2: ({}, {})", p1.x, p1.y, p2.x, p2.y);
 
@@ -373,6 +399,7 @@ namespace UI
 
 	void Canvas::drawLinePx(lv_point_t p1, lv_point_t p2, lv_color_t color, lv_opa_t opa)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("p1: ({}, {}), p2: ({}, {})", p1.x, p1.y, p2.x, p2.y);
 
@@ -405,6 +432,7 @@ namespace UI
 
 	void Canvas::drawCircle(lv_point_t center, uint32_t radius, lv_color_t color, lv_opa_t opa)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("center: ({:d}, {:d}), radius: {:d}", center.x, center.y, radius);
 		if (!posToPx(center.x, center.y, center.x, center.y))
@@ -431,6 +459,7 @@ namespace UI
 
 	void Canvas::drawLabelPx(lv_point_t pos, const std::string& label, lv_color_t color, lv_opa_t opa)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("pos: ({:d}, {:d}), label: {:s}", pos.x, pos.y, label.c_str());
 
@@ -471,6 +500,7 @@ namespace UI
 
 	lv_color_t Canvas::getPx(size_t px, size_t py) const
 	{
+		ZoneScoped;
 		lv_color32_t color32 = m_canvas.getPx(px, py);
 		lv_color_t color = {color32.blue, color32.green, color32.red};
 		return color;
@@ -478,6 +508,7 @@ namespace UI
 
 	void Canvas::clear()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		lv_style_value_t bg_color;
 		lv_style_get_prop(Themes::getLvglStyles().canvas, LV_STYLE_BG_COLOR, &bg_color);

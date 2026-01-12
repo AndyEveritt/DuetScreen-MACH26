@@ -25,11 +25,13 @@ namespace OM
 
 	static std::string GetLocalFilePath(std::string_view filename)
 	{
+		ZoneScoped;
 		return fmt::format("/tmp/heightmaps/{}", filename);
 	}
 
 	HeightmapMeta::HeightmapMeta()
 	{
+		ZoneScoped;
 		Reset();
 	}
 
@@ -37,6 +39,7 @@ namespace OM
 
 	void HeightmapMeta::Reset()
 	{
+		ZoneScoped;
 		m_isValid = false;
 		m_axis[0] = "X";
 		m_axis[1] = "Y";
@@ -55,6 +58,7 @@ namespace OM
 
 	void HeightmapMeta::Parse(std::string_view meta)
 	{
+		ZoneScoped;
 		utils::CSV doc(meta, true);
 		const std::vector<std::string>& headers = doc.GetHeaders();
 		for (std::string_view header : headers)
@@ -97,6 +101,7 @@ namespace OM
 
 	std::shared_ptr<Move::Axis> HeightmapMeta::GetAxis(size_t index) const
 	{
+		ZoneScoped;
 		const std::string& label = m_axis[index];
 		auto axis = Move::GetAxisByLetter(label[0]);
 		if (axis == nullptr)
@@ -108,6 +113,7 @@ namespace OM
 
 	void HeightmapMeta::CheckValidity()
 	{
+		ZoneScoped;
 		if (m_max[0] - m_min[0] < MinRange || m_spacing[0] < MinSpacing || m_max[1] - m_min[1] < MinRange ||
 			m_spacing[1] < MinSpacing)
 		{
@@ -128,10 +134,12 @@ namespace OM
 	Heightmap::Heightmap(std::string_view filename)
 		: m_fileName(filename)
 	{
+		ZoneScoped;
 	}
 
 	void Heightmap::Reset()
 	{
+		ZoneScoped;
 		m_heightmap.clear();
 		meta.Reset();
 		m_minError = 0.0f;
@@ -143,6 +151,7 @@ namespace OM
 
 	bool Heightmap::LoadFromDuet(Heightmap::load_cb_t callback)
 	{
+		ZoneScoped;
 		Reset();
 		OM::FileSystem::RequestFileContents(
 			OM::Directories::DirectoryType::SYSTEM,
@@ -187,6 +196,7 @@ namespace OM
 
 	const Heightmap::Point* Heightmap::GetPoint(size_t x, size_t y) const
 	{
+		ZoneScoped;
 		if (x >= GetWidth() || y >= GetHeight())
 		{
 			LOG_ERROR("Invalid point {:d}, {:d}, heightmap size ({:d}, {:d})", x, y, GetWidth(), GetHeight());
@@ -197,6 +207,7 @@ namespace OM
 
 	bool Heightmap::ParseMeta(std::string_view csvContents)
 	{
+		ZoneScoped;
 		LOG_INFO("Parsing meta data for heightmap {:s}", m_fileName);
 		size_t metaStart = utils::findInstance(csvContents, "\n", 1);
 		size_t metaEnd = utils::findInstance(csvContents, "\n", 3);
@@ -215,6 +226,7 @@ namespace OM
 
 	bool Heightmap::ParseData(std::string_view csvContents)
 	{
+		ZoneScoped;
 		LOG_INFO("Parsing data for heightmap {:s}", m_fileName);
 		size_t dataStart = utils::findInstance(csvContents, "\n", 3) + 1;
 		if (dataStart == std::string::npos)
@@ -341,6 +353,7 @@ namespace OM
 
 	double Heightmap::GetInterpolatedPoint(double axis0, double axis1, bool extrapolate) const
 	{
+		ZoneScoped;
 		// Last grid point
 		const double xLast = meta.GetMin(0) + (meta.GetSamples(0) - 1) * meta.GetSpacing(0);
 		const double yLast = meta.GetMin(1) + (meta.GetSamples(1) - 1) * meta.GetSpacing(1);
@@ -390,6 +403,7 @@ namespace OM
 	bool Heightmap::InterpolateAxis0Axis1(
 		size_t axis0Index, size_t axis1Index, double axis0Frac, double axis1Frac, double& result) const
 	{
+		ZoneScoped;
 		const uint32_t indexX0Y0 = GetMapIndex(axis0Index, axis1Index); // (X0,Y0)
 		const uint32_t indexX1Y0 = indexX0Y0 + 1;						// (X1,Y0)
 		const uint32_t indexX0Y1 = indexX0Y0 + meta.GetSamples(0);		// (X0 Y1)
@@ -423,6 +437,7 @@ namespace OM
 
 	void SetCurrentHeightmap(std::string_view filename)
 	{
+		ZoneScoped;
 		size_t pos = filename.find_last_of('/');
 		if (pos != std::string::npos)
 		{
@@ -437,12 +452,14 @@ namespace OM
 
 	void ClearCurrentHeightmap()
 	{
+		ZoneScoped;
 		s_currentHeightmapName = "";
 	}
 
 	/* Sends command to Duet to use the heightmap called `filename` */
 	void LoadHeightmap(std::string_view filename)
 	{
+		ZoneScoped;
 		LOG_INFO("Loading heightmap {:s}", filename);
 		Comm::DUET.SendGcodef("G29 S1 P\"{:s}\"\n", filename);
 	}
@@ -450,12 +467,14 @@ namespace OM
 	/* Sends command to Duet to unload the heightmap */
 	void UnloadHeightmap()
 	{
+		ZoneScoped;
 		LOG_INFO("Unloading heightmap");
 		Comm::DUET.SendGcode("G29 S2\n");
 	}
 
 	void ToggleHeightmap(std::string_view filename)
 	{
+		ZoneScoped;
 		if (s_currentHeightmapName != filename)
 		{
 			LoadHeightmap(filename);
@@ -467,11 +486,13 @@ namespace OM
 
 	std::string_view GetCurrentHeightmap()
 	{
+		ZoneScoped;
 		return s_currentHeightmapName;
 	}
 
 	HeightmapPtr GetHeightmapData(std::string_view filename)
 	{
+		ZoneScoped;
 		for (const auto& cachedHeightmap : s_heightmapCache)
 		{
 			if (cachedHeightmap->GetFileName() == filename)
@@ -488,6 +509,7 @@ namespace OM
 
 	size_t ClearHeightmapCache()
 	{
+		ZoneScoped;
 		size_t count = s_heightmapCache.size();
 		s_heightmapCache.clear();
 		return count;
@@ -495,6 +517,7 @@ namespace OM
 
 	void RequestHeightmapFiles(FileSystem::request_files_cb_t callback)
 	{
+		ZoneScoped;
 		LOG_DBG("Requesting heightmap files from Duet");
 		FileSystem::RequestFiles(Directories::DirectoryType::SYSTEM, "", callback);
 		ClearHeightmapCache();
@@ -502,6 +525,7 @@ namespace OM
 
 	FileSystem::ItemList GetHeightmapFiles(const FileSystem::ItemList& files)
 	{
+		ZoneScoped;
 		FileSystem::ItemList csvFiles;
 
 		for (const auto& item : files)

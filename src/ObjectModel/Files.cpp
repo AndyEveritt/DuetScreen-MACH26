@@ -26,6 +26,7 @@ namespace OM::FileSystem
 
 	std::string FileSystemItem::GetPath() const
 	{
+		ZoneScoped;
 		if (m_path.empty())
 			return m_name;
 
@@ -39,6 +40,7 @@ namespace OM::FileSystem
 
 	std::string FileSystemItem::GetReadableSize() const
 	{
+		ZoneScoped;
 		const char* sizes[] = {"B", "KB", "MB", "GB", "TB"};
 		int order = 0;
 
@@ -57,6 +59,7 @@ namespace OM::FileSystem
 
 	void FileSystemItem::SetName(const std::string name)
 	{
+		ZoneScoped;
 		m_name = name.c_str();
 		switch (m_type)
 		{
@@ -71,7 +74,7 @@ namespace OM::FileSystem
 
 	FileSystemItem::~FileSystemItem()
 	{
-		LOG_DBG("Files: destructing item {:s}", GetPath().c_str());
+		ZoneScoped;
 	}
 
 	FileListRequest::FileListRequest(const std::string& path, request_files_cb_t callback, bool run_every_time)
@@ -80,15 +83,17 @@ namespace OM::FileSystem
 		, m_runEveryTime(run_every_time)
 		, m_requestTime(TimeHelper::getCurrentTime())
 	{
+		ZoneScoped;
 	}
 
 	FileListRequest::~FileListRequest()
 	{
-		LOG_DBG("Files: destructing file list request for '{:s}'", m_path);
+		ZoneScoped;
 	}
 
 	ItemPtr FileListRequest::AddFolder()
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		auto folder = std::make_shared<FileSystemItem>(FileSystemItemType::folder);
 		m_items.push_back(folder);
@@ -97,6 +102,7 @@ namespace OM::FileSystem
 
 	ItemPtr FileListRequest::AddFile()
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		auto file = std::make_shared<FileSystemItem>(FileSystemItemType::file);
 		m_items.push_back(file);
@@ -105,23 +111,27 @@ namespace OM::FileSystem
 
 	void FileListRequest::SortItems(const SortBy by, const bool descending)
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		SortFilesBy(m_items, by, descending);
 	}
 
 	ItemList FileListRequest::GetItemsCopy() const
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		return m_items;
 	}
 	size_t FileListRequest::GetItemCount() const
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		return m_items.size();
 	}
 
 	ItemPtr FileListRequest::GetLastItem() const
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		if (m_items.empty())
 		{
@@ -132,6 +142,7 @@ namespace OM::FileSystem
 
 	ItemPtr FileListRequest::GetItem(const size_t index) const
 	{
+		ZoneScoped;
 		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 		if (index >= m_items.size())
 		{
@@ -142,6 +153,7 @@ namespace OM::FileSystem
 
 	void FileListRequest::RunCallback()
 	{
+		ZoneScoped;
 		if (m_next > 0 && !m_runEveryTime)
 		{
 			return;
@@ -155,12 +167,14 @@ namespace OM::FileSystem
 
 	bool FileListRequest::IsRequestExpired() const
 	{
+		ZoneScoped;
 		const auto elapsed = TimeHelper::getTimeSince(m_requestTime);
 		return elapsed > PRINTER_REQUEST_TIMEOUT;
 	}
 
 	static std::string GetLocalFilePath(std::string_view filename)
 	{
+		ZoneScoped;
 		filename = filename.substr(filename.find_last_of('/') + 1); // Get the file name only
 		return fmt::format("/tmp/files/{}", filename);
 	}
@@ -170,11 +184,13 @@ namespace OM::FileSystem
 		, m_callback(callback)
 		, m_runEveryTime(runEveryTime)
 	{
+		ZoneScoped;
 		ClearData();
 	}
 
 	int FileContents::AppendData(std::string_view data)
 	{
+		ZoneScoped;
 		if (data.empty())
 		{
 			return 0;
@@ -199,6 +215,7 @@ namespace OM::FileSystem
 
 	int FileContents::GetData(std::string& outData) const
 	{
+		ZoneScoped;
 		const std::string fullPath = GetLocalFilePath(m_filename);
 		std::ifstream file(fullPath, std::ios::binary);
 		if (!file.is_open())
@@ -218,6 +235,7 @@ namespace OM::FileSystem
 
 	int FileContents::ClearData()
 	{
+		ZoneScoped;
 		const std::string fullPath = GetLocalFilePath(m_filename);
 		std::ofstream file(fullPath, std::ios::trunc | std::ios::binary);
 		if (!file.is_open())
@@ -230,6 +248,7 @@ namespace OM::FileSystem
 
 	void FileContents::RunCallback()
 	{
+		ZoneScoped;
 		if (m_parseErr != 0)
 		{
 			LOG_ERROR("File {} has parse error: {}", m_filename, m_parseErr);
@@ -258,6 +277,7 @@ namespace OM::FileSystem
 
 	FileListRequestPtr GetFileListRequest(const std::string& path)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto it = s_fileListRequests.find(path);
 		if (it != s_fileListRequests.end())
@@ -269,6 +289,7 @@ namespace OM::FileSystem
 
 	void SortFilesBy(ItemList& items, std::function<bool(const ItemPtr&, const ItemPtr&)> sortFunc)
 	{
+		ZoneScoped;
 		auto first = items.begin();
 		auto last = items.end();
 		if (first != last)
@@ -295,6 +316,7 @@ namespace OM::FileSystem
 
 	void SortFilesBy(ItemList& items, const SortBy by, const bool descending)
 	{
+		ZoneScoped;
 		switch (by)
 		{
 		case SortBy::NAME:
@@ -334,6 +356,7 @@ namespace OM::FileSystem
 					  request_files_cb_t callback,
 					  bool runEveryTime)
 	{
+		ZoneScoped;
 		std::string full_path = fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path);
 
 		FileListRequestPtr cached;
@@ -361,6 +384,7 @@ namespace OM::FileSystem
 
 	void RequestUsbFiles(const std::string& path)
 	{
+		ZoneScoped;
 		LOG_DBG("Requesting USB files in path '{:s}'", path);
 #if 0
 		ClearFileSystem();
@@ -389,6 +413,7 @@ namespace OM::FileSystem
 
 	void RunFile(const ItemPtr& file)
 	{
+		ZoneScoped;
 		if (file == nullptr || file->GetType() != FileSystemItemType::file)
 		{
 			LOG_ERROR("Invalid file to run");
@@ -404,11 +429,13 @@ namespace OM::FileSystem
 
 	void RunMacro(const std::string& path)
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcodef("M98 P\"{:s}\"\n", path);
 	}
 
 	void UploadFile(const ItemPtr& file)
 	{
+		ZoneScoped;
 		// TODO upload file
 		LOG_DBG("Uploading file '{:s}'", file ? file->GetPath() : "null");
 #if 0
@@ -427,31 +454,37 @@ namespace OM::FileSystem
 
 	void StartPrint(const std::string& path)
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcodef("M32 \"{:s}\"\n", path);
 	}
 
 	void ResumePrint()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("M24\n");
 	}
 
 	void PausePrint()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("M25\n");
 	}
 
 	void StopPrint()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("M0\n");
 	}
 
 	void PrintAgain()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcodef("M23 \"{:s}\"\nM24\n", OM::GetLastJobName());
 	}
 
 	void ClearFileSystem()
 	{
+		ZoneScoped;
 		LOG_INFO("Clearing all file list requests");
 		MODEL_LOCK();
 		s_fileListRequests.clear();
@@ -460,6 +493,7 @@ namespace OM::FileSystem
 
 	void ClearFileList(const std::string& path)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto it = s_fileListRequests.find(path);
 		if (it != s_fileListRequests.end())
@@ -471,6 +505,7 @@ namespace OM::FileSystem
 
 	void RequestFilaments()
 	{
+		ZoneScoped;
 		LOG_DBG("Requesting filaments");
 		RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
 					 "",
@@ -497,6 +532,7 @@ namespace OM::FileSystem
 
 	const std::vector<std::string>& GetFilamentList()
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		return s_filaments;
 	}
@@ -506,6 +542,7 @@ namespace OM::FileSystem
 							 request_file_contents_cb_t callback,
 							 bool runEveryTime)
 	{
+		ZoneScoped;
 		LOG_INFO("Requesting file contents of {}", path);
 		std::string fullPath = fmt::format("{}{}", OM::Directories::GetDirectory(baseFolder), path);
 		if (Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
@@ -527,11 +564,13 @@ namespace OM::FileSystem
 
 	FileContentsPtr GetCurrentFileRequestContents()
 	{
+		ZoneScoped;
 		return s_fileContents;
 	}
 
 	std::string_view GetFileExtension(std::string_view filename)
 	{
+		ZoneScoped;
 		size_t dot = filename.find_last_of('.');
 		if (dot != std::string::npos)
 		{

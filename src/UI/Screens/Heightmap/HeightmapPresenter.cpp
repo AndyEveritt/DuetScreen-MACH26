@@ -4,6 +4,7 @@
 #include "HeightmapView.h"
 #include "i18n/i18n.h"
 #include <cmath>
+#include <span>
 
 #define RENDER_MEASUREMENT_POINTS 0
 
@@ -11,12 +12,14 @@ namespace UI
 {
 	void HeightmapPresenter::setRenderMode(HeightmapRenderMode mode)
 	{
+		ZoneScoped;
 		m_mode = mode;
 		render();
 	}
 
 	void HeightmapPresenter::setHeightmap(const std::shared_ptr<OM::Heightmap>& heightmap)
 	{
+		ZoneScoped;
 		m_heightmap = heightmap;
 		if (m_heightmap == nullptr)
 		{
@@ -26,6 +29,7 @@ namespace UI
 
 	void HeightmapPresenter::render()
 	{
+		ZoneScoped;
 		if (!checkMode())
 		{
 			return;
@@ -78,13 +82,18 @@ namespace UI
 		uint32_t width, height;
 		m_view->getResolution(width, height);
 
-		for (uint32_t px = 0; px < width; px++)
 		{
-			for (uint32_t py = 0; py < height; py++)
+			float x_min, y_min, x_max, y_max;
+			m_view->pxToPos(0, 0, x_min, y_min);
+			m_view->pxToPos(width - 1, height - 1, x_max, y_max);
+			float xStep = (x_max - x_min) / static_cast<float>(width - 1);
+			float yStep = (y_max - y_min) / static_cast<float>(height - 1);
+			for (uint32_t px = 0; px < width; px++)
 			{
-				float x, y;
-				if (m_view->pxToPos(px, py, x, y))
+				for (uint32_t py = 0; py < height; py++)
 				{
+					float x = x_min + (static_cast<float>(px) * xStep);
+					float y = y_min + (static_cast<float>(py) * yStep);
 					double value = m_heightmap->GetInterpolatedPoint(x, y);
 					if (std::isnan(value))
 					{
@@ -94,6 +103,7 @@ namespace UI
 				}
 			}
 		}
+		m_view->getHeightmap().getCanvas().invalidate();
 		m_view->renderColorBar();
 
 #if RENDER_MEASUREMENT_POINTS
@@ -115,6 +125,7 @@ namespace UI
 
 	void HeightmapPresenter::setActiveHeightmap(const size_t index)
 	{
+		ZoneScoped;
 		if (index >= m_heightmapFiles.size())
 		{
 			LOG_ERROR("Invalid heightmap index {:d}", index);
@@ -129,6 +140,7 @@ namespace UI
 
 	void HeightmapPresenter::toggleHeightmap(const size_t index)
 	{
+		ZoneScoped;
 		if (index >= m_heightmapFiles.size())
 		{
 			LOG_ERROR("Invalid heightmap index {:d}", index);
@@ -142,16 +154,19 @@ namespace UI
 
 	void HeightmapPresenter::trueBedLevel()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("G32\n");
 	}
 
 	void HeightmapPresenter::meshBedLevel()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("G29\n");
 	}
 
 	void HeightmapPresenter::newCompensationFile()
 	{
+		ZoneScoped;
 		LOG_INFO("New compensation file");
 		updateHeightmapList();
 		OM::RequestHeightmapFiles(
@@ -164,6 +179,7 @@ namespace UI
 
 	void HeightmapPresenter::newDirectories()
 	{
+		ZoneScoped;
 		LOG_DBG("New directories");
 		OM::RequestHeightmapFiles(
 			[this](OM::FileSystem::ItemList files)
@@ -175,6 +191,7 @@ namespace UI
 
 	void HeightmapPresenter::newAxesData()
 	{
+		ZoneScoped;
 		LOG_DBG("New axes data");
 		if (m_heightmap == nullptr)
 		{
@@ -206,6 +223,7 @@ namespace UI
 
 	void HeightmapPresenter::updateHeightmapList()
 	{
+		ZoneScoped;
 		OM::FileSystem::SortFilesBy(m_heightmapFiles, OM::FileSystem::SortBy::NAME, false);
 		m_view->setHeightmapCount(m_heightmapFiles.size());
 
@@ -227,6 +245,7 @@ namespace UI
 
 	bool HeightmapPresenter::checkMode()
 	{
+		ZoneScoped;
 #if 0
 		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::network)
 		{
@@ -248,6 +267,7 @@ namespace UI
 
 	void HeightmapPresenter::onActivate()
 	{
+		ZoneScoped;
 		LOG_DBG("activate");
 		OM::RequestHeightmapFiles(
 			[this](const OM::FileSystem::ItemList& files)
@@ -267,12 +287,14 @@ namespace UI
 
 	void HeightmapPresenter::onConnect()
 	{
+		ZoneScoped;
 		LOG_DBG("Connected");
 		checkMode();
 	}
 
 	void HeightmapPresenter::onDisconnect()
 	{
+		ZoneScoped;
 		LOG_DBG("Disconnect");
 		if (m_heightmap != nullptr)
 		{

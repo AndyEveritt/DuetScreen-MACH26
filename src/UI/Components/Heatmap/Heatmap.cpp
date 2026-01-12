@@ -25,6 +25,7 @@ namespace UI
 		, m_canvas("heightmap_canvas", getRoot())
 		, m_colorBar("heightmap_color_bar", getRoot())
 	{
+		ZoneScoped;
 		init();
 	}
 
@@ -35,6 +36,7 @@ namespace UI
 		, m_canvas("heightmap_canvas", getRoot())
 		, m_colorBar("heightmap_color_bar", getRoot())
 	{
+		ZoneScoped;
 		init();
 	}
 
@@ -42,6 +44,7 @@ namespace UI
 
 	void Heatmap::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		// Layout
@@ -67,6 +70,7 @@ namespace UI
 
 	void Heatmap::showScale(const bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_colorBar.setVisible(show);
 		m_columnDsc[2] = show ? LV_GRID_CONTENT : 0;
@@ -74,21 +78,25 @@ namespace UI
 
 	Heatmap::range_t Heatmap::getXRange() const
 	{
+		ZoneScoped;
 		return m_canvas.getXRange();
 	}
 
 	Heatmap::range_t Heatmap::getYRange() const
 	{
+		ZoneScoped;
 		return m_canvas.getYRange();
 	}
 
 	void Heatmap::setTitle(std::string_view title)
 	{
+		ZoneScoped;
 		m_canvas.setTitle(title);
 	}
 
 	void Heatmap::setValueRange(float min, float max)
 	{
+		ZoneScoped;
 		m_minValue = min;
 		m_maxValue = max;
 
@@ -99,11 +107,13 @@ namespace UI
 
 	float Heatmap::normalizeValue(float value) const
 	{
+		ZoneScoped;
 		return std::clamp((value - m_minValue) / (m_maxValue - m_minValue), 0.0f, 1.0f);
 	}
 
 	void Heatmap::setPx(size_t px, size_t py, float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_minValue = std::min(m_minValue, value);
 		m_maxValue = std::max(m_maxValue, value);
@@ -114,6 +124,7 @@ namespace UI
 
 	void Heatmap::setPos(float x, float y, float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		size_t px, py;
 		if (!m_canvas.posToPx(x, y, px, py))
@@ -126,6 +137,7 @@ namespace UI
 
 	void Heatmap::render()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// Get the canvas dimensions
 		m_canvas.updateLayout();
@@ -136,6 +148,7 @@ namespace UI
 		// Clear the canvas before rendering
 		m_canvas.clear();
 
+#if 0
 		// Render the heatmap pixel by pixel
 		for (uint32_t pixelY = 0; pixelY < height; pixelY++)
 		{
@@ -143,6 +156,7 @@ namespace UI
 			{
 			}
 		}
+#endif
 
 		// Now render the color bar
 		renderColorBar();
@@ -150,6 +164,7 @@ namespace UI
 
 	void Heatmap::renderColorBar()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// Also render a color scale on the color bar
 		m_colorBar.updateLayout();
@@ -166,6 +181,7 @@ namespace UI
 
 	void Heatmap::clear()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_canvas.clear();
 		m_colorBar.clear();
@@ -173,6 +189,7 @@ namespace UI
 
 	static lv_color_t GetColorForPercent(double percent)
 	{
+		ZoneScoped;
 		// Convert the height to a color on a HSV colorbar from blue to red
 		double hue = (1.0 - percent) * 240.0; // Map the percent to the hue range (blue to red)
 		double saturation = 1.0;			  // Set the saturation to maximum
