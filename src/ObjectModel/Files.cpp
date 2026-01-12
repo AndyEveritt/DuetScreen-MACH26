@@ -548,12 +548,11 @@ namespace OM::FileSystem
 		if (Comm::DUET.GetCommunicationType() == Comm::CommunicationType::network)
 		{
 			std::string contents;
-			if (!Comm::DUET.DownloadFile(fullPath, contents))
+			if (!Comm::DUET.DownloadFile(fullPath, callback))
 			{
 				LOG_ERROR("Failed to download file contents of {}", fullPath);
 				return;
 			}
-			callback(contents);
 		}
 		else
 		{

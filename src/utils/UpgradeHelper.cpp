@@ -141,22 +141,24 @@ namespace UpgradeHelper
 		LOG_INFO("Attempting upgrade from Duet file {:s}", filePath.c_str());
 		removeTmpFile(); // Remove any previous upgrade file
 
-		std::string contents;
-		if (!Comm::DUET.DownloadFile(filePath.c_str(), contents))
+		if (!Comm::DUET.DownloadFile(filePath.c_str(),
+									 [](const std::string& contents)
+									 {
+										 std::ofstream file(TMP_FILEPATH, std::ios::binary);
+										 if (!file.is_open())
+										 {
+											 LOG_ERROR("Failed to create file \"" TMP_FILEPATH "\"");
+										 }
+										 file.write(contents.c_str(), contents.size());
+										 file.close();
+
+										 upgradeFromTmp();
+									 }))
 		{
 			LOG_ERROR("Failed to download file \"{:s}\" from Duet", filePath.c_str());
 			return false;
 		}
 
-		std::ofstream file(TMP_FILEPATH, std::ios::binary);
-		if (!file.is_open())
-		{
-			LOG_ERROR("Failed to create file \"" TMP_FILEPATH "\"");
-			return false;
-		}
-		file.write(contents.c_str(), contents.size());
-		file.close();
-
-		return upgradeFromTmp();
+		return true;
 	}
 } // namespace UpgradeHelper

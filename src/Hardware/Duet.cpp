@@ -471,7 +471,7 @@ namespace Comm
 		return true;
 	}
 
-	bool Duet::DownloadFile(std::string_view filename, std::string& contents)
+	bool Duet::DownloadFile(std::string_view filename, std::function<void(const std::string&)> onComplete)
 	{
 		ZoneScoped;
 		if (!IsConnected())
@@ -489,12 +489,23 @@ namespace Comm
 			HttpResponse r;
 			hv::QueryParams query;
 			query["name"] = filename;
-			if (!Get("/rr_download", r, query))
+			if (!AsyncGet("/rr_download",
+						  query,
+						  [cb = std::move(onComplete), filename](const HttpResponsePtr& r)
+						  {
+							  if (r->status_code != HTTP_STATUS_OK)
+							  {
+								  LOG_ERROR(
+									  "HTTP error {:d}: Failed to download file: {}", (int)r->status_code, filename);
+								  return false;
+							  }
+							  cb(r->body);
+							  return true;
+						  }))
 			{
-				LOG_ERROR("HTTP error {:d}: Failed to download file: {}", (int)r.status_code, filename);
+				LOG_ERROR("Failed to download file {:s}", filename);
 				return false;
 			}
-			contents = r.body;
 #endif
 			break;
 		}

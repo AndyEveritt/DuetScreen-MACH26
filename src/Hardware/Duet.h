@@ -104,7 +104,7 @@ namespace Comm
 		void ProcessReply(HttpResponse& r);
 
 		bool UploadFile(std::string_view filename, const std::string& contents);
-		bool DownloadFile(std::string_view filename, std::string& contents);
+		bool DownloadFile(std::string_view filename, std::function<void(const std::string&)> onComplete);
 
 		void RequestModel(std::string_view flags = "d99f");
 		void RequestModel(std::string_view key, std::string_view flags);
