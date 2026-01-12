@@ -161,7 +161,6 @@ void Model::runEventLoop()
 	while (true)
 	{
 		{
-			ZoneScoped;
 			std::pair<EventType, EventData> event;
 			{
 				std::unique_lock<LockableBase(std::mutex)> lock(m_mutex);
@@ -177,6 +176,7 @@ void Model::runEventLoop()
 
 			bool found = false;
 
+			ZoneScoped;
 			UI_LOCK();
 			{
 				ZoneScopedN("Model Event Handlers");

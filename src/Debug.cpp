@@ -58,6 +58,10 @@ using std::vector;
 #define LOG_UI_PATTERN LOG_UI_TIMESTAMP_FMT "[%l] %v"
 #define LOG_TRACY_PATTERN "[%@ %!()] %v"
 
+#if defined(TRACY_ENABLE)
+#  include "utils/TracyMemory.h"
+#endif
+
 namespace Log
 {
 	template <typename Mutex>
@@ -174,6 +178,11 @@ namespace Log
 			spdlog::flush_every(std::chrono::seconds(1));
 			spdlog::enable_backtrace(100);
 			LOG_INFO("Logger initialized");
+
+#if defined(TRACY_ENABLE) && TRACY_ENABLE
+			// Start lightweight memory plots (RSS and heap) for Tracy in Simulation builds
+			TracyMemory::Start();
+#endif
 		}
 		catch (const spdlog::spdlog_ex& ex)
 		{

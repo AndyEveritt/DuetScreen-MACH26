@@ -10,3 +10,10 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/UpgradeHelper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
 )
+
+if(TRACY_ENABLE)
+  target_sources(
+    DuetScreen.lib
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/TracyMemory.cpp)
+endif()
