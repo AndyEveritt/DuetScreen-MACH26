@@ -248,16 +248,27 @@ namespace UI::Themes
 
 	struct ComponentStyles
 	{
-		Style estop;				 // Emergency stop button style
-		Style file;					 // File item style
-		Style folder;				 // Folder item style
-		Style unhomed;				 // Used for the move view
+		/* Sidebar */
 		Style sidebar;				 // Sidebar style
 		Style sidebar_btn;			 // Sidebar button style
+		Style estop;				 // Emergency stop button style
+
+		/* Files */
+		Style file;					 // File item style
+		Style folder;				 // Folder item style
+
+		/* Move */
+		Style unhomed;				 // Used for the move view
+
+		/* Temperature */
 		Style temperature_bar;		 // Temperature bar style
 		Style temperature_bar_indic; // Temperature bar indicator style
 		Style tool_selected;		 // Used in tool list
+
+		/* Tabview */
 		Style tab_button;			 // Used in tabview tabs
+
+		/* Slider */
 		Style slider_buttons;		 // Slider increment/decrement buttons
 
 		/* List */
@@ -266,6 +277,10 @@ namespace UI::Themes
 
 		/* Graph */
 		Style graph_legend;
+
+		/* Bar */
+		Style bar_label_bg;
+		Style bar_label;
 	};
 
 	const LvglStyles& getLvglStyles();

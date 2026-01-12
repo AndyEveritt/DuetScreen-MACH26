@@ -15,6 +15,7 @@ class MoveSubscribers : public SubscriberMap
 		addSubscriber("move:axes^:min", axisMinPosition);
 		addSubscriber("move:axes^:max", axisMaxPosition);
 		addSubscriber("move:axes^:userPosition", axisUserPosition);
+		addSubscriber("move:axes^:speed", axisMaxSpeed);
 		addSubscriber("move:axes^:visible", axisVisible);
 		addSubscriber("move:axes^:workplaceOffsets^", axisWorkplaceOffset);
 		addSubscriber("move:extruders^:factor", extrusionFactor);
@@ -22,6 +23,7 @@ class MoveSubscribers : public SubscriberMap
 		addSubscriber("move:extruders^:filament", extruderFilamentName);
 		addSubscriber("move:extruders^:position", extruderPosition);
 		addSubscriber("move:extruders^:pressureAdvance", extruderPressureAdvance);
+		addSubscriber("move:extruders^:speed", extruderMaxSpeed);
 		addSubscriber("move:extruders^:stepsPerMm", extruderStepsPerMm);
 		addSubscriber("move:kinematics:name", kinematicsName);
 		addSubscriber("move:speedFactor", speedFactor);
@@ -47,6 +49,7 @@ class MoveSubscribers : public SubscriberMap
 	static bool axisMinPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool axisMaxPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool axisUserPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool axisMaxSpeed(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);
 	static bool axisVisible(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[]);
 	static bool axisWorkplaceOffset(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool extrusionFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
@@ -54,6 +57,7 @@ class MoveSubscribers : public SubscriberMap
 	static bool extruderFilamentName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool extruderPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool extruderPressureAdvance(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool extruderMaxSpeed(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);
 	static bool extruderStepsPerMm(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool kinematicsName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool speedFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);

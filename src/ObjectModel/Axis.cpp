@@ -216,6 +216,7 @@ namespace OM::Move
 	AXIS_SETTER(SetAxisMachinePosition, float, machinePosition);
 	AXIS_SETTER(SetAxisMinPosition, float, minPosition);
 	AXIS_SETTER(SetAxisMaxPosition, float, maxPosition);
+	AXIS_SETTER(SetAxisMaxSpeed, int32_t, maxSpeed);
 	AXIS_SETTER(SetAxisVisible, bool, visible);
 
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset)
@@ -348,6 +349,7 @@ namespace OM::Move
 	EXTRUDER_AXIS_SETTER(SetExtruderStepsPerMm, float, stepsPerMm);
 	EXTRUDER_AXIS_SETTER(SetExtruderFilamentDiameter, float, filamentDiameter);
 	EXTRUDER_AXIS_SETTER(SetExtruderPressureAdvance, float, pressureAdvance);
+	EXTRUDER_AXIS_SETTER(SetExtruderMaxSpeed, int32_t, maxSpeed);
 
 	bool SetExtruderFilamentName(size_t index, const char* name)
 	{

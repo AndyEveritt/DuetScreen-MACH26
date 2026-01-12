@@ -93,6 +93,17 @@ bool MoveSubscribers::axisUserPosition(Comm::JsonDecoder* decoder, const float& 
 	return true;
 }
 
+bool MoveSubscribers::axisMaxSpeed(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
+{
+	UNUSED(decoder);
+	if (!OM::Move::SetAxisMaxSpeed(indices[0], data / 60))
+	{
+		LOG_ERROR("Failed to set axis[{:d}]->maxSpeed = {:d}", indices[0], data);
+		return false;
+	}
+	return true;
+}
+
 bool MoveSubscribers::axisVisible(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
 	UNUSED(decoder);
@@ -165,6 +176,17 @@ bool MoveSubscribers::extruderPressureAdvance(Comm::JsonDecoder* decoder, const 
 	if (!OM::Move::SetExtruderPressureAdvance(indices[0], data))
 	{
 		LOG_ERROR("Failed to set extruderAxis[{:d}]->pressureAdvance = {:g}", indices[0], data);
+		return false;
+	}
+	return true;
+}
+
+bool MoveSubscribers::extruderMaxSpeed(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
+{
+	UNUSED(decoder);
+	if (!OM::Move::SetExtruderMaxSpeed(indices[0], data / 60))
+	{
+		LOG_ERROR("Failed to set extruderAxis[{:d}]->maxSpeed = {:d}", indices[0], data);
 		return false;
 	}
 	return true;

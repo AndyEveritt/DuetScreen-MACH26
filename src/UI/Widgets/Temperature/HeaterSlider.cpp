@@ -171,9 +171,10 @@ namespace UI
 		txt_area.y2 = txt_size.y - 1;
 
 		lv_area_t indic_area = slider.m_currentTemperature.getCoords();
-		lv_area_set_width(&indic_area,
-						  static_cast<int32_t>(lv_area_get_width(&indic_area) * slider.m_currentTempValue /
-											   (slider.m_maxTempValue - slider.m_minTempValue)));
+		lv_area_set_width(
+			&indic_area,
+			static_cast<int32_t>(lv_area_get_width(&indic_area) * (slider.m_currentTempValue - slider.m_minTempValue) /
+								 (slider.m_maxTempValue - slider.m_minTempValue)));
 
 		/*If the indicator is long enough put the text inside on the right*/
 		if (lv_area_get_width(&indic_area) > txt_size.x + 20)
@@ -255,10 +256,10 @@ namespace UI
 			const int32_t w = control.m_currentTemperature.getWidth();
 			const int32_t rel_position =
 				p.x - control.m_currentTemperature.getCoords().x1 - control.m_pressedPointOffset.x;
-			int32_t new_temperature =
-				static_cast<int32_t>(std::clamp(((range * rel_position + w / 2) / w) + control.m_minTempValue,
-												control.m_minTempValue,
-												control.m_maxTempValue));
+			int32_t new_temperature = static_cast<int32_t>(
+				std::clamp(static_cast<float>((range * rel_position + w / 2) / w) + control.m_minTempValue,
+						   control.m_minTempValue,
+						   control.m_maxTempValue));
 
 			if (activeTemperature)
 				control.setActiveTemperature(new_temperature, true);
@@ -282,7 +283,7 @@ namespace UI
 					LOG_ERROR("NumberPad is not set for {}", control.getName());
 					break;
 				}
-				control.m_numberPad->setValue(temperature);
+				control.m_numberPad->setValue(static_cast<float>(temperature));
 				control.m_numberPad->setMinValue(control.m_minTempValue);
 				control.m_numberPad->setMaxValue(control.m_maxTempValue);
 				control.m_numberPad->setHeader(
@@ -299,7 +300,7 @@ namespace UI
 			}
 			else
 			{
-				control.getPresenter()->sendTemperature(temperature, activeTemperature);
+				control.getPresenter()->sendTemperature(static_cast<float>(temperature), activeTemperature);
 			}
 			break;
 		}
@@ -330,7 +331,7 @@ namespace UI
 			const int32_t range = static_cast<int32_t>(control.m_maxTempValue - control.m_minTempValue);
 
 			int32_t pct =
-				range > 0 ? std::clamp(100 * static_cast<int32_t>(temperature - control.m_minTempValue) / range, 0, 100)
+				range > 0 ? std::clamp(100 * temperature - static_cast<int32_t>(control.m_minTempValue) / range, 0, 100)
 						  : 0;
 
 			marker_area.x1 = label_area.x1 + label_width * pct / 100 - marker_width / 2;

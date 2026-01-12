@@ -35,6 +35,7 @@ namespace UI
 		bool back() override;
 
 	  private:
+		void onInit() override;
 		void onShow() override;
 		void onHide() override;
 

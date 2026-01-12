@@ -31,6 +31,7 @@ namespace UI
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
+		setStylePad(0);
 
 		m_tabs.setSize(LV_PCT(100), LV_PCT(100));
 	}

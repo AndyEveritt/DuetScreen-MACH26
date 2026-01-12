@@ -46,16 +46,24 @@ namespace UI
 		lv_area_t txt_area{.x1 = 0, .y1 = 0, .x2 = txt_size.x - 1, .y2 = txt_size.y - 1};
 
 		lv_area_t indic_area = self.getCoords();
+		const int32_t range = self.getMaxValue() - self.getMinValue();
+
 		const int32_t filled_width =
-			static_cast<int32_t>((lv_area_get_width(&indic_area) * (self.getValue() - self.getMinValue())) /
-								 (self.getMaxValue() - self.getMinValue()));
+			std::clamp(static_cast<int32_t>((lv_area_get_width(&indic_area) * (self.getValue() - self.getMinValue())) /
+											std::max(range, 1)),
+					   0,
+					   lv_area_get_width(&indic_area));
 		lv_area_set_width(&indic_area, filled_width);
 
 		/*If the indicator is long enough put the text inside on the right*/
 		if (lv_area_get_width(&indic_area) > txt_size.x + 2 * pad)
 		{
 			lv_area_align(&indic_area, &txt_area, LV_ALIGN_RIGHT_MID, -pad, 0);
-			label_dsc.color = lv_color_white();
+			lv_style_value_t prop_value;
+			if (lv_style_get_prop(Themes::getLvglStyles().text, LV_STYLE_TEXT_COLOR, &prop_value) == LV_STYLE_RES_FOUND)
+				label_dsc.color = prop_value.color;
+			else
+				label_dsc.color = lv_color_white();
 		}
 		/*If the indicator is still short put the text out of it on the right*/
 		else

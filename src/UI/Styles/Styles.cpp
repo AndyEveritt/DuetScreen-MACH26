@@ -524,6 +524,7 @@ namespace UI::Themes
 		else if (lv_obj_check_type(obj, &lv_bar_class))
 		{
 			lv_obj_add_style(obj, lvgl.bar, 0);
+			lv_obj_add_style(obj, lvgl.anim, 0);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
 			lv_obj_add_style(obj, lvgl.outline_secondary, LV_STATE_EDITED);
 			lv_obj_add_style(obj, lvgl.bg_color_primary, LV_PART_INDICATOR);

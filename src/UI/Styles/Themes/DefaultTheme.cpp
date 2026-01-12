@@ -624,5 +624,12 @@ namespace UI::Themes
 
 		lv_style_set_min_width(components.graph_legend, 150);
 		// lv_style_set_max_width(components.graph_legend, 200);
+
+		/* Bar */
+
+		lv_style_set_bg_color(components.bar_label_bg, m_colors.bg_light);
+		lv_style_set_bg_opa(components.bar_label_bg, LV_OPA_50);
+		lv_style_set_radius(components.bar_label_bg, RADIUS_DEFAULT);
+		lv_style_set_pad_hor(components.bar_label_bg, PAD_DEF);
 	}
 } // namespace UI::Themes

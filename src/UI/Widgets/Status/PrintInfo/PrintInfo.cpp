@@ -18,15 +18,15 @@ namespace UI
 	{
 		UI_LOCK();
 
-		static int32_t printInfoColDsc[] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
+		static int32_t printInfoColDsc[] = {LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		static int32_t printInfoRowDsc[] = {
-			LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+			LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		setGridDsc(printInfoColDsc, printInfoRowDsc);
 		setGridCell(m_positions, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
-		setGridCell(m_speedCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		setGridCell(m_flowCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
-		setGridCell(m_timeCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 3, 1);
-		setGridCell(m_babyStep, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 3);
+		setGridCell(m_speedCont, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 1, 1);
+		setGridCell(m_flowCont, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 2, 1);
+		setGridCell(m_timeCont, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_END, 3, 1);
+		setGridCell(m_babyStepCont, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 
 		/* Positions */
 		m_positions.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -35,10 +35,35 @@ namespace UI
 		m_positions.setTitle(_("status.positions"));
 
 		/* Speed */
-		m_speedCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
-		m_speedCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+		static int32_t speedColDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static int32_t speedRowDsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+		m_speedCont.setHeight(LV_SIZE_CONTENT);
+		m_speedCont.setGridDsc(speedColDsc, speedRowDsc);
+		m_speedCont.setGridCell(m_speedHeader, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
+		m_speedCont.setGridCell(m_speedMultiplier, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+		m_speedCont.setGridCell(m_currentSpeed, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		m_speedCont.setGridCell(m_requestedSpeed, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		// m_speedCont.setGridCell(m_speedLabel, LV_GRID_ALIGN_END, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+
 		m_speedHeader.setText(_("status.speed_header"));
-		m_speedHeader.hide();
+		m_speedHeader.addStyle(Themes::getLvglStyles().bg_color_header);
+		m_speedHeader.addStyle(Themes::getLvglStyles().pad_normal);
+		m_speedHeader.addStyle(Themes::getLvglStyles().text_emphasis);
+		m_speedMultiplier.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_currentSpeed.setHeight(LV_SIZE_CONTENT);
+		// m_currentSpeed.setLabelFormat("{} mm/s");
+		m_currentSpeed.setStyleBgOpa(LV_OPA_0);
+
+		m_requestedSpeed.setHeight(LV_SIZE_CONTENT);
+		// m_requestedSpeed.setLabelFormat("{} mm/s");
+		m_requestedSpeed.addStyle(Themes::getLvglStyles().bg_color_primary_muted, LV_PART_INDICATOR);
+		m_requestedSpeed.addStyle(Themes::getLvglStyles().anim_fast);
+
+		m_speedLabel.setAlign(LV_ALIGN_LEFT_MID, 10, 0);
+		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
+		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label);
+
 		m_speedFactorModal.setSize(LV_PCT(70), LV_SIZE_CONTENT);
 		updateSpeed(0, 0);
 		updateSpeedMultiplier(100);
@@ -51,9 +76,26 @@ namespace UI
 			this);
 
 		/* Flow */
-		m_flowCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		static int32_t flowColDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static int32_t flowRowDsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+		m_flowCont.setHeight(LV_SIZE_CONTENT);
+		m_flowCont.setGridDsc(flowColDsc, flowRowDsc);
+		m_flowCont.setGridCell(m_flowHeader, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
+		m_flowCont.setGridCell(m_flowMultiplier, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+		m_flowCont.setGridCell(m_extruderFeedrate, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+
 		m_flowHeader.setText(_("status.flow_header"));
-		m_flowHeader.hide();
+		m_flowHeader.addStyle(Themes::getLvglStyles().bg_color_header);
+		m_flowHeader.addStyle(Themes::getLvglStyles().pad_normal);
+		m_flowHeader.addStyle(Themes::getLvglStyles().text_emphasis);
+		m_flowMultiplier.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_extruderFeedrate.setHeight(LV_SIZE_CONTENT);
+
+		m_extruderFeedrateLabel.setAlign(LV_ALIGN_LEFT_MID, 10, 0);
+		m_extruderFeedrateLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
+		m_extruderFeedrateLabel.addStyle(Themes::getComponentStyles().bar_label);
+
 		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
 		updateFlowMultiplier(100);
 		m_flowMultiplier.addClickedCallback(
@@ -64,9 +106,34 @@ namespace UI
 			},
 			this);
 
+		/* Babystep */
+		m_babyStepCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		m_babyStepCont.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
+		m_babyStepHeader.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_babyStepHeader.setMinWidth(LV_SIZE_CONTENT);
+		m_babyStepHeader.setText(_("status.babystep_header"));
+		m_babyStepHeader.addStyle(Themes::getLvglStyles().bg_color_header);
+		m_babyStepHeader.addStyle(Themes::getLvglStyles().pad_normal);
+		m_babyStepHeader.addStyle(Themes::getLvglStyles().text_emphasis);
+
+		m_babyStepButton.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_babyStepButton.setMinWidth(LV_SIZE_CONTENT);
+		m_babyStepButton.setText(_("status.babystep_button"));
+		m_babyStepButton.addClickedCallback([this](lv_event_t*) { openModal(&m_babyStepModal); });
+
+		m_babyStepModal.setSize(LV_PCT(40), LV_PCT(70));
+
 		/* Time */
 		m_timeCont.setHeight(LV_SIZE_CONTENT);
 		m_timeCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
+
+		m_timeHeader.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_timeHeader.setMinWidth(LV_SIZE_CONTENT);
+		m_timeHeader.setText(_("status.time_header"));
+		m_timeHeader.addStyle(Themes::getLvglStyles().bg_color_header);
+		m_timeHeader.addStyle(Themes::getLvglStyles().pad_normal);
+		m_timeHeader.addStyle(Themes::getLvglStyles().text_emphasis);
 	}
 
 	void PrintInfo::openSubView(lv_event_t* e)
@@ -76,16 +143,15 @@ namespace UI
 		openScreen(view, false);
 	}
 
-	void PrintInfo::onShow()
+	void PrintInfo::onInit()
 	{
-		if (!m_initialised)
-		{
-			// Can't put this in the constructor as it would cause `HomeView::instance()` to be called within itself
-			m_speedFactorModal.setParent(HomeView::instance().getMainWindow());
-			m_extrusionFactorModal.setParent(HomeView::instance().getMainWindow());
-			m_initialised = true;
-		}
+		// Can't put this in the constructor as it would cause `HomeView::instance()` to be called within itself
+		m_speedFactorModal.setParent(HomeView::instance().getMainWindow());
+		m_extrusionFactorModal.setParent(HomeView::instance().getMainWindow());
+		m_babyStepModal.setParent(HomeView::instance().getMainWindow());
 	}
+
+	void PrintInfo::onShow() {}
 
 	void PrintInfo::onHide() {}
 
@@ -122,17 +188,32 @@ namespace UI
 		}
 	}
 
+	void PrintInfo::setMaxSpeed(int32_t max_speed)
+	{
+		m_currentSpeed.setMaxValue(max_speed);
+		m_requestedSpeed.setMaxValue(max_speed);
+	}
+
+	void PrintInfo::setMaxExtrusionRate(int32_t max_extrusion_rate)
+	{
+		m_extruderFeedrate.setMaxValue(max_extrusion_rate);
+	}
+
 	void PrintInfo::updateExtrusionRate(float feedrate, float volumetric)
 	{
 		UI_LOCK();
-		m_extruderFeedrate.setText(_("status.extrusion_speed", feedrate));
-		m_flowRate.setText(_("status.flow_rate", volumetric));
+		m_extruderFeedrate.setValue(static_cast<int32_t>(std::round(feedrate)));
+		m_extruderFeedrateLabel.setText(_("status.extrusion_speed", feedrate));
+		UNUSED(volumetric);
+		// m_flowRateLabel.setText(_("status.flow_rate", volumetric));
 	}
 
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
-		m_currentSpeed.setText(_("status.current_speed", topSpeed));
-		m_requestedSpeed.setText(_("status.requested_speed", requestedSpeed));
+		m_currentSpeed.setValue(static_cast<int32_t>(std::round(topSpeed)), LV_ANIM_ON);
+		m_requestedSpeed.setValue(static_cast<int32_t>(std::round(requestedSpeed)), LV_ANIM_ON);
+
+		m_speedLabel.setText(_("status.speed_label", topSpeed, requestedSpeed));
 	}
 
 	void PrintInfo::updateFlowMultiplier(uint32_t multiplier)
@@ -162,5 +243,11 @@ namespace UI
 		int32_t seconds = remaining % 60;
 		std::string remainingStr = fmt::format("{:02d}:{:02d}:{:02d}", hours, minutes, seconds);
 		m_remainingTime.setText(_("status.remaining_time", remainingStr));
+	}
+
+	void PrintInfo::updateBabyStep(float babystep)
+	{
+		UI_LOCK();
+		m_babyStepButton.setText(_("status.babystep_value", babystep));
 	}
 } // namespace UI

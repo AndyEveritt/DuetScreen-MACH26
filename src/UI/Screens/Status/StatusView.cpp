@@ -1,6 +1,7 @@
 #include "StatusView.h"
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Screens/Home/HomeView.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 
@@ -114,6 +115,11 @@ namespace UI
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		openModal(&view->m_confirmCancel);
+	}
+
+	void StatusView::onInit()
+	{
+		m_confirmCancel.setParent(HomeView::instance().getMainWindow());
 	}
 
 	void StatusView::onShow() {}

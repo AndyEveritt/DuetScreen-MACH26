@@ -47,6 +47,7 @@ namespace OM::Move
 		float machinePosition;
 		float minPosition;
 		float maxPosition;
+		int32_t maxSpeed; // mm/s
 		uint8_t homed : 1, visible : 1;
 
 		void Reset();
@@ -68,6 +69,7 @@ namespace OM::Move
 		float stepsPerMm;
 		float filamentDiameter;
 		float pressureAdvance;
+		int32_t maxSpeed; // mm/s
 		String<MAX_FILAMENT_NAME_LENGTH> filamentName;
 
 		void Reset();
@@ -102,6 +104,7 @@ namespace OM::Move
 	bool SetAxisMachinePosition(size_t index, float f);
 	bool SetAxisMinPosition(size_t index, float f);
 	bool SetAxisMaxPosition(size_t index, float f);
+	bool SetAxisMaxSpeed(size_t index, int32_t f);
 	bool SetAxisVisible(size_t index, bool visible);
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset);
 	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber);
@@ -123,6 +126,7 @@ namespace OM::Move
 	bool SetExtruderStepsPerMm(size_t index, float f);
 	bool SetExtruderFilamentDiameter(size_t index, float f);
 	bool SetExtruderPressureAdvance(size_t index, float f);
+	bool SetExtruderMaxSpeed(size_t index, int32_t f);
 	bool SetExtruderFilamentName(size_t index, const char* name);
 
 	void SetExtrusionRate(float rate);

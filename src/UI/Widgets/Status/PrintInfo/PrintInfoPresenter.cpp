@@ -72,6 +72,7 @@ namespace UI
 	{
 		{
 			MODEL_LOCK();
+			int32_t max_speed = 1;
 			size_t axis_count = OM::Move::GetAxisCount();
 			m_view->setAxisCount(axis_count);
 			for (size_t i = 0; i < axis_count; i++)
@@ -82,6 +83,18 @@ namespace UI
 					continue;
 				}
 				m_view->setPosition(i, axis->letter[0], axis->userPosition);
+				max_speed = std::max(max_speed, axis->maxSpeed);
+			}
+			m_view->setMaxSpeed(max_speed);
+
+			/* Update babystep */
+			if (auto axis = OM::Move::GetAxisByLetter('Z'))
+			{
+				m_view->updateBabyStep(axis->babystep);
+			}
+			else
+			{
+				m_view->updateBabyStep(0.0f);
 			}
 		}
 	}
@@ -95,6 +108,7 @@ namespace UI
 			return;
 		}
 		// TODO show all extruder multipliers
+		int32_t extruderMaxSpeed = 1;
 		uint32_t extruderCount = 0;
 		uint32_t flowMultiplier = 0;
 		tool->IterateExtruders(
@@ -102,6 +116,7 @@ namespace UI
 			{
 				flowMultiplier += static_cast<uint32_t>(std::lround(100 * extruder->factor));
 				extruderCount++;
+				extruderMaxSpeed = std::max(extruderMaxSpeed, extruder->maxSpeed);
 			});
 
 		if (extruderCount == 0)
@@ -111,6 +126,7 @@ namespace UI
 		}
 
 		m_view->updateFlowMultiplier(flowMultiplier / extruderCount);
+		m_view->setMaxExtrusionRate(extruderMaxSpeed);
 	}
 
 	void PrintInfoPresenter::newSpeedFactor()

@@ -9,6 +9,7 @@ namespace UI
 		: View<ControlPresenter>(name, parent, layout_t(0, 0, 100, 100))
 	{
 		addStyle(Themes::getLvglStyles().bg_dark);
+		setStylePad(0);
 
 		m_tabs.setSize(LV_PCT(100), LV_PCT(100));
 
