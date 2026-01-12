@@ -12,6 +12,7 @@
 #include "nameof.hpp"
 #include "tracy/Tracy.hpp"
 #include "utils/StorageHelper.h"
+#include <algorithm>
 
 Model::Model()
 {
@@ -56,6 +57,20 @@ void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 	unbind(presenter);
 	LOG_DBG("Binding presenter '{:s}'", presenter.lock()->getName());
 	m_presenters.push_back(presenter);
+
+	// Index this presenter by the events it subscribes to for faster dispatch
+	if (auto sp = presenter.lock())
+	{
+		std::vector<EventType> subscribedEvents;
+		const auto& handlers = sp->getEventHandlers();
+		subscribedEvents.reserve(handlers.size());
+		for (const auto& [et, _] : handlers)
+		{
+			m_eventPresenterIndex[et].push_back(sp);
+			subscribedEvents.push_back(et);
+		}
+		m_presenterEventIndex[sp.get()] = std::move(subscribedEvents);
+	}
 }
 
 void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
@@ -68,6 +83,28 @@ void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 		return;
 	}
 	std::shared_ptr<UI::BasePresenter> sharedPresenter = presenter.lock();
+
+	// Remove from optimized event -> presenter index
+	{
+		auto itIndex = m_presenterEventIndex.find(sharedPresenter.get());
+		if (itIndex != m_presenterEventIndex.end())
+		{
+			for (auto et : itIndex->second)
+			{
+				auto& vec = m_eventPresenterIndex[et];
+				vec.erase(std::remove_if(vec.begin(),
+										 vec.end(),
+										 [&sharedPresenter](const std::weak_ptr<UI::BasePresenter>& wp)
+										 {
+											 auto sp = wp.lock();
+											 return !sp || sp == sharedPresenter;
+										 }),
+						  vec.end());
+			}
+			m_presenterEventIndex.erase(itIndex);
+		}
+	}
+
 	std::erase_if(m_presenters,
 				  [&sharedPresenter](const std::weak_ptr<UI::BasePresenter>& p)
 				  {
@@ -161,33 +198,38 @@ void Model::runEventLoop()
 
 			{
 				ZoneScopedN("Presenter Event Handlers");
-				auto it = m_presenters.begin();
-				std::shared_ptr<UI::BasePresenter> presenter;
-				while (it != m_presenters.end())
+				auto pit = m_eventPresenterIndex.find(event.first);
+				if (pit != m_eventPresenterIndex.end())
 				{
-					presenter = (*it).lock();
-					if (!presenter)
+					auto& vec = pit->second;
+					// Index-based iteration to avoid iterator invalidation pitfalls during erase
+					for (size_t i = 0; i < vec.size();)
 					{
-						it = m_presenters.erase(it);
-						continue;
-					}
-					ZoneScoped;
-					ZoneName(presenter->getName().data(), presenter->getName().size());
-					auto handler = presenter->getEventHandler(event.first);
-					if (handler)
-					{
-						found = true;
-						LOG_DBG("Notifying presenter '{:s}' for event '{:s}'",
-								presenter->getName(),
-								nameof::nameof_enum(event.first));
-
+						auto presenter = vec[i].lock();
+						if (!presenter)
+						{
+							vec.erase(vec.begin() + static_cast<std::ptrdiff_t>(i));
+							continue;
+						}
 						ZoneScoped;
-						[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
-						ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
-						ZoneColor(tracy::Color::Red);
-						std::invoke(handler, event.second);
+						ZoneName(presenter->getName().data(), presenter->getName().size());
+						auto handler = presenter->getEventHandler(event.first);
+						if (handler)
+						{
+							found = true;
+							LOG_DBG("Notifying presenter '{:s}' for event '{:s}'",
+									presenter->getName(),
+									nameof::nameof_enum(event.first));
+
+							ZoneScoped;
+							[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
+							ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(),
+									 eventName.size());
+							ZoneColor(tracy::Color::Red);
+							std::invoke(handler, event.second);
+						}
+						++i;
 					}
-					++it;
 				}
 			}
 
@@ -196,7 +238,6 @@ void Model::runEventLoop()
 				LOG_VERBOSE("No handler for event type {:s}", nameof::nameof_enum(event.first));
 			}
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 }
 

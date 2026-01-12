@@ -26,6 +26,8 @@ namespace UI
 			return nullptr;
 		}
 
+		const auto& getEventHandlers() const { return m_handlers; }
+
 	  protected:
 		template <EventType E, typename Class, typename... Args>
 		void registerEventListener(Class* instance, void (Class::*memberFunc)(Args...))
@@ -66,6 +68,6 @@ namespace UI
 
 		Model& m_model;
 
-		std::map<EventType, EventCallback> m_handlers;
+		std::unordered_map<EventType, EventCallback> m_handlers;
 	};
 } // namespace UI

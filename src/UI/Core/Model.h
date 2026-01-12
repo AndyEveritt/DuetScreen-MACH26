@@ -29,6 +29,7 @@
 #include <mutex>
 #include <queue>
 #include <tuple>
+#include <unordered_map>
 #include <variant>
 
 namespace UI
@@ -281,6 +282,11 @@ class Model
 	ThumbnailSubscribers m_thumbnailSubscribers;
 	ToolSubscribers m_toolSubscribers;
 	std::list<std::weak_ptr<UI::BasePresenter>> m_presenters;
+
+	// Optimized event dispatch: map event -> presenters subscribed to that event
+	std::unordered_map<EventType, std::vector<std::weak_ptr<UI::BasePresenter>>> m_eventPresenterIndex;
+	// Reverse index to support fast unbind cleanup
+	std::unordered_map<UI::BasePresenter*, std::vector<EventType>> m_presenterEventIndex;
 
 	std::queue<std::pair<EventType, EventData>> m_eventQueue;
 	std::map<EventType, std::vector<EventCallback>> m_handlers;
