@@ -1,7 +1,7 @@
 /*
  * LvSwitch.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:33 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -28,6 +28,7 @@ namespace UI
 		void setOrientation(lv_switch_orientation_t orientation)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_switch_set_orientation(static_cast<Derived*>(this)->getRootPtr(), orientation);
 		}
@@ -39,6 +40,7 @@ namespace UI
 		lv_switch_orientation_t getOrientation() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_switch_get_orientation(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -50,6 +52,7 @@ namespace UI
 		LvSwitchGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_switch_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

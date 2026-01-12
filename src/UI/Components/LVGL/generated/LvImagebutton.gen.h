@@ -1,7 +1,7 @@
 /*
  * LvImagebutton.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -34,6 +34,7 @@ namespace UI
 		void setSrc(lv_imagebutton_state_t state, const void* src_left, const void* src_mid, const void* src_right)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_imagebutton_set_src(static_cast<Derived*>(this)->getRootPtr(), state, src_left, src_mid, src_right);
 		}
@@ -47,6 +48,7 @@ namespace UI
 		void setSrcLeft(lv_imagebutton_state_t state, const void* src_left)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_imagebutton_set_src_left(static_cast<Derived*>(this)->getRootPtr(), state, src_left);
 		}
@@ -60,6 +62,7 @@ namespace UI
 		void setSrcRight(lv_imagebutton_state_t state, const void* src_right)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_imagebutton_set_src_right(static_cast<Derived*>(this)->getRootPtr(), state, src_right);
 		}
@@ -73,6 +76,7 @@ namespace UI
 		void setSrcMid(lv_imagebutton_state_t state, const void* src_mid)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_imagebutton_set_src_mid(static_cast<Derived*>(this)->getRootPtr(), state, src_mid);
 		}
@@ -84,6 +88,7 @@ namespace UI
 		void setState(lv_imagebutton_state_t state)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_imagebutton_set_state(static_cast<Derived*>(this)->getRootPtr(), state);
 		}
@@ -96,6 +101,7 @@ namespace UI
 		const void* getSrcLeft(lv_imagebutton_state_t state) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_imagebutton_get_src_left(static_cast<const Derived*>(this)->getRootPtr(), state);
 		}
@@ -108,6 +114,7 @@ namespace UI
 		const void* getSrcMiddle(lv_imagebutton_state_t state) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_imagebutton_get_src_middle(static_cast<const Derived*>(this)->getRootPtr(), state);
 		}
@@ -120,6 +127,7 @@ namespace UI
 		const void* getSrcRight(lv_imagebutton_state_t state) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_imagebutton_get_src_right(static_cast<const Derived*>(this)->getRootPtr(), state);
 		}
@@ -131,6 +139,7 @@ namespace UI
 		LvImagebuttonGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_imagebutton_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

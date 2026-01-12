@@ -1,7 +1,7 @@
 /*
  * LvCalendar.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -31,6 +31,7 @@ namespace UI
 		void setTodayDate(uint32_t year, uint32_t month, uint32_t day)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_today_date(static_cast<Derived*>(this)->getRootPtr(), year, month, day);
 		}
@@ -42,6 +43,7 @@ namespace UI
 		void setTodayYear(uint32_t year)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_today_year(static_cast<Derived*>(this)->getRootPtr(), year);
 		}
@@ -53,6 +55,7 @@ namespace UI
 		void setTodayMonth(uint32_t month)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_today_month(static_cast<Derived*>(this)->getRootPtr(), month);
 		}
@@ -64,6 +67,7 @@ namespace UI
 		void setTodayDay(uint32_t day)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_today_day(static_cast<Derived*>(this)->getRootPtr(), day);
 		}
@@ -76,6 +80,7 @@ namespace UI
 		void setMonthShown(uint32_t year, uint32_t month)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_month_shown(static_cast<Derived*>(this)->getRootPtr(), year, month);
 		}
@@ -87,6 +92,7 @@ namespace UI
 		void setShownYear(uint32_t year)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_shown_year(static_cast<Derived*>(this)->getRootPtr(), year);
 		}
@@ -98,6 +104,7 @@ namespace UI
 		void setShownMonth(uint32_t month)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_shown_month(static_cast<Derived*>(this)->getRootPtr(), month);
 		}
@@ -112,6 +119,7 @@ namespace UI
 		void setHighlightedDates(std::span<lv_calendar_date_t> highlighted)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_highlighted_dates(
 				static_cast<Derived*>(this)->getRootPtr(), highlighted.data(), highlighted.size());
@@ -127,6 +135,7 @@ namespace UI
 		void setDayNames(const char** day_names)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_calendar_set_day_names(static_cast<Derived*>(this)->getRootPtr(), day_names);
 		}
@@ -139,6 +148,7 @@ namespace UI
 		lv_obj_t* getBtnmatrix() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_calendar_get_btnmatrix(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -151,6 +161,7 @@ namespace UI
 		const lv_calendar_date_t* getTodayDate() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_calendar_get_today_date(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -163,6 +174,7 @@ namespace UI
 		const lv_calendar_date_t* getShowedDate() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_calendar_get_showed_date(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -175,6 +187,7 @@ namespace UI
 		lv_calendar_date_t* getHighlightedDates() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_calendar_get_highlighted_dates(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -187,6 +200,7 @@ namespace UI
 		size_t getHighlightedDatesNum() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_calendar_get_highlighted_dates_num(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -201,6 +215,7 @@ namespace UI
 		lv_result_t getPressedDate(lv_calendar_date_t* date) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_calendar_get_pressed_date(static_cast<const Derived*>(this)->getRootPtr(), date);
 		}
@@ -212,6 +227,7 @@ namespace UI
 		LvCalendarGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_calendar_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

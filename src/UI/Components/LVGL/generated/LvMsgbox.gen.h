@@ -1,7 +1,7 @@
 /*
  * LvMsgbox.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		lv_obj_t* addTitle(const char* title)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_add_title(static_cast<Derived*>(this)->getRootPtr(), title);
 		}
@@ -41,6 +42,7 @@ namespace UI
 		lv_obj_t* addHeaderButton(const void* icon)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_add_header_button(static_cast<Derived*>(this)->getRootPtr(), icon);
 		}
@@ -53,6 +55,7 @@ namespace UI
 		lv_obj_t* addText(const char* text)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_add_text(static_cast<Derived*>(this)->getRootPtr(), text);
 		}
@@ -65,6 +68,7 @@ namespace UI
 		lv_obj_t* addFooterButton(const char* text)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_add_footer_button(static_cast<Derived*>(this)->getRootPtr(), text);
 		}
@@ -76,6 +80,7 @@ namespace UI
 		lv_obj_t* addCloseButton()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_add_close_button(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -87,6 +92,7 @@ namespace UI
 		lv_obj_t* getHeader() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_get_header(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -98,6 +104,7 @@ namespace UI
 		lv_obj_t* getFooter() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_get_footer(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -109,6 +116,7 @@ namespace UI
 		lv_obj_t* getContent() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_get_content(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -120,6 +128,7 @@ namespace UI
 		lv_obj_t* getTitle() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_msgbox_get_title(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -131,6 +140,7 @@ namespace UI
 		void close()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_msgbox_close(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -142,6 +152,7 @@ namespace UI
 		void closeAsync()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_msgbox_close_async(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -153,6 +164,7 @@ namespace UI
 		LvMsgboxGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_msgbox_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

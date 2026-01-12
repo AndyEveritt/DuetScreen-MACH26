@@ -1,7 +1,7 @@
 /*
  * LvSpinner.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -32,6 +32,7 @@ namespace UI
 		void setAnimParams(uint32_t t, uint32_t angle)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinner_set_anim_params(static_cast<Derived*>(this)->getRootPtr(), t, angle);
 		}
@@ -43,6 +44,7 @@ namespace UI
 		void setAnimDuration(uint32_t t)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinner_set_anim_duration(static_cast<Derived*>(this)->getRootPtr(), t);
 		}
@@ -55,6 +57,7 @@ namespace UI
 		void setArcSweep(uint32_t angle)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinner_set_arc_sweep(static_cast<Derived*>(this)->getRootPtr(), angle);
 		}
@@ -66,6 +69,7 @@ namespace UI
 		LvSpinnerGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_spinner_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

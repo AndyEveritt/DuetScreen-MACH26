@@ -1,7 +1,7 @@
 /*
  * LvCanvas.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -40,6 +40,7 @@ namespace UI
 		void setBuffer(void* buf, int32_t w, int32_t h, lv_color_format_t cf)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_set_buffer(static_cast<Derived*>(this)->getRootPtr(), buf, w, h, cf);
 		}
@@ -53,6 +54,7 @@ namespace UI
 		void setDrawBuf(lv_draw_buf_t* draw_buf)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_set_draw_buf(static_cast<Derived*>(this)->getRootPtr(), draw_buf);
 		}
@@ -71,6 +73,7 @@ namespace UI
 		void setPx(int32_t x, int32_t y, lv_color_t color, lv_opa_t opa)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_set_px(static_cast<Derived*>(this)->getRootPtr(), x, y, color, opa);
 		}
@@ -87,6 +90,7 @@ namespace UI
 		void setPalette(uint8_t index, lv_color32_t color)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_set_palette(static_cast<Derived*>(this)->getRootPtr(), index, color);
 		}
@@ -94,6 +98,7 @@ namespace UI
 		lv_draw_buf_t* getDrawBuf() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_canvas_get_draw_buf(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -107,6 +112,7 @@ namespace UI
 		lv_color32_t getPx(int32_t x, int32_t y) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_canvas_get_px(static_cast<const Derived*>(this)->getRootPtr(), x, y);
 		}
@@ -119,6 +125,7 @@ namespace UI
 		lv_image_dsc_t* getImage() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_canvas_get_image(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -133,6 +140,7 @@ namespace UI
 		const void* getBuf() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_canvas_get_buf(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -147,6 +155,7 @@ namespace UI
 		void copyBuf(const lv_area_t* canvas_area, lv_draw_buf_t* dest_buf, const lv_area_t* dest_area)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_copy_buf(static_cast<Derived*>(this)->getRootPtr(), canvas_area, dest_buf, dest_area);
 		}
@@ -159,6 +168,7 @@ namespace UI
 		void fillBg(lv_color_t color, lv_opa_t opa)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_fill_bg(static_cast<Derived*>(this)->getRootPtr(), color, opa);
 		}
@@ -172,6 +182,7 @@ namespace UI
 		void initLayer(lv_layer_t* layer)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_init_layer(static_cast<Derived*>(this)->getRootPtr(), layer);
 		}
@@ -185,6 +196,7 @@ namespace UI
 		void finishLayer(lv_layer_t* layer)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_finish_layer(static_cast<Derived*>(this)->getRootPtr(), layer);
 		}
@@ -196,6 +208,7 @@ namespace UI
 		LvCanvasGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_canvas_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

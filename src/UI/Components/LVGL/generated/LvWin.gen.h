@@ -1,7 +1,7 @@
 /*
  * LvWin.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:33 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		lv_obj_t* addTitle(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_win_add_title(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -42,6 +43,7 @@ namespace UI
 		lv_obj_t* addButton(const void* icon, int32_t btn_w)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_win_add_button(static_cast<Derived*>(this)->getRootPtr(), icon, btn_w);
 		}
@@ -54,6 +56,7 @@ namespace UI
 		lv_obj_t* getHeader() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_win_get_header(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -66,6 +69,7 @@ namespace UI
 		lv_obj_t* getContent() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_win_get_content(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -77,6 +81,7 @@ namespace UI
 		LvWinGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_win_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

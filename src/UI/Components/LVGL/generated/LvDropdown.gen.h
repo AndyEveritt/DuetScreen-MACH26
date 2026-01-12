@@ -1,7 +1,7 @@
 /*
  * LvDropdown.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -30,6 +30,7 @@ namespace UI
 		void setText(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_set_text(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -43,6 +44,7 @@ namespace UI
 		void setOptions(const char* options)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_set_options(static_cast<Derived*>(this)->getRootPtr(), options);
 		}
@@ -55,6 +57,7 @@ namespace UI
 		void setOptionsStatic(const char* options)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_set_options_static(static_cast<Derived*>(this)->getRootPtr(), options);
 		}
@@ -67,6 +70,7 @@ namespace UI
 		void addOption(const char* option, uint32_t pos)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_add_option(static_cast<Derived*>(this)->getRootPtr(), option, pos);
 		}
@@ -77,6 +81,7 @@ namespace UI
 		void clearOptions()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_clear_options(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -88,6 +93,7 @@ namespace UI
 		void setSelected(uint32_t sel_opt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_set_selected(static_cast<Derived*>(this)->getRootPtr(), sel_opt);
 		}
@@ -99,6 +105,7 @@ namespace UI
 		void setDir(lv_dir_t dir)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_set_dir(static_cast<Derived*>(this)->getRootPtr(), dir);
 		}
@@ -112,6 +119,7 @@ namespace UI
 		void setSymbol(const void* symbol)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_set_symbol(static_cast<Derived*>(this)->getRootPtr(), symbol);
 		}
@@ -123,6 +131,7 @@ namespace UI
 		void setSelectedHighlight(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_set_selected_highlight(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -134,6 +143,7 @@ namespace UI
 		lv_obj_t* getList() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_list(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -145,6 +155,7 @@ namespace UI
 		const char* getText() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_text(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -156,6 +167,7 @@ namespace UI
 		const char* getOptions() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_options(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -167,6 +179,7 @@ namespace UI
 		uint32_t getSelected() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_selected(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -178,6 +191,7 @@ namespace UI
 		uint32_t getOptionCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_option_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -190,6 +204,7 @@ namespace UI
 		void getSelectedStr(char* buf, uint32_t buf_size) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_get_selected_str(static_cast<const Derived*>(this)->getRootPtr(), buf, buf_size);
 		}
@@ -202,6 +217,7 @@ namespace UI
 		int32_t getOptionIndex(const char* option) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_option_index(static_cast<const Derived*>(this)->getRootPtr(), option);
 		}
@@ -213,6 +229,7 @@ namespace UI
 		const char* getSymbol() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_symbol(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -224,6 +241,7 @@ namespace UI
 		bool getSelectedHighlight() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_selected_highlight(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -235,6 +253,7 @@ namespace UI
 		lv_dir_t getDir() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_get_dir(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -246,6 +265,7 @@ namespace UI
 		void open()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_open(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -256,6 +276,7 @@ namespace UI
 		void close()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_dropdown_close(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -267,6 +288,7 @@ namespace UI
 		bool isOpen() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_is_open(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -281,6 +303,7 @@ namespace UI
 		lv_observer_t* bindValue(lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_dropdown_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
 		}
@@ -294,6 +317,7 @@ namespace UI
 		LvDropdownGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_dropdown_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

@@ -1,7 +1,7 @@
 /*
  * LvArc.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:51 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -28,6 +28,7 @@ namespace UI
 		void setStartAngle(lv_value_precise_t start)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_start_angle(static_cast<Derived*>(this)->getRootPtr(), start);
 		}
@@ -39,6 +40,7 @@ namespace UI
 		void setEndAngle(lv_value_precise_t end)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_end_angle(static_cast<Derived*>(this)->getRootPtr(), end);
 		}
@@ -51,6 +53,7 @@ namespace UI
 		void setAngles(lv_value_precise_t start, lv_value_precise_t end)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_angles(static_cast<Derived*>(this)->getRootPtr(), start, end);
 		}
@@ -62,6 +65,7 @@ namespace UI
 		void setBgStartAngle(lv_value_precise_t start)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_bg_start_angle(static_cast<Derived*>(this)->getRootPtr(), start);
 		}
@@ -73,6 +77,7 @@ namespace UI
 		void setBgEndAngle(lv_value_precise_t end)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_bg_end_angle(static_cast<Derived*>(this)->getRootPtr(), end);
 		}
@@ -85,6 +90,7 @@ namespace UI
 		void setBgAngles(lv_value_precise_t start, lv_value_precise_t end)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_bg_angles(static_cast<Derived*>(this)->getRootPtr(), start, end);
 		}
@@ -96,6 +102,7 @@ namespace UI
 		void setRotation(int32_t rotation)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_rotation(static_cast<Derived*>(this)->getRootPtr(), rotation);
 		}
@@ -107,6 +114,7 @@ namespace UI
 		void setMode(lv_arc_mode_t type)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_mode(static_cast<Derived*>(this)->getRootPtr(), type);
 		}
@@ -118,6 +126,7 @@ namespace UI
 		void setValue(int32_t value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_value(static_cast<Derived*>(this)->getRootPtr(), value);
 		}
@@ -130,6 +139,7 @@ namespace UI
 		void setRange(int32_t min, int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_range(static_cast<Derived*>(this)->getRootPtr(), min, max);
 		}
@@ -141,6 +151,7 @@ namespace UI
 		void setMinValue(int32_t min)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_min_value(static_cast<Derived*>(this)->getRootPtr(), min);
 		}
@@ -152,6 +163,7 @@ namespace UI
 		void setMaxValue(int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_max_value(static_cast<Derived*>(this)->getRootPtr(), max);
 		}
@@ -163,6 +175,7 @@ namespace UI
 		void setChangeRate(uint32_t rate)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_change_rate(static_cast<Derived*>(this)->getRootPtr(), rate);
 		}
@@ -174,6 +187,7 @@ namespace UI
 		void setKnobOffset(int32_t offset)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_set_knob_offset(static_cast<Derived*>(this)->getRootPtr(), offset);
 		}
@@ -185,6 +199,7 @@ namespace UI
 		lv_value_precise_t getAngleStart() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_angle_start(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -196,6 +211,7 @@ namespace UI
 		lv_value_precise_t getAngleEnd() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_angle_end(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -207,6 +223,7 @@ namespace UI
 		lv_value_precise_t getBgAngleStart() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_bg_angle_start(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -218,6 +235,7 @@ namespace UI
 		lv_value_precise_t getBgAngleEnd() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_bg_angle_end(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -229,6 +247,7 @@ namespace UI
 		int32_t getValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -240,6 +259,7 @@ namespace UI
 		int32_t getMinValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_min_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -251,6 +271,7 @@ namespace UI
 		int32_t getMaxValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_max_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -262,6 +283,7 @@ namespace UI
 		lv_arc_mode_t getMode() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_mode(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -273,6 +295,7 @@ namespace UI
 		int32_t getRotation() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_rotation(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -284,6 +307,7 @@ namespace UI
 		int32_t getKnobOffset() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_knob_offset(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -298,6 +322,7 @@ namespace UI
 		lv_observer_t* bindValue(lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
 		}
@@ -312,6 +337,7 @@ namespace UI
 		void alignObjToAngle(lv_obj_t* obj_to_align, int32_t r_offset)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_align_obj_to_angle(static_cast<Derived*>(this)->getRootPtr(), obj_to_align, r_offset);
 		}
@@ -324,6 +350,7 @@ namespace UI
 		void rotateObjToAngle(lv_obj_t* obj_to_rotate, int32_t r_offset)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arc_rotate_obj_to_angle(static_cast<Derived*>(this)->getRootPtr(), obj_to_rotate, r_offset);
 		}
@@ -335,6 +362,7 @@ namespace UI
 		LvArcGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_arc_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

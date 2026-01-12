@@ -1,7 +1,7 @@
 /*
  * LvCheckbox.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		void setText(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_checkbox_set_text(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -41,6 +42,7 @@ namespace UI
 		void setTextStatic(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_checkbox_set_text_static(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -52,6 +54,7 @@ namespace UI
 		const char* getText() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_checkbox_get_text(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -63,6 +66,7 @@ namespace UI
 		LvCheckboxGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_checkbox_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

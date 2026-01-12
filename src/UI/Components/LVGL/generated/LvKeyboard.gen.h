@@ -1,7 +1,7 @@
 /*
  * LvKeyboard.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -32,6 +32,7 @@ namespace UI
 		void setTextarea(lv_obj_t* ta)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_keyboard_set_textarea(static_cast<Derived*>(this)->getRootPtr(), ta);
 		}
@@ -44,6 +45,7 @@ namespace UI
 		void setMode(lv_keyboard_mode_t mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_keyboard_set_mode(static_cast<Derived*>(this)->getRootPtr(), mode);
 		}
@@ -56,6 +58,7 @@ namespace UI
 		void setPopovers(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_keyboard_set_popovers(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -74,6 +77,7 @@ namespace UI
 					std::span<const lv_buttonmatrix_ctrl_t> ctrl_map)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_keyboard_set_map(static_cast<Derived*>(this)->getRootPtr(), mode, map.data(), ctrl_map.data());
 		}
@@ -86,6 +90,7 @@ namespace UI
 		lv_obj_t* getTextarea() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_keyboard_get_textarea(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -98,6 +103,7 @@ namespace UI
 		lv_keyboard_mode_t getMode() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_keyboard_get_mode(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -109,6 +115,7 @@ namespace UI
 		bool getPopovers() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_keyboard_get_popovers(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -121,6 +128,7 @@ namespace UI
 		const char* const* getMapArray() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_keyboard_get_map_array(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -134,6 +142,7 @@ namespace UI
 		uint32_t getSelectedButton() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_keyboard_get_selected_button(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -146,6 +155,7 @@ namespace UI
 		const char* getButtonText(uint32_t btn_id) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_keyboard_get_button_text(static_cast<const Derived*>(this)->getRootPtr(), btn_id);
 		}
@@ -157,6 +167,7 @@ namespace UI
 		LvKeyboardGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_keyboard_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

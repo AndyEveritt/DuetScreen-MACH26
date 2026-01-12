@@ -1,7 +1,7 @@
 /*
  * LvButtonmatrix.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -31,6 +31,7 @@ namespace UI
 		void setMap(std::span<const char* const> map)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_set_map(static_cast<Derived*>(this)->getRootPtr(), map.data());
 		}
@@ -49,6 +50,7 @@ namespace UI
 		void setCtrlMap(std::span<const lv_buttonmatrix_ctrl_t> ctrl_map)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_set_ctrl_map(static_cast<Derived*>(this)->getRootPtr(), ctrl_map.data());
 		}
@@ -60,6 +62,7 @@ namespace UI
 		void setSelectedButton(uint32_t btn_id)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_set_selected_button(static_cast<Derived*>(this)->getRootPtr(), btn_id);
 		}
@@ -72,6 +75,7 @@ namespace UI
 		void setButtonCtrl(uint32_t btn_id, lv_buttonmatrix_ctrl_t ctrl)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_set_button_ctrl(static_cast<Derived*>(this)->getRootPtr(), btn_id, ctrl);
 		}
@@ -84,6 +88,7 @@ namespace UI
 		void clearButtonCtrl(uint32_t btn_id, lv_buttonmatrix_ctrl_t ctrl)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_clear_button_ctrl(static_cast<Derived*>(this)->getRootPtr(), btn_id, ctrl);
 		}
@@ -95,6 +100,7 @@ namespace UI
 		void setButtonCtrlAll(lv_buttonmatrix_ctrl_t ctrl)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_set_button_ctrl_all(static_cast<Derived*>(this)->getRootPtr(), ctrl);
 		}
@@ -106,6 +112,7 @@ namespace UI
 		void clearButtonCtrlAll(lv_buttonmatrix_ctrl_t ctrl)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_clear_button_ctrl_all(static_cast<Derived*>(this)->getRootPtr(), ctrl);
 		}
@@ -121,6 +128,7 @@ namespace UI
 		void setButtonWidth(uint32_t btn_id, uint32_t width)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_set_button_width(static_cast<Derived*>(this)->getRootPtr(), btn_id, width);
 		}
@@ -134,6 +142,7 @@ namespace UI
 		void setOneChecked(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_buttonmatrix_set_one_checked(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -145,6 +154,7 @@ namespace UI
 		const char* const* getMap() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_buttonmatrix_get_map(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -157,6 +167,7 @@ namespace UI
 		uint32_t getSelectedButton() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_buttonmatrix_get_selected_button(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -169,6 +180,7 @@ namespace UI
 		const char* getButtonText(uint32_t btn_id) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_buttonmatrix_get_button_text(static_cast<const Derived*>(this)->getRootPtr(), btn_id);
 		}
@@ -182,6 +194,7 @@ namespace UI
 		bool hasButtonCtrl(uint32_t btn_id, lv_buttonmatrix_ctrl_t ctrl) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_buttonmatrix_has_button_ctrl(static_cast<const Derived*>(this)->getRootPtr(), btn_id, ctrl);
 		}
@@ -193,6 +206,7 @@ namespace UI
 		bool getOneChecked() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_buttonmatrix_get_one_checked(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -204,6 +218,7 @@ namespace UI
 		LvButtonmatrixGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_buttonmatrix_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

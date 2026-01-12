@@ -1,7 +1,7 @@
 /*
  * LvList.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -30,6 +30,7 @@ namespace UI
 		lv_obj_t* addText(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_list_add_text(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -44,6 +45,7 @@ namespace UI
 		lv_obj_t* addButton(const void* icon, const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_list_add_button(static_cast<Derived*>(this)->getRootPtr(), icon, txt);
 		}
@@ -57,6 +59,7 @@ namespace UI
 		const char* getButtonText(lv_obj_t* btn) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_list_get_button_text(static_cast<const Derived*>(this)->getRootPtr(), btn);
 		}
@@ -70,6 +73,7 @@ namespace UI
 		void setButtonText(lv_obj_t* btn, const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_list_set_button_text(static_cast<Derived*>(this)->getRootPtr(), btn, txt);
 		}
@@ -85,6 +89,7 @@ namespace UI
 		lv_obj_t* addTranslationTag(const char* tag)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_list_add_translation_tag(static_cast<Derived*>(this)->getRootPtr(), tag);
 		}
@@ -99,6 +104,7 @@ namespace UI
 		lv_obj_t* addButtonTranslationTag(const void* icon, const char* tag)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_list_add_button_translation_tag(static_cast<Derived*>(this)->getRootPtr(), icon, tag);
 		}
@@ -112,6 +118,7 @@ namespace UI
 		void setButtonTranslationTag(lv_obj_t* btn, const char* tag)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_list_set_button_translation_tag(static_cast<Derived*>(this)->getRootPtr(), btn, tag);
 		}
@@ -125,6 +132,7 @@ namespace UI
 		LvListGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_list_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

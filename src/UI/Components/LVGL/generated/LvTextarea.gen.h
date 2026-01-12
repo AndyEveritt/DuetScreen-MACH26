@@ -1,7 +1,7 @@
 /*
  * LvTextarea.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:33 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		void addChar(uint32_t c)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_add_char(static_cast<Derived*>(this)->getRootPtr(), c);
 		}
@@ -40,6 +41,7 @@ namespace UI
 		void addText(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_add_text(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -50,6 +52,7 @@ namespace UI
 		void deleteChar()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_delete_char(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -60,6 +63,7 @@ namespace UI
 		void deleteCharForward()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_delete_char_forward(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -71,6 +75,7 @@ namespace UI
 		void setText(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_text(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -82,6 +87,7 @@ namespace UI
 		void setPlaceholderText(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_placeholder_text(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -95,6 +101,7 @@ namespace UI
 		void setCursorPos(int32_t pos)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_cursor_pos(static_cast<Derived*>(this)->getRootPtr(), pos);
 		}
@@ -106,6 +113,7 @@ namespace UI
 		void setCursorClickPos(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_cursor_click_pos(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -117,6 +125,7 @@ namespace UI
 		void setPasswordMode(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_password_mode(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -128,6 +137,7 @@ namespace UI
 		void setPasswordBullet(const char* bullet)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_password_bullet(static_cast<Derived*>(this)->getRootPtr(), bullet);
 		}
@@ -139,6 +149,7 @@ namespace UI
 		void setOneLine(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_one_line(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -150,6 +161,7 @@ namespace UI
 		void setAcceptedChars(const char* list)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_accepted_chars(static_cast<Derived*>(this)->getRootPtr(), list);
 		}
@@ -161,6 +173,7 @@ namespace UI
 		void setMaxLength(uint32_t num)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_max_length(static_cast<Derived*>(this)->getRootPtr(), num);
 		}
@@ -174,6 +187,7 @@ namespace UI
 		void setInsertReplace(const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_insert_replace(static_cast<Derived*>(this)->getRootPtr(), txt);
 		}
@@ -185,6 +199,7 @@ namespace UI
 		void setTextSelection(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_text_selection(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -196,6 +211,7 @@ namespace UI
 		void setPasswordShowTime(uint32_t time)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_password_show_time(static_cast<Derived*>(this)->getRootPtr(), time);
 		}
@@ -210,6 +226,7 @@ namespace UI
 		void setAlign(lv_text_align_t align)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_align(static_cast<Derived*>(this)->getRootPtr(), align);
 		}
@@ -221,6 +238,7 @@ namespace UI
 		const char* getText() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_text(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -232,6 +250,7 @@ namespace UI
 		const char* getPlaceholderText() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_placeholder_text(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -243,6 +262,7 @@ namespace UI
 		lv_obj_t* getLabel() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_label(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -254,6 +274,7 @@ namespace UI
 		uint32_t getCursorPos() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_cursor_pos(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -265,6 +286,7 @@ namespace UI
 		bool getCursorClickPos() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_cursor_click_pos(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -276,6 +298,7 @@ namespace UI
 		bool getPasswordMode() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_password_mode(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -287,6 +310,7 @@ namespace UI
 		const char* getPasswordBullet() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_password_bullet(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -298,6 +322,7 @@ namespace UI
 		bool getOneLine() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_one_line(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -309,6 +334,7 @@ namespace UI
 		const char* getAcceptedChars() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_accepted_chars(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -320,6 +346,7 @@ namespace UI
 		uint32_t getMaxLength() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_max_length(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -331,6 +358,7 @@ namespace UI
 		bool textIsSelected()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_text_is_selected(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -342,6 +370,7 @@ namespace UI
 		bool getTextSelection() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_text_selection(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -353,6 +382,7 @@ namespace UI
 		uint32_t getPasswordShowTime() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_password_show_time(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -364,6 +394,7 @@ namespace UI
 		uint32_t getCurrentChar() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_textarea_get_current_char(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -374,6 +405,7 @@ namespace UI
 		void clearSelection()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_clear_selection(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -384,6 +416,7 @@ namespace UI
 		void cursorRight()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_cursor_right(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -394,6 +427,7 @@ namespace UI
 		void cursorLeft()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_cursor_left(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -404,6 +438,7 @@ namespace UI
 		void cursorDown()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_cursor_down(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -414,6 +449,7 @@ namespace UI
 		void cursorUp()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_cursor_up(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -425,6 +461,7 @@ namespace UI
 		LvTextareaGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_textarea_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

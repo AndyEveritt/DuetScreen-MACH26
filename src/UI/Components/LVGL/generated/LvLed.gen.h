@@ -1,7 +1,7 @@
 /*
  * LvLed.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -26,6 +26,7 @@ namespace UI
 		void setColor(lv_color_t color)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_led_set_color(static_cast<Derived*>(this)->getRootPtr(), color);
 		}
@@ -38,6 +39,7 @@ namespace UI
 		void setBrightness(uint8_t bright)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_led_set_brightness(static_cast<Derived*>(this)->getRootPtr(), bright);
 		}
@@ -49,6 +51,7 @@ namespace UI
 		void on()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_led_on(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -60,6 +63,7 @@ namespace UI
 		void off()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_led_off(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -71,6 +75,7 @@ namespace UI
 		void toggle()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_led_toggle(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -82,6 +87,7 @@ namespace UI
 		uint8_t getBrightness() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_led_get_brightness(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -93,6 +99,7 @@ namespace UI
 		LvLedGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_led_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

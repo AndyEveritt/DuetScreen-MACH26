@@ -493,6 +493,7 @@ def emit_header_gen(
         lines.append(
             f"        {m.ret_type_cpp()} {m.name}({m.decl_args_str()}){const_str} requires HasGetRootPtr<Derived>")
         lines.append("        {")
+        lines.append("            ZoneScoped;")
         lines.append("            UI_LOCK();")
         root_expr = ("static_cast<const Derived*>(this)->getRootPtr()" if m.is_const else
                      "static_cast<Derived*>(this)->getRootPtr()")
@@ -546,6 +547,7 @@ def emit_header_gen(
     lines.append(f"        {class_gen_name}(const std::string& name, LvObj& parent)")
     lines.append(f"            : LvObj(lv_{widget_token}_create, name, parent)")
     lines.append("        {")
+    lines.append("            ZoneScoped;")
     lines.append("            UI_LOCK();")
     lines.append("        }")
     lines.append("    };")

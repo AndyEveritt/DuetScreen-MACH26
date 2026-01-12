@@ -1,7 +1,7 @@
 /*
  * LvTable.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:33 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -32,6 +32,7 @@ namespace UI
 		void setCellValue(uint32_t row, uint32_t col, const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_set_cell_value(static_cast<Derived*>(this)->getRootPtr(), row, col, txt);
 		}
@@ -43,6 +44,7 @@ namespace UI
 		void setRowCount(uint32_t row_cnt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_set_row_count(static_cast<Derived*>(this)->getRootPtr(), row_cnt);
 		}
@@ -54,6 +56,7 @@ namespace UI
 		void setColumnCount(uint32_t col_cnt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_set_column_count(static_cast<Derived*>(this)->getRootPtr(), col_cnt);
 		}
@@ -66,6 +69,7 @@ namespace UI
 		void setColumnWidth(uint32_t col_id, int32_t w)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_set_column_width(static_cast<Derived*>(this)->getRootPtr(), col_id, w);
 		}
@@ -79,6 +83,7 @@ namespace UI
 		void setCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_set_cell_ctrl(static_cast<Derived*>(this)->getRootPtr(), row, col, ctrl);
 		}
@@ -92,6 +97,7 @@ namespace UI
 		void clearCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_clear_cell_ctrl(static_cast<Derived*>(this)->getRootPtr(), row, col, ctrl);
 		}
@@ -108,6 +114,7 @@ namespace UI
 		void setCellUserData(uint16_t row, uint16_t col, void* user_data)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_set_cell_user_data(static_cast<Derived*>(this)->getRootPtr(), row, col, user_data);
 		}
@@ -120,6 +127,7 @@ namespace UI
 		void setSelectedCell(uint16_t row, uint16_t col)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_set_selected_cell(static_cast<Derived*>(this)->getRootPtr(), row, col);
 		}
@@ -133,6 +141,7 @@ namespace UI
 		const char* getCellValue(uint32_t row, uint32_t col) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_table_get_cell_value(static_cast<const Derived*>(this)->getRootPtr(), row, col);
 		}
@@ -144,6 +153,7 @@ namespace UI
 		uint32_t getRowCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_table_get_row_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -155,6 +165,7 @@ namespace UI
 		uint32_t getColumnCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_table_get_column_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -167,6 +178,7 @@ namespace UI
 		int32_t getColumnWidth(uint32_t col) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_table_get_column_width(static_cast<const Derived*>(this)->getRootPtr(), col);
 		}
@@ -181,6 +193,7 @@ namespace UI
 		bool hasCellCtrl(uint32_t row, uint32_t col, lv_table_cell_ctrl_t ctrl) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_table_has_cell_ctrl(static_cast<const Derived*>(this)->getRootPtr(), row, col, ctrl);
 		}
@@ -193,6 +206,7 @@ namespace UI
 		void getSelectedCell(uint32_t* row, uint32_t* col) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_table_get_selected_cell(static_cast<const Derived*>(this)->getRootPtr(), row, col);
 		}
@@ -205,6 +219,7 @@ namespace UI
 		void* getCellUserData(uint16_t row, uint16_t col) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_table_get_cell_user_data(static_cast<const Derived*>(this)->getRootPtr(), row, col);
 		}
@@ -216,6 +231,7 @@ namespace UI
 		LvTableGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_table_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

@@ -1,7 +1,7 @@
 /*
  * LvLine.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -31,6 +31,7 @@ namespace UI
 		void setPoints(std::span<const lv_point_precise_t> points)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_line_set_points(static_cast<Derived*>(this)->getRootPtr(), points.data(), points.size());
 		}
@@ -45,6 +46,7 @@ namespace UI
 		void setPointsMutable(std::span<lv_point_precise_t> points)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_line_set_points_mutable(static_cast<Derived*>(this)->getRootPtr(), points.data(), points.size());
 		}
@@ -58,6 +60,7 @@ namespace UI
 		void setYInvert(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_line_set_y_invert(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -69,6 +72,7 @@ namespace UI
 		const lv_point_precise_t* getPoints() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_line_get_points(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -80,6 +84,7 @@ namespace UI
 		uint32_t getPointCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_line_get_point_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -91,6 +96,7 @@ namespace UI
 		bool isPointArrayMutable() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_line_is_point_array_mutable(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -102,6 +108,7 @@ namespace UI
 		lv_point_precise_t* getPointsMutable() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_line_get_points_mutable(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -113,6 +120,7 @@ namespace UI
 		bool getYInvert() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_line_get_y_invert(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -124,6 +132,7 @@ namespace UI
 		LvLineGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_line_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

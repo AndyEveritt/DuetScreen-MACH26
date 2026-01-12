@@ -83,6 +83,7 @@ namespace UI
 		m_view->getResolution(width, height);
 
 		{
+			ZoneScopedN("Heightmap Render Loop");
 			float x_min, y_min, x_max, y_max;
 			m_view->pxToPos(0, 0, x_min, y_min);
 			m_view->pxToPos(width - 1, height - 1, x_max, y_max);
@@ -90,6 +91,11 @@ namespace UI
 			float yStep = (y_max - y_min) / static_cast<float>(height - 1);
 			for (uint32_t px = 0; px < width; px++)
 			{
+				ZoneScoped;
+#ifdef TRACY_ENABLE
+				auto name = fmt::format("px = {:d}", px);
+				ZoneName(name.c_str(), name.size());
+#endif
 				for (uint32_t py = 0; py < height; py++)
 				{
 					float x = x_min + (static_cast<float>(px) * xStep);

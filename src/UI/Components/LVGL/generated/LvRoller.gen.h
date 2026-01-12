@@ -1,7 +1,7 @@
 /*
  * LvRoller.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		void setOptions(const char* options, lv_roller_mode_t mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_roller_set_options(static_cast<Derived*>(this)->getRootPtr(), options, mode);
 		}
@@ -41,6 +42,7 @@ namespace UI
 		void setSelected(uint32_t sel_opt, lv_anim_enable_t anim = LV_ANIM_ON)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_roller_set_selected(static_cast<Derived*>(this)->getRootPtr(), sel_opt, anim);
 		}
@@ -55,6 +57,7 @@ namespace UI
 		bool setSelectedStr(const char* sel_opt, lv_anim_enable_t anim = LV_ANIM_ON)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_roller_set_selected_str(static_cast<Derived*>(this)->getRootPtr(), sel_opt, anim);
 		}
@@ -66,6 +69,7 @@ namespace UI
 		void setVisibleRowCount(uint32_t row_cnt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_roller_set_visible_row_count(static_cast<Derived*>(this)->getRootPtr(), row_cnt);
 		}
@@ -77,6 +81,7 @@ namespace UI
 		uint32_t getSelected() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_roller_get_selected(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -89,6 +94,7 @@ namespace UI
 		void getSelectedStr(char* buf, uint32_t buf_size) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_roller_get_selected_str(static_cast<const Derived*>(this)->getRootPtr(), buf, buf_size);
 		}
@@ -100,6 +106,7 @@ namespace UI
 		const char* getOptions() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_roller_get_options(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -111,6 +118,7 @@ namespace UI
 		uint32_t getOptionCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_roller_get_option_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -125,6 +133,7 @@ namespace UI
 		lv_result_t getOptionStr(uint32_t option, char* buf, uint32_t buf_size) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_roller_get_option_str(static_cast<const Derived*>(this)->getRootPtr(), option, buf, buf_size);
 		}
@@ -139,6 +148,7 @@ namespace UI
 		lv_observer_t* bindValue(lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_roller_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
 		}
@@ -152,6 +162,7 @@ namespace UI
 		LvRollerGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_roller_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

@@ -1,7 +1,7 @@
 /*
  * LvChart.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		void setType(lv_chart_type_t type)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_type(static_cast<Derived*>(this)->getRootPtr(), type);
 		}
@@ -40,6 +41,7 @@ namespace UI
 		void setPointCount(uint32_t cnt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_point_count(static_cast<Derived*>(this)->getRootPtr(), cnt);
 		}
@@ -53,6 +55,7 @@ namespace UI
 		void setAxisRange(lv_chart_axis_t axis, int32_t min, int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_axis_range(static_cast<Derived*>(this)->getRootPtr(), axis, min, max);
 		}
@@ -65,6 +68,7 @@ namespace UI
 		void setAxisMinValue(lv_chart_axis_t axis, int32_t min)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_axis_min_value(static_cast<Derived*>(this)->getRootPtr(), axis, min);
 		}
@@ -77,6 +81,7 @@ namespace UI
 		void setAxisMaxValue(lv_chart_axis_t axis, int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_axis_max_value(static_cast<Derived*>(this)->getRootPtr(), axis, max);
 		}
@@ -88,6 +93,7 @@ namespace UI
 		void setUpdateMode(lv_chart_update_mode_t update_mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_update_mode(static_cast<Derived*>(this)->getRootPtr(), update_mode);
 		}
@@ -100,6 +106,7 @@ namespace UI
 		void setDivLineCount(uint32_t hdiv, uint32_t vdiv)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_div_line_count(static_cast<Derived*>(this)->getRootPtr(), hdiv, vdiv);
 		}
@@ -111,6 +118,7 @@ namespace UI
 		void setHorDivLineCount(uint32_t cnt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_hor_div_line_count(static_cast<Derived*>(this)->getRootPtr(), cnt);
 		}
@@ -122,6 +130,7 @@ namespace UI
 		void setVerDivLineCount(uint32_t cnt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_ver_div_line_count(static_cast<Derived*>(this)->getRootPtr(), cnt);
 		}
@@ -133,6 +142,7 @@ namespace UI
 		lv_chart_type_t getType() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_type(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -144,6 +154,7 @@ namespace UI
 		uint32_t getPointCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_point_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -156,6 +167,7 @@ namespace UI
 		uint32_t getXStartPoint(lv_chart_series_t* ser) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_x_start_point(static_cast<const Derived*>(this)->getRootPtr(), ser);
 		}
@@ -169,6 +181,7 @@ namespace UI
 		void getPointPosById(lv_chart_series_t* ser, uint32_t id, lv_point_t* p_out) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_get_point_pos_by_id(static_cast<const Derived*>(this)->getRootPtr(), ser, id, p_out);
 		}
@@ -179,6 +192,7 @@ namespace UI
 		void refresh()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_refresh(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -193,6 +207,7 @@ namespace UI
 		lv_chart_series_t* addSeries(lv_color_t color, lv_chart_axis_t axis)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_add_series(static_cast<Derived*>(this)->getRootPtr(), color, axis);
 		}
@@ -204,6 +219,7 @@ namespace UI
 		void removeSeries(lv_chart_series_t* series)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_remove_series(static_cast<Derived*>(this)->getRootPtr(), series);
 		}
@@ -217,6 +233,7 @@ namespace UI
 		void hideSeries(lv_chart_series_t* series, bool hide)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_hide_series(static_cast<Derived*>(this)->getRootPtr(), series, hide);
 		}
@@ -230,6 +247,7 @@ namespace UI
 		void setSeriesColor(lv_chart_series_t* series, lv_color_t color)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_series_color(static_cast<Derived*>(this)->getRootPtr(), series, color);
 		}
@@ -243,6 +261,7 @@ namespace UI
 		lv_color_t getSeriesColor(const lv_chart_series_t* series) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_series_color(static_cast<const Derived*>(this)->getRootPtr(), series);
 		}
@@ -256,6 +275,7 @@ namespace UI
 		void setXStartPoint(lv_chart_series_t* ser, uint32_t id)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_x_start_point(static_cast<Derived*>(this)->getRootPtr(), ser, id);
 		}
@@ -269,6 +289,7 @@ namespace UI
 		lv_chart_series_t* getSeriesNext(const lv_chart_series_t* ser) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_series_next(static_cast<const Derived*>(this)->getRootPtr(), ser);
 		}
@@ -282,6 +303,7 @@ namespace UI
 		lv_chart_cursor_t* addCursor(lv_color_t color, lv_dir_t dir)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_add_cursor(static_cast<Derived*>(this)->getRootPtr(), color, dir);
 		}
@@ -293,6 +315,7 @@ namespace UI
 		void removeCursor(lv_chart_cursor_t* cursor)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_remove_cursor(static_cast<Derived*>(this)->getRootPtr(), cursor);
 		}
@@ -306,6 +329,7 @@ namespace UI
 		void setCursorPos(lv_chart_cursor_t* cursor, lv_point_t* pos)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_cursor_pos(static_cast<Derived*>(this)->getRootPtr(), cursor, pos);
 		}
@@ -319,6 +343,7 @@ namespace UI
 		void setCursorPosX(lv_chart_cursor_t* cursor, int32_t x)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_cursor_pos_x(static_cast<Derived*>(this)->getRootPtr(), cursor, x);
 		}
@@ -332,6 +357,7 @@ namespace UI
 		void setCursorPosY(lv_chart_cursor_t* cursor, int32_t y)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_cursor_pos_y(static_cast<Derived*>(this)->getRootPtr(), cursor, y);
 		}
@@ -346,6 +372,7 @@ namespace UI
 		void setCursorPoint(lv_chart_cursor_t* cursor, lv_chart_series_t* ser, uint32_t point_id)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_cursor_point(static_cast<Derived*>(this)->getRootPtr(), cursor, ser, point_id);
 		}
@@ -359,6 +386,7 @@ namespace UI
 		lv_point_t getCursorPoint(lv_chart_cursor_t* cursor) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_cursor_point(static_cast<const Derived*>(this)->getRootPtr(), cursor);
 		}
@@ -371,6 +399,7 @@ namespace UI
 		void setAllValues(lv_chart_series_t* ser, int32_t value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_all_values(static_cast<Derived*>(this)->getRootPtr(), ser, value);
 		}
@@ -383,6 +412,7 @@ namespace UI
 		void setNextValue(lv_chart_series_t* ser, int32_t value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_next_value(static_cast<Derived*>(this)->getRootPtr(), ser, value);
 		}
@@ -396,6 +426,7 @@ namespace UI
 		void setNextValue2(lv_chart_series_t* ser, int32_t x_value, int32_t y_value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_next_value2(static_cast<Derived*>(this)->getRootPtr(), ser, x_value, y_value);
 		}
@@ -409,6 +440,7 @@ namespace UI
 		void setSeriesValues(lv_chart_series_t* ser, std::span<const int32_t> values)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_series_values(static_cast<Derived*>(this)->getRootPtr(), ser, values.data(), values.size());
 		}
@@ -425,6 +457,7 @@ namespace UI
 							  std::span<const int32_t> y_values)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_series_values2(
 				static_cast<Derived*>(this)->getRootPtr(), ser, x_values.data(), y_values.data(), y_values.size());
@@ -439,6 +472,7 @@ namespace UI
 		void setSeriesValueById(lv_chart_series_t* ser, uint32_t id, int32_t value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_series_value_by_id(static_cast<Derived*>(this)->getRootPtr(), ser, id, value);
 		}
@@ -454,6 +488,7 @@ namespace UI
 		void setSeriesValueById2(lv_chart_series_t* ser, uint32_t id, int32_t x_value, int32_t y_value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_series_value_by_id2(static_cast<Derived*>(this)->getRootPtr(), ser, id, x_value, y_value);
 		}
@@ -467,6 +502,7 @@ namespace UI
 		void setSeriesExtYArray(lv_chart_series_t* ser, std::span<int32_t> array)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_series_ext_y_array(static_cast<Derived*>(this)->getRootPtr(), ser, array.data());
 		}
@@ -480,6 +516,7 @@ namespace UI
 		void setSeriesExtXArray(lv_chart_series_t* ser, std::span<int32_t> array)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_chart_set_series_ext_x_array(static_cast<Derived*>(this)->getRootPtr(), ser, array.data());
 		}
@@ -492,6 +529,7 @@ namespace UI
 		int32_t* getSeriesYArray(lv_chart_series_t* ser) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_series_y_array(static_cast<const Derived*>(this)->getRootPtr(), ser);
 		}
@@ -504,6 +542,7 @@ namespace UI
 		int32_t* getSeriesXArray(lv_chart_series_t* ser) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_series_x_array(static_cast<const Derived*>(this)->getRootPtr(), ser);
 		}
@@ -516,6 +555,7 @@ namespace UI
 		uint32_t getPressedPoint() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_pressed_point(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -528,6 +568,7 @@ namespace UI
 		int32_t getFirstPointCenterOffset() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_first_point_center_offset(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -539,6 +580,7 @@ namespace UI
 		LvChartGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_chart_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

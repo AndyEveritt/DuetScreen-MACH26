@@ -1,7 +1,7 @@
 /*
  * LvArclabel.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:51 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -31,6 +31,7 @@ namespace UI
 		void setText(const char* text)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_text(static_cast<Derived*>(this)->getRootPtr(), text);
 		}
@@ -44,6 +45,7 @@ namespace UI
 		void setTextStatic(const char* text)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_text_static(static_cast<Derived*>(this)->getRootPtr(), text);
 		}
@@ -55,6 +57,7 @@ namespace UI
 		void setAngleStart(lv_value_precise_t start)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_angle_start(static_cast<Derived*>(this)->getRootPtr(), start);
 		}
@@ -66,6 +69,7 @@ namespace UI
 		void setAngleSize(lv_value_precise_t size)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_angle_size(static_cast<Derived*>(this)->getRootPtr(), size);
 		}
@@ -77,6 +81,7 @@ namespace UI
 		void setOffset(int32_t offset)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_offset(static_cast<Derived*>(this)->getRootPtr(), offset);
 		}
@@ -88,6 +93,7 @@ namespace UI
 		void setDir(lv_arclabel_dir_t dir)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_dir(static_cast<Derived*>(this)->getRootPtr(), dir);
 		}
@@ -100,6 +106,7 @@ namespace UI
 		void setRecolor(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_recolor(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -112,6 +119,7 @@ namespace UI
 		void setRadius(uint32_t radius)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_radius(static_cast<Derived*>(this)->getRootPtr(), radius);
 		}
@@ -123,6 +131,7 @@ namespace UI
 		void setCenterOffsetX(uint32_t x)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_center_offset_x(static_cast<Derived*>(this)->getRootPtr(), x);
 		}
@@ -134,6 +143,7 @@ namespace UI
 		void setCenterOffsetY(uint32_t y)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_center_offset_y(static_cast<Derived*>(this)->getRootPtr(), y);
 		}
@@ -145,6 +155,7 @@ namespace UI
 		void setTextVerticalAlign(lv_arclabel_text_align_t align)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_text_vertical_align(static_cast<Derived*>(this)->getRootPtr(), align);
 		}
@@ -156,6 +167,7 @@ namespace UI
 		void setTextHorizontalAlign(lv_arclabel_text_align_t align)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_arclabel_set_text_horizontal_align(static_cast<Derived*>(this)->getRootPtr(), align);
 		}
@@ -167,6 +179,7 @@ namespace UI
 		lv_value_precise_t getAngleStart() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_angle_start(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -178,6 +191,7 @@ namespace UI
 		lv_value_precise_t getAngleSize() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_angle_size(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -189,6 +203,7 @@ namespace UI
 		lv_arclabel_dir_t getDir() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_dir(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -203,6 +218,7 @@ namespace UI
 		bool getRecolor() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_recolor(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -214,6 +230,7 @@ namespace UI
 		uint32_t getRadius() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_radius(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -225,6 +242,7 @@ namespace UI
 		uint32_t getCenterOffsetX() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_center_offset_x(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -236,6 +254,7 @@ namespace UI
 		uint32_t getCenterOffsetY() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_center_offset_y(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -247,6 +266,7 @@ namespace UI
 		lv_arclabel_text_align_t getTextVerticalAlign() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_text_vertical_align(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -258,6 +278,7 @@ namespace UI
 		lv_arclabel_text_align_t getTextHorizontalAlign() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_text_horizontal_align(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -269,6 +290,7 @@ namespace UI
 		LvArclabelGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_arclabel_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

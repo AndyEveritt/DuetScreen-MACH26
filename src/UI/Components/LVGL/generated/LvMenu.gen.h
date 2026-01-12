@@ -1,7 +1,7 @@
 /*
  * LvMenu.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -34,6 +34,7 @@ namespace UI
 		lv_obj_t* pageCreate(char const* const title)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_page_create(static_cast<Derived*>(this)->getRootPtr(), title);
 		}
@@ -47,6 +48,7 @@ namespace UI
 		lv_obj_t* contCreate()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_cont_create(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -59,6 +61,7 @@ namespace UI
 		lv_obj_t* sectionCreate()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_section_create(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -71,6 +74,7 @@ namespace UI
 		lv_obj_t* separatorCreate()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_separator_create(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -82,6 +86,7 @@ namespace UI
 		void setPage(lv_obj_t* page)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_set_page(static_cast<Derived*>(this)->getRootPtr(), page);
 		}
@@ -94,6 +99,7 @@ namespace UI
 		void setPageTitle(char const* const title)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_set_page_title(static_cast<Derived*>(this)->getRootPtr(), title);
 		}
@@ -107,6 +113,7 @@ namespace UI
 		void setPageTitleStatic(char const* const title)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_set_page_title_static(static_cast<Derived*>(this)->getRootPtr(), title);
 		}
@@ -118,6 +125,7 @@ namespace UI
 		void setSidebarPage(lv_obj_t* page)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_set_sidebar_page(static_cast<Derived*>(this)->getRootPtr(), page);
 		}
@@ -129,6 +137,7 @@ namespace UI
 		void setModeHeader(lv_menu_mode_header_t mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_set_mode_header(static_cast<Derived*>(this)->getRootPtr(), mode);
 		}
@@ -140,6 +149,7 @@ namespace UI
 		void setModeRootBackButton(lv_menu_mode_root_back_button_t mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_set_mode_root_back_button(static_cast<Derived*>(this)->getRootPtr(), mode);
 		}
@@ -152,6 +162,7 @@ namespace UI
 		void setLoadPageEvent(lv_obj_t* obj, lv_obj_t* page)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_set_load_page_event(static_cast<Derived*>(this)->getRootPtr(), obj, page);
 		}
@@ -163,6 +174,7 @@ namespace UI
 		lv_obj_t* getCurMainPage() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_get_cur_main_page(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -174,6 +186,7 @@ namespace UI
 		lv_obj_t* getCurSidebarPage() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_get_cur_sidebar_page(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -185,6 +198,7 @@ namespace UI
 		lv_obj_t* getMainHeader() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_get_main_header(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -196,6 +210,7 @@ namespace UI
 		lv_obj_t* getMainHeaderBackButton() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_get_main_header_back_button(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -207,6 +222,7 @@ namespace UI
 		lv_obj_t* getSidebarHeader() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_get_sidebar_header(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -218,6 +234,7 @@ namespace UI
 		lv_obj_t* getSidebarHeaderBackButton() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_get_sidebar_header_back_button(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -230,6 +247,7 @@ namespace UI
 		bool backButtonIsRoot(lv_obj_t* obj)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_back_button_is_root(static_cast<Derived*>(this)->getRootPtr(), obj);
 		}
@@ -240,6 +258,7 @@ namespace UI
 		void clearHistory()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_menu_clear_history(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -251,6 +270,7 @@ namespace UI
 		LvMenuGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_menu_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

@@ -1,7 +1,7 @@
 /*
  * LvScale.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		void setMode(lv_scale_mode_t mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_mode(static_cast<Derived*>(this)->getRootPtr(), mode);
 		}
@@ -40,6 +41,7 @@ namespace UI
 		void setTotalTickCount(uint32_t total_tick_count)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_total_tick_count(static_cast<Derived*>(this)->getRootPtr(), total_tick_count);
 		}
@@ -51,6 +53,7 @@ namespace UI
 		void setMajorTickEvery(uint32_t major_tick_every)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_major_tick_every(static_cast<Derived*>(this)->getRootPtr(), major_tick_every);
 		}
@@ -62,6 +65,7 @@ namespace UI
 		void setLabelShow(bool show_label)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_label_show(static_cast<Derived*>(this)->getRootPtr(), show_label);
 		}
@@ -74,6 +78,7 @@ namespace UI
 		void setRange(int32_t min, int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_range(static_cast<Derived*>(this)->getRootPtr(), min, max);
 		}
@@ -85,6 +90,7 @@ namespace UI
 		void setMinValue(int32_t min)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_min_value(static_cast<Derived*>(this)->getRootPtr(), min);
 		}
@@ -96,6 +102,7 @@ namespace UI
 		void setMaxValue(int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_max_value(static_cast<Derived*>(this)->getRootPtr(), max);
 		}
@@ -108,6 +115,7 @@ namespace UI
 		void setAngleRange(uint32_t angle_range)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_angle_range(static_cast<Derived*>(this)->getRootPtr(), angle_range);
 		}
@@ -134,6 +142,7 @@ namespace UI
 		void setRotation(int32_t rotation)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_rotation(static_cast<Derived*>(this)->getRootPtr(), rotation);
 		}
@@ -151,6 +160,7 @@ namespace UI
 		void setLineNeedleValue(lv_obj_t* needle_line, int32_t needle_length, int32_t value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_line_needle_value(
 				static_cast<Derived*>(this)->getRootPtr(), needle_line, needle_length, value);
@@ -165,6 +175,7 @@ namespace UI
 		void setImageNeedleValue(lv_obj_t* needle_img, int32_t value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_image_needle_value(static_cast<Derived*>(this)->getRootPtr(), needle_img, value);
 		}
@@ -177,6 +188,7 @@ namespace UI
 		void setTextSrc(std::span<const char*> txt_src)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_text_src(static_cast<Derived*>(this)->getRootPtr(), txt_src.data());
 		}
@@ -188,6 +200,7 @@ namespace UI
 		void setPostDraw(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_post_draw(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -199,6 +212,7 @@ namespace UI
 		void setDrawTicksOnTop(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_draw_ticks_on_top(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -211,6 +225,7 @@ namespace UI
 		lv_scale_section_t* addSection()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_add_section(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -225,6 +240,7 @@ namespace UI
 		void setSectionRange(lv_scale_section_t* section, int32_t min, int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_section_range(static_cast<Derived*>(this)->getRootPtr(), section, min, max);
 		}
@@ -238,6 +254,7 @@ namespace UI
 		void setSectionMinValue(lv_scale_section_t* section, int32_t min)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_section_min_value(static_cast<Derived*>(this)->getRootPtr(), section, min);
 		}
@@ -251,6 +268,7 @@ namespace UI
 		void setSectionMaxValue(lv_scale_section_t* section, int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_section_max_value(static_cast<Derived*>(this)->getRootPtr(), section, max);
 		}
@@ -264,6 +282,7 @@ namespace UI
 		void setSectionStyleMain(lv_scale_section_t* section, const lv_style_t* style)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_section_style_main(static_cast<Derived*>(this)->getRootPtr(), section, style);
 		}
@@ -277,6 +296,7 @@ namespace UI
 		void setSectionStyleIndicator(lv_scale_section_t* section, const lv_style_t* style)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_section_style_indicator(static_cast<Derived*>(this)->getRootPtr(), section, style);
 		}
@@ -290,6 +310,7 @@ namespace UI
 		void setSectionStyleItems(lv_scale_section_t* section, const lv_style_t* style)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_scale_set_section_style_items(static_cast<Derived*>(this)->getRootPtr(), section, style);
 		}
@@ -301,6 +322,7 @@ namespace UI
 		lv_scale_mode_t getMode() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_mode(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -312,6 +334,7 @@ namespace UI
 		int32_t getTotalTickCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_total_tick_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -323,6 +346,7 @@ namespace UI
 		int32_t getMajorTickEvery() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_major_tick_every(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -334,6 +358,7 @@ namespace UI
 		int32_t getRotation() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_rotation(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -345,6 +370,7 @@ namespace UI
 		bool getLabelShow() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_label_show(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -356,6 +382,7 @@ namespace UI
 		uint32_t getAngleRange() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_angle_range(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -367,6 +394,7 @@ namespace UI
 		int32_t getRangeMinValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_range_min_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -378,6 +406,7 @@ namespace UI
 		int32_t getRangeMaxValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_get_range_max_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -393,6 +422,7 @@ namespace UI
 		lv_observer_t* bindSectionMinValue(lv_scale_section_t* section, lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_bind_section_min_value(static_cast<Derived*>(this)->getRootPtr(), section, subject);
 		}
@@ -406,6 +436,7 @@ namespace UI
 		lv_observer_t* bindSectionMaxValue(lv_scale_section_t* section, lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_scale_bind_section_max_value(static_cast<Derived*>(this)->getRootPtr(), section, subject);
 		}
@@ -419,6 +450,7 @@ namespace UI
 		LvScaleGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_scale_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

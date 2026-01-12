@@ -1,7 +1,7 @@
 /*
  * LvLottie.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -32,6 +32,7 @@ namespace UI
 		void setBuffer(int32_t w, int32_t h, void* buf)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_lottie_set_buffer(static_cast<Derived*>(this)->getRootPtr(), w, h, buf);
 		}
@@ -43,6 +44,7 @@ namespace UI
 		void setDrawBuf(lv_draw_buf_t* draw_buf)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_lottie_set_draw_buf(static_cast<Derived*>(this)->getRootPtr(), draw_buf);
 		}
@@ -55,6 +57,7 @@ namespace UI
 		void setSrcData(const void* src, size_t src_size)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_lottie_set_src_data(static_cast<Derived*>(this)->getRootPtr(), src, src_size);
 		}
@@ -67,6 +70,7 @@ namespace UI
 		void setSrcFile(const char* src)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_lottie_set_src_file(static_cast<Derived*>(this)->getRootPtr(), src);
 		}
@@ -78,6 +82,7 @@ namespace UI
 		lv_anim_t* getAnim() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_lottie_get_anim(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -89,6 +94,7 @@ namespace UI
 		LvLottieGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_lottie_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

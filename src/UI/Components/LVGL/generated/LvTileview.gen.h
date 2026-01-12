@@ -1,7 +1,7 @@
 /*
  * LvTileview.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:33 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -32,6 +32,7 @@ namespace UI
 		lv_obj_t* addTile(uint8_t col_id, uint8_t row_id, lv_dir_t dir)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tileview_add_tile(static_cast<Derived*>(this)->getRootPtr(), col_id, row_id, dir);
 		}
@@ -45,6 +46,7 @@ namespace UI
 		void setTile(lv_obj_t* tile_obj, lv_anim_enable_t anim_en = LV_ANIM_ON)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_tileview_set_tile(static_cast<Derived*>(this)->getRootPtr(), tile_obj, anim_en);
 		}
@@ -59,6 +61,7 @@ namespace UI
 		void setTileByIndex(uint32_t col_id, uint32_t row_id, lv_anim_enable_t anim_en = LV_ANIM_ON)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_tileview_set_tile_by_index(static_cast<Derived*>(this)->getRootPtr(), col_id, row_id, anim_en);
 		}
@@ -70,6 +73,7 @@ namespace UI
 		lv_obj_t* getTileActive() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tileview_get_tile_active(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -81,6 +85,7 @@ namespace UI
 		LvTileviewGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_tileview_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

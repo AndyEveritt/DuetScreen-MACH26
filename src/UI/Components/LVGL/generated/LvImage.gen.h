@@ -1,7 +1,7 @@
 /*
  * LvImage.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		void setSrc(const void* src)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_src(static_cast<Derived*>(this)->getRootPtr(), src);
 		}
@@ -40,6 +41,7 @@ namespace UI
 		void setOffsetX(int32_t x)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_offset_x(static_cast<Derived*>(this)->getRootPtr(), x);
 		}
@@ -52,6 +54,7 @@ namespace UI
 		void setOffsetY(int32_t y)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_offset_y(static_cast<Derived*>(this)->getRootPtr(), y);
 		}
@@ -68,6 +71,7 @@ namespace UI
 		void setRotation(int32_t angle)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_rotation(static_cast<Derived*>(this)->getRootPtr(), angle);
 		}
@@ -83,6 +87,7 @@ namespace UI
 		void setPivot(int32_t x, int32_t y)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_pivot(static_cast<Derived*>(this)->getRootPtr(), x, y);
 		}
@@ -94,6 +99,7 @@ namespace UI
 		void setPivotX(int32_t x)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_pivot_x(static_cast<Derived*>(this)->getRootPtr(), x);
 		}
@@ -105,6 +111,7 @@ namespace UI
 		void setPivotY(int32_t y)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_pivot_y(static_cast<Derived*>(this)->getRootPtr(), y);
 		}
@@ -122,6 +129,7 @@ namespace UI
 		void setScale(uint32_t zoom)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_scale(static_cast<Derived*>(this)->getRootPtr(), zoom);
 		}
@@ -139,6 +147,7 @@ namespace UI
 		void setScaleX(uint32_t zoom)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_scale_x(static_cast<Derived*>(this)->getRootPtr(), zoom);
 		}
@@ -156,6 +165,7 @@ namespace UI
 		void setScaleY(uint32_t zoom)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_scale_y(static_cast<Derived*>(this)->getRootPtr(), zoom);
 		}
@@ -167,6 +177,7 @@ namespace UI
 		void setBlendMode(lv_blend_mode_t blend_mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_blend_mode(static_cast<Derived*>(this)->getRootPtr(), blend_mode);
 		}
@@ -179,6 +190,7 @@ namespace UI
 		void setAntialias(bool antialias)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_antialias(static_cast<Derived*>(this)->getRootPtr(), antialias);
 		}
@@ -192,6 +204,7 @@ namespace UI
 		void setInnerAlign(lv_image_align_t align)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_inner_align(static_cast<Derived*>(this)->getRootPtr(), align);
 		}
@@ -203,6 +216,7 @@ namespace UI
 		void setBitmapMapSrc(const lv_image_dsc_t* src)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_set_bitmap_map_src(static_cast<Derived*>(this)->getRootPtr(), src);
 		}
@@ -214,6 +228,7 @@ namespace UI
 		const void* getSrc() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_src(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -225,6 +240,7 @@ namespace UI
 		int32_t getOffsetX() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_offset_x(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -236,6 +252,7 @@ namespace UI
 		int32_t getOffsetY() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_offset_y(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -249,6 +266,7 @@ namespace UI
 		int32_t getRotation() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_rotation(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -261,6 +279,7 @@ namespace UI
 		void getPivot(lv_point_t* pivot) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_image_get_pivot(static_cast<const Derived*>(this)->getRootPtr(), pivot);
 		}
@@ -272,6 +291,7 @@ namespace UI
 		int32_t getScale() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_scale(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -283,6 +303,7 @@ namespace UI
 		int32_t getScaleX() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_scale_x(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -294,6 +315,7 @@ namespace UI
 		int32_t getScaleY() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_scale_y(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -305,6 +327,7 @@ namespace UI
 		int32_t getSrcWidth() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_src_width(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -316,6 +339,7 @@ namespace UI
 		int32_t getSrcHeight() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_src_height(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -327,6 +351,7 @@ namespace UI
 		int32_t getTransformedWidth() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_transformed_width(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -338,6 +363,7 @@ namespace UI
 		int32_t getTransformedHeight() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_transformed_height(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -349,6 +375,7 @@ namespace UI
 		lv_blend_mode_t getBlendMode() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_blend_mode(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -360,6 +387,7 @@ namespace UI
 		bool getAntialias() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_antialias(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -371,6 +399,7 @@ namespace UI
 		lv_image_align_t getInnerAlign() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_inner_align(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -382,6 +411,7 @@ namespace UI
 		const lv_image_dsc_t* getBitmapMapSrc() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_get_bitmap_map_src(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -396,6 +426,7 @@ namespace UI
 		lv_observer_t* bindSrc(lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_image_bind_src(static_cast<Derived*>(this)->getRootPtr(), subject);
 		}
@@ -409,6 +440,7 @@ namespace UI
 		LvImageGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_image_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

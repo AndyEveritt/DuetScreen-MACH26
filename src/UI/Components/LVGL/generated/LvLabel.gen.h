@@ -1,7 +1,7 @@
 /*
  * LvLabel.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -31,6 +31,7 @@ namespace UI
 		void setText(const char* text)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_text(static_cast<Derived*>(this)->getRootPtr(), text);
 		}
@@ -48,6 +49,7 @@ namespace UI
 		void setTextFmt(const char* fmt, ...)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			va_list args;
 			va_start(args, fmt);
@@ -72,6 +74,7 @@ namespace UI
 		void setTextVfmt(const char* fmt, va_list args)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_text_vfmt(static_cast<Derived*>(this)->getRootPtr(), fmt, args);
 		}
@@ -85,6 +88,7 @@ namespace UI
 		void setTextStatic(const char* text)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_text_static(static_cast<Derived*>(this)->getRootPtr(), text);
 		}
@@ -98,6 +102,7 @@ namespace UI
 		void setLongMode(lv_label_long_mode_t long_mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_long_mode(static_cast<Derived*>(this)->getRootPtr(), long_mode);
 		}
@@ -110,6 +115,7 @@ namespace UI
 		void setTextSelectionStart(uint32_t index)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_text_selection_start(static_cast<Derived*>(this)->getRootPtr(), index);
 		}
@@ -121,6 +127,7 @@ namespace UI
 		void setTextSelectionEnd(uint32_t index)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_text_selection_end(static_cast<Derived*>(this)->getRootPtr(), index);
 		}
@@ -133,6 +140,7 @@ namespace UI
 		void setRecolor(bool en)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_recolor(static_cast<Derived*>(this)->getRootPtr(), en);
 		}
@@ -147,6 +155,7 @@ namespace UI
 		void setTranslationTag(const char* tag)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_set_translation_tag(static_cast<Derived*>(this)->getRootPtr(), tag);
 		}
@@ -160,6 +169,7 @@ namespace UI
 		char* getText() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_get_text(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -171,6 +181,7 @@ namespace UI
 		lv_label_long_mode_t getLongMode() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_get_long_mode(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -185,6 +196,7 @@ namespace UI
 		void getLetterPos(uint32_t char_id, lv_point_t* pos) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_get_letter_pos(static_cast<const Derived*>(this)->getRootPtr(), char_id, pos);
 		}
@@ -199,6 +211,7 @@ namespace UI
 		uint32_t getLetterOn(lv_point_t* pos_in, bool bidi) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_get_letter_on(static_cast<const Derived*>(this)->getRootPtr(), pos_in, bidi);
 		}
@@ -211,6 +224,7 @@ namespace UI
 		bool isCharUnderPos(lv_point_t* pos) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_is_char_under_pos(static_cast<const Derived*>(this)->getRootPtr(), pos);
 		}
@@ -222,6 +236,7 @@ namespace UI
 		uint32_t getTextSelectionStart() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_get_text_selection_start(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -233,6 +248,7 @@ namespace UI
 		uint32_t getTextSelectionEnd() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_get_text_selection_end(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -244,6 +260,7 @@ namespace UI
 		bool getRecolor() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_get_recolor(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -262,6 +279,7 @@ namespace UI
 		lv_observer_t* bindText(lv_subject_t* subject, const char* fmt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_label_bind_text(static_cast<Derived*>(this)->getRootPtr(), subject, fmt);
 		}
@@ -277,6 +295,7 @@ namespace UI
 		void insText(uint32_t pos, const char* txt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_ins_text(static_cast<Derived*>(this)->getRootPtr(), pos, txt);
 		}
@@ -290,6 +309,7 @@ namespace UI
 		void cutText(uint32_t pos, uint32_t cnt)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_label_cut_text(static_cast<Derived*>(this)->getRootPtr(), pos, cnt);
 		}
@@ -301,6 +321,7 @@ namespace UI
 		LvLabelGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_label_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

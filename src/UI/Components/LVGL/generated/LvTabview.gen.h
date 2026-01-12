@@ -1,7 +1,7 @@
 /*
  * LvTabview.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:33 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -29,6 +29,7 @@ namespace UI
 		lv_obj_t* addTab(const char* name)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_add_tab(static_cast<Derived*>(this)->getRootPtr(), name);
 		}
@@ -41,6 +42,7 @@ namespace UI
 		void setTabText(uint32_t idx, const char* new_name)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_tabview_set_tab_text(static_cast<Derived*>(this)->getRootPtr(), idx, new_name);
 		}
@@ -55,6 +57,7 @@ namespace UI
 		lv_obj_t* setTabTranslationTag(const char* tag)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_set_tab_translation_tag(static_cast<Derived*>(this)->getRootPtr(), tag);
 		}
@@ -69,6 +72,7 @@ namespace UI
 		void setActive(uint32_t idx, lv_anim_enable_t anim_en = LV_ANIM_ON)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_tabview_set_active(static_cast<Derived*>(this)->getRootPtr(), idx, anim_en);
 		}
@@ -80,6 +84,7 @@ namespace UI
 		void setTabBarPosition(lv_dir_t dir)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_tabview_set_tab_bar_position(static_cast<Derived*>(this)->getRootPtr(), dir);
 		}
@@ -92,6 +97,7 @@ namespace UI
 		void setTabBarSize(int32_t size)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_tabview_set_tab_bar_size(static_cast<Derived*>(this)->getRootPtr(), size);
 		}
@@ -103,6 +109,7 @@ namespace UI
 		uint32_t getTabCount() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_get_tab_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -114,6 +121,7 @@ namespace UI
 		uint32_t getTabActive() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_get_tab_active(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -127,6 +135,7 @@ namespace UI
 		lv_obj_t* getTabButton(int32_t idx) const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_get_tab_button(static_cast<const Derived*>(this)->getRootPtr(), idx);
 		}
@@ -138,6 +147,7 @@ namespace UI
 		lv_obj_t* getContent() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_get_content(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -149,6 +159,7 @@ namespace UI
 		lv_obj_t* getTabBar() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_get_tab_bar(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -160,6 +171,7 @@ namespace UI
 		LvTabviewGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_tabview_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

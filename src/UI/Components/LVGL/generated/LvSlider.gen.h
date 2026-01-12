@@ -1,7 +1,7 @@
 /*
  * LvSlider.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -31,6 +31,7 @@ namespace UI
 		void setValue(int32_t value, lv_anim_enable_t anim = LV_ANIM_ON)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_slider_set_value(static_cast<Derived*>(this)->getRootPtr(), value, anim);
 		}
@@ -43,6 +44,7 @@ namespace UI
 		void setStartValue(int32_t value, lv_anim_enable_t anim = LV_ANIM_ON)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_slider_set_start_value(static_cast<Derived*>(this)->getRootPtr(), value, anim);
 		}
@@ -55,6 +57,7 @@ namespace UI
 		void setRange(int32_t min, int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_slider_set_range(static_cast<Derived*>(this)->getRootPtr(), min, max);
 		}
@@ -66,6 +69,7 @@ namespace UI
 		void setMinValue(int32_t min)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_slider_set_min_value(static_cast<Derived*>(this)->getRootPtr(), min);
 		}
@@ -77,6 +81,7 @@ namespace UI
 		void setMaxValue(int32_t max)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_slider_set_max_value(static_cast<Derived*>(this)->getRootPtr(), max);
 		}
@@ -88,6 +93,7 @@ namespace UI
 		void setMode(lv_slider_mode_t mode)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_slider_set_mode(static_cast<Derived*>(this)->getRootPtr(), mode);
 		}
@@ -99,6 +105,7 @@ namespace UI
 		void setOrientation(lv_slider_orientation_t orientation)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_slider_set_orientation(static_cast<Derived*>(this)->getRootPtr(), orientation);
 		}
@@ -110,6 +117,7 @@ namespace UI
 		int32_t getValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_get_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -121,6 +129,7 @@ namespace UI
 		int32_t getLeftValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_get_left_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -132,6 +141,7 @@ namespace UI
 		int32_t getMinValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_get_min_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -143,6 +153,7 @@ namespace UI
 		int32_t getMaxValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_get_max_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -154,6 +165,7 @@ namespace UI
 		bool isDragged() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_is_dragged(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -166,6 +178,7 @@ namespace UI
 		lv_slider_mode_t getMode() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_get_mode(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -177,6 +190,7 @@ namespace UI
 		lv_slider_orientation_t getOrientation() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_get_orientation(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -188,6 +202,7 @@ namespace UI
 		bool isSymmetrical() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_is_symmetrical(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -202,6 +217,7 @@ namespace UI
 		lv_observer_t* bindValue(lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_slider_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
 		}
@@ -215,6 +231,7 @@ namespace UI
 		LvSliderGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_slider_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

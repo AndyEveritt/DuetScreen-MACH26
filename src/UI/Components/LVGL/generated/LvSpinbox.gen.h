@@ -1,7 +1,7 @@
 /*
  * LvSpinbox.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:52 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -30,6 +30,7 @@ namespace UI
 		void setValue(int32_t v)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_value(static_cast<Derived*>(this)->getRootPtr(), v);
 		}
@@ -41,6 +42,7 @@ namespace UI
 		void setRollover(bool rollover)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_rollover(static_cast<Derived*>(this)->getRootPtr(), rollover);
 		}
@@ -54,6 +56,7 @@ namespace UI
 		void setDigitFormat(uint32_t digit_count, uint32_t sep_pos)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_digit_format(static_cast<Derived*>(this)->getRootPtr(), digit_count, sep_pos);
 		}
@@ -65,6 +68,7 @@ namespace UI
 		void setDigitCount(uint32_t digit_count)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_digit_count(static_cast<Derived*>(this)->getRootPtr(), digit_count);
 		}
@@ -76,6 +80,7 @@ namespace UI
 		void setDecPointPos(uint32_t dec_point_pos)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_dec_point_pos(static_cast<Derived*>(this)->getRootPtr(), dec_point_pos);
 		}
@@ -87,6 +92,7 @@ namespace UI
 		void setStep(uint32_t step)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_step(static_cast<Derived*>(this)->getRootPtr(), step);
 		}
@@ -99,6 +105,7 @@ namespace UI
 		void setRange(int32_t min_value, int32_t max_value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_range(static_cast<Derived*>(this)->getRootPtr(), min_value, max_value);
 		}
@@ -110,6 +117,7 @@ namespace UI
 		void setMinValue(int32_t min_value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_min_value(static_cast<Derived*>(this)->getRootPtr(), min_value);
 		}
@@ -121,6 +129,7 @@ namespace UI
 		void setMaxValue(int32_t max_value)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_max_value(static_cast<Derived*>(this)->getRootPtr(), max_value);
 		}
@@ -132,6 +141,7 @@ namespace UI
 		void setCursorPos(uint32_t pos)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_cursor_pos(static_cast<Derived*>(this)->getRootPtr(), pos);
 		}
@@ -143,6 +153,7 @@ namespace UI
 		void setDigitStepDirection(lv_dir_t direction)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_set_digit_step_direction(static_cast<Derived*>(this)->getRootPtr(), direction);
 		}
@@ -153,6 +164,7 @@ namespace UI
 		bool getRollover() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_spinbox_get_rollover(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -164,6 +176,7 @@ namespace UI
 		int32_t getValue() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_spinbox_get_value(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -175,6 +188,7 @@ namespace UI
 		int32_t getStep() const
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_spinbox_get_step(static_cast<const Derived*>(this)->getRootPtr());
 		}
@@ -185,6 +199,7 @@ namespace UI
 		void stepNext()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_step_next(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -195,6 +210,7 @@ namespace UI
 		void stepPrev()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_step_prev(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -205,6 +221,7 @@ namespace UI
 		void increment()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_increment(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -215,6 +232,7 @@ namespace UI
 		void decrement()
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_spinbox_decrement(static_cast<Derived*>(this)->getRootPtr());
 		}
@@ -229,6 +247,7 @@ namespace UI
 		lv_observer_t* bindValue(lv_subject_t* subject)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			return lv_spinbox_bind_value(static_cast<Derived*>(this)->getRootPtr(), subject);
 		}
@@ -242,6 +261,7 @@ namespace UI
 		LvSpinboxGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_spinbox_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};

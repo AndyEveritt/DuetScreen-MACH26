@@ -1,7 +1,7 @@
 /*
  * Lv3dtexture.gen.h
  *
- *  AUTO-GENERATED: 2026-01-06T19:18:51 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -30,6 +30,7 @@ namespace UI
 		void setSrc(lv_3dtexture_id_t id)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_3dtexture_set_src(static_cast<Derived*>(this)->getRootPtr(), id);
 		}
@@ -42,6 +43,7 @@ namespace UI
 		void setFlip(bool h_flip, bool v_flip)
 			requires HasGetRootPtr<Derived>
 		{
+			ZoneScoped;
 			UI_LOCK();
 			lv_3dtexture_set_flip(static_cast<Derived*>(this)->getRootPtr(), h_flip, v_flip);
 		}
@@ -53,6 +55,7 @@ namespace UI
 		Lv3dtextureGen(const std::string& name, LvObj& parent)
 			: LvObj(lv_3dtexture_create, name, parent)
 		{
+			ZoneScoped;
 			UI_LOCK();
 		}
 	};
