@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include <map>
 #include <mutex>
+#include <condition_variable>
 #include <set>
 #include <string>
 #include <thread>
@@ -69,30 +70,31 @@ class DeadlockDetectingMutex
 		// Normal lock acquisition path
 		DeadlockDetector::getInstance().beforeLockAcquire(&m_mutex);
 
-		// Try to acquire the lock with a timeout
-		auto start = std::chrono::steady_clock::now();
-		bool locked = false;
-
-		while (!locked)
+		// Try fast path first
+		if (!m_mutex.try_lock())
 		{
-			locked = m_mutex.try_lock();
-			if (locked)
-				break;
-
-			auto now = std::chrono::steady_clock::now();
-			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
-
-			if (elapsed > std::chrono::milliseconds(5000))
+			// Block until notified that unlock happened, avoiding polling
+			std::unique_lock<std::mutex> waitLock(m_waitMutex);
+			for (;;)
 			{
-				thread_id_t holdingThread = DeadlockDetector::getInstance().getOwningThreadId(&m_mutex);
-				LOG_WARN("Lock acquisition timeout for \"{:s}\" in thread {:d} (holding thread: {:d})",
-						 m_name,
-						 Log::GetThreadId(),
-						 holdingThread);
-				start = now; // Reset the timer to continue logging periodically
+				if (m_mutex.try_lock())
+					break;
+				// Wait to be notified or timeout to log
+				if (m_cv.wait_for(waitLock, std::chrono::milliseconds(5000)) == std::cv_status::timeout)
+				{
+					thread_id_t holdingThread = DeadlockDetector::getInstance().getOwningThreadId(&m_mutex);
+					LOG_WARN("Lock acquisition timeout for \"{:s}\" in thread {:d} (holding thread: {:d})",
+							 m_name,
+							 Log::GetThreadId(),
+							 holdingThread);
+					// keep waiting, periodic logging
+				}
 			}
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			// waitLock releases automatically
+		}
+		else
+		{
+			// Acquired via fast path
 		}
 
 		// Record ownership
@@ -181,6 +183,8 @@ class DeadlockDetectingMutex
 
 		DeadlockDetector::getInstance().beforeLockRelease(&m_mutex);
 		m_mutex.unlock();
+		// Notify one waiting thread to re-attempt lock immediately
+		m_cv.notify_one();
 		DeadlockDetector::getInstance().afterLockRelease(&m_mutex);
 	}
 
@@ -196,4 +200,8 @@ class DeadlockDetectingMutex
 	// Map to track thread-specific lock counts for recursive locking
 	std::map<thread_id_t, int> m_ownershipCount;
 	std::mutex m_ownershipMutex;
+
+		// Wake up waiting threads immediately on unlock
+		std::condition_variable m_cv;
+		std::mutex m_waitMutex;
 };

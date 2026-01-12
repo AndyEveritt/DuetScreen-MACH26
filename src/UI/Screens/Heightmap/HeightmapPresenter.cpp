@@ -89,6 +89,12 @@ namespace UI
 			m_view->pxToPos(width - 1, height - 1, x_max, y_max);
 			float xStep = (x_max - x_min) / static_cast<float>(width - 1);
 			float yStep = (y_max - y_min) / static_cast<float>(height - 1);
+
+			/**
+			 * Can improve performance by preventing UI updates until the whole heightmap finishes rendering
+			 * (`UI_LOCK`) but since a large heightmap might take ~1-2 seconds and the UI would be frozen during that
+			 * time, I think it is better to have a slightly slower but more responsive UI.
+			 */
 			for (uint32_t px = 0; px < width; px++)
 			{
 				ZoneScoped;
