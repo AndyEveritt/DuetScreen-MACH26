@@ -631,5 +631,11 @@ namespace UI::Themes
 		lv_style_set_bg_opa(components.bar_label_bg, LV_OPA_50);
 		lv_style_set_radius(components.bar_label_bg, RADIUS_DEFAULT);
 		lv_style_set_pad_hor(components.bar_label_bg, PAD_DEF);
+
+#if DEBUG_BORDERS
+		lv_style_set_outline_color(components.debug_borders, m_colors.border);
+		lv_style_set_outline_width(components.debug_borders, 2);
+		lv_style_set_outline_opa(components.debug_borders, LV_OPA_100);
+#endif
 	}
 } // namespace UI::Themes

@@ -44,16 +44,6 @@ namespace UI::Themes
 
 	static Theme* s_currentTheme = nullptr;
 
-#if DEBUG_BORDERS
-	static Style s_debugBorders("debugBorders",
-								[](lv_style_t* style)
-								{
-									lv_style_set_outline_color(style, lv_color_black());
-									lv_style_set_outline_width(style, 2);
-									lv_style_set_outline_opa(style, LV_OPA_100);
-								});
-#endif
-
 	Style::Style()
 		: name(nullptr)
 		, initFunc(nullptr)
@@ -523,6 +513,7 @@ namespace UI::Themes
 #  if LV_USE_BAR
 		else if (lv_obj_check_type(obj, &lv_bar_class))
 		{
+			// lv_obj_add_style(obj, lvgl.pad_normal, 0);
 			lv_obj_add_style(obj, lvgl.bar, 0);
 			lv_obj_add_style(obj, lvgl.anim, 0);
 			lv_obj_add_style(obj, lvgl.outline_primary, LV_STATE_FOCUS_KEY);
@@ -972,11 +963,25 @@ namespace UI::Themes
 #  endif
 
 #  if DEBUG_BORDERS
-		if (lv_obj_has_style(lv_screen_active(), s_debugBorders))
+		const auto& components = getComponentStyles();
+
+		if (lv_obj_has_style(lv_screen_active(), components.debug_borders))
 		{
 			// Add debug borders to any newly created objects
-			lv_obj_add_style(obj, s_debugBorders, LV_PART_MAIN);
+			lv_obj_add_style(obj, components.debug_borders, LV_PART_MAIN);
 		}
+#  endif
+
+#  if USE_LV_ANIMATION == 0
+		// Disable animations globally
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_MAIN);
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_SCROLLBAR);
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_INDICATOR);
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_KNOB);
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_SELECTED);
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_ITEMS);
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_CURSOR);
+		lv_obj_set_style_anim_duration(obj, 0, LV_PART_CUSTOM_FIRST);
 #  endif
 #endif
 	}
@@ -1218,7 +1223,7 @@ namespace UI::Themes
 	{
 		ZoneScoped;
 		UI_LOCK();
-		return lv_obj_has_style(obj, s_debugBorders);
+		return lv_obj_has_style(obj, getComponentStyles().debug_borders);
 	}
 
 	static void _showDebugBorders(lv_obj_t* obj, const bool show, const bool recursive)
@@ -1226,11 +1231,11 @@ namespace UI::Themes
 		ZoneScoped;
 		if (show)
 		{
-			lv_obj_add_style(obj, s_debugBorders, LV_PART_MAIN, recursive);
+			lv_obj_add_style(obj, getComponentStyles().debug_borders, LV_PART_MAIN, recursive);
 		}
 		else
 		{
-			lv_obj_remove_style(obj, s_debugBorders, LV_PART_MAIN, recursive);
+			lv_obj_remove_style(obj, getComponentStyles().debug_borders, LV_PART_MAIN, recursive);
 		}
 	}
 

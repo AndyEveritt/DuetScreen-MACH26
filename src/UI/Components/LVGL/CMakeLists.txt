@@ -11,6 +11,7 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/LvKeyboard.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvLabel.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvObj.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/LvSubject.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvSwitch.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvTextarea.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/LvXml.cpp

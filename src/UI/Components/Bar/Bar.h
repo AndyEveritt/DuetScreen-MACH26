@@ -9,6 +9,7 @@
 
 #include "UI/Components/LVGL/LvBar.h"
 #include "UI/Components/LVGL/LvLabel.h"
+#include "UI/Components/LVGL/LvSubject.h"
 
 namespace UI
 {
@@ -17,13 +18,10 @@ namespace UI
 	  public:
 		Bar(const std::string& name, LvObj& parent);
 
-		void setLabelFormat(const std::string& fmt)
-		{
-			UI_LOCK();
-            m_labelFmt = fmt;
-		}
+		void setLabelFormat(const std::string& fmt);
 
 	  private:
+		static void barEvent(lv_event_t* e);
 		static void drawLabel(lv_event_t* e);
 
 		std::string m_labelFmt{"{}"};

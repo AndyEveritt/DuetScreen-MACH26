@@ -76,7 +76,8 @@
             "cacheVariables": {
                 "BUILD_TESTING": "ON",
                 "ENABLE_COVERAGE": "ON",
-                "DUETSCREEN_USE_FIXED_TEST_BUILD_TIME": "ON"
+                "DUETSCREEN_USE_FIXED_TEST_BUILD_TIME": "ON",
+                "DUETSCREEN_USE_LV_ANIMATION": "OFF"
             }
         },
         {

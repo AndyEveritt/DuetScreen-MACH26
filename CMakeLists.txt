@@ -51,6 +51,7 @@ option(DUETSCREEN_LV_NESTED_SHOW_HIDE "Enable nested show/hide events for LvObj"
 option(DUETSCREEN_ENABLE_PROFILING "Enable profiling using Tracy" OFF)
 option(DUETSCREEN_ENABLE_LV_PROFILING "Enable lvgl profiling" ${DUETSCREEN_ENABLE_PROFILING})
 option(DUETSCREEN_USE_FIXED_TEST_BUILD_TIME "Use fixed build date/time for unit tests" OFF)
+option(DUETSCREEN_USE_LV_ANIMATION "Enable LVGL animations" ON)
 
 # UI Options
 set(DUETSCREEN_UI_SETTINGS_TOGGLE_WIDGET "LvCheckbox" CACHE STRING "Widget type for settings toggles: 'LvCheckbox' or 'LvSwitch'")

@@ -281,6 +281,10 @@ namespace UI::Themes
 		/* Bar */
 		Style bar_label_bg;
 		Style bar_label;
+
+#if DEBUG_BORDERS
+		Style debug_borders;
+#endif
 	};
 
 	const LvglStyles& getLvglStyles();

@@ -30,20 +30,24 @@ namespace UI
 		// m_header.setFlexGrow(1);
 		m_printInfo.setWidth(LV_PCT(100));
 		m_printInfo.setFlexGrow(5);
-		m_footer.setSize(LV_PCT(100), LV_PCT(20));
+		m_footer.setSize(LV_PCT(100), LV_PCT(15));
 
 		// Header
 		static const int32_t header_col_dsc[] = {LV_GRID_FR(5), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-		static const int32_t header_row_dsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+		static const int32_t header_row_dsc[] = {
+			LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		m_header.setGridDsc(header_col_dsc, header_row_dsc);
-		m_header.setGridCell(m_filename, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-		m_header.setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_CENTER, 0, 2);
-		m_header.setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		m_header.setGridCell(m_filename, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
+		m_header.setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 3);
+		m_header.setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 2, 1);
 
 		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 		m_thumbnail.setHeight(LV_PCT(100));
+		m_thumbnail.setMinHeight(50);
 		m_thumbnail.setMaxWidth(LV_PCT(30));
+		m_progress.setHeight(LV_SIZE_CONTENT);
 		m_progress.setRange(0, 100);
+		m_progress.setLabelFormat("{}%");
 
 		// Footer
 		m_footer.setFlexFlow(LV_FLEX_FLOW_ROW);
@@ -137,9 +141,7 @@ namespace UI
 	{
 		UI_LOCK();
 		LOG_DBG("{:d}", percent);
-		percent = std::min(percent, 100u);
 		m_progress.setValue(percent);
-		m_progressLabel.setText(fmt::format("{:d}%", percent));
 	}
 
 	void StatusView::setThumbnail(const char* img)

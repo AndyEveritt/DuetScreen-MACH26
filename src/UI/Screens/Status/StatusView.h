@@ -50,8 +50,7 @@ namespace UI
 		LvContainer m_footer{"footer", getRoot()};
 
 		// Header
-		LvBar m_progress{"progress", m_header};
-		LvLabel m_progressLabel{"progress_label", m_progress};
+		Bar m_progress{"progress", m_header};
 		LvLabel m_filename{"filename", m_header};
 		LvImage m_thumbnail{"thumbnail", m_header};
 
