@@ -134,6 +134,8 @@ namespace UI
 		m_timeHeader.addStyle(Themes::getLvglStyles().bg_color_header);
 		m_timeHeader.addStyle(Themes::getLvglStyles().pad_normal);
 		m_timeHeader.addStyle(Themes::getLvglStyles().text_emphasis);
+
+		updateLayout();
 	}
 
 	void PrintInfo::openSubView(lv_event_t* e)

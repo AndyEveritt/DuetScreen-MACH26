@@ -147,7 +147,7 @@ namespace UI
 	void StatusView::setThumbnail(const char* img)
 	{
 		UI_LOCK();
-		LOG_DBG("'{:s}'", img);
+		LOG_DBG("'{:s}'", img ? img : "null");
 		m_thumbnail.setSrc(img);
 		m_thumbnail.setWidth(img == nullptr ? 0 : m_thumbnail.getHeight());
 		m_header.updateLayout();

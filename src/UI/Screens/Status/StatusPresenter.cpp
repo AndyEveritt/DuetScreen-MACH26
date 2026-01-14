@@ -155,6 +155,7 @@ namespace UI
 			return;
 		}
 
+		m_view->setThumbnail(nullptr);
 		LOG_DBG("Requesting thumbnail for '{:s}'", filename);
 		FILEINFO_CACHE->QueueThumbnailRequest(filename, true);
 	}
