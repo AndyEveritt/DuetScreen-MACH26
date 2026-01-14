@@ -1,9 +1,9 @@
 #pragma once
 
 #include "HeaterSliderPresenter.h"
+#include "UI/Components/Bar/Bar.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Input/ModalNumberPad.h"
-#include "UI/Components/LVGL/LvBar.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Core/View.h"
@@ -26,7 +26,6 @@ namespace UI
 		void setNumberPad(ModalNumberPad* numberPad);
 
 	  private:
-		static void drawCurrentTemperatureEvent(lv_event_t* e);
 		static void onTemperatureLabelEvent(lv_event_t* e);
 		static void onToggleStateEvent(lv_event_t* e);
 
@@ -39,7 +38,7 @@ namespace UI
 		Button m_heaterName{"heater_name", m_heaterInfoCont};
 		LvLabel m_heaterState{"heater_state", m_heaterInfoCont};
 		LvContainer m_temperatureCont{"temperature_cont", getRoot()};
-		LvBar m_currentTemperature{"current_temperature", m_temperatureCont};
+		Bar m_currentTemperature{"current_temperature", m_temperatureCont};
 		Button m_activeTemperature{"active_temperature", m_temperatureCont};
 		Button m_standbyTemperature{"standby_temperature", m_temperatureCont};
 

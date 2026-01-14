@@ -170,6 +170,7 @@ namespace UI
 		if (lv_area_get_width(&indic_area) > lv_area_get_width(&bg_area) + indic_pad_left + indic_pad_right)
 		{
 			lv_area_align(&indic_area, &bg_area, LV_ALIGN_RIGHT_MID, -indic_pad_right, 0);
+			label_bg_dsc.bg_opa = LV_OPA_0;
 		}
 		/*If the indicator is still short put the text out of it on the right*/
 		else

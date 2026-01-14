@@ -128,6 +128,14 @@ TEST_F(TestTheme, Widgets)
 	bar.setWidth(col_width);
 	bar.setValue(40);
 
+	Bar label_bar("label_bar", cont);
+	label_bar.setWidth(col_width);
+	label_bar.setValue(10);
+
+	Bar label_bar2("label_bar2", cont);
+	label_bar2.setWidth(col_width);
+	label_bar2.setValue(70);
+
 	/* LvButtonmatrix */
 	LvButtonmatrix button_matrix("button_matrix", cont);
 	const char* btnm_map[] = {"Default", "Checked", "\0"};
