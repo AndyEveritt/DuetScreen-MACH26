@@ -6,6 +6,7 @@
  */
 
 #include "tracing.h"
+#include <mutex>
 #include <string_view>
 #include <vector>
 
@@ -17,6 +18,7 @@ struct ZoneInfo
 	TracyCZoneCtx ctx;
 };
 
+static std::mutex s_zoneMutex;
 static std::vector<ZoneInfo> s_zones;
 
 extern "C" void _lv_tracy_start_zone(const char* tag, const char* func, const char* file, uint32_t line, uint32_t color)
@@ -26,6 +28,7 @@ extern "C" void _lv_tracy_start_zone(const char* tag, const char* func, const ch
 		return;
 	}
 
+	std::lock_guard<std::mutex> lock(s_zoneMutex);
 	std::string_view key = tag;
 	// Same as TracyCZoneNC but with custom parameters so file, func, line can be passed in from caller
 	static const struct ___tracy_source_location_data source_info = {NULL, func, file, line, color};
@@ -45,6 +48,7 @@ extern "C" void _lv_tracy_end_zone(const char* tag)
 		return;
 	}
 
+	std::lock_guard<std::mutex> lock(s_zoneMutex);
 	std::string_view key = tag;
 
 	for (auto it = s_zones.rbegin(); it != s_zones.rend(); ++it)
