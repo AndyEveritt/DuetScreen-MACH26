@@ -99,6 +99,7 @@ namespace UI
 
 	HomeView& HomeView::instance()
 	{
+		ZoneScoped;
 		// Allow tests to override the singleton instance when needed
 		if (s_overrideInstance)
 		{

@@ -36,6 +36,7 @@ struct BrightnessParam
 DisplayHelper::DisplayHelper(const char* device, unsigned int screen)
 	: m_screen(screen)
 {
+	ZoneScoped;
 #if T113
 	m_fd = open(device, O_RDWR);
 	if (m_fd < 0)
@@ -51,6 +52,7 @@ DisplayHelper::DisplayHelper(const char* device, unsigned int screen)
 // Destructor: Closes the device.
 DisplayHelper::~DisplayHelper()
 {
+	ZoneScoped;
 	if (m_fd >= 0)
 	{
 		close(m_fd);
@@ -59,6 +61,7 @@ DisplayHelper::~DisplayHelper()
 
 DisplayHelper& DisplayHelper::instance()
 {
+	ZoneScoped;
 	static DisplayHelper instance;
 	return instance;
 }
@@ -67,6 +70,7 @@ DisplayHelper& DisplayHelper::instance()
 // brightness should be in the range [0, 100]
 bool DisplayHelper::setBrightness(unsigned int percentage)
 {
+	ZoneScoped;
 	auto& disp = instance();
 	disp.m_percentage = percentage;
 	disp.setBrightnessInner(percentage);
@@ -76,6 +80,7 @@ bool DisplayHelper::setBrightness(unsigned int percentage)
 
 bool DisplayHelper::setScreenSaverBrightness(unsigned int percentage)
 {
+	ZoneScoped;
 	auto& disp = instance();
 	disp.m_screensaverPercentage = percentage;
 	return true;
@@ -83,12 +88,14 @@ bool DisplayHelper::setScreenSaverBrightness(unsigned int percentage)
 
 void DisplayHelper::enableScreenSaver(bool enable)
 {
+	ZoneScoped;
 	auto& disp = instance();
 	disp.setBrightnessInner(enable ? disp.m_screensaverPercentage : disp.m_percentage);
 }
 
 bool DisplayHelper::setBrightnessInner(unsigned int percentage)
 {
+	ZoneScoped;
 	auto& disp = instance();
 	BrightnessParam param;
 	percentage = std::clamp(percentage, 0u, 100u);
@@ -119,6 +126,7 @@ bool DisplayHelper::setBrightnessInner(unsigned int percentage)
 // Returns a brightness value in the range [0, 100].
 unsigned int DisplayHelper::getBrightness()
 {
+	ZoneScoped;
 	auto& disp = instance();
 	return disp.m_percentage;
 }

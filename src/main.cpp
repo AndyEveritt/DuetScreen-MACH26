@@ -91,11 +91,11 @@ int main(int argc, char** argv)
 	set_thread_priority(pthread_self(), SCHED_OTHER, 100);
 #endif
 
-	lv_init();
-
 	// Initialise
 	StorageHelper::load();
 	Log::Init();
+
+	lv_init();
 
 	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
 	// deadlocks can occur
@@ -344,6 +344,7 @@ int main(int argc, char** argv)
 
 void lvgl_log_cb(lv_log_level_t level, const char* buf)
 {
+	ZoneScoped;
 	switch (level)
 	{
 	case LV_LOG_LEVEL_TRACE:
@@ -365,6 +366,7 @@ void lvgl_log_cb(lv_log_level_t level, const char* buf)
 
 static const char* getenv_default(const char* name, const char* dflt)
 {
+	ZoneScoped;
 	return getenv(name) ?: dflt;
 }
 
@@ -374,6 +376,7 @@ static const char* getenv_default(const char* name, const char* dflt)
  */
 static lv_display_t* hal_init(int32_t w, int32_t h)
 {
+	ZoneScoped;
 	LOG_INFO("Initialising display");
 #if LV_USE_LINUX_FBDEV
 	const char* device = getenv_default("LV_LINUX_FBDEV_DEVICE", "/dev/fb0");
@@ -390,39 +393,77 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 
 #elif LV_USE_SDL
 
+	lv_display_t* disp = NULL;
+	lv_indev_t* mouse = NULL;
+
 	lv_group_set_default(lv_group_create());
+	{
+		ZoneScopedN("SDL Window Creation");
+		disp = lv_sdl_window_create(w, h);
+		lv_obj_set_name(lv_screen_active(), "screen_active");
+	}
 
-	lv_display_t* disp = lv_sdl_window_create(w, h);
-	lv_obj_set_name(lv_screen_active(), "screen_active");
+	{
+		ZoneScopedN("SDL Input Devices Creation");
+		mouse = lv_sdl_mouse_create();
+		lv_indev_set_group(mouse, lv_group_get_default());
+		lv_indev_set_display(mouse, disp);
+		lv_display_set_default(disp);
+	}
 
-	lv_indev_t* mouse = lv_sdl_mouse_create();
-	lv_indev_set_group(mouse, lv_group_get_default());
-	lv_indev_set_display(mouse, disp);
-	lv_display_set_default(disp);
+	{
+		ZoneScopedN("Mouse Cursor Setup");
+		LV_IMAGE_DECLARE(mouse_cursor_icon); /*Declare the image file.*/
+		lv_obj_t* cursor_obj;
+		cursor_obj = lv_image_create(lv_screen_active()); /*Create an image object for the cursor */
+		lv_obj_set_name(cursor_obj, "mouse_cursor");
+		lv_image_set_src(cursor_obj, &mouse_cursor_icon); /*Set the image source*/
+		lv_indev_set_cursor(mouse, cursor_obj);			  /*Connect the image  object to the driver*/
+	}
 
-	LV_IMAGE_DECLARE(mouse_cursor_icon); /*Declare the image file.*/
-	lv_obj_t* cursor_obj;
-	cursor_obj = lv_image_create(lv_screen_active()); /*Create an image object for the cursor */
-	lv_obj_set_name(cursor_obj, "mouse_cursor");
-	lv_image_set_src(cursor_obj, &mouse_cursor_icon); /*Set the image source*/
-	lv_indev_set_cursor(mouse, cursor_obj);			  /*Connect the image  object to the driver*/
+	{
+		ZoneScopedN("SDL Mousewheel Creation");
+		lv_indev_t* mousewheel = lv_sdl_mousewheel_create();
+		lv_indev_set_display(mousewheel, disp);
+		lv_indev_set_group(mousewheel, lv_group_get_default());
+	}
 
-	lv_indev_t* mousewheel = lv_sdl_mousewheel_create();
-	lv_indev_set_display(mousewheel, disp);
-	lv_indev_set_group(mousewheel, lv_group_get_default());
-
-	lv_indev_t* kb = lv_sdl_keyboard_create();
-	lv_indev_set_display(kb, disp);
-	lv_indev_set_group(kb, lv_group_get_default());
+	{
+		ZoneScopedN("SDL Keyboard Creation");
+		lv_indev_t* kb = lv_sdl_keyboard_create();
+		lv_indev_set_display(kb, disp);
+		lv_indev_set_group(kb, lv_group_get_default());
+	}
 
 #else
 #  error Unsupported configuration
 #endif
+
+#if LV_USE_SYSMON
+	{
+		ZoneScopedN("System Monitor Setup");
+		const bool sysmon_enabled = StorageHelper::getData<bool>(ID_SYSTEM_MONITOR_ENABLED, true);
+#  if LV_USE_PERF_MONITOR
+		if (sysmon_enabled)
+			lv_sysmon_show_performance(NULL);
+		else
+			lv_sysmon_hide_performance(NULL);
+#  endif
+#  if LV_USE_MEM_MONITOR
+		if (sysmon_enabled)
+			lv_sysmon_show_memory(NULL);
+		else
+			lv_sysmon_hide_memory(NULL);
+#  endif
+	}
+#endif
+
 	return disp;
 }
 
 int set_thread_priority(pthread_t thread_id, int policy, int priority)
 {
+	ZoneScoped;
 #ifndef __APPLE__
 	sched_param sch;
 	int current_policy;

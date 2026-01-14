@@ -23,10 +23,12 @@ namespace UI::FontManager
 	Font::Font(const lv_font_t* font)
 		: m_font(font)
 	{
+		ZoneScoped;
 	}
 
 	Font::~Font()
 	{
+		ZoneScoped;
 		if (m_font && m_font != LV_FONT_DEFAULT)
 		{
 			lv_font_manager_delete_font(s_fontManager, const_cast<lv_font_t*>(m_font));
@@ -37,11 +39,13 @@ namespace UI::FontManager
 	Font::Font(Font&& other) noexcept
 		: m_font(other.m_font)
 	{
+		ZoneScoped;
 		other.m_font = nullptr;
 	}
 
 	Font& Font::operator=(Font&& other) noexcept
 	{
+		ZoneScoped;
 		if (this != &other)
 		{
 			if (m_font && m_font != LV_FONT_DEFAULT)
@@ -59,6 +63,7 @@ namespace UI::FontManager
 	 */
 	void init()
 	{
+		ZoneScoped;
 		LOG_INFO("Initializing Font Manager...");
 		s_fontManager = lv_font_manager_create(8);
 
@@ -103,6 +108,7 @@ namespace UI::FontManager
 
 	Font createFont(const std::string& typeface, uint32_t size, uint32_t style)
 	{
+		ZoneScoped;
 		if (!s_fontManager)
 		{
 			LOG_ERROR("Font manager not initialized");
@@ -168,21 +174,25 @@ namespace UI::FontManager
 
 	const std::vector<std::string>& getLoadedFontNames()
 	{
+		ZoneScoped;
 		return s_loadedFontNames;
 	}
 
 	bool isFontLoaded(const std::string& name)
 	{
+		ZoneScoped;
 		return std::find(s_loadedFontNames.begin(), s_loadedFontNames.end(), name) != s_loadedFontNames.end();
 	}
 
 	const std::string& getActiveTypefaceName()
 	{
+		ZoneScoped;
 		return s_activeTypeface;
 	}
 
 	void setActiveTypeface(const std::string& name)
 	{
+		ZoneScoped;
 		if (name == s_activeTypeface)
 		{
 			return;

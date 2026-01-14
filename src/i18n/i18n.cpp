@@ -51,6 +51,7 @@ namespace i18n
 
 	void init()
 	{
+		ZoneScoped;
 		LOG_INFO("Initialising i18n module...");
 		refreshLanguageFiles();
 
@@ -59,11 +60,13 @@ namespace i18n
 
 	std::string_view getCurrentLanguage()
 	{
+		ZoneScoped;
 		return s_currentLanguage;
 	}
 
 	void refreshLanguageFiles()
 	{
+		ZoneScoped;
 		LOG_DBG("Refreshing language files...");
 		s_languages.clear();
 		std::ranges::for_each(std::filesystem::directory_iterator(LANG_DIR),
@@ -93,11 +96,13 @@ namespace i18n
 
 	const std::map<language_code_t, language_readable_t>& getAvailableLanguages()
 	{
+		ZoneScoped;
 		return s_languages;
 	}
 
 	bool setLanguage(const std::string_view lang)
 	{
+		ZoneScoped;
 		LOG_INFO("Setting language to {:s}", lang);
 		std::filesystem::path lang_file = fmt::format(LANG_DIR "/{:s}" LANG_FILE_EXT, lang);
 		if (!std::filesystem::exists(lang_file))
@@ -118,6 +123,7 @@ namespace i18n
 
 	const std::string& translate(std::string_view tag)
 	{
+		ZoneScoped;
 		/* Find the translation if it exists */
 		{
 			auto it = s_translationTable.find(tag);
@@ -141,11 +147,13 @@ namespace i18n
 
 	const std::vector<std::string>& getSupportedFonts()
 	{
+		ZoneScoped;
 		return s_supportedFonts;
 	}
 
 	static bool loadLanguageFile(const std::filesystem::path& filepath)
 	{
+		ZoneScoped;
 		nlohmann::json data = parseLanguageFile(filepath);
 		if (data.is_null())
 		{
@@ -202,6 +210,7 @@ namespace i18n
 
 	static nlohmann::json parseLanguageFile(const std::filesystem::path& filepath)
 	{
+		ZoneScoped;
 		LOG_DBG("Parsing language file: {:s}...", filepath.string());
 		std::ifstream file(filepath);
 		if (!file.is_open())
@@ -230,6 +239,7 @@ namespace i18n
 
 	static std::string getLanguageReadableName(const nlohmann::json& contents)
 	{
+		ZoneScoped;
 		if (contents.find("readable") != contents.end() && contents["readable"].is_string())
 		{
 			return contents["readable"].get<std::string>();
@@ -239,6 +249,7 @@ namespace i18n
 
 	static std::vector<std::string> getLanguageFonts(const nlohmann::json& contents)
 	{
+		ZoneScoped;
 		if (contents.find("fonts") != contents.end() && contents["fonts"].is_array())
 		{
 			return contents["fonts"].get<std::vector<std::string>>();

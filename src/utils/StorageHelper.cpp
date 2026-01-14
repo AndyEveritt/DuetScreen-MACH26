@@ -10,6 +10,7 @@ static std::string filename_ = "config.json";
 
 bool StorageHelper::setConfigFile(std::string_view filename)
 {
+	ZoneScoped;
 	filename_ = filename;
 	if (!load())
 	{
@@ -23,6 +24,7 @@ bool StorageHelper::setConfigFile(std::string_view filename)
 
 bool StorageHelper::save()
 {
+	ZoneScoped;
 	nlohmann::json j(data_);
 	auto json_string = j.dump();
 	LOG_DBG("Saving config.json:\n{:s}", json_string);
@@ -47,6 +49,7 @@ bool StorageHelper::save()
 
 bool StorageHelper::load()
 {
+	ZoneScoped;
 	std::ifstream file(filename_);
 	if (!file.is_open())
 	{
@@ -80,6 +83,7 @@ bool StorageHelper::load()
 
 bool StorageHelper::clear()
 {
+	ZoneScoped;
 	data_.clear();
 	return save();
 }

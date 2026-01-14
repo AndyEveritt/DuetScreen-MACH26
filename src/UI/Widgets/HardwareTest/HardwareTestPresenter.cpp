@@ -13,6 +13,7 @@
 #include "nameof.hpp"
 #include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
+#include "utils/SystemHelper.h"
 #include <filesystem>
 #include <fstream>
 #include <regex>
@@ -528,6 +529,10 @@ namespace UI
 
 		setUsbMode(Comm::UsbMode::Device);
 
+#if DEVELOPER_MODE // Enabled when DUETSCREEN_HARDWARE_TEST is enabled
+		SystemHelper::startService(SystemHelper::Services::ADB);
+#endif
+
 		auto& usbTest = getView()->getUsbTest();
 		usbTest.setMessage("Connect USB-A port to either USB-C port");
 		usbTest.showButton(true);
@@ -545,7 +550,10 @@ namespace UI
 
 						std::string lsusb = runCommand("lsusb");
 						m_currentTest->output["usb_c_device"]["lsusb"] = lsusb;
+
+						/* This requires ADB to be enabled */
 						bool result = lsusb.find("1d6b:0105") != std::string::npos;
+
 						m_currentTest->output["usb_c_device"]["result"] = result;
 						if (!result)
 						{

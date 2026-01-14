@@ -163,6 +163,7 @@ class Model
 
 	static Model& get()
 	{
+		ZoneScoped;
 		static Model instance;
 		return instance;
 	}
@@ -185,6 +186,7 @@ class Model
 	template <EventType E, typename Func>
 	void addEventListener(Func&& func)
 	{
+		ZoneScoped;
 		// Verify at compile time that the callable can be invoked with the event's argument list
 		using Tuple = typename EventTraits<E>::tuple_type;
 		// Expanded check (kept separate for a clean message)
@@ -209,6 +211,7 @@ class Model
 	template <EventType E, typename Class, typename... Args>
 	void addEventListener(Class* instance, void (Class::*memberFunc)(Args...))
 	{
+		ZoneScoped;
 		// Compile-time verification that the member function signature matches the event's argument list
 		using ExpectedTuple = typename EventTraits<E>::tuple_type;
 		using ProvidedTuple = std::tuple<std::decay_t<Args>...>;

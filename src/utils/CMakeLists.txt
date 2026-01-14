@@ -6,6 +6,7 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/GpioHelper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/NetworkHelper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/StorageHelper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/SystemHelper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/UnitSystem.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/UpgradeHelper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp

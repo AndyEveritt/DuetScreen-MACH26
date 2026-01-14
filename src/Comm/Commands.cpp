@@ -13,6 +13,7 @@
  */
 
 #include "Comm/Commands.h"
+#include "Debug.h"
 #include "ObjectModel/Utils.h"
 #include "utils/utils.h"
 #include <stdlib.h>
@@ -161,12 +162,14 @@ namespace Comm
 
 	void SortFieldTable()
 	{
+		ZoneScoped;
 		// Sort the g_fieldTable prior searching using binary search
 		qsort(g_fieldTable, ARRAY_SIZE(g_fieldTable), sizeof(FieldTableEntry), compareKey<FieldTableEntry>);
 	}
 
 	const FieldTableEntry* SearchFieldTable(const char* id)
 	{
+		ZoneScoped;
 		const FieldTableEntry key = {ReceivedDataEvent::rcvUnknown, id};
 		const FieldTableEntry* searchResult = (FieldTableEntry*)bsearch(
 			&key, g_fieldTable, ARRAY_SIZE(g_fieldTable), sizeof(FieldTableEntry), compareKey<FieldTableEntry>);

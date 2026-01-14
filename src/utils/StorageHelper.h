@@ -7,21 +7,34 @@
 #include <map>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <string_view>
 
 class StorageHelper
 {
   public:
 	template <typename T>
-	static void setData(const std::string& key, const T& value)
+	static void setData(std::string_view key, const T& value)
 	{
-		LOG_VERBOSE("Saving \"{:s}\" to config.json", key.c_str());
-		std::istringstream keyStream(key);
-		std::string segment;
+		ZoneScoped;
+		LOG_VERBOSE("Saving \"{:s}\" to config.json", key);
 		nlohmann::json* current = &data_;
 
-		while (std::getline(keyStream, segment, ':'))
+		std::size_t pos = 0;
+		while (pos <= key.size())
 		{
+			const std::size_t next = key.find(':', pos);
+			const std::string_view segment =
+				(next == std::string_view::npos) ? key.substr(pos) : key.substr(pos, next - pos);
 			current = &(*current)[segment];
+			if (next == std::string_view::npos)
+			{
+				break;
+			}
+			pos = next + 1;
+		}
+		if (*current == value)
+		{
+			return;
 		}
 		*current = value;
 		save();
@@ -33,19 +46,28 @@ class StorageHelper
 	static bool clear();
 
 	template <typename T>
-	static T getData(const std::string& key, const T& defaultValue)
+	static T getData(std::string_view key, const T& defaultValue)
 	{
-		std::istringstream keyStream(key);
-		std::string segment;
+		ZoneScoped;
 		nlohmann::json* current = &data_;
 
-		while (std::getline(keyStream, segment, ':'))
+		std::size_t pos = 0;
+		while (pos <= key.size())
 		{
-			if (current->find(segment) == current->end())
+			const std::size_t next = key.find(':', pos);
+			const std::string_view segment =
+				(next == std::string_view::npos) ? key.substr(pos) : key.substr(pos, next - pos);
+			// const std::string segmentStr(segment);
+			if (!current->contains(segment))
 			{
 				return defaultValue;
 			}
 			current = &(*current)[segment];
+			if (next == std::string_view::npos)
+			{
+				break;
+			}
+			pos = next + 1;
 		}
 
 		return current->get<T>();

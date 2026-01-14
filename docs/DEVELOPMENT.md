@@ -383,7 +383,7 @@ To build on Ubuntu 24.04 LTS the following commands worked for me but your milea
 ```bash
 cd libraries/tracy
 cmake -B ./profiler/build -S ./profiler -DCMAKE_BUILD_TYPE=Release -DLEGACY=1
-cmake --build ./profiler/build --config Release
+cmake --build ./profiler/build --config Release --parallel
 ```
 
 Then run the tracy server using:

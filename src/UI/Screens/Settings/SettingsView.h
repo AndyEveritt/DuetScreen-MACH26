@@ -137,7 +137,10 @@ namespace UI
 #if DEBUG_BORDERS
 		LvSettingsToggle m_debugBorders{"debug_borders", getRoot()};
 #endif
+#if DEVELOPER_MODE
 		LvSettingsToggle m_enableSSH{"enable_ssh", getRoot()};
+		LvSettingsToggle m_enableADB{"enable_adb", getRoot()};
+#endif
 #if LV_USE_SYSMON
 		LvSettingsToggle m_enableSystemMonitor{"enable_system_monitor", getRoot()};
 #endif
@@ -149,6 +152,9 @@ namespace UI
 		Button m_eraseAndRestart{"erase_and_restart", m_controls};
 		Button m_reboot{"reboot", m_controls};
 		Button m_startHardwareTest{"start_hardware_test", m_controls};
+#if DEVELOPER_MODE
+		Button m_runBuildrootSetup{"run_buildroot_setup", m_controls};
+#endif
 
 		HardwareTest m_hardwareTest;
 	};

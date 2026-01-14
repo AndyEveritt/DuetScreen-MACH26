@@ -8,6 +8,7 @@
 
 #include "Reset.h"
 #include "Debug.h"
+#include "utils/SystemHelper.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -27,10 +28,7 @@ extern "C"
 #if SIMULATION
 		exit(EXIT_SUCCESS);
 #else
-	if (system("/etc/init.d/S20DuetScreen restart") != 0)
-	{
-		LOG_FATAL_THROW("Failed to restart DuetScreen service");
-	}
+	SystemHelper::restartService(SystemHelper::Services::DUETSCREEN);
 #endif
 	}
 

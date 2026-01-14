@@ -53,6 +53,17 @@ option(DUETSCREEN_ENABLE_LV_PROFILING "Enable lvgl profiling" ${DUETSCREEN_ENABL
 option(DUETSCREEN_USE_FIXED_TEST_BUILD_TIME "Use fixed build date/time for unit tests" OFF)
 option(DUETSCREEN_USE_LV_ANIMATION "Enable LVGL animations" ON)
 
+set(_dev_default OFF)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(_dev_default ON)
+endif()
+set(DUETSCREEN_DEVELOPER_MODE ${_dev_default} CACHE BOOL "Enable developer mode features")
+
+# Hardware test requires developer mode to enable ADB
+if (DUETSCREEN_HARDWARE_TEST)
+  set(DUETSCREEN_DEVELOPER_MODE ON CACHE BOOL "Enable developer mode features" FORCE)
+endif()
+
 # UI Options
 set(DUETSCREEN_UI_SETTINGS_TOGGLE_WIDGET "LvCheckbox" CACHE STRING "Widget type for settings toggles: 'LvCheckbox' or 'LvSwitch'")
 set_property(CACHE DUETSCREEN_UI_SETTINGS_TOGGLE_WIDGET PROPERTY STRINGS LvCheckbox LvSwitch) # constrain valid values

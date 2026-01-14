@@ -11,6 +11,7 @@
 #include "i18n/i18n.h"
 #include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
+#include "utils/SystemHelper.h"
 #include "version.h"
 
 #define USE_MODAL_NUMBERPAD_FOR_IP_ADDRESS 1
@@ -511,31 +512,39 @@ namespace UI
 			});
 #endif
 
+#if DEVELOPER_MODE
 		/* Enable SSH */
 		createRow(_("settings.enable_ssh"), m_enableSSH);
 		m_enableSSH.setCheckedCallback(
 			[](bool checked)
 			{
 				StorageHelper::setData(ID_SSH_ENABLED, checked);
-#if !SIMULATION
-				if (checked && !std::filesystem::exists("/etc/init.d/S50dropbear"))
+				if (checked)
 				{
-					std::filesystem::rename("/etc/init.d/50dropbear", "/etc/init.d/S50dropbear");
-					if (system("/etc/init.d/S50dropbear start") != 0)
-					{
-						LOG_ERROR("Failed to start SSH server");
-					}
+					SystemHelper::enableService(SystemHelper::Services::SSH);
 				}
-				else if (!checked && std::filesystem::exists("/etc/init.d/S50dropbear"))
+				else
 				{
-					if (system("/etc/init.d/S50dropbear stop") != 0)
-					{
-						LOG_ERROR("Failed to stop SSH server");
-					}
-					std::filesystem::rename("/etc/init.d/S50dropbear", "/etc/init.d/50dropbear");
+					SystemHelper::disableService(SystemHelper::Services::SSH);
 				}
-#endif
 			});
+
+		/* Enable ADB */
+		createRow(_("settings.enable_adb"), m_enableADB);
+		m_enableADB.setCheckedCallback(
+			[](bool checked)
+			{
+				StorageHelper::setData(ID_ADB_ENABLED, checked);
+				if (checked)
+				{
+					SystemHelper::enableService(SystemHelper::Services::ADB);
+				}
+				else
+				{
+					SystemHelper::disableService(SystemHelper::Services::ADB);
+				}
+			});
+#endif
 
 #if LV_USE_SYSMON
 		createRow(_("settings.enable_system_monitor"), m_enableSystemMonitor);
@@ -573,7 +582,15 @@ namespace UI
 		m_controls.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 		m_controls.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		for (auto& btn : {&m_restart, &m_eraseAndRestart, &m_reboot, &m_startHardwareTest})
+		for (auto& btn : {
+				 &m_restart,
+				 &m_eraseAndRestart,
+				 &m_reboot,
+				 &m_startHardwareTest,
+#if DEVELOPER_MODE
+				 &m_runBuildrootSetup,
+#endif
+			 })
 		{
 			btn->setSize(150, 100);
 		}
@@ -588,6 +605,12 @@ namespace UI
 		m_reboot.addClickedCallback([](lv_event_t*) { Reboot(); });
 		m_startHardwareTest.addClickedCallback([this](lv_event_t*) { getPresenter()->startHardwareTest(); });
 
+#if DEVELOPER_MODE
+		m_runBuildrootSetup.setText(_("settings.run_buildroot_setup"));
+		m_runBuildrootSetup.addClickedCallback([](lv_event_t*)
+											   { SystemHelper::restartService(SystemHelper::Services::SETUP); });
+#endif
+
 		/* Hardware test */
 		m_hardwareTest.hide();
 	}
@@ -601,10 +624,14 @@ namespace UI
 #if DEBUG_BORDERS
 		m_debugBorders.setChecked(Themes::isdebugBorderVisible(lv_screen_active()));
 #endif
+#if DEVELOPER_MODE
 		m_enableSSH.setChecked(
-			StorageHelper::getData(ID_SSH_ENABLED, std::filesystem::exists("/etc/init.d/S50dropbear")));
+			StorageHelper::getData(ID_SSH_ENABLED, SystemHelper::isServiceEnabled(SystemHelper::Services::SSH)));
+		m_enableADB.setChecked(
+			StorageHelper::getData(ID_ADB_ENABLED, SystemHelper::isServiceEnabled(SystemHelper::Services::ADB)));
+#endif
 #if LV_USE_SYSMON
-		m_enableSystemMonitor.setChecked(StorageHelper::getData(ID_SYSTEM_MONITOR_ENABLED, false));
+		m_enableSystemMonitor.setChecked(StorageHelper::getData(ID_SYSTEM_MONITOR_ENABLED, true));
 #endif
 		m_systemLogging.setChecked(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
 	}

@@ -14,12 +14,14 @@
 
 DeadlockDetector& DeadlockDetector::getInstance()
 {
+	ZoneScoped;
 	static DeadlockDetector instance;
 	return instance;
 }
 
 void DeadlockDetector::registerLock(const std::string& lockName, const void* lockPtr)
 {
+	ZoneScoped;
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	m_registeredLocks[lockPtr] = lockName;
 	LOG_VERBOSE("Lock registered: {:s} at {:p}", lockName.c_str(), lockPtr);
@@ -27,6 +29,7 @@ void DeadlockDetector::registerLock(const std::string& lockName, const void* loc
 
 void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 {
+	ZoneScoped;
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 
 	auto threadId = Log::GetThreadId();
@@ -104,6 +107,7 @@ void DeadlockDetector::beforeLockAcquire(const void* lockPtr)
 
 void DeadlockDetector::afterLockAcquire(const void* lockPtr)
 {
+	ZoneScoped;
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
@@ -118,6 +122,7 @@ void DeadlockDetector::afterLockAcquire(const void* lockPtr)
 
 void DeadlockDetector::beforeLockRelease(const void* lockPtr)
 {
+	ZoneScoped;
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
@@ -130,6 +135,7 @@ void DeadlockDetector::beforeLockRelease(const void* lockPtr)
 
 void DeadlockDetector::afterLockRelease(const void* lockPtr)
 {
+	ZoneScoped;
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	auto threadId = Log::GetThreadId();
 	std::string lockName = getLockName(lockPtr);
@@ -151,6 +157,7 @@ void DeadlockDetector::afterLockRelease(const void* lockPtr)
 
 std::string DeadlockDetector::getLockName(const void* lockPtr)
 {
+	ZoneScoped;
 	auto it = m_registeredLocks.find(lockPtr);
 	if (it != m_registeredLocks.end())
 	{
@@ -167,6 +174,7 @@ void DeadlockDetector::reportPotentialDeadlock(thread_id_t thread1,
 											   thread_id_t thread2,
 											   const void* lock2)
 {
+	ZoneScoped;
 	LOG_ERROR("POTENTIAL DEADLOCK DETECTED!");
 	LOG_ERROR("Thread {} holds {:s} and wants to acquire {:s}",
 			  thread1,
@@ -180,6 +188,7 @@ void DeadlockDetector::reportPotentialDeadlock(thread_id_t thread1,
 
 void DeadlockDetector::allowThreadToTakeMultipleLocks(thread_id_t threadId, bool allowed)
 {
+	ZoneScoped;
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	if (allowed)
 	{
@@ -194,6 +203,7 @@ void DeadlockDetector::allowThreadToTakeMultipleLocks(thread_id_t threadId, bool
 
 thread_id_t DeadlockDetector::getOwningThreadId(const void* lockPtr)
 {
+	ZoneScoped;
 	std::lock_guard<std::mutex> guard(m_detectorMutex);
 	for (const auto& entry : m_threadLocks)
 	{

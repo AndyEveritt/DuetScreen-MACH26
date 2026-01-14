@@ -11,6 +11,7 @@
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
 #include "utils/StorageHelper.h"
+#include "utils/SystemHelper.h"
 #include <sys/stat.h>
 
 #define USB_BASE_DIR "/media/usb"
@@ -107,8 +108,7 @@ namespace UpgradeHelper
 			return false;
 		}
 
-		int ret = system("/etc/init.d/S50rootfs-upgrade restart");
-		return ret == 0;
+		return SystemHelper::restartService(SystemHelper::Services::UPGRADE);
 	}
 
 	bool upgradeFromUSB(const std::string& filePath)
