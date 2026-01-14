@@ -92,7 +92,7 @@ namespace OM
 				auto bed = GetBed(i);
 				if (bed != nullptr)
 				{
-					LOG_INFO("    [{:d}]: heater({:d}), slot({:d})", bed->index, bed->heater, bed->slot);
+					LOG_INFO("    [{:d}]: heater({:d})", bed->index, bed->heater);
 				}
 			}
 			LOG_INFO("  Chambers:");
@@ -101,7 +101,7 @@ namespace OM
 				auto chamber = GetChamber(i);
 				if (chamber != nullptr)
 				{
-					LOG_INFO("    [{:d}]: heater({:d}), slot({:d})", chamber->index, chamber->heater, chamber->slot);
+					LOG_INFO("    [{:d}]: heater({:d})", chamber->index, chamber->heater);
 				}
 			}
 			LOG_INFO("  Fans:");

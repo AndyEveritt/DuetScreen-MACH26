@@ -20,7 +20,7 @@ namespace UI
 
 	void SpeedFactorPresenter::setSpeedFactor(uint32_t value)
 	{
-		if (value == std::round(100 * OM::Move::GetSpeedFactor()))
+		if (value == static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())))
 		{
 			return;
 		}

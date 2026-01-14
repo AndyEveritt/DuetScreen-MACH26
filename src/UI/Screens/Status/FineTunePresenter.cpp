@@ -20,7 +20,7 @@ namespace UI
 {
 	void FineTunePresenter::newSpeedFactor()
 	{
-		m_view->setSpeedValue(static_cast<uint32_t>(std::round(100 * OM::Move::GetSpeedFactor())));
+		m_view->setSpeedValue(static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())));
 	}
 
 	void FineTunePresenter::newExtruderData()
@@ -31,7 +31,7 @@ namespace UI
 			[this](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t index)
 			{
 				m_view->setExtruderLabel(index, _("fine_tune.extruder", extruder->index));
-				m_view->setExtruderValue(index, static_cast<uint32_t>(std::round(100 * extruder->factor)));
+				m_view->setExtruderValue(index, static_cast<uint32_t>(std::lround(100 * extruder->factor)));
 				return true;
 			});
 	}
@@ -44,7 +44,7 @@ namespace UI
 			[this](std::shared_ptr<OM::Fan> fan, size_t index)
 			{
 				m_view->setFanLabel(index, _("fine_tune.fan", fan->index));
-				m_view->setFanValue(index, static_cast<uint32_t>(std::round(100 * fan->requestedValue)));
+				m_view->setFanValue(index, static_cast<uint32_t>(std::lround(100 * fan->requestedValue)));
 				return true;
 			});
 	}
@@ -58,7 +58,7 @@ namespace UI
 
 	void FineTunePresenter::setSpeedFactor(uint32_t value)
 	{
-		if (value == std::round(100 * OM::Move::GetSpeedFactor()))
+		if (value == static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())))
 		{
 			return;
 		}
@@ -68,7 +68,7 @@ namespace UI
 	void FineTunePresenter::setExtruderFactor(size_t slot, uint32_t value)
 	{
 		auto extruder = OM::Move::GetExtruderAxisBySlot(slot);
-		if (extruder == nullptr || value == std::round(100 * extruder->factor))
+		if (extruder == nullptr || value == static_cast<uint32_t>(std::lround(100 * extruder->factor)))
 		{
 			return;
 		}
@@ -80,11 +80,11 @@ namespace UI
 	void FineTunePresenter::setFanValue(size_t slot, uint32_t value)
 	{
 		auto fan = OM::GetFanBySlot(slot);
-		if (fan == nullptr || value == std::round(100 * fan->requestedValue))
+		if (fan == nullptr || value == static_cast<uint32_t>(std::lround(100 * fan->requestedValue)))
 		{
 			return;
 		}
 
-		Comm::DUET.SendGcodef("M106 P{:d} S{:d}\n", fan->index, (uint32_t)std::round(2.55 * value));
+		Comm::DUET.SendGcodef("M106 P{:d} S{:d}\n", fan->index, std::lround(2.55 * value));
 	}
 } // namespace UI

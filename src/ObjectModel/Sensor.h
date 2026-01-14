@@ -20,7 +20,7 @@ namespace OM
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<AnalogSensor>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<AnalogSensor>(p); }
 
-		uint8_t index;
+		size_t index;
 		float lastReading;
 		std::chrono::milliseconds lastReadingTime;
 		String<MAX_TOOL_NAME_LENGTH> name;
@@ -33,7 +33,7 @@ namespace OM
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<Endstop>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<Endstop>(p); }
 
-		uint8_t index;
+		size_t index;
 		bool triggered;
 
 		void Reset();

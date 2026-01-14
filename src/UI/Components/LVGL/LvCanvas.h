@@ -41,9 +41,9 @@ namespace UI
 				}
 
 				uint8_t bpp = lv_color_format_get_bpp(cf);
-				uint8_t mask = (1 << bpp) - 1;
+				uint8_t mask = static_cast<uint8_t>((1 << bpp) - 1);
 				c_int &= mask;
-				*data = (*data & ~(mask << shift)) | (c_int << shift);
+				*data = (*data & static_cast<uint8_t>(~(mask << shift))) | static_cast<uint8_t>(c_int << shift);
 			}
 			else if (cf == LV_COLOR_FORMAT_L8)
 			{
@@ -56,9 +56,11 @@ namespace UI
 			else if (cf == LV_COLOR_FORMAT_RGB565)
 			{
 				lv_color16_t* buf = (lv_color16_t*)data;
+#pragma GCC diagnostic ignored "-Wconversion"
 				buf->red = color.red >> 3;
 				buf->green = color.green >> 2;
 				buf->blue = color.blue >> 3;
+#pragma GCC diagnostic pop
 			}
 			else if (cf == LV_COLOR_FORMAT_RGB888)
 			{

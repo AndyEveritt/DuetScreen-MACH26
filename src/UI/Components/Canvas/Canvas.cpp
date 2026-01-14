@@ -200,8 +200,10 @@ namespace UI
 		range_t xRange = getXRange();
 		range_t yRange = getYRange();
 
-		x = xRange.min + (float)px * (xRange.max - xRange.min) / (float)res_x;
-		y = yRange.min + (float)py * (yRange.max - yRange.min) / (float)res_y;
+		x = static_cast<float>(xRange.min) +
+			static_cast<float>(px * (xRange.max - xRange.min)) / static_cast<float>(res_x);
+		y = static_cast<float>(yRange.min) +
+			static_cast<float>(py * (yRange.max - yRange.min)) / static_cast<float>(res_y);
 
 		return true;
 	}
@@ -220,7 +222,8 @@ namespace UI
 		range_t xRange = getXRange();
 		range_t yRange = getYRange();
 
-		if (x < xRange.min || x > xRange.max || y < yRange.min || y > yRange.max)
+		if (x < static_cast<float>(xRange.min) || x > static_cast<float>(xRange.max) ||
+			y < static_cast<float>(yRange.min) || y > static_cast<float>(yRange.max))
 		{
 			return false;
 		}
@@ -228,8 +231,10 @@ namespace UI
 		uint32_t res_x, res_y;
 		getResolution(res_x, res_y);
 
-		px = (size_t)((x - xRange.min) * (float)res_x / (xRange.max - xRange.min));
-		py = (size_t)(res_y - (y - yRange.min) * (float)res_y / (yRange.max - yRange.min));
+		px = (size_t)((x - static_cast<float>(xRange.min)) * static_cast<float>(res_x) /
+					  static_cast<float>(xRange.max - xRange.min));
+		py = (size_t)(res_y - static_cast<uint32_t>((y - static_cast<float>(yRange.min)) * static_cast<float>(res_y) /
+													static_cast<float>(yRange.max - yRange.min)));
 
 		return true;
 	}
@@ -326,7 +331,7 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		// Draw the pixel
-		m_canvas.setPxNoInvalidate(px, py, color, opa);
+		m_canvas.setPxNoInvalidate(static_cast<int32_t>(px), static_cast<int32_t>(py), color, opa);
 	}
 
 	void Canvas::drawRect(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa)
@@ -384,12 +389,12 @@ namespace UI
 		UI_LOCK();
 		LOG_DBG("p1: ({}, {}), p2: ({}, {})", p1.x, p1.y, p2.x, p2.y);
 
-		if (!posToPx(p1.x, p1.y, p1.x, p1.y))
+		if (!posToPx(static_cast<float>(p1.x), static_cast<float>(p1.y), p1.x, p1.y))
 		{
 			LOG_WARN("invalid point ({}, {})", p1.x, p1.y);
 			return;
 		}
-		if (!posToPx(p2.x, p2.y, p2.x, p2.y))
+		if (!posToPx(static_cast<float>(p2.x), static_cast<float>(p2.y), p2.x, p2.y))
 		{
 			LOG_WARN("invalid point ({}, {})", p2.x, p2.y);
 			return;
@@ -435,7 +440,7 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("center: ({:d}, {:d}), radius: {:d}", center.x, center.y, radius);
-		if (!posToPx(center.x, center.y, center.x, center.y))
+		if (!posToPx(static_cast<float>(center.x), static_cast<float>(center.y), center.x, center.y))
 		{
 			LOG_WARN("invalid point ({:d}, {:d})", center.x, center.y);
 			return;
@@ -501,7 +506,8 @@ namespace UI
 	lv_color_t Canvas::getPx(size_t px, size_t py) const
 	{
 		ZoneScoped;
-		lv_color32_t color32 = m_canvas.getPx(px, py);
+		lv_color32_t color32 =
+			m_canvas.getPx(static_cast<int32_t>(px), static_cast<int32_t>(py)); // not sure why the API wants int32_t
 		lv_color_t color = {color32.blue, color32.green, color32.red};
 		return color;
 	}

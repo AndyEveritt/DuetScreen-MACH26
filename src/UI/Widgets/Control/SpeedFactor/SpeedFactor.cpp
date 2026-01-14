@@ -39,6 +39,6 @@ namespace UI
 
 	void SpeedFactor::setSpeedValue(uint32_t value)
 	{
-		m_speed.setValue(value);
+		m_speed.setValue(static_cast<float>(value));
 	}
 } // namespace UI

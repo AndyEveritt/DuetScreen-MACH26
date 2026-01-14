@@ -36,8 +36,6 @@ namespace UI
 	  private:
 		static void onHomeAllEvent(lv_event_t* e);
 		static void onDisableMotorsEvent(lv_event_t* e);
-		static void onDistanceEvent(lv_event_t* e);
-		static void onFeedrateEvent(lv_event_t* e);
 
 		void onShow() override;
 

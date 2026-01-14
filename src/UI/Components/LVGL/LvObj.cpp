@@ -472,9 +472,9 @@ namespace UI
 		lv_obj_set_flag(obj, flag, enable);
 		if (recursive)
 		{
-			for (size_t i = 0; i < lv_obj_get_child_count(obj); i++)
+			for (uint32_t i = 0; i < lv_obj_get_child_count(obj); i++)
 			{
-				lv_obj_t* child = lv_obj_get_child(obj, i);
+				lv_obj_t* child = lv_obj_get_child(obj, static_cast<int32_t>(i));
 				if (child == nullptr)
 				{
 					continue;
@@ -506,7 +506,7 @@ namespace UI
 		{
 			for (size_t i = 0; i < lv_obj_get_child_count(obj); i++)
 			{
-				lv_obj_t* child = lv_obj_get_child(obj, i);
+				lv_obj_t* child = lv_obj_get_child(obj, static_cast<int32_t>(i));
 				if (child == nullptr)
 				{
 					continue;
@@ -839,7 +839,7 @@ namespace UI
 		}
 	}
 
-	bool LvObj::removeEvent(size_t index)
+	bool LvObj::removeEvent(uint32_t index)
 	{
 		ZoneScoped;
 		UI_LOCK();

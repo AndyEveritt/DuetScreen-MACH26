@@ -67,7 +67,7 @@ namespace UI
 
 	void FineTune::setSpeedValue(uint32_t value)
 	{
-		m_speed.setValue(value);
+		m_speed.setValue(static_cast<float>(value));
 	}
 
 	/**
@@ -152,7 +152,7 @@ namespace UI
 			if (!extruder->isFocused())
 			{
 				LOG_DBG("Setting extruder {:d} extrusion factor to {:d}", index, value);
-				extruder->setValue(value);
+				extruder->setValue(static_cast<float>(value));
 			}
 		}
 	}
@@ -176,7 +176,7 @@ namespace UI
 		{
 			if (!fan->isFocused())
 			{
-				fan->setValue(value);
+				fan->setValue(static_cast<float>(value));
 			}
 		}
 	}

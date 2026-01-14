@@ -36,7 +36,7 @@ namespace UI
 		newHeaterData();
 	}
 
-	void HeaterSliderPresenter::setToolHeaterIndex(size_t toolIndex, uint8_t toolHeaterIndex)
+	void HeaterSliderPresenter::setToolHeaterIndex(size_t toolIndex, size_t toolHeaterIndex)
 	{
 		UI_LOCK();
 		reset();

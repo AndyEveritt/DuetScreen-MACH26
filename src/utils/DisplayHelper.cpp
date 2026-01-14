@@ -94,7 +94,7 @@ bool DisplayHelper::setBrightnessInner(unsigned int percentage)
 	percentage = std::clamp(percentage, 0u, 100u);
 
 	// Scale brightness from 0-100 to 0-255 for the hardware
-	uint8_t brightness = (percentage * 255) / 100;
+	unsigned int brightness = (percentage * 255) / 100;
 	param.screen = disp.m_screen;
 	param.brightness = brightness;
 

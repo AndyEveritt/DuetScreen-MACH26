@@ -46,12 +46,12 @@ bool HeatSubscribers::bedHeater(Comm::JsonDecoder* decoder, const int32_t& data,
 	UNUSED(decoder);
 	if (data > -1)
 	{
-		OM::SetBedHeater(indices[0], data);
+		OM::SetBedHeater(indices[0], static_cast<int8_t>(data));
 		for (size_t i = OM::g_lastBed + 1; i < indices[0]; ++i)
 		{
 			OM::RemoveBed(i, false);
 		}
-		OM::g_lastBed = indices[0];
+		OM::g_lastBed = static_cast<int8_t>(indices[0]);
 		LOG_DBG("g_lastBed={:d}", OM::g_lastBed);
 	}
 	return true;
@@ -62,12 +62,12 @@ bool HeatSubscribers::chamberHeater(Comm::JsonDecoder* decoder, const int32_t& d
 	UNUSED(decoder);
 	if (data > -1)
 	{
-		OM::SetChamberHeater(indices[0], data);
+		OM::SetChamberHeater(indices[0], static_cast<int8_t>(data));
 		for (size_t i = OM::g_lastChamber + 1; i < indices[0]; ++i)
 		{
 			OM::RemoveChamber(i, false);
 		}
-		OM::g_lastChamber = indices[0];
+		OM::g_lastChamber = static_cast<int8_t>(indices[0]);
 		LOG_DBG("g_lastChamber={:d}", OM::g_lastChamber);
 	}
 	return true;

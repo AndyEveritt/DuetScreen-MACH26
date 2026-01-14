@@ -98,11 +98,17 @@ namespace USB
 			return false;
 		}
 
-		std::streamsize size = file.tellg();
+		const std::streampos endPos = file.tellg();
+		if (endPos == std::streampos(-1))
+		{
+			LOG_ERROR("Failed to get file size for {:s}", filePath.c_str());
+			return false;
+		}
 		file.seekg(0, std::ios::beg);
-		contents.resize(size);
-		LOG_DBG("Reading {:d} bytes", size);
-		if (!file.read(&contents[0], size))
+		const auto sizeOff = static_cast<std::streamoff>(endPos);
+		contents.resize(static_cast<std::size_t>(sizeOff));
+		LOG_DBG("Reading {:d} bytes", static_cast<int>(sizeOff));
+		if (!file.read(contents.data(), static_cast<std::streamsize>(sizeOff)))
 		{
 			LOG_ERROR("Failed to read file {:s}", filePath.c_str());
 			return false;

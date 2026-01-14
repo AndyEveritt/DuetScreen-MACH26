@@ -171,10 +171,12 @@ namespace UI
 		txt_area.y2 = txt_size.y - 1;
 
 		lv_area_t indic_area = slider.m_currentTemperature.getCoords();
-		lv_area_set_width(
-			&indic_area,
-			static_cast<int32_t>(lv_area_get_width(&indic_area) * (slider.m_currentTempValue - slider.m_minTempValue) /
-								 (slider.m_maxTempValue - slider.m_minTempValue)));
+		const int32_t range =
+			std::max(1, static_cast<int32_t>(std::lround(slider.m_maxTempValue - slider.m_minTempValue)));
+		lv_area_set_width(&indic_area,
+						  ((lv_area_get_width(&indic_area) *
+							static_cast<int32_t>(slider.m_currentTempValue - slider.m_minTempValue)) /
+						   range));
 
 		/*If the indicator is long enough put the text inside on the right*/
 		if (lv_area_get_width(&indic_area) > txt_size.x + 20)
@@ -232,11 +234,12 @@ namespace UI
 			lv_indev_get_point(lv_indev_active(), &control.m_pressedPoint);
 			lv_obj_transform_point(
 				label.getRootPtr(), &control.m_pressedPoint, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
-			float pct =
-				(float)(temperature - control.m_minTempValue) / (control.m_maxTempValue - control.m_minTempValue);
+			const int32_t pct_100 =
+				static_cast<int32_t>(100 * (static_cast<float>(temperature) - control.m_minTempValue) /
+									 (control.m_maxTempValue - control.m_minTempValue));
 
 			control.m_pressedPointOffset.x =
-				static_cast<int32_t>(control.m_pressedPoint.x - label.getCoords().x1 - label.getWidth() * pct);
+				(control.m_pressedPoint.x - label.getCoords().x1 - label.getWidth() * pct_100) / 100;
 			break;
 		}
 		case LV_EVENT_PRESSING:
@@ -331,8 +334,9 @@ namespace UI
 			const int32_t range = static_cast<int32_t>(control.m_maxTempValue - control.m_minTempValue);
 
 			int32_t pct =
-				range > 0 ? std::clamp(100 * temperature - static_cast<int32_t>(control.m_minTempValue) / range, 0, 100)
-						  : 0;
+				range > 0
+					? std::clamp((100 * temperature - static_cast<int32_t>(control.m_minTempValue)) / range, 0, 100)
+					: 0;
 
 			marker_area.x1 = label_area.x1 + label_width * pct / 100 - marker_width / 2;
 			marker_area.x2 = marker_area.x1 + marker_width - 1;

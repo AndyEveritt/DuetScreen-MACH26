@@ -25,7 +25,7 @@ namespace OM
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<Fan>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<Fan>(p); }
 
-		uint8_t index; // This is the fan number
+		size_t index; // This is the fan number
 		float actualValue;
 		float requestedValue;
 		int32_t rpm;

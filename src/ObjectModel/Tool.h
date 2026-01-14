@@ -50,7 +50,7 @@ namespace OM
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<ToolHeater>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<ToolHeater>(p); }
 
-		uint8_t index;
+		size_t index;
 		int32_t activeTemp;
 		int32_t standbyTemp;
 		Heat::HeaterPtr heater;
@@ -66,7 +66,7 @@ namespace OM
 		void operator delete(void* p) noexcept;
 
 		// tool number
-		uint8_t index;
+		size_t index;
 		String<MAX_TOOL_NAME_LENGTH> name;
 		ToolHeaterPtr heaters[MAX_HEATERS_PER_TOOL];
 		Move::ExtruderAxisPtr extruders[MAX_EXTRUDERS_PER_TOOL];
@@ -80,34 +80,34 @@ namespace OM
 
 		std::string GetName() const;
 
-		ToolHeaterPtr GetHeater(const uint8_t toolHeaterIndex);
-		ToolHeaterPtr GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
+		ToolHeaterPtr GetHeater(const size_t toolHeaterIndex);
+		ToolHeaterPtr GetOrCreateHeater(const size_t toolHeaterIndex, const size_t heaterIndex);
 
-		Move::ExtruderAxisPtr GetExtruder(const uint8_t toolExtruderIndex) const;
-		Move::ExtruderAxisPtr GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex);
+		Move::ExtruderAxisPtr GetExtruder(const size_t toolExtruderIndex) const;
+		Move::ExtruderAxisPtr GetOrCreateExtruder(const size_t toolExtruderIndex, const size_t extruderIndex);
 		size_t GetExtruderCount() const;
 
-		FanPtr GetFan(const uint8_t toolFanIndex);
-		FanPtr GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex);
+		FanPtr GetFan(const size_t toolFanIndex);
+		FanPtr GetOrCreateFan(const size_t toolFanIndex, const size_t fanIndex);
 		size_t GetFanCount() const;
 
 		StringRef GetFilament() const;
 
-		int32_t GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active);
+		int32_t GetHeaterTarget(const size_t toolHeaterIndex, const bool active);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
 		bool SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active);
-		uint8_t GetHeaterCount() const;
-		bool HasHeater(const uint8_t heaterIndex) const;
+		size_t GetHeaterCount() const;
+		bool HasHeater(const size_t heaterIndex) const;
 		void IterateHeaters(function_ref<void(ToolHeaterPtr, size_t)> func, const size_t startAt = 0);
 		void IterateExtruders(function_ref<void(Move::ExtruderAxisPtr, size_t)> func, const size_t startAt = 0);
 		void IterateFans(function_ref<void(FanPtr, size_t)> func, const size_t startAt = 0);
-		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
-		size_t RemoveExtrudersFrom(const uint8_t toolExtruderIndex);
-		size_t RemoveFansFrom(const uint8_t toolFanIndex);
-		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
+		size_t RemoveHeatersFrom(const size_t toolHeaterIndex);
+		size_t RemoveExtrudersFrom(const size_t toolExtruderIndex);
+		size_t RemoveFansFrom(const size_t toolFanIndex);
+		void UpdateTemp(const size_t toolHeaterIndex, const int32_t temp, const bool active);
 		const char* GetStatusStr() const;
 		void ToggleState();
-		void ToggleHeaterState(const uint8_t toolHeaterIndex);
+		void ToggleHeaterState(const size_t toolHeaterIndex);
 		void ToggleSpindleState();
 		void UpdateSpindleTarget(const int32_t rpm);
 
@@ -127,15 +127,15 @@ namespace OM
 	bool IterateToolsWhile(function_ref<bool(ToolPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveTool(const size_t index, const bool allFollowing);
 
-	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex);
-	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
+	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const size_t heaterIndex);
+	bool RemoveToolHeaters(const size_t toolIndex, const size_t firstIndexToDelete = 0);
 
-	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const uint8_t extruderIndex);
-	bool RemoveToolExtruders(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
+	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const size_t extruderIndex);
+	bool RemoveToolExtruders(const size_t toolIndex, const size_t firstIndexToDelete = 0);
 	bool UpdateToolMix(const size_t toolIndex, const size_t toolExtruderIndex, const float mix);
 
-	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex);
-	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
+	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const size_t fanIndex);
+	bool RemoveToolFans(const size_t toolIndex, const size_t firstIndexToDelete = 0);
 
 	bool UpdateToolFilamentExtruder(const size_t toolIndex, const int8_t extruderIndex);
 

@@ -25,7 +25,7 @@ namespace UI
 
 		// Setters
 		void reset();
-		void setToolHeaterIndex(size_t toolIndex, uint8_t toolHeaterIndex);
+		void setToolHeaterIndex(size_t toolIndex, size_t toolHeaterIndex);
 		void setBedIndex(size_t index);
 		void setChamberIndex(size_t index);
 

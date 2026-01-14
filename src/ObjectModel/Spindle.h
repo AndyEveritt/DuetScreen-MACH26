@@ -41,7 +41,7 @@ namespace OM
 		void operator delete(void* p) noexcept { FreelistManager::Release<Spindle>(p); }
 
 		// Index within configured spindles
-		uint8_t index;
+		size_t index;
 		uint32_t active;
 		bool canReverse;
 		uint32_t current;

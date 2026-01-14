@@ -11,16 +11,18 @@ namespace UI
 {
 	static std::vector<float> s_distances = {0.1f, 0.5f, 1, 5, 10, 25, 50};	   // mm
 	static std::vector<uint32_t> s_feedRates = {5, 10, 25, 50, 100, 200, 300}; // mm/s
-	static uint32_t s_currentDistanceIndex = 4;
-	static uint32_t s_currentFeedrateIndex = 3;
+	static size_t s_currentDistanceIndex = 4;
+	static size_t s_currentFeedrateIndex = 3;
 
 	static float getSelectedDistance()
 	{
+		s_currentDistanceIndex = std::min(s_currentDistanceIndex, s_distances.size() - 1);
 		return s_distances[s_currentDistanceIndex];
 	}
 
 	static uint32_t getSelectedFeedrate()
 	{
+		s_currentFeedrateIndex = std::min(s_currentFeedrateIndex, s_feedRates.size() - 1);
 		return s_feedRates[s_currentFeedrateIndex];
 	}
 
@@ -179,7 +181,19 @@ namespace UI
 									 btn->addStyle(Themes::getLvglStyles().long_press);
 									 btn->setText(fmt::format("{}", s_distances[i]));
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
-									 btn->addClickedCallback(onDistanceEvent, this);
+									 btn->addClickedCallback(
+										 [this, i](lv_event_t*)
+										 {
+											 if (auto item = m_distances.getItem(s_currentDistanceIndex))
+											 {
+												 item->setChecked(false);
+											 }
+											 s_currentDistanceIndex = i;
+											 if (auto item = m_distances.getItem(s_currentDistanceIndex))
+											 {
+												 item->setChecked(true);
+											 }
+										 });
 									 btn->setCheckable(true);
 									 btn->setChecked(i == s_currentDistanceIndex);
 									 btn->setFlexGrow(1);
@@ -236,7 +250,19 @@ namespace UI
 									 btn->addStyle(Themes::getLvglStyles().long_press);
 									 btn->setText(fmt::format("{}", s_feedRates[i]));
 									 btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
-									 btn->addClickedCallback(onFeedrateEvent, this);
+									 btn->addClickedCallback(
+										 [this, i](lv_event_t*)
+										 {
+											 if (auto item = m_feedrates.getItem(s_currentFeedrateIndex))
+											 {
+												 item->setChecked(false);
+											 }
+											 s_currentFeedrateIndex = i;
+											 if (auto item = m_feedrates.getItem(s_currentFeedrateIndex))
+											 {
+												 item->setChecked(true);
+											 }
+										 });
 									 btn->setCheckable(true);
 									 btn->setChecked(i == s_currentFeedrateIndex);
 									 btn->setFlexGrow(1);
@@ -247,7 +273,7 @@ namespace UI
 										 {
 											 assert(i < std::size(s_feedRates));
 
-											 float value = s_feedRates[i];
+											 float value = static_cast<float>(s_feedRates[i]);
 											 openModal(&m_numberpad);
 											 m_numberpad.setHeader(
 												 _("move.feedrate_adjust_header", Units::getDisplayedSpeedUnit()));
@@ -257,7 +283,7 @@ namespace UI
 											 m_numberpad.setConfirmCallback(
 												 [btn_ptr, i](float value)
 												 {
-													 s_feedRates[i] = static_cast<uint32_t>(value);
+													 s_feedRates[i] = static_cast<uint32_t>(std::lround(value));
 													 btn_ptr->setText(fmt::format("{}", s_feedRates[i]));
 													 StorageHelper::setData(ID_MOVE_FEEDRATES, s_feedRates);
 												 });
@@ -279,38 +305,6 @@ namespace UI
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter->disableMotors();
-	}
-
-	void MoveView::onDistanceEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		MoveView& view = *static_cast<MoveView*>(lv_event_get_user_data(e));
-		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
-		if (auto item = view.m_distances.getItem(s_currentDistanceIndex))
-		{
-			item->setChecked(false);
-		}
-		s_currentDistanceIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
-		if (auto item = view.m_distances.getItem(s_currentDistanceIndex))
-		{
-			item->setChecked(true);
-		}
-	}
-
-	void MoveView::onFeedrateEvent(lv_event_t* e)
-	{
-		UI_LOCK();
-		MoveView& view = *static_cast<MoveView*>(lv_event_get_user_data(e));
-		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
-		if (auto item = view.m_feedrates.getItem(s_currentFeedrateIndex))
-		{
-			item->setChecked(false);
-		}
-		s_currentFeedrateIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
-		if (auto item = view.m_feedrates.getItem(s_currentFeedrateIndex))
-		{
-			item->setChecked(true);
-		}
 	}
 
 	void MoveView::setDisabled(bool disabled)

@@ -38,7 +38,7 @@ namespace OM::Move
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<Axis>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<Axis>(p); }
 
-		uint8_t index;
+		size_t index;
 		uint32_t acceleration;
 		float babystep;
 		char letter[2];
@@ -63,7 +63,7 @@ namespace OM::Move
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<ExtruderAxis>(); }
 		void operator delete(void* p) noexcept { FreelistManager::Release<ExtruderAxis>(p); }
 
-		uint8_t index;
+		size_t index;
 		float position;
 		float factor;
 		float stepsPerMm;

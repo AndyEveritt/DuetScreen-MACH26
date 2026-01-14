@@ -23,11 +23,9 @@ namespace OM
 		void operator delete(void* p) noexcept { FreelistManager::Release<BedOrChamber>(p); }
 
 		// Index within configured heaters
-		uint8_t index;
+		size_t index;
 		// Id of heater
 		int8_t heater;
-		// Slot for display on panel
-		uint8_t slot;
 
 		void Reset();
 		float GetCurrentTemp();
@@ -65,8 +63,8 @@ namespace OM
 	size_t GetChamberCount();
 	bool IterateChambersWhile(function_ref<bool(ChamberPtr, size_t)> func, const size_t startAt = 0);
 	size_t RemoveChamber(const size_t index, const bool allFollowing);
-	bool SetBedHeater(const uint8_t bedIndex, const int8_t heaterNumber);
-	bool SetChamberHeater(const uint8_t chamberIndex, const int8_t heaterNumber);
+	bool SetBedHeater(const size_t bedIndex, const int8_t heaterNumber);
+	bool SetChamberHeater(const size_t chamberIndex, const int8_t heaterNumber);
 
 	extern int8_t g_lastBed;
 	extern int8_t g_lastChamber;

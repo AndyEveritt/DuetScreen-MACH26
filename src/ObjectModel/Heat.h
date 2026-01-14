@@ -55,7 +55,7 @@ namespace OM
 			void* operator new(size_t) noexcept { return FreelistManager::Allocate<Heater>(); }
 			void operator delete(void* p) noexcept { FreelistManager::Release<Heater>(p); }
 
-			uint8_t index; // This is the heater number
+			size_t index; // This is the heater number
 			int32_t activeTemp;
 			int32_t standbyTemp;
 			float current;

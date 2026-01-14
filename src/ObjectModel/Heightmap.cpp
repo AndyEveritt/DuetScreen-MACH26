@@ -270,8 +270,8 @@ namespace OM
 				size_t index = rowIdx * cols + colIdx;
 				Point& point = m_heightmap[index];
 				std::string val;
-				point.x = meta.GetMin(0) + colIdx * meta.GetSpacing(0);
-				point.y = meta.GetMin(1) + rowIdx * meta.GetSpacing(1);
+				point.x = meta.GetMin(0) + static_cast<double>(colIdx) * meta.GetSpacing(0);
+				point.y = meta.GetMin(1) + static_cast<double>(rowIdx) * meta.GetSpacing(1);
 				if (point.x < xMin)
 				{
 					LOG_DBG("New xMin: {:g}", point.x);
@@ -329,8 +329,9 @@ namespace OM
 		LOG_DBG("xMin={:g}, xMax={:g}, yMin={:g}, yMax={:g}", xMin, xMax, yMin, yMax);
 		m_area =
 			meta.GetRadius() > 0 ? meta.GetRadius() * meta.GetRadius() * M_PI : std::abs((xMax - xMin) * (yMax - yMin));
-		m_meanError = errorSum / (rows * cols);
-		m_stdDev = sqrt(errorSqrSum * GetPointCount() - errorSum * errorSum) / GetPointCount();
+		m_meanError = errorSum / static_cast<double>(rows * cols);
+		const double pointCount = static_cast<double>(GetPointCount());
+		m_stdDev = sqrt(errorSqrSum * pointCount - errorSum * errorSum) / pointCount;
 
 		if (rows * cols != m_heightmap.size())
 		{
@@ -355,8 +356,8 @@ namespace OM
 	{
 		ZoneScoped;
 		// Last grid point
-		const double xLast = meta.GetMin(0) + (meta.GetSamples(0) - 1) * meta.GetSpacing(0);
-		const double yLast = meta.GetMin(1) + (meta.GetSamples(1) - 1) * meta.GetSpacing(1);
+		const double xLast = meta.GetMin(0) + (static_cast<double>(meta.GetSamples(0)) - 1) * meta.GetSpacing(0);
+		const double yLast = meta.GetMin(1) + (static_cast<double>(meta.GetSamples(1)) - 1) * meta.GetSpacing(1);
 
 		// Clamp to rectangle so InterpolateXY will always have valid parameters
 		const double fEPSILON = 0.01;
@@ -404,10 +405,10 @@ namespace OM
 		size_t axis0Index, size_t axis1Index, double axis0Frac, double axis1Frac, double& result) const
 	{
 		ZoneScoped;
-		const uint32_t indexX0Y0 = GetMapIndex(axis0Index, axis1Index); // (X0,Y0)
-		const uint32_t indexX1Y0 = indexX0Y0 + 1;						// (X1,Y0)
-		const uint32_t indexX0Y1 = indexX0Y0 + meta.GetSamples(0);		// (X0 Y1)
-		const uint32_t indexX1Y1 = indexX0Y1 + 1;						// (X1,Y1)
+		const size_t indexX0Y0 = GetMapIndex(axis0Index, axis1Index); // (X0,Y0)
+		const size_t indexX1Y0 = indexX0Y0 + 1;						  // (X1,Y0)
+		const size_t indexX0Y1 = indexX0Y0 + meta.GetSamples(0);	  // (X0 Y1)
+		const size_t indexX1Y1 = indexX0Y1 + 1;						  // (X1,Y1)
 
 		const double xyFrac = axis0Frac * axis1Frac;
 

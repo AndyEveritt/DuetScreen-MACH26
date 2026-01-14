@@ -30,7 +30,6 @@ namespace OM
 	{
 		index = 0;
 		heater = -1;
-		slot = MAX_SLOTS;
 	}
 
 	float BedOrChamber::GetCurrentTemp()
@@ -102,10 +101,7 @@ namespace OM
 		if (pheater == nullptr)
 			return false;
 
-		String<MAX_COMMAND_LENGTH> command;
-		command.catf("M140 P%d %s%d\n", index, active ? "S" : "R", temp);
-
-		Comm::DUET.SendGcode(command.c_str());
+		Comm::DUET.SendGcodef("M140 P{:d} {:s}{:d}\n", index, active ? "S" : "R", temp);
 		return true;
 	}
 
@@ -115,10 +111,7 @@ namespace OM
 		if (pheater == nullptr)
 			return false;
 
-		String<MAX_COMMAND_LENGTH> command;
-		command.catf("M141 P%d %s%d\n", index, active ? "S" : "R", temp);
-
-		Comm::DUET.SendGcode(command.c_str());
+		Comm::DUET.SendGcodef("M141 P{:d} {:s}{:d}\n", index, active ? "S" : "R", temp);
 		return true;
 	}
 
@@ -275,7 +268,7 @@ namespace OM
 		return Remove<ChamberList, Chamber>(s_chambers, index, allFollowing);
 	}
 
-	bool SetBedHeater(const uint8_t bedIndex, const int8_t heaterNumber)
+	bool SetBedHeater(const size_t bedIndex, const int8_t heaterNumber)
 	{
 		auto bed = OM::GetOrCreateBed(bedIndex);
 		if (bed == nullptr)
@@ -288,7 +281,7 @@ namespace OM
 		return true;
 	}
 
-	bool SetChamberHeater(const uint8_t chamberIndex, const int8_t heaterNumber)
+	bool SetChamberHeater(const size_t chamberIndex, const int8_t heaterNumber)
 	{
 		auto chamber = OM::GetOrCreateChamber(chamberIndex);
 		if (chamber == nullptr)

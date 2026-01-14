@@ -94,8 +94,9 @@ namespace UI
 			lv_style_value_t borderWidth;
 			lv_style_get_prop(Themes::getLvglStyles().dragging, LV_STYLE_BORDER_WIDTH, &borderWidth);
 
-			lv_obj_set_style_border_width(
-				button->getButton(), static_cast<int32_t>(borderWidth.num * (1.0f - pct)), LV_STATE_PRESSED);
+			lv_obj_set_style_border_width(button->getButton(),
+										  static_cast<int32_t>(static_cast<float>(borderWidth.num) * (1.0f - pct)),
+										  LV_STATE_PRESSED);
 
 			if (!lv_obj_has_state(button->getButton(), LV_STATE_USER_1) && pct == 1.0f)
 			{

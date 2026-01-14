@@ -89,7 +89,7 @@ namespace UI
 			if (!extruder->isFocused())
 			{
 				LOG_DBG("Setting extruder {:d} extrusion factor to {:d}", index, value);
-				extruder->setValue(value);
+				extruder->setValue(static_cast<float>(value));
 			}
 		}
 	}

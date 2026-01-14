@@ -33,7 +33,7 @@ std::shared_ptr<T> GetOrCreate(L& list, const size_t index, const bool create, c
 		LOG_VERBOSE("Creating index={:d}", index);
 		std::shared_ptr<T> elem = std::make_shared<T>();
 		elem->Reset();
-		elem->index = static_cast<decltype(T::index)>(index);
+		elem->index = index;
 		list.Add(elem);
 		list.Sort([](std::shared_ptr<T> e1, std::shared_ptr<T> e2) { return e1->index > e2->index; });
 		return elem;

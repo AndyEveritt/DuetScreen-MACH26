@@ -54,7 +54,7 @@ namespace UI
 	void ExtrusionFactorPresenter::setExtruderFactor(size_t slot, uint32_t value)
 	{
 		auto extruder = m_tool ? m_tool->GetExtruder(slot) : OM::Move::GetExtruderAxisBySlot(slot);
-		if (extruder == nullptr || value == std::round(100 * extruder->factor))
+		if (extruder == nullptr || value == static_cast<uint32_t>(std::lround(100 * extruder->factor)))
 		{
 			return;
 		}

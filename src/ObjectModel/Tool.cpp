@@ -46,7 +46,7 @@ namespace OM
 		return name.c_str();
 	}
 
-	ToolHeaterPtr Tool::GetHeater(const uint8_t toolHeaterIndex)
+	ToolHeaterPtr Tool::GetHeater(const size_t toolHeaterIndex)
 	{
 		if (toolHeaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
@@ -55,7 +55,7 @@ namespace OM
 		return heaters[toolHeaterIndex];
 	}
 
-	ToolHeaterPtr Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
+	ToolHeaterPtr Tool::GetOrCreateHeater(const size_t toolHeaterIndex, const size_t heaterIndex)
 	{
 		auto th = GetHeater(toolHeaterIndex);
 		if (th != nullptr && th->heater->index == heaterIndex)
@@ -75,7 +75,7 @@ namespace OM
 		return th;
 	}
 
-	Move::ExtruderAxisPtr Tool::GetExtruder(const uint8_t toolExtruderIndex) const
+	Move::ExtruderAxisPtr Tool::GetExtruder(const size_t toolExtruderIndex) const
 	{
 		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL)
 		{
@@ -84,7 +84,7 @@ namespace OM
 		return extruders[toolExtruderIndex];
 	}
 
-	Move::ExtruderAxisPtr Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex)
+	Move::ExtruderAxisPtr Tool::GetOrCreateExtruder(const size_t toolExtruderIndex, const size_t extruderIndex)
 	{
 		auto extruder = GetExtruder(toolExtruderIndex);
 		if (extruder != nullptr && extruder->index == extruderIndex)
@@ -106,7 +106,7 @@ namespace OM
 		return count;
 	}
 
-	FanPtr Tool::GetFan(const uint8_t toolFanIndex)
+	FanPtr Tool::GetFan(const size_t toolFanIndex)
 	{
 		if (toolFanIndex >= MAX_FANS)
 		{
@@ -115,7 +115,7 @@ namespace OM
 		return fans[toolFanIndex];
 	}
 
-	FanPtr Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
+	FanPtr Tool::GetOrCreateFan(const size_t toolFanIndex, const size_t fanIndex)
 	{
 		auto fan = GetFan(toolFanIndex);
 		if (fan != nullptr && fan->index == fanIndex)
@@ -148,7 +148,7 @@ namespace OM
 		return extruder->filamentName.GetRef();
 	}
 
-	int32_t Tool::GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active)
+	int32_t Tool::GetHeaterTarget(const size_t toolHeaterIndex, const bool active)
 	{
 		auto heater = GetHeater(toolHeaterIndex);
 		if (heater == nullptr)
@@ -197,20 +197,20 @@ namespace OM
 		return true;
 	}
 
-	uint8_t Tool::GetHeaterCount() const
+	size_t Tool::GetHeaterCount() const
 	{
-		uint8_t count;
+		size_t count;
 		for (count = 0; count < MAX_HEATERS_PER_TOOL && heaters[count] != nullptr; ++count)
 		{
 		}
 		return count;
 	}
 
-	bool Tool::HasHeater(const uint8_t heaterIndex) const
+	bool Tool::HasHeater(const size_t heaterIndex) const
 	{
 		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
-			if (heaters[i]->heater->index == (int)heaterIndex)
+			if (heaters[i]->heater->index == heaterIndex)
 			{
 				return true;
 			}
@@ -242,7 +242,7 @@ namespace OM
 		}
 	}
 
-	size_t Tool::RemoveHeatersFrom(const uint8_t heaterIndex)
+	size_t Tool::RemoveHeatersFrom(const size_t heaterIndex)
 	{
 		if (heaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
@@ -257,7 +257,7 @@ namespace OM
 		return removed;
 	}
 
-	size_t Tool::RemoveExtrudersFrom(const uint8_t extruderIndex)
+	size_t Tool::RemoveExtrudersFrom(const size_t extruderIndex)
 	{
 		if (extruderIndex >= MAX_EXTRUDERS_PER_TOOL)
 		{
@@ -272,7 +272,7 @@ namespace OM
 		return removed;
 	}
 
-	size_t Tool::RemoveFansFrom(const uint8_t fanIndex)
+	size_t Tool::RemoveFansFrom(const size_t fanIndex)
 	{
 		if (fanIndex >= MAX_FANS)
 		{
@@ -287,7 +287,7 @@ namespace OM
 		return removed;
 	}
 
-	void Tool::UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active)
+	void Tool::UpdateTemp(const size_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
 		auto toolHeater = GetHeater(toolHeaterIndex);
 		if (toolHeater == nullptr)
@@ -333,7 +333,7 @@ namespace OM
 		}
 	}
 
-	void Tool::ToggleHeaterState(const uint8_t toolHeaterIndex)
+	void Tool::ToggleHeaterState(const size_t toolHeaterIndex)
 	{
 		auto toolHeater = GetHeater(toolHeaterIndex);
 		if (toolHeater == nullptr)
@@ -530,7 +530,7 @@ namespace OM
 		return Remove<ToolList, Tool>(s_tools, index, allFollowing);
 	}
 
-	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex)
+	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const size_t heaterIndex)
 	{
 		if (toolHeaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
@@ -541,7 +541,7 @@ namespace OM
 		{
 			return false;
 		}
-		auto heater = tool->GetOrCreateHeater(static_cast<uint8_t>(toolHeaterIndex), heaterIndex);
+		auto heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
 		if (heater == nullptr)
 		{
 			LOG_ERROR("Failed to get or create tool {:d} heater {:d}={:d}", toolIndex, toolHeaterIndex, heaterIndex);
@@ -551,7 +551,7 @@ namespace OM
 		return true;
 	}
 
-	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete)
+	bool RemoveToolHeaters(const size_t toolIndex, const size_t firstIndexToDelete)
 	{
 		auto tool = OM::GetTool(toolIndex);
 		if (tool == nullptr)
@@ -561,7 +561,7 @@ namespace OM
 		return tool->RemoveHeatersFrom(firstIndexToDelete) > 0;
 	}
 
-	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const uint8_t extruderIndex)
+	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const size_t extruderIndex)
 	{
 		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL)
 		{
@@ -572,7 +572,7 @@ namespace OM
 		{
 			return false;
 		}
-		auto extruder = tool->GetOrCreateExtruder(static_cast<uint8_t>(toolExtruderIndex), extruderIndex);
+		auto extruder = tool->GetOrCreateExtruder(toolExtruderIndex, extruderIndex);
 		if (extruder == nullptr)
 		{
 			LOG_ERROR(
@@ -582,7 +582,7 @@ namespace OM
 		return true;
 	}
 
-	bool RemoveToolExtruders(const size_t toolIndex, const uint8_t firstIndexToDelete)
+	bool RemoveToolExtruders(const size_t toolIndex, const size_t firstIndexToDelete)
 	{
 		auto tool = OM::GetTool(toolIndex);
 		if (tool == nullptr)
@@ -604,7 +604,7 @@ namespace OM
 		return true;
 	}
 
-	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex)
+	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const size_t fanIndex)
 	{
 		if (toolFanIndex >= MAX_FANS)
 		{
@@ -615,7 +615,7 @@ namespace OM
 		{
 			return false;
 		}
-		auto fan = tool->GetOrCreateFan(static_cast<uint8_t>(toolFanIndex), fanIndex);
+		auto fan = tool->GetOrCreateFan(toolFanIndex, fanIndex);
 		if (fan == nullptr)
 		{
 			LOG_ERROR("Failed to get or create tool {:d} fan {:d}={:d}", toolIndex, toolFanIndex, fanIndex);
@@ -636,7 +636,7 @@ namespace OM
 		return true;
 	}
 
-	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete)
+	bool RemoveToolFans(const size_t toolIndex, const size_t firstIndexToDelete)
 	{
 		auto tool = OM::GetTool(toolIndex);
 		if (tool == nullptr)

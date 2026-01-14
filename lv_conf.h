@@ -25,6 +25,7 @@
 /* 20MB of memory for LVGL, mostly this is for the unit tests but it doesn't hurt to have it here too. Can be reduced in
  * the future if required */
 #define LV_MEM_SIZE (20 * 1024 * 1024U)
+#define LV_DRAW_THREAD_STACK_SIZE (32 * 1024U)
 
 /* 100fps refresh rate. Since thread priority is not guaranteed this means even when the fps drops due to other
  * computation, we still hit >60fps */

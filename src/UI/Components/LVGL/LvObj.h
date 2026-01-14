@@ -238,7 +238,7 @@ namespace UI
 
 		lv_event_dsc_t* addEventCallback(lv_event_cb_t cb, lv_event_code_t code, void* userData);
 		void addEventCallback(const std::function<void(lv_event_t*)>& cb, lv_event_code_t code);
-		bool removeEvent(size_t index);
+		bool removeEvent(uint32_t index);
 		uint32_t removeEventCallback(lv_event_cb_t cb);
 		uint32_t removeEventCallbackWithUserData(lv_event_cb_t cb, void* userData);
 		uint32_t getEventCount();
