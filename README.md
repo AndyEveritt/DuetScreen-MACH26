@@ -125,7 +125,7 @@ The Duet3D screen has two USB ports:
     - It can be used to power the screen in either mode (assuming the attached device/host is able to supply power).
 
 > [!WARNING]
-> A Duet3D mainboard **CANNOT** provide power to the screen via the USB-C. If connecting to a Duet3D mainboard this will likely damage either the screen, the mainboard, or both. Always power the screen via the `5V_IN` port when connecting to a Duet3D mainboard.
+> A Duet3D mainboard CANNOT provide power to the screen via the USB-C. Always power the screen via the 5V_IN port when using USB
 
 USB hubs are supported **if they are NOT smart**. A smart hub is one that requires a driver to work. This includes most USB-C hubs. If you are using a USB-C hub, make sure it is a dumb hub. A dumb hub is one that does not require a driver to work. This includes most USB-A hubs. If in doubt, use a USB-A hub.
 
