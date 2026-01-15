@@ -13,13 +13,13 @@ namespace UI
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
+		addStyle(Themes::getLvglStyles().card);
 
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
-		// m_fans.setTitle(_("fan.title"));
-		m_fans.setSize(LV_PCT(100), LV_PCT(100));
-		m_fans.setListGrow(1);
+		m_fans.setTitle(_("fan.title"));
+		m_fans.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 	}
 
 	void FanView::setFanCount(size_t count)

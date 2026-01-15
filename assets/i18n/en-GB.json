@@ -81,7 +81,7 @@
       "feedrate_header": "Set Extrusion Feedrate ({:s})"
     },
     "fan": { /* Fan screen */
-      "title": "Fans",
+      "title": "Controllable Fans:",
       "header": "Fan {:d}",
       "off": "Off",
       "max": "Max"
