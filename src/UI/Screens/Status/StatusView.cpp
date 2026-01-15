@@ -212,4 +212,9 @@ namespace UI
 			m_cancelBtn.show();
 		}
 	}
+
+	void StatusView::setNumberPad(ModalNumberPad* np)
+	{
+		m_printInfo.setNumberPad(np);
+	}
 } // namespace UI

@@ -52,6 +52,11 @@ namespace UI
 		m_tabs.disableTab(0, disable);
 	}
 
+	void Dashboard::setNumberPad(ModalNumberPad* np)
+	{
+		m_statusView.setNumberPad(np);
+	}
+
 	void Dashboard::clear()
 	{
 		m_toolList.setToolCount(0);

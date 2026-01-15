@@ -90,6 +90,9 @@ namespace UI
 			},
 			LV_EVENT_CANCEL);
 		m_settingsView.setKeyboard(&m_kb);
+
+		/* NumberPad */
+		m_dashboard.setNumberPad(&m_numberpad);
 	}
 
 	HomeView::~HomeView()

@@ -149,6 +149,7 @@ namespace UI
 
 		/* Babystepping */
 		m_babystep.setSize(LV_PCT(22), LV_PCT(100));
+		m_babystep.setNumberPad(&m_numberpad);
 
 		/* Bottom Bar */
 		m_bottomBarCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);

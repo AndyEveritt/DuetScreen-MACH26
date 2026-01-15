@@ -39,6 +39,8 @@ namespace UI
 
 		auto& getModalExtrusionFactor() { return m_extrusionFactorModal; }
 
+		void setNumberPad(ModalNumberPad* numberPad);
+
 	  private:
 		static void openSubView(lv_event_t* e);
 

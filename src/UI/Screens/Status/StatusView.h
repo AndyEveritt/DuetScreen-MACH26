@@ -32,6 +32,8 @@ namespace UI
 		void setPrintAgain(ControlVisibility visibility);
 		void setCancel(ControlVisibility visibility);
 
+		void setNumberPad(ModalNumberPad* np);
+
 		bool back() override;
 
 	  private:

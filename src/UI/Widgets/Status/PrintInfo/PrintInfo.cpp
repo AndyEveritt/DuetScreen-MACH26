@@ -252,4 +252,9 @@ namespace UI
 		UI_LOCK();
 		m_babyStepButton.setText(_("status.babystep_value", babystep));
 	}
+
+	void PrintInfo::setNumberPad(ModalNumberPad* numberPad)
+	{
+		m_babyStepModal.setNumberPad(numberPad);
+	}
 } // namespace UI

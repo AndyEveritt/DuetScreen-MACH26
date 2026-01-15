@@ -19,6 +19,10 @@ namespace UI
 		BabyStep(const std::string& name, LvObj& parent);
 
 		void setBabyStepValue(float value);
+		void setNumberPad(ModalNumberPad* numberPad) { m_buttonPanel.setNumberPad(numberPad); }
+
+	  protected:
+		void onShow() override;
 
 	  private:
 		LvLabel m_header{"header", getRoot()};

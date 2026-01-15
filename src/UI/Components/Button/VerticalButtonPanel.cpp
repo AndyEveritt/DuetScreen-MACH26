@@ -8,6 +8,7 @@
 #include "VerticalButtonPanel.h"
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
+#include "i18n/i18n.h"
 
 namespace UI
 {
@@ -111,11 +112,12 @@ namespace UI
 		updateValueLabels();
 	}
 
-	void VerticalButtonPanel::setIncrementValues(const std::vector<float>& values)
+	void VerticalButtonPanel::setIncrementValues(std::span<const float> values)
 	{
 		UI_LOCK();
 		m_values.setItemCount(values.size(), this, &VerticalButtonPanel::createValueButton);
-		m_incrementValues = values;
+		m_incrementValues.clear();
+		m_incrementValues.insert(m_incrementValues.end(), values.begin(), values.end());
 
 		updateValueLabels();
 	}
@@ -130,15 +132,34 @@ namespace UI
 		btn->setCheckable(true);
 		btn->setChecked(index == m_selectedValueIndex);
 		btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
-		btn->addClickedCallback(
-			[](lv_event_t* e)
+		btn->addClickedCallback([this, index](lv_event_t*) { setSelectedValueIndex(index); });
+		btn->addEventCallback(
+			[this, btnPtr = btn.get(), index](lv_event_t*)
 			{
-				UI_LOCK();
-				VerticalButtonPanel* panel = static_cast<VerticalButtonPanel*>(lv_event_get_user_data(e));
-				LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
-				panel->setSelectedValueIndex(static_cast<uint8_t>(reinterpret_cast<uintptr_t>(btn->getUserData())));
+				auto np = getNumberPad();
+				if (np == nullptr)
+				{
+					LOG_DBG("No numberpad set");
+					return;
+				}
+
+				if (index >= m_incrementValues.size())
+					return;
+
+				float value = m_incrementValues.at(index);
+				openModal(np);
+				np->setHeader(_("multi_value_selector.numberpad_new_value_header"));
+				np->setValue(value);
+				np->setMinValue(0);
+				np->setMaxValue(1);
+				np->setConfirmCallback(
+					[this, index](float value)
+					{
+						m_incrementValues.at(index) = value;
+						updateValueLabels();
+					});
 			},
-			this);
+			LV_EVENT_LONG_PRESSED);
 		return btn;
 	}
 
@@ -153,7 +174,7 @@ namespace UI
 		return m_incrementValues[m_selectedValueIndex];
 	}
 
-	void VerticalButtonPanel::setSelectedValueIndex(uint8_t index)
+	void VerticalButtonPanel::setSelectedValueIndex(size_t index)
 	{
 		UI_LOCK();
 		m_values.iterateListItems([index](size_t i, Button& btn) { btn.setChecked(i == index); });

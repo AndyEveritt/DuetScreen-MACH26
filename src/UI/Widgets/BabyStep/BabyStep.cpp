@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
+#include "utils/StorageHelper.h"
 #include "utils/UnitSystem.h"
 
 namespace UI
@@ -31,7 +32,6 @@ namespace UI
 		m_buttonPanel.setIncrementIcon("babystep_increment.png");
 		m_buttonPanel.setDecrementIcon("babystep_decrement.png");
 		m_buttonPanel.setValueLabelFmt("{:g} mm");
-		m_buttonPanel.setIncrementValues({0.01f, 0.05f});
 		m_buttonPanel.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
 		m_buttonPanel.setResetCallback([this]() { m_presenter->resetBabystep(); });
 
@@ -43,5 +43,11 @@ namespace UI
 	void BabyStep::setBabyStepValue(float value)
 	{
 		m_buttonPanel.setResetLabel(_("babystep.reset", value));
+	}
+
+	void BabyStep::onShow()
+	{
+		const auto values = StorageHelper::getData<std::vector<float>>(ID_BABYSTEP_AMOUNT, {0.01f, 0.05f});
+		m_buttonPanel.setIncrementValues(values);
 	}
 } // namespace UI

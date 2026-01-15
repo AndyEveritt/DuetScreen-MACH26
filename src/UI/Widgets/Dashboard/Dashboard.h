@@ -32,6 +32,8 @@ namespace UI
 		void showStatusTab() { m_tabs.setActiveTab(1); }
 		void disableJobsTab(bool disable);
 
+		void setNumberPad(ModalNumberPad* np);
+
 		void clear();
 
 	  private:
