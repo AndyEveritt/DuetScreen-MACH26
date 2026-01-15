@@ -310,7 +310,8 @@ namespace UI
 
 	void MoveView::setDisabled(bool disabled)
 	{
-		m_centralRow.setState(LV_STATE_DISABLED, disabled, true);
+		m_axisControlCont.setState(LV_STATE_DISABLED, disabled, true);
+
 		// m_xyControl.setHomeAllDisabled(true);
 		// m_xyControl.setDisableMotorsDisabled(true);
 		// m_xyControl.setXDisabled(true);

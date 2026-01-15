@@ -34,6 +34,11 @@ namespace UI
 		m_buttonPanel.setValueLabelFmt("{:g} mm");
 		m_buttonPanel.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
 		m_buttonPanel.setResetCallback([this]() { m_presenter->resetBabystep(); });
+		m_buttonPanel.setUpdatedValuesCallback(
+			[this](const std::vector<float>& values)
+			{ StorageHelper::setData<std::vector<float>>(ID_BABYSTEP_AMOUNT, values); });
+		m_buttonPanel.setMinValue(0.001f);
+		m_buttonPanel.setMaxValue(1.0f);
 
 		m_buttonPanel.getResetButton().addStyle(Themes::getLvglStyles().actionBtn);
 		m_buttonPanel.getIncrementButton().addStyle(Themes::getLvglStyles().actionBtn);

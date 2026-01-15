@@ -30,8 +30,12 @@ namespace UI
 		float getSelectedValue() const;
 		void setSelectedValueIndex(size_t index);
 
+		void setMinValue(float min) { m_minValue = min; }
+		void setMaxValue(float max) { m_maxValue = max; }
+
 		void setValueChangeCallback(std::function<void(float)> callback);
 		void setResetCallback(std::function<void()> callback);
+		void setUpdatedValuesCallback(std::function<void(const std::vector<float>&)> callback);
 
 		Button& getResetButton() { return m_reset; }
 		Button& getIncrementButton() { return m_increment; }
@@ -58,7 +62,12 @@ namespace UI
 		std::string m_fmt;
 		std::vector<float> m_incrementValues;
 
-		std::function<void(float)> m_valueChangeCallback;
-		std::function<void()> m_resetCallback;
+		float m_minValue = 0.0f;
+		float m_maxValue = 100.0f;
+
+		std::function<void(float)> m_valueChangeCallback; // Called when increment/decrement is pressed
+		std::function<void()> m_resetCallback;			  // Called when reset is pressed
+		std::function<void(const std::vector<float>&)>
+			m_updatedValuesCallback; // Called when increment values are updated by long press
 	};
 } // namespace UI

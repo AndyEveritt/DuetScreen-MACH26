@@ -150,13 +150,17 @@ namespace UI
 				openModal(np);
 				np->setHeader(_("multi_value_selector.numberpad_new_value_header"));
 				np->setValue(value);
-				np->setMinValue(0);
-				np->setMaxValue(1);
+				np->setMinValue(m_minValue);
+				np->setMaxValue(m_maxValue);
 				np->setConfirmCallback(
 					[this, index](float value)
 					{
 						m_incrementValues.at(index) = value;
 						updateValueLabels();
+						if (m_updatedValuesCallback)
+						{
+							m_updatedValuesCallback(m_incrementValues);
+						}
 					});
 			},
 			LV_EVENT_LONG_PRESSED);
@@ -183,11 +187,19 @@ namespace UI
 
 	void VerticalButtonPanel::setValueChangeCallback(std::function<void(float)> callback)
 	{
-		m_valueChangeCallback = callback;
+		UI_LOCK();
+		m_valueChangeCallback = std::move(callback);
 	}
 
 	void VerticalButtonPanel::setResetCallback(std::function<void()> callback)
 	{
-		m_resetCallback = callback;
+		UI_LOCK();
+		m_resetCallback = std::move(callback);
+	}
+
+	void VerticalButtonPanel::setUpdatedValuesCallback(std::function<void(const std::vector<float>&)> callback)
+	{
+		UI_LOCK();
+		m_updatedValuesCallback = std::move(callback);
 	}
 } // namespace UI

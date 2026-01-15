@@ -359,6 +359,14 @@ TEST_F(TestHomeViewWithData, ControlView)
 
 	openScreen(&control);
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move.png");
+	{
+		auto btn =
+			control.getMoveView().getChildByName("central_row.babystep.button_panel.value_list.list.value_btn_1");
+		ASSERT_NE(btn, nullptr);
+
+		btn->sendEvent(LV_EVENT_LONG_PRESSED);
+		EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move_babystep_long_press.png");
+	}
 
 	control.showTemperatureView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/temperature.png");

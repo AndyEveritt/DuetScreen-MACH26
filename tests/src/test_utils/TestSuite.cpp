@@ -23,7 +23,7 @@ TestSuite::TestSuite()
 	/* Run at start of each test */
 	std::filesystem::remove("tests/config.json");
 	StorageHelper::setConfigFile("tests/config.json");
-	Log::SetDebugLevel(Log::DebugLevel::Debug);
+	// Log::SetDebugLevel(Log::DebugLevel::Debug);
 	Log::Init();
 
 	Comm::init();
