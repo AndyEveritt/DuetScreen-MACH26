@@ -21,6 +21,8 @@ class TestVerticalButtons : public UiTestSuite
 
 TEST_F(TestVerticalButtons, BasicDisplay)
 {
+	const auto values = {0.01f, 0.05f};
+
 	VerticalButtonPanel panel{"panel", screen};
 	panel.setSize(135, 240);
 	panel.setIncrementIcon("babystep_increment.png");
@@ -29,7 +31,7 @@ TEST_F(TestVerticalButtons, BasicDisplay)
 	// panel.setDecrementLabel("Dec");
 	panel.setResetLabel("Reset");
 	panel.setValueLabelFmt("{:g} mm");
-	panel.setIncrementValues({0.01f, 0.05f});
+	panel.setIncrementValues(values);
 
 	panel.setSelectedValueIndex(-1);
 
@@ -42,7 +44,7 @@ TEST_F(TestVerticalButtons, BasicDisplay)
 	// panel2.setDecrementLabel("Dec");
 	panel2.setResetLabel("Reset");
 	panel2.setValueLabelFmt("{:g} mm");
-	panel2.setIncrementValues({0.01f, 0.05f});
+	panel2.setIncrementValues(values);
 
 	EXPECT_EQUAL_SCREENSHOT("vertical_buttons/basic_display.png");
 }
