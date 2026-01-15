@@ -17,6 +17,12 @@
 
 namespace UI
 {
+	// Concept to validate a list item constructor for T
+	// Parameter order: F (callable), then T (constructed type)
+	template <typename F, typename T>
+	concept LazyListItemConstructor = requires(F&& f, size_t index, LvObj& parent) {
+		{ std::invoke(std::forward<F>(f), index) } -> std::same_as<T>;
+	};
 
 	template <typename T>
 		requires(std::is_base_of_v<LvObj, T>)
@@ -170,7 +176,9 @@ namespace UI
 			return *m_items.back();
 		}
 
-		size_t setItemCount(const size_t count, std::function<LazyTPtr(size_t)> constructor)
+		template <typename F>
+			requires LazyListItemConstructor<F, LazyTPtr>
+		size_t setItemCount(const size_t count, F&& constructor)
 		{
 			ZoneScoped;
 			UI_LOCK();
@@ -189,18 +197,11 @@ namespace UI
 				m_pool.reserve(count);
 				for (size_t i = currentCount; i < count; i++)
 				{
-					m_pool.emplace_back(constructor(i));
+					m_pool.emplace_back(std::invoke(constructor, i));
 				}
 			}
 			refresh();
 			return count > currentCount ? count - currentCount : 0;
-		}
-
-		template <typename F, typename = std::enable_if_t<std::is_invocable_r_v<LazyTPtr, F, size_t>>>
-		size_t setItemCount(const size_t count, F&& constructor)
-		{
-			ZoneScoped;
-			return setItemCount(count, std::function<LazyTPtr(size_t)>(std::forward<F>(constructor)));
 		}
 
 		void refresh()

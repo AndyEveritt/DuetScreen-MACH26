@@ -10,13 +10,31 @@
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Styles/Styles.h"
+#include <concepts>
 #include <functional>
 #include <memory>
 #include <optional>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace UI
 {
+	// Concept to validate a list item constructor for T
+	// Parameter order: F (callable), then T (constructed type)
+	template <typename F, typename T>
+	concept ListItemConstructor = requires(F&& f, size_t index, LvObj& parent) {
+		{ std::invoke(std::forward<F>(f), index, parent) } -> std::same_as<std::unique_ptr<T>>;
+	};
+
+	// Helper: true when Args... is exactly one type that itself is a valid
+	// constructor functor for T (invocable with (size_t, LvObj&) returning unique_ptr<T>).
+	template <typename T, typename U>
+	concept SingleCtorArgFor = ListItemConstructor<std::decay_t<U>, T>;
+
+	template <typename T, typename... U>
+	concept NotSingleCtorArgFor = !(sizeof...(U) == 1 && (SingleCtorArgFor<T, U> && ...));
+
 	class ListItem : public LvContainer
 	{
 	  public:
@@ -131,17 +149,21 @@ namespace UI
 			return *m_list.back();
 		}
 
-		TRef addItem(std::function<TPtr(size_t, LvObj&)> constructor)
+		template <typename F>
+			requires ListItemConstructor<F, T>
+		TRef addItem(F&& constructor)
 		{
 			ZoneScoped;
 			UI_LOCK();
 			LOG_DBG("Adding item to list \"{:s}\"", getName());
-			auto item = constructor(getItemCount(), m_listCont);
+			auto item = std::invoke(constructor, getItemCount(), m_listCont);
 			m_list.push_back(std::move(item));
 			return *m_list.back();
 		}
 
-		size_t setItemCount(const size_t count, std::function<TPtr(size_t, LvObj&)> constructor)
+		template <typename F>
+			requires ListItemConstructor<F, T>
+		size_t setItemCount(const size_t count, F&& constructor)
 		{
 			ZoneScoped;
 			UI_LOCK();
@@ -162,19 +184,11 @@ namespace UI
 				m_list.reserve(count);
 				for (size_t i = currentCount; i < count; i++)
 				{
-					m_list.emplace_back(constructor(i, m_listCont));
+					m_list.emplace_back(std::invoke(constructor, i, m_listCont));
 				}
 			}
 
 			return count > currentCount ? count - currentCount : 0;
-		}
-
-		template <typename F, typename = std::enable_if_t<std::is_invocable_r_v<TPtr, F, size_t, LvObj&>>>
-			requires std::is_constructible_v<std::function<TPtr(size_t, LvObj&)>, F>
-		size_t setItemCount(const size_t count, F&& constructor)
-		{
-			ZoneScoped;
-			return setItemCount(count, std::function<TPtr(size_t, LvObj&)>(std::forward<F>(constructor)));
 		}
 
 		template <typename Class, typename... Args>
@@ -209,10 +223,8 @@ namespace UI
 			return count > currentCount ? count - currentCount : 0;
 		}
 
-		template <typename... Args,
-				  typename = std::enable_if_t<sizeof...(Args) != 1 ||
-											  !std::is_invocable_r_v<TPtr, std::decay_t<Args>..., size_t, LvObj&>>>
-			requires std::is_constructible_v<T, size_t, LvObj&, Args...>
+		template <typename... Args>
+			requires std::constructible_from<T, size_t, LvObj&, Args...> && NotSingleCtorArgFor<T, Args...>
 		size_t setItemCount(const size_t count, Args&&... args)
 		{
 			ZoneScoped;
