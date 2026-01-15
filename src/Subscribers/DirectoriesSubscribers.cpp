@@ -13,6 +13,7 @@
 
 bool DirectoriesSubscribers::filaments(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Directories::SetFilamentsDirectory(data);
@@ -21,6 +22,7 @@ bool DirectoriesSubscribers::filaments(Comm::JsonDecoder* decoder, const char* d
 
 bool DirectoriesSubscribers::firmware(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Directories::SetFirmwareDirectory(data);
@@ -29,6 +31,7 @@ bool DirectoriesSubscribers::firmware(Comm::JsonDecoder* decoder, const char* da
 
 bool DirectoriesSubscribers::gcodes(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Directories::SetGcodesDirectory(data);
@@ -37,6 +40,7 @@ bool DirectoriesSubscribers::gcodes(Comm::JsonDecoder* decoder, const char* data
 
 bool DirectoriesSubscribers::macros(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Directories::SetMacrosDirectory(data);
@@ -45,6 +49,7 @@ bool DirectoriesSubscribers::macros(Comm::JsonDecoder* decoder, const char* data
 
 bool DirectoriesSubscribers::menu(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Directories::SetMenuDirectory(data);
@@ -53,6 +58,7 @@ bool DirectoriesSubscribers::menu(Comm::JsonDecoder* decoder, const char* data, 
 
 bool DirectoriesSubscribers::system(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Directories::SetSystemDirectory(data);
@@ -61,6 +67,7 @@ bool DirectoriesSubscribers::system(Comm::JsonDecoder* decoder, const char* data
 
 bool DirectoriesSubscribers::web(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Directories::SetWebDirectory(data);

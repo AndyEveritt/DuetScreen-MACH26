@@ -25,7 +25,7 @@ namespace OM
 		index = 0;
 		lastReading = 0.0;
 		lastReadingTime = 0ms;
-		name.Clear();
+		name.clear();
 	}
 
 	void Endstop::Reset()
@@ -77,7 +77,7 @@ namespace OM
 		return true;
 	}
 
-	bool UpdateAnalogSensorName(const size_t index, const char* name)
+	bool UpdateAnalogSensorName(const size_t index, std::string_view name)
 	{
 		auto const sensor = GetOrCreateAnalogSensor(index);
 		if (sensor == nullptr)
@@ -86,12 +86,7 @@ namespace OM
 			return false;
 		}
 
-		sensor->name.copy(name);
-		if (sensor->name.IsEmpty())
-		{
-			sensor->name.copy("Heater ");
-			sensor->name.catf("%zu", index);
-		}
+		sensor->name = name;
 		return true;
 	}
 

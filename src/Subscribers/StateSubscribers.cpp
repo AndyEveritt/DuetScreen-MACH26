@@ -11,6 +11,7 @@
 
 bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetPrinterName(data);
@@ -19,6 +20,7 @@ bool StateSubscribers::networkName(Comm::JsonDecoder* decoder, const char* data,
 
 bool StateSubscribers::networkActualIP(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	Model::get().post<EventType::IpAddress>(std::string(data));
@@ -27,6 +29,7 @@ bool StateSubscribers::networkActualIP(Comm::JsonDecoder* decoder, const char* d
 
 bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetStatus(data);
@@ -35,6 +38,7 @@ bool StateSubscribers::status(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool StateSubscribers::currentTool(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetCurrentTool(data);
@@ -44,6 +48,7 @@ bool StateSubscribers::currentTool(Comm::JsonDecoder* decoder, const int32_t& da
 
 bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	if (data[0] != 0)
@@ -56,6 +61,7 @@ bool StateSubscribers::nullMessageBox(Comm::JsonDecoder* decoder, const char* da
 
 bool StateSubscribers::messageBoxAxisControls(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::g_currentAlert.controls = data;
@@ -65,6 +71,7 @@ bool StateSubscribers::messageBoxAxisControls(Comm::JsonDecoder* decoder, const 
 
 bool StateSubscribers::messageBoxMessage(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::g_currentAlert.text.copy(data);
@@ -74,6 +81,7 @@ bool StateSubscribers::messageBoxMessage(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::messageBoxMode(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::g_currentAlert.mode = static_cast<OM::Alert::Mode>(data);
@@ -83,6 +91,7 @@ bool StateSubscribers::messageBoxMode(Comm::JsonDecoder* decoder, const int32_t&
 
 bool StateSubscribers::messageBoxSeq(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::g_currentAlert.seq = data;
@@ -92,6 +101,7 @@ bool StateSubscribers::messageBoxSeq(Comm::JsonDecoder* decoder, const uint32_t&
 
 bool StateSubscribers::messageBoxTimeout(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::g_currentAlert.timeout = data;
@@ -101,6 +111,7 @@ bool StateSubscribers::messageBoxTimeout(Comm::JsonDecoder* decoder, const float
 
 bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::g_currentAlert.title.copy(data);
@@ -117,6 +128,7 @@ bool StateSubscribers::messageBoxTitle(Comm::JsonDecoder* decoder, const char* d
 
 bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	if (data[0] == 0)
@@ -134,6 +146,7 @@ bool StateSubscribers::messageBoxMin(Comm::JsonDecoder* decoder, const char* dat
 
 bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	if (data[0] == 0)
@@ -151,6 +164,7 @@ bool StateSubscribers::messageBoxMax(Comm::JsonDecoder* decoder, const char* dat
 
 bool StateSubscribers::messageBoxDefault(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	if (data[0] == 0)
@@ -168,6 +182,7 @@ bool StateSubscribers::messageBoxDefault(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::messageBoxCancelButton(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::g_currentAlert.cancelButton = data;
@@ -176,6 +191,7 @@ bool StateSubscribers::messageBoxCancelButton(Comm::JsonDecoder* decoder, const 
 
 bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (indices[0] >= ALERT_MAX_CHOICES)
 	{
@@ -189,6 +205,7 @@ bool StateSubscribers::messageBoxChoices(Comm::JsonDecoder* decoder, const char*
 
 bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	static std::chrono::milliseconds lastUpdated = 0ms;
@@ -209,6 +226,7 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 
 bool StateSubscribers::inputChannel(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	/* This will not be triggered by a `rr_model` HTTP request,

@@ -14,6 +14,7 @@
 
 bool FanSubscribers::nullFan(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(data);
 	OM::RemoveFan(indices[0], false);
@@ -22,6 +23,7 @@ bool FanSubscribers::nullFan(Comm::JsonDecoder* decoder, const char* data, const
 
 bool FanSubscribers::actualValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::UpdateFanActualVal(indices[0], data))
 	{
@@ -33,6 +35,7 @@ bool FanSubscribers::actualValue(Comm::JsonDecoder* decoder, const float& data, 
 
 bool FanSubscribers::requestedValue(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::UpdateFanRequestedVal(indices[0], data))
 	{
@@ -44,6 +47,7 @@ bool FanSubscribers::requestedValue(Comm::JsonDecoder* decoder, const float& dat
 
 bool FanSubscribers::rpm(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::UpdateFanRpm(indices[0], data))
 	{
@@ -55,6 +59,7 @@ bool FanSubscribers::rpm(Comm::JsonDecoder* decoder, const int32_t& data, const 
 
 bool FanSubscribers::thermostatic(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::UpdateFanThermostatic(indices[0], data != nullptr))
 	{
@@ -66,6 +71,7 @@ bool FanSubscribers::thermostatic(Comm::JsonDecoder* decoder, const char* data, 
 
 bool FanSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (OM::RemoveFan(indices[0], true))
 	{

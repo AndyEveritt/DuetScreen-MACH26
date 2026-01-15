@@ -20,6 +20,7 @@
 
 bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	OM::FileSystem::FileListRequestWeakPtr request = OM::FileSystem::GetFileListRequest(data);
 	if (!request.lock())
@@ -36,6 +37,7 @@ bool FileSubscribers::setCurrectDirectory(Comm::JsonDecoder* decoder, const char
 
 bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
@@ -67,6 +69,7 @@ bool FileSubscribers::setFirstIndex(Comm::JsonDecoder* decoder, const uint32_t& 
 
 bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
@@ -94,6 +97,7 @@ bool FileSubscribers::setType(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
@@ -118,6 +122,7 @@ bool FileSubscribers::setName(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
@@ -141,6 +146,7 @@ bool FileSubscribers::setSize(Comm::JsonDecoder* decoder, const uint32_t& data, 
 
 bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::filelist)
 	{
@@ -164,6 +170,7 @@ bool FileSubscribers::setDate(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder && decoder->GetSeq() != nullptr)
 	{
@@ -196,6 +203,7 @@ bool FileSubscribers::setNextIndex(Comm::JsonDecoder* decoder, const uint32_t& d
 
 bool FileSubscribers::setFragFilename(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents = OM::FileSystem::GetCurrentFileRequestContents();
 	if (!fileContents || fileContents->GetFilename() != data)
@@ -213,6 +221,7 @@ bool FileSubscribers::setFragFilename(Comm::JsonDecoder* decoder, const char* da
 
 static bool getFileContentsFromDecoder(Comm::JsonDecoder* decoder, OM::FileSystem::FileContentsPtr& fileContents)
 {
+	ZoneScoped;
 	try
 	{
 		fileContents = std::get<OM::FileSystem::FileContentsPtr>(decoder->responseData);
@@ -231,6 +240,7 @@ static bool getFileContentsFromDecoder(Comm::JsonDecoder* decoder, OM::FileSyste
 
 bool FileSubscribers::setFragOffset(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
@@ -252,6 +262,7 @@ bool FileSubscribers::setFragOffset(Comm::JsonDecoder* decoder, const char* data
 
 bool FileSubscribers::setFragData(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
@@ -266,6 +277,7 @@ bool FileSubscribers::setFragData(Comm::JsonDecoder* decoder, const char* data, 
 
 bool FileSubscribers::setFragNext(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
@@ -287,6 +299,7 @@ bool FileSubscribers::setFragNext(Comm::JsonDecoder* decoder, const char* data, 
 
 bool FileSubscribers::setFragErr(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	OM::FileSystem::FileContentsPtr fileContents;
 	if (!getFileContentsFromDecoder(decoder, fileContents))
@@ -319,6 +332,7 @@ bool FileSubscribers::setFragErr(Comm::JsonDecoder* decoder, const char* data, c
 
 bool FileSubscribers::arrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	{
 		MODEL_LOCK();

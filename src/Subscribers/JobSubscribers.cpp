@@ -6,6 +6,7 @@
 
 bool JobSubscribers::currentFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetJobName(data);
@@ -15,6 +16,7 @@ bool JobSubscribers::currentFileName(Comm::JsonDecoder* decoder, const char* dat
 
 bool JobSubscribers::lastFileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetLastJobName(data);
@@ -24,6 +26,7 @@ bool JobSubscribers::lastFileName(Comm::JsonDecoder* decoder, const char* data, 
 
 bool JobSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetPrintTime(data);
@@ -33,6 +36,7 @@ bool JobSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data,
 
 bool JobSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	uint32_t val = 0;
@@ -44,6 +48,7 @@ bool JobSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const char* data,
 
 bool JobSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetPrintHeight(data);
@@ -53,6 +58,7 @@ bool JobSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const
 
 bool JobSubscribers::duration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetPrintDuration(data);
@@ -68,6 +74,7 @@ bool JobSubscribers::duration(Comm::JsonDecoder* decoder, const uint32_t& data, 
 
 bool JobSubscribers::filamentTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	uint32_t val = 0;
@@ -79,6 +86,7 @@ bool JobSubscribers::filamentTimeLeft(Comm::JsonDecoder* decoder, const char* da
 
 bool JobSubscribers::fileTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	uint32_t val = 0;
@@ -90,6 +98,7 @@ bool JobSubscribers::fileTimeLeft(Comm::JsonDecoder* decoder, const char* data, 
 
 bool JobSubscribers::slicerTimeLeft(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	uint32_t val = 0;
@@ -101,6 +110,7 @@ bool JobSubscribers::slicerTimeLeft(Comm::JsonDecoder* decoder, const char* data
 
 bool JobSubscribers::warmUpDuration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetWarmUpDuration(data);
@@ -110,6 +120,7 @@ bool JobSubscribers::warmUpDuration(Comm::JsonDecoder* decoder, const uint32_t& 
 
 bool JobSubscribers::nullBuild(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(data);
 	LOG_DBG("Job: build is null");
@@ -120,6 +131,7 @@ bool JobSubscribers::nullBuild(Comm::JsonDecoder* decoder, const char* data, con
 
 bool JobSubscribers::currentObject(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::SetCurrentJobObject(static_cast<int8_t>(data));
@@ -129,6 +141,7 @@ bool JobSubscribers::currentObject(Comm::JsonDecoder* decoder, const int32_t& da
 
 bool JobSubscribers::nullObject(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(data);
 	OM::RemoveJobObject(indices[0], false);
@@ -138,6 +151,7 @@ bool JobSubscribers::nullObject(Comm::JsonDecoder* decoder, const char* data, co
 
 bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
@@ -150,6 +164,7 @@ bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& dat
 
 bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
@@ -162,6 +177,7 @@ bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, co
 
 bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
@@ -179,6 +195,7 @@ bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, co
 
 bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	auto jobObject = OM::GetOrCreateJobObject(indices[0]);
 	if (jobObject == nullptr)
@@ -196,6 +213,7 @@ bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, co
 
 bool JobSubscribers::objectArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	OM::RemoveJobObject(indices[0], true);
 	Model::get().post<EventType::JobObjectData>();

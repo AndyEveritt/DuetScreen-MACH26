@@ -192,7 +192,7 @@ namespace UI
 
 	void HeaterSliderPresenter::newHeaterData()
 	{
-		std::string_view name;
+		std::string name;
 		heater_state_t state = heater_state_t::unknown;
 		std::string_view state_str;
 		int32_t activeTemp = -2000;
@@ -266,6 +266,10 @@ namespace UI
 		}
 
 		name = heater->GetName();
+		if (name.empty())
+		{
+			name = _("temperature.heater", heater->index);
+		}
 		state = heater->status;
 		state_str = _(fmt::format("temperature.status.{:s}", heater->GetHeaterStatusStr()));
 		currentTemp = heater->current;

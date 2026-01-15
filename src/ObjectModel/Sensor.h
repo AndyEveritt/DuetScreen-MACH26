@@ -8,7 +8,6 @@
 #pragma once
 
 #include "Configuration.h"
-#include "Duet3D/General/String.h"
 #include <Duet3D/General/FreelistManager.h>
 #include <memory>
 
@@ -23,7 +22,7 @@ namespace OM
 		size_t index;
 		float lastReading;
 		std::chrono::milliseconds lastReadingTime;
-		String<MAX_TOOL_NAME_LENGTH> name;
+		std::string name;
 
 		void Reset();
 	};
@@ -46,7 +45,7 @@ namespace OM
 	size_t RemoveAnalogSensor(const size_t index, const bool allFollowing);
 
 	bool UpdateAnalogSensorReading(const size_t index, const float reading);
-	bool UpdateAnalogSensorName(const size_t index, const char* name);
+	bool UpdateAnalogSensorName(const size_t index, std::string_view name);
 
 	size_t GetEndstopCount();
 	std::shared_ptr<Endstop> GetEndstop(const size_t index);

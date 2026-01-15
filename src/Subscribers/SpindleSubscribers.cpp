@@ -6,6 +6,7 @@
 
 bool SpindleSubscribers::nullSpindle(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(data);
 	OM::RemoveSpindle(indices[0], false);
@@ -15,6 +16,7 @@ bool SpindleSubscribers::nullSpindle(Comm::JsonDecoder* decoder, const char* dat
 
 bool SpindleSubscribers::activeSpeed(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::SetSpindleActive(indices[0], data))
 	{
@@ -26,6 +28,7 @@ bool SpindleSubscribers::activeSpeed(Comm::JsonDecoder* decoder, const uint32_t&
 
 bool SpindleSubscribers::canReverse(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::SetSpindleCanReverse(indices[0], data))
 	{
@@ -37,6 +40,7 @@ bool SpindleSubscribers::canReverse(Comm::JsonDecoder* decoder, const bool& data
 
 bool SpindleSubscribers::currentSpeed(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::SetSpindleCurrent(indices[0], data))
 	{
@@ -48,6 +52,7 @@ bool SpindleSubscribers::currentSpeed(Comm::JsonDecoder* decoder, const uint32_t
 
 bool SpindleSubscribers::maxSpeed(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::SetSpindleMax(indices[0], data))
 	{
@@ -59,6 +64,7 @@ bool SpindleSubscribers::maxSpeed(Comm::JsonDecoder* decoder, const uint32_t& da
 
 bool SpindleSubscribers::minSpeed(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::SetSpindleMin(indices[0], data))
 	{
@@ -70,6 +76,7 @@ bool SpindleSubscribers::minSpeed(Comm::JsonDecoder* decoder, const uint32_t& da
 
 bool SpindleSubscribers::state(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::SetSpindleState(indices[0], data))
 	{
@@ -81,6 +88,7 @@ bool SpindleSubscribers::state(Comm::JsonDecoder* decoder, const char* data, con
 
 bool SpindleSubscribers::spindleArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (OM::RemoveSpindle(indices[0], true))
 	{

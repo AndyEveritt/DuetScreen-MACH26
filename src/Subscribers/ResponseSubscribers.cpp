@@ -6,6 +6,7 @@
 
 bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	size_t len = strlen(data);
@@ -53,6 +54,7 @@ bool ResponseSubscribers::resp(Comm::JsonDecoder* decoder, const char* data, con
 
 bool ResponseSubscribers::message(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	LOG_INFO("{:s}", data);
@@ -61,6 +63,7 @@ bool ResponseSubscribers::message(Comm::JsonDecoder* decoder, const char* data, 
 
 bool ResponseSubscribers::seq(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	LOG_INFO("{:s}", data);
@@ -69,6 +72,7 @@ bool ResponseSubscribers::seq(Comm::JsonDecoder* decoder, const char* data, cons
 
 bool ResponseSubscribers::seqReply(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	static int32_t lastSeq = -1;

@@ -6,6 +6,7 @@
 
 bool SensorSubscribers::nullAnalogSensor(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(data);
 	OM::RemoveAnalogSensor(indices[0], false);
@@ -15,6 +16,7 @@ bool SensorSubscribers::nullAnalogSensor(Comm::JsonDecoder* decoder, const char*
 
 bool SensorSubscribers::analogSensorReading(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::UpdateAnalogSensorReading(indices[0], data))
 	{
@@ -26,6 +28,7 @@ bool SensorSubscribers::analogSensorReading(Comm::JsonDecoder* decoder, const fl
 
 bool SensorSubscribers::analogSensorName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::UpdateAnalogSensorName(indices[0], data))
 	{
@@ -37,6 +40,7 @@ bool SensorSubscribers::analogSensorName(Comm::JsonDecoder* decoder, const char*
 
 bool SensorSubscribers::nullEndstop(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(data);
 	OM::RemoveEndstop(indices[0], false);
@@ -46,6 +50,7 @@ bool SensorSubscribers::nullEndstop(Comm::JsonDecoder* decoder, const char* data
 
 bool SensorSubscribers::endstopTriggered(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::UpdateEndstopTriggered(indices[0], data))
 	{
@@ -57,6 +62,7 @@ bool SensorSubscribers::endstopTriggered(Comm::JsonDecoder* decoder, const bool&
 
 bool SensorSubscribers::analogSensorArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (OM::RemoveAnalogSensor(indices[0], true))
 	{
@@ -67,6 +73,7 @@ bool SensorSubscribers::analogSensorArrayEnd(Comm::JsonDecoder* decoder, const s
 
 bool SensorSubscribers::endstopArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (OM::RemoveEndstop(indices[0], true))
 	{

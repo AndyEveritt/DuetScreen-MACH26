@@ -13,6 +13,7 @@
 
 bool BoardSubscribers::uniqueId(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 
 	/* We only care about the uniqueId for the main board */

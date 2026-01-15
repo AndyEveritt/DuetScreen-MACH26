@@ -6,6 +6,7 @@ SubscriberMap::ArrayEndSubscriberMap_t SubscriberMap::s_arrayEndSubscribers;
 
 size_t SubscriberMap::getSubscriberCount(const char* key)
 {
+	ZoneScoped;
 	auto it = s_subscribers.find(key);
 	if (it == s_subscribers.end())
 	{
@@ -16,6 +17,7 @@ size_t SubscriberMap::getSubscriberCount(const char* key)
 
 const std::vector<Subscriber>& SubscriberMap::getSubscribers(const char* key)
 {
+	ZoneScoped;
 	auto it = s_subscribers.find(key);
 	if (it == s_subscribers.end())
 	{
@@ -27,6 +29,7 @@ const std::vector<Subscriber>& SubscriberMap::getSubscribers(const char* key)
 
 size_t SubscriberMap::getArrayEndSubscriberCount(const char* key)
 {
+	ZoneScoped;
 	auto it = s_arrayEndSubscribers.find(key);
 	if (it == s_arrayEndSubscribers.end())
 	{
@@ -37,6 +40,7 @@ size_t SubscriberMap::getArrayEndSubscriberCount(const char* key)
 
 const std::vector<ArrayEndSubscriber>& SubscriberMap::getArrayEndSubscribers(const char* key)
 {
+	ZoneScoped;
 	auto it = s_arrayEndSubscribers.find(key);
 	if (it == s_arrayEndSubscribers.end())
 	{
@@ -48,6 +52,7 @@ const std::vector<ArrayEndSubscriber>& SubscriberMap::getArrayEndSubscribers(con
 
 void SubscriberMap::_addSubscriber(const char* key, subscriberCb_t cb)
 {
+	ZoneScoped;
 	if (key == nullptr)
 		return;
 
@@ -59,11 +64,13 @@ void SubscriberMap::_addSubscriber(const char* key, subscriberCb_t cb)
 void SubscriberMap::addSubscriber(const char* key,
 								  bool (*cb)(Comm::JsonDecoder* decoder, const char* val, const size_t indices[]))
 {
+	ZoneScoped;
 	_addSubscriber(key, cb);
 }
 void SubscriberMap::addSubscriber(const char* key,
 								  bool (*cb)(Comm::JsonDecoder* decoder, const float& val, const size_t indices[]))
 {
+	ZoneScoped;
 	_addSubscriber(key,
 				   [cb](Comm::JsonDecoder* decoder, const char* data, const size_t arrayIndices[])
 				   {
@@ -79,6 +86,7 @@ void SubscriberMap::addSubscriber(const char* key,
 void SubscriberMap::addSubscriber(const char* key,
 								  bool (*cb)(Comm::JsonDecoder* decoder, const uint32_t& val, const size_t indices[]))
 {
+	ZoneScoped;
 	_addSubscriber(key,
 				   [cb](Comm::JsonDecoder* decoder, const char* data, const size_t arrayIndices[])
 				   {
@@ -94,6 +102,7 @@ void SubscriberMap::addSubscriber(const char* key,
 void SubscriberMap::addSubscriber(const char* key,
 								  bool (*cb)(Comm::JsonDecoder* decoder, const int32_t& val, const size_t indices[]))
 {
+	ZoneScoped;
 	_addSubscriber(key,
 				   [cb](Comm::JsonDecoder* decoder, const char* data, const size_t arrayIndices[])
 				   {
@@ -109,6 +118,7 @@ void SubscriberMap::addSubscriber(const char* key,
 void SubscriberMap::addSubscriber(const char* key,
 								  bool (*cb)(Comm::JsonDecoder* decoder, const bool& val, const size_t indices[]))
 {
+	ZoneScoped;
 	_addSubscriber(key,
 				   [cb](Comm::JsonDecoder* decoder, const char* data, const size_t arrayIndices[])
 				   {
@@ -124,6 +134,7 @@ void SubscriberMap::addSubscriber(const char* key,
 void SubscriberMap::addArrayEndSubscriber(const char* key,
 										  bool (*cb)(Comm::JsonDecoder* decoder, const size_t indices[]))
 {
+	ZoneScoped;
 	// Check key ends with '^', otherwise raise compiler error
 	if (key[strlen(key) - 1] != '^')
 	{

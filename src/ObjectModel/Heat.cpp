@@ -42,7 +42,7 @@ namespace OM
 				return "";
 			}
 
-			return sensor->name.c_str();
+			return sensor->name;
 		}
 
 		const char* Heater::GetHeaterStatusStr() const

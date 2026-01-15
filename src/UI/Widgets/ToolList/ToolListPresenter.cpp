@@ -250,8 +250,8 @@ namespace UI
 				continue;
 			}
 
-			item->setLabel(tHeater->heater->GetName().length() == 0 ? _("temperature.heater", i)
-																	: tHeater->heater->GetName());
+			const auto name = tHeater->heater->GetName();
+			item->setLabel(name.empty() ? _("temperature.heater", tHeater->heater->index) : name);
 
 			item->setStatus(_(fmt::format("temperature.status.{:s}", tHeater->heater->GetHeaterStatusStr())));
 			item->setCurrentTemp(tHeater->heater->current);

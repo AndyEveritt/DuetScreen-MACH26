@@ -13,6 +13,7 @@
 
 bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	// TODO this is not thread safe with multiple parallel requests
 	FILEINFO_CACHE->ReceivingFileInfoResponse(data);
@@ -32,6 +33,7 @@ bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data
 
 bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	LOG_DBG("lastModified {:s}", data);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
@@ -56,6 +58,7 @@ bool ThumbnailSubscribers::lastModified(Comm::JsonDecoder* decoder, const char* 
 
 bool ThumbnailSubscribers::size(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -79,6 +82,7 @@ bool ThumbnailSubscribers::size(Comm::JsonDecoder* decoder, const uint32_t& data
 
 bool ThumbnailSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -102,6 +106,7 @@ bool ThumbnailSubscribers::printTime(Comm::JsonDecoder* decoder, const uint32_t&
 
 bool ThumbnailSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -125,6 +130,7 @@ bool ThumbnailSubscribers::simulatedTime(Comm::JsonDecoder* decoder, const uint3
 
 bool ThumbnailSubscribers::height(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -148,6 +154,7 @@ bool ThumbnailSubscribers::height(Comm::JsonDecoder* decoder, const float& data,
 
 bool ThumbnailSubscribers::layerHeight(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -171,6 +178,7 @@ bool ThumbnailSubscribers::layerHeight(Comm::JsonDecoder* decoder, const float& 
 
 bool ThumbnailSubscribers::filament(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
 		LOG_DBG("filament received but not in fileInfo response");
@@ -194,6 +202,7 @@ bool ThumbnailSubscribers::filament(Comm::JsonDecoder* decoder, const float& dat
 
 bool ThumbnailSubscribers::thumbnailsFormat(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	LOG_VERBOSE("thumbnail format {:s}", data);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -221,6 +230,7 @@ bool ThumbnailSubscribers::thumbnailsFormat(Comm::JsonDecoder* decoder, const ch
 
 bool ThumbnailSubscribers::thumbnailsHeight(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	LOG_VERBOSE("thumbnail height {:d}", data);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -244,6 +254,7 @@ bool ThumbnailSubscribers::thumbnailsHeight(Comm::JsonDecoder* decoder, const ui
 
 bool ThumbnailSubscribers::thumbnailsOffset(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	LOG_VERBOSE("thumbnail offset {:d}", data);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -269,6 +280,7 @@ bool ThumbnailSubscribers::thumbnailsOffset(Comm::JsonDecoder* decoder, const ui
 
 bool ThumbnailSubscribers::thumbnailsSize(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	LOG_VERBOSE("thumbnail size {:d}", data);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -292,6 +304,7 @@ bool ThumbnailSubscribers::thumbnailsSize(Comm::JsonDecoder* decoder, const uint
 
 bool ThumbnailSubscribers::thumbnailsWidth(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	LOG_VERBOSE("thumbnail width {:d}", data);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -315,6 +328,7 @@ bool ThumbnailSubscribers::thumbnailsWidth(Comm::JsonDecoder* decoder, const uin
 
 bool ThumbnailSubscribers::generatedBy(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{
@@ -339,6 +353,7 @@ bool ThumbnailSubscribers::generatedBy(Comm::JsonDecoder* decoder, const char* d
 
 bool ThumbnailSubscribers::thumbnailFilename(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request = FILEINFO_CACHE->GetThumbnailRequest(data);
 	if (!request)
@@ -363,6 +378,7 @@ static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder,
 									Comm::FileInfoCache::ThumbnailRequestPtr& request,
 									Comm::ThumbnailPtr& thumbnail)
 {
+	ZoneScoped;
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::thumbnail)
 	{
 		return false;
@@ -393,6 +409,7 @@ static bool getThumbnailFromDecoder(Comm::JsonDecoder* decoder,
 
 bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
@@ -426,6 +443,7 @@ bool ThumbnailSubscribers::thumbnailOffset(Comm::JsonDecoder* decoder, const cha
 
 bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
@@ -445,6 +463,7 @@ bool ThumbnailSubscribers::thumbnailData(Comm::JsonDecoder* decoder, const char*
 
 bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
@@ -465,6 +484,7 @@ bool ThumbnailSubscribers::thumbnailNext(Comm::JsonDecoder* decoder, const char*
 
 bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(indices);
 	Comm::FileInfoCache::ThumbnailRequestPtr request;
 	Comm::ThumbnailPtr thumbnail;
@@ -528,6 +548,7 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 
 bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	LOG_DBG("Thumbnail array end");
 	if (decoder->responseType != Comm::JsonDecoder::ResponseType::fileInfo)
 	{

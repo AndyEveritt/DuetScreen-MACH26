@@ -16,6 +16,7 @@
 
 bool HeatSubscribers::coldExtrudeTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Heat::SetColdExtrudeTemperature(data);
@@ -24,6 +25,7 @@ bool HeatSubscribers::coldExtrudeTemperature(Comm::JsonDecoder* decoder, const f
 
 bool HeatSubscribers::coldRetractTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
 	OM::Heat::SetColdRetractTemperature(data);
@@ -32,6 +34,7 @@ bool HeatSubscribers::coldRetractTemperature(Comm::JsonDecoder* decoder, const f
 
 bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(data);
 	if (OM::Heat::RemoveHeater(indices[0], false) > 0)
@@ -43,6 +46,7 @@ bool HeatSubscribers::nullHeater(Comm::JsonDecoder* decoder, const char* data, c
 
 bool HeatSubscribers::bedHeater(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (data > -1)
 	{
@@ -59,6 +63,7 @@ bool HeatSubscribers::bedHeater(Comm::JsonDecoder* decoder, const int32_t& data,
 
 bool HeatSubscribers::chamberHeater(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (data > -1)
 	{
@@ -75,6 +80,7 @@ bool HeatSubscribers::chamberHeater(Comm::JsonDecoder* decoder, const int32_t& d
 
 bool HeatSubscribers::heaterCurrentTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::Heat::UpdateHeaterTemp(indices[0], data))
 	{
@@ -86,6 +92,7 @@ bool HeatSubscribers::heaterCurrentTemperature(Comm::JsonDecoder* decoder, const
 
 bool HeatSubscribers::heaterActiveTemperature(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::Heat::UpdateHeaterTarget(indices[0], data, true))
 	{
@@ -97,6 +104,7 @@ bool HeatSubscribers::heaterActiveTemperature(Comm::JsonDecoder* decoder, const 
 
 bool HeatSubscribers::heaterStandbyTemperature(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::Heat::UpdateHeaterTarget(indices[0], data, false))
 	{
@@ -108,6 +116,7 @@ bool HeatSubscribers::heaterStandbyTemperature(Comm::JsonDecoder* decoder, const
 
 bool HeatSubscribers::heaterAvgPwm(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::Heat::UpdateHeaterPwm(indices[0], data))
 	{
@@ -119,6 +128,7 @@ bool HeatSubscribers::heaterAvgPwm(Comm::JsonDecoder* decoder, const float& data
 
 bool HeatSubscribers::heaterMinTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::Heat::UpdateHeaterMin(indices[0], data))
 	{
@@ -130,6 +140,7 @@ bool HeatSubscribers::heaterMinTemperature(Comm::JsonDecoder* decoder, const flo
 
 bool HeatSubscribers::heaterMaxTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::Heat::UpdateHeaterMax(indices[0], data))
 	{
@@ -141,6 +152,7 @@ bool HeatSubscribers::heaterMaxTemperature(Comm::JsonDecoder* decoder, const flo
 
 bool HeatSubscribers::heaterSensorNum(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (!OM::Heat::UpdateHeaterSensor(indices[0], data))
 	{
@@ -152,6 +164,7 @@ bool HeatSubscribers::heaterSensorNum(Comm::JsonDecoder* decoder, const int32_t&
 
 bool HeatSubscribers::heaterState(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	OM::Heat::UpdateHeaterStatus(indices[0], data);
 	return true;
@@ -159,6 +172,7 @@ bool HeatSubscribers::heaterState(Comm::JsonDecoder* decoder, const char* data, 
 
 bool HeatSubscribers::heaterArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (OM::Heat::RemoveHeater(indices[0], true))
 	{
@@ -169,6 +183,7 @@ bool HeatSubscribers::heaterArrayEnd(Comm::JsonDecoder* decoder, const size_t in
 
 bool HeatSubscribers::bedHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (OM::RemoveBed(indices[0], true))
 	{
@@ -179,6 +194,7 @@ bool HeatSubscribers::bedHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t
 
 bool HeatSubscribers::chamberHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
+	ZoneScoped;
 	UNUSED(decoder);
 	if (OM::RemoveChamber(indices[0], true))
 	{
