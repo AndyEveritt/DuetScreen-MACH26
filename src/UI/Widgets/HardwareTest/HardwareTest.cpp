@@ -6,7 +6,10 @@
  */
 
 #include "HardwareTest.h"
+#include "BuildDate.h"
 #include "Debug.h"
+#include "i18n/i18n.h"
+#include "version.h"
 
 #ifndef HARDWARE_TEST_SERIAL_NUMBER
 #  define HARDWARE_TEST_SERIAL_NUMBER ""
@@ -33,6 +36,8 @@ namespace UI
 
 		setSize(LV_PCT(100), LV_PCT(100));
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+
+		m_version.setText(_("settings.build_time", FIRMWARE_VERSION, BuildDateText, BuildTimeSuffix));
 
 		m_warning.setText("Invalid serial number");
 		m_warning.hide();
@@ -395,6 +400,8 @@ namespace UI
 
 		m_title.setText("Test Results");
 		m_title.setAlign(LV_ALIGN_TOP_MID, 0, 0);
+
+		m_version.setText(_("settings.build_time", FIRMWARE_VERSION, BuildDateText, BuildTimeSuffix));
 
 		m_passed.setTitle("Passed Tests");
 		m_passed.setWidth(LV_PCT(100));

@@ -31,6 +31,7 @@ namespace UI
 		  private:
 			void onShow() override;
 
+			LvLabel m_version{"version", getRoot()};
 			LvLabel m_warning{"warning", getRoot()};
 			TextBox m_serialInput{"serial_input", getRoot()};
 			LvKeyboard m_kb{"keyboard", getRoot()};
@@ -167,6 +168,7 @@ namespace UI
 
 		  private:
 			LvLabel m_title{"title", getRoot()};
+			LvLabel m_version{"version", getRoot()};
 			List<TestResult> m_passed{"passed", getRoot()};
 			List<TestResult> m_failed{"failed", getRoot()};
 

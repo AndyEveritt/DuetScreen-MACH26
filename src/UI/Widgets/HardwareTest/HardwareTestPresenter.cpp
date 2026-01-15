@@ -6,6 +6,7 @@
  */
 
 #include "HardwareTestPresenter.h"
+#include "BuildDate.h"
 #include "Debug.h"
 #include "Hardware/Usb.h"
 #include "HardwareTest.h"
@@ -14,6 +15,7 @@
 #include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
 #include "utils/SystemHelper.h"
+#include "version.h"
 #include <filesystem>
 #include <fstream>
 #include <regex>
@@ -856,6 +858,8 @@ namespace UI
 		m_logFile = filePath;
 
 		out << "DuetScreen Hardware Test Log - " << m_uid << std::endl;
+		out << "Firmware version: " << FIRMWARE_VERSION << std::endl;
+		out << "Build date: " << BuildDateText << " " << BuildTimeSuffix << std::endl;
 
 		writeToLogFile(runCommand("dmesg"));
 	}
