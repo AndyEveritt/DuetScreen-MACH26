@@ -14,6 +14,10 @@
 
 #include "UI/Core/Model.h"
 
+// TODO: this isn't thread safe if there are multiple decoders running simultaneously
+static ssize_t s_lastBedIndex = -1;
+static ssize_t s_lastChamberIndex = -1;
+
 bool HeatSubscribers::coldExtrudeTemperature(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	ZoneScoped;
@@ -48,15 +52,20 @@ bool HeatSubscribers::bedHeater(Comm::JsonDecoder* decoder, const int32_t& data,
 {
 	ZoneScoped;
 	UNUSED(decoder);
+	if (indices[0] == 0)
+	{
+		s_lastBedIndex = -1;
+	}
+
 	if (data > -1)
 	{
 		OM::SetBedHeater(indices[0], static_cast<int8_t>(data));
-		for (size_t i = OM::g_lastBed + 1; i < indices[0]; ++i)
+		for (size_t i = s_lastBedIndex + 1; i < indices[0]; ++i)
 		{
 			OM::RemoveBed(i, false);
 		}
-		OM::g_lastBed = static_cast<int8_t>(indices[0]);
-		LOG_DBG("g_lastBed={:d}", OM::g_lastBed);
+		s_lastBedIndex = static_cast<int8_t>(indices[0]);
+		LOG_DBG("s_lastBedIndex={:d}", s_lastBedIndex);
 	}
 	return true;
 }
@@ -65,15 +74,20 @@ bool HeatSubscribers::chamberHeater(Comm::JsonDecoder* decoder, const int32_t& d
 {
 	ZoneScoped;
 	UNUSED(decoder);
+	if (indices[0] == 0)
+	{
+		s_lastChamberIndex = -1;
+	}
+
 	if (data > -1)
 	{
 		OM::SetChamberHeater(indices[0], static_cast<int8_t>(data));
-		for (size_t i = OM::g_lastChamber + 1; i < indices[0]; ++i)
+		for (size_t i = s_lastChamberIndex + 1; i < indices[0]; ++i)
 		{
 			OM::RemoveChamber(i, false);
 		}
-		OM::g_lastChamber = static_cast<int8_t>(indices[0]);
-		LOG_DBG("g_lastChamber={:d}", OM::g_lastChamber);
+		s_lastChamberIndex = static_cast<int8_t>(indices[0]);
+		LOG_DBG("s_lastChamberIndex={:d}", s_lastChamberIndex);
 	}
 	return true;
 }
@@ -185,7 +199,8 @@ bool HeatSubscribers::bedHeaterArrayEnd(Comm::JsonDecoder* decoder, const size_t
 {
 	ZoneScoped;
 	UNUSED(decoder);
-	if (OM::RemoveBed(indices[0], true))
+	UNUSED(indices);
+	if (OM::RemoveBed(s_lastBedIndex + 1, true))
 	{
 	}
 	Model::get().post<EventType::BedHeaterData>();
@@ -196,7 +211,8 @@ bool HeatSubscribers::chamberHeaterArrayEnd(Comm::JsonDecoder* decoder, const si
 {
 	ZoneScoped;
 	UNUSED(decoder);
-	if (OM::RemoveChamber(indices[0], true))
+	UNUSED(indices);
+	if (OM::RemoveChamber(s_lastChamberIndex + 1, true))
 	{
 	}
 	Model::get().post<EventType::ChamberHeaterData>();

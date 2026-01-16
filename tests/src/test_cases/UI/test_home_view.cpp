@@ -306,7 +306,7 @@ class TestHomeViewWithData : public TestHomeView
 	}
 };
 
-TEST_F(TestHomeViewWithData, HomeView)
+TEST_F(TestHomeViewWithData, Dashboard)
 {
 	ZoneScoped;
 	EXPECT_EQ(OM::Heat::GetHeaterCount(), 4);
@@ -326,6 +326,20 @@ TEST_F(TestHomeViewWithData, HomeView)
 	view.getDashboard().getToolList().getTool(0)->getHeater(0)->getChildByName("active")->sendEvent(LV_EVENT_CLICKED,
 																									nullptr);
 	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/tool_list_numberpad.png");
+}
+
+TEST_F(TestHomeViewWithData, SimplePrinterDashboard)
+{
+	ZoneScoped;
+	load_model_data_from_file("tests/object_model/5_axis/model_heat_v.json");
+	load_model_data_from_file("tests/object_model/5_axis/model_tools_v.json");
+
+	EXPECT_EQ(OM::Heat::GetHeaterCount(), 1);
+	EXPECT_EQ(OM::GetToolCount(), 1);
+	EXPECT_EQ(OM::GetBedCount(), 0);
+	EXPECT_EQ(OM::GetChamberCount(), 0);
+
+	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/simple_printer.png");
 }
 
 TEST_F(TestHomeViewWithData, ConsoleView)

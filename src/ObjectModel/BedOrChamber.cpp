@@ -23,9 +23,6 @@ static ChamberList s_chambers;
 
 namespace OM
 {
-	int8_t g_lastBed = -1;
-	int8_t g_lastChamber = -1;
-
 	void BedOrChamber::Reset()
 	{
 		index = 0;

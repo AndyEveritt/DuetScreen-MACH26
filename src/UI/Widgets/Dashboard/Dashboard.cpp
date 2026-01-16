@@ -14,7 +14,7 @@
 namespace UI
 {
 	static constexpr int32_t s_mainWindowLayoutColDsc[3] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
-	static constexpr int32_t s_mainWindowLayoutRowDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+	static constexpr int32_t s_mainWindowLayoutRowDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
 	Dashboard::Dashboard(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
@@ -32,10 +32,13 @@ namespace UI
 		setGridDsc(s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
-		// m_toolList.setMaxHeight(LV_PCT(50));
-		setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_toolList, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
 		setGridCell(m_graph, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		setGridCell(m_tabs, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
+
+		/* Toollist */
+		m_toolList.setHeight(LV_SIZE_CONTENT);
+		m_toolList.setMaxHeight(LV_PCT(50));
 
 		/* Graph */
 		m_graph.setXRange({.min = -60, .max = 0});

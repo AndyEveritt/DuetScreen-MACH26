@@ -65,9 +65,6 @@ namespace OM
 	size_t RemoveChamber(const size_t index, const bool allFollowing);
 	bool SetBedHeater(const size_t bedIndex, const int8_t heaterNumber);
 	bool SetChamberHeater(const size_t chamberIndex, const int8_t heaterNumber);
-
-	extern int8_t g_lastBed;
-	extern int8_t g_lastChamber;
 } // namespace OM
 
 #endif /* SRC_OBJECTMODEL_BEDORCHAMBER_HPP_ */
