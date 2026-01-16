@@ -38,6 +38,7 @@ namespace NetworkHelper
 
 	[[maybe_unused]] static bool initWPAControl()
 	{
+		ZoneScoped;
 		LOG_DBG("Initializing wpa_supplicant control interface");
 #if T113
 		if (s_ctrl_conn != nullptr)
@@ -78,6 +79,7 @@ namespace NetworkHelper
 
 	[[maybe_unused]] static void closeWPAControl()
 	{
+		ZoneScoped;
 		LOG_DBG("Closing wpa_supplicant control interface");
 #if T113
 		if (s_monitor_conn != nullptr)
@@ -96,6 +98,7 @@ namespace NetworkHelper
 
 	static std::string sendCommand(const std::string& cmd)
 	{
+		ZoneScoped;
 #if T113
 		if (!initWPAControl())
 		{
@@ -124,6 +127,7 @@ namespace NetworkHelper
 
 	void enable(bool enable)
 	{
+		ZoneScoped;
 		LOG_INFO("{:s} WiFi", enable ? "Enabling" : "Disabling");
 #if T113
 		std::string cmd = fmt::format("ip link set " INTERFACE " {:s}", (enable ? " up" : " down"));
@@ -148,6 +152,7 @@ namespace NetworkHelper
 
 	bool isEnabled()
 	{
+		ZoneScoped;
 		std::string output = sendCommand("STATUS");
 		LOG_DBG("WiFi status: {:s}", output);
 		return output.find("wpa_state=COMPLETED") != std::string::npos;
@@ -155,12 +160,14 @@ namespace NetworkHelper
 
 	void reconfigure()
 	{
+		ZoneScoped;
 		LOG_INFO("Reconfiguring wpa_supplicant");
 		sendCommand("RECONFIGURE");
 	}
 
 	std::string getIpAddress()
 	{
+		ZoneScoped;
 		std::string result;
 		std::string output = sendCommand("STATUS");
 
@@ -178,6 +185,7 @@ namespace NetworkHelper
 
 	std::vector<WiFiNetwork> getKnownWiFiNetworks()
 	{
+		ZoneScoped;
 		LOG_INFO("Getting known WiFi networks");
 		std::vector<WiFiNetwork> networks;
 
@@ -255,6 +263,7 @@ namespace NetworkHelper
 
 	std::vector<WiFiNetwork> scanWiFiNetworks()
 	{
+		ZoneScoped;
 		LOG_INFO("Scanning for WiFi networks");
 #if SIMULATION
 		std::vector<WiFiNetwork> networks = {{.ssid = "Network 1", .signal_level = 100, .id = 1, .connected = true},
@@ -341,6 +350,7 @@ namespace NetworkHelper
 
 	bool isNetworkKnown(std::string_view ssid)
 	{
+		ZoneScoped;
 		std::vector<WiFiNetwork> networks = getKnownWiFiNetworks();
 		return std::any_of(
 			networks.begin(), networks.end(), [&ssid](const WiFiNetwork& network) { return network.ssid == ssid; });
@@ -348,6 +358,7 @@ namespace NetworkHelper
 
 	void connect(std::string_view ssid)
 	{
+		ZoneScoped;
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid);
 		std::vector<WiFiNetwork> networks = getKnownWiFiNetworks();
 		for (const WiFiNetwork& network : networks)
@@ -364,6 +375,7 @@ namespace NetworkHelper
 
 	void connect(std::string_view ssid, std::string_view password)
 	{
+		ZoneScoped;
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid);
 #if T113
 		if (isNetworkKnown(ssid))
@@ -395,18 +407,21 @@ namespace NetworkHelper
 
 	void disconnect()
 	{
+		ZoneScoped;
 		LOG_INFO("Disconnecting from WiFi network");
 		sendCommand("DISCONNECT");
 	}
 
 	void reconnect()
 	{
+		ZoneScoped;
 		LOG_INFO("Reconnecting to WiFi network");
 		sendCommand("RECONNECT");
 	}
 
 	void forgetNetwork(std::string_view ssid)
 	{
+		ZoneScoped;
 		LOG_INFO("Forgetting network \"{:s}\"", ssid);
 		std::vector<WiFiNetwork> networks = getKnownWiFiNetworks();
 		for (const WiFiNetwork& network : networks)

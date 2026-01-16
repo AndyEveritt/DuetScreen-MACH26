@@ -45,6 +45,7 @@ namespace UI
 			bool isConnected() const { return m_isConnected; }
 
 			Button& getConnectButton() { return m_connectBtn; }
+			Button& getForgetButton() { return m_forgetBtn; }
 
 		  private:
 			LvLabel m_ssidLabel{"ssid", getRoot()};

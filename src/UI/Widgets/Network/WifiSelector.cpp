@@ -16,6 +16,7 @@ namespace UI
 	WifiSelector::WifiSelector(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -42,6 +43,7 @@ namespace UI
 		m_passwordModal.setCloseCallback(
 			[this]()
 			{
+				ZoneScopedN("WifiSelector::m_passwordModal close callback");
 				m_passwordModal.close();
 				if (auto kb = m_passwordInput.getKeyboard())
 					kb->hide();
@@ -51,6 +53,7 @@ namespace UI
 		m_passwordInput.getTextarea().addEventCallback(
 			[this](lv_event_t* e)
 			{
+				ZoneScopedN("WifiSelector::m_passwordInput event callback");
 				if (auto kb = m_passwordInput.getKeyboard())
 				{
 					auto code = lv_event_get_code(e);
@@ -75,13 +78,16 @@ namespace UI
 
 	void WifiSelector::setNetworkCount(size_t count)
 	{
+		ZoneScoped;
 		m_list.setItemCount(count,
 							[this](size_t index, LvObj& parent)
 							{
+								ZoneScopedN("WifiSelector::setNetworkCount item constructor");
 								auto item = std::make_unique<WifiListItem>(index, parent);
-								item->getConnectButton().addEventCallback(
+								item->getConnectButton().addClickedCallback(
 									[this, index, &itemRef = *item](lv_event_t*)
 									{
+										ZoneScopedN("WifiSelector::setNetworkCount connect button callback");
 										const std::string& ssid = itemRef.getSsid();
 										if (itemRef.isConnected())
 										{
@@ -96,8 +102,14 @@ namespace UI
 											openPasswordModal(ssid);
 											m_passwordInput.getTextarea().sendEvent(LV_EVENT_CLICKED);
 										}
-									},
-									LV_EVENT_CLICKED);
+									});
+								item->getForgetButton().addClickedCallback(
+									[this, index, &itemRef = *item](lv_event_t*)
+									{
+										ZoneScopedN("WifiSelector::setNetworkCount forget button callback");
+										const std::string& ssid = itemRef.getSsid();
+										getPresenter()->forgetNetwork(ssid);
+									});
 								return item;
 							});
 	}
@@ -105,6 +117,7 @@ namespace UI
 	void WifiSelector::setNetworkDetails(
 		size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected)
 	{
+		ZoneScoped;
 		auto* item = m_list.getItem(index);
 		if (!item)
 			return;
@@ -116,11 +129,13 @@ namespace UI
 
 	void WifiSelector::setIpAddress(std::string_view ip_address)
 	{
+		ZoneScoped;
 		m_ipAddress.setText(_("settings.network.ip_address", ip_address));
 	}
 
 	void WifiSelector::setKeyboard(LvKeyboard* keyboard)
 	{
+		ZoneScoped;
 		m_keyboard = keyboard;
 		m_passwordInput.setKeyboard(m_keyboard);
 	}
@@ -128,6 +143,7 @@ namespace UI
 	WifiSelector::WifiListItem::WifiListItem(size_t index, LvObj& parent)
 		: ListItem(index, parent)
 	{
+		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -155,18 +171,21 @@ namespace UI
 
 	void WifiSelector::WifiListItem::setSsid(const std::string& ssid)
 	{
+		ZoneScoped;
 		m_ssid = ssid;
 		m_ssidLabel.setText(m_ssid);
 	}
 
 	void WifiSelector::WifiListItem::setSignalLevel(int32_t levelDbm)
 	{
+		ZoneScoped;
 		m_signal = levelDbm;
 		m_signalLabel.setText(fmt::format("{:d} dBm", m_signal));
 	}
 
 	void WifiSelector::WifiListItem::setKnown(bool known)
 	{
+		ZoneScoped;
 		m_known = known;
 		m_statusLabel.setVisible(m_known);
 		m_forgetBtn.setVisible(m_known);
@@ -174,6 +193,7 @@ namespace UI
 
 	void WifiSelector::WifiListItem::setConnected(bool connected)
 	{
+		ZoneScoped;
 		m_isConnected = connected;
 		if (connected)
 		{
@@ -188,11 +208,13 @@ namespace UI
 
 	void WifiSelector::onInit()
 	{
+		ZoneScoped;
 		m_passwordModal.setParent(HomeView::instance().getMainWindow());
 	}
 
 	void WifiSelector::openPasswordModal(const std::string& ssid)
 	{
+		ZoneScoped;
 		m_pendingSsid = ssid;
 		m_passwordInput.setText("");
 		m_passwordModal.setTitle(_("settings.network.password_for", ssid));

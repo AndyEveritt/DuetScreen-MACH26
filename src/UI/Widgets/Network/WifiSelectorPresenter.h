@@ -29,6 +29,7 @@ namespace UI
 		void connectToNetwork(std::string_view ssid);
 		void connectToNetwork(std::string_view ssid, std::string_view password);
 		void disconnectFromNetwork();
+		void forgetNetwork(std::string_view ssid);
 
 	  protected:
 		void onInit() override;

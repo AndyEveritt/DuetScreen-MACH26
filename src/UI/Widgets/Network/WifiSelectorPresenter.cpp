@@ -14,6 +14,7 @@ namespace UI
 {
 	WifiSelectorPresenter::~WifiSelectorPresenter()
 	{
+		ZoneScoped;
 		if (m_scanThread.joinable())
 		{
 			m_scanThread.request_stop();
@@ -23,44 +24,60 @@ namespace UI
 
 	void WifiSelectorPresenter::refresh()
 	{
-		UI_LOCK();
+		ZoneScoped;
 		if (!getView())
 			return;
 		std::vector<WiFiNetwork> networks = NetworkHelper::scanWiFiNetworks();
-		getView()->setNetworkCount(networks.size());
-		for (size_t i = 0; i < networks.size(); ++i)
 		{
-			const auto& network = networks[i];
-			getView()->setNetworkDetails(i, network.ssid, network.signal_level, network.isKnown(), network.connected);
+			UI_LOCK();
+			getView()->setNetworkCount(networks.size());
+			for (size_t i = 0; i < networks.size(); ++i)
+			{
+				const auto& network = networks[i];
+				getView()->setNetworkDetails(
+					i, network.ssid, network.signal_level, network.isKnown(), network.connected);
+			}
 		}
 		getView()->setIpAddress(NetworkHelper::getIpAddress());
 	}
 
 	void WifiSelectorPresenter::connectToNetwork(std::string_view ssid)
 	{
+		ZoneScoped;
 		NetworkHelper::connect(ssid);
 		refresh();
 	}
 
 	void WifiSelectorPresenter::connectToNetwork(std::string_view ssid, std::string_view password)
 	{
+		ZoneScoped;
 		NetworkHelper::connect(ssid, password);
 		refresh();
 	}
 
 	void WifiSelectorPresenter::disconnectFromNetwork()
 	{
+		ZoneScoped;
 		NetworkHelper::disconnect();
+		refresh();
+	}
+
+	void WifiSelectorPresenter::forgetNetwork(std::string_view ssid)
+	{
+		ZoneScoped;
+		NetworkHelper::forgetNetwork(ssid);
 		refresh();
 	}
 
 	void WifiSelectorPresenter::onInit()
 	{
+		ZoneScoped;
 		if (!m_scanThread.joinable())
 		{
 			m_scanThread = std::jthread(
 				[this](std::stop_token st)
 				{
+					tracy::SetThreadName("WifiScanThread");
 					std::unique_lock<std::mutex> lk(m_scanMutex);
 					for (;;)
 					{
@@ -84,6 +101,7 @@ namespace UI
 
 	void WifiSelectorPresenter::onActivate()
 	{
+		ZoneScoped;
 		{
 			std::lock_guard<std::mutex> lk(m_scanMutex);
 			m_scanActive.store(true);
@@ -93,6 +111,7 @@ namespace UI
 
 	void WifiSelectorPresenter::onDeactivate()
 	{
+		ZoneScoped;
 		{
 			std::lock_guard<std::mutex> lk(m_scanMutex);
 			m_scanActive.store(false);
