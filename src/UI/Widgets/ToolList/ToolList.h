@@ -68,6 +68,20 @@ namespace UI
 		bool m_selected;
 	};
 
+	/**
+	 * @brief Wrapper to give consistent padding with ToolListTool heaters
+	 */
+	class ToolListBedChamber : public ListItem
+	{
+	  public:
+		ToolListBedChamber(size_t index, LvObj& parent);
+
+		ToolListHeater& getHeater();
+
+	  private:
+		List<ToolListHeater> m_heaters{"heaters", getRoot()};
+	};
+
 	class ToolList : public View<ToolListPresenter>
 	{
 	  public:
@@ -81,9 +95,9 @@ namespace UI
 		size_t getBedCount() const { return m_beds.getItemCount(); }
 		size_t getChamberCount() const { return m_chambers.getItemCount(); }
 
-		auto getTool(size_t index) const { return m_tools.getItem(index); }
-		auto getBed(size_t index) const { return m_beds.getItem(index); }
-		auto getChamber(size_t index) const { return m_chambers.getItem(index); }
+		ToolListTool* getTool(size_t index) const { return m_tools.getItem(index); }
+		ToolListHeater* getBed(size_t index) const;
+		ToolListHeater* getChamber(size_t index) const;
 
 		auto& getNumberPad() { return m_numberPad; }
 		void showNumberPad();
@@ -95,8 +109,8 @@ namespace UI
 		void init();
 
 		List<ToolListTool> m_tools{"tools", getRoot()};
-		List<ToolListHeater> m_beds{"beds", getRoot()};
-		List<ToolListHeater> m_chambers{"chambers", getRoot()};
+		List<ToolListBedChamber> m_beds{"beds", getRoot()};
+		List<ToolListBedChamber> m_chambers{"chambers", getRoot()};
 
 		ModalNumberPad m_numberPad;
 	};

@@ -348,12 +348,12 @@
     },
     "temperature": { /* Temperature widgets */
       "bed": "Bed",
-      "beds": "Beds",
+      "beds": "Beds:",
       "chamber": "Chamber",
-      "chambers": "Chambers",
+      "chambers": "Chambers:",
       "default_tool_name": "Tool {:d}",
       "heater": "Heater {:d}",
-      "tools": "Tools",
+      "tools": "Tools:",
       "status": { /* Heater states */
         "active": "Active",
         "fault": "Fault",

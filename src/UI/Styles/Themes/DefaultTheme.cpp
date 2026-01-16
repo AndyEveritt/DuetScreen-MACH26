@@ -607,8 +607,17 @@ namespace UI::Themes
 		lv_style_set_bg_color(components.temperature_bar_indic, m_colors.border);
 		lv_style_set_bg_opa(components.temperature_bar_indic, LV_OPA_COVER);
 
-		lv_style_merge(components.tool_selected, lvgl.border_color_primary);
-		lv_style_set_border_width(components.tool_selected, 3);
+		lv_style_copy(components.tool_list_tool, lvgl.card);
+		// lv_style_set_bg_color(components.tool_list_tool, m_colors.bg_light);
+		// lv_style_set_bg_opa(components.tool_list_tool, LV_OPA_COVER);
+		// lv_style_set_radius(components.tool_list_tool, RADIUS_DEFAULT);
+
+		// lv_style_copy(components.tool_list_heater, components.tool_list_tool);
+		lv_style_set_pad_all(components.tool_list_heater, 0);
+
+		lv_style_set_outline_color(components.tool_selected, m_colors.primary);
+		lv_style_set_outline_opa(components.tool_selected, LV_OPA_COVER);
+		lv_style_set_outline_width(components.tool_selected, 3);
 		lv_style_set_shadow_color(components.tool_selected, lv_color_darken(m_colors.primary, 10));
 		lv_style_set_shadow_opa(components.tool_selected, LV_OPA_50);
 		lv_style_set_shadow_width(components.tool_selected, 0);
@@ -633,8 +642,8 @@ namespace UI::Themes
 		lv_style_set_pad_hor(components.bar_label_bg, PAD_DEF);
 
 #if DEBUG_BORDERS
-		lv_style_set_outline_color(components.debug_borders, m_colors.border);
-		lv_style_set_outline_width(components.debug_borders, 2);
+		lv_style_set_outline_color(components.debug_borders, m_colors.text);
+		lv_style_set_outline_width(components.debug_borders, 1);
 		lv_style_set_outline_opa(components.debug_borders, LV_OPA_100);
 #endif
 	}
