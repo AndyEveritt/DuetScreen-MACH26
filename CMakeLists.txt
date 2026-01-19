@@ -33,8 +33,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
-set(MAIN_SOURCES "")
-
 # --------------------------------------------------------------------------------------------------------
 # Options. These are mirrored as PUBLIC DuetScreen.lib compile definitions without the DUETSCREEN_ prefix.
 # --------------------------------------------------------------------------------------------------------
@@ -82,45 +80,9 @@ if (NOT PROCESSOR STREQUAL "T113" AND NOT PROCESSOR STREQUAL "Simulation")
   )
 endif()
 
-# ----------------------------------------------------------------------------
-# Set source files for executable
-# ----------------------------------------------------------------------------
-file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
-${LIBRARIES_DIR}/Duet3D/**.cpp)
 
-list(APPEND MAIN_SOURCES ${DUET_LIB_SOURCES})
-
-add_library(DuetScreen.lib ${MAIN_SOURCES})
+add_library(DuetScreen.lib)
 add_executable(DuetScreen)
-
-
-# Update DuetScreen version.h
-add_custom_target(
-  update_version_h
-  COMMAND "${CMAKE_SOURCE_DIR}/scripts/update_version.sh"
-  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-  COMMENT "Updating version.h"
-)
-add_dependencies(DuetScreen.lib update_version_h)
-
-# Find clang-format-19
-include(${LIBRARIES_DIR}/clang-format.cmake)
-add_dependencies(DuetScreen.lib clang-format)
-  
-  # Touch BuildDate.cpp to ensure it is always compiled
-  if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  add_custom_command(
-    TARGET DuetScreen
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
-    COMMENT "Touching BuildDate.cpp to force recompilation")
-    endif()
-    
-target_include_directories(DuetScreen.lib PUBLIC ${INCLUDE_DIR})
-target_include_directories(DuetScreen.lib PUBLIC ${SRC_DIR})
-target_include_directories(DuetScreen.lib SYSTEM PUBLIC ${LIBRARIES_DIR})
-
-add_subdirectory(src)
 
 # ----------------------------------------------------------------------------
 # Libraries
@@ -160,6 +122,42 @@ if(LIBUSB_LIBRARY_DIRS)
   # Ensure libusb library directory is on the link line (needed on macOS)
   target_link_directories(DuetScreen.lib PUBLIC ${LIBUSB_LIBRARY_DIRS})
 endif()
+
+# ----------------------------------------------------------------------------
+# Set source files for executable
+# ----------------------------------------------------------------------------
+file(GLOB_RECURSE DUET_LIB_SOURCES ${LIBRARIES_DIR}/Duet3D/**.c
+${LIBRARIES_DIR}/Duet3D/**.cpp)
+
+target_sources(DuetScreen.lib PRIVATE ${DUET_LIB_SOURCES})
+
+# Update DuetScreen version.h
+add_custom_target(
+  update_version_h
+  COMMAND "${CMAKE_SOURCE_DIR}/scripts/update_version.sh"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  COMMENT "Updating version.h"
+)
+add_dependencies(DuetScreen.lib update_version_h)
+
+# Find clang-format-19
+include(${LIBRARIES_DIR}/clang-format.cmake)
+add_dependencies(DuetScreen.lib clang-format)
+  
+  # Touch BuildDate.cpp to ensure it is always compiled
+  if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_custom_command(
+    TARGET DuetScreen
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E touch ${SRC_DIR}/BuildDate.cpp
+    COMMENT "Touching BuildDate.cpp to force recompilation")
+    endif()
+    
+target_include_directories(DuetScreen.lib PUBLIC ${INCLUDE_DIR})
+target_include_directories(DuetScreen.lib PUBLIC ${SRC_DIR})
+target_include_directories(DuetScreen.lib SYSTEM PUBLIC ${LIBRARIES_DIR})
+
+add_subdirectory(src)
 
 # ----------------------------------------------------------------------------
 # Add Definitions

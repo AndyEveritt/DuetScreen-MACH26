@@ -12,7 +12,7 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
 )
 
-if(TRACY_ENABLE)
+if(DUETSCREEN_ENABLE_PROFILING)
   target_sources(
     DuetScreen.lib
     PRIVATE
