@@ -251,6 +251,7 @@ namespace UI::Themes
 		/* Sidebar */
 		Style sidebar;				 // Sidebar style
 		Style sidebar_btn;			 // Sidebar button style
+		Style console_btn_anim;		 // Console button animation style
 		Style estop;				 // Emergency stop button style
 
 		/* Files */

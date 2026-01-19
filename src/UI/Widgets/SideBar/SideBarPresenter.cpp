@@ -26,6 +26,11 @@ namespace UI
 		m_view->enableHomeButton(enable);
 	}
 
+	void SideBarPresenter::newResponse(const ResponseType type, const std::string& /* message */)
+	{
+		m_view->animateResponse(type);
+	}
+
 	void SideBarPresenter::onInit()
 	{
 #if SIDE_BAR_BACK_BUTTON
@@ -36,6 +41,7 @@ namespace UI
 #else
 		enableHomeButton(true);
 #endif
+		registerEventListener<EventType::Response>(this, &SideBarPresenter::newResponse);
 	}
 
 	void SideBarPresenter::onActivate() {}

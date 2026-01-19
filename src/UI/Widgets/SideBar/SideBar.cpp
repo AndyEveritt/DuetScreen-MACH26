@@ -25,6 +25,7 @@ namespace UI
 	SideBar::SideBar(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		LOG_VERBOSE("Creating SideBar");
 
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
@@ -81,6 +82,7 @@ namespace UI
 		m_consoleBtn.setIcon("console.png");
 		m_consoleBtn.addClickedCallback(consoleBtnEvent, this);
 		m_consoleBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_consoleBtn.addStyle(Themes::getComponentStyles().console_btn_anim, LV_STATE_USER_1);
 #endif
 
 #if SIDE_BAR_SETTINGS_BUTTON
@@ -129,29 +131,63 @@ namespace UI
 
 	void SideBar::enableHomeButton(bool enable)
 	{
+		ZoneScoped;
 		m_homeBtn.setDisabled(!enable);
 	}
 
 #if SIDE_BAR_BACK_BUTTON
 	void SideBar::enableBackButton(bool enable)
 	{
+		ZoneScoped;
 		m_backBtn.setDisabled(!enable);
 		showAppDrawer(false);
 	}
 
 	void SideBar::backBtnEvent(lv_event_t*)
 	{
+		ZoneScoped;
 		UI::back();
 	}
 #endif
 
+	void SideBar::animateResponse(const ResponseType /* type */)
+	{
+		ZoneScoped;
+		LvAnim anim;
+		anim.setDuration(500);
+		anim.setValues(0, 100);
+		anim.setExecCb(
+			[](void* var, int32_t value)
+			{
+				ZoneScopedN("SideBar::animateResponse ExecCb");
+				auto& sideBar = *static_cast<SideBar*>(var);
+				sideBar.m_consoleBtn.setStyleRecolorOpa(static_cast<lv_opa_t>(value));
+			});
+		anim.setCompletedCb(
+			[](lv_anim_t* anim)
+			{
+				ZoneScopedN("SideBar::animateResponse CompletedCb");
+				auto& sideBar = *static_cast<SideBar*>(anim->var);
+				sideBar.m_consoleBtn.setStyleRecolorOpa(LV_OPA_0);
+				sideBar.m_consoleBtn.setState(LV_STATE_USER_1, false);
+			});
+		anim.setPathCb(lv_anim_path_ease_in_out);
+		anim.setRepeatCount(1);
+		anim.setVar(this);
+		anim.setReverseDuration(200);
+		m_consoleBtn.setState(LV_STATE_USER_1, true);
+		anim.start();
+	}
+
 	void SideBar::homeBtnEvent(lv_event_t*)
 	{
+		ZoneScoped;
 		UI::home();
 	}
 
 	void SideBar::controlBtnEvent(lv_event_t*)
 	{
+		ZoneScoped;
 		LOG_INFO("Control button pressed");
 		HomeView& homeView = HomeView::instance();
 		openScreen(&homeView.getControlView(), true);
@@ -159,6 +195,7 @@ namespace UI
 
 	void SideBar::filesBtnEvent(lv_event_t*)
 	{
+		ZoneScoped;
 		LOG_INFO("Files button pressed");
 		auto& view = HomeView::instance().getFileView();
 		openScreen(&view, true);
@@ -167,6 +204,7 @@ namespace UI
 #if SIDE_BAR_APP_DRAWER
 	void SideBar::menuBtnEvent(lv_event_t*)
 	{
+		ZoneScoped;
 		LOG_DBG("Menu button pressed");
 		SideBar& sidebar = *static_cast<SideBar*>(lv_event_get_user_data(e));
 
@@ -175,6 +213,7 @@ namespace UI
 
 	void SideBar::showAppDrawer(bool show, bool animate)
 	{
+		ZoneScoped;
 		if (show == m_appDrawer.hasState(LV_STATE_USER_1))
 		{
 			LOG_DBG("App drawer is already {}", show ? "shown" : "hidden");
@@ -226,6 +265,7 @@ namespace UI
 #if SIDE_BAR_CONSOLE_BUTTON
 	void SideBar::consoleBtnEvent(lv_event_t*)
 	{
+		ZoneScoped;
 		LOG_INFO("Console button pressed");
 		HomeView& homeView = HomeView::instance();
 		openScreen(&homeView.getConsoleView(), true);
@@ -235,6 +275,7 @@ namespace UI
 #if SIDE_BAR_SETTINGS_BUTTON
 	void SideBar::settingsBtnEvent(lv_event_t*)
 	{
+		ZoneScoped;
 		LOG_INFO("Settings button pressed");
 		HomeView& homeView = HomeView::instance();
 		openScreen(&homeView.getSettingsView(), true);
@@ -243,6 +284,7 @@ namespace UI
 
 	void SideBar::onShow()
 	{
+		ZoneScoped;
 #if SIDE_BAR_APP_DRAWER
 		m_appDrawer.init();
 #endif

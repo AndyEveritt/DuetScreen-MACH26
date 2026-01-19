@@ -36,6 +36,8 @@ namespace UI
 		void showAppDrawer(bool show, bool animate = LV_ANIM_ON);
 #endif
 
+		void animateResponse(const ResponseType type);
+
 	  private:
 #if SIDE_BAR_BACK_BUTTON
 		static void backBtnEvent(lv_event_t* e);

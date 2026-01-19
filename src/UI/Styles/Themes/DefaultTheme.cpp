@@ -585,6 +585,8 @@ namespace UI::Themes
 		lv_style_set_border_width(lvgl.slider_knob, BORDER_WIDTH);
 #endif
 
+		lv_style_set_recolor(components.console_btn_anim, m_colors.secondary);
+
 		lv_style_set_bg_color(components.estop, lv_palette_main(LV_PALETTE_RED));
 		// lv_style_set_bg_grad_color(components.estop, lv_palette_darken(LV_PALETTE_RED, 4));
 		lv_style_set_text_color(components.estop, lv_color_white());
