@@ -60,9 +60,8 @@ namespace UI
 		LvContainer m_flowCont{"flow_cont", getRoot()};
 		LvLabel m_flowHeader{"flow_header", m_flowCont};
 		Button m_flowMultiplier{"flow_multiplier", m_flowCont};
-		LvBar m_extruderFeedrate{"extruder_feedrate", m_flowCont};
-		LvLabel m_extruderFeedrateLabel{"extruder_feedrate_label", m_extruderFeedrate};
-		// LvLabel m_flowRateLabel{"flow_rate", m_flowCont};
+		LvBar m_extruderFlow{"extruder_feedrate", m_flowCont};
+		LvLabel m_extruderFlowLabel{"extruder_feedrate_label", m_extruderFlow};
 
 		LvContainer m_timeCont{"time_cont", getRoot()};
 		LvLabel m_timeHeader{"time_header", m_timeCont};

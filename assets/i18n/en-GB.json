@@ -331,7 +331,7 @@
       "fan_speed": "Fan: {:d}%",
       "flow_header": "Flow:",
       "flow_multiplier": "{:d}%",
-      "flow_rate": "Volumetric Flow: {:g} mm\u00b3/s",
+      "flow_rate": "{:.1g} mm\u00b3/s",
       "extrusion_speed": "{:g} mm/s",
       "layer_number": "Layer: {:d}",
       "positions": "Tool Position:",

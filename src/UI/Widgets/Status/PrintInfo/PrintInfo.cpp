@@ -82,7 +82,7 @@ namespace UI
 		m_flowCont.setGridDsc(flowColDsc, flowRowDsc);
 		m_flowCont.setGridCell(m_flowHeader, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
 		m_flowCont.setGridCell(m_flowMultiplier, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-		m_flowCont.setGridCell(m_extruderFeedrate, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		m_flowCont.setGridCell(m_extruderFlow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
 		m_flowHeader.setText(_("status.flow_header"));
 		m_flowHeader.addStyle(Themes::getLvglStyles().bg_color_header);
@@ -90,11 +90,11 @@ namespace UI
 		m_flowHeader.addStyle(Themes::getLvglStyles().text_emphasis);
 		m_flowMultiplier.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
-		m_extruderFeedrate.setHeight(LV_SIZE_CONTENT);
+		m_extruderFlow.setHeight(LV_SIZE_CONTENT);
 
-		m_extruderFeedrateLabel.setAlign(LV_ALIGN_LEFT_MID, 10, 0);
-		m_extruderFeedrateLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
-		m_extruderFeedrateLabel.addStyle(Themes::getComponentStyles().bar_label);
+		m_extruderFlowLabel.setAlign(LV_ALIGN_LEFT_MID, 10, 0);
+		m_extruderFlowLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
+		m_extruderFlowLabel.addStyle(Themes::getComponentStyles().bar_label);
 
 		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
 		updateFlowMultiplier(100);
@@ -198,16 +198,14 @@ namespace UI
 
 	void PrintInfo::setMaxExtrusionRate(int32_t max_extrusion_rate)
 	{
-		m_extruderFeedrate.setMaxValue(max_extrusion_rate);
+		m_extruderFlow.setMaxValue(max_extrusion_rate);
 	}
 
-	void PrintInfo::updateExtrusionRate(float feedrate, float volumetric)
+	void PrintInfo::updateExtrusionRate(float /* feedrate */, float volumetric)
 	{
 		UI_LOCK();
-		m_extruderFeedrate.setValue(static_cast<int32_t>(std::round(feedrate)));
-		m_extruderFeedrateLabel.setText(_("status.extrusion_speed", feedrate));
-		UNUSED(volumetric);
-		// m_flowRateLabel.setText(_("status.flow_rate", volumetric));
+		m_extruderFlow.setValue(static_cast<int32_t>(std::round(volumetric)));
+		m_extruderFlowLabel.setText(_("status.flow_rate", volumetric));
 	}
 
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
