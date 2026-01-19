@@ -37,6 +37,11 @@ using std::vector;
 #  define TRACE_LOG_MESSAGES 0
 #endif
 
+// TODO enable serverity when tracy supports it in a full release
+// Using v0.13.1 because it allows people to use the tracy server on windows from
+// https://github.com/wolfpld/tracy/releases assets
+#define USE_TRACY_SEVERITY 0 // v0.13.1 doesn't have MessageSeverity enum
+
 #if LOG_TIMESTAMPS
 #  define LOG_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S.%e] "
 #  if DEBUG
@@ -56,7 +61,12 @@ using std::vector;
 #define LOG_FILE_PATTERN LOG_TIMESTAMP_FMT "[%l] [%t] %@ %!() %v"
 
 #define LOG_UI_PATTERN LOG_UI_TIMESTAMP_FMT "[%l] %v"
-#define LOG_TRACY_PATTERN "[%@ %!()] %v"
+
+#if USE_TRACY_SEVERITY
+#  define LOG_TRACY_PATTERN "[%@ %!()] %v"
+#else
+#  define LOG_TRACY_PATTERN "[%L] [%@ %!()] %v"
+#endif
 
 #if defined(TRACY_ENABLE)
 #  include "utils/TracyMemory.h"
@@ -93,40 +103,62 @@ namespace Log
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 			uint32_t color;
+
+#  if USE_TRACY_SEVERITY
 			tracy::MessageSeverity severity;
+#  endif
 			switch (msg.level)
 			{
 			case spdlog::level::trace:
 				color = tracy::Color::LightGrey;
+#  if USE_TRACY_SEVERITY
 				severity = tracy::MessageSeverity::Trace;
+#  endif
 				break;
 			case spdlog::level::debug:
 				color = tracy::Color::LightBlue;
+#  if USE_TRACY_SEVERITY
 				severity = tracy::MessageSeverity::Debug;
+#  endif
 				break;
 			case spdlog::level::info:
 				color = tracy::Color::Green;
+#  if USE_TRACY_SEVERITY
 				severity = tracy::MessageSeverity::Info;
+#  endif
 				break;
 			case spdlog::level::warn:
 				color = tracy::Color::Yellow;
+#  if USE_TRACY_SEVERITY
 				severity = tracy::MessageSeverity::Warning;
+#  endif
 				break;
 			case spdlog::level::err:
 				color = tracy::Color::Red;
+#  if USE_TRACY_SEVERITY
 				severity = tracy::MessageSeverity::Error;
+#  endif
 				break;
 			case spdlog::level::critical:
 				color = tracy::Color::Purple;
+#  if USE_TRACY_SEVERITY
 				severity = tracy::MessageSeverity::Fatal;
+#  endif
 				break;
 			default:
 				color = tracy::Color::White;
+#  if USE_TRACY_SEVERITY
 				severity = tracy::MessageSeverity::Info;
+#  endif
+				break;
 			}
 
+#  if USE_TRACY_SEVERITY
 			tracy::Profiler::LogString(
 				tracy::MessageSourceType::User, severity, color, TRACY_CALLSTACK, formatted.size(), formatted.data());
+#  else
+			TracyMessageC(formatted.data(), formatted.size(), color);
+#  endif
 		}
 
 		void flush_() override {}
