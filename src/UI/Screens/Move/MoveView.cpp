@@ -404,7 +404,14 @@ namespace UI
 						m_presenter->moveAxisRelative(
 							axis_letter, (forward ? 1 : -1) * getSelectedDistance(), getSelectedFeedrate());
 					});
-				control->setHomeCallback([this](char axis_letter) { m_presenter->homeAxis(axis_letter); });
+				control->setHomeCallback(
+					[this](char axis_letter)
+					{
+						m_messageBox.setTitle(_("move.home_generic_confirm.title", axis_letter));
+						m_messageBox.setText(_("move.home_generic_confirm.text", axis_letter));
+						m_messageBox.setOkCallback([this, axis_letter]() { m_presenter->homeAxis(axis_letter); });
+						openModal(&m_messageBox);
+					});
 				control->setLabelCallback([this](char axis_letter, float position)
 										  { configureNumberpadForAxis(axis_letter, position); });
 				return control;
