@@ -377,7 +377,9 @@ Tracy can be used when simulating on PC or when running on the physical Duet3D s
 > Tracy support is only enabled in `Debug` builds by default. To enable tracy support in `Release` builds, set the cmake cache variable `DUETSCREEN_ENABLE_PROFILING` to `ON`. To enable lvgl profiling, set the cmake cache variable `DUETSCREEN_ENABLE_LV_PROFILING` to `ON`.
 
 #### Building tracy server
-The tracy server can be built from source in the [libraries/tracy/](../libraries/tracy/) directory. Instructions for building the tracy server can be found in the [tracy repository](../libraries/tracy/manual/tracy.md#buildingserver)
+A prebuilt tracy server binary for Windows can be downloaded from the [tracy releases page](https://github.com/wolfpld/tracy/releases), the version must match the tracy version used in this project. For simplicity a copy of the compatible tracy server binary for Windows is included in the [tools/win32/](../tools/win32/tracy-profiler.exe) directory.
+
+The tracy server can be built from source for Linux and MacOS in the [libraries/tracy/](../libraries/tracy/) directory. Instructions for building the tracy server can be found in the [tracy repository](../libraries/tracy/manual/tracy.md#buildingserver)
 
 To build on Ubuntu 24.04 LTS the following commands worked for me but your mileage may vary:
 ```bash
