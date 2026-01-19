@@ -336,6 +336,10 @@ All messages more severe than the selected log level are shown. For example, if 
 
 
 ### Filtering logs
+If you want to view the logs with a GUI, you can follow the instructions in [Tracing](#tracing) to use the tracy profiler. The logs are available under the "Messages" tab in tracy. This works for both simulation and code running on the Duet3D screen (if `DUETSCREEN_ENABLE_PROFILING` is `ON`). Comma separated filters can be applied to the logs in tracy.
+
+If you want to filter the logs and have the output as text, you can use the `scripts/filter_logs.py` script.
+
 When using `DEBUG` and `VERBOSE` log levels, the logs are generated too fast to be useful. Since you generally only want to see the logs from a part of the code, you can use the `scripts/filter_logs.py` script to filter the logs.
 
 This script works for both the simulation and code running on the Duet3D screen.
