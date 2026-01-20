@@ -39,7 +39,7 @@ namespace UI
 			[this](float value)
 			{
 				m_speed.setSendMode(Slider::SendMode::DISABLED); // prevent callback loop
-				m_speed.setRange(std::max(SPEED_FACTOR_MIN, value - 50), value + 50);
+				m_speed.setRange(std::max(SPEED_FACTOR_MIN, value - 50), std::max(150.0f, value + 50));
 				m_speed.setOutOfRangeMode(m_speed.getMin() <= SPEED_FACTOR_MIN ? Slider::OutOfRange::UPPER
 																			   : Slider::OutOfRange::BOTH);
 				m_speed.setSendMode(Slider::SendMode::VALUE_CONFIRMED);
@@ -47,20 +47,19 @@ namespace UI
 				m_presenter->setSpeedFactor(static_cast<uint32_t>(value));
 			});
 		m_speed.addEventCallback(
-			[this](lv_event_t* e)
+			[this](lv_event_t*)
 			{
-				float value = *static_cast<float*>(lv_event_get_param(e));
 				if (m_numberPad)
 				{
-					m_numberPad->setValue(value);
+					m_numberPad->setValue(m_speed.getValue());
 				}
 			},
 			LV_EVENT_VALUE_CHANGED);
 	}
 
-	void SpeedFactor::setSpeedValue(uint32_t value)
+	void SpeedFactor::setSpeedValue(float value)
 	{
-		m_speed.setValue(static_cast<float>(value));
+		m_speed.setValue(value);
 	}
 
 	ModalSpeedFactor::ModalSpeedFactor(const std::string& name, LvObj& parent)

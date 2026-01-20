@@ -19,7 +19,7 @@ namespace UI
 	  public:
 		SpeedFactor(const std::string& name, LvObj& parent);
 
-		void setSpeedValue(uint32_t value);
+		void setSpeedValue(float value);
 		void setNumberPad(NumberPad* numberPad) { m_numberPad = numberPad; }
 
 		Slider& getSlider() { return m_speed; }
