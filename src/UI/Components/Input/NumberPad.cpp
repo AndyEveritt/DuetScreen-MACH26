@@ -244,6 +244,7 @@ namespace UI
 								  }},
 					   np.m_confirmCb.value());
 		}
+		np.sendEvent(LV_EVENT_READY);
 		if (np.getCloseOnConfirm())
 		{
 			np.close();

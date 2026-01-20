@@ -128,8 +128,8 @@ namespace UI
 		setMinText("");
 		setMaxText("");
 		setWarningText("");
-		setOkBtnText(_("msgbox.ok"));
-		setCancelBtnText(_("msgbox.cancel"));
+		setOkBtnText(_("common.ok"));
+		setCancelBtnText(_("common.cancel"));
 
 		warningTextVisible(false);
 		minTextVisible(false);

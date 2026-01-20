@@ -43,31 +43,6 @@ namespace UI
 		newCurrentMoveExtrusionSpeed();
 	}
 
-	void PrintInfoPresenter::openSpeedFactorModal()
-	{
-		auto& np = HomeView::instance().getNumberPad();
-		np.setHeader(_("fine_tune.speed_factor"));
-		np.setValue(OM::Move::GetSpeedFactor() * 100);
-		np.setMinValue(1);
-		np.setMaxValue(1000);
-		np.setConfirmCallback(
-			[](float value)
-			{
-				if (value == std::round(100 * OM::Move::GetSpeedFactor()))
-				{
-					return;
-				}
-				Comm::DUET.SendGcodef("M220 S{:g}\n", value);
-			});
-		openModal(&np);
-	}
-
-	void PrintInfoPresenter::openExtrusionFactorModal()
-	{
-		auto& modal = m_view->getModalExtrusionFactor();
-		openModal(&modal);
-	}
-
 	void PrintInfoPresenter::newAxesData()
 	{
 		{

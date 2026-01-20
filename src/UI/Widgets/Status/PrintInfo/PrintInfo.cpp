@@ -64,16 +64,10 @@ namespace UI
 		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
 		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label);
 
-		m_speedFactorModal.setSize(LV_PCT(70), LV_SIZE_CONTENT);
+		m_speedFactorModal.setSize(LV_PCT(80), LV_PCT(70));
 		updateSpeed(0, 0);
 		updateSpeedMultiplier(100);
-		m_speedMultiplier.addClickedCallback(
-			[](lv_event_t* e)
-			{
-				auto& printInfo = *static_cast<PrintInfo*>(lv_event_get_user_data(e));
-				printInfo.m_presenter->openSpeedFactorModal();
-			},
-			this);
+		m_speedMultiplier.addClickedCallback([this](lv_event_t*) { openModal(&m_speedFactorModal); });
 
 		/* Flow */
 		static int32_t flowColDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -98,13 +92,7 @@ namespace UI
 
 		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
 		updateFlowMultiplier(100);
-		m_flowMultiplier.addClickedCallback(
-			[](lv_event_t* e)
-			{
-				auto& printInfo = *static_cast<PrintInfo*>(lv_event_get_user_data(e));
-				openModal(&printInfo.m_extrusionFactorModal);
-			},
-			this);
+		m_flowMultiplier.addClickedCallback([this](lv_event_t*) { openModal(&m_extrusionFactorModal); });
 
 		/* Babystep */
 		m_babyStepCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);

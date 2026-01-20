@@ -129,7 +129,7 @@ namespace UI
 			break;
 		}
 
-		msgBox->setCancelBtnText(_("msgbox.close"));
+		msgBox->setCancelBtnText(_("common.close"));
 		msgBox->setOkBtnText(_("msgbox.open_console"));
 		msgBox->setOkCallback(
 			[this]()
@@ -210,7 +210,7 @@ namespace UI
 		case OM::Alert::Mode::InfoClose:
 		case OM::Alert::Mode::InfoConfirm:
 		case OM::Alert::Mode::ConfirmCancel:
-			modalAlert.setOkBtnText(alert.mode == OM::Alert::Mode::InfoClose ? _("msgbox.close") : _("msgbox.ok"));
+			modalAlert.setOkBtnText(alert.mode == OM::Alert::Mode::InfoClose ? _("common.close") : _("common.ok"));
 			modalAlert.okVisible(true);
 			modalAlert.setOkCallback(
 				[seq]()

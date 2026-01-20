@@ -23,7 +23,10 @@
     },
     "common": {
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "ok": "Ok",
+      "cancel": "Cancel",
+      "close": "Close"
     },
     "connection_method": { /* Duet connection methods */
       "network": "Network",
@@ -159,9 +162,6 @@
       "response_info": "Info",
       "response_warning": "Warning",
       "response_error": "Error",
-      "cancel": "Cancel",
-      "close": "Close",
-      "ok": "Ok",
       "open_console": "Open Console",
       "warning_float_range": "Value must be between {:g} and {:g}",
       "warning_int_range": "Value must be between {:d} and {:d}",

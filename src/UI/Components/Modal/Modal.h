@@ -7,11 +7,17 @@
 
 #pragma once
 
+#include "UI/Components/Button/Button.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvObj.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Styles/Styles.h"
+#include "i18n/i18n.h"
 #include <concepts>
+
+#ifndef UI_MODAL_CLOSE_BUTTON
+#  define UI_MODAL_CLOSE_BUTTON 0
+#endif
 
 namespace UI
 {
@@ -45,6 +51,18 @@ namespace UI
 				},
 				LV_EVENT_CLICKED);
 			m_modalBg.addStyle(Themes::getLvglStyles().bg_modal);
+
+#if UI_MODAL_CLOSE_BUTTON
+			m_closeBtn.setAlign(LV_ALIGN_TOP_RIGHT);
+			m_closeBtn.setIcon("close.png");
+			m_closeBtn.setText(_("common.close"));
+			m_closeBtn.addClickedCallback(
+				[this](lv_event_t*)
+				{
+					if (!Modal::isBlocking())
+						Modal::close();
+				});
+#endif
 		}
 
 		void open() { openModal(this); }
@@ -60,10 +78,16 @@ namespace UI
 
 		void setParent(LvObj& parent) { m_modalBg.setParent(parent); }
 
-		void setBlocking(bool blocking) { m_blocking = blocking; }
+		void setBlocking(bool blocking)
+		{
+			m_blocking = blocking;
+#if UI_MODAL_CLOSE_BUTTON
+			m_closeBtn.setVisible(!blocking);
+#endif
+		}
 		bool isBlocking() const { return m_blocking; }
 
-	  private:
+	  protected:
 		/**
 		 * @warning private to prevent accidental calls (use this->open() or openModal() instead)
 		 */
@@ -85,7 +109,12 @@ namespace UI
 			m_modalBg.hide();
 		}
 
+	  private:
 		LvContainer m_modalBg;
+
+#if UI_MODAL_CLOSE_BUTTON
+		Button m_closeBtn{"modal_close_btn", m_modalBg};
+#endif
 		bool m_blocking = false;
 	};
 } // namespace UI
