@@ -208,13 +208,13 @@ Where:
 The above sections describe how to add assets to the project which will then be included in the `DuetScreen.tar.gz` file in the next release or manual build. If you want to add or update assets at runtime without needing to rebuild the project, you can do any of the following:
 1. Remove the SD card from the DuetScreen and insert it into a PC that is capable of reading ext4 file systems. Then copy the new/updated assets to the appropriate directories under `/etc/assets/` on the SD card. Reinsert the SD card into the DuetScreen and reboot.
 2. Use SCP to copy the assets to the screen over the network.
-  - This requires SSH to be enabled on the DuetScreen.
-  - Example command to copy a new language file:
-  ```bash
-  scp path/to/new_language.json root@<duetscreen_ip>:/etc/assets/i18n/
-  ```
+    - This requires SSH to be enabled on the DuetScreen.
+    - Example command to copy a new language file:
+      ```bash
+      scp path/to/new_language.json root@<duetscreen_ip>:/etc/assets/i18n/
+      ```
 3. Create a `DuetScreen.tar.gz` file containing with `./scripts/create_upgrade.sh --skip-binary`, and use it to update the screen via the GUI upgrade process.
-  - This will only update the assets and not the binary.
+    - This will only update the assets and not the binary.
 
 ## Testing
 
