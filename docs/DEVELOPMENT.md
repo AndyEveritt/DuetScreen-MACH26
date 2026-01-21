@@ -204,7 +204,7 @@ Where:
 - To add a new font, add the font file to the `assets/fonts/` directory.
 - The font can be selected in the GUI settings under `Settings > Display > Font`
 
-### Adding assets at runtime
+### Adding assets to the DuetScreen
 The above sections describe how to add assets to the project which will then be included in the `DuetScreen.tar.gz` file in the next release or manual build. If you want to add or update assets at runtime without needing to rebuild the project, you can do any of the following:
 1. Remove the SD card from the DuetScreen and insert it into a PC that is capable of reading ext4 file systems. Then copy the new/updated assets to the appropriate directories under `/etc/assets/` on the SD card. Reinsert the SD card into the DuetScreen and reboot.
 2. Use SCP to copy the assets to the screen over the network.
@@ -215,6 +215,7 @@ The above sections describe how to add assets to the project which will then be 
       ```
 3. Create a `DuetScreen.tar.gz` file containing with `./scripts/create_upgrade.sh --skip-binary`, and use it to update the screen via the GUI upgrade process.
     - This will only update the assets and not the binary.
+    - Note that this process will first delete all existing assets on the screen before copying the new ones.
 
 ## Testing
 
