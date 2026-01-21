@@ -213,7 +213,7 @@ The above sections describe how to add assets to the project which will then be 
       ```bash
       scp path/to/new_language.json root@<duetscreen_ip>:/etc/assets/i18n/
       ```
-3. Create a `DuetScreen.tar.gz` file containing with `./scripts/create_upgrade.sh --skip-binary`, and use it to update the screen via the GUI upgrade process.
+3. Create a `DuetScreen.tar.gz` file with `./scripts/create_upgrade.sh --skip-binary`, and use it to update the screen via the GUI upgrade process.
     - This will only update the assets and not the binary.
     - Note that this process will first delete all existing assets on the screen before copying the new ones.
 
