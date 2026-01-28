@@ -29,7 +29,8 @@
                 "DUETSCREEN_LOG_THREAD": "ON",
                 "DUETSCREEN_DEBUG_BORDERS": "ON",
                 "DUETSCREEN_ENABLE_CONSOLE_SHELL": "ON",
-                "DUETSCREEN_ENABLE_PROFILING": "ON"
+                "DUETSCREEN_ENABLE_PROFILING": "ON",
+                "DUETSCREEN_USE_PCH": "ON"
             }
         },
         {

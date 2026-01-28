@@ -15,6 +15,18 @@ set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(LIBRARIES_DIR ${PROJECT_SOURCE_DIR}/libraries)
 # set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
+# ----------------------------------------------------------------------------------
+# Build acceleration helpers (ccache, split DWARF, debug info level, unity, PCH)
+# ----------------------------------------------------------------------------------
+
+# Prefer ccache if available (speeds up rebuilds substantially)
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+  message(STATUS "Enabling ccache: ${CCACHE_PROGRAM}")
+  set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+  set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif()
+
 # Remove ARM-specific compile and linker options
 if(PROCESSOR STREQUAL "Simulation")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
@@ -31,6 +43,32 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+endif()
+
+# Reduce debug info size and speed up links in Debug/RelWithDebInfo
+set(PIPE ON)
+option(DUETSCREEN_SPLIT_DWARF "Split DWARF debug info for faster links" OFF)
+if(CMAKE_BUILD_TYPE MATCHES "^Debug$|^RelWithDebInfo$")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # Keep only line tables for fast stepping and use split DWARF if enabled
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -gline-tables-only")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gline-tables-only")
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    # Minimal debug info level that still allows backtraces
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g1")
+  endif()
+  if(DUETSCREEN_SPLIT_DWARF AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -gsplit-dwarf")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gsplit-dwarf")
+    set(PIPE OFF)
+  endif()
+endif()
+
+# Use pipes instead of temp files when compiling (reduces disk IO on GCC/Clang)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU" AND PIPE)
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -pipe")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe")
 endif()
 
 # --------------------------------------------------------------------------------------------------------
@@ -83,6 +121,47 @@ endif()
 
 add_library(DuetScreen.lib)
 add_executable(DuetScreen)
+
+# Optionally save preprocessed/assembly temps for investigation (OFF by default)
+option(DUETSCREEN_SAVE_TEMPS "Save intermediate compile outputs for analysis" OFF)
+if(DUETSCREEN_SAVE_TEMPS)
+  target_compile_options(DuetScreen.lib PUBLIC --save-temps)
+  add_compile_options(-ftime-report)
+  add_compile_options(-H)
+endif()
+
+# Optional unity build to reduce translation unit count (CMake >= 3.16)
+option(DUETSCREEN_UNITY_BUILD "Enable CMake unity build for faster compiles" OFF)
+if(DUETSCREEN_UNITY_BUILD AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16")
+  set_target_properties(DuetScreen.lib PROPERTIES UNITY_BUILD ON)
+  set_target_properties(DuetScreen     PROPERTIES UNITY_BUILD ON)
+endif()
+
+# Optional precompiled headers for common libc++ headers (CMake >= 3.16)
+option(DUETSCREEN_USE_PCH "Enable precompiled headers for common includes" OFF)
+if(DUETSCREEN_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16")
+  # Keep this conservative (std headers only) to avoid macro/ODR surprises.
+  # Apply PCH only to C++ compilations to avoid injecting C++ headers into C units.
+    set(_DUETSCREEN_PCH_CXX
+      "$<$<COMPILE_LANGUAGE:CXX>:<array$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<chrono$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<cstdint$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<functional$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<memory$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<optional$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<map$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<span$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<string$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<string_view$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<utility$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<variant$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:<vector$<ANGLE-R>>"
+      "$<$<COMPILE_LANGUAGE:CXX>:Debug.h>"
+      "\"lvgl/lvgl.h\""
+    )
+  target_precompile_headers(DuetScreen.lib PRIVATE ${_DUETSCREEN_PCH_CXX})
+  target_precompile_headers(DuetScreen     PRIVATE ${_DUETSCREEN_PCH_CXX})
+endif()
 
 # ----------------------------------------------------------------------------
 # Libraries
@@ -267,34 +346,45 @@ foreach(_var ${_cache_vars})
   endif()
 endforeach()
 
-# Helper function to add preprocesor definition of FILE_BASENAME to pass the
-# filename without directory path for debugging use.
-#
-# Note that in header files this is not consistent with __FILE__ and __LINE__
-# since FILE_BASENAME will be the compilation unit source file name (.c/.cpp).
-#
-# Example:
-#
-# define_file_basename_for_sources(my_target)
-#
-# Will add -DFILE_BASENAME="filename" for each source file depended on by
-# my_target, where filename is the name of the file.
-#
-function(define_file_relpath_for_sources targetname)
-  get_target_property(source_files "${targetname}" SOURCES)
-  foreach(sourcefile ${source_files})
-    # Add the FILE_BASENAME=filename compile definition to the list.
-    file(RELATIVE_PATH relpath "${PROJECT_SOURCE_DIR}" "${sourcefile}")
-    # Set the updated compile definitions on the source file.
-    set_property(
-      SOURCE "${sourcefile}"
-      APPEND
-      PROPERTY COMPILE_DEFINITIONS "__FILE_RELPATH__=\"${relpath}\"")
-  endforeach()
-endfunction()
+if (!DUETSCREEN_USE_PCH)
+  # Helper function to add preprocesor definition of FILE_BASENAME to pass the
+  # filename without directory path for debugging use.
+  #
+  # Note that in header files this is not consistent with __FILE__ and __LINE__
+  # since FILE_BASENAME will be the compilation unit source file name (.c/.cpp).
+  #
+  # Example:
+  #
+  # define_file_basename_for_sources(my_target)
+  #
+  # Will add -DFILE_BASENAME="filename" for each source file depended on by
+  # my_target, where filename is the name of the file.
+  #
+  function(define_file_relpath_for_sources targetname)
+    get_target_property(source_files "${targetname}" SOURCES)
+    foreach(sourcefile ${source_files})
+      # Add the __FILE_RELPATH__=relative-path compile definition to the list for each TU.
+      # This yields the main source file path for use in logging/macros.
+      file(RELATIVE_PATH relpath "${PROJECT_SOURCE_DIR}" "${sourcefile}")
+      set_property(
+        SOURCE "${sourcefile}"
+        APPEND
+        PROPERTY COMPILE_DEFINITIONS "__FILE_RELPATH__=\"${relpath}\"")
+    endforeach()
+  endfunction()
+endif()
 
-define_file_relpath_for_sources(DuetScreen.lib)
-define_file_relpath_for_sources(DuetScreen)
+# Use compiler-provided __BASE_FILE__ which expands to the primary source file.
+# Also remap the project source prefix to produce relative paths in macros.
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+  target_compile_options(DuetScreen.lib PRIVATE -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=)
+  target_compile_options(DuetScreen     PRIVATE -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=)
+endif()
+target_compile_definitions(DuetScreen.lib PUBLIC __FILE_RELPATH__=__BASE_FILE__)
+target_compile_definitions(DuetScreen     PUBLIC __FILE_RELPATH__=__BASE_FILE__)
+
+# define_file_relpath_for_sources(DuetScreen.lib)
+# define_file_relpath_for_sources(DuetScreen)
 
 # Define LVGL configuration as a simple include
 target_compile_definitions(DuetScreen.lib PUBLIC LV_CONF_INCLUDE_SIMPLE)

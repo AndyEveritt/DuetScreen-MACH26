@@ -135,17 +135,16 @@ template <EventType E>
 struct EventWrapper
 {
 	using tuple_type = typename EventTraits<E>::tuple_type;
-	EventWrapper() = default;
-	explicit EventWrapper(const tuple_type& t)
+	constexpr EventWrapper() noexcept = default;
+	constexpr explicit EventWrapper(const tuple_type& t) noexcept
 		: tup(t)
 	{
 	}
-	explicit EventWrapper(tuple_type&& t)
+	constexpr explicit EventWrapper(tuple_type&& t) noexcept
 		: tup(std::move(t))
 	{
 	}
 	tuple_type tup;
-	constexpr static std::string_view eventName = nameof::nameof_enum<E>();
 };
 
 // Variant holding all event payload wrappers

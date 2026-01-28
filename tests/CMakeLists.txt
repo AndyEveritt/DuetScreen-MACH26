@@ -23,6 +23,10 @@ add_dependencies(DuetScreen.tests clang-format-tests)
 file(GLOB_RECURSE DUETSCREEN_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 target_sources(DuetScreen.tests PRIVATE ${DUETSCREEN_TEST_SOURCES})
 
+if (DUETSCREEN_USE_PCH)
+  target_precompile_headers(DuetScreen.tests REUSE_FROM DuetScreen.lib)
+endif()
+
 target_include_directories(DuetScreen.tests PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
@@ -56,7 +60,12 @@ else()
   )
 endif()
 
-define_file_relpath_for_sources(DuetScreen.tests)
+# Use compiler-provided __BASE_FILE__ which expands to the primary source file.
+# Also remap the project source prefix to produce relative paths in macros.
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+  target_compile_options(DuetScreen.tests PRIVATE -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=)
+endif()
+target_compile_definitions(DuetScreen.tests PUBLIC __FILE_RELPATH__=__BASE_FILE__)
 
 include(GoogleTest)
 # Ensure tests run from the project root so any relative paths in tests behave as expected

@@ -6,7 +6,6 @@
 /*********************
  *      INCLUDES
  *********************/
-#define _DEFAULT_SOURCE /* needed for usleep() */
 #include "Comm/Communication.h"
 #include "Comm/Usb.h"
 #include "Debug.h"
@@ -37,8 +36,6 @@
 
 #if LV_USE_OS == LV_OS_PTHREAD
 #  include <pthread.h>
-#elif LV_USE_OS == LV_OS_FREERTOS
-#  include "freertos_main.h"
 #endif
 
 #if T113

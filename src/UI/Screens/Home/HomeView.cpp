@@ -108,6 +108,7 @@ namespace UI
 		{
 			return *s_overrideInstance;
 		}
+		LOG_INFO("Initialising");
 		static HomeView view;
 		return view;
 	}

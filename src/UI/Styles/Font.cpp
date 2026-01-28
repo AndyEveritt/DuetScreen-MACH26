@@ -88,6 +88,11 @@ namespace UI::FontManager
 				LOG_DBG("Loading FreeType font: {:s}", path.filename().c_str());
 				success = lv_font_manager_add_src(s_fontManager, name.c_str(), path.c_str(), &lv_freetype_font_class);
 			}
+			else
+			{
+				LOG_VERBOSE("Skipping unsupported font file: {:s}", path.filename().c_str());
+				continue;
+			}
 
 			if (!success)
 			{
