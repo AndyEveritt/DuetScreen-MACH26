@@ -54,17 +54,15 @@ namespace UI
 										 [this, index](float value)
 										 { m_presenter->setExtruderFactor(index, static_cast<uint32_t>(value)); });
 									 slider->addEventCallback(
-										 [](lv_event_t* e)
+										 [this](lv_event_t* e)
 										 {
-											 auto& control = *static_cast<ExtrusionFactor*>(lv_event_get_user_data(e));
 											 float value = *static_cast<float*>(lv_event_get_param(e));
-											 if (control.m_numberPad)
+											 if (m_numberPad)
 											 {
-												 control.m_numberPad->setValue(value);
+												 m_numberPad->setValue(value);
 											 }
 										 },
-										 LV_EVENT_VALUE_CHANGED,
-										 this);
+										 LV_EVENT_VALUE_CHANGED);
 									 return slider;
 								 });
 	}
@@ -107,7 +105,7 @@ namespace UI
 		// m_numberPad->setMaxValue(slider->getMax());
 		slider->getInput().sendEvent(LV_EVENT_DEFOCUSED, nullptr);
 		m_numberPad->setConfirmCallback(
-			[slider](float value)
+			[this, slider](float value)
 			{
 				slider->setValue(value); // This might be a bug if the slider is destroyed while the numberpad is open?
 			});
@@ -135,5 +133,6 @@ namespace UI
 		m_numberPad.setSize(LV_PCT(50), LV_PCT(100));
 
 		m_numberPad.setCloseOnConfirm(false);
+		m_numberPad.addEventCallback([this](lv_event_t*) { closeModal(this); }, LV_EVENT_READY);
 	}
 } // namespace UI

@@ -91,8 +91,8 @@ namespace UI
 		m_cancelBtn.setFlexGrow(1);
 		m_okBtn.setHeight(LV_SIZE_CONTENT);
 		m_okBtn.setFlexGrow(1);
-		m_cancelBtn.setText(_("msgbox.cancel"));
-		m_okBtn.setText(_("msgbox.ok"));
+		m_cancelBtn.setText(_("common.cancel"));
+		m_okBtn.setText(_("common.ok"));
 
 		m_progress.setSize(LV_PCT(100), 5);
 
@@ -207,8 +207,8 @@ namespace UI
 		setTitle("");
 		setText("");
 		setImage(nullptr);
-		setOkBtnText(_("msgbox.ok"));
-		setCancelBtnText(_("msgbox.cancel"));
+		setOkBtnText(_("common.ok"));
+		setCancelBtnText(_("common.cancel"));
 		okVisible(true);
 		cancelVisible(false);
 		imageVisible(false);

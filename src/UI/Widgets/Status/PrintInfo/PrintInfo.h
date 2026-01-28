@@ -72,7 +72,7 @@ namespace UI
 		LvLabel m_babyStepHeader{"babystep_header", m_babyStepCont};
 		Button m_babyStepButton{"babystep_button", m_babyStepCont};
 
-		Modal<SpeedFactor> m_speedFactorModal{"speed_factor", getRoot()};
+		ModalSpeedFactor m_speedFactorModal{"speed_factor", getRoot()};
 		ModalExtrusionFactor m_extrusionFactorModal{"extrusion_factor", getRoot()};
 		Modal<BabyStep> m_babyStepModal{"baby_step", getRoot()};
 	};

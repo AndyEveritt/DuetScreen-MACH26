@@ -150,7 +150,9 @@ Where:
 > [!WARNING]
 > The commit message format is used to automatically generate the changelog for the project. Pull Requests that do not follow this format may be rejected.
 
-## Adding a new language (i18n)
+## Assets
+
+### Adding a new language (i18n)
 - Language files are located in the `assets/i18n/` directory.
 - Each language file is a JSON file with the following structure:
 ```json
@@ -182,7 +184,7 @@ Where:
 > [!NOTE]
 > The language files are loaded at runtime without need to be compiled into the binary. When simulating on PC, the language files are loaded from the `assets/i18n/` directory in the project. When running on the Duet3D screen, the language files are loaded from the `/etc/assets/i18n/` directory.
 
-## Adding a new icon set
+### Adding a new icon set
 - Icon sets are located in the `assets/icons/` directory.
 - Each icon set is a subdirectory in the `assets/icons/` directory.
 - To add a new icon set, create a new subdirectory in the `assets/icons/` directory and add the icons to it.
@@ -191,6 +193,29 @@ Where:
 - The icon set can be selected in the GUI settings under `Settings > Display > Icons`
 - The filenames of the icons should match the filenames used in the code. If in doubt look at the existing icon sets for reference.
 - A translation key is used to provide a human readable name for the icon set in the GUI. This key should be added to the `i18n` language files under the `theme.icon_sets.{icon_set_folder_name}` key. For example, for an icon set called `example`, the translation key would be `theme.icon_sets.example`.
+- https://fonts.google.com/icons is a good source for icons.
+
+### Adding a new font
+- Fonts are located in the `assets/fonts/` directory.
+- A font can be a `.ttf` or a compiled `.bin` lvgl font file.
+- Some themes set different weights for different UI elements. For this to be supported, the font must be a variable weight `.ttf` font.
+  - These fonts contain multiple weights in a single file and allow the weight to be changed at runtime.
+  - https://fonts.google.com/?categoryFilters=Technology:%2FTechnology%2FVariable is a good source for variable weight fonts.
+- To add a new font, add the font file to the `assets/fonts/` directory.
+- The font can be selected in the GUI settings under `Settings > Display > Font`
+
+### Adding assets to the DuetScreen
+The above sections describe how to add assets to the project which will then be included in the `DuetScreen.tar.gz` file in the next release or manual build. If you want to add or update assets at runtime without needing to rebuild the project, you can do any of the following:
+1. Remove the SD card from the DuetScreen and insert it into a PC that is capable of reading ext4 file systems. Then copy the new/updated assets to the appropriate directories under `/etc/assets/` on the SD card. Reinsert the SD card into the DuetScreen and reboot.
+2. Use SCP to copy the assets to the screen over the network.
+    - This requires SSH to be enabled on the DuetScreen.
+    - Example command to copy a new language file:
+      ```bash
+      scp path/to/new_language.json root@<duetscreen_ip>:/etc/assets/i18n/
+      ```
+3. Create a `DuetScreen.tar.gz` file with `./scripts/create_upgrade.sh --skip-binary`, and use it to update the screen via the GUI upgrade process.
+    - This will only update the assets and not the binary.
+    - Note that this process will first delete all existing assets on the screen before copying the new ones.
 
 ## Testing
 

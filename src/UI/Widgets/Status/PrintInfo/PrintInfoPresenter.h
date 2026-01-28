@@ -23,8 +23,6 @@ namespace UI
 		// Getters
 
 		// Actions
-		void openSpeedFactorModal();
-		void openExtrusionFactorModal();
 
 		// Observers
 		void newAxesData();
