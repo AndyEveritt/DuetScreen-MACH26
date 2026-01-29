@@ -20,11 +20,14 @@ set(LIBRARIES_DIR ${PROJECT_SOURCE_DIR}/libraries)
 # ----------------------------------------------------------------------------------
 
 # Prefer ccache if available (speeds up rebuilds substantially)
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-  message(STATUS "Enabling ccache: ${CCACHE_PROGRAM}")
-  set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-  set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+option(ENABLE_CCACHE "Enable ccache if available" ON)
+if (ENABLE_CCACHE)
+  find_program(CCACHE_PROGRAM ccache)
+  if(CCACHE_PROGRAM)
+    message(STATUS "Enabling ccache: ${CCACHE_PROGRAM}")
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+  endif()
 endif()
 
 # Remove ARM-specific compile and linker options

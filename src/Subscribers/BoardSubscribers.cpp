@@ -9,6 +9,7 @@
 #include "Debug.h"
 
 #include "ObjectModel/Directories.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "UI/Core/Model.h"
 
 bool BoardSubscribers::uniqueId(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])

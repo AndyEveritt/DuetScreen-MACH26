@@ -1,6 +1,7 @@
 #include "StatusBarPresenter.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "StatusBar.h"
 #include "i18n/i18n.h"
 #include "utils/StorageHelper.h"

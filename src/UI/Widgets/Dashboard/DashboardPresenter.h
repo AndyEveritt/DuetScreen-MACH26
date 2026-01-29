@@ -8,6 +8,7 @@
 #pragma once
 
 #include "UI/Core/Presenter.h"
+#include "ObjectModel/PrinterStatus.h"
 
 namespace UI
 {
