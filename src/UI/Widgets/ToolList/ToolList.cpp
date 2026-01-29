@@ -12,6 +12,8 @@
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 
+#define SHOW_HEADERS 0
+
 namespace UI
 {
 	ToolList::ToolList(const std::string& name, LvObj& parent, LvObj* numberPadParent)
@@ -41,11 +43,21 @@ namespace UI
 		m_tools.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_beds.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_chambers.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+
+		m_tools.setStylePad(0);
+		m_beds.setStylePad(0);
+		m_chambers.setStylePad(0);
+
+		m_tools.getHeader().setStylePad(0);
+		m_beds.getHeader().setStylePad(0);
+		m_chambers.getHeader().setStylePad(0);
 	}
 
 	size_t ToolList::setToolCount(size_t count)
 	{
+#if SHOW_HEADERS
 		m_tools.getHeader().setVisible(count > 1);
+#endif
 		return m_tools.setItemCount(count,
 									[this](size_t index, LvObj& parent)
 									{
@@ -57,13 +69,17 @@ namespace UI
 
 	size_t ToolList::setBedCount(size_t count)
 	{
+#if SHOW_HEADERS
 		m_beds.getHeader().setVisible(count > 1);
+#endif
 		return m_beds.setItemCount(count);
 	}
 
 	size_t ToolList::setChamberCount(size_t count)
 	{
+#if SHOW_HEADERS
 		m_chambers.getHeader().setVisible(count > 1);
+#endif
 		return m_chambers.setItemCount(count);
 	}
 
@@ -134,7 +150,7 @@ namespace UI
 
 		m_heaters.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		// m_heaters.setStylePad(0, LV_PART_MAIN, Padding::TOP);
+		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::TOP);
 		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::BOTTOM);
 		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::RIGHT);
 		m_heaters.setStylePad(0, LV_PART_MAIN, Padding::LEFT);
