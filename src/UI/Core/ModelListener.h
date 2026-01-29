@@ -44,9 +44,9 @@ namespace UI
 				Class* instance;
 				void (Class::*mf)(Args...);
 			};
-			// Store context locally to keep lifetime tied to presenter
-			m_ctxStorage.emplace_back(new Ctx{instance, memberFunc},
-									  Deleter{+[](void* p) { delete static_cast<Ctx*>(p); }});
+			// Store context locally to keep lifetime tied to presenter.
+			auto ctxPtr = std::make_unique<Ctx>(Ctx{instance, memberFunc});
+			m_ctxStorage.emplace_back(ctxPtr.release(), Deleter{+[](void* p) { delete static_cast<Ctx*>(p); }});
 			void* user = m_ctxStorage.back().get();
 
 			auto thunk = [](void* user, const void* payload)
@@ -66,9 +66,8 @@ namespace UI
 			using Tuple = typename EventTraits<E>::tuple_type;
 
 			using F = std::decay_t<Func>;
-			m_ctxStorage.emplace_back(
-				new F(std::forward<Func>(func)),
-				Deleter{+[](void* p) { delete static_cast<F*>(p); }});
+			auto fPtr = std::make_unique<F>(std::forward<Func>(func));
+			m_ctxStorage.emplace_back(fPtr.release(), Deleter{+[](void* p) { delete static_cast<F*>(p); }});
 			void* user = m_ctxStorage.back().get();
 			auto thunk = [](void* user, const void* payload)
 			{

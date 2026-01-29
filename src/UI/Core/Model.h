@@ -202,7 +202,7 @@ class Model
 
 	// Non-templated registration/enqueue used by thin template wrappers
 	void registerHandler(EventType e, EventHandlerFn fn, void* user, void (*deleter)(void*)) noexcept;
-	void enqueueEvent(EventType e, const void* payload) noexcept;
+	void enqueueEvent(EventType e, void* payload) noexcept;
 };
 
 #define MODEL_LOCK()                                                                                                   \

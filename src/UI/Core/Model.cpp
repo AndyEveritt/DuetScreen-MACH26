@@ -56,12 +56,12 @@ namespace ModelPayload
 		return std::max(maxAl, PayloadInfo<EventType::Null>::align);
 	}
 
-	inline constexpr size_t kMaxPayloadSize = computeMaxSize();
-	inline constexpr size_t kMaxPayloadAlign = computeMaxAlign();
+	inline constexpr size_t maxPayloadSize = computeMaxSize();
+	inline constexpr size_t maxPayloadAlign = computeMaxAlign();
 
-	struct alignas(kMaxPayloadAlign) PayloadStorage
+	struct alignas(maxPayloadAlign) PayloadStorage
 	{
-		std::byte data[kMaxPayloadSize];
+		std::byte data[maxPayloadSize];
 	};
 } // namespace ModelPayload
 
@@ -207,13 +207,13 @@ void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 		return;
 	}
 	// Prevent duplicate weak_ptr entries for the same presenter
+	auto curSp = presenter.lock();
 	bool alreadyBound = std::any_of(m_presenters.begin(),
 									m_presenters.end(),
-									[&](const std::weak_ptr<UI::BasePresenter>& wp)
+									[curSp](const std::weak_ptr<UI::BasePresenter>& wp)
 									{
 										auto sp = wp.lock();
-										auto cur = presenter.lock();
-										return sp && cur && sp.get() == cur.get();
+										return sp && sp == curSp;
 									});
 	if (alreadyBound)
 	{
@@ -280,7 +280,7 @@ void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 						  return true;
 					  }
 					  auto locked = p.lock();
-					  if (locked && locked.get() == sharedPresenter.get())
+					  if (locked && locked == sharedPresenter)
 					  {
 						  LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter->getName());
 						  return true;
@@ -469,7 +469,7 @@ void Model::registerHandler(EventType e, EventHandlerFn fn, void* user, void (*d
 		EventSystem::HandlerEntry{fn, std::unique_ptr<void, EventSystem::HandlerEntry::Deleter>(user, d)});
 }
 
-void Model::enqueueEvent(EventType e, const void* payload) noexcept
+void Model::enqueueEvent(EventType e, void* payload) noexcept
 {
 	ZoneScoped;
 	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
@@ -483,7 +483,7 @@ void Model::enqueueEvent(EventType e, const void* payload) noexcept
 	{                                                                                                                  \
 		ZoneScopedN("Constructing Event Payload");                                                                     \
 		using Tuple = typename EventTraits<EventType::name>::tuple_type;                                               \
-		::new (static_cast<void*>(node.payload.data)) Tuple(std::move(*static_cast<const Tuple*>(payload)));           \
+		::new (static_cast<void*>(node.payload.data)) Tuple(std::move(*static_cast<Tuple*>(payload)));                 \
 		node.destroy = [](void* p) { static_cast<Tuple*>(p)->~Tuple(); };                                              \
 		node.move = [](void* dst, void* src) { new (dst) Tuple(std::move(*static_cast<Tuple*>(src))); };               \
 		break;                                                                                                         \
