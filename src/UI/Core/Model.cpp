@@ -13,11 +13,160 @@
 #include "tracy/Tracy.hpp"
 #include "utils/StorageHelper.h"
 #include <algorithm>
+#include <array>
+#include <cstring>
+#include <map>
+#include <memory>
+#include <new>
+#include <queue>
+#include <unordered_map>
+#include <utility>
+
+// Ensure ResponseType and OM types are complete for payload sizing in this TU
+#include "ObjectModel/Alert.h"
+#include "Subscribers/ResponseSubscribers.h"
+
+namespace
+{
+	// Compute maximal payload size and alignment across all events at compile time
+	template <EventType E>
+	struct PayloadInfo
+	{
+		using tuple_t = typename EventTraits<E>::tuple_type;
+		static constexpr size_t size = sizeof(tuple_t);
+		static constexpr size_t align = alignof(tuple_t);
+	};
+
+	consteval size_t computeMaxSize()
+	{
+		size_t maxSz = 0;
+#define XX(name, ...) maxSz = std::max(maxSz, PayloadInfo<EventType::name>::size);
+		EVENTS(XX)
+#undef XX
+		return std::max(maxSz, PayloadInfo<EventType::Null>::size);
+	}
+
+	consteval size_t computeMaxAlign()
+	{
+		size_t maxAl = 1;
+#define XX(name, ...) maxAl = std::max(maxAl, PayloadInfo<EventType::name>::align);
+		EVENTS(XX)
+#undef XX
+		return std::max(maxAl, PayloadInfo<EventType::Null>::align);
+	}
+
+	constexpr size_t kMaxPayloadSize = computeMaxSize();
+	constexpr size_t kMaxPayloadAlign = computeMaxAlign();
+
+	struct alignas(kMaxPayloadAlign) PayloadStorage
+	{
+		std::byte data[kMaxPayloadSize];
+	};
+} // namespace
+
+struct Model::EventSystem
+{
+	struct HandlerEntry
+	{
+		EventHandlerFn fn;
+		struct Deleter
+		{
+			void (*fn)(void*);
+			void operator()(void* p) const
+			{
+				if (fn)
+					fn(p);
+			}
+		};
+		std::unique_ptr<void, Deleter> ctx;
+	};
+
+	struct Node
+	{
+		EventType type;
+		PayloadStorage payload;
+		void (*destroy)(void*);
+		void (*move)(void* dst, void* src);
+
+		Node() noexcept
+			: type(EventType::Null)
+			, destroy(nullptr)
+			, move(nullptr)
+		{
+			ZoneScopedN("Node default constructor");
+		}
+
+		~Node()
+		{
+			ZoneScopedN("Node destructor");
+			if (destroy)
+			{
+				ZoneScopedN("Destroy Event Payload");
+				destroy(static_cast<void*>(payload.data));
+			}
+		}
+
+		Node(const Node&) = delete;
+		Node& operator=(const Node&) = delete;
+		Node& operator=(Node&& other) noexcept
+		{
+			ZoneScopedN("Node move assignment");
+			if (this != &other)
+			{
+				if (destroy)
+				{
+					destroy(static_cast<void*>(payload.data));
+				}
+				type = other.type;
+				destroy = other.destroy;
+				move = other.move;
+				if (other.move)
+				{
+					ZoneScopedN("Move Event Payload");
+					other.move(static_cast<void*>(payload.data), static_cast<void*>(other.payload.data));
+					if (other.destroy)
+					{
+						ZoneScopedN("Destroy Event Payload");
+						other.destroy(static_cast<void*>(other.payload.data));
+					}
+				}
+				other.type = EventType::Null;
+				other.destroy = nullptr;
+				other.move = nullptr;
+			}
+			return *this;
+		}
+		Node(Node&& other) noexcept
+			: type(other.type)
+			, destroy(other.destroy)
+			, move(other.move)
+		{
+			ZoneScopedN("Node move constructor");
+			if (other.move)
+			{
+				ZoneScopedN("Move Event Payload");
+				other.move(static_cast<void*>(payload.data), static_cast<void*>(other.payload.data));
+				if (other.destroy)
+				{
+					ZoneScopedN("Destroy Event Payload");
+					other.destroy(static_cast<void*>(other.payload.data));
+				}
+			}
+			other.type = EventType::Null;
+			other.destroy = nullptr;
+			other.move = nullptr;
+		}
+	};
+
+	std::unordered_map<EventType, std::vector<HandlerEntry>> handlers;
+	std::queue<Node> queue;
+};
 
 Model::Model()
 {
 	ZoneScoped;
 	LOG_INFO("Initializing Model...");
+	m_events = std::make_unique<EventSystem>();
 	// Timers
 	if (lv_is_initialized())
 	{
@@ -161,17 +310,17 @@ void Model::runEventLoop()
 	while (true)
 	{
 		{
-			std::pair<EventType, EventData> event;
+			EventSystem::Node event;
 			{
 				std::unique_lock<LockableBase(std::mutex)> lock(m_mutex);
-				m_eventCondition.wait(lock, [this] { return !m_eventQueue.empty() || !m_running; });
-				if (!m_running && m_eventQueue.empty())
+				m_eventCondition.wait(lock, [this] { return !m_events->queue.empty() || !m_running; });
+				if (!m_running && m_events->queue.empty())
 				{
 					LOG_DBG("Stopping event loop");
 					break;
 				}
-				event = std::move(m_eventQueue.front());
-				m_eventQueue.pop();
+				event = std::move(m_events->queue.front());
+				m_events->queue.pop();
 			}
 
 			bool found = false;
@@ -180,25 +329,24 @@ void Model::runEventLoop()
 			UI_LOCK();
 			{
 				ZoneScopedN("Model Event Handlers");
-				auto it = m_handlers.find(event.first);
-				if (it != m_handlers.end())
+				auto it = m_events->handlers.find(event.type);
+				if (it != m_events->handlers.end())
 				{
 					found = true;
-					auto& handlers = it->second;
-					for (auto& handler : handlers)
+					for (auto& h : it->second)
 					{
 						ZoneScoped;
-						[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
-						ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
+						[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.type);
+						ZoneName(event.type == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
 						ZoneColor(tracy::Color::Yellow);
-						std::invoke(handler, event.second);
+						h.fn(h.ctx.get(), static_cast<void*>(event.payload.data));
 					}
 				}
 			}
 
 			{
 				ZoneScopedN("Presenter Event Handlers");
-				auto pit = m_eventPresenterIndex.find(event.first);
+				auto pit = m_eventPresenterIndex.find(event.type);
 				if (pit != m_eventPresenterIndex.end())
 				{
 					auto& vec = pit->second;
@@ -213,20 +361,19 @@ void Model::runEventLoop()
 						}
 						ZoneScoped;
 						ZoneName(presenter->getName().data(), presenter->getName().size());
-						auto handler = presenter->getEventHandler(event.first);
+						auto handler = presenter->getEventHandler(event.type);
 						if (handler)
 						{
 							found = true;
 							LOG_DBG("Notifying presenter '{:s}' for event '{:s}'",
 									presenter->getName(),
-									nameof::nameof_enum(event.first));
+									nameof::nameof_enum(event.type));
 
 							ZoneScoped;
-							[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.first);
-							ZoneName(event.first == EventType::Null ? "Null Event" : eventName.data(),
-									 eventName.size());
+							[[maybe_unused]] const auto eventName = nameof::nameof_enum(event.type);
+							ZoneName(event.type == EventType::Null ? "Null Event" : eventName.data(), eventName.size());
 							ZoneColor(tracy::Color::Red);
-							std::invoke(handler, event.second);
+							handler.fn(handler.user, static_cast<void*>(event.payload.data));
 						}
 						++i;
 					}
@@ -235,7 +382,7 @@ void Model::runEventLoop()
 
 			if (!found)
 			{
-				LOG_VERBOSE("No handler for event type {:s}", nameof::nameof_enum(event.first));
+				LOG_VERBOSE("No handler for event type {:s}", nameof::nameof_enum(event.type));
 			}
 		}
 	}
@@ -296,6 +443,47 @@ void Model::connected()
 	}
 }
 
+void Model::registerHandler(EventType e, EventHandlerFn fn, void* user, void (*deleter)(void*)) noexcept
+{
+	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
+	EventSystem::HandlerEntry::Deleter d{deleter};
+	m_events->handlers[e].emplace_back(
+		EventSystem::HandlerEntry{fn, std::unique_ptr<void, EventSystem::HandlerEntry::Deleter>(user, d)});
+}
+
+void Model::enqueueEvent(EventType e, const void* payload, size_t payloadSize) noexcept
+{
+	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
+	UNUSED(payloadSize);
+	EventSystem::Node node;
+	node.type = e;
+	// Copy-construct the typed payload into storage and remember how to destroy/move it
+	switch (e)
+	{
+#define XX(name, ...)                                                                                                  \
+	case EventType::name:                                                                                              \
+	{                                                                                                                  \
+		using Tuple = typename EventTraits<EventType::name>::tuple_type;                                               \
+		::new (static_cast<void*>(node.payload.data)) Tuple(*static_cast<const Tuple*>(payload));                      \
+		node.destroy = [](void* p) { static_cast<Tuple*>(p)->~Tuple(); };                                              \
+		node.move = [](void* dst, void* src) { new (dst) Tuple(std::move(*static_cast<Tuple*>(src))); };               \
+		break;                                                                                                         \
+	}
+		EVENTS(XX)
+#undef XX
+	default:
+	{
+		using Tuple = typename EventTraits<EventType::Null>::tuple_type;
+		::new (static_cast<void*>(node.payload.data)) Tuple();
+		node.destroy = [](void* p) { static_cast<Tuple*>(p)->~Tuple(); };
+		node.move = [](void* dst, void* src) { new (dst) Tuple(std::move(*static_cast<Tuple*>(src))); };
+		break;
+	}
+	}
+	m_events->queue.emplace(std::move(node));
+	m_eventCondition.notify_one();
+}
+
 void Model::disconnected()
 {
 	ZoneScoped;
@@ -304,4 +492,11 @@ void Model::disconnected()
 	{
 		post<EventType::Response>(ResponseType::INFO, _("message.disconnected"));
 	}
+}
+
+Model::~Model()
+{
+	ZoneScoped;
+	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
+	// unique_ptr takes care of handler context cleanup
 }
