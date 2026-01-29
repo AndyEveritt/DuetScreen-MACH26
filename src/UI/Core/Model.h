@@ -55,6 +55,8 @@ struct EventHandler
 	explicit operator bool() const noexcept { return fn != nullptr; }
 };
 
+// Note: Common payload storage is defined privately in Model.cpp.
+
 class Model
 {
   public:
@@ -129,10 +131,10 @@ class Model
 	{
 		[[maybe_unused]] constexpr auto eventName = nameof::nameof_enum<E>();
 		ZoneScopedNC(eventName.data(), tracy::Color::Red);
-		using Tuple = typename EventTraits<E>::tuple_type;
 
+		using Tuple = typename EventTraits<E>::tuple_type;
 		Tuple payload{std::forward<Args>(args)...};
-		enqueueEvent(E, &payload, sizeof(Tuple));
+		enqueueEvent(E, &payload);
 	}
 
 	void runEventLoop();

@@ -26,9 +26,10 @@
 #include "ObjectModel/Alert.h"
 #include "Subscribers/ResponseSubscribers.h"
 
-namespace
+// Define common payload storage privately in this TU to avoid
+// instantiating payload tuples with incomplete types in headers.
+namespace ModelPayload
 {
-	// Compute maximal payload size and alignment across all events at compile time
 	template <EventType E>
 	struct PayloadInfo
 	{
@@ -55,14 +56,16 @@ namespace
 		return std::max(maxAl, PayloadInfo<EventType::Null>::align);
 	}
 
-	constexpr size_t kMaxPayloadSize = computeMaxSize();
-	constexpr size_t kMaxPayloadAlign = computeMaxAlign();
+	inline constexpr size_t kMaxPayloadSize = computeMaxSize();
+	inline constexpr size_t kMaxPayloadAlign = computeMaxAlign();
 
 	struct alignas(kMaxPayloadAlign) PayloadStorage
 	{
 		std::byte data[kMaxPayloadSize];
 	};
-} // namespace
+} // namespace ModelPayload
+
+using ModelPayload::PayloadStorage;
 
 struct Model::EventSystem
 {
@@ -203,7 +206,21 @@ void Model::bind(std::weak_ptr<UI::BasePresenter> presenter)
 		LOG_WARN("Attempted to bind an expired presenter");
 		return;
 	}
-	unbind(presenter);
+	// Prevent duplicate weak_ptr entries for the same presenter
+	bool alreadyBound = std::any_of(m_presenters.begin(),
+									m_presenters.end(),
+									[&](const std::weak_ptr<UI::BasePresenter>& wp)
+									{
+										auto sp = wp.lock();
+										auto cur = presenter.lock();
+										return sp && cur && sp.get() == cur.get();
+									});
+	if (alreadyBound)
+	{
+		LOG_DBG("Presenter {:s} already bound", presenter.lock()->getName());
+		return;
+	}
+
 	LOG_DBG("Binding presenter '{:s}'", presenter.lock()->getName());
 	m_presenters.push_back(presenter);
 
@@ -262,7 +279,8 @@ void Model::unbind(std::weak_ptr<UI::BasePresenter> presenter)
 						  LOG_DBG("Unbinding expired presenter");
 						  return true;
 					  }
-					  else if (p.lock() == sharedPresenter)
+					  auto locked = p.lock();
+					  if (locked && locked.get() == sharedPresenter.get())
 					  {
 						  LOG_DBG("Unbinding presenter '{:s}'", sharedPresenter->getName());
 						  return true;
@@ -453,6 +471,7 @@ void Model::registerHandler(EventType e, EventHandlerFn fn, void* user, void (*d
 
 void Model::enqueueEvent(EventType e, const void* payload) noexcept
 {
+	ZoneScoped;
 	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 	EventSystem::Node node;
 	node.type = e;
@@ -462,8 +481,9 @@ void Model::enqueueEvent(EventType e, const void* payload) noexcept
 #define XX(name, ...)                                                                                                  \
 	case EventType::name:                                                                                              \
 	{                                                                                                                  \
+		ZoneScopedN("Constructing Event Payload");                                                                     \
 		using Tuple = typename EventTraits<EventType::name>::tuple_type;                                               \
-		::new (static_cast<void*>(node.payload.data)) Tuple(*static_cast<const Tuple*>(payload));                      \
+		::new (static_cast<void*>(node.payload.data)) Tuple(std::move(*static_cast<const Tuple*>(payload)));           \
 		node.destroy = [](void* p) { static_cast<Tuple*>(p)->~Tuple(); };                                              \
 		node.move = [](void* dst, void* src) { new (dst) Tuple(std::move(*static_cast<Tuple*>(src))); };               \
 		break;                                                                                                         \
@@ -496,6 +516,16 @@ void Model::disconnected()
 Model::~Model()
 {
 	ZoneScoped;
+	// Ensure the event loop thread is stopped cleanly before destruction
+	if (m_running)
+	{
+		stopEventLoop();
+	}
 	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
+	// Flush any remaining queued events to properly destroy payloads
+	while (!m_events->queue.empty())
+	{
+		m_events->queue.pop();
+	}
 	// unique_ptr takes care of handler context cleanup
 }

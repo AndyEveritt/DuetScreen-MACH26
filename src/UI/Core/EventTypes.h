@@ -13,7 +13,7 @@ namespace OM
 {
 	struct Alert;
 	enum class PrinterStatus;
-}
+} // namespace OM
 
 enum class ResponseType;
 
@@ -21,7 +21,7 @@ namespace Log
 {
 	enum class DebugLevel;
 	using log_time_t = std::chrono::system_clock::time_point;
-}
+} // namespace Log
 
 // Central event registry. Add events here with optional payload types.
 #define EVENTS(XX)                                                                                                     \
@@ -98,7 +98,11 @@ EVENTS(XX)
 #undef XX
 
 // Null event traits
-template <> struct EventTraits<EventType::Null> { using tuple_type = std::tuple<>; };
+template <>
+struct EventTraits<EventType::Null>
+{
+	using tuple_type = std::tuple<>;
+};
 
 // Concepts to validate handlers and argument lists at compile time
 namespace UI
@@ -107,7 +111,8 @@ namespace UI
 	template <typename F, typename Tuple, std::size_t... I>
 	constexpr bool invocable_from_tuple_impl(std::index_sequence<I...>)
 	{
-		return std::is_invocable_v<F&, std::tuple_element_t<I, Tuple>&...>;
+		return std::is_invocable_v<F&,
+								   std::add_lvalue_reference_t<std::add_const_t<std::tuple_element_t<I, Tuple>>>...>;
 	}
 
 	template <typename F, typename Tuple>
