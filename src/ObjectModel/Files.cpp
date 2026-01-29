@@ -512,7 +512,7 @@ namespace OM::FileSystem
 					 [](OM::FileSystem::ItemList files)
 					 {
 						 {
-
+							 ZoneScopedN("RequestFilaments Callback");
 							 MODEL_LOCK();
 							 SortFilesBy(files, SortBy::NAME, false);
 							 s_filaments.clear();

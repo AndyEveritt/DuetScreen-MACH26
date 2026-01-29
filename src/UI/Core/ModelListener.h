@@ -1,6 +1,11 @@
 #pragma once
 
 #include "Model.h"
+#include <memory>
+#include <cassert>
+#include <vector>
+#include <tuple>
+#include <unordered_map>
 
 namespace UI
 {
@@ -16,58 +21,82 @@ namespace UI
 
 		Model& getModel() const { return m_model; }
 
-		EventCallback getEventHandler(EventType eventType)
+		EventHandler getEventHandler(EventType eventType)
 		{
 			auto it = m_handlers.find(eventType);
 			if (it != m_handlers.end())
 			{
 				return it->second;
 			}
-			return nullptr;
+			return EventHandler{};
 		}
 
 		const auto& getEventHandlers() const { return m_handlers; }
 
 	  protected:
 		template <EventType E, typename Class, typename... Args>
+			requires UI::ExactArgsMatch<typename EventTraits<E>::tuple_type, Args...>
 		void registerEventListener(Class* instance, void (Class::*memberFunc)(Args...))
 		{
-			using ExpectedTuple = typename EventTraits<E>::tuple_type;
-			using ProvidedTuple = std::tuple<std::decay_t<Args>...>;
-			static_assert(std::is_same_v<ExpectedTuple, ProvidedTuple>, "registerEventListener member args mismatch");
-			m_handlers[E] = [instance, memberFunc](const EventData& data)
+			// Prevent duplicate registration which would leak the old context in m_ctxStorage
+			const bool alreadyRegistered = m_handlers.contains(E);
+			assert(!alreadyRegistered && "Duplicate registration for EventType");
+			if (alreadyRegistered)
 			{
-				auto& tup = std::get<EventWrapper<E>>(data).tup;
-				std::apply([instance, memberFunc](const auto&... args) { (instance->*memberFunc)(args...); }, tup);
+				return;
+			}
+			using ExpectedTuple = typename EventTraits<E>::tuple_type;
+
+			struct Ctx
+			{
+				Class* instance;
+				void (Class::*mf)(Args...);
 			};
+			// Store context locally to keep lifetime tied to presenter.
+			auto ctxPtr = std::make_unique<Ctx>(Ctx{instance, memberFunc});
+			m_ctxStorage.emplace_back(ctxPtr.release(), Deleter{+[](void* p) { delete static_cast<Ctx*>(p); }});
+			void* user = m_ctxStorage.back().get();
+
+			auto thunk = [](void* user, const void* payload)
+			{
+				const auto& tup = *static_cast<const ExpectedTuple*>(payload);
+				auto* c = static_cast<Ctx*>(user);
+				std::apply([c](const auto&... a) { (c->instance->*c->mf)(a...); }, tup);
+			};
+			m_handlers[E] = EventHandler{thunk, user};
 		}
 
-		// Register a free function / lambda / functor for event E. Argument types are deduced
-		// from the event definition; no need to spell them out at the call site.
-		// Example: registerEventListener<EventType::UpdateAvailable>([](const std::string& s){ ... });
+		// Register a free function / lambda / functor for event E.
 		template <EventType E, typename Func>
+			requires UI::InvocableFromTuple<std::decay_t<Func>, typename EventTraits<E>::tuple_type>
 		void registerEventListener(Func&& func)
 		{
+			// Prevent duplicate registration which would leak the old context in m_ctxStorage
+			const bool alreadyRegistered = m_handlers.contains(E);
+			assert(!alreadyRegistered && "Duplicate registration for EventType");
+			if (alreadyRegistered)
+			{
+				return;
+			}
 			using Tuple = typename EventTraits<E>::tuple_type;
 
-			/* Validate func is callable with the correct arguments */
-			[]<typename F, typename T, std::size_t... I>(F&&, T*, std::index_sequence<I...>)
+			using F = std::decay_t<Func>;
+			auto fPtr = std::make_unique<F>(std::forward<Func>(func));
+			m_ctxStorage.emplace_back(fPtr.release(), Deleter{+[](void* p) { delete static_cast<F*>(p); }});
+			void* user = m_ctxStorage.back().get();
+			auto thunk = [](void* user, const void* payload)
 			{
-				static_assert(std::is_invocable_v<F&, std::tuple_element_t<I, T>&...>,
-							  "registerEventListener: handler not invocable with event parameter types");
-			}(std::forward<Func>(func),
-			  static_cast<Tuple*>(nullptr),
-			  std::make_index_sequence<std::tuple_size<Tuple>::value>{});
-
-			m_handlers[E] = [f = std::forward<Func>(func)](const EventData& data)
-			{
-				auto& tup = std::get<EventWrapper<E>>(data).tup;
-				std::apply(f, tup);
+				const auto& tup = *static_cast<const Tuple*>(payload);
+				std::apply(*static_cast<F*>(user), tup);
 			};
+			m_handlers[E] = EventHandler{thunk, user};
 		}
 
 		Model& m_model;
 
-		std::unordered_map<EventType, EventCallback> m_handlers;
+		std::unordered_map<EventType, EventHandler> m_handlers;
+		// Keep storage for handler contexts alive for the lifetime of the presenter
+		struct Deleter { void (*fn)(void*); void operator()(void* p) const { if (fn) fn(p); } };
+		std::vector<std::unique_ptr<void, Deleter>> m_ctxStorage;
 	};
 } // namespace UI

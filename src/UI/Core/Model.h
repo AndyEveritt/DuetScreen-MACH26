@@ -2,8 +2,6 @@
 
 #include "Debug.h"
 #include "LockWrapper.h"
-#include "ObjectModel/Alert.h"
-#include "ObjectModel/PrinterStatus.h"
 #include "Subscribers/BoardSubscribers.h"
 #include "Subscribers/DirectoriesSubscribers.h"
 #include "Subscribers/FanSubscribers.h"
@@ -18,6 +16,7 @@
 #include "Subscribers/Subscribers.h"
 #include "Subscribers/ThumbnailSubscribers.h"
 #include "Subscribers/ToolSubscribers.h"
+#include "UI/Core/EventTypes.h"
 #include "lvgl/lvgl.h"
 #include "nameof.hpp"
 #include "tracy/Tracy.hpp"
@@ -25,140 +24,45 @@
 #include <condition_variable>
 #include <fmt/ostream.h>
 #include <list>
-#include <map>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <tuple>
 #include <unordered_map>
-#include <variant>
 
 namespace UI
 {
 	class BasePresenter;
 }
 
-enum class EventType;
-
 /*
-To add an Event, add a new line with the format `XX(EventName, EventArgs...)`
+To add an Event, edit UI/Core/EventTypes.h (EVENTS macro).
 
-An event can be triggered with `Model::get().post<EventType::EventName>(args...)`.
-The event will be passed to the listeners that have registered for the event type.
+An event can be triggered with Model::get().post<EventType::EventName>(args...).
+Listeners can be registered with addEventListener<EventType::EventName>(...).
 
-Any variables that are pass to the event must be copyable.
-Events are queued and processed in the order they are received.
-
-Event listeners must be none blocking and should not take a long time to process.
+Payloads are copied into an internal queue with fixed-size storage; dispatch is
+via a direct function pointer call for zero overhead at runtime.
 */
-#define EVENTS(XX)                                                                                                     \
-	XX(Tick)                                                                                                           \
-	XX(Connected)                                                                                                      \
-	XX(Disconnected)                                                                                                   \
-	XX(UpdateAvailable, std::string)                                                                                   \
-	XX(FanData)                                                                                                        \
-	XX(BedHeaterData)                                                                                                  \
-	XX(ChamberHeaterData)                                                                                              \
-	XX(HeaterData)                                                                                                     \
-	XX(JobFileName, std::string)                                                                                       \
-	XX(JobLastFileName, std::string)                                                                                   \
-	XX(JobPrintTime)                                                                                                   \
-	XX(JobDuration)                                                                                                    \
-	XX(JobTimeLeft)                                                                                                    \
-	XX(JobWarmupDuration)                                                                                              \
-	XX(JobHeight)                                                                                                      \
-	XX(JobBuild)                                                                                                       \
-	XX(JobCurrentObject)                                                                                               \
-	XX(JobObjectData)                                                                                                  \
-	XX(ThumbnailData, std::string)                                                                                     \
-	XX(AxesData)                                                                                                       \
-	XX(ExtruderData)                                                                                                   \
-	XX(KinematicsName, std::string)                                                                                    \
-	XX(SpeedFactor)                                                                                                    \
-	XX(WorkplaceNumber)                                                                                                \
-	XX(NoMoveBeforeHoming)                                                                                             \
-	XX(PrintingAcceleration, uint32_t)                                                                                 \
-	XX(CurrentMoveRequestedSpeed)                                                                                      \
-	XX(CurrentMoveTopSpeed)                                                                                            \
-	XX(CurrentMoveExtrusionSpeed)                                                                                      \
-	XX(CompensationFile)                                                                                               \
-	XX(Response, ResponseType, std::string)                                                                            \
-	XX(LogMessage, Log::DebugLevel, Log::log_time_t, std::string)                                                      \
-	XX(AnalogSensorData)                                                                                               \
-	XX(EndstopData)                                                                                                    \
-	XX(SpindleData)                                                                                                    \
-	XX(NetworkName)                                                                                                    \
-	XX(PrinterUniqueId)                                                                                                \
-	XX(IpAddress, std::string)                                                                                         \
-	XX(Status, OM::PrinterStatus)                                                                                      \
-	XX(CurrentTool)                                                                                                    \
-	XX(Alert, OM::Alert)                                                                                               \
-	XX(Time)                                                                                                           \
-	XX(ToolData)                                                                                                       \
-	XX(ToolHeaterData, size_t)                                                                                         \
-	XX(Directories)                                                                                                    \
-	XX(NavigationHomeEnable, bool)                                                                                     \
-	XX(NavigationBackEnable, bool)                                                                                     \
-	XX(Filaments, std::vector<std::string>) // New filaments available after rr_filelist/M20 request
 
-enum class EventType
+// Thin, non-templated handler signature (user data + opaque payload pointer)
+using EventHandlerFn = void (*)(void* user, const void* payload);
+
+struct EventHandler
 {
-#define XX(name, ...) name,
-	EVENTS(XX)
-#undef XX
-	Null
+	EventHandlerFn fn = nullptr;
+	void* user = nullptr;
+	explicit operator bool() const noexcept { return fn != nullptr; }
 };
 
-// Primary template (unused, will be specialized by macro below)
-template <EventType E>
-struct EventTraits;
-
-// Specializations generated from EVENTS macro: maps EventType -> argument tuple
-#define XX(name, ...)                                                                                                  \
-	template <>                                                                                                        \
-	struct EventTraits<EventType::name>                                                                                \
-	{                                                                                                                  \
-		using tuple_type = std::tuple<__VA_ARGS__>;                                                                    \
-	};
-
-EVENTS(XX)
-#undef XX
-
-// Provide traits for Null event
-template <>
-struct EventTraits<EventType::Null>
-{
-	using tuple_type = std::tuple<>;
-};
-
-// Wrapper that stores the payload tuple for a given EventType
-template <EventType E>
-struct EventWrapper
-{
-	using tuple_type = typename EventTraits<E>::tuple_type;
-	constexpr EventWrapper() noexcept = default;
-	constexpr explicit EventWrapper(const tuple_type& t) noexcept
-		: tup(t)
-	{
-	}
-	constexpr explicit EventWrapper(tuple_type&& t) noexcept
-		: tup(std::move(t))
-	{
-	}
-	tuple_type tup;
-};
-
-// Variant holding all event payload wrappers
-#define XX(name, ...) EventWrapper<EventType::name>,
-using EventData = std::variant<EVENTS(XX) EventWrapper<EventType::Null>>;
-#undef XX
-
-using EventCallback = std::function<void(const EventData&)>;
+// Note: Common payload storage is defined privately in Model.cpp.
 
 class Model
 {
   public:
 	Model(const Model&) = delete;
 	Model& operator=(const Model&) = delete;
+	~Model();
 
 	static Model& get()
 	{
@@ -183,63 +87,54 @@ class Model
 	void stopEventLoop();
 
 	template <EventType E, typename Func>
+		requires UI::InvocableFromTuple<std::decay_t<Func>, typename EventTraits<E>::tuple_type>
 	void addEventListener(Func&& func)
 	{
 		ZoneScoped;
-		// Verify at compile time that the callable can be invoked with the event's argument list
 		using Tuple = typename EventTraits<E>::tuple_type;
-		// Expanded check (kept separate for a clean message)
-		[]<typename F, typename T, std::size_t... I>(F&&, T*, std::index_sequence<I...>)
-		{
-			using tuple_t = T;
-			using std::get; // not actually used, just to silence unused warnings in some compilers
-			static_assert(std::is_invocable_v<F&, std::tuple_element_t<I, tuple_t>&...>,
-						  "addEventListener: handler not invocable with event parameter types");
-		}(std::forward<Func>(func),
-		  static_cast<Tuple*>(nullptr),
-		  std::make_index_sequence<std::tuple_size<Tuple>::value>{});
 
-		m_handlers[E].emplace_back(
-			[f = std::forward<Func>(func)](const EventData& data)
-			{
-				auto& tup = std::get<EventWrapper<E>>(data).tup;
-				std::apply(f, tup);
-			});
+		using F = std::decay_t<Func>;
+		auto fobj = std::make_unique<F>(std::forward<Func>(func));
+		auto thunk = [](void* user, const void* payload)
+		{
+			const auto& tup = *static_cast<const Tuple*>(payload);
+			std::apply(*static_cast<F*>(user), tup);
+		};
+		registerHandler(E, thunk, fobj.release(), [](void* p) { delete static_cast<F*>(p); });
 	}
 
 	template <EventType E, typename Class, typename... Args>
+		requires UI::ExactArgsMatch<typename EventTraits<E>::tuple_type, Args...>
 	void addEventListener(Class* instance, void (Class::*memberFunc)(Args...))
 	{
 		ZoneScoped;
-		// Compile-time verification that the member function signature matches the event's argument list
 		using ExpectedTuple = typename EventTraits<E>::tuple_type;
-		using ProvidedTuple = std::tuple<std::decay_t<Args>...>;
-		static_assert(std::is_same_v<ExpectedTuple, ProvidedTuple>,
-					  "addEventListener member function args mismatch for event");
 
-		m_handlers[E].emplace_back(
-			[instance, memberFunc](const EventData& data)
-			{
-				auto& tup = std::get<EventWrapper<E>>(data).tup;
-				std::apply([instance, memberFunc](auto const&... a) { (instance->*memberFunc)(a...); }, tup);
-			});
+		struct Ctx
+		{
+			Class* instance;
+			void (Class::*mf)(Args...);
+		};
+		auto ctx = std::make_unique<Ctx>(Ctx{instance, memberFunc});
+		auto thunk = [](void* user, const void* payload)
+		{
+			const auto& tup = *static_cast<const ExpectedTuple*>(payload);
+			auto* c = static_cast<Ctx*>(user);
+			std::apply([c](const auto&... a) { (c->instance->*c->mf)(a...); }, tup);
+		};
+		registerHandler(E, thunk, ctx.release(), [](void* p) { delete static_cast<Ctx*>(p); });
 	}
 
 	template <EventType E, typename... Args>
+		requires UI::ExactArgsMatch<typename EventTraits<E>::tuple_type, Args...>
 	void post(Args&&... args)
 	{
 		[[maybe_unused]] constexpr auto eventName = nameof::nameof_enum<E>();
 		ZoneScopedNC(eventName.data(), tracy::Color::Red);
-		using Wrapper = EventWrapper<E>;
-		using Tuple = typename Wrapper::tuple_type;
-		using ExpectedTuple = Tuple;
-		using ProvidedTuple = std::tuple<std::decay_t<Args>...>;
-		static_assert(std::is_same_v<ExpectedTuple, ProvidedTuple>,
-					  "post() argument types mismatch for event, expected");
 
-		std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
-		m_eventQueue.emplace(E, EventData(std::in_place_type<Wrapper>, Tuple(std::forward<Args>(args)...)));
-		m_eventCondition.notify_one();
+		using Tuple = typename EventTraits<E>::tuple_type;
+		Tuple payload{std::forward<Args>(args)...};
+		enqueueEvent(E, &payload);
 	}
 
 	void runEventLoop();
@@ -290,8 +185,9 @@ class Model
 	// Reverse index to support fast unbind cleanup
 	std::unordered_map<UI::BasePresenter*, std::vector<EventType>> m_presenterEventIndex;
 
-	std::queue<std::pair<EventType, EventData>> m_eventQueue;
-	std::map<EventType, std::vector<EventCallback>> m_handlers;
+	// Internal event system (hidden implementation to reduce compile-time impact)
+	struct EventSystem;
+	std::unique_ptr<EventSystem> m_events;
 	std::condition_variable_any m_eventCondition;
 	std::thread m_eventThread;
 	std::atomic<bool> m_running{false};
@@ -303,6 +199,10 @@ class Model
 		lv_timer_t* request;
 		lv_timer_t* receive;
 	} m_timers;
+
+	// Non-templated registration/enqueue used by thin template wrappers
+	void registerHandler(EventType e, EventHandlerFn fn, void* user, void (*deleter)(void*)) noexcept;
+	void enqueueEvent(EventType e, void* payload) noexcept;
 };
 
 #define MODEL_LOCK()                                                                                                   \
