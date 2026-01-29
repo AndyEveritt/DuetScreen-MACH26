@@ -451,10 +451,9 @@ void Model::registerHandler(EventType e, EventHandlerFn fn, void* user, void (*d
 		EventSystem::HandlerEntry{fn, std::unique_ptr<void, EventSystem::HandlerEntry::Deleter>(user, d)});
 }
 
-void Model::enqueueEvent(EventType e, const void* payload, size_t payloadSize) noexcept
+void Model::enqueueEvent(EventType e, const void* payload) noexcept
 {
 	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
-	UNUSED(payloadSize);
 	EventSystem::Node node;
 	node.type = e;
 	// Copy-construct the typed payload into storage and remember how to destroy/move it
