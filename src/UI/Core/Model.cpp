@@ -517,10 +517,8 @@ Model::~Model()
 {
 	ZoneScoped;
 	// Ensure the event loop thread is stopped cleanly before destruction
-	if (m_running)
-	{
-		stopEventLoop();
-	}
+	stopEventLoop();
+
 	std::lock_guard<LockableBase(std::mutex)> lock(m_mutex);
 	// Flush any remaining queued events to properly destroy payloads
 	while (!m_events->queue.empty())

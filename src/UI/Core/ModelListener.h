@@ -2,6 +2,7 @@
 
 #include "Model.h"
 #include <memory>
+#include <cassert>
 #include <vector>
 #include <tuple>
 #include <unordered_map>
@@ -37,6 +38,13 @@ namespace UI
 			requires UI::ExactArgsMatch<typename EventTraits<E>::tuple_type, Args...>
 		void registerEventListener(Class* instance, void (Class::*memberFunc)(Args...))
 		{
+			// Prevent duplicate registration which would leak the old context in m_ctxStorage
+			const bool alreadyRegistered = m_handlers.contains(E);
+			assert(!alreadyRegistered && "Duplicate registration for EventType");
+			if (alreadyRegistered)
+			{
+				return;
+			}
 			using ExpectedTuple = typename EventTraits<E>::tuple_type;
 
 			struct Ctx
@@ -63,6 +71,13 @@ namespace UI
 			requires UI::InvocableFromTuple<std::decay_t<Func>, typename EventTraits<E>::tuple_type>
 		void registerEventListener(Func&& func)
 		{
+			// Prevent duplicate registration which would leak the old context in m_ctxStorage
+			const bool alreadyRegistered = m_handlers.contains(E);
+			assert(!alreadyRegistered && "Duplicate registration for EventType");
+			if (alreadyRegistered)
+			{
+				return;
+			}
 			using Tuple = typename EventTraits<E>::tuple_type;
 
 			using F = std::decay_t<Func>;
