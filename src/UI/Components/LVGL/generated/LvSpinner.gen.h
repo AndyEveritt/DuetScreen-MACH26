@@ -1,7 +1,7 @@
 /*
  * LvSpinner.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -60,6 +60,30 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			lv_spinner_set_arc_sweep(static_cast<Derived*>(this)->getRootPtr(), angle);
+		}
+
+		/**
+		 * Get the animation duration of the spinner
+		 * @return          the animation time in milliseconds
+		 */
+		uint32_t getAnimDuration() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_spinner_get_anim_duration(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the animation arc length of the spinner
+		 * @return          the angle of the arc in degrees
+		 */
+		uint32_t getArcSweep() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_spinner_get_arc_sweep(static_cast<const Derived*>(this)->getRootPtr());
 		}
 	};
 

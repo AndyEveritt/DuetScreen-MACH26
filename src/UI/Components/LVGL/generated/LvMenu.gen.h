@@ -1,7 +1,7 @@
 /*
  * LvMenu.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -250,6 +250,30 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			return lv_menu_back_button_is_root(static_cast<Derived*>(this)->getRootPtr(), obj);
+		}
+
+		/**
+		 * Get the header mode of the menu
+		 * @return          LV_MENU_HEADER_TOP_FIXED/TOP_UNFIXED/BOTTOM_FIXED
+		 */
+		lv_menu_mode_header_t getModeHeader() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_menu_get_mode_header(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the root back button mode of the menu
+		 * @return          LV_MENU_ROOT_BACK_BUTTON_DISABLED/ENABLED
+		 */
+		lv_menu_mode_root_back_button_t getModeRootBackButton() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_menu_get_mode_root_back_button(static_cast<const Derived*>(this)->getRootPtr());
 		}
 
 		/**

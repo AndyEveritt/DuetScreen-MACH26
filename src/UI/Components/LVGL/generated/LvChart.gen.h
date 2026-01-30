@@ -1,7 +1,7 @@
 /*
  * LvChart.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -157,6 +157,42 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			return lv_chart_get_point_count(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the update mode of a chart
+		 * @return          the update mode
+		 */
+		lv_chart_update_mode_t getUpdateMode() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_chart_get_update_mode(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the number of horizontal division lines
+		 * @return          the number of horizontal division lines
+		 */
+		uint32_t getHorDivLineCount() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_chart_get_hor_div_line_count(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the number of vertical division lines
+		 * @return          the number of vertical division lines
+		 */
+		uint32_t getVerDivLineCount() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_chart_get_ver_div_line_count(static_cast<const Derived*>(this)->getRootPtr());
 		}
 
 		/**

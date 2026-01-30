@@ -1,7 +1,7 @@
 /*
  * LvLed.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -90,6 +90,18 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			return lv_led_get_brightness(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the color of a LED object
+		 * @return color    color of the LED
+		 */
+		lv_color_t getColor() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_led_get_color(static_cast<const Derived*>(this)->getRootPtr());
 		}
 	};
 

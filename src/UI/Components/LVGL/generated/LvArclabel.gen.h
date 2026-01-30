@@ -1,7 +1,7 @@
 /*
  * LvArclabel.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -173,6 +173,31 @@ namespace UI
 		}
 
 		/**
+		 * Set the overflow behavior for an arc label object.
+		 * @param overflow  the overflow mode (visible, ellipsis, clip)
+		 */
+		void setOverflow(lv_arclabel_overflow_t overflow)
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			lv_arclabel_set_overflow(static_cast<Derived*>(this)->getRootPtr(), overflow);
+		}
+
+		/**
+		 * Set the end overlap behavior for an arc label object.
+		 * This controls how text is handled when it would overlap at the end of a 360-degree arc.
+		 * @param overlap   set the arc label's end overlap behavior
+		 */
+		void setEndOverlap(bool overlap)
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			lv_arclabel_set_end_overlap(static_cast<Derived*>(this)->getRootPtr(), overlap);
+		}
+
+		/**
 		 * Get the start angle of an arc label.
 		 * @return          the start angle [0..360]  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
 		 */
@@ -281,6 +306,46 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			return lv_arclabel_get_text_horizontal_align(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the overflow behavior for an arc label object.
+		 * @return          the overflow mode
+		 */
+		lv_arclabel_overflow_t getOverflow() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_arclabel_get_overflow(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the end overlap behavior for an arc label object.
+		 * @return          the end overlap mode
+		 */
+		bool getEndOverlap() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_arclabel_get_end_overlap(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the text angle for an arc label object.
+		 * @note            The text angle is calculated at runtime. You can get the updated value
+		 *                  after the arclabel's size has been updated.
+		 *                  Returns the real rendered text angle in degrees except in
+		 *                  `LV_ARCLABEL_OVERFLOW_VISIBLE` mode.
+		 * @return          the text angle (if `LV_USE_FLOAT` is enabled it can be fractional too.)
+		 */
+		lv_value_precise_t getTextAngle() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_arclabel_get_text_angle(static_cast<const Derived*>(this)->getRootPtr());
 		}
 	};
 

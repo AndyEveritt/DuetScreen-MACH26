@@ -1,7 +1,7 @@
 /*
  * LvTabview.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:33 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -162,6 +162,18 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			return lv_tabview_get_tab_bar(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the position of the tab bar
+		 * @return          LV_DIR_TOP/BOTTOM/LEFT/RIGHT
+		 */
+		lv_dir_t getTabBarPosition() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_tabview_get_tab_bar_position(static_cast<const Derived*>(this)->getRootPtr());
 		}
 	};
 

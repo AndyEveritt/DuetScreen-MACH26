@@ -1,7 +1,7 @@
 /*
  * LvMsgbox.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -50,7 +50,7 @@ namespace UI
 		/**
 		 * Add a text to the content area of message box. Multiple texts will be created below each other.
 		 * @param text          text to add
-		 * @return              the created button
+		 * @return              the created label
 		 */
 		lv_obj_t* addText(const char* text)
 			requires HasGetRootPtr<Derived>

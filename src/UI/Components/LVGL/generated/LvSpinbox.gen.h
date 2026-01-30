@@ -1,7 +1,7 @@
 /*
  * LvSpinbox.gen.h
  *
- *  AUTO-GENERATED: 2026-01-12T11:39:32 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -191,6 +191,66 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			return lv_spinbox_get_step(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the spinbox digit count
+		 * @return      number of digits
+		 */
+		uint32_t getDigitCount() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_spinbox_get_digit_count(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the decimal point position
+		 * @return      decimal point position
+		 */
+		uint32_t getDecPointPos() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_spinbox_get_dec_point_pos(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the spinbox minimum value
+		 * @return      minimum value
+		 */
+		int32_t getMinValue() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_spinbox_get_min_value(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the spinbox maximum value
+		 * @return      maximum value
+		 */
+		int32_t getMaxValue() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_spinbox_get_max_value(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the digit step direction
+		 * @return      direction (LV_DIR_RIGHT or LV_DIR_LEFT)
+		 */
+		lv_dir_t getDigitStepDirection() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_spinbox_get_digit_step_direction(static_cast<const Derived*>(this)->getRootPtr());
 		}
 
 		/**

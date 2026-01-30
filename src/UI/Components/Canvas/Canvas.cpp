@@ -331,7 +331,7 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		// Draw the pixel
-		m_canvas.setPxNoInvalidate(static_cast<int32_t>(px), static_cast<int32_t>(py), color, opa);
+		m_canvas.setPxSkipInvalidate(static_cast<int32_t>(px), static_cast<int32_t>(py), color, opa);
 	}
 
 	void Canvas::drawRect(lv_area_t area, int32_t radius, lv_color_t color, lv_opa_t opa)
