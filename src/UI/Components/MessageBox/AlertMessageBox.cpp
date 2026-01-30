@@ -26,12 +26,14 @@ namespace UI
 		, m_input("input", m_inputCont)
 		, m_kb(nullptr)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		init();
 	}
 
 	void AlertMessageBox::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		m_okBtn.addStyle(Themes::getLvglStyles().actionBtn);
@@ -69,6 +71,7 @@ namespace UI
 
 	void AlertMessageBox::setInputValidationCallback(std::function<bool(std::string_view)> cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_inputValidationCb = cb;
 		m_okBtn.setDisabled(!validate());
@@ -76,6 +79,7 @@ namespace UI
 
 	bool AlertMessageBox::validate()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (!m_inputValidationCb)
 		{
@@ -87,6 +91,7 @@ namespace UI
 
 	void AlertMessageBox::setKeyboard(LvKeyboard* kb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Setting keyboard {:p}", static_cast<const void*>(kb));
 		m_kb = kb;
@@ -99,6 +104,7 @@ namespace UI
 
 	bool AlertMessageBox::isBlocking() const
 	{
+		ZoneScoped;
 		switch (m_mode)
 		{
 		case OM::Alert::Mode::InfoConfirm:
@@ -117,11 +123,13 @@ namespace UI
 
 	bool AlertMessageBox::isResponse() const
 	{
+		ZoneScoped;
 		return m_mode == OM::Alert::Mode::None;
 	}
 
 	void AlertMessageBox::clear()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_mode = OM::Alert::Mode::None;
 		MessageBox::clear();
@@ -144,6 +152,7 @@ namespace UI
 
 	void AlertMessageBox::setMode(OM::Alert::Mode mode)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Seting mode to {:d}", (int)mode);
 		m_mode = mode;
@@ -199,6 +208,7 @@ namespace UI
 
 	void AlertMessageBox::selectionVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_choicesList.setVisible(visible);
 		updateVisibility();
@@ -206,6 +216,7 @@ namespace UI
 
 	void AlertMessageBox::inputVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_inputCont.setVisible(visible);
 		updateVisibility();
@@ -213,6 +224,7 @@ namespace UI
 
 	void AlertMessageBox::warningTextVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_warningText.setVisible(visible);
 		updateVisibility();
@@ -220,6 +232,7 @@ namespace UI
 
 	void AlertMessageBox::minTextVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_minText.setVisible(visible);
 		updateVisibility();
@@ -227,6 +240,7 @@ namespace UI
 
 	void AlertMessageBox::maxTextVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_maxText.setVisible(visible);
 		updateVisibility();
@@ -234,6 +248,7 @@ namespace UI
 
 	void AlertMessageBox::axisJogVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_axisJogList.setVisible(visible);
 		updateVisibility();
@@ -241,31 +256,37 @@ namespace UI
 
 	void AlertMessageBox::setWarningText(std::string_view format)
 	{
+		ZoneScoped;
 		m_warningText.setText(format);
 	}
 
 	void AlertMessageBox::setMinText(std::string_view format)
 	{
+		ZoneScoped;
 		m_minText.setText(format);
 	}
 
 	void AlertMessageBox::setMaxText(std::string_view format)
 	{
+		ZoneScoped;
 		m_maxText.setText(format);
 	}
 
 	size_t AlertMessageBox::getJogAxisCount() const
 	{
+		ZoneScoped;
 		return m_axisJogList.getItemCount();
 	}
 
 	void AlertMessageBox::setJogAxisCount(size_t count)
 	{
+		ZoneScoped;
 		m_axisJogList.setItemCount(count, *this);
 	}
 
 	std::string_view AlertMessageBox::getJogAxisLetter(size_t index) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = m_axisJogList.getItem(index);
 		if (!control)
@@ -278,6 +299,7 @@ namespace UI
 
 	void AlertMessageBox::setJogAxisLetter(size_t index, char letter)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= getJogAxisCount())
 		{
@@ -293,6 +315,7 @@ namespace UI
 
 	void AlertMessageBox::setJogAxisPosition(size_t index, float position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= getJogAxisCount())
 		{
@@ -308,6 +331,7 @@ namespace UI
 
 	void AlertMessageBox::setJogAxisEnabled(size_t index, bool enabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= getJogAxisCount())
 		{
@@ -323,11 +347,13 @@ namespace UI
 
 	size_t AlertMessageBox::getChoiceCount() const
 	{
+		ZoneScoped;
 		return m_choicesList.getItemCount();
 	}
 
 	void AlertMessageBox::setChoiceCount(size_t count)
 	{
+		ZoneScoped;
 		m_choicesList.setItemCount(count,
 								   [this](size_t i, LvObj& parent)
 								   {
@@ -342,6 +368,7 @@ namespace UI
 
 	void AlertMessageBox::setChoice(size_t index, std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = m_choicesList.getItem(index);
 		if (!control)
@@ -354,6 +381,7 @@ namespace UI
 
 	void AlertMessageBox::setInput(int32_t val)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		char buf[32];
 		snprintf(buf, sizeof(buf), "%d", val);
@@ -362,6 +390,7 @@ namespace UI
 
 	void AlertMessageBox::setInput(float val)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		char buf[32];
 		snprintf(buf, sizeof(buf), "%.1f", static_cast<double>(val));
@@ -370,18 +399,21 @@ namespace UI
 
 	void AlertMessageBox::setInput(const std::string& text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_input.setText(text);
 	}
 
 	std::string_view AlertMessageBox::getInput() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return m_input.getText();
 	}
 
 	void AlertMessageBox::onChoiceEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		AlertMessageBox* msgBox = static_cast<AlertMessageBox*>(lv_event_get_user_data(e));
 		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
@@ -395,6 +427,7 @@ namespace UI
 
 	void AlertMessageBox::onInputEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		AlertMessageBox* msgBox = static_cast<AlertMessageBox*>(lv_event_get_user_data(e));
 		lv_event_code_t code = lv_event_get_code(e);
@@ -450,6 +483,7 @@ namespace UI
 					Button("rel_move_6", getRoot(), "", layout_t(0, 0, 0, 100))}
 
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		setFlexFlow(LV_FLEX_FLOW_ROW);
@@ -478,6 +512,7 @@ namespace UI
 
 	void AlertMessageBox::AxisJog::setAxisLetter(char letter)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_axisLetter[0] = letter;
 		m_axisLetter[1] = '\0';
@@ -486,6 +521,7 @@ namespace UI
 
 	void AlertMessageBox::AxisJog::setPosition(float position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_position = position;
 		m_label.setText(fmt::format("{:s} = {:.2f}", m_axisLetter, m_position).c_str());
@@ -493,6 +529,7 @@ namespace UI
 
 	void AlertMessageBox::AxisJog::setEnabled(bool enabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		for (size_t i = 0; i < ARRAY_SIZE(m_relMove); i++)
 		{
@@ -502,6 +539,7 @@ namespace UI
 
 	void AlertMessageBox::AxisJog::onRelMoveEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		Button* btn = static_cast<Button*>(lv_event_get_user_data(e));
 		AlertMessageBox::AxisJog* axisJog =

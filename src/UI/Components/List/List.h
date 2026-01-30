@@ -137,7 +137,11 @@ namespace UI
 
 		void setListSize(const lv_coord_t w, const lv_coord_t h) { m_listCont.setSize(w, h); }
 
-		void clear() { m_list.clear(); }
+		void clear()
+		{
+			ZoneScoped;
+			m_list.clear();
+		}
 
 		TRef addItem()
 		{

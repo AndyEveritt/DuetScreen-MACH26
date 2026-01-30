@@ -20,11 +20,13 @@ namespace UI
 		: View(name, parent)
 		, m_numberPad("number_pad", numberPadParent ? *numberPadParent : parent)
 	{
+		ZoneScoped;
 		init();
 	}
 
 	void ToolList::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
@@ -55,6 +57,7 @@ namespace UI
 
 	size_t ToolList::setToolCount(size_t count)
 	{
+		ZoneScoped;
 #if SHOW_HEADERS
 		m_tools.getHeader().setVisible(count > 1);
 #endif
@@ -69,6 +72,7 @@ namespace UI
 
 	size_t ToolList::setBedCount(size_t count)
 	{
+		ZoneScoped;
 #if SHOW_HEADERS
 		m_beds.getHeader().setVisible(count > 1);
 #endif
@@ -77,6 +81,7 @@ namespace UI
 
 	size_t ToolList::setChamberCount(size_t count)
 	{
+		ZoneScoped;
 #if SHOW_HEADERS
 		m_chambers.getHeader().setVisible(count > 1);
 #endif
@@ -85,6 +90,7 @@ namespace UI
 
 	ToolListHeater* ToolList::getBed(size_t index) const
 	{
+		ZoneScoped;
 		auto bed = m_beds.getItem(index);
 		if (!bed)
 		{
@@ -95,6 +101,7 @@ namespace UI
 
 	ToolListHeater* ToolList::getChamber(size_t index) const
 	{
+		ZoneScoped;
 		auto chamber = m_chambers.getItem(index);
 		if (!chamber)
 		{
@@ -105,6 +112,7 @@ namespace UI
 
 	void ToolList::showNumberPad()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_numberPad.clear();
 		openModal(&m_numberPad);
@@ -113,6 +121,7 @@ namespace UI
 	ToolListTool::ToolListTool(size_t index, LvObj& parent, ToolList& toolList)
 		: View(index, parent)
 	{
+		ZoneScoped;
 		getPresenter()->setToolListPresenter(toolList.getPresenter());
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -144,6 +153,7 @@ namespace UI
 	ToolListBedChamber::ToolListBedChamber(size_t index, LvObj& parent)
 		: ListItem(index, parent)
 	{
+		ZoneScoped;
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -166,6 +176,7 @@ namespace UI
 	ToolListHeater::ToolListHeater(size_t index, LvObj& parent)
 		: ListItem(index, parent)
 	{
+		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
@@ -196,11 +207,13 @@ namespace UI
 
 	void ToolListTool::setLabel(std::string_view text)
 	{
+		ZoneScoped;
 		m_toolName.setText(text);
 	}
 
 	void ToolListTool::setSelected(const bool selected)
 	{
+		ZoneScoped;
 		if (m_selected == selected)
 		{
 			return;
@@ -212,12 +225,14 @@ namespace UI
 
 	size_t ToolListTool::setHeaterCount(size_t count)
 	{
+		ZoneScoped;
 		m_heaters.setFlag(LV_OBJ_FLAG_HIDDEN, count == 0);
 		return m_heaters.setItemCount(count);
 	}
 
 	void ToolListTool::onNameEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto view = static_cast<ToolListTool*>(lv_event_get_user_data(e));
 		view->m_presenter->toggleState();
@@ -225,36 +240,43 @@ namespace UI
 
 	ToolListHeater& ToolListBedChamber::getHeater()
 	{
+		ZoneScoped;
 		return *m_heaters.getItem(0);
 	}
 
 	void ToolListHeater::setLabel(std::string_view text)
 	{
+		ZoneScoped;
 		m_label.setText(text);
 	}
 
 	void ToolListHeater::setStatus(std::string_view status)
 	{
+		ZoneScoped;
 		m_status.setText(status);
 	}
 
 	void ToolListHeater::setCurrentTemp(float value)
 	{
+		ZoneScoped;
 		m_currentTemp.setText(fmt::format("{:.1f}", value));
 	}
 
 	void ToolListHeater::setActiveTemp(int32_t value)
 	{
+		ZoneScoped;
 		m_activeTemp.setText(fmt::format("{:d}", value));
 	}
 
 	void ToolListHeater::setStandbyTemp(int32_t value)
 	{
+		ZoneScoped;
 		m_standbyTemp.setText(fmt::format("{:d}", value));
 	}
 
 	void ToolListHeater::onStatusEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto view = static_cast<ToolListHeater*>(lv_event_get_user_data(e));
 		if (view->m_statusCb)
@@ -263,6 +285,7 @@ namespace UI
 
 	void ToolListHeater::onActiveStandbyEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto view = static_cast<ToolListHeater*>(lv_event_get_user_data(e));
 		LvObj* obj = LvObj::fromPtr(lv_event_get_target_obj(e));

@@ -9,6 +9,7 @@ namespace UI
 {
 	void FanPresenter::setFanSpeed(size_t slot, uint32_t value)
 	{
+		ZoneScoped;
 		auto& fan = m_controllableFans.at(slot);
 		if (fan == nullptr)
 			return;
@@ -24,6 +25,7 @@ namespace UI
 
 	void FanPresenter::newFanData()
 	{
+		ZoneScoped;
 		m_controllableFans.resize(OM::GetFanCount());
 
 		size_t count = 0;
@@ -50,11 +52,13 @@ namespace UI
 
 	void FanPresenter::onActivate()
 	{
+		ZoneScoped;
 		newFanData();
 	}
 
 	void FanPresenter::onDisconnect()
 	{
+		ZoneScoped;
 		m_view->setFanCount(0);
 	}
 } // namespace UI

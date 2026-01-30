@@ -45,6 +45,7 @@ namespace UI
 		 */
 		std::unique_ptr<ObjT> create(size_t index, LvObj& parent)
 		{
+			ZoneScoped;
 			auto obj = std::make_unique<ObjT>(fmt::format("lazy_item_{:d}", index), parent);
 			obj->setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 			return obj;

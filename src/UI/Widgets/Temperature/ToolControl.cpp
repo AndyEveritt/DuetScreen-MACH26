@@ -13,6 +13,7 @@ namespace UI
 	ToolControl::ToolControl(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -54,11 +55,13 @@ namespace UI
 
 	void ToolControl::setToolName(std::string_view name)
 	{
+		ZoneScoped;
 		m_name.setText(name);
 	}
 
 	void ToolControl::setToolState(ToolControlPresenter::tool_state_t state, std::string_view str)
 	{
+		ZoneScoped;
 		bool active = state == ToolControlPresenter::tool_state_t::active;
 		setState(LV_STATE_CHECKED, active);
 		m_name.setChecked(active);
@@ -67,6 +70,7 @@ namespace UI
 
 	void ToolControl::setNumberPad(ModalNumberPad* numberPad)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_numberPad = numberPad;
 		for (auto& heater : m_heaters)
@@ -77,6 +81,7 @@ namespace UI
 
 	void ToolControl::setExtrusionModal(ModalExtrusionFactor* modal)
 	{
+		ZoneScoped;
 		m_extrusionFactorModal = modal;
 	}
 } // namespace UI

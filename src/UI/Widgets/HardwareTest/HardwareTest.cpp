@@ -20,6 +20,7 @@ namespace UI
 	HardwareTest::HardwareTest()
 		: View("hardware_test")
 	{
+		ZoneScoped;
 		setStylePad(0, LV_PART_MAIN, Padding::ALL);
 		setSize(LV_PCT(100), LV_PCT(100));
 		// Don't use plain black to prevent content from fading away (bug in the SUNXI display or DMA/MMU driver)
@@ -31,6 +32,7 @@ namespace UI
 		: LvContainer("serial_input_container", parent)
 		, m_parent(parent)
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
@@ -68,6 +70,7 @@ namespace UI
 
 	void HardwareTest::SerialInput::onShow()
 	{
+		ZoneScoped;
 		m_warning.hide(true);
 
 		m_serialInput.setText(HARDWARE_TEST_SERIAL_NUMBER);
@@ -79,6 +82,7 @@ namespace UI
 		: LvContainer("touch_screen_test_container", parent)
 		, m_parent(parent)
 	{
+		ZoneScoped;
 		setStyleBgOpa(LV_OPA_COVER);
 		setStylePad(0, LV_PART_MAIN, Padding::ALL);
 
@@ -106,6 +110,7 @@ namespace UI
 
 	void HardwareTest::TouchScreenTest::setTouchTargetPosition(int32_t x, int32_t y)
 	{
+		ZoneScoped;
 		// Ensure the target is centered on (x, y)
 		const lv_coord_t target_width = m_target.getWidth();
 		const lv_coord_t target_height = m_target.getHeight();
@@ -115,6 +120,7 @@ namespace UI
 
 	void HardwareTest::TouchScreenTest::showResults(bool pass, std::string_view message)
 	{
+		ZoneScoped;
 		m_messageBox.setText(message);
 		m_messageBox.okVisible(pass);
 		m_messageBox.cancelVisible(!pass);
@@ -125,6 +131,7 @@ namespace UI
 
 	void HardwareTest::TouchScreenTest::onTouchEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		auto* instance = static_cast<TouchScreenTest*>(lv_event_get_user_data(e));
 		lv_indev_t* indev = lv_event_get_indev(e);
 
@@ -136,6 +143,7 @@ namespace UI
 
 	void HardwareTest::TouchScreenTest::onShow()
 	{
+		ZoneScoped;
 		m_messageBox.hide();
 		setStyleBgColor(lv_palette_main(LV_PALETTE_BLUE));
 	}
@@ -144,6 +152,7 @@ namespace UI
 		: LvContainer("dead_pixel_test_container", parent)
 		, m_parent(parent)
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
@@ -180,6 +189,7 @@ namespace UI
 
 	void HardwareTest::DeadPixelTest::setScreenColour(uint8_t red, uint8_t green, uint8_t blue)
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(red, green, blue));
 		m_hint.hide();
 		m_pass.hide();
@@ -190,11 +200,13 @@ namespace UI
 
 	void HardwareTest::DeadPixelTest::confirmWithUser()
 	{
+		ZoneScoped;
 		m_messageBox.show();
 	}
 
 	void HardwareTest::DeadPixelTest::onTouchEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		auto* instance = static_cast<DeadPixelTest*>(lv_event_get_user_data(e));
 		if (instance->m_start.isVisible())
 		{
@@ -212,6 +224,7 @@ namespace UI
 
 	void HardwareTest::DeadPixelTest::onShow()
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		m_hint.show();
 		m_pass.show();
@@ -233,6 +246,7 @@ namespace UI
 		: LvContainer("command_test_container", parent)
 		, m_parent(parent)
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
@@ -250,22 +264,26 @@ namespace UI
 
 	void HardwareTest::CommandTest::setMessage(std::string_view message)
 	{
+		ZoneScoped;
 		m_message.setText(message);
 	}
 
 	void HardwareTest::CommandTest::setOutput(const std::string& output)
 	{
+		ZoneScoped;
 		m_output.setText(output);
 	}
 
 	void HardwareTest::CommandTest::appendOutput(std::string_view output)
 	{
+		ZoneScoped;
 		m_output.addText(std::string(output));
 	}
 
 	HardwareTest::UsbATest::UsbATest(HardwareTest& parent)
 		: CommandTest(parent)
 	{
+		ZoneScoped;
 		setMessage("Connect a device to the USB-A port and press the button below when ready.");
 		m_button.setText("Device connected");
 		m_button.setSize(LV_PCT(30), LV_SIZE_CONTENT);
@@ -286,6 +304,7 @@ namespace UI
 		: LvContainer("buzzer_test_container", parent)
 		, m_parent(parent)
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
@@ -337,6 +356,7 @@ namespace UI
 	HardwareTest::SpeakerTest::SpeakerTest(HardwareTest& parent)
 		: CommandTest(parent)
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
@@ -391,6 +411,7 @@ namespace UI
 		: LvContainer("test_results_container", parent)
 		, m_parent(parent)
 	{
+		ZoneScoped;
 		setStyleBgColor(lv_color_make(0x01, 0x01, 0x01));
 		setStyleBgOpa(LV_OPA_COVER);
 
@@ -446,12 +467,14 @@ namespace UI
 
 	void HardwareTest::TestResults::clearResults()
 	{
+		ZoneScoped;
 		m_passed.clear();
 		m_failed.clear();
 	}
 
 	void HardwareTest::TestResults::addResult(std::string_view name, const std::string& output, bool passed)
 	{
+		ZoneScoped;
 		auto& list = passed ? m_passed : m_failed;
 		auto& item = list.addItem();
 		item.setName(name);
@@ -462,6 +485,7 @@ namespace UI
 	HardwareTest::TestResults::TestResult::TestResult(size_t index, LvObj& parent)
 		: ListItem(index, parent)
 	{
+		ZoneScoped;
 		setHeight(LV_PCT(100));
 		setFlexGrow(1);
 		setMinWidth(LV_PCT(20));
@@ -478,21 +502,25 @@ namespace UI
 
 	void HardwareTest::TestResults::TestResult::setName(std::string_view name)
 	{
+		ZoneScoped;
 		m_name.setText(name);
 	}
 
 	void HardwareTest::TestResults::TestResult::setOutput(const std::string& output)
 	{
+		ZoneScoped;
 		m_output.setText(output);
 	}
 
 	void HardwareTest::TestResults::TestResult::setPassed(bool passed)
 	{
+		ZoneScoped;
 		setStyleBgColor(passed ? lv_palette_main(LV_PALETTE_GREEN) : lv_palette_main(LV_PALETTE_RED));
 	}
 
 	void HardwareTest::showTest(LvContainer* test)
 	{
+		ZoneScoped;
 		m_testResults.hide();
 		for (auto* t : m_tests)
 		{
@@ -502,11 +530,13 @@ namespace UI
 
 	void HardwareTest::showResults()
 	{
+		ZoneScoped;
 		m_testResults.show(true);
 	}
 
 	void HardwareTest::onShow()
 	{
+		ZoneScoped;
 		m_serialInput.setVisible(true);
 		m_touchScreenTest.setVisible(false);
 		m_deadPixelTest.setVisible(false);

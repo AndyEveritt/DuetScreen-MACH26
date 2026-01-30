@@ -18,6 +18,7 @@ namespace UI
 	Slider::Slider(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
@@ -108,6 +109,7 @@ namespace UI
 
 	void Slider::setOutOfRangeMode(OutOfRange mode)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (mode & OutOfRange::LOWER || getMin() < 0)
 		{
@@ -122,6 +124,7 @@ namespace UI
 
 	void Slider::setLabel(std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_label.setFlag(LV_OBJ_FLAG_HIDDEN, text.empty());
 		m_label.setText(text);
@@ -129,6 +132,7 @@ namespace UI
 
 	void Slider::setIncrementValue(float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_incrementValue = value;
 		m_slider.setMaxValue(static_cast<int32_t>((m_max - m_min) / m_incrementValue));
@@ -136,6 +140,7 @@ namespace UI
 
 	void Slider::setRange(float min, float max)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_min = min;
 		m_max = max;
@@ -146,6 +151,7 @@ namespace UI
 
 	void Slider::setValue(float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		boundValue(value);
 		m_value = value;
@@ -170,6 +176,7 @@ namespace UI
 
 	void Slider::setDefaultValue(float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_defaultValue = value;
 		m_reset.setVisible(hasDefaultValue() && getValue() != m_defaultValue);
@@ -177,6 +184,7 @@ namespace UI
 
 	void Slider::onValueChanged(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		lv_event_code_t code = lv_event_get_code(e);
 		Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
@@ -226,6 +234,7 @@ namespace UI
 
 	void Slider::onInputEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		lv_event_code_t code = lv_event_get_code(e);
 		Slider* slider = static_cast<Slider*>(lv_event_get_user_data(e));
@@ -300,6 +309,7 @@ namespace UI
 
 	bool Slider::boundValue(float& value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		float original = value;
 		switch (m_outOfRangeMode)
@@ -329,6 +339,7 @@ namespace UI
 
 	int32_t Slider::normaliseValue(float value) const
 	{
+		ZoneScoped;
 		if (value < getMin())
 		{
 			return m_slider.getMinValue();
@@ -350,6 +361,7 @@ namespace UI
 
 	void Slider::updateText()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_input.setText(fmt::format("{:g}", getValue()));
 

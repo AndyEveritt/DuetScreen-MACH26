@@ -17,6 +17,7 @@ namespace UI
 	BabyStep::BabyStep(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -47,11 +48,13 @@ namespace UI
 
 	void BabyStep::setBabyStepValue(float value)
 	{
+		ZoneScoped;
 		m_buttonPanel.setResetLabel(_("babystep.reset", value));
 	}
 
 	void BabyStep::onShow()
 	{
+		ZoneScoped;
 		const auto values = StorageHelper::getData<std::vector<float>>(ID_BABYSTEP_AMOUNT, {0.01f, 0.05f});
 		m_buttonPanel.setIncrementValues(values);
 	}

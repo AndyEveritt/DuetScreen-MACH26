@@ -17,11 +17,13 @@ namespace UI
 	Graph::Graph(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
+		ZoneScoped;
 		init();
 	}
 
 	void Graph::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		// Layout
@@ -67,12 +69,14 @@ namespace UI
 
 	void Graph::showLegend(const bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_legend.setVisible(show);
 	}
 
 	Graph::range_t Graph::getXRange() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		range_t range;
 		range.min = m_hScale.getRangeMinValue();
@@ -82,6 +86,7 @@ namespace UI
 
 	Graph::range_t Graph::getYRange() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		range_t range;
 		range.min = m_vScale.getRangeMinValue();
@@ -91,6 +96,7 @@ namespace UI
 
 	void Graph::setXRange(Graph::range_t range)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_hScale.setRange(range.min, range.max);
 		m_chart.setAxisRange(LV_CHART_AXIS_PRIMARY_X, range.min, range.max);
@@ -98,6 +104,7 @@ namespace UI
 
 	void Graph::setYRange(Graph::range_t range)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_vScale.setRange(range.min, range.max);
 		m_chart.setAxisRange(LV_CHART_AXIS_PRIMARY_Y, range.min, range.max);
@@ -105,12 +112,14 @@ namespace UI
 
 	void Graph::setXCount(int32_t count)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_chart.setPointCount(count);
 	}
 
 	void Graph::setSeriesCount(size_t count)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (count == m_series.size())
 		{
@@ -130,6 +139,7 @@ namespace UI
 
 	const Graph::series_t* Graph::getSeries(const size_t index)
 	{
+		ZoneScoped;
 		if (index >= m_series.size())
 		{
 			LOG_DBG("Series index out of range");
@@ -140,6 +150,7 @@ namespace UI
 
 	bool Graph::createSeries(lv_color_t color, const std::string& displayName)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		lv_chart_series_t* series = m_chart.addSeries(color, LV_CHART_AXIS_PRIMARY_Y);
 
@@ -175,6 +186,7 @@ namespace UI
 
 	bool Graph::updateSeriesColor(const size_t index, lv_color_t color)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		series_t* series = (series_t*)getSeries(index);
 		if (series == nullptr)
@@ -188,6 +200,7 @@ namespace UI
 
 	bool Graph::updateSeriesName(const size_t index, const std::string& displayName)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		series_t* series = (series_t*)getSeries(index);
 		if (series == nullptr)
@@ -202,6 +215,7 @@ namespace UI
 
 	void Graph::showSeries(const size_t index, const bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
@@ -215,6 +229,7 @@ namespace UI
 
 	void Graph::clear()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		for (auto& series : m_series)
 		{
@@ -226,6 +241,7 @@ namespace UI
 
 	void Graph::clear(const size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
@@ -240,6 +256,7 @@ namespace UI
 
 	void Graph::addData(const size_t index, int32_t value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		const series_t* series = getSeries(index);
 		if (series == nullptr)
@@ -252,6 +269,7 @@ namespace UI
 
 	void Graph::legendEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		Graph* g = (Graph*)lv_event_get_user_data(e);
 		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
@@ -263,6 +281,7 @@ namespace UI
 
 	void Graph::setSeriesColor(series_t& series, lv_color_t color)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_chart.setSeriesColor(series.series, color);
 		series.color = color;

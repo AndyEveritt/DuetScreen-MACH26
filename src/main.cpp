@@ -92,7 +92,10 @@ int main(int argc, char** argv)
 	StorageHelper::load();
 	Log::Init();
 
-	lv_init();
+	{
+		ZoneScopedN("lv_init");
+		lv_init();
+	}
 
 	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
 	// deadlocks can occur

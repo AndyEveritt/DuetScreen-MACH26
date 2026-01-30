@@ -14,6 +14,7 @@ namespace UI
 	FilamentSelectDropdown::FilamentSelectDropdown(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 
@@ -38,6 +39,7 @@ namespace UI
 
 	void FilamentSelectDropdown::setToolIndex(size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("Setting tool index to {} for {}", index, getName());
 		getPresenter()->setSelectedToolBySlot(index);
@@ -45,11 +47,13 @@ namespace UI
 
 	void FilamentSelectDropdown::showHint(bool show)
 	{
+		ZoneScoped;
 		UNUSED(show);
 	}
 
 	void FilamentSelectDropdown::setFilamentDisabled(bool disabled)
 	{
+		ZoneScoped;
 		if (disabled == hasState(LV_STATE_DISABLED))
 		{
 			return;
@@ -69,6 +73,7 @@ namespace UI
 
 	void FilamentSelectDropdown::setFilamentOptions(const std::vector<std::string>& options)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
 		m_filamentOptions = options;
@@ -77,6 +82,7 @@ namespace UI
 
 	void FilamentSelectDropdown::setFilamentSelected(const std::string& filament, bool forceUpdate)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("Setting selected filament to '{}' for {}", filament, getName());
 
@@ -95,6 +101,7 @@ namespace UI
 
 	void FilamentSelectDropdown::onFilamentSelectEvent(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = static_cast<FilamentSelectDropdown*>(lv_event_get_user_data(event));
 
@@ -105,6 +112,7 @@ namespace UI
 
 	void FilamentSelectDropdown::onFilamentChangeEvent(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = static_cast<FilamentSelectDropdown*>(lv_event_get_user_data(event));
 
@@ -117,6 +125,7 @@ namespace UI
 
 	void FilamentSelectDropdown::onFilamentUnloadEvent(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = static_cast<FilamentSelectDropdown*>(lv_event_get_user_data(event));
 

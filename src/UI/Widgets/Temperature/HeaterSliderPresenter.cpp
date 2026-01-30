@@ -7,6 +7,7 @@ namespace UI
 {
 	void HeaterSliderPresenter::onActivate()
 	{
+		ZoneScoped;
 		switch (m_slotType)
 		{
 		case SlotType::Tool:
@@ -38,6 +39,7 @@ namespace UI
 
 	void HeaterSliderPresenter::setToolHeaterIndex(size_t toolIndex, size_t toolHeaterIndex)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		reset();
 		m_tool = OM::GetTool(toolIndex);
@@ -64,6 +66,7 @@ namespace UI
 
 	void HeaterSliderPresenter::setBedIndex(size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		reset();
 		m_bedOrChamber = OM::GetBedBySlot(index);
@@ -80,6 +83,7 @@ namespace UI
 
 	void HeaterSliderPresenter::setChamberIndex(size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		reset();
 		m_bedOrChamber = OM::GetChamberBySlot(index);
@@ -96,6 +100,7 @@ namespace UI
 
 	void HeaterSliderPresenter::reset()
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		m_slotType = SlotType::Unknown;
@@ -107,6 +112,7 @@ namespace UI
 
 	void HeaterSliderPresenter::cycleHeaterState()
 	{
+		ZoneScoped;
 		switch (m_slotType)
 		{
 		case SlotType::Tool:
@@ -147,6 +153,7 @@ namespace UI
 
 	void HeaterSliderPresenter::sendTemperature(float value, bool active)
 	{
+		ZoneScoped;
 		switch (m_slotType)
 		{
 		case SlotType::Tool:
@@ -192,6 +199,7 @@ namespace UI
 
 	void HeaterSliderPresenter::newHeaterData()
 	{
+		ZoneScoped;
 		std::string name;
 		heater_state_t state = heater_state_t::unknown;
 		std::string_view state_str;

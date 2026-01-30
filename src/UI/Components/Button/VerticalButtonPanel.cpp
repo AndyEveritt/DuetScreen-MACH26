@@ -19,6 +19,7 @@ namespace UI
 		, m_decrement("decrement", getRoot())
 		, m_values{"value_list", getRoot()}
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -81,31 +82,37 @@ namespace UI
 
 	void VerticalButtonPanel::setIncrementIcon(std::string_view icon)
 	{
+		ZoneScoped;
 		m_increment.setIcon(icon);
 	}
 
 	void VerticalButtonPanel::setDecrementIcon(std::string_view icon)
 	{
+		ZoneScoped;
 		m_decrement.setIcon(icon);
 	}
 
 	void VerticalButtonPanel::setIncrementLabel(std::string_view label)
 	{
+		ZoneScoped;
 		m_increment.setText(label);
 	}
 
 	void VerticalButtonPanel::setDecrementLabel(std::string_view label)
 	{
+		ZoneScoped;
 		m_decrement.setText(label);
 	}
 
 	void VerticalButtonPanel::setResetLabel(std::string_view label)
 	{
+		ZoneScoped;
 		m_reset.setText(label);
 	}
 
 	void VerticalButtonPanel::setValueLabelFmt(std::string_view fmt)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_fmt = fmt;
 
@@ -114,6 +121,7 @@ namespace UI
 
 	void VerticalButtonPanel::setIncrementValues(std::span<const float> values)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_values.setItemCount(values.size(), this, &VerticalButtonPanel::createValueButton);
 		m_incrementValues.clear();
@@ -124,6 +132,7 @@ namespace UI
 
 	std::unique_ptr<Button> VerticalButtonPanel::createValueButton(size_t index, LvObj& parent)
 	{
+		ZoneScoped;
 		auto btn = std::make_unique<Button>(fmt::format("value_btn_{}", index), parent);
 		btn->getLabel().setLongMode(LV_LABEL_LONG_MODE_WRAP);
 		btn->setHeight(LV_PCT(100));
@@ -169,17 +178,20 @@ namespace UI
 
 	void VerticalButtonPanel::updateValueLabels()
 	{
+		ZoneScoped;
 		m_values.iterateListItems([this](size_t index, Button& btn)
 								  { btn.setText(fmt::format(fmt::runtime(m_fmt), m_incrementValues.at(index))); });
 	}
 
 	float VerticalButtonPanel::getSelectedValue() const
 	{
+		ZoneScoped;
 		return m_incrementValues[m_selectedValueIndex];
 	}
 
 	void VerticalButtonPanel::setSelectedValueIndex(size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_values.iterateListItems([index](size_t i, Button& btn) { btn.setChecked(i == index); });
 		m_selectedValueIndex = index;
@@ -187,18 +199,21 @@ namespace UI
 
 	void VerticalButtonPanel::setValueChangeCallback(std::function<void(float)> callback)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_valueChangeCallback = std::move(callback);
 	}
 
 	void VerticalButtonPanel::setResetCallback(std::function<void()> callback)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_resetCallback = std::move(callback);
 	}
 
 	void VerticalButtonPanel::setUpdatedValuesCallback(std::function<void(const std::vector<float>&)> callback)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_updatedValuesCallback = std::move(callback);
 	}

@@ -22,6 +22,7 @@ namespace UI
 			, m_colorBox("color_box", getRoot())
 			, m_label("label", getRoot())
 		{
+			ZoneScoped;
 			m_colorBox.addStyle(Themes::getLvglStyles().border);
 
 			setFlexFlow(LV_FLEX_FLOW_COLUMN);
@@ -59,6 +60,7 @@ namespace UI
 		: LvContainer(name, parent)
 		, m_swatches("swatches", getRoot())
 	{
+		ZoneScoped;
 		static const int32_t s_col_dsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		static const int32_t s_row_dsc[] = {
 			LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
@@ -190,6 +192,7 @@ namespace UI
 
 	void ThemePreview::updateSwatches()
 	{
+		ZoneScoped;
 		const auto& styles = Themes::getLvglStyles();
 		const LabelledStyle swatch_styles[] = {
 			{.name = "bg_dark", .style = styles.bg_dark, .color_prop = LV_STYLE_BG_COLOR},
@@ -264,6 +267,7 @@ namespace UI
 
 	void ThemePreview::updateSliders(size_t primaryHue, size_t secondaryHue, float chroma, bool darkMode)
 	{
+		ZoneScoped;
 		m_primaryHueSlider.setSendMode(Slider::SendMode::DISABLED);
 		m_secondaryHueSlider.setSendMode(Slider::SendMode::DISABLED);
 		m_chromaSlider.setSendMode(Slider::SendMode::DISABLED);
@@ -280,26 +284,31 @@ namespace UI
 
 	void ThemePreview::setPrimaryHue(size_t hue)
 	{
+		ZoneScoped;
 		m_primaryHueSlider.setValue(static_cast<float>(hue));
 	}
 
 	void ThemePreview::setSecondaryHue(size_t hue)
 	{
+		ZoneScoped;
 		m_secondaryHueSlider.setValue(static_cast<float>(hue));
 	}
 
 	void ThemePreview::setChroma(float chroma)
 	{
+		ZoneScoped;
 		m_chromaSlider.setValue(chroma);
 	}
 
 	void ThemePreview::setDarkMode(bool enable)
 	{
+		ZoneScoped;
 		m_darkMode.setChecked(enable);
 	}
 
 	void ThemePreview::showControls(bool show)
 	{
+		ZoneScoped;
 		m_primaryHueLabel.setVisible(show);
 		m_primaryHueSlider.setVisible(show);
 		m_primaryColorPreview.setVisible(show);
@@ -320,6 +329,7 @@ namespace UI
 
 	void ThemePreview::setNumberPad(ModalNumberPad* numberPad)
 	{
+		ZoneScoped;
 		m_numberPad = numberPad;
 
 		m_primaryHueSlider.setNumberPad(numberPad);
@@ -329,6 +339,7 @@ namespace UI
 
 	void ThemePreview::updateThemeColors()
 	{
+		ZoneScoped;
 		UI::Themes::Theme* theme = Themes::getCurrentTheme();
 
 		if (!theme)
@@ -359,6 +370,7 @@ namespace UI
 
 	void ThemePreview::renderColorPreview(Canvas& canvas, float luminance, float chroma)
 	{
+		ZoneScoped;
 		uint32_t barWidth, barHeight;
 		canvas.getResolution(barWidth, barHeight);
 		for (uint32_t x = 0; x < barWidth; x++)
@@ -369,6 +381,7 @@ namespace UI
 
 	void ThemePreview::onShow()
 	{
+		ZoneScoped;
 		m_primaryHueSlider.getLvSlider().sendEvent(LV_EVENT_SIZE_CHANGED);
 		m_secondaryHueSlider.getLvSlider().sendEvent(LV_EVENT_SIZE_CHANGED);
 		UI::Themes::Theme* theme = Themes::getCurrentTheme();

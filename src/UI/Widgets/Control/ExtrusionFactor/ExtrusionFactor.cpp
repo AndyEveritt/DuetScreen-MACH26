@@ -15,6 +15,7 @@ namespace UI
 	ExtrusionFactor::ExtrusionFactor(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		m_extruders.setSize(LV_PCT(100), LV_PCT(100));
 		m_extruders.setMinHeight(LV_SIZE_CONTENT);
 
@@ -27,6 +28,7 @@ namespace UI
 	 */
 	void ExtrusionFactor::setExtruderCount(size_t count)
 	{
+		ZoneScoped;
 		m_extruders.setItemCount(count,
 								 [this](size_t index, LvObj& parent)
 								 {
@@ -69,6 +71,7 @@ namespace UI
 
 	void ExtrusionFactor::setExtruderLabel(size_t index, std::string_view label)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (auto extruder = m_extruders.getItem(index))
 		{
@@ -81,6 +84,7 @@ namespace UI
 
 	void ExtrusionFactor::setExtruderValue(size_t index, uint32_t value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (auto extruder = m_extruders.getItem(index))
 		{
@@ -94,6 +98,7 @@ namespace UI
 
 	void ExtrusionFactor::configureNumberPad(Slider* slider)
 	{
+		ZoneScoped;
 		if (!m_numberPad)
 		{
 			LOG_WARN("Number pad not set");
@@ -114,6 +119,7 @@ namespace UI
 	ModalExtrusionFactor::ModalExtrusionFactor(const std::string& name, LvObj& parent)
 		: Modal(name, parent)
 	{
+		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);

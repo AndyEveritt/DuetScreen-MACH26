@@ -33,6 +33,7 @@ namespace UI
 			: T(name, parent, std::forward<Args>(args)...)
 			, m_modalBg("modal_bg", parent, layout_t(0, 0, 100, 100))
 		{
+			ZoneScoped;
 			UI_LOCK();
 
 			this->addStyle(Themes::getLvglStyles().card);
@@ -65,11 +66,20 @@ namespace UI
 #endif
 		}
 
-		void open() { openModal(this); }
-		void close() { closeModal(this); }
+		void open()
+		{
+			ZoneScoped;
+			openModal(this);
+		}
+		void close()
+		{
+			ZoneScoped;
+			closeModal(this);
+		}
 
 		void setVisible(bool visible)
 		{
+			ZoneScoped;
 			if (visible)
 				open();
 			else
@@ -80,6 +90,7 @@ namespace UI
 
 		void setBlocking(bool blocking)
 		{
+			ZoneScoped;
 			m_blocking = blocking;
 #if UI_MODAL_CLOSE_BUTTON
 			m_closeBtn.setVisible(!blocking);
@@ -91,20 +102,30 @@ namespace UI
 		/**
 		 * @warning private to prevent accidental calls (use this->open() or openModal() instead)
 		 */
-		void show(bool move_to_front = false) override { T::show(move_to_front); }
+		void show(bool move_to_front = false) override
+		{
+			ZoneScoped;
+			T::show(move_to_front);
+		}
 
 		/**
 		 * @warning private to prevent accidental calls (use this->close() or closeModal() instead)
 		 */
-		void hide(bool move_to_front = false) override { T::hide(move_to_front); }
+		void hide(bool move_to_front = false) override
+		{
+			ZoneScoped;
+			T::hide(move_to_front);
+		}
 
 		void onShow() override
 		{
+			ZoneScoped;
 			m_modalBg.show(true);
 			T::onShow();
 		}
 		void onHide() override
 		{
+			ZoneScoped;
 			T::onHide();
 			m_modalBg.hide();
 		}

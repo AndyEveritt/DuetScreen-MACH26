@@ -38,6 +38,7 @@ namespace UI
 
 	static std::string runCommand(const std::string& cmd)
 	{
+		ZoneScoped;
 		std::string result;
 		FILE* pipe = ::popen(cmd.c_str(), "r");
 		if (!pipe)
@@ -53,6 +54,7 @@ namespace UI
 
 	void TestProcedure::start()
 	{
+		ZoneScoped;
 		output.clear();
 		state = TestState::InProgress;
 		// Call the start callback if it exists
@@ -63,6 +65,7 @@ namespace UI
 	}
 	bool TestProcedure::finish()
 	{
+		ZoneScoped;
 		bool success = true;
 		if (finish_cb)
 		{
@@ -78,6 +81,7 @@ namespace UI
 	}
 	void TestProcedure::cleanup()
 	{
+		ZoneScoped;
 		if (cleanup_cb)
 		{
 			cleanup_cb(*this);
@@ -86,6 +90,7 @@ namespace UI
 
 	bool HardwareTestPresenter::setSerialNumber(std::string_view serial_number)
 	{
+		ZoneScoped;
 		// Validate the serial number (example: must be 10 characters long and alphanumeric)
 		std::regex serial_regex("^A[C-Z]-[0-9]{2}-[0-9]{2}_[0-9]{4}$");
 		if (!std::regex_match(serial_number.begin(), serial_number.end(), serial_regex))
@@ -105,6 +110,7 @@ namespace UI
 
 	void HardwareTestPresenter::startTouchCalibration()
 	{
+		ZoneScoped;
 		// Start the touch calibration process
 		auto& touchScreenTest = getView()->getTouchScreenTest();
 		getView()->showTest(&touchScreenTest);
@@ -115,6 +121,7 @@ namespace UI
 
 	void HardwareTestPresenter::touchCalibrationFinished()
 	{
+		ZoneScoped;
 
 		// Finish the touch calibration process
 		nextTest();
@@ -122,6 +129,7 @@ namespace UI
 
 	void HardwareTestPresenter::showNextTouchPoint()
 	{
+		ZoneScoped;
 		if (m_touchPointIndex >= m_touchPoints.size())
 		{
 			testFinished(TestId::TouchCalibration);
@@ -135,6 +143,7 @@ namespace UI
 
 	void HardwareTestPresenter::logTouchEvent(int32_t x, int32_t y)
 	{
+		ZoneScoped;
 		if (m_touchPointIndex >= m_touchPoints.size())
 		{
 			// Not in calibration mode
@@ -162,6 +171,7 @@ namespace UI
 
 	bool HardwareTestPresenter::checkTouchCalibration(TestProcedure& test)
 	{
+		ZoneScoped;
 		const int32_t tolerance = 50; // pixels
 		bool success = true;
 		for (size_t i = 0; i < m_touchPoints.size(); ++i)
@@ -184,12 +194,14 @@ namespace UI
 
 	void HardwareTestPresenter::startDeadPixelTest()
 	{
+		ZoneScoped;
 		m_colorIndex = 0;
 		nextColor();
 	}
 
 	void HardwareTestPresenter::nextColor()
 	{
+		ZoneScoped;
 		auto& deadPixelTest = getView()->getDeadPixelTest();
 
 		if (m_colorIndex >= m_colors.size())
@@ -203,6 +215,7 @@ namespace UI
 
 	void HardwareTestPresenter::deadPixelCheckPassed(bool passed)
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::DeadPixelTest)
 		{
 			// Not in dead pixel test
@@ -230,6 +243,7 @@ namespace UI
 
 	void HardwareTestPresenter::testMemory()
 	{
+		ZoneScoped;
 		auto& commandTest = getView()->getCommandTest();
 		getView()->showTest(&commandTest);
 		commandTest.setMessage("Running memory test...");
@@ -333,6 +347,7 @@ namespace UI
 
 	static std::string extractMacAddress(const std::string& input)
 	{
+		ZoneScoped;
 		std::regex mac_regex("link/ether ((?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2}))");
 		std::smatch match;
 		if (std::regex_search(input, match, mac_regex))
@@ -344,6 +359,7 @@ namespace UI
 
 	void HardwareTestPresenter::testWifi()
 	{
+		ZoneScoped;
 		auto& commandTest = getView()->getCommandTest();
 		getView()->showTest(&commandTest);
 		commandTest.setMessage("Running internal WiFi test...");
@@ -392,6 +408,7 @@ namespace UI
 
 	void HardwareTestPresenter::testUsb()
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-A test
@@ -429,6 +446,7 @@ namespace UI
 
 	void HardwareTestPresenter::promptUsbAConnect()
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-A test
@@ -460,6 +478,7 @@ namespace UI
 
 	void HardwareTestPresenter::promptUsbCConnect()
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-C test
@@ -491,6 +510,7 @@ namespace UI
 
 	void HardwareTestPresenter::promptUsbCConnect2()
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-C test
@@ -523,6 +543,7 @@ namespace UI
 
 	void HardwareTestPresenter::promptUsbDeviceConnect()
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			LOG_ERROR("Not in USB test");
@@ -571,6 +592,7 @@ namespace UI
 
 	void HardwareTestPresenter::logUsbData(std::string_view key, bool device_present)
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::UsbTest)
 		{
 			// Not in USB-A test
@@ -635,6 +657,7 @@ namespace UI
 
 	void HardwareTestPresenter::updateUsbMounts()
 	{
+		ZoneScoped;
 
 		const auto& mounts = USB::UsbMonitor::getInstance().getMountedDrives();
 		std::string mount_str = fmt::format("Mounted drives:\n  {:s}\nTarget drive: {:s}",
@@ -650,6 +673,7 @@ namespace UI
 
 	void HardwareTestPresenter::playBuzzer()
 	{
+		ZoneScoped;
 		if (system("beep 100") != 0)
 		{
 			m_currentTest->output["result"] = false;
@@ -660,6 +684,7 @@ namespace UI
 
 	void HardwareTestPresenter::buzzerCheckPassed(bool passed)
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::BuzzerTest)
 		{
 			// Not in speaker test
@@ -676,6 +701,7 @@ namespace UI
 
 	void HardwareTestPresenter::testSpeaker()
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::SpeakerTest)
 		{
 			LOG_ERROR("Not in Speaker test");
@@ -704,6 +730,7 @@ namespace UI
 
 	void HardwareTestPresenter::playSpeaker()
 	{
+		ZoneScoped;
 		if (system("speaker-test -c 1 -t sine -f 500 -l 1") != 0)
 		{
 			m_currentTest->output["result"] = false;
@@ -714,6 +741,7 @@ namespace UI
 
 	void HardwareTestPresenter::speakerCheckPassed(bool passed)
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr || m_currentTest->getId() != TestId::SpeakerTest)
 		{
 			// Not in speaker test
@@ -730,6 +758,7 @@ namespace UI
 
 	void HardwareTestPresenter::restartTests()
 	{
+		ZoneScoped;
 		m_serialNumber.clear();
 		m_testIndex = 0;
 
@@ -758,6 +787,7 @@ namespace UI
 
 	void HardwareTestPresenter::testFinished(TestId id)
 	{
+		ZoneScoped;
 		if (m_currentTest == nullptr)
 		{
 			LOG_ERROR("Unexpected test finished: no current test");
@@ -786,6 +816,7 @@ namespace UI
 
 	void HardwareTestPresenter::nextTest()
 	{
+		ZoneScoped;
 		if (m_testIndex >= m_tests.size())
 		{
 			auto& testResults = getView()->getTestResults();
@@ -809,6 +840,7 @@ namespace UI
 
 	void HardwareTestPresenter::getUid()
 	{
+		ZoneScoped;
 		std::string uid =
 #if SIMULATION
 			"\n0x03006200: 0x93406000 0x4c004814 0x01070a31 0x5c4d1c54";
@@ -836,6 +868,7 @@ namespace UI
 
 	void HardwareTestPresenter::createLogFile()
 	{
+		ZoneScoped;
 		std::string filePath = fmt::format(FOLDER "{:s}_{:s}.log", m_serialNumber, m_uid);
 
 #if SIMULATION
@@ -866,6 +899,7 @@ namespace UI
 
 	bool HardwareTestPresenter::writeToLogFile(const std::string& message)
 	{
+		ZoneScoped;
 		if (m_logFile.empty())
 		{
 			LOG_ERROR("Log file not created");
@@ -888,11 +922,13 @@ namespace UI
 													std::function<bool(TestProcedure& test)> finish_cb,
 													std::function<void(TestProcedure& test)> cleanup_cb)
 	{
+		ZoneScoped;
 		m_tests.emplace_back(id, start_cb, finish_cb, cleanup_cb);
 	}
 
 	void HardwareTestPresenter::onInit()
 	{
+		ZoneScoped;
 		getUid();
 		std::srand(static_cast<unsigned int>(std::time(nullptr)));
 		std::filesystem::create_directories(FOLDER);
@@ -1069,6 +1105,7 @@ namespace UI
 
 	void HardwareTestPresenter::onActivate()
 	{
+		ZoneScoped;
 		if (isActive())
 			return;
 
@@ -1079,6 +1116,7 @@ namespace UI
 
 	void HardwareTestPresenter::onDeactivate()
 	{
+		ZoneScoped;
 		Comm::setUsbMode(m_usbMode);
 	}
 } // namespace UI

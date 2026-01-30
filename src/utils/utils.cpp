@@ -21,6 +21,7 @@ namespace utils
 	 */
 	std::string exec(const char* cmd)
 	{
+		ZoneScoped;
 		char buffer[128];
 		std::string result = "";
 		std::string errorText = "";
@@ -45,6 +46,7 @@ namespace utils
 
 	size_t removeCharFromString(std::string& nString, char c)
 	{
+		ZoneScoped;
 		std::string::size_type pos;
 		while (1)
 		{
@@ -63,6 +65,7 @@ namespace utils
 
 	void replaceSubstring(std::string& nString, const std::string& target, const std::string& replacement)
 	{
+		ZoneScoped;
 		size_t position = nString.find(target); // Find the first occurrence of the target substring
 
 		while (position != std::string::npos)
@@ -75,6 +78,7 @@ namespace utils
 
 	std::vector<std::string> splitString(const std::string& str, const std::string& delimiter)
 	{
+		ZoneScoped;
 		std::vector<std::string> tokens;
 		size_t prev = 0, pos = 0;
 		do
@@ -95,6 +99,7 @@ namespace utils
 
 	size_t findInstance(std::string_view str, std::string_view target, size_t instance)
 	{
+		ZoneScoped;
 		size_t pos = 0;
 		size_t count = 0;
 		while (count < instance)

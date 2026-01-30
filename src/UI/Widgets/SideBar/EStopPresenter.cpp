@@ -15,6 +15,7 @@ namespace UI
 {
 	void EStopPresenter::eStop()
 	{
+		ZoneScoped;
 		LOG_WARN("EStop Pressed!");
 		Comm::DUET.SendGcode("M112 M999\n");
 		LOG_WARN("Emergency Stop sent to Duet");

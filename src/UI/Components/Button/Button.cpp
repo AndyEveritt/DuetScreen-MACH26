@@ -8,6 +8,7 @@ namespace UI
 		, m_icon("icon", getRoot())
 		, m_label("label", getRoot())
 	{
+		ZoneScoped;
 		init("");
 	}
 
@@ -16,6 +17,7 @@ namespace UI
 		, m_icon("icon", getRoot())
 		, m_label("label", getRoot())
 	{
+		ZoneScoped;
 		init(text);
 	}
 
@@ -24,11 +26,13 @@ namespace UI
 		, m_icon("icon", getRoot())
 		, m_label("label", getRoot())
 	{
+		ZoneScoped;
 		init(text);
 	}
 
 	void Button::init(std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setUserData(this);
 		m_label.setUserData(this);
@@ -121,6 +125,7 @@ namespace UI
 
 	void Button::setText(std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (text == m_label.getText())
 		{
@@ -132,16 +137,19 @@ namespace UI
 
 	void Button::addClickedCallback(lv_event_cb_t event_cb, void* user_data)
 	{
+		ZoneScoped;
 		addEventCallback(event_cb, LV_EVENT_CLICKED, user_data);
 	}
 
 	void Button::addClickedCallback(std::function<void(lv_event_t*)> event_cb)
 	{
+		ZoneScoped;
 		addEventCallback(std::move(event_cb), LV_EVENT_CLICKED);
 	}
 
 	void Button::setIcon(std::string_view icon)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// If the icon is null, remove the icon and center the label
 		m_icon.setIcon(icon);
@@ -150,6 +158,7 @@ namespace UI
 
 	void Button::setFixedIcon(const std::string& icon_path)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_icon.setFixedIcon(icon_path);
 		updateIconVisibility();
@@ -157,6 +166,7 @@ namespace UI
 
 	void Button::clearIcon()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_icon.clearIcon();
 		updateIconVisibility();
@@ -164,6 +174,7 @@ namespace UI
 
 	void Button::updateIconVisibility()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// Check the icon has loaded correctly
 		bool icon_loaded = m_icon.getSrc() != nullptr;
@@ -176,18 +187,21 @@ namespace UI
 
 	void Button::setCheckable(bool checkable)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlag(LV_OBJ_FLAG_CHECKABLE, checkable);
 	}
 
 	void Button::setChecked(const bool checked)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setState(LV_STATE_CHECKED, checked);
 	}
 
 	bool Button::getChecked() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (hasFlag(LV_OBJ_FLAG_CHECKABLE))
 		{
@@ -198,6 +212,7 @@ namespace UI
 
 	void Button::setDisabled(bool disabled)
 	{
+		ZoneScoped;
 		setState(LV_STATE_DISABLED, disabled);
 	}
 } // namespace UI

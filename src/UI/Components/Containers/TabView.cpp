@@ -13,6 +13,7 @@ namespace UI
 	TabView::TabView(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
+		ZoneScoped;
 		setTabBarPosition(LV_DIR_TOP, false);
 		setStylePad(0);
 		setStylePad(-5, LV_PART_MAIN, Padding::ROW);
@@ -31,6 +32,7 @@ namespace UI
 
 	LvContainer& TabView::addTab(std::string_view tab_name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		// Create new tab container
 		m_tabs.emplace_back(std::make_unique<LvContainer>(fmt::format("tab_{}", m_tabs.size()), m_tabContent));
@@ -83,6 +85,7 @@ namespace UI
 
 	bool TabView::renameTab(size_t index, std::string_view new_name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (TabButton* tab_button = m_tabButtons.getItem(index))
 		{
@@ -96,18 +99,21 @@ namespace UI
 
 	LvContainer& TabView::getActiveTab()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return *m_tabs.at(m_currentTabIndex);
 	}
 
 	TabView::TabButton* TabView::getTabButton(size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return m_tabButtons.getItem(index);
 	}
 
 	LvContainer* TabView::getTab(size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= m_tabs.size())
 		{
@@ -118,6 +124,7 @@ namespace UI
 
 	void TabView::setActiveTab(size_t index)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index == m_currentTabIndex)
 		{
@@ -145,6 +152,7 @@ namespace UI
 
 	void TabView::setTabBarPosition(lv_dir_t dir, bool outer)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (!outer)
 		{
@@ -187,6 +195,7 @@ namespace UI
 
 	bool TabView::disableTab(size_t index, bool disable)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		TabButton* tab_button = m_tabButtons.getItem(index);
 		if (!tab_button)

@@ -15,11 +15,13 @@ namespace UI
 {
 	void SpeedFactorPresenter::newSpeedFactor()
 	{
+		ZoneScoped;
 		m_view->setSpeedValue(std::round(100 * OM::Move::GetSpeedFactor()));
 	}
 
 	void SpeedFactorPresenter::setSpeedFactor(uint32_t value)
 	{
+		ZoneScoped;
 		if (value == static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())))
 		{
 			return;

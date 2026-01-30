@@ -19,6 +19,7 @@ namespace Units
 	 */
 	UnitSystem getCurrentDuetUnitSystem()
 	{
+		ZoneScoped;
 		return OM::Move::GetCurrentDistanceUnit();
 	}
 
@@ -28,6 +29,7 @@ namespace Units
 	 */
 	UnitSystem getCurrentDisplayedUnitSystem()
 	{
+		ZoneScoped;
 		auto id = StorageHelper::getData<int>(ID_UNIT_SYSTEM, static_cast<int>(UnitSystem::Metric));
 		return id > static_cast<int>(UnitSystem::Imperial) ? UnitSystem::Metric : static_cast<UnitSystem>(id);
 	}
@@ -38,6 +40,7 @@ namespace Units
 	 */
 	const std::string& getDisplayedDistanceUnit()
 	{
+		ZoneScoped;
 		switch (getCurrentDisplayedUnitSystem())
 		{
 		case UnitSystem::Metric:
@@ -55,6 +58,7 @@ namespace Units
 	 */
 	const std::string& getDisplayedSpeedUnit()
 	{
+		ZoneScoped;
 		switch (getCurrentDisplayedUnitSystem())
 		{
 		case UnitSystem::Metric:
@@ -73,6 +77,7 @@ namespace Units
 	 */
 	float convertDistanceToCurrentDisplayedUnit(float distance_mm)
 	{
+		ZoneScoped;
 		switch (getCurrentDisplayedUnitSystem())
 		{
 		case UnitSystem::Metric:
@@ -91,6 +96,7 @@ namespace Units
 	 */
 	float convertSpeedToCurrentDisplayedUnit(float speed_mm_s)
 	{
+		ZoneScoped;
 		switch (getCurrentDisplayedUnitSystem())
 		{
 		case UnitSystem::Metric:
@@ -109,6 +115,7 @@ namespace Units
 	 */
 	float convertDisplayedDistanceToDuetUnits(float distance)
 	{
+		ZoneScoped;
 		UnitSystem display_units = getCurrentDisplayedUnitSystem();
 		UnitSystem duet_units = getCurrentDuetUnitSystem();
 
@@ -135,6 +142,7 @@ namespace Units
 	 */
 	float convertDisplayedSpeedToDuetUnits(float speed)
 	{
+		ZoneScoped;
 		UnitSystem display_units = getCurrentDisplayedUnitSystem();
 		UnitSystem duet_units = getCurrentDuetUnitSystem();
 
@@ -161,11 +169,13 @@ namespace Units
 
 	float inchesToMm(float inches)
 	{
+		ZoneScoped;
 		return inches * 25.4f;
 	}
 
 	float mmToInches(float mm)
 	{
+		ZoneScoped;
 		return mm / 25.4f;
 	}
 } // namespace Units

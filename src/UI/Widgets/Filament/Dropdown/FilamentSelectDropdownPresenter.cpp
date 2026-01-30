@@ -15,12 +15,14 @@ namespace UI
 {
 	void FilamentSelectDropdownPresenter::setSelectedToolBySlot(size_t slot)
 	{
+		ZoneScoped;
 		m_tool = OM::GetToolBySlot(slot);
 		getView()->setFilamentSelected(m_tool->GetFilament().c_str());
 	}
 
 	void FilamentSelectDropdownPresenter::setFilament(const std::string& filamentName)
 	{
+		ZoneScoped;
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("No tool selected, cannot set filament");
@@ -31,6 +33,7 @@ namespace UI
 
 	void FilamentSelectDropdownPresenter::unloadFilament()
 	{
+		ZoneScoped;
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("No tool selected, cannot unload filament");
@@ -42,6 +45,7 @@ namespace UI
 
 	void FilamentSelectDropdownPresenter::clear()
 	{
+		ZoneScoped;
 		m_tool.reset();
 		m_filamentOptions.clear();
 		updateFilamentList();
@@ -49,6 +53,7 @@ namespace UI
 
 	void FilamentSelectDropdownPresenter::newToolData()
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 
 		if (m_tool)
@@ -59,6 +64,7 @@ namespace UI
 
 	void FilamentSelectDropdownPresenter::newFilaments(const std::vector<std::string>& filaments)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		m_filamentOptions = filaments;
 		updateFilamentList();
@@ -66,11 +72,13 @@ namespace UI
 
 	void FilamentSelectDropdownPresenter::updateFilamentList()
 	{
+		ZoneScoped;
 		getView()->setFilamentOptions(m_filamentOptions);
 	}
 
 	void FilamentSelectDropdownPresenter::onActivate()
 	{
+		ZoneScoped;
 		m_filamentOptions = OM::FileSystem::GetFilamentList();
 		updateFilamentList();
 		if (m_tool)

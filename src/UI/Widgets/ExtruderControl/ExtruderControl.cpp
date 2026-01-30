@@ -21,6 +21,7 @@ namespace UI
 	ExtruderControl::ExtruderControl(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
@@ -65,12 +66,14 @@ namespace UI
 
 	void ExtruderControl::clear()
 	{
+		ZoneScoped;
 		m_retractBtn.setState(LV_STATE_DISABLED, true);
 		m_extrudeBtn.setState(LV_STATE_DISABLED, true);
 	}
 
 	void ExtruderControl::setExtrudeDisabled(bool disabled)
 	{
+		ZoneScoped;
 		if (disabled == m_extrudeBtn.hasState(LV_STATE_DISABLED))
 		{
 			return;
@@ -81,6 +84,7 @@ namespace UI
 
 	void ExtruderControl::setRetractDisabled(bool disabled)
 	{
+		ZoneScoped;
 		if (disabled == m_retractBtn.hasState(LV_STATE_DISABLED))
 		{
 			return;
@@ -91,16 +95,19 @@ namespace UI
 
 	float ExtruderControl::getDistanceValue() const
 	{
+		ZoneScoped;
 		return m_distanceSelector.getValue();
 	}
 
 	float ExtruderControl::getFeedrateValue() const
 	{
+		ZoneScoped;
 		return m_feedrateSelector.getValue();
 	}
 
 	void ExtruderControl::setNumberPad(ModalNumberPad* np)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_numberPad = np;
 		m_distanceSelector.setNumberPad(np);
@@ -109,6 +116,7 @@ namespace UI
 
 	void ExtruderControl::onRetractEvent(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
 		float dist = -control->getDistanceValue();
@@ -120,6 +128,7 @@ namespace UI
 
 	void ExtruderControl::onExtrudeEvent(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = static_cast<ExtruderControl*>(lv_event_get_user_data(event));
 		float dist = control->getDistanceValue();

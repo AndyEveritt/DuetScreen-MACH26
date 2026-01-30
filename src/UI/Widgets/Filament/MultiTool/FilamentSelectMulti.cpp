@@ -20,6 +20,7 @@ namespace UI
 			, m_filament("filament", getRoot())
 			, m_widget(widget)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 			setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -33,10 +34,15 @@ namespace UI
 			m_filament.addClickedCallback(onToolSelectEvent, this);
 		}
 
-		void setToolName(std::string_view name) { m_toolName.setText(name); }
+		void setToolName(std::string_view name)
+		{
+			ZoneScoped;
+			m_toolName.setText(name);
+		}
 
 		void setFilamentName(std::string_view filament)
 		{
+			ZoneScoped;
 			UI_LOCK();
 			m_filament.setText(filament);
 		}
@@ -44,6 +50,7 @@ namespace UI
 	  private:
 		static void onToolSelectEvent(lv_event_t* e)
 		{
+			ZoneScoped;
 			auto& control = *static_cast<ToolItem*>(lv_event_get_user_data(e));
 
 			auto presenter = control.m_widget.getPresenter();
@@ -65,6 +72,7 @@ namespace UI
 		, m_filamentOptions("filament_options", m_confirmation.getBody())
 		, m_unload("unload", m_confirmation.getFooter(), _("filament.unload"))
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
@@ -120,12 +128,14 @@ namespace UI
 
 	void FilamentSelectMulti::setToolCount(size_t count)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_toolList.setItemCount(count, *this);
 	}
 
 	void FilamentSelectMulti::setToolData(size_t index, std::string_view toolName, std::string_view filamentName)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= m_toolList.getItemCount())
 		{
@@ -147,6 +157,7 @@ namespace UI
 
 	void FilamentSelectMulti::setFilamentOptions(const std::vector<std::string>& options)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("Setting filament options for {}", getName());
 		m_filamentOptions.clear();
@@ -165,11 +176,13 @@ namespace UI
 
 	void FilamentSelectMulti::showToolSelect(bool show)
 	{
+		ZoneScoped;
 		m_toolList.setVisible(show);
 	}
 
 	void FilamentSelectMulti::showSelection(std::string_view toolName, std::string_view filamentName)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_confirmation.setTitle(_("filament.select_tool", toolName));
 		for (size_t i = 0; i < m_filamentOptions.getItemCount(); i++)
@@ -190,6 +203,7 @@ namespace UI
 
 	void FilamentSelectMulti::setSelectedFilament(std::string_view filamentName)
 	{
+		ZoneScoped;
 		LOG_DBG("Setting selected filament to {}", filamentName);
 		UI_LOCK();
 		if (m_confirmation.isVisible())
@@ -216,6 +230,7 @@ namespace UI
 
 	void FilamentSelectMulti::onFilamentOptionClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		auto& control = *static_cast<FilamentSelectMulti*>(lv_event_get_user_data(e));
 		LvObj* obj = LvObj::fromPtr(lv_event_get_target_obj(e));
 		size_t index = reinterpret_cast<size_t>(obj->getUserData());

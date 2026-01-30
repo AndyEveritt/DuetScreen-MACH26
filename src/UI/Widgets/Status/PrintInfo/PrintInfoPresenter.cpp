@@ -19,6 +19,7 @@ namespace UI
 {
 	void PrintInfoPresenter::onInit()
 	{
+		ZoneScoped;
 		registerEventListener<EventType::JobDuration>(this, &PrintInfoPresenter::newJobDuration);
 		registerEventListener<EventType::JobTimeLeft>(this, &PrintInfoPresenter::newJobTimeLeft);
 		registerEventListener<EventType::CurrentMoveRequestedSpeed>(this,
@@ -33,6 +34,7 @@ namespace UI
 
 	void PrintInfoPresenter::onActivate()
 	{
+		ZoneScoped;
 		newAxesData();
 		newExtruderData();
 		newSpeedFactor();
@@ -45,6 +47,7 @@ namespace UI
 
 	void PrintInfoPresenter::newAxesData()
 	{
+		ZoneScoped;
 		{
 			MODEL_LOCK();
 			int32_t max_speed = 1;
@@ -76,6 +79,7 @@ namespace UI
 
 	void PrintInfoPresenter::newExtruderData()
 	{
+		ZoneScoped;
 		auto tool = OM::GetCurrentTool();
 		if (tool == nullptr)
 		{
@@ -106,17 +110,20 @@ namespace UI
 
 	void PrintInfoPresenter::newSpeedFactor()
 	{
+		ZoneScoped;
 		m_view->updateSpeedMultiplier(static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())));
 	}
 
 	void PrintInfoPresenter::newJobDuration()
 	{
+		ZoneScoped;
 		uint32_t elapsed = OM::GetPrintDuration();
 		m_view->updateElapsedTime(elapsed);
 	}
 
 	void PrintInfoPresenter::newJobTimeLeft()
 	{
+		ZoneScoped;
 		uint32_t timeRemaining = OM::GetPrintRemaining(OM::RemainingTimeType::AUTO);
 
 		m_view->updateRemainingTime(timeRemaining);
@@ -124,16 +131,19 @@ namespace UI
 
 	void PrintInfoPresenter::newCurrentMoveRequestedSpeed()
 	{
+		ZoneScoped;
 		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
 	}
 
 	void PrintInfoPresenter::newCurrentMoveTopSpeed()
 	{
+		ZoneScoped;
 		m_view->updateSpeed(OM::Move::GetCurrentMoveTopSpeed(), OM::Move::GetCurrentMoveRequestedSpeed());
 	}
 
 	void PrintInfoPresenter::newCurrentMoveExtrusionSpeed()
 	{
+		ZoneScoped;
 		m_view->updateExtrusionRate(OM::Move::GetExtrusionRate(), OM::Move::GetVolumetricFlow());
 	}
 } // namespace UI

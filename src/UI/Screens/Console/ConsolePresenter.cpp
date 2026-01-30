@@ -8,11 +8,13 @@ namespace UI
 {
 	bool ConsolePresenter::back()
 	{
+		ZoneScoped;
 		return false;
 	}
 
 	void ConsolePresenter::newResponse(ResponseType /* type */, const std::string& resp)
 	{
+		ZoneScoped;
 		m_view->addResponse(resp);
 	}
 
@@ -20,11 +22,13 @@ namespace UI
 										 const Log::log_time_t& /* time */,
 										 const std::string& message)
 	{
+		ZoneScoped;
 		m_view->addResponse(message);
 	}
 
 	void ConsolePresenter::sendCommand(std::string_view cmd)
 	{
+		ZoneScoped;
 		m_view->addCommand(cmd);
 #if ENABLE_CONSOLE_SHELL
 		if (m_shellEnabled)

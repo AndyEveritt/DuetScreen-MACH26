@@ -17,22 +17,26 @@ namespace UI
 #if SIDE_BAR_BACK_BUTTON
 	void SideBarPresenter::enableBackButton(bool enable)
 	{
+		ZoneScoped;
 		m_view->enableBackButton(enable);
 	}
 #endif
 
 	void SideBarPresenter::enableHomeButton(bool enable)
 	{
+		ZoneScoped;
 		m_view->enableHomeButton(enable);
 	}
 
 	void SideBarPresenter::newResponse(const ResponseType type, const std::string& /* message */)
 	{
+		ZoneScoped;
 		m_view->animateResponse(type);
 	}
 
 	void SideBarPresenter::onInit()
 	{
+		ZoneScoped;
 #if SIDE_BAR_BACK_BUTTON
 		registerEventListener<EventType::NavigationBackEnable>(this, &SideBarPresenter::enableBackButton);
 #endif

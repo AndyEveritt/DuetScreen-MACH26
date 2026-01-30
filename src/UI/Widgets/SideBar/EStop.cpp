@@ -15,6 +15,7 @@ namespace UI
 	EStop::EStop(const std::string& name, LvObj& parent)
 		: View(name, parent, _("estop.label"))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		setIcon("estop.png");
@@ -52,6 +53,7 @@ namespace UI
 
 	void EStop::eStopDraggedEvent(float pct, void* user_data)
 	{
+		ZoneScoped;
 		LOG_INFO("E-Stop button dragged");
 		EStop* estop = static_cast<EStop*>(user_data);
 		if (pct < 0.5f)

@@ -22,6 +22,7 @@ namespace UI
 		, m_fans("fans", m_sliderCont)
 		, m_numberPad("numberpad", numberpad_parent ? *numberpad_parent : parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
@@ -67,6 +68,7 @@ namespace UI
 
 	void FineTune::setSpeedValue(uint32_t value)
 	{
+		ZoneScoped;
 		m_speed.setValue(static_cast<float>(value));
 	}
 
@@ -76,6 +78,7 @@ namespace UI
 	 */
 	void FineTune::setExtruderCount(size_t count)
 	{
+		ZoneScoped;
 		m_extruders.setItemCount(count,
 								 [this](size_t index, LvObj& parent)
 								 {
@@ -105,6 +108,7 @@ namespace UI
 
 	void FineTune::setFanCount(size_t count)
 	{
+		ZoneScoped;
 		m_fans.setItemCount(count,
 							[this](size_t index, LvObj& parent)
 							{
@@ -134,6 +138,7 @@ namespace UI
 
 	void FineTune::setExtruderLabel(size_t index, std::string_view label)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (auto extruder = m_extruders.getItem(index))
 		{
@@ -146,6 +151,7 @@ namespace UI
 
 	void FineTune::setExtruderValue(size_t index, uint32_t value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (auto extruder = m_extruders.getItem(index))
 		{
@@ -159,6 +165,7 @@ namespace UI
 
 	void FineTune::setFanLabel(size_t index, std::string_view label)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (auto fan = m_fans.getItem(index))
 		{
@@ -171,6 +178,7 @@ namespace UI
 
 	void FineTune::setFanValue(size_t index, uint32_t value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (auto fan = m_fans.getItem(index))
 		{
@@ -183,11 +191,13 @@ namespace UI
 
 	void FineTune::showNumberPad()
 	{
+		ZoneScoped;
 		openModal(&m_numberPad);
 	}
 
 	void FineTune::configureNumberPad(Slider* slider)
 	{
+		ZoneScoped;
 		m_numberPad.setHeader(slider->getLabelText());
 		m_numberPad.setValue(slider->getValue());
 		m_numberPad.setMinValue(slider->getMin());

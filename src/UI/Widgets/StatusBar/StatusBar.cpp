@@ -8,6 +8,7 @@ namespace UI
 	StatusBar::StatusBar(LvObj& parent)
 		: View("status_bar", parent)
 	{
+		ZoneScoped;
 		activate();
 
 		UI_LOCK();
@@ -23,18 +24,21 @@ namespace UI
 
 	void StatusBar::setDuetName(std::string_view name)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_duetName.setText(name);
 	}
 
 	void StatusBar::setDuetStatus(std::string_view status)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_duetStatus.setText(status);
 	}
 
 	void StatusBar::setTime(std::string_view time)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_time.setText(time);
 	}

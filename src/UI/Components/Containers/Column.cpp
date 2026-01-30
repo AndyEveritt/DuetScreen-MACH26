@@ -13,6 +13,7 @@ namespace UI
 	Column::Column(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
+		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 	}
 } // namespace UI

@@ -14,6 +14,7 @@ namespace UI
 	Screen::Screen(const std::string& name)
 		: LvObj(lv_obj_create, name)
 	{
+		ZoneScoped;
 		LOG_INFO("Creating Screen: {}", name);
 		setSize(LV_PCT(100), LV_PCT(100));
 

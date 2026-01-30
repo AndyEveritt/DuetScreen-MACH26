@@ -16,26 +16,31 @@ namespace UI
 {
 	void StatusPresenter::pausePrint()
 	{
+		ZoneScoped;
 		OM::FileSystem::PausePrint(); // Pause print
 	}
 
 	void StatusPresenter::resumePrint()
 	{
+		ZoneScoped;
 		OM::FileSystem::ResumePrint(); // Resume print
 	}
 
 	void StatusPresenter::printAgain()
 	{
+		ZoneScoped;
 		OM::FileSystem::PrintAgain(); // Print again
 	}
 
 	void StatusPresenter::cancelPrint()
 	{
+		ZoneScoped;
 		OM::FileSystem::StopPrint(); // Stop print and turn off heaters
 	}
 
 	void StatusPresenter::onActivate()
 	{
+		ZoneScoped;
 		newJobFileName(OM::GetJobName());
 		newJobLastFileName(OM::GetLastJobName());
 		newJobDuration();
@@ -58,12 +63,14 @@ namespace UI
 
 	void StatusPresenter::newJobFileName(const std::string& filename)
 	{
+		ZoneScoped;
 		m_view->setFilename(filename);
 		setOrRequestThumbnail(filename);
 	}
 
 	void StatusPresenter::newThumbnailData(const std::string& filename)
 	{
+		ZoneScoped;
 		if (!filename.empty() && filename != OM::GetJobName() && filename != OM::GetLastJobName())
 		{
 			// Thumbnail is not for the current job
@@ -75,6 +82,7 @@ namespace UI
 
 	void StatusPresenter::newJobLastFileName(const std::string& filename)
 	{
+		ZoneScoped;
 		m_view->setPrintAgain(filename.empty() ? StatusView::HIDDEN : StatusView::ENABLED);
 		if (filename.empty())
 		{
@@ -86,6 +94,7 @@ namespace UI
 
 	void StatusPresenter::newJobDuration()
 	{
+		ZoneScoped;
 		uint32_t progress = 0;
 		{
 			MODEL_LOCK();
@@ -105,6 +114,7 @@ namespace UI
 
 	void StatusPresenter::newStatus(OM::PrinterStatus status)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		switch (status)
 		{
@@ -144,6 +154,7 @@ namespace UI
 
 	void StatusPresenter::setOrRequestThumbnail(const std::string& filename)
 	{
+		ZoneScoped;
 		if (filename.empty())
 		{
 			return;

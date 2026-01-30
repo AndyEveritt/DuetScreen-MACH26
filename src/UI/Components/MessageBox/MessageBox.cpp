@@ -20,12 +20,14 @@ namespace UI
 	MessageBox::MessageBox(const std::string& name, LvObj& parent, layout_t layout)
 		: LvContainer(name, parent, layout)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		init();
 	}
 
 	MessageBox::~MessageBox()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (!lv_is_initialized())
 		{
@@ -43,11 +45,13 @@ namespace UI
 
 	void MessageBox::onHide()
 	{
+		ZoneScoped;
 		close();
 	}
 
 	void MessageBox::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().card);
@@ -122,6 +126,7 @@ namespace UI
 
 	void MessageBox::ok()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto self = getPtr(); // Keep shared ptr to self to prevent deletion during callback
 		if (m_okCb)
@@ -134,6 +139,7 @@ namespace UI
 
 	void MessageBox::cancel()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto self = getPtr(); // Keep shared ptr to self to prevent deletion during callback
 		if (m_cancelCb)
@@ -146,6 +152,7 @@ namespace UI
 
 	void MessageBox::close()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (getRootPtr()) // This stops an infrequent segfault when HomePresenter destroys the response message boxes
 		{
@@ -160,12 +167,14 @@ namespace UI
 
 	void MessageBox::setTitle(std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_title.setText(text);
 	}
 
 	void MessageBox::setText(std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_text.setText(text);
 		m_text.setVisible(!text.empty());
@@ -173,6 +182,7 @@ namespace UI
 
 	void MessageBox::setImage(const char* imagePath)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_image.setSrc(imagePath);
 		if (m_autoSizeImage)
@@ -184,6 +194,7 @@ namespace UI
 
 	void MessageBox::setImageSize(int32_t width, int32_t height)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		autoSizeImage(false);
 		m_image.setSize(width, height);
@@ -191,18 +202,21 @@ namespace UI
 
 	void MessageBox::setOkBtnText(std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_okBtn.setText(text);
 	}
 
 	void MessageBox::setCancelBtnText(std::string_view text)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_cancelBtn.setText(text);
 	}
 
 	void MessageBox::clear()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setTitle("");
 		setText("");
@@ -222,6 +236,7 @@ namespace UI
 
 	void MessageBox::okVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_okBtn.setVisible(visible);
 		updateVisibility();
@@ -229,6 +244,7 @@ namespace UI
 
 	void MessageBox::cancelVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_cancelBtn.setVisible(visible);
 		updateVisibility();
@@ -236,6 +252,7 @@ namespace UI
 
 	void MessageBox::imageVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_image.setVisible(visible);
 		m_bodyTextCont.setStyleTextAlign(visible ? LV_TEXT_ALIGN_LEFT : LV_TEXT_ALIGN_CENTER, 0);
@@ -244,12 +261,14 @@ namespace UI
 
 	void MessageBox::progressVisible(bool visible)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_progress.setVisible(visible);
 	}
 
 	void MessageBox::updateVisibility()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		bool visible = false;
 		m_body.iterateChildrenWhile(
@@ -280,12 +299,14 @@ namespace UI
 
 	void MessageBox::setProgress(int percent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_progress.setValue(percent, LV_ANIM_ON);
 	}
 
 	void MessageBox::cancelTimeout()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_timers.timeout)
 		{
@@ -297,6 +318,7 @@ namespace UI
 
 	void MessageBox::setTimeout(uint32_t timeout)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_type == ResponseType::ERROR &&
 			!StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR))
@@ -332,6 +354,7 @@ namespace UI
 
 	uint32_t MessageBox::getTimeRemaining() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_timers.timeout)
 		{
@@ -346,6 +369,7 @@ namespace UI
 
 	uint32_t MessageBox::getTimeOutPercentage() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_timeout == 0)
 		{
@@ -357,6 +381,7 @@ namespace UI
 
 	void MessageBox::setType(ResponseType type)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_type = type;
 
@@ -386,6 +411,7 @@ namespace UI
 
 	void MessageBox::onOkEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		MessageBox* msgBox = static_cast<MessageBox*>(lv_event_get_user_data(e));
 		msgBox->ok();
@@ -393,6 +419,7 @@ namespace UI
 
 	void MessageBox::onCancelEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		MessageBox* msgBox = static_cast<MessageBox*>(lv_event_get_user_data(e));
 		msgBox->cancel();
@@ -400,6 +427,7 @@ namespace UI
 
 	void MessageBox::onProgressTimer(lv_timer_t* timer)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		MessageBox* msgBox = static_cast<MessageBox*>(lv_timer_get_user_data(timer));
 		if (msgBox->m_progressCb)

@@ -12,6 +12,7 @@ namespace UI
 {
 	void TemperaturePresenter::newToolData()
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto& tools = m_view->getTools();
 		std::vector<size_t> toolIndices;
@@ -50,6 +51,7 @@ namespace UI
 
 	void TemperaturePresenter::newBedHeaterData()
 	{
+		ZoneScoped;
 		auto& beds = m_view->getBeds();
 		beds.clear();
 		beds.setItemCount(OM::GetBedCount(),
@@ -66,6 +68,7 @@ namespace UI
 
 	void TemperaturePresenter::newChamberHeaterData()
 	{
+		ZoneScoped;
 		auto& chambers = m_view->getChambers();
 		chambers.clear();
 		chambers.setItemCount(OM::GetChamberCount(),
@@ -82,6 +85,7 @@ namespace UI
 
 	void TemperaturePresenter::onDisconnect()
 	{
+		ZoneScoped;
 		m_view->getTools().clear();
 		m_view->getBeds().clear();
 		m_view->getChambers().clear();
@@ -89,6 +93,7 @@ namespace UI
 
 	void TemperaturePresenter::onActivate()
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 
 		newToolData();

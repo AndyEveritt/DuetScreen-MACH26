@@ -14,6 +14,7 @@ namespace UI
 	Icon::Icon(const std::string& name, LvObj& parent)
 		: LvImage(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().icon);
@@ -34,6 +35,7 @@ namespace UI
 
 	void Icon::setIcon(std::string_view icon)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_iconName = icon;
 		refreshIcon(m_iconName);
@@ -41,6 +43,7 @@ namespace UI
 
 	void Icon::setFixedIcon(const std::string& icon_path)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_iconName.clear();
 		setSrc(icon_path.empty() ? nullptr : icon_path.c_str());
@@ -48,6 +51,7 @@ namespace UI
 
 	void Icon::clearIcon()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_iconName.clear();
 		setSrc(nullptr);
@@ -55,12 +59,14 @@ namespace UI
 
 	void Icon::refreshIcon(std::string_view icon)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setSrc(icon.empty() ? nullptr : Themes::getIconPath(icon).c_str());
 	}
 
 	void Icon::enableRecolor(bool enable)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (enable)
 		{

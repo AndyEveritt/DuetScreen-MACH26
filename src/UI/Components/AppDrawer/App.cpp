@@ -16,6 +16,7 @@ namespace UI
 		: ListItem(index, parent)
 		, m_button("app_button", getRoot())
 	{
+		ZoneScoped;
 		addStyle(Themes::getLvglStyles().pad_zero);
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
@@ -26,6 +27,7 @@ namespace UI
 
 	void App::appClickedEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto* app = static_cast<App*>(lv_event_get_user_data(e));
 		if (app == nullptr)

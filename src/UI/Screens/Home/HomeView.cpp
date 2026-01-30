@@ -17,6 +17,7 @@ namespace UI
 	HomeView::HomeView()
 		: View("HomeView")
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_INFO("Creating UI");
 
@@ -97,6 +98,7 @@ namespace UI
 
 	HomeView::~HomeView()
 	{
+		ZoneScoped;
 		removeHomeScreen(this, false);
 	}
 
@@ -115,21 +117,30 @@ namespace UI
 
 	void HomeView::setInstance(HomeView* instance)
 	{
+		ZoneScoped;
 		s_overrideInstance = instance;
 	}
 
 	void HomeView::clear()
 	{
+		ZoneScoped;
 		m_dashboard.clear();
 		clearMessageBoxes();
 	}
 
-	void HomeView::onShow() {}
+	void HomeView::onShow()
+	{
+		ZoneScoped;
+	}
 
-	void HomeView::onHide() {}
+	void HomeView::onHide()
+	{
+		ZoneScoped;
+	}
 
 	std::shared_ptr<MessageBox>& HomeView::createMessageBox()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_messageBoxList.emplace_back(
 			std::make_shared<MessageBox>("home_message_box", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)));
@@ -143,6 +154,7 @@ namespace UI
 
 	std::shared_ptr<MessageBox> HomeView::getMessageBox(size_t index) const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= getMessageBoxCount())
 		{
@@ -155,6 +167,7 @@ namespace UI
 
 	void HomeView::popMessageBox()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (!m_messageBoxList.empty())
 		{
@@ -164,6 +177,7 @@ namespace UI
 
 	void HomeView::showKeyboard(bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_alert.setAlign(LV_ALIGN_TOP_MID, 0, show ? 5 : 0);
 		m_alert.setMaxHeight(show ? LV_PCT(45) : LV_PCT(70));
@@ -172,6 +186,7 @@ namespace UI
 
 	void HomeView::showUpdatePrompt(bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_updatePrompt.setVisible(show);
 	}

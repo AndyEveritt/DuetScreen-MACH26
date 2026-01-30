@@ -19,6 +19,7 @@ namespace UI
 		, m_toolPosition("tool_position", getRoot())
 		, m_machinePosition("machine_position", getRoot())
 	{
+		ZoneScoped;
 		// Layout
 		UI_LOCK();
 		constexpr lv_coord_t pad = 2;
@@ -56,6 +57,7 @@ namespace UI
 
 	void AxisItem::setAxisLetter(const char* letter)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_axisLetter = letter;
 		m_home.setText(_("move.axis_home", letter));
@@ -63,6 +65,7 @@ namespace UI
 
 	void AxisItem::setJogAmounts(const float* distances, const size_t count)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_relMove.clear();
 
@@ -93,30 +96,35 @@ namespace UI
 
 	void AxisItem::setJogAmounts(const std::vector<float>& distances)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setJogAmounts(distances.data(), distances.size());
 	}
 
 	void AxisItem::setHomed(const bool homed)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_home.setChecked(!homed);
 	}
 
 	void AxisItem::setToolPosition(const float& position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_toolPosition.setText(fmt::format("{:.2f}", position));
 	}
 
 	void AxisItem::setMachinePosition(const float& position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_machinePosition.setText(fmt::format("({:.2f})", position));
 	}
 
 	void AxisItem::disableHome(const bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_home.setDisabled(disabled);
 		m_home.setText(disabled ? m_axisLetter : _("move.axis_home", m_axisLetter));
@@ -124,6 +132,7 @@ namespace UI
 
 	void AxisItem::setJogCallback(jog_cb_t cb, void* user_data)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_jogCallback = cb;
 		m_jogUserData = user_data;
@@ -131,6 +140,7 @@ namespace UI
 
 	void AxisItem::setHomeCallback(home_cb_t cb, void* user_data)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeCallback = cb;
 		m_homeUserData = user_data;
@@ -138,6 +148,7 @@ namespace UI
 
 	void AxisItem::onHomeEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
 		if (item == nullptr)
@@ -153,6 +164,7 @@ namespace UI
 
 	void AxisItem::onRelMoveEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		AxisItem* item = static_cast<AxisItem*>(lv_event_get_user_data(e));
 		LvObj* btn = LvObj::fromPtr(lv_event_get_target_obj(e));
@@ -171,6 +183,7 @@ namespace UI
 		, m_toolPositionLabel("tool_position_label", m_axisItems.getHeader())
 		, m_machinePositionLabel("machine_position_label", m_axisItems.getHeader())
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);

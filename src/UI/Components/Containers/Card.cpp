@@ -14,18 +14,20 @@ namespace UI
 	Card::Card(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
-
+		ZoneScoped;
 		init();
 	}
 
 	Card::Card(const std::string& name, LvObj& parent, layout_t layout)
 		: LvContainer(name, parent, layout)
 	{
+		ZoneScoped;
 		init();
 	}
 
 	void Card::init()
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().card);

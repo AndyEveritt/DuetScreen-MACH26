@@ -19,6 +19,7 @@ namespace UI
 		, m_homeButton("home", getRoot())
 		, m_decrementButton("decrement", getRoot())
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().pad_large);
@@ -61,6 +62,7 @@ namespace UI
 
 	void GenericAxisControl::setAxisLetter(const char letter)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_axisLetter = letter;
 
@@ -70,6 +72,7 @@ namespace UI
 
 	void GenericAxisControl::setAxisPosition(float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_axisPosition = value;
 		updateLabel();
@@ -77,6 +80,7 @@ namespace UI
 
 	void GenericAxisControl::setDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setJogDisabled(disabled);
 		setHomeDisabled(disabled);
@@ -84,6 +88,7 @@ namespace UI
 
 	void GenericAxisControl::setJogDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_label.setState(LV_STATE_DISABLED, disabled);
 		m_incrementButton.setDisabled(disabled);
@@ -92,30 +97,35 @@ namespace UI
 
 	void GenericAxisControl::setHomeDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeButton.setDisabled(disabled);
 	}
 
 	void GenericAxisControl::setJogCallback(jog_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_positionCallback = std::move(cb);
 	}
 
 	void GenericAxisControl::setHomeCallback(home_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeCallback = std::move(cb);
 	}
 
 	void GenericAxisControl::setLabelCallback(label_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_labelCallback = std::move(cb);
 	}
 
 	void GenericAxisControl::onJogBtn(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto* control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
 
@@ -129,6 +139,7 @@ namespace UI
 
 	void GenericAxisControl::onHomeBtn(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto* control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
 		if (control && control->m_homeCallback && control->m_axisLetter != '\0')
@@ -139,6 +150,7 @@ namespace UI
 
 	void GenericAxisControl::onLabelClick(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		auto control = static_cast<GenericAxisControl*>(lv_event_get_user_data(event));
 		if (control && control->m_labelCallback && control->m_axisLetter != '\0')
@@ -149,6 +161,7 @@ namespace UI
 
 	void GenericAxisControl::updateLabel()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		std::string labelText = fmt::format("{}: {:g}", m_axisLetter, m_axisPosition);
 		m_label.setText(labelText);

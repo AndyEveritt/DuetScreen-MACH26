@@ -16,6 +16,7 @@ namespace UI
 	SpeedFactor::SpeedFactor(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		m_speed.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -59,12 +60,14 @@ namespace UI
 
 	void SpeedFactor::setSpeedValue(float value)
 	{
+		ZoneScoped;
 		m_speed.setValue(value);
 	}
 
 	ModalSpeedFactor::ModalSpeedFactor(const std::string& name, LvObj& parent)
 		: Modal(name, parent)
 	{
+		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
@@ -89,6 +92,7 @@ namespace UI
 
 	void ModalSpeedFactor::onShow()
 	{
+		ZoneScoped;
 		Modal::onShow();
 
 		auto& slider = m_speedFactor.getSlider();

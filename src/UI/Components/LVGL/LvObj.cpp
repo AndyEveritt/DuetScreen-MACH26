@@ -57,7 +57,7 @@ namespace UI
 		}
 #endif
 
-		LOG_VERBOSE("Creating view '{:s}' ({:p})", getName(), static_cast<const void*>(m_root));
+		LOG_DBG("Creating LvObj '{:s}' ({:p})", getName(), static_cast<const void*>(m_root));
 		lv_obj_null_on_delete(&m_root);
 	}
 

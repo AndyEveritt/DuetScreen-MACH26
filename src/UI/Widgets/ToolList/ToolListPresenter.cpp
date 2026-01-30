@@ -18,6 +18,7 @@ namespace UI
 {
 	void ToolListPresenter::update()
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		size_t added_items = 0;
 
@@ -155,6 +156,7 @@ namespace UI
 
 	void ToolListPresenter::onActivate()
 	{
+		ZoneScoped;
 		update();
 	}
 
@@ -162,11 +164,13 @@ namespace UI
 
 	size_t ToolListToolPresenter::getSlotIndex() const
 	{
+		ZoneScoped;
 		return getView()->getIndex();
 	}
 
 	void ToolListPresenter::configureNumberPad(const ToolListPresenter::NumberPadConfig& config)
 	{
+		ZoneScoped;
 		auto& np = getView()->getNumberPad();
 		np.setHeader(config.header);
 		np.setMinValue(config.min);
@@ -176,6 +180,7 @@ namespace UI
 
 	void ToolListToolPresenter::update()
 	{
+		ZoneScoped;
 		size_t slot = getSlotIndex();
 		LOG_VERBOSE("Tool index {:d}", slot);
 
@@ -262,6 +267,7 @@ namespace UI
 
 	void ToolListToolPresenter::toggleState()
 	{
+		ZoneScoped;
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("Tool is null");
@@ -272,6 +278,7 @@ namespace UI
 
 	void ToolListToolPresenter::onActivate()
 	{
+		ZoneScoped;
 		update();
 	}
 } // namespace UI

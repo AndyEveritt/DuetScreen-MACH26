@@ -13,6 +13,7 @@ namespace UI
 	StatusView::StatusView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().pad_zero);
@@ -89,12 +90,14 @@ namespace UI
 
 	bool StatusView::back()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		return m_printInfo.back();
 	}
 
 	void StatusView::onPauseClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		view->m_presenter->pausePrint();
@@ -102,6 +105,7 @@ namespace UI
 
 	void StatusView::onResumeClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		view->m_presenter->resumePrint();
@@ -109,6 +113,7 @@ namespace UI
 
 	void StatusView::onPrintAgainClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		view->m_presenter->printAgain();
@@ -116,6 +121,7 @@ namespace UI
 
 	void StatusView::onCancelClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		StatusView* view = static_cast<StatusView*>(lv_event_get_user_data(e));
 		openModal(&view->m_confirmCancel);
@@ -123,6 +129,7 @@ namespace UI
 
 	void StatusView::onInit()
 	{
+		ZoneScoped;
 		m_confirmCancel.setParent(HomeView::instance().getMainWindow());
 	}
 
@@ -132,6 +139,7 @@ namespace UI
 
 	void StatusView::setFilename(std::string_view filename)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("'{:s}'", filename);
 		m_filename.setText(filename);
@@ -139,6 +147,7 @@ namespace UI
 
 	void StatusView::updateProgress(uint32_t percent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("{:d}", percent);
 		m_progress.setValue(percent);
@@ -146,6 +155,7 @@ namespace UI
 
 	void StatusView::setThumbnail(const char* img)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("'{:s}'", img ? img : "null");
 		m_thumbnail.setSrc(img);
@@ -155,6 +165,7 @@ namespace UI
 
 	void StatusView::setPause(ControlVisibility visibility)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		m_pauseBtn.setDisabled(visibility != ENABLED);
@@ -170,6 +181,7 @@ namespace UI
 
 	void StatusView::setResume(ControlVisibility visibility)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		m_resumeBtn.setDisabled(visibility != ENABLED);
@@ -185,6 +197,7 @@ namespace UI
 
 	void StatusView::setPrintAgain(ControlVisibility visibility)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		m_printAgainBtn.setDisabled(visibility != ENABLED);
@@ -200,6 +213,7 @@ namespace UI
 
 	void StatusView::setCancel(ControlVisibility visibility)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		m_cancelBtn.setDisabled(visibility != ENABLED);
@@ -215,6 +229,7 @@ namespace UI
 
 	void StatusView::setNumberPad(ModalNumberPad* np)
 	{
+		ZoneScoped;
 		m_printInfo.setNumberPad(np);
 	}
 } // namespace UI

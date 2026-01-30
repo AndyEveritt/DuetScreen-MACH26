@@ -16,12 +16,14 @@ namespace UI
 
 	static float getSelectedDistance()
 	{
+		ZoneScoped;
 		s_currentDistanceIndex = std::min(s_currentDistanceIndex, s_distances.size() - 1);
 		return s_distances[s_currentDistanceIndex];
 	}
 
 	static uint32_t getSelectedFeedrate()
 	{
+		ZoneScoped;
 		s_currentFeedrateIndex = std::min(s_currentFeedrateIndex, s_feedRates.size() - 1);
 		return s_feedRates[s_currentFeedrateIndex];
 	}
@@ -29,6 +31,7 @@ namespace UI
 	MoveView::MoveView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
@@ -296,6 +299,7 @@ namespace UI
 
 	void MoveView::onHomeAllEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter->homeAll();
@@ -303,6 +307,7 @@ namespace UI
 
 	void MoveView::onDisableMotorsEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		MoveView* view = static_cast<MoveView*>(lv_event_get_user_data(e));
 		view->m_presenter->disableMotors();
@@ -310,6 +315,7 @@ namespace UI
 
 	void MoveView::setDisabled(bool disabled)
 	{
+		ZoneScoped;
 		m_axisControlCont.setState(LV_STATE_DISABLED, disabled, true);
 
 		// m_xyControl.setHomeAllDisabled(true);
@@ -324,11 +330,13 @@ namespace UI
 
 	void MoveView::clear()
 	{
+		ZoneScoped;
 		m_genericAxisControls.clear();
 	}
 
 	void MoveView::setAxisData(const std::vector<MovePresenter::AxisData>& axis_data)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		bool has_x = false;
 		bool has_y = false;
@@ -441,6 +449,7 @@ namespace UI
 
 	void MoveView::setAxisPosition(char axis_letter, float position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (axis_letter == 'X')
 		{
@@ -470,6 +479,7 @@ namespace UI
 
 	void MoveView::setAxisHomed(char axis_letter, bool homed)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (axis_letter == 'X')
 		{
@@ -499,6 +509,7 @@ namespace UI
 
 	void MoveView::setAxisDisabled(char axis_letter, bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setAxisJogDisabled(axis_letter, disabled);
 		setAxisHomeDisabled(axis_letter, disabled);
@@ -506,6 +517,7 @@ namespace UI
 
 	void MoveView::setAxisJogDisabled(char axis_letter, bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (axis_letter == 'X')
 		{
@@ -534,6 +546,7 @@ namespace UI
 
 	void MoveView::setAxisHomeDisabled(char axis_letter, bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (axis_letter == 'X')
 		{
@@ -562,21 +575,25 @@ namespace UI
 
 	void MoveView::setHomeAllDisabled(bool disabled)
 	{
+		ZoneScoped;
 		m_xyControl.setHomeAllDisabled(disabled);
 	}
 
 	void MoveView::setDisableMotorsDisabled(bool disabled)
 	{
+		ZoneScoped;
 		m_xyControl.setDisableMotorsDisabled(disabled);
 	}
 
 	void MoveView::onShow()
 	{
+		ZoneScoped;
 		closeAllModals();
 	}
 
 	void MoveView::configureNumberpadForAxis(char axis_letter, float position)
 	{
+		ZoneScoped;
 		openModal(&m_numberpad);
 		m_numberpad.setHeader(_("move.set_position", axis_letter));
 		m_numberpad.setValue(position);

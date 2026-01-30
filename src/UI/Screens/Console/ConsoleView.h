@@ -5,6 +5,7 @@
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
+#include "UI/Components/LVGL/LvTable.h"
 #include "UI/Components/LVGL/LvTextarea.h"
 #include "UI/Core/View.h"
 
@@ -38,7 +39,7 @@ namespace UI
 		void onHide() override;
 
 		LvContainer m_topCont{"top_cont", getRoot()};
-		LvObj m_commandList{lv_table_create, "command_list", m_topCont};
+		LvTable m_commandList{"command_list", m_topCont};
 		Button m_commandVisibility{"command_visibility", m_topCont, LV_SYMBOL_LIST};
 		LvTextarea m_output{"output", m_topCont};
 		LvContainer m_inputCont{"input_cont", getRoot()};

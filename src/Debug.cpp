@@ -80,6 +80,7 @@ namespace Log
 	  protected:
 		void sink_it_(const spdlog::details::log_msg& msg) override
 		{
+			ZoneScoped;
 			// mutex is locked by base_sink
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
@@ -99,6 +100,7 @@ namespace Log
 	  protected:
 		void sink_it_(const spdlog::details::log_msg& msg) override
 		{
+			ZoneScoped;
 			// mutex is locked by base_sink
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
@@ -173,6 +175,7 @@ namespace Log
 
 	void Init()
 	{
+		ZoneScoped;
 		try
 		{
 			auto console_sink = make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -224,6 +227,7 @@ namespace Log
 
 	void SetDebugLevel(DebugLevel level)
 	{
+		ZoneScoped;
 		s_debugLevel = level;
 		StorageHelper::setData(ID_DEBUG_LEVEL, level);
 
@@ -257,6 +261,7 @@ namespace Log
 
 	void CloseDebugFile()
 	{
+		ZoneScoped;
 		if (s_logger)
 		{
 			s_logger->flush();
@@ -265,6 +270,7 @@ namespace Log
 
 	void EnableUiLogging(bool enable)
 	{
+		ZoneScoped;
 		if ((s_uiSink && enable) || (!s_uiSink && !enable))
 			return;
 
@@ -292,21 +298,25 @@ namespace Log
 
 	bool IsUiLoggingEnabled()
 	{
+		ZoneScoped;
 		return s_uiSink != nullptr;
 	}
 
 	size_t GetThreadId()
 	{
+		ZoneScoped;
 		return spdlog::details::os::thread_id();
 	}
 
 	const DebugLevel& GetDebugLevel()
 	{
+		ZoneScoped;
 		return s_debugLevel;
 	}
 
 	shared_ptr<spdlog::logger> GetLogger()
 	{
+		ZoneScoped;
 		return s_logger;
 	}
 } // namespace Log

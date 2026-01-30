@@ -20,11 +20,13 @@ namespace UI
 {
 	void FineTunePresenter::newSpeedFactor()
 	{
+		ZoneScoped;
 		m_view->setSpeedValue(static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())));
 	}
 
 	void FineTunePresenter::newExtruderData()
 	{
+		ZoneScoped;
 		m_view->setExtruderCount(OM::Move::GetExtruderAxisCount());
 
 		OM::Move::IterateExtruderAxesWhile(
@@ -38,6 +40,7 @@ namespace UI
 
 	void FineTunePresenter::newFanData()
 	{
+		ZoneScoped;
 		m_view->setFanCount(OM::GetFanCount());
 
 		OM::IterateFansWhile(
@@ -51,6 +54,7 @@ namespace UI
 
 	void FineTunePresenter::onActivate()
 	{
+		ZoneScoped;
 		newSpeedFactor();
 		newExtruderData();
 		newFanData();
@@ -58,6 +62,7 @@ namespace UI
 
 	void FineTunePresenter::setSpeedFactor(uint32_t value)
 	{
+		ZoneScoped;
 		if (value == static_cast<uint32_t>(std::lround(100 * OM::Move::GetSpeedFactor())))
 		{
 			return;
@@ -67,6 +72,7 @@ namespace UI
 
 	void FineTunePresenter::setExtruderFactor(size_t slot, uint32_t value)
 	{
+		ZoneScoped;
 		auto extruder = OM::Move::GetExtruderAxisBySlot(slot);
 		if (extruder == nullptr || value == static_cast<uint32_t>(std::lround(100 * extruder->factor)))
 		{
@@ -79,6 +85,7 @@ namespace UI
 
 	void FineTunePresenter::setFanValue(size_t slot, uint32_t value)
 	{
+		ZoneScoped;
 		auto fan = OM::GetFanBySlot(slot);
 		if (fan == nullptr || value == static_cast<uint32_t>(std::lround(100 * fan->requestedValue)))
 		{

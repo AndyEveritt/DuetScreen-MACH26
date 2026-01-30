@@ -20,6 +20,7 @@ namespace UI
 	MultiValueSelector::MultiValueSelector(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
+		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
 		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -96,12 +97,14 @@ namespace UI
 
 	void MultiValueSelector::setLabel(const std::string& label)
 	{
+		ZoneScoped;
 		m_label.setVisible(!label.empty());
 		m_label.setText(label);
 	}
 
 	void MultiValueSelector::setValue(float value)
 	{
+		ZoneScoped;
 		value = std::clamp(value, getMinValue(), getMaxValue());
 		if (value == m_value)
 			return;
@@ -113,16 +116,19 @@ namespace UI
 
 	float MultiValueSelector::getValue() const
 	{
+		ZoneScoped;
 		return m_value;
 	}
 
 	void MultiValueSelector::setIncrement(float increment)
 	{
+		ZoneScoped;
 		m_incrementValue = increment;
 	}
 
 	void MultiValueSelector::setValueBtn(size_t index, float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= m_currentValues.size())
 		{
@@ -140,6 +146,7 @@ namespace UI
 
 	void MultiValueSelector::setValueBtns(const std::vector<float>& values)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_currentValues = values;
 
@@ -209,18 +216,21 @@ namespace UI
 
 	void MultiValueSelector::setMinValue(float value)
 	{
+		ZoneScoped;
 		m_minValue = value;
 		setValue(getValue()); // refresh with new limit
 	}
 
 	void MultiValueSelector::setMaxValue(float value)
 	{
+		ZoneScoped;
 		m_maxValue = value;
 		setValue(getValue()); // refresh with new limit
 	}
 
 	void MultiValueSelector::setStorageKey(std::string_view key)
 	{
+		ZoneScoped;
 		if (key.empty())
 		{
 			m_storageKey.clear();
@@ -244,6 +254,7 @@ namespace UI
 
 	void MultiValueSelector::saveValues() const
 	{
+		ZoneScoped;
 		if (m_storageKey.empty())
 			return;
 
@@ -252,6 +263,7 @@ namespace UI
 
 	void MultiValueSelector::saveSelected() const
 	{
+		ZoneScoped;
 		if (m_storageKey.empty())
 			return;
 

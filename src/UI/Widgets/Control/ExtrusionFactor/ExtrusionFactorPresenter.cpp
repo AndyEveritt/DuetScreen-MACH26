@@ -17,6 +17,7 @@ namespace UI
 {
 	void ExtrusionFactorPresenter::setTool(OM::ToolPtr tool)
 	{
+		ZoneScoped;
 		m_tool = std::move(tool);
 
 		newExtruderData();
@@ -24,6 +25,7 @@ namespace UI
 
 	void ExtrusionFactorPresenter::newExtruderData()
 	{
+		ZoneScoped;
 		auto callback = [&](OM::Move::ExtruderAxisPtr extruder, size_t index)
 		{
 			m_view->setExtruderLabel(index, _("fine_tune.extruder", extruder->index));
@@ -53,6 +55,7 @@ namespace UI
 
 	void ExtrusionFactorPresenter::setExtruderFactor(size_t slot, uint32_t value)
 	{
+		ZoneScoped;
 		auto extruder = m_tool ? m_tool->GetExtruder(slot) : OM::Move::GetExtruderAxisBySlot(slot);
 		if (extruder == nullptr || value == static_cast<uint32_t>(std::lround(100 * extruder->factor)))
 		{
@@ -65,6 +68,7 @@ namespace UI
 
 	void ModalExtrusionFactorPresenter::configureNumberPad(size_t index)
 	{
+		ZoneScoped;
 		auto tool = getView()->getExtrusionFactor().getPresenter()->m_tool;
 		auto extruder = tool ? tool->GetExtruder(index) : OM::Move::GetExtruderAxisBySlot(index);
 		configureNumberPad(std::move(extruder));
@@ -72,6 +76,7 @@ namespace UI
 
 	void ModalExtrusionFactorPresenter::configureNumberPad(OM::Move::ExtruderAxisPtr extruder)
 	{
+		ZoneScoped;
 		auto& np = m_view->getNumberPad();
 
 		np.setVisible(extruder != nullptr);
@@ -104,6 +109,7 @@ namespace UI
 
 	void ModalExtrusionFactorPresenter::onActivate()
 	{
+		ZoneScoped;
 		auto tool = OM::GetCurrentTool();
 		OM::Move::ExtruderAxisPtr extruder;
 		if (tool)

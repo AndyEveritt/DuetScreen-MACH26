@@ -14,6 +14,7 @@ namespace UI
 	DraggableButton::DraggableButton(const std::string& name, LvObj& parent, const std::string& text)
 		: Button(name, parent, text)
 	{
+		ZoneScoped;
 		// lv_obj_add_flag(getCont(), LV_OBJ_FLAG_OVERFLOW_VISIBLE);
 		setExtDrawSize(200);
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
@@ -29,6 +30,7 @@ namespace UI
 
 	void DraggableButton::setDragCallback(DraggableButton::drag_cb_t drag_cb, void* user_data)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_dragCallback = drag_cb;
 		m_dragUserData = drag_cb ? user_data : nullptr;
@@ -36,6 +38,7 @@ namespace UI
 
 	void DraggableButton::setDragThreshold(lv_coord_t threshold)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (threshold < 0)
 		{
@@ -49,6 +52,7 @@ namespace UI
 
 	float DraggableButton::getDragPct(const lv_point_t& start_pos, const lv_event_t* e) const
 	{
+		ZoneScoped;
 		UNUSED(e);
 		lv_point_t curr_pos;
 		lv_indev_get_point(lv_indev_active(), &curr_pos);
@@ -66,6 +70,7 @@ namespace UI
 
 	void DraggableButton::dragEventCallback(lv_event_t* e)
 	{
+		ZoneScoped;
 		// Get the button instance from the user data
 		DraggableButton* button = static_cast<DraggableButton*>(lv_event_get_user_data(e));
 		if (!button)

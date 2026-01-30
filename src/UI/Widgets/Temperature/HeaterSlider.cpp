@@ -10,6 +10,7 @@ namespace UI
 	HeaterSlider::HeaterSlider(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -69,11 +70,13 @@ namespace UI
 
 	void HeaterSlider::setHeaterName(const std::string_view name)
 	{
+		ZoneScoped;
 		m_heaterName.setText(name);
 	}
 
 	void HeaterSlider::setHeaterState(HeaterSliderPresenter::heater_state_t state, const std::string_view str)
 	{
+		ZoneScoped;
 		m_heaterState.setText(str);
 		m_activeTemperature.setState(LV_STATE_CHECKED, state == HeaterSliderPresenter::heater_state_t::active);
 		m_standbyTemperature.setState(LV_STATE_CHECKED, state == HeaterSliderPresenter::heater_state_t::standby);
@@ -81,6 +84,7 @@ namespace UI
 
 	void HeaterSlider::setHeaterMinTemperature(float temperature)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		temperature = std::max(0.0f, temperature);
 		// if (temperature == m_minTempValue)
@@ -93,6 +97,7 @@ namespace UI
 
 	void HeaterSlider::setHeaterMaxTemperature(float temperature)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (temperature == m_maxTempValue)
 			return;
@@ -105,6 +110,7 @@ namespace UI
 
 	void HeaterSlider::setCurrentTemperature(float temperature)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (temperature == m_currentTempValue)
 			return;
@@ -116,6 +122,7 @@ namespace UI
 
 	void HeaterSlider::setActiveTemperature(int32_t temperature, bool dragging)
 	{
+		ZoneScoped;
 		if (temperature == m_activeTempValue)
 			return;
 
@@ -130,6 +137,7 @@ namespace UI
 
 	void HeaterSlider::setStandbyTemperature(int32_t temperature, bool dragging)
 	{
+		ZoneScoped;
 		if (temperature == m_standbyTempValue)
 			return;
 
@@ -144,12 +152,14 @@ namespace UI
 
 	void HeaterSlider::setNumberPad(ModalNumberPad* numberPad)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_numberPad = numberPad;
 	}
 
 	void HeaterSlider::onTemperatureLabelEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		lv_event_code_t code = lv_event_get_code(e);
 		if (code == LV_EVENT_DELETE)
 			return; // Ignore delete events
@@ -340,23 +350,27 @@ namespace UI
 
 	void HeaterSlider::onToggleStateEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		HeaterSlider& control = *(HeaterSlider*)lv_event_get_user_data(e);
 		control.getPresenter()->cycleHeaterState();
 	}
 
 	void HeaterSlider::onShow()
 	{
+		ZoneScoped;
 		updateLabelPositions();
 	}
 
 	void HeaterSlider::updateLabelPositions()
 	{
+		ZoneScoped;
 		updateLabelPosition(m_activeTemperature, m_activeTempValue);
 		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
 	void HeaterSlider::updateLabelPosition(LvObj& label, int32_t value)
 	{
+		ZoneScoped;
 		LOG_DBG("Updating label '{}' position for value: {:d}", label.getName(), value);
 		// Calculate the position based on the current temperature value
 		const int32_t range = static_cast<int32_t>(m_maxTempValue - m_minTempValue);

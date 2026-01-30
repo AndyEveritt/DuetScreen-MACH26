@@ -14,6 +14,7 @@ namespace UI
 	Bar::Bar(const std::string& name, LvObj& parent)
 		: LvBar(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		// Update label text and position
@@ -26,6 +27,7 @@ namespace UI
 
 	void Bar::setLabelFormat(const std::string& fmt)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_labelFmt = fmt;
 
@@ -34,6 +36,7 @@ namespace UI
 
 	void Bar::barEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		[[maybe_unused]] Bar& self = *static_cast<Bar*>(lv_event_get_user_data(e));
 		const lv_event_code_t code = lv_event_get_code(e);
 
@@ -101,6 +104,7 @@ namespace UI
 
 	void Bar::drawLabel(lv_event_t* e)
 	{
+		ZoneScoped;
 		Bar& self = *static_cast<Bar*>(lv_event_get_user_data(e));
 		lv_layer_t* layer = lv_event_get_layer(e);
 

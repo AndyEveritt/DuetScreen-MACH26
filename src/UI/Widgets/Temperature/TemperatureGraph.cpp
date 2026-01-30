@@ -13,5 +13,6 @@ namespace UI
 	TemperatureGraph::TemperatureGraph(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 	}
 } // namespace UI

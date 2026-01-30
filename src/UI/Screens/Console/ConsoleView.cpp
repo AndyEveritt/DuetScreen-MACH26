@@ -17,6 +17,7 @@ namespace UI
 	ConsoleView::ConsoleView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
@@ -42,17 +43,17 @@ namespace UI
 		m_output.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 
 		// Command List
-		lv_table_set_column_count(m_commandList.getRootPtr(), 2);
-		lv_table_set_column_width(m_commandList.getRootPtr(), 0, TABLE_GCODE_WIDTH);
-		lv_table_set_column_width(m_commandList.getRootPtr(), 1, TABLE_DESCRIPTION_WIDTH);
-		lv_table_set_row_count(m_commandList.getRootPtr(), static_cast<uint32_t>(Gcodes::getGcodeCount()));
+		m_commandList.setColumnCount(2);
+		m_commandList.setColumnWidth(0, TABLE_GCODE_WIDTH);
+		m_commandList.setColumnWidth(1, TABLE_DESCRIPTION_WIDTH);
+		m_commandList.setRowCount(static_cast<uint32_t>(Gcodes::getGcodeCount()));
 		size_t gcode_count = Gcodes::getGcodeCount();
 		assert(gcode_count < std::numeric_limits<uint32_t>::max()); // table uses uint32_t
-		for (uint32_t i = 0; i < static_cast<uint32_t>(gcode_count); i++)
+		for (size_t i = 0; i < gcode_count; i++)
 		{
 			const gcode* g = Gcodes::getGcode(i);
-			lv_table_set_cell_value(m_commandList.getRootPtr(), i, 0, g->gcode.data());
-			lv_table_set_cell_value(m_commandList.getRootPtr(), i, 1, g->helpText.data());
+			m_commandList.setCellValue(static_cast<uint32_t>(i), 0, g->gcode.data());
+			m_commandList.setCellValue(static_cast<uint32_t>(i), 1, g->helpText.data());
 		}
 
 		// Input Area
@@ -105,16 +106,19 @@ namespace UI
 
 	void ConsoleView::clear()
 	{
+		ZoneScoped;
 		m_input.setText("");
 	}
 
 	void ConsoleView::addCommand(std::string_view resp)
 	{
+		ZoneScoped;
 		addResponse(fmt::format("> {:s}", resp));
 	}
 
 	void ConsoleView::addResponse(const std::string& resp)
 	{
+		ZoneScoped;
 		m_output.addText(resp);
 		m_output.addChar('\n');
 
@@ -136,6 +140,7 @@ namespace UI
 
 	void ConsoleView::showCommandList(bool show, bool animate)
 	{
+		ZoneScoped;
 		if (show == m_commandVisibility.hasState(LV_STATE_CHECKED))
 		{
 			return;
@@ -156,6 +161,7 @@ namespace UI
 			anim.setExecCb(
 				[](void* var, int32_t value)
 				{
+					ZoneScopedN("ConsoleView::showCommandList:animExecCb");
 					ConsoleView& view = *static_cast<ConsoleView*>(var);
 					view.m_commandList.setFlexGrow(static_cast<uint8_t>(value));
 					view.updateBtnPos();
@@ -163,6 +169,7 @@ namespace UI
 			anim.setDeletedCb(
 				[](lv_anim_t* anim)
 				{
+					ZoneScopedN("ConsoleView::showCommandList:animDeletedCb");
 					ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
 					view.m_commandList.setScrollDir(view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL
 																										: LV_DIR_VER);
@@ -186,6 +193,7 @@ namespace UI
 
 	void ConsoleView::showKeyboard(bool show)
 	{
+		ZoneScoped;
 		m_kb.setTextarea(show ? &m_input : nullptr);
 		m_kb.setMode(LV_KEYBOARD_MODE_TEXT_UPPER);
 		m_kb.setVisible(show, true);
@@ -193,6 +201,7 @@ namespace UI
 
 	void ConsoleView::onSendEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		view->m_input.sendEvent(LV_EVENT_READY, view);
@@ -200,6 +209,7 @@ namespace UI
 
 	void ConsoleView::onClearEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		view->clear();
@@ -207,16 +217,18 @@ namespace UI
 
 	void ConsoleView::onCommandListEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		lv_event_code_t code = lv_event_get_code(e);
 		if (code == LV_EVENT_VALUE_CHANGED)
 		{
+			ZoneScopedN("ConsoleView::onCommandListEvent:LV_EVENT_VALUE_CHANGED");
 			uint32_t row;
 			uint32_t col;
-			lv_table_get_selected_cell(view->m_commandList.getRootPtr(), &row, &col);
+			view->m_commandList.getSelectedCell(&row, &col);
 
-			const char* gcode = lv_table_get_cell_value(view->m_commandList.getRootPtr(), row, 0);
+			const char* gcode = view->m_commandList.getCellValue(row, 0);
 
 			if (gcode[0] == '\0')
 			{
@@ -228,6 +240,7 @@ namespace UI
 
 	void ConsoleView::onKeyboardEvent(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		lv_event_code_t code = lv_event_get_code(e);
@@ -235,18 +248,22 @@ namespace UI
 		{
 		case LV_EVENT_FOCUSED:
 		{
+			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_FOCUSED");
 			view->showKeyboard(true);
 			break;
 		}
 		case LV_EVENT_DEFOCUSED:
 		{
+			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_DEFOCUSED");
 			view->showKeyboard(false);
 			break;
 		}
 		case LV_EVENT_VALUE_CHANGED:
 		{
+			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_VALUE_CHANGED");
 			view->m_commandList.scrollToY(0, LV_ANIM_OFF);
 			std::string_view cmd = view->m_input.getText();
+			LOG_DBG("Filtering command list for '{}'", cmd);
 			if (cmd.find_first_of(' ') == std::string::npos)
 			{
 				std::string upper_cmd;
@@ -261,19 +278,21 @@ namespace UI
 					const gcode* g = Gcodes::getGcode(i);
 					if (std::string(g->gcode).rfind(upper_cmd, 0) == 0)
 					{
-						lv_table_set_cell_value(view->m_commandList.getRootPtr(), index, 0, g->gcode.data());
-						lv_table_set_cell_value(view->m_commandList.getRootPtr(), index, 1, g->helpText.data());
+						view->m_commandList.setCellValue(index, 0, g->gcode.data());
+						view->m_commandList.setCellValue(index, 1, g->helpText.data());
 						index++;
 					}
 				}
 
-				lv_table_set_row_count(view->m_commandList.getRootPtr(), index);
+				LOG_DBG("Filtered command list to {} entries", index);
+				view->m_commandList.setRowCount(index);
 			}
 
 			break;
 		}
 		case LV_EVENT_READY:
 		{
+			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_READY");
 			std::string_view text = view->m_input.getText();
 			if (!text.empty())
 			{
@@ -288,17 +307,20 @@ namespace UI
 
 		if (code == LV_EVENT_CANCEL)
 		{
+			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_CANCEL");
 			view->m_kb.hide();
 		}
 	}
 
 	bool ConsoleView::back()
 	{
+		ZoneScoped;
 		return false;
 	}
 
 	void ConsoleView::updateBtnPos()
 	{
+		ZoneScoped;
 		m_commandList.updateLayout();
 		m_commandVisibility.setPos(m_commandList.getX2() - m_commandVisibility.getWidth() - 5,
 								   m_commandList.getY() + 5);
@@ -306,6 +328,7 @@ namespace UI
 
 	void ConsoleView::onShow()
 	{
+		ZoneScoped;
 		m_commandList.scrollToX(0, LV_ANIM_OFF);
 		m_kb.hide();
 		updateBtnPos();
@@ -313,6 +336,7 @@ namespace UI
 
 	void ConsoleView::onHide()
 	{
+		ZoneScoped;
 		// We want the console output to still update with new replies even when the console is hidden.
 		activate();
 	}

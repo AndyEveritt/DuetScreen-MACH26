@@ -57,6 +57,7 @@ namespace UI
 		, m_slider("slider", getRoot())
 		, m_max("max", getRoot(), _("fan.max"))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().card);
@@ -87,12 +88,14 @@ namespace UI
 
 	void FanView::ControllableFanItem::setLabel(std::string_view label)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_slider.setLabel(label);
 	}
 
 	void FanView::ControllableFanItem::setValue(uint32_t value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_slider.isFocused())
 		{
@@ -103,6 +106,7 @@ namespace UI
 
 	void FanView::ControllableFanItem::onFanOffClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		ControllableFanItem* item = static_cast<ControllableFanItem*>(lv_event_get_user_data(e));
 		item->m_view.m_presenter->setFanSpeed(item->getIndex(), 0);
@@ -110,6 +114,7 @@ namespace UI
 
 	void FanView::ControllableFanItem::onFanMaxClicked(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		ControllableFanItem* item = static_cast<ControllableFanItem*>(lv_event_get_user_data(e));
 		item->m_view.m_presenter->setFanSpeed(item->getIndex(), 100);

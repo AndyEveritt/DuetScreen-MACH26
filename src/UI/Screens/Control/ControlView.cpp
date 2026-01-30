@@ -8,6 +8,7 @@ namespace UI
 	ControlView::ControlView(const std::string& name, LvObj& parent)
 		: View<ControlPresenter>(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		addStyle(Themes::getLvglStyles().bg_dark);
 		setStylePad(0);
 

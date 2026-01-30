@@ -16,6 +16,7 @@ namespace UI
 	PrintInfo::PrintInfo(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		static int32_t printInfoColDsc[] = {LV_GRID_FR(3), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
@@ -128,6 +129,7 @@ namespace UI
 
 	void PrintInfo::openSubView(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		LvObj* view = static_cast<LvObj*>(lv_event_get_user_data(e));
 		openScreen(view, false);
@@ -135,6 +137,7 @@ namespace UI
 
 	void PrintInfo::onInit()
 	{
+		ZoneScoped;
 		// Can't put this in the constructor as it would cause `HomeView::instance()` to be called within itself
 		m_speedFactorModal.setParent(HomeView::instance().getMainWindow());
 		m_extrusionFactorModal.setParent(HomeView::instance().getMainWindow());
@@ -147,6 +150,7 @@ namespace UI
 
 	void PrintInfo::setAxisCount(size_t count)
 	{
+		ZoneScoped;
 		m_positions.setItemCount(count,
 								 [this](size_t index, LvObj& parent)
 								 {
@@ -162,6 +166,7 @@ namespace UI
 
 	void PrintInfo::setPosition(size_t index, char axis_letter, float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (index >= m_positions.getItemCount())
 		{
@@ -180,17 +185,20 @@ namespace UI
 
 	void PrintInfo::setMaxSpeed(int32_t max_speed)
 	{
+		ZoneScoped;
 		m_currentSpeed.setMaxValue(max_speed);
 		m_requestedSpeed.setMaxValue(max_speed);
 	}
 
 	void PrintInfo::setMaxExtrusionRate(int32_t max_extrusion_rate)
 	{
+		ZoneScoped;
 		m_extruderFlow.setMaxValue(max_extrusion_rate);
 	}
 
 	void PrintInfo::updateExtrusionRate(float /* feedrate */, float volumetric)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_extruderFlow.setValue(static_cast<int32_t>(std::round(volumetric)));
 		m_extruderFlowLabel.setText(_("status.flow_rate", volumetric));
@@ -198,6 +206,7 @@ namespace UI
 
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
+		ZoneScoped;
 		m_currentSpeed.setValue(static_cast<int32_t>(std::round(topSpeed)), LV_ANIM_ON);
 		m_requestedSpeed.setValue(static_cast<int32_t>(std::round(requestedSpeed)), LV_ANIM_ON);
 
@@ -206,16 +215,19 @@ namespace UI
 
 	void PrintInfo::updateFlowMultiplier(uint32_t multiplier)
 	{
+		ZoneScoped;
 		m_flowMultiplier.setText(_("status.flow_multiplier", multiplier));
 	}
 
 	void PrintInfo::updateSpeedMultiplier(uint32_t multiplier)
 	{
+		ZoneScoped;
 		m_speedMultiplier.setText(_("status.speed_multiplier", multiplier));
 	}
 
 	void PrintInfo::updateElapsedTime(uint32_t elapsed)
 	{
+		ZoneScoped;
 		int32_t hours = elapsed / 3600;
 		int32_t minutes = (elapsed % 3600) / 60;
 		int32_t seconds = elapsed % 60;
@@ -225,6 +237,7 @@ namespace UI
 
 	void PrintInfo::updateRemainingTime(uint32_t remaining)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		int32_t hours = remaining / 3600;
 		int32_t minutes = (remaining % 3600) / 60;
@@ -235,12 +248,14 @@ namespace UI
 
 	void PrintInfo::updateBabyStep(float babystep)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_babyStepButton.setText(_("status.babystep_value", babystep));
 	}
 
 	void PrintInfo::setNumberPad(ModalNumberPad* numberPad)
 	{
+		ZoneScoped;
 		m_babyStepModal.setNumberPad(numberPad);
 	}
 } // namespace UI

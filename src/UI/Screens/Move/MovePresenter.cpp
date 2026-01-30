@@ -13,6 +13,7 @@ namespace UI
 {
 	static bool canHome()
 	{
+		ZoneScoped;
 		switch (OM::GetStatus())
 		{
 		case OM::PrinterStatus::connecting:
@@ -28,11 +29,13 @@ namespace UI
 
 	static bool canMove(const OM::Move::AxisPtr& axis)
 	{
+		ZoneScoped;
 		return (axis->homed || !OM::Move::GetNoMovesBeforeHoming()) && canHome();
 	}
 
 	void MovePresenter::onInit()
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 
 		registerEventListener<EventType::AxesData>(this, &MovePresenter::newAxesData);
@@ -41,22 +44,26 @@ namespace UI
 
 	void MovePresenter::onActivate()
 	{
+		ZoneScoped;
 		getView()->setDisabled(!OM::IsConnected());
 		newAxesData();
 	}
 
 	void MovePresenter::homeAll()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("G28\n");
 	}
 
 	void MovePresenter::disableMotors()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("M18\n");
 	}
 
 	void MovePresenter::homeAxis(char axis_letter)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto axis = OM::Move::GetAxisByLetter(axis_letter);
 		if (axis == nullptr)
@@ -69,6 +76,7 @@ namespace UI
 
 	void MovePresenter::homeAxis(size_t axisSlot)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto axis = OM::Move::GetAxisBySlot(axisSlot);
 		if (axis == nullptr)
@@ -81,6 +89,7 @@ namespace UI
 
 	void MovePresenter::moveAxisAbsolute(char axis_letter, float position, uint32_t feedrate)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto axis = OM::Move::GetAxisByLetter(axis_letter);
 		if (axis == nullptr)
@@ -93,6 +102,7 @@ namespace UI
 
 	void MovePresenter::moveAxisRelative(char axis_letter, float distance, uint32_t feedrate)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto axis = OM::Move::GetAxisByLetter(axis_letter);
 		if (axis == nullptr)
@@ -105,6 +115,7 @@ namespace UI
 
 	void MovePresenter::moveAxisRelative(size_t axisSlot, float distance, uint32_t feedrate)
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 		auto axis = OM::Move::GetAxisBySlot(axisSlot);
 		if (axis == nullptr)
@@ -117,6 +128,7 @@ namespace UI
 
 	void MovePresenter::newAxesData()
 	{
+		ZoneScoped;
 		std::vector<OM::Move::AxisPtr> axes = OM::Move::GetAxes(false);
 		{
 			/*
@@ -144,17 +156,20 @@ namespace UI
 
 	void MovePresenter::newStatus(const OM::PrinterStatus& /* status */)
 	{
+		ZoneScoped;
 		getView()->setDisabled(!OM::IsConnected());
 		newAxesData();
 	}
 
 	void MovePresenter::onConnect()
 	{
+		ZoneScoped;
 		getView()->setDisabled(false);
 	}
 
 	void MovePresenter::onDisconnect()
 	{
+		ZoneScoped;
 		getView()->setDisabled(true);
 		getView()->clear();
 	}

@@ -16,6 +16,7 @@ namespace UI
 {
 	void HomePresenter::onInit()
 	{
+		ZoneScoped;
 		registerEventListener<EventType::UpdateAvailable>(this, &HomePresenter::newUpdateAvailable);
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
@@ -40,11 +41,13 @@ namespace UI
 
 	void HomePresenter::onActivate()
 	{
+		ZoneScoped;
 		newAxesData();
 	}
 
 	void HomePresenter::clear()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_view->clear();
 		m_alertAxes.clear();
@@ -52,17 +55,20 @@ namespace UI
 
 	void HomePresenter::update()
 	{
+		ZoneScoped;
 		UpgradeHelper::upgradeFromUSB(m_updateFile);
 	}
 
 	void HomePresenter::newUpdateAvailable(const std::string& file)
 	{
+		ZoneScoped;
 		m_updateFile = file.c_str();
 		m_view->showUpdatePrompt(true);
 	}
 
 	void HomePresenter::newAxesData()
 	{
+		ZoneScoped;
 		// Alert jog axes
 		for (size_t i = 0; i < m_alertAxes.size(); i++)
 		{
@@ -76,6 +82,7 @@ namespace UI
 
 	void HomePresenter::newResponse(const ResponseType type, const std::string& resp)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		if (m_view->m_consoleView.isVisible())
 		{
@@ -155,6 +162,7 @@ namespace UI
 
 	void HomePresenter::newAlertData(const OM::Alert& alert)
 	{
+		ZoneScoped;
 		auto& modalAlert = m_view->m_alert;
 
 		// First clear any existing alert state

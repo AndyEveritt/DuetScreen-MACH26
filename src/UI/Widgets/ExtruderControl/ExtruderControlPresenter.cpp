@@ -19,11 +19,13 @@ namespace UI
 
 	void ExtruderControlPresenter::extrude(float distance, float feedrate)
 	{
+		ZoneScoped;
 		OM::Move::Extrude(distance, feedrate);
 	}
 
 	void ExtruderControlPresenter::newToolData()
 	{
+		ZoneScoped;
 		auto currentTool = OM::GetCurrentTool();
 		bool canExtrude = true;
 		bool canRetract = true;
@@ -68,11 +70,13 @@ namespace UI
 
 	void ExtruderControlPresenter::onInit()
 	{
+		ZoneScoped;
 		registerEventListener<EventType::ToolData>(this, &ExtruderControlPresenter::newToolData);
 	}
 
 	void ExtruderControlPresenter::onActivate()
 	{
+		ZoneScoped;
 		newToolData();
 	}
 
@@ -80,6 +84,7 @@ namespace UI
 
 	void ExtruderControlPresenter::onDisconnect()
 	{
+		ZoneScoped;
 		m_view->clear();
 	}
 } // namespace UI

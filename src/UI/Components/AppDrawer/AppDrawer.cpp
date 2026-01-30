@@ -23,6 +23,7 @@ namespace UI
 		: Card(name, parent)
 		, m_apps("apps", getRoot())
 	{
+		ZoneScoped;
 		setMinWidth(LV_SIZE_CONTENT);
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -40,6 +41,7 @@ namespace UI
 
 	void AppDrawer::init()
 	{
+		ZoneScoped;
 		static const AppInfo apps[] = {
 			{.name = _("app_drawer.console"), .screen = &HomeView::instance().getConsoleView(), .icon = "console.png"},
 			{.name = _("app_drawer.move"),

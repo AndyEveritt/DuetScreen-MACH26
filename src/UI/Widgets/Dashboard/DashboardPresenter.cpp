@@ -14,6 +14,7 @@ namespace UI
 {
 	void DashboardPresenter::newStatus(const OM::PrinterStatus& status)
 	{
+		ZoneScoped;
 		switch (status)
 		{
 		case OM::PrinterStatus::cancelling:

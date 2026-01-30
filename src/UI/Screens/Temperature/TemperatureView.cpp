@@ -11,6 +11,7 @@ namespace UI
 	TemperatureView::TemperatureView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
@@ -46,11 +47,13 @@ namespace UI
 
 	void TemperatureView::setSelectedToolName(std::string_view tool_name)
 	{
+		ZoneScoped;
 		m_selectedToolLabel.setText(_("temperature.selected_tool_label", tool_name));
 	}
 
 	void TemperatureView::onShow()
 	{
+		ZoneScoped;
 		m_numberPad.close();
 	}
 

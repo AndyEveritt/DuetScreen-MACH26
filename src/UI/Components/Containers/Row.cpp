@@ -13,6 +13,7 @@ namespace UI
 	Row::Row(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
+		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 	}
 } // namespace UI

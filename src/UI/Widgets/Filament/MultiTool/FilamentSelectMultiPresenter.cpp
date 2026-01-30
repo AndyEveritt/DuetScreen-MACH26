@@ -15,6 +15,7 @@ namespace UI
 {
 	void FilamentSelectMultiPresenter::setSelectedToolBySlot(size_t slot)
 	{
+		ZoneScoped;
 		if (slot >= m_tools.size())
 		{
 			LOG_ERROR("Invalid tool slot: {}", slot);
@@ -28,6 +29,7 @@ namespace UI
 
 	void FilamentSelectMultiPresenter::setFilament(std::string_view filamentName)
 	{
+		ZoneScoped;
 		if (m_selectedTool == nullptr)
 		{
 			LOG_ERROR("No tool selected, cannot set filament");
@@ -38,6 +40,7 @@ namespace UI
 
 	void FilamentSelectMultiPresenter::unloadFilament()
 	{
+		ZoneScoped;
 		if (m_selectedTool == nullptr)
 		{
 			LOG_ERROR("No tool selected, cannot unload filament");
@@ -49,6 +52,7 @@ namespace UI
 
 	void FilamentSelectMultiPresenter::clear()
 	{
+		ZoneScoped;
 		m_selectedTool.reset();
 		getView()->setToolCount(0);
 		m_filamentOptions.clear();
@@ -57,6 +61,7 @@ namespace UI
 
 	void FilamentSelectMultiPresenter::newToolData()
 	{
+		ZoneScoped;
 		MODEL_LOCK();
 
 		// This resizing mess is to prevent unnecessary reallocations since the capacity of m_tools will stay at the
@@ -101,11 +106,13 @@ namespace UI
 
 	void FilamentSelectMultiPresenter::updateFilamentList()
 	{
+		ZoneScoped;
 		getView()->setFilamentOptions(m_filamentOptions);
 	}
 
 	void FilamentSelectMultiPresenter::onActivate()
 	{
+		ZoneScoped;
 		OM::FileSystem::RequestFiles(OM::Directories::DirectoryType::FILAMENTS,
 									 "",
 									 [this](OM::FileSystem::ItemList files)

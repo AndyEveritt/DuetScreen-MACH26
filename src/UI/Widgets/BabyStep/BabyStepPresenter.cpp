@@ -16,16 +16,19 @@ namespace UI
 {
 	void BabyStepPresenter::babystep(float change)
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcodef("M290 S{:g}\n", change);
 	}
 
 	void BabyStepPresenter::resetBabystep()
 	{
+		ZoneScoped;
 		Comm::DUET.SendGcode("M290 R0 S0\n");
 	}
 
 	void BabyStepPresenter::newAxesData()
 	{
+		ZoneScoped;
 		auto axis = OM::Move::GetAxisByLetter('Z');
 		if (axis == nullptr)
 		{

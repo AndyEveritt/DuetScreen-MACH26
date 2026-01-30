@@ -18,6 +18,7 @@ namespace UI
 	XYControl::XYControl(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		addStyle(Themes::getLvglStyles().pad_large);
 		setGridDsc(m_colDsc, m_rowDsc);
@@ -104,6 +105,7 @@ namespace UI
 
 	void XYControl::setXPosition(float position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_xPosition = position;
 		updateXLabel();
@@ -111,6 +113,7 @@ namespace UI
 
 	void XYControl::setYPosition(float position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_yPosition = position;
 		updateYLabel();
@@ -118,6 +121,7 @@ namespace UI
 
 	void XYControl::setXHomed(bool homed)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeXButton.setChecked(!homed);
 		m_homeXYButton.setChecked(!homed || m_homeYButton.hasState(LV_STATE_CHECKED));
@@ -125,6 +129,7 @@ namespace UI
 
 	void XYControl::setYHomed(bool homed)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeYButton.setChecked(!homed);
 		m_homeXYButton.setChecked(!homed || m_homeXButton.hasState(LV_STATE_CHECKED));
@@ -132,6 +137,7 @@ namespace UI
 
 	void XYControl::setXDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setXJogDisabled(disabled);
 		setXHomeDisabled(disabled);
@@ -139,6 +145,7 @@ namespace UI
 
 	void XYControl::setYDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setYJogDisabled(disabled);
 		setYHomeDisabled(disabled);
@@ -146,6 +153,7 @@ namespace UI
 
 	void XYControl::setXJogDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_xLabel.setState(LV_STATE_DISABLED, disabled);
 		m_xIncrementButton.setDisabled(disabled);
@@ -154,6 +162,7 @@ namespace UI
 
 	void XYControl::setYJogDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_yLabel.setState(LV_STATE_DISABLED, disabled);
 		m_yIncrementButton.setDisabled(disabled);
@@ -162,6 +171,7 @@ namespace UI
 
 	void XYControl::setXHomeDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeXButton.setDisabled(disabled);
 		m_homeXYButton.setDisabled(disabled || m_homeYButton.hasState(LV_STATE_DISABLED));
@@ -169,6 +179,7 @@ namespace UI
 
 	void XYControl::setYHomeDisabled(bool disabled)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeYButton.setDisabled(disabled);
 		m_homeXYButton.setDisabled(disabled || m_homeXButton.hasState(LV_STATE_DISABLED));
@@ -176,64 +187,75 @@ namespace UI
 
 	void XYControl::setHomeAllDisabled(bool disabled)
 	{
+		ZoneScoped;
 		m_homeAllButton.setDisabled(disabled);
 	}
 
 	void XYControl::setDisableMotorsDisabled(bool disabled)
 	{
+		ZoneScoped;
 		m_disableMotorsButton.setDisabled(disabled);
 	}
 
 	void XYControl::setJogCallback(jog_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_jogCallback = std::move(cb);
 	}
 
 	void XYControl::setHomeAllCallback(home_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeAllCallback = std::move(cb);
 	}
 
 	void XYControl::setHomeXYCallback(home_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeXYCallback = std::move(cb);
 	}
 
 	void XYControl::setHomeXCallback(home_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeXCallback = std::move(cb);
 	}
 
 	void XYControl::setHomeYCallback(home_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_homeYCallback = std::move(cb);
 	}
 
 	void XYControl::setDisableMotorsCallback(disable_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_disableMotorsCallback = std::move(cb);
 	}
 
 	void XYControl::setXLabelCallback(label_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_xLabelCallback = std::move(cb);
 	}
 
 	void XYControl::setYLabelCallback(label_cb_t cb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_yLabelCallback = std::move(cb);
 	}
 
 	void XYControl::onJogBtn(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
 
@@ -269,6 +291,7 @@ namespace UI
 
 	void XYControl::onHomeBtn(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
 
@@ -311,6 +334,7 @@ namespace UI
 
 	void XYControl::onLabelEvent(lv_event_t* event)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		XYControl* control = static_cast<XYControl*>(lv_event_get_user_data(event));
 
@@ -339,18 +363,21 @@ namespace UI
 
 	void XYControl::updateXLabel()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		updateLabel(m_xLabel, sm_xAxisLetter, m_xPosition);
 	}
 
 	void XYControl::updateYLabel()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		updateLabel(m_yLabel, sm_yAxisLetter, m_yPosition);
 	}
 
 	void XYControl::updateLabel(Button& label, const char axisLetter, const float position)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		std::string labelText = fmt::format("{}: {:g}", axisLetter, position);
 		label.setText(labelText);

@@ -14,6 +14,7 @@ namespace UI
 {
 	void ToolControlPresenter::onActivate()
 	{
+		ZoneScoped;
 		if (m_tool != nullptr)
 		{
 			setToolIndex(m_toolSlot);
@@ -23,6 +24,7 @@ namespace UI
 
 	void ToolControlPresenter::onDeactivate()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		for (auto& heater : m_view->getHeaters())
 		{
@@ -33,6 +35,7 @@ namespace UI
 
 	void ToolControlPresenter::reset()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_tool = nullptr;
 		m_view->getHeaters().clear();
@@ -41,6 +44,7 @@ namespace UI
 
 	void ToolControlPresenter::setToolIndex(size_t toolIndex)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		reset();
 		m_tool = OM::GetToolBySlot(toolIndex);
@@ -56,6 +60,7 @@ namespace UI
 
 	void ToolControlPresenter::toggleToolState()
 	{
+		ZoneScoped;
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("Tool is null for presenter '{}'", getName());
@@ -67,6 +72,7 @@ namespace UI
 
 	void ToolControlPresenter::newToolData()
 	{
+		ZoneScoped;
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("Tool is null for presenter '{}'", getName());
@@ -135,6 +141,7 @@ namespace UI
 
 	void ToolControlPresenter::newToolHeaterData(size_t toolIndex)
 	{
+		ZoneScoped;
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("Tool is null for presenter '{}'", getName());

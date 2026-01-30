@@ -37,6 +37,7 @@ namespace UI
 	NumberPad::NumberPad(const std::string& name, LvObj& parent, layout_t layout)
 		: LvContainer(name, parent, layout)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
@@ -87,6 +88,7 @@ namespace UI
 	NumberPad::NumberPad(const std::string& name, LvObj& parent, layout_t layout, const NumberPadConfig& config)
 		: NumberPad(name, parent, layout)
 	{
+		ZoneScoped;
 		// Configure
 		setMinValue(config.minValue);
 		setMaxValue(config.maxValue);
@@ -95,6 +97,7 @@ namespace UI
 
 	bool NumberPad::back()
 	{
+		ZoneScoped;
 		// This custom back method prevents the previous screen from reopening
 		close();
 		return true;
@@ -102,17 +105,20 @@ namespace UI
 
 	void NumberPad::clear()
 	{
+		ZoneScoped;
 		m_textBox.setText("");
 		validateInput();
 	}
 
 	void NumberPad::close()
 	{
+		ZoneScoped;
 		closeScreen(this, false);
 	}
 
 	void NumberPad::confirm()
 	{
+		ZoneScoped;
 		if (validateInput())
 		{
 			// Call the confirm callback
@@ -122,12 +128,14 @@ namespace UI
 
 	void NumberPad::setHeader(std::string_view text)
 	{
+		ZoneScoped;
 		m_header.setFlag(LV_OBJ_FLAG_HIDDEN, text.empty());
 		m_header.setText(text);
 	}
 
 	void NumberPad::setMinValue(float value)
 	{
+		ZoneScoped;
 		m_minValue = value;
 
 		m_textBox.setAcceptedChars(value < 0 ? "0123456789.-" : "0123456789.");
@@ -146,12 +154,14 @@ namespace UI
 
 	void NumberPad::setMaxValue(float value)
 	{
+		ZoneScoped;
 		m_maxValue = value;
 		validateInput();
 	}
 
 	void NumberPad::setRange(float minValue, float maxValue)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_minValue = minValue;
 		m_maxValue = maxValue;
@@ -160,6 +170,7 @@ namespace UI
 
 	void NumberPad::setValue(float value)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_textBox.setText(fmt::format("{:g}", value));
 		m_textBox.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
@@ -168,22 +179,26 @@ namespace UI
 
 	float NumberPad::getValue() const
 	{
+		ZoneScoped;
 		return static_cast<float>(atof(m_textBox.getText().data()));
 	}
 
 	void NumberPad::setText(const std::string& text)
 	{
+		ZoneScoped;
 		m_textBox.setText(text);
 		m_textBox.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
 	}
 
 	std::string_view NumberPad::getText() const
 	{
+		ZoneScoped;
 		return m_textBox.getText();
 	}
 
 	bool NumberPad::validateInput()
 	{
+		ZoneScoped;
 		UI_LOCK();
 		float value = getValue();
 		if (value < m_minValue || value > m_maxValue)
@@ -200,6 +215,7 @@ namespace UI
 
 	void NumberPad::setConfirmIsAction(bool isAction)
 	{
+		ZoneScoped;
 		if (isAction)
 		{
 			m_btnMatrix.setButtonCtrl(13, LV_BTNMATRIX_CTRL_CUSTOM_1);
@@ -212,12 +228,14 @@ namespace UI
 
 	void NumberPad::setConfirmCallback(confirm_cb_t eventCb)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		m_confirmCb = std::move(eventCb);
 	}
 
 	void NumberPad::clearBtnEventHandler(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		NumberPad* np = (NumberPad*)lv_event_get_user_data(e);
 		np->clear();
@@ -225,6 +243,7 @@ namespace UI
 
 	void NumberPad::onReadyEventHandler(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		NumberPad& np = *(NumberPad*)lv_event_get_user_data(e);
 		if (np.m_confirmCb.has_value())
@@ -253,6 +272,7 @@ namespace UI
 
 	void NumberPad::btnmEventHandler(lv_event_t* e)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		lv_obj_t* obj = lv_event_get_target_obj(e);
 		TextBox& ta = *(TextBox*)lv_event_get_user_data(e);

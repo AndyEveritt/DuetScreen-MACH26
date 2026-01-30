@@ -21,6 +21,7 @@ namespace UI
 		, m_fileView("files", m_tabs.addTab(_("app_drawer.files")))
 		, m_statusView("status", m_tabs.addTab(_("app_drawer.status")))
 	{
+		ZoneScoped;
 		setStylePad(0);
 		// setExtDrawSize(100); /* for outer tab buttons */
 
@@ -52,16 +53,19 @@ namespace UI
 
 	void Dashboard::disableJobsTab(bool disable)
 	{
+		ZoneScoped;
 		m_tabs.disableTab(0, disable);
 	}
 
 	void Dashboard::setNumberPad(ModalNumberPad* np)
 	{
+		ZoneScoped;
 		m_statusView.setNumberPad(np);
 	}
 
 	void Dashboard::clear()
 	{
+		ZoneScoped;
 		m_toolList.setToolCount(0);
 		m_toolList.hideNumberPad();
 		m_graph.clear();

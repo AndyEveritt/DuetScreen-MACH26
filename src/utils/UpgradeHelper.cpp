@@ -25,6 +25,7 @@ namespace UpgradeHelper
 {
 	static bool removeTmpFile()
 	{
+		ZoneScoped;
 		std::error_code ec;
 		std::filesystem::remove(TMP_FILEPATH, ec);
 		if (ec)
@@ -37,6 +38,7 @@ namespace UpgradeHelper
 
 	static bool copyFileFromUsb(const std::string& filePath)
 	{
+		ZoneScoped;
 		if (filePath.rfind(USB_BASE_DIR, 0) != 0)
 		{
 			LOG_ERROR("File path {:s} is not on USB", filePath.c_str());
@@ -69,6 +71,7 @@ namespace UpgradeHelper
 
 	static bool moveTmpFileToBoot()
 	{
+		ZoneScoped;
 		struct stat sb;
 		std::filesystem::remove(BOOT_FILEPATH);
 		if (stat(TMP_FILEPATH, &sb) == -1)
@@ -84,6 +87,7 @@ namespace UpgradeHelper
 
 	static bool createUpgradeCompleteFile(const std::string& usbPath)
 	{
+		ZoneScoped;
 		if (usbPath.rfind(USB_BASE_DIR, 0) != 0)
 		{
 			LOG_ERROR("File path {:s} is not on USB", usbPath.c_str());
@@ -102,6 +106,7 @@ namespace UpgradeHelper
 
 	static bool upgradeFromTmp()
 	{
+		ZoneScoped;
 		if (!moveTmpFileToBoot())
 		{
 			LOG_ERROR("Failed to move file to boot partition");
@@ -113,6 +118,7 @@ namespace UpgradeHelper
 
 	bool upgradeFromUSB(const std::string& filePath)
 	{
+		ZoneScoped;
 		LOG_INFO("Attempting upgrade from USB file {:s}", filePath.c_str());
 		if (!copyFileFromUsb(filePath))
 		{
@@ -136,6 +142,7 @@ namespace UpgradeHelper
 
 	bool upgradeFromDuet()
 	{
+		ZoneScoped;
 		std::string filePath = "/firmware/" UPGRADE_FILE;
 
 		LOG_INFO("Attempting upgrade from Duet file {:s}", filePath.c_str());

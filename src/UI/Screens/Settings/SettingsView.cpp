@@ -22,6 +22,7 @@ namespace UI
 
 	static void setSliderNumberpadLabel(Slider& slider, std::string_view label)
 	{
+		ZoneScoped;
 		slider.setLabel(label);
 		slider.getLabel().hide();
 	}
@@ -29,6 +30,7 @@ namespace UI
 	SettingsView::SettingsView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		addStyle(Themes::getLvglStyles().bg_dark);
@@ -39,12 +41,14 @@ namespace UI
 
 	void SettingsView::setKeyboard(LvKeyboard* keyboard)
 	{
+		ZoneScoped;
 		m_keyboard = keyboard;
 		m_connectionSettings.setKeyboard(m_keyboard);
 	}
 
 	bool SettingsView::back()
 	{
+		ZoneScoped;
 		return false;
 	}
 
@@ -56,6 +60,7 @@ namespace UI
 		: LvContainer(name, parent, layout_t(0, 0, 100, 100))
 		, m_colDsc({LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST})
 	{
+		ZoneScoped;
 		addStyle(Themes::getLvglStyles().card);
 
 		m_rowDsc.at(1) = LV_GRID_TEMPLATE_LAST;
@@ -64,6 +69,7 @@ namespace UI
 
 	void SettingsTab::createHeader(std::string_view text)
 	{
+		ZoneScoped;
 		if (m_rowCount >= m_maxRowCount)
 		{
 			LOG_FATAL_THROW("Maximum row count exceeded");
@@ -91,6 +97,7 @@ namespace UI
 
 	void SettingsTab::createRow(std::string_view label, LvObj& obj)
 	{
+		ZoneScoped;
 		if (m_rowCount >= m_maxRowCount)
 		{
 			LOG_FATAL_THROW("Maximum row count exceeded");
@@ -118,6 +125,7 @@ namespace UI
 
 	void SettingsTab::createSpanRow(LvObj& obj)
 	{
+		ZoneScoped;
 		if (m_rowCount >= m_maxRowCount)
 		{
 			LOG_FATAL_THROW("Maximum row count exceeded");
@@ -134,6 +142,7 @@ namespace UI
 
 	void SettingsTab::setRowVisibility(LvObj& obj, bool show)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		int32_t row = lv_obj_get_style_grid_cell_row_pos(obj.getRootPtr(), LV_PART_MAIN);
 		if (row < 0 || row >= static_cast<int32_t>(m_rowCount))
@@ -152,6 +161,7 @@ namespace UI
 	GeneralSettings::GeneralSettings(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		/* Firmware version */
 		createRow(_("settings.firmware_version"), m_buildTime);
 #if USE_FIXED_TEST_BUILD_TIME
@@ -223,6 +233,7 @@ namespace UI
 
 	void GeneralSettings::onInit()
 	{
+		ZoneScoped;
 		m_brightness.setNumberPad(&HomeView::instance().getNumberPad());
 		m_screensaverTimeout.setNumberPad(&HomeView::instance().getNumberPad());
 		m_notificationTimeout.setNumberPad(&HomeView::instance().getNumberPad());
@@ -230,6 +241,7 @@ namespace UI
 
 	void GeneralSettings::onShow()
 	{
+		ZoneScoped;
 		// Update language selection
 		m_language.setSelected(std::string(i18n::getCurrentLanguage()));
 		m_brightness.setValue(static_cast<float>(DisplayHelper::getBrightness()));
@@ -246,6 +258,7 @@ namespace UI
 	ConnectionSettings::ConnectionSettings(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		/* Connection method */
 		createRow(_("settings.duet_connection_method"), m_connectionMethod);
 		std::vector<std::string> options;
@@ -352,6 +365,7 @@ namespace UI
 
 	void ConnectionSettings::setKeyboard(LvKeyboard* keyboard)
 	{
+		ZoneScoped;
 		m_keyboard = keyboard;
 #if !USE_MODAL_NUMBERPAD_FOR_IP_ADDRESS
 		m_duetIpAddress.setKeyboard(m_keyboard);
@@ -362,6 +376,7 @@ namespace UI
 
 	void ConnectionSettings::showConnectionMethodSettings(const Comm::CommunicationType method)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		setRowVisibility(m_duetIpAddress, method == Comm::CommunicationType::network);
@@ -370,6 +385,7 @@ namespace UI
 
 	void ConnectionSettings::onInit()
 	{
+		ZoneScoped;
 		m_pollInterval.setNumberPad(&HomeView::instance().getNumberPad());
 #if USE_MODAL_NUMBERPAD_FOR_IP_ADDRESS
 		m_duetIpAddress.setNumberPad(&HomeView::instance().getNumberPad());
@@ -378,6 +394,7 @@ namespace UI
 
 	void ConnectionSettings::onShow()
 	{
+		ZoneScoped;
 		// Update USB mode selection
 		auto communicationType = Comm::DUET.GetCommunicationType();
 		m_connectionMethod.setSelected(static_cast<uint32_t>(communicationType));
@@ -391,6 +408,7 @@ namespace UI
 	DisplaySettings::DisplaySettings(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		/* Theme */
 		createRow(_("settings.theme"), m_theme);
 		m_theme.setHeight(LV_SIZE_CONTENT);
@@ -452,6 +470,7 @@ namespace UI
 
 	void DisplaySettings::updateThemePreview()
 	{
+		ZoneScoped;
 		auto theme = Themes::getCurrentTheme();
 		if (theme == nullptr)
 		{
@@ -473,11 +492,13 @@ namespace UI
 
 	void DisplaySettings::onInit()
 	{
+		ZoneScoped;
 		m_themePreview.setNumberPad(&HomeView::instance().getNumberPad());
 	}
 
 	void DisplaySettings::onShow()
 	{
+		ZoneScoped;
 		updateThemePreview();
 		m_font.setSelected(FontManager::getActiveTypefaceName());
 		m_icons.setSelected(_(fmt::format("theme.icon_sets.{:s}", Themes::getIconFolder())));
@@ -486,6 +507,7 @@ namespace UI
 	DeveloperSettings::DeveloperSettings(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
+		ZoneScoped;
 		/* Debug level */
 		createRow(_("settings.debug_level"), m_debugLevel);
 		m_debugLevel.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -619,6 +641,7 @@ namespace UI
 
 	void DeveloperSettings::onShow()
 	{
+		ZoneScoped;
 		m_debugLevel.setSelected(static_cast<uint32_t>(Log::GetDebugLevel()));
 		m_enableAdvancedSettings.setChecked(StorageHelper::getData(ID_ENABLE_ADVANCED_SETTINGS, false));
 #if DEBUG_BORDERS
@@ -638,6 +661,7 @@ namespace UI
 
 	static void onTextareaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode)
 	{
+		ZoneScoped;
 		UI_LOCK();
 
 		lv_event_code_t code = lv_event_get_code(e);

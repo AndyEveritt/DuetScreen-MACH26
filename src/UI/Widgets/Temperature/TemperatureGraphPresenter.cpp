@@ -16,6 +16,7 @@ namespace UI
 {
 	void TemperatureGraphPresenter::tick()
 	{
+		ZoneScoped;
 		// Update the graph with new temperature data
 		UI_LOCK();
 		const size_t heaterCount = OM::Heat::GetHeaterCount();

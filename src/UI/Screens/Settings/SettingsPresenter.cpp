@@ -11,6 +11,7 @@ namespace UI
 
 	void DeveloperSettingsPresenter::startHardwareTest()
 	{
+		ZoneScoped;
 		auto& hardwareTest = getView()->getHardwareTest();
 		hardwareTest.show(true);
 
