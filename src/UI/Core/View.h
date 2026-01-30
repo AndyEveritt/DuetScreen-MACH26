@@ -60,10 +60,10 @@ namespace UI
 		 *
 		 * @note This function calls the `onShow()` virtual method before showing the view.
 		 */
-		void show(bool move_to_front = false)
+		void showInner() override
 		{
 			activate();
-			BaseViewType::show(move_to_front);
+			BaseViewType::showInner();
 		}
 
 		/**
@@ -71,10 +71,10 @@ namespace UI
 		 *
 		 * @note This function calls the `onHide()` virtual method before hiding the view.
 		 */
-		void hide(bool move_to_back = false)
+		void hideInner() override
 		{
 			deactivate();
-			BaseViewType::hide(move_to_back);
+			BaseViewType::hideInner();
 		}
 
 	  protected:

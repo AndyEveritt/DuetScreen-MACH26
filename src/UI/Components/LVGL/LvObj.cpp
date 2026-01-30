@@ -921,8 +921,41 @@ namespace UI
 	void LvObj::show(bool move_to_front)
 	{
 		ZoneScoped;
-		UI_LOCK();
-		if (getRootPtr() == nullptr || m_showing)
+		{
+			UI_LOCK();
+			if (getRootPtr() == nullptr || m_showing)
+			{
+				return;
+			}
+
+			if (!m_initialized)
+			{
+				m_initialized = 1;
+				onInit();
+			}
+
+			if (!hasFlag(LV_OBJ_FLAG_HIDDEN))
+			{
+				LOG_VERBOSE("'{:s}' is already visible", getName());
+				/* Don't return */
+			}
+
+			LOG_DBG("Showing '{:s}'", getName());
+			if (move_to_front)
+			{
+				moveToFront();
+			}
+		}
+
+		setFlag(LV_OBJ_FLAG_HIDDEN, false);
+		showInner();
+	}
+
+	void LvObj::showInner()
+	{
+		ZoneScoped;
+		/* Stop recursive call to same LvObj */
+		if (m_showing)
 		{
 			return;
 		}
@@ -933,30 +966,18 @@ namespace UI
 			onInit();
 		}
 
-		if (!hasFlag(LV_OBJ_FLAG_HIDDEN))
-		{
-			LOG_VERBOSE("'{:s}' is already visible", getName());
-			/* Don't return */
-		}
-
-		LOG_DBG("Showing '{:s}'", getName());
 		m_showing = 1;
-		if (move_to_front)
-		{
-			moveToFront();
-		}
-
 #if LV_NESTED_SHOW_HIDE
 		iterateChildren(
 			[](size_t /* index */, LvObj& child)
 			{
 				if (child.isVisible())
-					child.show(false);
+					child.showInner();
 			});
 #endif
 
-		setFlag(LV_OBJ_FLAG_HIDDEN, false);
 		onShow();
+
 		m_showing = 0;
 	}
 
@@ -980,12 +1001,24 @@ namespace UI
 		}
 
 		LOG_DBG("Hiding '{:s}'", getName());
-		m_hidding = 1;
 		if (move_to_back)
 		{
 			moveToBack();
 		}
 
+		setFlag(LV_OBJ_FLAG_HIDDEN, true);
+		hideInner();
+	}
+
+	void LvObj::hideInner()
+	{
+		ZoneScoped;
+		if (m_hidding)
+		{
+			return;
+		}
+
+		m_hidding = 1;
 #if LV_NESTED_SHOW_HIDE
 		iterateChildren(
 			[](size_t, LvObj& child)
@@ -994,14 +1027,13 @@ namespace UI
 				{
 					/* want to run `deactivate` on any children with presenters, and onHide(), but also want the child
 					 * to be visible again when obj is shown */
-					child.hide();
-					child.setFlag(LV_OBJ_FLAG_HIDDEN, false);
+					child.hideInner();
 				}
 			});
 #endif
 
-		setFlag(LV_OBJ_FLAG_HIDDEN, true);
 		onHide();
+
 		m_hidding = 0;
 	}
 

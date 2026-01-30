@@ -41,7 +41,7 @@ namespace UI
 
 			this->setAlign(LV_ALIGN_CENTER, 0, 0);
 			static_cast<T*>(this)->setParent(m_modalBg); // make sure to call the base setParent
-			this->hide();
+			T::hide();
 
 			m_modalBg.setFlag(LV_OBJ_FLAG_FLOATING, true);
 			m_modalBg.addEventCallback(
@@ -102,20 +102,12 @@ namespace UI
 		/**
 		 * @warning private to prevent accidental calls (use this->open() or openModal() instead)
 		 */
-		void show(bool move_to_front = false) override
-		{
-			ZoneScoped;
-			T::show(move_to_front);
-		}
+		void show(bool move_to_front = false) = delete;
 
 		/**
 		 * @warning private to prevent accidental calls (use this->close() or closeModal() instead)
 		 */
-		void hide(bool move_to_front = false) override
-		{
-			ZoneScoped;
-			T::hide(move_to_front);
-		}
+		void hide(bool move_to_front = false) = delete;
 
 		void onShow() override
 		{

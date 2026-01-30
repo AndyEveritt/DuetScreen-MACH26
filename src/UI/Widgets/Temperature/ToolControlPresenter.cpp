@@ -46,8 +46,13 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		reset();
-		m_tool = OM::GetToolBySlot(toolIndex);
+		const auto tool = OM::GetToolBySlot(toolIndex);
+		if (m_tool != tool)
+		{
+			reset();
+			m_tool = tool;
+		}
+
 		if (m_tool == nullptr)
 		{
 			LOG_ERROR("Tool with index {:d} not found", toolIndex);

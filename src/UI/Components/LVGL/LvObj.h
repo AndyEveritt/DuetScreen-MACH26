@@ -250,8 +250,8 @@ namespace UI
 		void clearChildren();
 
 		void setVisible(bool display, bool move_to_front = false);
-		virtual void show(bool move_to_front = false);
-		virtual void hide(bool move_to_back = false);
+		void show(bool move_to_front = false);
+		void hide(bool move_to_back = false);
 		bool isVisible();
 
 		virtual bool back();
@@ -263,7 +263,9 @@ namespace UI
 		virtual void onShow() {}
 		virtual void onHide() {}
 
-	  private:
+		virtual void showInner();
+		virtual void hideInner();
+
 		lv_obj_t* m_root;
 		std::string m_name;
 

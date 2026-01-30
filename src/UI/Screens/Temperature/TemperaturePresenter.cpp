@@ -53,7 +53,6 @@ namespace UI
 	{
 		ZoneScoped;
 		auto& beds = m_view->getBeds();
-		beds.clear();
 		beds.setItemCount(OM::GetBedCount(),
 						  [this](size_t index, LvObj& parent)
 						  {
@@ -70,7 +69,6 @@ namespace UI
 	{
 		ZoneScoped;
 		auto& chambers = m_view->getChambers();
-		chambers.clear();
 		chambers.setItemCount(OM::GetChamberCount(),
 							  [this](size_t index, LvObj& parent)
 							  {
