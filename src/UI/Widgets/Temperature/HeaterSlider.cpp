@@ -7,6 +7,8 @@
 
 namespace UI
 {
+	static constexpr lv_coord_t s_dragThreshold = 2;
+
 	HeaterSlider::HeaterSlider(const std::string& name, LvObj& parent)
 		: View(name, parent)
 	{
@@ -187,12 +189,14 @@ namespace UI
 		{
 		case LV_EVENT_SHORT_CLICKED:
 		{
+			ZoneScopedN("HeaterSlider::onTemperatureLabelEvent::LV_EVENT_SHORT_CLICKED");
 			// Open numberpad
 			LOG_DBG("Label '{}' clicked", label.getName());
 			break;
 		}
 		case LV_EVENT_PRESSED:
 		{
+			ZoneScopedN("HeaterSlider::onTemperatureLabelEvent::LV_EVENT_PRESSED");
 			lv_indev_get_point(lv_indev_active(), &control.m_pressedPoint);
 			lv_obj_transform_point(
 				label.getRootPtr(), &control.m_pressedPoint, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
@@ -201,11 +205,13 @@ namespace UI
 									 (control.m_maxTempValue - control.m_minTempValue));
 
 			control.m_pressedPointOffset.x =
-				(control.m_pressedPoint.x - label.getCoords().x1 - label.getWidth() * pct_100) / 100;
+				control.m_pressedPoint.x - label.getCoords().x1 - ((label.getWidth() * pct_100) / 100);
+			control.m_dragging = false;
 			break;
 		}
 		case LV_EVENT_PRESSING:
 		{
+			ZoneScopedN("HeaterSlider::onTemperatureLabelEvent::LV_EVENT_PRESSING");
 			// Update the target temperature based on the slider position
 			lv_indev_t* indev = lv_indev_active();
 			if (lv_indev_get_type(indev) != LV_INDEV_TYPE_POINTER)
@@ -217,14 +223,24 @@ namespace UI
 			lv_indev_get_point(indev, &p);
 			lv_obj_transform_point(label.getRootPtr(), &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
 
-			const int32_t range = static_cast<int32_t>(control.m_maxTempValue - control.m_minTempValue);
+			if (abs(p.x - control.m_pressedPoint.x) > s_dragThreshold)
+			{
+				control.m_dragging = true;
+			}
+
+			if (!control.m_dragging)
+			{
+				break;
+			}
+
+			const float range = control.m_maxTempValue - control.m_minTempValue;
 			const int32_t w = control.m_currentTemperature.getWidth();
 			const int32_t rel_position =
 				p.x - control.m_currentTemperature.getCoords().x1 - control.m_pressedPointOffset.x;
-			int32_t new_temperature = static_cast<int32_t>(
-				std::clamp(static_cast<float>((range * rel_position + w / 2) / w) + control.m_minTempValue,
-						   control.m_minTempValue,
-						   control.m_maxTempValue));
+			int32_t new_temperature = static_cast<int32_t>(std::lroundf(std::clamp(
+				((range * static_cast<float>(rel_position)) / static_cast<float>(w)) + control.m_minTempValue,
+				control.m_minTempValue,
+				control.m_maxTempValue)));
 
 			if (activeTemperature)
 				control.setActiveTemperature(new_temperature, true);
@@ -235,13 +251,14 @@ namespace UI
 		case LV_EVENT_RELEASED:
 		case LV_EVENT_PRESS_LOST:
 		{
+			ZoneScopedN("HeaterSlider::onTemperatureLabelEvent::LV_EVENT_RELEASED");
 			LOG_DBG("Label '{}' released", label.getName());
 			// Set new target temperature
 			lv_point_t p;
 			lv_indev_get_point(lv_indev_active(), &p);
 			lv_obj_transform_point(label.getRootPtr(), &p, LV_OBJ_POINT_TRANSFORM_FLAG_INVERSE_RECURSIVE);
 
-			if (abs(p.x - control.m_pressedPoint.x) < 2)
+			if (!control.m_dragging)
 			{
 				if (control.m_numberPad == nullptr)
 				{
@@ -271,6 +288,7 @@ namespace UI
 		}
 		case LV_EVENT_REFR_EXT_DRAW_SIZE:
 		{
+			ZoneScopedN("HeaterSlider::onTemperatureLabelEvent::LV_EVENT_REFR_EXT_DRAW_SIZE");
 			int32_t size =
 				activeTemperature
 					? control.m_currentTemperature.getCoords().y1 - control.m_activeTemperature.getCoords().y2
@@ -280,7 +298,9 @@ namespace UI
 		}
 		case LV_EVENT_DRAW_MAIN:
 		{
+// Draw temperature marker
 #if 1
+			ZoneScopedN("HeaterSlider::onTemperatureLabelEvent::LV_EVENT_DRAW_MAIN");
 			lv_layer_t* layer = lv_event_get_layer(e);
 			lv_area_t marker_area;
 			static int32_t marker_width = 21;

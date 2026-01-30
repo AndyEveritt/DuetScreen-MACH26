@@ -44,6 +44,7 @@ namespace UI
 
 		lv_point_t m_pressedPoint;
 		lv_point_t m_pressedPointOffset;
+		bool m_dragging;
 
 		float m_currentTempValue = 0.0f;
 		int32_t m_activeTempValue = 0;
