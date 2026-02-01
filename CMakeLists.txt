@@ -4,6 +4,20 @@ include(FetchContent)
 include(ExternalProject)
 include(CTest) # Enables BUILD_TESTING and CTest integration
 
+# Enable Interprocedural Optimization (LTO) when supported
+if(POLICY CMP0069)
+  cmake_policy(SET CMP0069 NEW)
+endif()
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported OUTPUT ipo_output)
+if(ipo_supported)
+  message(STATUS "LTO/IPO supported: enabling for Release and RelWithDebInfo")
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO ON)
+else()
+  message(STATUS "LTO/IPO not supported: ${ipo_output}")
+endif()
+
 # Set C and C++ standards
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 23)
