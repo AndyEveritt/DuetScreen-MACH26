@@ -362,6 +362,9 @@ TEST_F(TestHomeViewWithData, ConsoleView)
 	view.getConsoleView().showCommandList(true, false);
 	EXPECT_EQUAL_SCREENSHOT("home_view/console_view/command_list.png");
 
+	view.getConsoleView().showCommandList(false, false);
+	EXPECT_EQUAL_SCREENSHOT("home_view/console_view/command_list_hidden.png");
+
 	view.getConsoleView().showKeyboard(true);
 	EXPECT_EQUAL_SCREENSHOT("home_view/console_view/keyboard.png");
 }

@@ -57,6 +57,12 @@ namespace UI
 		 * @param obj The LVGL object to update (created by create()).
 		 */
 		virtual void update(size_t index, ObjT& obj) = 0;
+
+		/**
+		 * @brief Called to determine if the item is visible and should be considered when rendering the list
+		 * @return `true` if the item is visible
+		 */
+		virtual bool isVisible() const { return true; }
 	};
 
 	template <typename LazyT>
@@ -167,16 +173,6 @@ namespace UI
 			m_sizer.setHeight(0);
 		}
 
-		template <typename... Args>
-		TRef addItem(Args&&... args)
-		{
-			ZoneScoped;
-			auto item = std::make_unique<T>(std::forward<Args>(args)...);
-			m_items.push_back(std::move(item));
-			refresh();
-			return *m_items.back();
-		}
-
 		template <typename F>
 			requires LazyListItemConstructor<F, LazyTPtr>
 		size_t setItemCount(const size_t count, F&& constructor)
@@ -213,6 +209,10 @@ namespace UI
 			bool first = true;
 			for (const auto& item : m_pool)
 			{
+				if (!item->isVisible())
+				{
+					continue;
+				}
 				totalHeight += item->getSize();
 				if (!first)
 				{
@@ -245,13 +245,18 @@ namespace UI
 			lv_coord_t itemStart = 0;
 			for (size_t i = 0; i < m_pool.size(); ++i)
 			{
-				lv_coord_t itemHeight = m_pool[i]->getSize();
+				const LazyTPtr& item = m_pool.at(i);
+				if (!item->isVisible())
+				{
+					continue;
+				}
+
+				lv_coord_t itemHeight = item->getSize();
 				lv_coord_t itemBottom = itemStart + itemHeight;
 
 				if (itemBottom >= scrollTop && itemStart <= scrollBottom)
 				{
-					item_info_t info{.index = i, .top = itemStart, .height = itemHeight};
-					visibleItems.push_back(std::move(info));
+					visibleItems.emplace_back(i, itemStart, itemHeight);
 				}
 				itemStart += itemHeight + itemPad;
 			}

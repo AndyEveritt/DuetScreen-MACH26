@@ -10,9 +10,9 @@
 
 namespace UI
 {
-#define TABLE_GCODE_WIDTH 100
-#define TABLE_DESCRIPTION_WIDTH 500
-#define INPUT_BTN_SIZE 50
+	static constexpr lv_coord_t s_gcodeWidth = 50;
+	static constexpr lv_coord_t s_descriptionWidth = 500;
+	static constexpr lv_coord_t s_inputBtnSize = 50;
 
 	ConsoleView::ConsoleView(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
@@ -35,7 +35,7 @@ namespace UI
 		m_commandVisibility.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		m_commandVisibility.updateLayout();
 		m_commandList.setFlexGrow(1);
-		m_commandList.setMinWidth(TABLE_GCODE_WIDTH);
+		m_commandList.setMinWidth(0);
 		m_output.setFlexGrow(30);
 		m_commandList.setHeight(LV_PCT(100));
 		m_output.setHeight(LV_PCT(100));
@@ -43,18 +43,9 @@ namespace UI
 		m_output.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 
 		// Command List
-		m_commandList.setColumnCount(2);
-		m_commandList.setColumnWidth(0, TABLE_GCODE_WIDTH);
-		m_commandList.setColumnWidth(1, TABLE_DESCRIPTION_WIDTH);
-		m_commandList.setRowCount(static_cast<uint32_t>(Gcodes::getGcodeCount()));
-		size_t gcode_count = Gcodes::getGcodeCount();
-		assert(gcode_count < std::numeric_limits<uint32_t>::max()); // table uses uint32_t
-		for (size_t i = 0; i < gcode_count; i++)
-		{
-			const gcode* g = Gcodes::getGcode(i);
-			m_commandList.setCellValue(static_cast<uint32_t>(i), 0, g->gcode.data());
-			m_commandList.setCellValue(static_cast<uint32_t>(i), 1, g->helpText.data());
-		}
+		m_commandList.getListContainer().setScrollDir(LV_DIR_ALL);
+		m_commandList.setItemCount(Gcodes::getGcodeCount(),
+								   [this](size_t index) { return std::make_unique<LazyGcodeItem>(index, *this); });
 
 		// Input Area
 		m_inputCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -65,8 +56,8 @@ namespace UI
 		m_input.setPlaceholderText(_("console.input_placeholder"));
 		m_input.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
 		m_input.setHeight(LV_SIZE_CONTENT);
-		m_clear.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
-		m_enter.setSize(INPUT_BTN_SIZE, INPUT_BTN_SIZE);
+		m_clear.setSize(s_inputBtnSize, s_inputBtnSize);
+		m_enter.setSize(s_inputBtnSize, s_inputBtnSize);
 
 		m_clear.setIcon("clear.png");
 		m_enter.setIcon("send.png");
@@ -90,7 +81,6 @@ namespace UI
 		// Callbacks
 		m_clear.addClickedCallback(onClearEvent, this);
 		m_enter.addClickedCallback(onSendEvent, this);
-		m_commandList.addEventCallback(onCommandListEvent, LV_EVENT_ALL, this);
 		m_input.addEventCallback(onKeyboardEvent, LV_EVENT_ALL, this);
 		m_commandVisibility.addClickedCallback(
 			[](lv_event_t* e)
@@ -101,6 +91,7 @@ namespace UI
 			},
 			this);
 
+		m_commandList.getListContainer().hide();
 		showCommandList(!StorageHelper::getData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, false), false);
 	}
 
@@ -149,8 +140,8 @@ namespace UI
 		StorageHelper::setData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, !show);
 		m_commandVisibility.setChecked(show);
 
-		uint8_t start = show ? 1 : 20;
-		uint8_t end = show ? 20 : 1;
+		uint8_t start = show ? 1 : 10;
+		uint8_t end = show ? 10 : 1;
 
 		if (animate)
 		{
@@ -171,20 +162,24 @@ namespace UI
 				{
 					ZoneScopedN("ConsoleView::showCommandList:animDeletedCb");
 					ConsoleView& view = *static_cast<ConsoleView*>(anim->var);
-					view.m_commandList.setScrollDir(view.m_commandVisibility.hasState(LV_STATE_CHECKED) ? LV_DIR_ALL
-																										: LV_DIR_VER);
 					view.m_commandList.setFlexGrow(static_cast<uint8_t>(anim->end_value));
+					view.m_commandList.getListContainer().setVisible(anim->end_value > 1);
 					view.updateBtnPos();
 					view.m_output.updateLayout();
 					view.m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
 				}
 
 			);
+			if (show)
+			{
+				m_commandList.getListContainer().show();
+			}
 			anim.start();
 		}
 		else
 		{
 			m_commandList.setFlexGrow(static_cast<uint8_t>(end));
+			m_commandList.getListContainer().setVisible(show);
 			updateBtnPos();
 			m_output.updateLayout();
 			m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
@@ -215,6 +210,7 @@ namespace UI
 		view->clear();
 	}
 
+#if 0
 	void ConsoleView::onCommandListEvent(lv_event_t* e)
 	{
 		ZoneScoped;
@@ -237,6 +233,7 @@ namespace UI
 			view->m_input.setText(gcode);
 		}
 	}
+#endif
 
 	void ConsoleView::onKeyboardEvent(lv_event_t* e)
 	{
@@ -246,6 +243,7 @@ namespace UI
 		lv_event_code_t code = lv_event_get_code(e);
 		switch (code)
 		{
+		case LV_EVENT_CLICKED:
 		case LV_EVENT_FOCUSED:
 		{
 			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_FOCUSED");
@@ -262,32 +260,22 @@ namespace UI
 		{
 			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_VALUE_CHANGED");
 			view->m_commandList.scrollToY(0, LV_ANIM_OFF);
+
 			std::string_view cmd = view->m_input.getText();
+			cmd = cmd.substr(0, cmd.find_first_of(' '));
+
 			LOG_DBG("Filtering command list for '{}'", cmd);
-			if (cmd.find_first_of(' ') == std::string::npos)
+			std::string upper_cmd;
+			std::transform(
+				cmd.begin(), cmd.end(), std::back_inserter(upper_cmd), [](unsigned char c) { return std::toupper(c); });
+
+			for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
 			{
-				std::string upper_cmd;
-				std::transform(cmd.begin(),
-							   cmd.end(),
-							   std::back_inserter(upper_cmd),
-							   [](unsigned char c) { return std::toupper(c); });
-
-				uint16_t index = 0;
-				for (size_t i = 0; i < Gcodes::getGcodeCount(); i++)
-				{
-					const gcode* g = Gcodes::getGcode(i);
-					if (std::string(g->gcode).rfind(upper_cmd, 0) == 0)
-					{
-						view->m_commandList.setCellValue(index, 0, g->gcode.data());
-						view->m_commandList.setCellValue(index, 1, g->helpText.data());
-						index++;
-					}
-				}
-
-				LOG_DBG("Filtered command list to {} entries", index);
-				view->m_commandList.setRowCount(index);
+				const gcode* g = Gcodes::getGcode(i);
+				const bool visible = g->gcode.rfind(upper_cmd, 0) == 0;
+				view->m_commandList.getLazyItem(i)->setVisible(visible);
 			}
-
+			view->m_commandList.refresh();
 			break;
 		}
 		case LV_EVENT_READY:
@@ -339,5 +327,51 @@ namespace UI
 		ZoneScoped;
 		// We want the console output to still update with new replies even when the console is hidden.
 		activate();
+	}
+
+	ConsoleView::GcodeItem::GcodeItem(const std::string& name, LvObj& parent)
+		: LvContainer(name, parent)
+	{
+		ZoneScoped;
+		setFlexFlow(LV_FLEX_FLOW_ROW);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setWidth(LV_SIZE_CONTENT);
+		m_gcode.setWidth(s_gcodeWidth);
+		m_gcode.setMinWidth(LV_SIZE_CONTENT);
+		m_description.setWidth(LV_SIZE_CONTENT);
+		m_description.addStyle(Themes::getLvglStyles().text_muted);
+
+		addEventCallback(
+			[this](lv_event_t*)
+			{
+				if (m_consoleView)
+				{
+					m_consoleView->m_input.setText(m_gcode.getText());
+				}
+			},
+			LV_EVENT_CLICKED);
+	}
+
+	ConsoleView::LazyGcodeItem::LazyGcodeItem(size_t index, ConsoleView& view)
+		: m_index(index)
+		, m_view(view)
+	{
+		ZoneScoped;
+	}
+
+	lv_coord_t ConsoleView::LazyGcodeItem::getSize() const
+	{
+		ZoneScoped;
+		return 30;
+	}
+
+	void ConsoleView::LazyGcodeItem::update(size_t index, ConsoleView::GcodeItem& obj)
+	{
+		ZoneScoped;
+		const gcode* g = Gcodes::getGcode(index);
+
+		obj.setGcode(g->gcode);
+		obj.setDescription(g->helpText);
+		obj.setConsoleView(&m_view);
 	}
 } // namespace UI
