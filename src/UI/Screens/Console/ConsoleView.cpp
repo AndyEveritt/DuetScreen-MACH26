@@ -142,10 +142,13 @@ namespace UI
 		m_output.setSpanStyle(respSpan,
 							  emphasize ? Themes::getLvglStyles().text_emphasis : Themes::getLvglStyles().text);
 
-		auto newlineSpan = m_output.addSpan();
-		newlineSpan.setText("\n");
+		if (resp.length() > 0 && resp.back() != '\n')
+		{
+			auto newlineSpan = m_output.addSpan();
+			newlineSpan.setText("\n");
+		}
 
-		while (m_output.getSpanCount() > MAX_RESPONSE_LINES * 3) // 3 spans per line
+		while (m_output.getSpanCount() > MAX_RESPONSE_LINES * 3) // 3 spans per line (most of the time)
 		{
 			auto spanOpt = m_output.getSpanByIndex(0);
 			if (!spanOpt.has_value())

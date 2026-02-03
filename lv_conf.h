@@ -61,6 +61,9 @@
 #define LV_BUILD_EXAMPLES 0
 #define LV_BUILD_DEMOS 0
 
+/* Logging */
+#define LV_LOG_USE_LEVEL 0
+
 /* Profiling */
 #if defined LV_USE_PROFILER && LV_USE_PROFILER
 #  define LV_PROFILER_BEGIN LvZoneStart

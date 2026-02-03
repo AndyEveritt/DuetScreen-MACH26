@@ -44,11 +44,6 @@ using std::vector;
 
 #if LOG_TIMESTAMPS
 #  define LOG_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S.%e] "
-#  if DEBUG
-#	define LOG_UI_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S.%e] "
-#  else
-#	define LOG_UI_TIMESTAMP_FMT "[%Y-%m-%d %H:%M:%S] "
-#  endif
 #else
 #  define LOG_TIMESTAMP_FMT ""
 #  define LOG_UI_TIMESTAMP_FMT ""
@@ -60,7 +55,7 @@ using std::vector;
 
 #define LOG_FILE_PATTERN LOG_TIMESTAMP_FMT "[%l] [%t] %@ %!() %v"
 
-#define LOG_UI_PATTERN LOG_UI_TIMESTAMP_FMT "[%l] %v"
+#define LOG_UI_PATTERN "[%l] %v"
 
 #if USE_TRACY_SEVERITY
 #  define LOG_TRACY_PATTERN "[%@ %!()] %v"
@@ -85,7 +80,7 @@ namespace Log
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 			std::string str(formatted.data(), formatted.size());
-			Model::get().post<EventType::LogMessage>(static_cast<DebugLevel>(msg.level), msg.time, str);
+			Model::get().post<EventType::LogMessage>(static_cast<DebugLevel>(msg.level), msg.time, std::move(str));
 		}
 
 		void flush_() override {}
