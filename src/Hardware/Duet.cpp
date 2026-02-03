@@ -80,7 +80,7 @@ namespace Comm
 		m_sessionKey = sm_noSessionKey;
 		m_sbcMode = false;
 		m_sessionTimeout = std::chrono::milliseconds(0);
-		m_lastRequestTime = TimeHelper::getCurrentTime();
+		m_lastRequestTime = TimeHelper::getRunningTime();
 		m_pollIntervalScale = 1.0f;
 		m_nextLineNumber = 0;
 		ClearIPAddress();
@@ -209,7 +209,7 @@ namespace Comm
 		ZoneScoped;
 		m_cli.sendAsync(req,
 						[this, req, callback](const HttpResponsePtr& resp) { AsyncGetCallback(req, resp, callback); });
-		m_lastRequestTime = TimeHelper::getCurrentTime();
+		m_lastRequestTime = TimeHelper::getRunningTime();
 	}
 
 	bool Duet::AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback)
@@ -297,7 +297,7 @@ namespace Comm
 			return false;
 		}
 		LOG_VERBOSE("{:s}", r.body.c_str());
-		m_lastRequestTime = TimeHelper::getCurrentTime();
+		m_lastRequestTime = TimeHelper::getRunningTime();
 		return true;
 	}
 
@@ -1018,7 +1018,7 @@ namespace Comm
 							   if (body.contains("sessionTimeout"))
 							   {
 								   m_sessionTimeout = std::chrono::milliseconds(body["sessionTimeout"].get<int>());
-								   m_lastRequestTime = TimeHelper::getCurrentTime();
+								   m_lastRequestTime = TimeHelper::getRunningTime();
 								   LOG_INFO("Duet session timeout set to {}", m_sessionTimeout);
 							   }
 

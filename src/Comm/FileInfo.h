@@ -109,7 +109,7 @@ namespace Comm
 
 			void Receiving()
 			{
-				m_receiveTime = TimeHelper::getCurrentTime();
+				m_receiveTime = TimeHelper::getRunningTime();
 				m_state = RequestState::RECEIVING;
 			}
 			void Complete(bool failed = false) { m_state = failed ? RequestState::FAILED : RequestState::COMPLETE; }
@@ -126,7 +126,7 @@ namespace Comm
 
 			bool RequestData()
 			{
-				m_requestTime = TimeHelper::getCurrentTime();
+				m_requestTime = TimeHelper::getRunningTime();
 				if (!RequestDataInner())
 				{
 					return false;

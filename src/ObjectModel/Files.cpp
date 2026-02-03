@@ -81,7 +81,7 @@ namespace OM::FileSystem
 		: m_path(path)
 		, m_callback(callback)
 		, m_runEveryTime(run_every_time)
-		, m_requestTime(TimeHelper::getCurrentTime())
+		, m_requestTime(TimeHelper::getRunningTime())
 	{
 		ZoneScoped;
 	}

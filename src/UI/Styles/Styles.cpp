@@ -902,7 +902,13 @@ namespace UI::Themes
 		}
 
 #  endif
-
+#  if LV_USE_SPAN
+		else if (lv_obj_check_type(obj, &lv_spangroup_class))
+		{
+			lv_obj_add_style(obj, lvgl.text, 0);
+			lv_obj_add_style(obj, lvgl.scrollbar, LV_PART_SCROLLBAR);
+		}
+#  endif
 #  if LV_USE_SPINBOX
 		else if (lv_obj_check_type(obj, &lv_spinbox_class))
 		{

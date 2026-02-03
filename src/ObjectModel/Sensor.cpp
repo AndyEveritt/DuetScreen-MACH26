@@ -73,7 +73,7 @@ namespace OM
 		}
 
 		sensor->lastReading = reading;
-		sensor->lastReadingTime = TimeHelper::getCurrentTime();
+		sensor->lastReadingTime = TimeHelper::getRunningTime();
 		return true;
 	}
 

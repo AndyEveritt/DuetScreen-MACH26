@@ -1,7 +1,7 @@
 /*
  * LvChart.gen.h
  *
- *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-02-03T12:42:00 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 

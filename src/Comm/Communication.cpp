@@ -184,7 +184,7 @@ namespace Comm
 				LOG_DBG("seq '{:s}'", current->key);
 				return current;
 			}
-			if (current->state == SeqStateRequested && current->lastRequestTime + 500ms < TimeHelper::getCurrentTime())
+			if (current->state == SeqStateRequested && current->lastRequestTime + 500ms < TimeHelper::getRunningTime())
 			{
 				LOG_DBG("seq '{:s}' was requested but not updated, re-requesting", current->key);
 				current->state = SeqStateUpdate;
@@ -254,7 +254,7 @@ namespace Comm
 		}
 
 		LOG_DBG("Requesting seq '{:s}'", seq->key);
-		seq->lastRequestTime = TimeHelper::getCurrentTime();
+		seq->lastRequestTime = TimeHelper::getRunningTime();
 		seq->state = SeqStateRequested;
 
 		Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
@@ -396,10 +396,10 @@ namespace Comm
 	void KickWatchdog()
 	{
 		ZoneScoped;
-		const std::chrono::milliseconds now = TimeHelper::getCurrentTime();
+		const std::chrono::milliseconds now = TimeHelper::getRunningTime();
 		if (now > s_lastResponseTime)
 		{
-			s_lastResponseTime = TimeHelper::getCurrentTime();
+			s_lastResponseTime = TimeHelper::getRunningTime();
 		}
 	}
 
@@ -427,7 +427,7 @@ namespace Comm
 			return false;
 		}
 
-		const auto now = TimeHelper::getCurrentTime();
+		const auto now = TimeHelper::getRunningTime();
 		const auto expectedResponseBy = s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT;
 		if (now > expectedResponseBy)
 		{

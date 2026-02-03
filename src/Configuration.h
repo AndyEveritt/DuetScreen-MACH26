@@ -110,7 +110,7 @@ constexpr size_t HEIGHTMAP_COLORBAR_SAMPLES = 100;
 /* Console */
 constexpr unsigned int MAX_COMMAND_LENGTH = 50;
 constexpr unsigned int MAX_RESPONSE_LINE_LENGTH = 80;
-constexpr unsigned int MAX_RESPONSE_LINES = 500;
+constexpr unsigned int MAX_RESPONSE_LINES = 200;
 
 /* Webcam */
 constexpr size_t MAX_WEBCAMS = 20;

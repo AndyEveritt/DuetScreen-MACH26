@@ -5,6 +5,7 @@
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvContainer.h"
 #include "UI/Components/LVGL/LvKeyboard.h"
+#include "UI/Components/LVGL/LvSpan.h"
 #include "UI/Components/LVGL/LvTextarea.h"
 #include "UI/Components/List/LazyList.h"
 #include "UI/Core/View.h"
@@ -56,7 +57,7 @@ namespace UI
 
 		void clear();
 		void addCommand(std::string_view resp);
-		void addResponse(const std::string& resp);
+		void addResponse(const std::string& resp, const bool emphasize = false);
 		void showCommandList(bool show, bool animate = LV_ANIM_ON);
 		void showKeyboard(bool show);
 
@@ -76,7 +77,8 @@ namespace UI
 		LvContainer m_topCont{"top_cont", getRoot()};
 		LazyList<LazyGcodeItem> m_commandList{"command_list", m_topCont};
 		Button m_commandVisibility{"command_visibility", m_topCont, LV_SYMBOL_LIST};
-		LvTextarea m_output{"output", m_topCont};
+		LvContainer m_outputCont{"output_cont", m_topCont};
+		LvSpanGroup m_output{"output", m_outputCont};
 		LvContainer m_inputCont{"input_cont", getRoot()};
 		LvTextarea m_input{"input", m_inputCont};
 		Button m_clear{"clear", m_inputCont};

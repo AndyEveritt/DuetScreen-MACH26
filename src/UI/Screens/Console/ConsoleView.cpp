@@ -7,6 +7,7 @@
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 #include "utils/StorageHelper.h"
+#include "utils/TimeHelper.h"
 
 namespace UI
 {
@@ -36,11 +37,12 @@ namespace UI
 		m_commandVisibility.updateLayout();
 		m_commandList.setFlexGrow(1);
 		m_commandList.setMinWidth(0);
-		m_output.setFlexGrow(30);
 		m_commandList.setHeight(LV_PCT(100));
-		m_output.setHeight(LV_PCT(100));
-		m_output.setCursorClickPos(false);
-		m_output.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
+
+		m_outputCont.setFlexGrow(30);
+		m_outputCont.setHeight(LV_PCT(100));
+		m_outputCont.addStyle(Themes::getLvglStyles().card);
+		m_output.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		// Command List
 		m_commandList.getListContainer().setScrollDir(LV_DIR_ALL);
@@ -104,29 +106,57 @@ namespace UI
 	void ConsoleView::addCommand(std::string_view resp)
 	{
 		ZoneScoped;
-		addResponse(fmt::format("> {:s}", resp));
+		addResponse(fmt::format("> {:s}", resp), true);
 	}
 
-	void ConsoleView::addResponse(const std::string& resp)
+	void ConsoleView::addResponse(const std::string& resp, const bool emphasize)
 	{
 		ZoneScoped;
-		m_output.addText(resp);
-		m_output.addChar('\n');
+#if !USE_FIXED_TEST_BUILD_TIME
+		const auto now = std::chrono::system_clock::now();
+#endif
 
-		std::string_view currentText = m_output.getText();
+		const auto timePrefix = fmt::format("[{:02}:{:02}:{:02}]   ",
+#if USE_FIXED_TEST_BUILD_TIME
+											12,
+											34,
+											56
+#else
+											std::chrono::duration_cast<std::chrono::hours>(now.time_since_epoch())
+													.count() %
+												24,
+											std::chrono::duration_cast<std::chrono::minutes>(now.time_since_epoch())
+													.count() %
+												60,
+											std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch())
+													.count() %
+												60
+#endif
+		);
+		auto timeSpan = m_output.addSpan();
+		timeSpan.setText(timePrefix);
+		m_output.setSpanStyle(timeSpan, Themes::getLvglStyles().text_muted);
 
-		size_t newLineCount = std::count(currentText.begin(), currentText.end(), '\n');
+		auto respSpan = m_output.addSpan();
+		respSpan.setText(resp);
+		m_output.setSpanStyle(respSpan,
+							  emphasize ? Themes::getLvglStyles().text_emphasis : Themes::getLvglStyles().text);
 
-		if (newLineCount > MAX_RESPONSE_LINES)
+		auto newlineSpan = m_output.addSpan();
+		newlineSpan.setText("\n");
+
+		while (m_output.getSpanCount() > MAX_RESPONSE_LINES * 3) // 3 spans per line
 		{
-			size_t pos = 0;
-			for (size_t i = 0; i < newLineCount - MAX_RESPONSE_LINES; ++i)
+			auto spanOpt = m_output.getSpanByIndex(0);
+			if (!spanOpt.has_value())
 			{
-				pos = currentText.find('\n', pos) + 1;
+				break;
 			}
-			currentText = currentText.substr(pos);
-			m_output.setText(currentText.data());
+			m_output.deleteSpan(std::move(spanOpt.value()));
 		}
+
+		m_output.updateLayout();
+		m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_ON);
 	}
 
 	void ConsoleView::showCommandList(bool show, bool animate)
@@ -166,7 +196,6 @@ namespace UI
 					view.m_commandList.getListContainer().setVisible(anim->end_value > 1);
 					view.updateBtnPos();
 					view.m_output.updateLayout();
-					view.m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
 				}
 
 			);
@@ -182,7 +211,6 @@ namespace UI
 			m_commandList.getListContainer().setVisible(show);
 			updateBtnPos();
 			m_output.updateLayout();
-			m_output.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
 		}
 	}
 
@@ -199,6 +227,7 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
+		view->m_outputCont.scrollByBounded(0, -view->m_outputCont.getScrollBottom(), LV_ANIM_ON);
 		view->m_input.sendEvent(LV_EVENT_READY, view);
 	}
 
@@ -318,6 +347,7 @@ namespace UI
 	{
 		ZoneScoped;
 		m_commandList.scrollToX(0, LV_ANIM_OFF);
+		m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_ON);
 		m_kb.hide();
 		updateBtnPos();
 	}

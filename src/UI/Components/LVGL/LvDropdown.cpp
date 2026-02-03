@@ -12,22 +12,12 @@ namespace UI
 {
 	void LvDropdown::setText(const std::string& text)
 	{
-		UI_LOCK();
-		m_text = text;
-		lv_dropdown_set_text(getRootPtr(), m_text.c_str());
-	}
-
-	const std::string& LvDropdown::getText() const
-	{
-		UI_LOCK();
-		return m_text;
+		LvDropdownGen::setText(text.c_str());
 	}
 
 	void LvDropdown::clearText()
 	{
-		UI_LOCK();
-		m_text.clear();
-		lv_dropdown_set_text(getRootPtr(), NULL);
+		LvDropdownGen::setText(nullptr);
 	}
 
 	void LvDropdown::setOptions(std::span<std::string> options)
@@ -42,7 +32,7 @@ namespace UI
 				opt += "\n";
 			}
 		}
-		lv_dropdown_set_options(getRootPtr(), opt.c_str());
+		LvDropdownGen::setOptions(opt.c_str());
 	}
 
 	bool LvDropdown::setSelected(const std::string& option)
@@ -67,7 +57,7 @@ namespace UI
 	{
 		UI_LOCK();
 		char buf[64];
-		lv_dropdown_get_selected_str(getRootPtr(), buf, sizeof(buf));
+		LvDropdownGen::getSelectedStr(buf, sizeof(buf));
 		return std::string(buf);
 	}
 } // namespace UI

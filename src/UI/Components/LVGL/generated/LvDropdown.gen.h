@@ -1,7 +1,7 @@
 /*
  * LvDropdown.gen.h
  *
- *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-02-03T12:42:00 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -25,14 +25,28 @@ namespace UI
 		 * Set text of the drop-down list's button.
 		 * If set to `NULL` the selected option's text will be displayed on the button.
 		 * If set to a specific text then that text will be shown regardless of the selected option.
-		 * @param txt       the text as a string (Only its pointer is saved)
+		 * @param text      the text as a string (Copy is saved)
 		 */
-		void setText(const char* txt)
+		void setText(const char* text)
 			requires HasGetRootPtr<Derived>
 		{
 			ZoneScoped;
 			UI_LOCK();
-			lv_dropdown_set_text(static_cast<Derived*>(this)->getRootPtr(), txt);
+			lv_dropdown_set_text(static_cast<Derived*>(this)->getRootPtr(), text);
+		}
+
+		/**
+		 * Set text of the drop-down list's button.
+		 * If set to `NULL` the selected option's text will be displayed on the button.
+		 * If set to a specific text then that text will be shown regardless of the selected option.
+		 * @param text      the text as a string (Only its pointer is saved)
+		 */
+		void setTextStatic(const char* text)
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			lv_dropdown_set_text_static(static_cast<Derived*>(this)->getRootPtr(), text);
 		}
 
 		/**

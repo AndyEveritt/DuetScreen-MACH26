@@ -21,7 +21,6 @@ namespace UI
 		/* Override LvDropdownGen text methods so text is never NULL */
 
 		void setText(const std::string& text);
-		const std::string& getText() const;
 		void clearText();
 
 		void setOptions(std::span<std::string> options);
@@ -36,6 +35,5 @@ namespace UI
 		}
 
 	  private:
-		std::string m_text;
 	};
 } // namespace UI

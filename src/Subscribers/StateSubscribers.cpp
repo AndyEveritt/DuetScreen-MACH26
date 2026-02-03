@@ -214,12 +214,15 @@ bool StateSubscribers::time(Comm::JsonDecoder* decoder, const char* data, const 
 	{
 		return true;
 	}
-	if (TimeHelper::getCurrentTime() - lastUpdated < TIME_SYNC_INTERVAL)
+
+	const auto now = TimeHelper::getRunningTime();
+	if (now - lastUpdated < TIME_SYNC_INTERVAL)
 	{
 		return true;
 	}
 	LOG_DBG("Setting system time to {:s}", data);
 	TimeHelper::setDateTime(data);
+	lastUpdated = now;
 	Model::get().post<EventType::Time>();
 	return true;
 }

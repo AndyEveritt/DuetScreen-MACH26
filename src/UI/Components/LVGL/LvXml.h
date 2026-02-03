@@ -9,6 +9,10 @@
 
 #include "UI/Components/LVGL/LvContainer.h"
 
+#ifndef LV_USE_XML
+#  define LV_USE_XML 0
+#endif
+
 #if LV_USE_XML
 namespace UI
 {

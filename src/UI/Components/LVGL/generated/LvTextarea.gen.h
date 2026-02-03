@@ -1,7 +1,7 @@
 /*
  * LvTextarea.gen.h
  *
- *  AUTO-GENERATED: 2026-01-30T15:05:07 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-02-03T12:42:00 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0-dev
  */
 
@@ -156,7 +156,7 @@ namespace UI
 
 		/**
 		 * Set a list of characters. Only these characters will be accepted by the text area
-		 * @param list      list of characters. Only the pointer is saved. E.g. "+-.,0123456789"
+		 * @param list      list of characters. A copy is saved. Example: "+-.,0123456789"
 		 */
 		void setAcceptedChars(const char* list)
 			requires HasGetRootPtr<Derived>
@@ -164,6 +164,18 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			lv_textarea_set_accepted_chars(static_cast<Derived*>(this)->getRootPtr(), list);
+		}
+
+		/**
+		 * Set a list of characters. Only these characters will be accepted by the text area
+		 * @param list      list of characters. Only the pointer is saved. Example: "+-.,0123456789"
+		 */
+		void setAcceptedCharsStatic(const char* list)
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			lv_textarea_set_accepted_chars_static(static_cast<Derived*>(this)->getRootPtr(), list);
 		}
 
 		/**
