@@ -30,8 +30,8 @@ namespace Units
 	UnitSystem getCurrentDisplayedUnitSystem()
 	{
 		ZoneScoped;
-		auto id = StorageHelper::getData<int>(ID_UNIT_SYSTEM, static_cast<int>(UnitSystem::Metric));
-		return id > static_cast<int>(UnitSystem::Imperial) ? UnitSystem::Metric : static_cast<UnitSystem>(id);
+		auto id = StorageHelper::getData(ID_UNIT_SYSTEM);
+		return id;
 	}
 
 	/**

@@ -59,6 +59,6 @@ namespace UI
 		float m_minValue = 0.0f;
 		float m_maxValue = std::numeric_limits<float>::max();
 		std::vector<float> m_currentValues;
-		std::string m_storageKey;
+		std::string m_storageKeyPrefix;
 	};
 } // namespace UI

@@ -7,6 +7,7 @@
 
 #pragma once
 #include "DefaultTheme.h"
+#include "Storage.h"
 
 namespace UI::Themes
 {
@@ -34,5 +35,13 @@ namespace UI::Themes
 		bool m_darkMode;
 
 		bool m_initialized = false;
+
+		struct
+		{
+			StorageKeyRunTime<uint16_t> primaryHue;
+			StorageKeyRunTime<uint16_t> secondaryHue;
+			StorageKeyRunTime<float> chroma;
+			StorageKeyRunTime<bool> darkMode;
+		} m_storageKeys;
 	};
 } // namespace UI::Themes

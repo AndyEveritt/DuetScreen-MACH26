@@ -17,6 +17,7 @@ namespace OM
 		{
 			choices[i].Clear();
 		}
+		timeout = std::chrono::milliseconds(0);
 		limits.numberInt.min = std::numeric_limits<int32_t>::min();
 		limits.numberInt.max = std::numeric_limits<int32_t>::max();
 		limits.numberFloat.min = std::numeric_limits<float>::lowest();

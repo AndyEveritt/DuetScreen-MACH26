@@ -99,12 +99,12 @@ bool StateSubscribers::messageBoxSeq(Comm::JsonDecoder* decoder, const uint32_t&
 	return true;
 }
 
-bool StateSubscribers::messageBoxTimeout(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
+bool StateSubscribers::messageBoxTimeout(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	ZoneScoped;
 	UNUSED(decoder);
 	UNUSED(indices);
-	OM::g_currentAlert.timeout = data;
+	OM::g_currentAlert.timeout = std::chrono::milliseconds(data);
 	OM::g_currentAlert.flags.SetBit(OM::Alert::GotTimeout);
 	return true;
 }

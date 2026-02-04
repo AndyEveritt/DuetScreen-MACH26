@@ -37,7 +37,7 @@ class StateSubscribers : public SubscriberMap
 	static bool messageBoxMessage(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool messageBoxMode(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);
 	static bool messageBoxSeq(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
-	static bool messageBoxTimeout(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool messageBoxTimeout(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool messageBoxTitle(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool messageBoxMin(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);
 	static bool messageBoxMax(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);

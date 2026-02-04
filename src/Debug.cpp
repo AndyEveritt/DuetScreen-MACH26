@@ -8,6 +8,7 @@
 #include "Debug.h"
 #include "BuildDate.h"
 #include "Configuration.h"
+#include "Storage.h"
 #include "UI/Core/Model.h"
 #include "utils/StorageHelper.h"
 #include "version.h"
@@ -177,9 +178,7 @@ namespace Log
 			console_sink->set_pattern(LOG_CONSOLE_PATTERN);
 
 			auto file_sink = make_shared<spdlog::sinks::rotating_file_sink_mt>(
-				StorageHelper::getData<std::string>(ID_LOG_FILE, DEFAULT_LOG_FILE),
-				DEFAULT_LOG_FILE_SIZE,
-				DEFAULT_LOG_FILE_COUNT - 1);
+				std::string(StorageHelper::getData(ID_LOG_FILE)), DEFAULT_LOG_FILE_SIZE, DEFAULT_LOG_FILE_COUNT - 1);
 			file_sink->set_pattern(LOG_FILE_PATTERN);
 
 #if TRACE_LOG_MESSAGES
@@ -203,8 +202,8 @@ namespace Log
 					 "----------------------------------------------------------------------------------\n\n\n",
 					 BuildDateText,
 					 BuildTimeSuffix);
-			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL, Log::DebugLevel::Info));
-			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
+			SetDebugLevel(StorageHelper::getData(ID_DEBUG_LEVEL));
+			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING));
 			spdlog::flush_every(std::chrono::seconds(1));
 			spdlog::enable_backtrace(100);
 			LOG_INFO("Logger initialized");

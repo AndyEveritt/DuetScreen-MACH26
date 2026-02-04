@@ -27,28 +27,6 @@
 
 namespace Comm
 {
-	void to_json(nlohmann::json& j, const DuetConfig& c)
-	{
-		ZoneScoped;
-		j = nlohmann::json{
-			{ID_DUET_HOSTNAME, c.hostname},
-			{ID_DUET_PASSWORD, c.password},
-			{ID_DUET_COMMUNICATION_TYPE, c.communicationType},
-			{ID_DUET_POLL_INTERVAL, c.pollInterval.count()},
-			{ID_DUET_BAUD_RATE, c.baudRate},
-		};
-	}
-
-	void from_json(const nlohmann::json& j, DuetConfig& c)
-	{
-		ZoneScoped;
-		j.at(ID_DUET_HOSTNAME).get_to(c.hostname);
-		j.at(ID_DUET_PASSWORD).get_to(c.password);
-		j.at(ID_DUET_COMMUNICATION_TYPE).get_to(c.communicationType);
-		c.pollInterval = std::chrono::milliseconds(j.at(ID_DUET_POLL_INTERVAL).get<int64_t>());
-		j.at(ID_DUET_BAUD_RATE).get_to(c.baudRate);
-	}
-
 	Duet::Duet()
 		: m_lastRequestTime(0)
 		, m_pollIntervalScale(1.0f)
@@ -61,12 +39,17 @@ namespace Comm
 	void Duet::Init()
 	{
 		ZoneScoped;
-		DuetConfig config = StorageHelper::getData<DuetConfig>(ID_DUET, DuetConfig());
+		DuetConfig config = {
+			.ipAddress = std::string(StorageHelper::getData(ID_DUET_IP_ADDRESS)),
+			.password = std::string(StorageHelper::getData(ID_DUET_PASSWORD)),
+			.pollInterval = StorageHelper::getData(ID_DUET_POLL_INTERVAL),
+			.communicationType = static_cast<CommunicationType>(StorageHelper::getData(ID_DUET_COMMUNICATION_TYPE)),
+			.baudRate = StorageHelper::getData(ID_DUET_BAUD_RATE),
+		};
 
 		SetPollInterval(config.pollInterval);
 		SetBaudRate(config.baudRate);
 		SetIPAddress(config.ipAddress);
-		SetHostname(config.hostname);
 		SetPassword(config.password);
 		SetCommunicationType((CommunicationType)config.communicationType);
 
@@ -83,7 +66,7 @@ namespace Comm
 		m_lastRequestTime = TimeHelper::getRunningTime();
 		m_pollIntervalScale = 1.0f;
 		m_nextLineNumber = 0;
-		ClearIPAddress();
+		FILEINFO_CACHE->ClearCache();
 
 		OM::RemoveAll();
 		Comm::ResetSeqs();
@@ -95,12 +78,6 @@ namespace Comm
 		LOG_INFO("Reconnecting...");
 		Disconnect();
 		Connect();
-	}
-
-	void Duet::saveConfig()
-	{
-		ZoneScoped;
-		StorageHelper::setData(ID_DUET, m_config);
 	}
 
 	void Duet::SetCommunicationType(CommunicationType type)
@@ -116,7 +93,7 @@ namespace Comm
 		FILEINFO_CACHE->ClearCache();
 #endif
 		Connect();
-		saveConfig();
+		StorageHelper::setData(ID_DUET_COMMUNICATION_TYPE, type);
 	}
 
 	CommunicationType Duet::GetCommunicationType() const
@@ -149,7 +126,7 @@ namespace Comm
 				 std::chrono::duration_cast<std::chrono::milliseconds>(interval * m_pollIntervalScale));
 
 		m_config.pollInterval = interval;
-		saveConfig();
+		StorageHelper::setData(ID_DUET_POLL_INTERVAL, interval);
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
@@ -168,7 +145,6 @@ namespace Comm
 				 std::chrono::duration_cast<std::chrono::milliseconds>(m_config.pollInterval * scale));
 
 		m_pollIntervalScale = scale;
-		saveConfig();
 		// resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
@@ -1144,19 +1120,14 @@ namespace Comm
 	const std::string& Duet::GetBaseUrl() const
 	{
 		ZoneScoped;
-		if (!m_config.ipAddress.empty())
-		{
-			LOG_VERBOSE("Using IP address {:s}", m_config.ipAddress.c_str());
-			return m_config.ipAddress;
-		}
-		LOG_VERBOSE("Using hostname {:s}", m_config.hostname.c_str());
-		return m_config.hostname;
+		LOG_VERBOSE("Using IP address {:s}", m_config.ipAddress.c_str());
+		return m_config.ipAddress;
 	}
 
-	void Duet::SetBaudRate(const unsigned int baudRateCode)
+	void Duet::SetBaudRate(const speed_t baudRateCode)
 	{
 		ZoneScoped;
-		for (unsigned int i = 0; i < std::size(baudRates); i++)
+		for (size_t i = 0; i < std::size(baudRates); i++)
 		{
 			if (baudRates[i].internal == baudRateCode)
 			{
@@ -1173,7 +1144,7 @@ namespace Comm
 		LOG_INFO("Setting baud rate to {:d} ({:d})", baudRate.rate, baudRate.internal);
 		SerialIo::SetBaudRate(baudRate.internal);
 		m_config.baudRate = baudRate.internal;
-		saveConfig();
+		StorageHelper::setData(ID_DUET_BAUD_RATE, baudRate.internal);
 	}
 
 	const baudrate_t& Duet::GetBaudRate() const
@@ -1193,8 +1164,18 @@ namespace Comm
 	void Duet::SetIPAddress(std::string_view ipAddress)
 	{
 		ZoneScoped;
+		LOG_INFO("Setting IP address to {:s}", ipAddress);
+		if (m_config.ipAddress == ipAddress)
+		{
+			return;
+		}
+
 		m_config.ipAddress = ipAddress;
-		saveConfig();
+		StorageHelper::setData(ID_DUET_IP_ADDRESS, ipAddress);
+		if (m_config.communicationType == CommunicationType::network)
+		{
+			Connect();
+		}
 	}
 
 	const std::string& Duet::GetIPAddress() const
@@ -1210,51 +1191,12 @@ namespace Comm
 		LOG_DBG("IP address cleared \"{:s}\"", m_config.ipAddress.c_str());
 	}
 
-	void Duet::SetHostname(std::string_view hostname)
-	{
-		ZoneScoped;
-		if (hostname == m_config.hostname)
-		{
-			return;
-		}
-
-		LOG_DBG("Hostname = {:s}", hostname);
-		// TODO store hostname
-		m_config.hostname.clear();
-
-		if (hostname.find("http://") == 0)
-		{
-			m_config.hostname = hostname.substr(7);
-		}
-		else if (hostname.find("https://") == 0)
-		{
-			m_config.hostname = hostname.substr(8);
-		}
-		else
-		{
-			m_config.hostname = hostname;
-		}
-
-		ClearIPAddress();
-		LOG_INFO("Set Duet hostname to {:s}", m_config.hostname.c_str());
-		FILEINFO_CACHE->ClearCache();
-		if (m_config.communicationType == CommunicationType::network)
-			Connect();
-
-		saveConfig();
-	}
-
-	const std::string& Duet::GetHostname() const
-	{
-		ZoneScoped;
-		return m_config.hostname;
-	}
-
 	void Duet::SetPassword(std::string_view password)
 	{
 		ZoneScoped;
+		LOG_INFO("Setting Duet password");
 		m_config.password = password;
-		saveConfig();
+		StorageHelper::setData(ID_DUET_PASSWORD, password);
 	}
 
 	const std::string& Duet::GetPassword() const

@@ -10,6 +10,7 @@
 
 #include <chrono>
 #include <stdint.h>
+#include <string_view>
 #include <sys/types.h>
 #include <termios.h>
 
@@ -26,10 +27,10 @@ constexpr std::string_view NVS_FOLDER =
 
 /* Logging */
 #if SIMULATION
-constexpr const char* DEFAULT_LOG_FILE = "DuetScreen.log";
+constexpr std::string_view DEFAULT_LOG_FILE = "DuetScreen.log";
 constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 10; // 10MB
 #else
-constexpr const char* DEFAULT_LOG_FILE = "/var/log/DuetScreen.log";
+constexpr std::string_view DEFAULT_LOG_FILE = "/var/log/DuetScreen.log";
 constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 5; // 5MB
 #endif
 
@@ -42,21 +43,21 @@ constexpr uint32_t DEFAULT_SCREEN_TIMEOUT = 5 * 60 * 1000; // milliseconds
 constexpr std::string_view DEFAULT_ICON_SET = "material";
 
 /* Duet */
-constexpr const char* DEFAULT_GCODES_PATH = "0:/gcodes";
-constexpr const char* DEFAULT_MACROS_PATH = "0:/macros";
+constexpr std::string_view DEFAULT_GCODES_PATH = "0:/gcodes";
+constexpr std::string_view DEFAULT_MACROS_PATH = "0:/macros";
 constexpr std::chrono::milliseconds DEFAULT_PRINTER_POLL_INTERVAL = 250ms;
 constexpr std::chrono::milliseconds MIN_PRINTER_POLL_INTERVAL = 100ms;
 constexpr std::chrono::milliseconds PRINTER_REQUEST_TIMEOUT = 10000ms;
 constexpr int DEFAULT_COMMUNICATION_TYPE = 1;
-constexpr const char* DEFAULT_IP_ADDRESS = "192.168.0.";
-constexpr const char* DEFAULT_UART_PORT = "/dev/ttyS5";
+constexpr std::string_view DEFAULT_IP_ADDRESS = "192.168.0.";
+constexpr std::string DEFAULT_UART_PORT = "/dev/ttyS5";
 constexpr const int DEFAULT_BAUD_RATE = B115200;
 constexpr size_t MAX_IP_LENGTH = 50;
 constexpr size_t MAX_HOSTNAME_LENGTH = 64;
 constexpr std::chrono::milliseconds TIME_SYNC_INTERVAL = 10000ms; // Interval to resynchronize time with the Duet
 constexpr size_t MAX_UART_UPLOAD_SIZE = 1024;
-constexpr const char* DEFAULT_FILAMENTS_FILE = "filaments.csv";
-constexpr const char* DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
+constexpr std::string_view DEFAULT_FILAMENTS_FILE = "filaments.csv";
+constexpr std::string_view DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
 
 /* Thumbnails */
 constexpr std::chrono::milliseconds FILE_CACHE_REQUEST_TIMEOUT = 5000ms;
@@ -119,7 +120,7 @@ constexpr int32_t MINIMUM_WEBCAM_UPDATE_INTERVAL = 100;
 
 /* Misc UI */
 constexpr bool DEFAULT_SHOW_SETUP_ON_STARTUP = true;
-constexpr const char* DEFAULT_LANGUAGE_CODE = "en-GB";
+constexpr std::string_view DEFAULT_LANGUAGE_CODE = "en-GB";
 
 /* Popup */
 constexpr uint32_t DEFAULT_NOTIFICATION_TIMEOUT = 5000;

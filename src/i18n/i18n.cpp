@@ -55,7 +55,7 @@ namespace i18n
 		LOG_INFO("Initialising i18n module...");
 		refreshLanguageFiles();
 
-		setLanguage(StorageHelper::getData<std::string>(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE));
+		setLanguage(StorageHelper::getData(ID_SYS_LANG_CODE_KEY));
 	}
 
 	std::string_view getCurrentLanguage()

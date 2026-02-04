@@ -309,8 +309,7 @@ namespace UI
 		ZoneScoped;
 		registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
 		registerEventListener<EventType::PrinterUniqueId>([this]() { setFolder(""); });
-		setSort(StorageHelper::getData(ID_FILE_SORT_BY, SortBy::DATE),
-				StorageHelper::getData(ID_FILE_SORT_DESCENDING, true));
+		setSort(StorageHelper::getData(ID_FILE_SORT_BY), StorageHelper::getData(ID_FILE_SORT_DESCENDING));
 	}
 
 	void FilePresenter::onActivate()

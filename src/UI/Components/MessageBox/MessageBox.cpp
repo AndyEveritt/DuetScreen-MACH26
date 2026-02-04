@@ -316,18 +316,17 @@ namespace UI
 		m_timeout = 0;
 	}
 
-	void MessageBox::setTimeout(uint32_t timeout)
+	void MessageBox::setTimeout(std::chrono::milliseconds timeout)
 	{
 		ZoneScoped;
 		UI_LOCK();
-		if (m_type == ResponseType::ERROR &&
-			!StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR))
+		if (m_type == ResponseType::ERROR && !StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR))
 		{
 			return;
 		}
 
-		m_timeout = timeout;
-		if (timeout == 0)
+		m_timeout = static_cast<uint32_t>(timeout.count());
+		if (m_timeout == 0)
 		{
 			if (m_timers.timeout)
 			{
@@ -346,7 +345,7 @@ namespace UI
 					msgBox->cancel();
 				}
 			},
-			timeout,
+			m_timeout,
 			this);
 		lv_timer_set_auto_delete(m_timers.timeout, false);
 		lv_timer_set_repeat_count(m_timers.timeout, 1);

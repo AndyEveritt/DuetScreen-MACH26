@@ -193,7 +193,8 @@ namespace UI
 		m_screensaverTimeout.setHeight(LV_SIZE_CONTENT);
 		m_screensaverTimeout.setRange(0, 5 * 60); // seconds
 		m_screensaverTimeout.setValueChangedCallback(
-			[](float value) { StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, static_cast<int32_t>(value * 1000)); });
+			[](float value)
+			{ StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, std::chrono::seconds(static_cast<int32_t>(value))); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 
 		/* Notifications */
@@ -204,7 +205,7 @@ namespace UI
 		m_displayConnectedMessage.setAlign(LV_ALIGN_CENTER, 0, 0);
 		m_displayConnectedMessage.setCheckedCallback(
 			[](bool checked) { StorageHelper::setData(ID_DISPLAY_CONNECTED_MESSAGE, checked); });
-		m_displayConnectedMessage.setChecked(StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true));
+		m_displayConnectedMessage.setChecked(StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE));
 
 		/* Notification Level */
 		createRow(_("settings.notification_level"), m_notificationLevel);
@@ -213,8 +214,9 @@ namespace UI
 		{
 			m_notificationLevel.addOption(_(level));
 		}
-		m_notificationLevel.setSelectedCallback([](uint32_t index, std::string_view /* option */)
-												{ StorageHelper::setData(ID_NOTIFICATION_LEVEL, index); });
+		m_notificationLevel.setSelectedCallback(
+			[](uint32_t index, std::string_view /* option */)
+			{ StorageHelper::setData(ID_NOTIFICATION_LEVEL, ResponseType(index)); });
 
 		/* Info Timeout */
 		createRow(_("settings.notification_timeout"), m_notificationTimeout);
@@ -223,7 +225,10 @@ namespace UI
 		m_notificationTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 		m_notificationTimeout.setRange(0, 5000);
 		m_notificationTimeout.setValueChangedCallback(
-			[](float value) { StorageHelper::setData(ID_NOTIFICATION_TIMEOUT, static_cast<uint32_t>(value)); });
+			[](float value)
+			{
+				StorageHelper::setData(ID_NOTIFICATION_TIMEOUT, std::chrono::milliseconds(static_cast<int32_t>(value)));
+			});
 
 		/* Auto-close Error Notifications */
 		createRow(_("settings.notification_auto_close_error"), m_notificationAutoCloseError);
@@ -245,14 +250,10 @@ namespace UI
 		// Update language selection
 		m_language.setSelected(std::string(i18n::getCurrentLanguage()));
 		m_brightness.setValue(static_cast<float>(DisplayHelper::getBrightness()));
-		m_screensaverTimeout.setValue(
-			static_cast<float>(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT) / 1000));
-		m_notificationLevel.setSelected(
-			(StorageHelper::getData<uint32_t>(ID_NOTIFICATION_LEVEL, DEFAULT_NOTIFICATION_LEVEL)));
-		m_notificationTimeout.setValue(
-			StorageHelper::getData<float>(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
-		m_notificationAutoCloseError.setChecked(
-			!StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR, DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR));
+		m_screensaverTimeout.setValue(static_cast<float>(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT).count()));
+		m_notificationLevel.setSelected(static_cast<uint32_t>(StorageHelper::getData(ID_NOTIFICATION_LEVEL)));
+		m_notificationTimeout.setValue(static_cast<float>(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT).count()));
+		m_notificationAutoCloseError.setChecked(!StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR));
 	}
 
 	ConnectionSettings::ConnectionSettings(const std::string& name, LvObj& parent)
@@ -341,7 +342,7 @@ namespace UI
 #else
 		m_duetIpAddress.addConfirmEventCallback
 #endif
-			([this](lv_event_t*) { Comm::DUET.SetHostname(m_duetIpAddress.getText()); }
+			([this](lv_event_t*) { Comm::DUET.SetIPAddress(m_duetIpAddress.getText()); }
 #if USE_MODAL_NUMBERPAD_FOR_IP_ADDRESS
 			 ,
 			 LV_EVENT_VALUE_CHANGED
@@ -400,7 +401,7 @@ namespace UI
 		m_connectionMethod.setSelected(static_cast<uint32_t>(communicationType));
 		m_usbMode.setSelected(static_cast<uint32_t>(Comm::getUsbMode()));
 		m_pollInterval.setValue(static_cast<float>(Comm::DUET.GetPollInterval().count()));
-		m_duetIpAddress.setText(Comm::DUET.GetHostname());
+		m_duetIpAddress.setText(Comm::DUET.GetIPAddress());
 		m_duetPassword.setText(Comm::DUET.GetPassword());
 		showConnectionMethodSettings(communicationType);
 	}
@@ -431,7 +432,7 @@ namespace UI
 				StorageHelper::setData(ID_THEME, index);
 				// view->getMainSettingsPresenter()->setTheme(selected);
 			});
-		m_theme.setSelected(StorageHelper::getData(ID_THEME, 0));
+		m_theme.setSelected(static_cast<uint32_t>(StorageHelper::getData(ID_THEME)));
 
 		/* Font */
 		createRow(_("settings.font"), m_font);
@@ -573,7 +574,7 @@ namespace UI
 		m_enableSystemMonitor.setCheckedCallback(
 			[](bool checked)
 			{
-				StorageHelper::setData<bool>(ID_SYSTEM_MONITOR_ENABLED, checked);
+				StorageHelper::setData(ID_SYSTEM_MONITOR_ENABLED, checked);
 
 #  if LV_USE_PERF_MONITOR
 				if (checked)
@@ -643,20 +644,18 @@ namespace UI
 	{
 		ZoneScoped;
 		m_debugLevel.setSelected(static_cast<uint32_t>(Log::GetDebugLevel()));
-		m_enableAdvancedSettings.setChecked(StorageHelper::getData(ID_ENABLE_ADVANCED_SETTINGS, false));
+		m_enableAdvancedSettings.setChecked(StorageHelper::getData(ID_ENABLE_ADVANCED_SETTINGS));
 #if DEBUG_BORDERS
 		m_debugBorders.setChecked(Themes::isdebugBorderVisible(lv_screen_active()));
 #endif
 #if DEVELOPER_MODE
-		m_enableSSH.setChecked(
-			StorageHelper::getData(ID_SSH_ENABLED, SystemHelper::isServiceEnabled(SystemHelper::Services::SSH)));
-		m_enableADB.setChecked(
-			StorageHelper::getData(ID_ADB_ENABLED, SystemHelper::isServiceEnabled(SystemHelper::Services::ADB)));
+		m_enableSSH.setChecked(StorageHelper::getData(ID_SSH_ENABLED));
+		m_enableADB.setChecked(StorageHelper::getData(ID_ADB_ENABLED));
 #endif
 #if LV_USE_SYSMON
-		m_enableSystemMonitor.setChecked(StorageHelper::getData(ID_SYSTEM_MONITOR_ENABLED, true));
+		m_enableSystemMonitor.setChecked(StorageHelper::getData(ID_SYSTEM_MONITOR_ENABLED));
 #endif
-		m_systemLogging.setChecked(StorageHelper::getData(ID_ENABLE_UI_LOGGING, false));
+		m_systemLogging.setChecked(StorageHelper::getData(ID_ENABLE_UI_LOGGING));
 	}
 
 	static void onTextareaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode)

@@ -116,7 +116,7 @@ int main(int argc, char** argv)
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
 	lv_display_t* display = hal_init(1024, 600);
 
-	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY, 100u));
+	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY));
 	UI::Themes::init(display);
 
 	// lv_display_set_rotation(display, LV_DISP_ROTATION_180);
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
 				}
 
 				time_t lastModified = file_stat.st_mtime;
-				time_t savedModified = StorageHelper::getData(ID_UPGRADE_FILE_LAST_MODIFIED, 0);
+				time_t savedModified = StorageHelper::getData(ID_UPGRADE_FILE_LAST_MODIFIED);
 
 				if (lastModified == savedModified)
 				{
@@ -259,7 +259,7 @@ int main(int argc, char** argv)
 					std::invoke(cbs[index]);
 					index = (index + 1) % std::size(cbs);
 				},
-				StorageHelper::getData(ID_BURNIN_FREQUENCY, 2000),
+				StorageHelper::getData(ID_BURNIN_FREQUENCY),
 				NULL);
 			if (first_run)
 			{
@@ -268,7 +268,7 @@ int main(int argc, char** argv)
 			}
 #endif
 			uint32_t inactive_time = lv_display_get_inactive_time(NULL);
-			uint32_t timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT, DEFAULT_SCREEN_TIMEOUT);
+			uint32_t timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT).count() * 1000;
 			if (timeout > 0 && inactive_time > timeout)
 			{
 				if (!screensaver_enabled)
@@ -296,7 +296,7 @@ int main(int argc, char** argv)
 				}
 			}
 		},
-		1000, // Timer period in milliseconds
+		250, // Timer period in milliseconds
 		NULL);
 
 	lv_timer_create(
@@ -442,7 +442,7 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 #if LV_USE_SYSMON
 	{
 		ZoneScopedN("System Monitor Setup");
-		const bool sysmon_enabled = StorageHelper::getData<bool>(ID_SYSTEM_MONITOR_ENABLED, true);
+		const bool sysmon_enabled = StorageHelper::getData(ID_SYSTEM_MONITOR_ENABLED);
 #  if LV_USE_PERF_MONITOR
 		if (sysmon_enabled)
 			lv_sysmon_show_performance(NULL);

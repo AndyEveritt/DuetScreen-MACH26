@@ -19,7 +19,7 @@
 
 namespace SerialIo
 {
-	bool Init(const char* device, speed_t baudRate);
+	bool Init(const std::string& device, speed_t baudRate);
 	void Shutdown();
 	ssize_t Send(std::string_view gcode);
 

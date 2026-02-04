@@ -4,27 +4,52 @@
 #include "Storage.h"
 #include <fstream>
 #include <iostream>
+#include <magic_enum/magic_enum.hpp>
 #include <map>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
 
+template <typename T>
+concept StorageKeyType = requires(T key) {
+	// { T::storage_key_marker } -> std::same_as<void>;
+	{ key.id } -> std::convertible_to<std::string_view>;
+	{ key.default_value } -> std::convertible_to<typename T::value_type>;
+};
+
 class StorageHelper
 {
   public:
-	template <typename T>
-	static void setData(std::string_view key, const T& value)
+	template <StorageKeyType T, typename V>
+		requires(std::is_convertible_v<V, typename T::value_type>)
+	static void setData(const T& key, const V& value)
 	{
 		ZoneScoped;
-		LOG_VERBOSE("Saving \"{:s}\" to config.json", key);
+		LOG_VERBOSE("Saving \"{:s}\" to config.json", key.id);
 		nlohmann::json* current = &data_;
 
-		std::size_t pos = 0;
-		while (pos <= key.size())
+		auto convertor = [](const typename T::value_type& val) -> nlohmann::json
 		{
-			const std::size_t next = key.find(':', pos);
+			if constexpr (std::is_convertible<typename T::value_type, nlohmann::json>::value)
+			{
+				return nlohmann::json(val);
+			}
+			else
+			{
+				static_assert(sizeof(typename T::value_type) == 0, "Type T is not convertible to nlohmann::json");
+			}
+		};
+
+		const nlohmann::json jvalue = convertor(value);
+
+		const std::string_view id = key.id;
+
+		std::size_t pos = 0;
+		while (pos <= id.size())
+		{
+			const std::size_t next = id.find(':', pos);
 			const std::string_view segment =
-				(next == std::string_view::npos) ? key.substr(pos) : key.substr(pos, next - pos);
+				(next == std::string_view::npos) ? id.substr(pos) : id.substr(pos, next - pos);
 			current = &(*current)[segment];
 			if (next == std::string_view::npos)
 			{
@@ -32,11 +57,11 @@ class StorageHelper
 			}
 			pos = next + 1;
 		}
-		if (*current == value)
+		if (*current == jvalue)
 		{
 			return;
 		}
-		*current = value;
+		*current = jvalue;
 		save();
 	}
 
@@ -45,22 +70,24 @@ class StorageHelper
 	static bool load();
 	static bool clear();
 
-	template <typename T>
-	static T getData(std::string_view key, const T& defaultValue)
+	template <StorageKeyType T>
+	static typename T::value_type getData(const T& key)
 	{
 		ZoneScoped;
 		nlohmann::json* current = &data_;
 
+		const std::string_view id = key.id;
+
 		std::size_t pos = 0;
-		while (pos <= key.size())
+		while (pos <= id.size())
 		{
-			const std::size_t next = key.find(':', pos);
+			const std::size_t next = id.find(':', pos);
 			const std::string_view segment =
-				(next == std::string_view::npos) ? key.substr(pos) : key.substr(pos, next - pos);
+				(next == std::string_view::npos) ? id.substr(pos) : id.substr(pos, next - pos);
 			// const std::string segmentStr(segment);
 			if (!current->contains(segment))
 			{
-				return defaultValue;
+				return key.default_value;
 			}
 			current = &(*current)[segment];
 			if (next == std::string_view::npos)
@@ -70,7 +97,21 @@ class StorageHelper
 			pos = next + 1;
 		}
 
-		return current->get<T>();
+		auto convertor = [&key](const nlohmann::json& jval) -> typename T::value_type
+		{
+			if constexpr (std::is_enum_v<typename T::value_type>)
+			{
+				const auto val = jval.get<std::underlying_type_t<typename T::value_type>>();
+				return magic_enum::enum_cast<typename T::value_type>(val).value_or(key.default_value);
+			}
+			else
+			{
+				return jval.get<typename T::value_type>();
+			}
+		};
+
+		const auto value = convertor(*current);
+		return value;
 	}
 
   private:

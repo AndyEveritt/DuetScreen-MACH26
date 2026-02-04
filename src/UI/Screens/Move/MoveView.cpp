@@ -9,22 +9,22 @@
 
 namespace UI
 {
-	static std::vector<float> s_distances = {0.1f, 0.5f, 1, 5, 10, 25, 50};	   // mm
-	static std::vector<uint32_t> s_feedRates = {5, 10, 25, 50, 100, 200, 300}; // mm/s
+	static std::vector<float> s_distances;	  // mm
+	static std::vector<uint32_t> s_feedRates; // mm/s
 	static size_t s_currentDistanceIndex = 4;
 	static size_t s_currentFeedrateIndex = 3;
 
 	static float getSelectedDistance()
 	{
 		ZoneScoped;
-		s_currentDistanceIndex = std::min(s_currentDistanceIndex, s_distances.size() - 1);
+		s_currentDistanceIndex = std::min(s_currentDistanceIndex, s_distances.empty() ? 0 : s_distances.size() - 1);
 		return s_distances[s_currentDistanceIndex];
 	}
 
 	static uint32_t getSelectedFeedrate()
 	{
 		ZoneScoped;
-		s_currentFeedrateIndex = std::min(s_currentFeedrateIndex, s_feedRates.size() - 1);
+		s_currentFeedrateIndex = std::min(s_currentFeedrateIndex, s_feedRates.empty() ? 0 : s_feedRates.size() - 1);
 		return s_feedRates[s_currentFeedrateIndex];
 	}
 
@@ -40,12 +40,12 @@ namespace UI
 		/* Layout */
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 
-		auto distances = StorageHelper::getData<decltype(s_distances)>(ID_MOVE_DISTANCES, s_distances);
+		auto distances = StorageHelper::getData(ID_MOVE_DISTANCES);
 		if (!distances.empty())
 		{
 			s_distances = std::move(distances);
 		}
-		auto feedRates = StorageHelper::getData<decltype(s_feedRates)>(ID_MOVE_FEEDRATES, s_feedRates);
+		auto feedRates = StorageHelper::getData(ID_MOVE_FEEDRATES);
 		if (!feedRates.empty())
 		{
 			s_feedRates = std::move(feedRates);

@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "Pins.h"
+#include "Storage.h"
 #include "tracy/Tracy.hpp"
 #include "utils/GpioHelper.h"
 #include "utils/NetworkHelper.h"
@@ -509,7 +510,7 @@ namespace Comm
 	{
 		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
-		setUsbMode(StorageHelper::getData(ID_USB_MODE, UsbMode::Host));
+		setUsbMode(StorageHelper::getData(ID_USB_MODE));
 		return libusb_init(&s_context);
 	}
 
@@ -602,14 +603,14 @@ namespace Comm
 			LOG_FATAL_THROW("Unknown USB mode");
 		}
 		LOG_INFO("USB mode set to {:d}", static_cast<int>(mode));
-		StorageHelper::setData(ID_USB_MODE, static_cast<int>(mode));
+		StorageHelper::setData(ID_USB_MODE, mode);
 		s_usbMode = mode;
 	}
 
 	UsbMode getUsbMode()
 	{
 		ZoneScoped;
-		return StorageHelper::getData(ID_USB_MODE, s_usbMode);
+		return s_usbMode;
 	}
 
 	static void setUsbHost(bool host)

@@ -27,7 +27,7 @@ namespace SerialIo
 
 	static void processData(const std::string_view data);
 
-	bool Init(const char* device, speed_t baudRate)
+	bool Init(const std::string& device, speed_t baudRate)
 	{
 #if SIMULATION
 		LOG_INFO("Initializing simulated UART on device: {:s}", device);

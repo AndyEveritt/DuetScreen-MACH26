@@ -12,6 +12,7 @@
 #include "Duet3D/General/Bitmap.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/Vector.h"
+#include <chrono>
 #include <cstddef>
 #include <float.h>
 #include <stdint.h>
@@ -35,7 +36,7 @@ namespace OM
 		} mode = Mode::None;
 		uint32_t seq = 0;
 		uint32_t controls = 0;
-		float timeout = 0.0f;
+		std::chrono::milliseconds timeout = std::chrono::milliseconds(0);
 		Bitmap<uint8_t> flags;
 		String<ALERT_TITLE_LENGTH> title;
 		String<ALERT_TEXT_LENGTH> text;
@@ -75,14 +76,7 @@ namespace OM
 			} text;
 		} limits;
 
-		Alert()
-			: mode(Mode::Info)
-			, seq(0)
-			, controls(0)
-			, timeout(0.0)
-		{
-			Reset();
-		}
+		Alert() { Reset(); }
 
 		bool AllFlagsSet() const { return flags.GetRaw() == GotAll; }
 		void Reset();

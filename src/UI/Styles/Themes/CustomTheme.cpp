@@ -28,18 +28,22 @@ namespace UI::Themes
 							 FontConfigSet fontConfigSet,
 							 std::function<void(Theme* theme)> styleOverrides)
 		: DefaultTheme(name, ThemeColors(), fontConfigSet, styleOverrides)
+		, m_storageKeys{
+			  .primaryHue = {fmt::format(PRIMARY_HUE_KEY, name), 245},
+			  .secondaryHue = {fmt::format(SECONDARY_HUE_KEY, name), 50},
+			  .chroma = {fmt::format(CHROMA_KEY, name), 0.02f},
+			  .darkMode = {fmt::format(DARK_MODE_KEY, name), true},
+		  }
 	{
 	}
 
 	void CustomTheme::setColors(uint16_t primaryHue, uint16_t secondaryHue, float chroma, bool darkMode)
 	{
 		auto colors = createThemeColors(primaryHue, secondaryHue, chroma, darkMode);
-		StorageHelper::setData<uint16_t>(fmt::format(PRIMARY_HUE_KEY, getName()), static_cast<uint16_t>(primaryHue));
-		StorageHelper::setData<uint16_t>(fmt::format(SECONDARY_HUE_KEY, getName()),
-										 static_cast<uint16_t>(secondaryHue));
-		StorageHelper::setData<float>(fmt::format(CHROMA_KEY, getName()), chroma);
-		StorageHelper::setData<bool>(fmt::format(DARK_MODE_KEY, getName()), darkMode);
-
+		StorageHelper::setData(m_storageKeys.primaryHue, primaryHue);
+		StorageHelper::setData(m_storageKeys.secondaryHue, secondaryHue);
+		StorageHelper::setData(m_storageKeys.chroma, chroma);
+		StorageHelper::setData(m_storageKeys.darkMode, darkMode);
 		m_primaryHue = primaryHue;
 		m_secondaryHue = secondaryHue;
 		m_chroma = chroma;
@@ -58,10 +62,10 @@ namespace UI::Themes
 		}
 		m_initialized = true;
 
-		uint16_t primaryHue = StorageHelper::getData<uint16_t>(fmt::format(PRIMARY_HUE_KEY, getName()), 245);
-		uint16_t secondaryHue = StorageHelper::getData<uint16_t>(fmt::format(SECONDARY_HUE_KEY, getName()), 50);
-		float chroma = StorageHelper::getData<float>(fmt::format(CHROMA_KEY, getName()), 0.02f);
-		bool darkMode = StorageHelper::getData<bool>(fmt::format(DARK_MODE_KEY, getName()), true);
+		uint16_t primaryHue = StorageHelper::getData(m_storageKeys.primaryHue);
+		uint16_t secondaryHue = StorageHelper::getData(m_storageKeys.secondaryHue);
+		float chroma = StorageHelper::getData(m_storageKeys.chroma);
+		bool darkMode = StorageHelper::getData(m_storageKeys.darkMode);
 
 		setColors(primaryHue, secondaryHue, chroma, darkMode);
 	}

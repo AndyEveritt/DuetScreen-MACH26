@@ -198,6 +198,7 @@ include(${LIBRARIES_DIR}/hv.cmake)
 
 # Reflection
 include(${LIBRARIES_DIR}/nameof.cmake)
+include(${LIBRARIES_DIR}/magic_enum.cmake)
 
 # Find libusb package
 find_package(PkgConfig REQUIRED)
@@ -419,6 +420,7 @@ target_link_libraries(
           hv_static
           nlohmann_json::nlohmann_json
           nameof::nameof
+          magic_enum::magic_enum
           spdlog::spdlog
           fmt::fmt
           Tracy::TracyClient)

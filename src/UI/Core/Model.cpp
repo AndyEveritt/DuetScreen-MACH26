@@ -455,7 +455,7 @@ void Model::connected()
 {
 	ZoneScoped;
 	LOG_DBG("Connected event");
-	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
+	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE))
 	{
 		post<EventType::Response>(ResponseType::INFO, _("message.connected"));
 	}
@@ -507,7 +507,7 @@ void Model::disconnected()
 {
 	ZoneScoped;
 	LOG_DBG("Disconnected event");
-	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE, true))
+	if (StorageHelper::getData(ID_DISPLAY_CONNECTED_MESSAGE))
 	{
 		post<EventType::Response>(ResponseType::INFO, _("message.disconnected"));
 	}

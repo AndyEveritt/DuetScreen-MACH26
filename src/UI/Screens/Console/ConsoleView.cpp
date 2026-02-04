@@ -94,7 +94,7 @@ namespace UI
 			this);
 
 		m_commandList.getListContainer().hide();
-		showCommandList(!StorageHelper::getData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED, false), false);
+		showCommandList(!StorageHelper::getData(ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED), LV_ANIM_OFF);
 	}
 
 	void ConsoleView::clear()

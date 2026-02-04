@@ -94,7 +94,7 @@ namespace UI
 			return;
 		}
 
-		if (static_cast<int>(type) < StorageHelper::getData<int>(ID_NOTIFICATION_LEVEL, DEFAULT_NOTIFICATION_LEVEL))
+		if (type < StorageHelper::getData(ID_NOTIFICATION_LEVEL))
 		{
 			return;
 		}
@@ -112,7 +112,7 @@ namespace UI
 					if (!msgBox)
 						return;
 					msgBox->show();
-					msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
+					msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT));
 				}
 			});
 
@@ -151,7 +151,7 @@ namespace UI
 		if (m_view->getMessageBoxCount() == 1)
 		{
 			msgBox->show();
-			msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
+			msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT));
 		}
 		msgBox->setProgressCallback([](MessageBox* msgBox) -> uint32_t { return msgBox->getTimeOutPercentage(); });
 		if (m_view->m_alert.isVisible())
@@ -204,8 +204,7 @@ namespace UI
 					if (msgBox) // Add null check
 					{
 						msgBox->show();
-						msgBox->setTimeout(
-							StorageHelper::getData(ID_NOTIFICATION_TIMEOUT, DEFAULT_NOTIFICATION_TIMEOUT));
+						msgBox->setTimeout(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT));
 					}
 				}
 			});
@@ -411,9 +410,9 @@ namespace UI
 		}
 
 		// Configure timeout and progress last
-		modalAlert.setTimeout(static_cast<uint32_t>(alert.timeout));
-		modalAlert.progressVisible(alert.timeout > 0);
-		if (alert.timeout > 0)
+		modalAlert.setTimeout(alert.timeout);
+		modalAlert.progressVisible(alert.timeout > std::chrono::milliseconds(0));
+		if (alert.timeout > std::chrono::milliseconds(0))
 		{
 			modalAlert.setProgressCallback([](MessageBox* msgBox) -> uint32_t
 										   { return msgBox->getTimeOutPercentage(); });

@@ -12,7 +12,7 @@ namespace Units
 {
 	enum class UnitSystem
 	{
-		Metric,
+		Metric = 0,
 		Imperial,
 	};
 

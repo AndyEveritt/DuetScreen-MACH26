@@ -1038,7 +1038,7 @@ namespace UI::Themes
 
 		lv_theme_apply(lv_screen_active());
 
-		Theme* theme = getTheme(StorageHelper::getData<int>(ID_THEME, -1));
+		Theme* theme = getTheme(StorageHelper::getData(ID_THEME));
 		if (theme == nullptr)
 		{
 			LOG_INFO("Theme not found, using default theme");
@@ -1060,11 +1060,11 @@ namespace UI::Themes
 		}
 
 		/* Set icon folder */
-		std::string_view iconFolder = StorageHelper::getData<std::string_view>(ID_ICON_FOLDER, DEFAULT_ICON_SET);
+		std::string_view iconFolder = StorageHelper::getData(ID_ICON_FOLDER);
 		setIconFolder(iconFolder);
 
 #if DEBUG_BORDERS
-		bool debugBordersEnabeled = StorageHelper::getData<bool>(ID_DEBUG_BORDERS, false);
+		bool debugBordersEnabeled = StorageHelper::getData(ID_DEBUG_BORDERS);
 		showDebugBorders(lv_screen_active(), debugBordersEnabeled);
 #endif
 	}

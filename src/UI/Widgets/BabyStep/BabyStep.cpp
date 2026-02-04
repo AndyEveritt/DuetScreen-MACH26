@@ -35,9 +35,8 @@ namespace UI
 		m_buttonPanel.setValueLabelFmt("{:g} mm");
 		m_buttonPanel.setValueChangeCallback([this](float change) { m_presenter->babystep(change); });
 		m_buttonPanel.setResetCallback([this]() { m_presenter->resetBabystep(); });
-		m_buttonPanel.setUpdatedValuesCallback(
-			[this](const std::vector<float>& values)
-			{ StorageHelper::setData<std::vector<float>>(ID_BABYSTEP_AMOUNT, values); });
+		m_buttonPanel.setUpdatedValuesCallback([this](const std::vector<float>& values)
+											   { StorageHelper::setData(ID_BABYSTEP_AMOUNT, values); });
 		m_buttonPanel.setMinValue(0.001f);
 		m_buttonPanel.setMaxValue(1.0f);
 
@@ -55,7 +54,7 @@ namespace UI
 	void BabyStep::onShow()
 	{
 		ZoneScoped;
-		const auto values = StorageHelper::getData<std::vector<float>>(ID_BABYSTEP_AMOUNT, {0.01f, 0.05f});
+		const auto values = StorageHelper::getData(ID_BABYSTEP_AMOUNT);
 		m_buttonPanel.setIncrementValues(values);
 	}
 } // namespace UI

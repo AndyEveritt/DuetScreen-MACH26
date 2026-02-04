@@ -26,8 +26,8 @@ namespace Comm
 
 	typedef struct
 	{
-		unsigned int rate;
-		unsigned int internal;
+		int rate;
+		speed_t internal;
 	} baudrate_t;
 
 	constexpr baudrate_t baudRates[] = {{1200, B1200},
@@ -56,15 +56,11 @@ namespace Comm
 
 	struct DuetConfig
 	{
-		std::string ipAddress = DEFAULT_IP_ADDRESS;
-		std::string hostname = "";
+		std::string ipAddress = std::string(DEFAULT_IP_ADDRESS);
 		std::string password = "";
 		std::chrono::milliseconds pollInterval = DEFAULT_PRINTER_POLL_INTERVAL;
 		CommunicationType communicationType = CommunicationType::usb;
-		unsigned int baudRate = B115200;
-
-		// NLOHMANN_DEFINE_TYPE_INTRUSIVE(
-		// 	DuetConfig, ipAddress, hostname, password, pollInterval, communicationType, baudRate)
+		speed_t baudRate = B115200;
 	};
 
 	class Duet
@@ -113,7 +109,7 @@ namespace Comm
 		bool RequestThumbnail(std::string_view filename, uint32_t offset);
 
 		// UART methods
-		void SetBaudRate(const unsigned int baudRateCode);
+		void SetBaudRate(const speed_t baudRateCode);
 		void SetBaudRate(const baudrate_t& baudRate);
 		const baudrate_t& GetBaudRate() const;
 
@@ -131,9 +127,6 @@ namespace Comm
 		const std::string& GetIPAddress() const;
 		void ClearIPAddress();
 
-		void SetHostname(std::string_view hostname);
-		const std::string& GetHostname() const;
-
 		void SetPassword(std::string_view password);
 		const std::string& GetPassword() const;
 
@@ -150,7 +143,6 @@ namespace Comm
 		bool AsyncGetCallback(const HttpRequestPtr& req, const HttpResponsePtr& r, HttpResponseCallback callback);
 		bool Get(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters);
 		bool Post(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters, std::string_view data);
-		void saveConfig();
 
 		DuetConfig m_config;
 		std::chrono::milliseconds m_lastRequestTime;

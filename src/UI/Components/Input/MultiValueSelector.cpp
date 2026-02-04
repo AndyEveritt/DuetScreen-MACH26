@@ -7,6 +7,7 @@
 
 #include "MultiValueSelector.h"
 #include "Debug.h"
+#include "Storage.h"
 #include "UI/Core/Navigation.h"
 #include "i18n/i18n.h"
 #include "utils/StorageHelper.h"
@@ -17,6 +18,16 @@
 
 namespace UI
 {
+	static StorageKeyRunTime<std::vector<float>> makeValuesStorageKey(const std::string& prefix)
+	{
+		return StorageKeyRunTime<std::vector<float>>(prefix + ID_MVS_VALUES_SUFFIX, {});
+	}
+
+	static StorageKeyRunTime<float> makeSelectedStorageKey(const std::string& prefix)
+	{
+		return StorageKeyRunTime<float>(prefix + ID_MVS_SELECTED_SUFFIX, std::numeric_limits<float>::quiet_NaN());
+	}
+
 	MultiValueSelector::MultiValueSelector(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
@@ -233,20 +244,20 @@ namespace UI
 		ZoneScoped;
 		if (key.empty())
 		{
-			m_storageKey.clear();
+			m_storageKeyPrefix.clear();
 			return;
 		}
 
-		m_storageKey = key;
+		m_storageKeyPrefix = key;
 
 		/* Load values */
-		auto values = StorageHelper::getData<std::vector<float>>(m_storageKey + ID_MVS_VALUES_SUFFIX, {});
+		auto values = StorageHelper::getData(makeValuesStorageKey(m_storageKeyPrefix));
 		if (!values.empty())
 		{
 			setValueBtns(values);
 		}
-		float selected = StorageHelper::getData<float>(m_storageKey + ID_MVS_SELECTED_SUFFIX, 0.0f);
-		if (selected != 0.0f)
+		float selected = StorageHelper::getData(makeSelectedStorageKey(m_storageKeyPrefix));
+		if (!std::isnan(selected))
 		{
 			setValue(selected);
 		}
@@ -255,18 +266,18 @@ namespace UI
 	void MultiValueSelector::saveValues() const
 	{
 		ZoneScoped;
-		if (m_storageKey.empty())
+		if (m_storageKeyPrefix.empty())
 			return;
 
-		StorageHelper::setData<std::vector<float>>(m_storageKey + ID_MVS_VALUES_SUFFIX, m_currentValues);
+		StorageHelper::setData(makeValuesStorageKey(m_storageKeyPrefix), m_currentValues);
 	}
 
 	void MultiValueSelector::saveSelected() const
 	{
 		ZoneScoped;
-		if (m_storageKey.empty())
+		if (m_storageKeyPrefix.empty())
 			return;
 
-		StorageHelper::setData<float>(m_storageKey + ID_MVS_SELECTED_SUFFIX, m_value);
+		StorageHelper::setData(makeSelectedStorageKey(m_storageKeyPrefix), m_value);
 	}
 } // namespace UI

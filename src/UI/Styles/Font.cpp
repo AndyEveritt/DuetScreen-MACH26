@@ -18,7 +18,7 @@ namespace UI::FontManager
 {
 	static lv_font_manager_t* s_fontManager = nullptr;
 	static std::vector<std::string> s_loadedFontNames;
-	static std::string s_activeTypeface = "OpenSans"; // Default typeface
+	static std::string s_activeTypeface;
 
 	Font::Font(const lv_font_t* font)
 		: m_font(font)
@@ -104,7 +104,7 @@ namespace UI::FontManager
 			s_loadedFontNames.push_back(name);
 		}
 
-		std::string selected_font = StorageHelper::getData(ID_FONT, s_activeTypeface);
+		std::string selected_font(StorageHelper::getData(ID_FONT));
 		if (isFontLoaded(selected_font))
 		{
 			s_activeTypeface = selected_font;

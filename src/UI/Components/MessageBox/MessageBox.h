@@ -64,7 +64,7 @@ namespace UI
 		void updateVisibility();
 
 		void cancelTimeout();
-		void setTimeout(uint32_t timeout);
+		void setTimeout(std::chrono::milliseconds timeout);
 		uint32_t getTimeout() const { return m_timeout; }
 		uint32_t getTimeRemaining() const;
 		uint32_t getTimeOutPercentage() const;
