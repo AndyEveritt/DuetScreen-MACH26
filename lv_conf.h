@@ -45,6 +45,7 @@
 /* Fonts */
 #define LV_USE_FONT_MANAGER 1
 #define LV_USE_FREETYPE 1
+#define LV_FREETYPE_CACHE_FT_GLYPH_CNT 2048
 
 /* File system support */
 #define LV_FS_DEFAULT_DRIVER_LETTER 'A'
