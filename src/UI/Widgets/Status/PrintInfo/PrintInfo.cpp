@@ -108,7 +108,7 @@ namespace UI
 
 		m_babyStepButton.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_babyStepButton.setMinWidth(LV_SIZE_CONTENT);
-		m_babyStepButton.setText(_("status.babystep_button"));
+		m_babyStepButton.setText(_("status.babystep_value", 0.0f));
 		m_babyStepButton.addClickedCallback([this](lv_event_t*) { openModal(&m_babyStepModal); });
 
 		m_babyStepModal.setSize(LV_PCT(40), LV_PCT(70));
