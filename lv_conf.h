@@ -38,6 +38,9 @@
 /* Enable object names which are useful for debugging and unit tests. Also allows the LvObj::getChildByName() API */
 #define LV_USE_OBJ_NAME 1
 
+/* Object style caching */
+#define LV_OBJ_STYLE_CACHE 1
+
 /* We use our own theme */
 #define LV_USE_THEME_DEFAULT 0
 #define LV_USE_THEME_MONO 0
@@ -67,6 +70,7 @@
 
 /* Profiling */
 #if defined LV_USE_PROFILER && LV_USE_PROFILER
+#  define LV_PROFILER_STYLE 1
 #  define LV_PROFILER_BEGIN LvZoneStart
 #  define LV_PROFILER_END LvZoneEnd
 
