@@ -34,7 +34,7 @@ class TimeHelper
 	 * @param ms
 	 * @return std::chrono::milliseconds
 	 */
-	static std::chrono::milliseconds getTimeSince(std::chrono::milliseconds ms) { return getCurrentTime() - ms; }
+	static std::chrono::milliseconds getTimeSince(std::chrono::milliseconds ms) { return getRunningTime() - ms; }
 
 	static bool setDateTime(std::string_view dateTimeStr)
 	{

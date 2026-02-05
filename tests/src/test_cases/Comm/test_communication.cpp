@@ -23,7 +23,7 @@ TEST_F(TestCommunication, SendNext)
 	 * SIMULATION */
 	Comm::DUET.SetCommunicationType(Comm::CommunicationType::uart);
 
-	auto startTime = TimeHelper::getCurrentTime();
+	auto startTime = TimeHelper::getRunningTime();
 	while (!Comm::DUET.IsConnected())
 	{
 		ASSERT_LT(TimeHelper::getTimeSince(startTime), std::chrono::seconds(5))
