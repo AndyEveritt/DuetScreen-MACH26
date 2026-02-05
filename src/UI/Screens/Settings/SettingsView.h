@@ -54,6 +54,7 @@ namespace UI
 		DropdownMenu m_language{"language", getRoot()};
 		Slider m_brightness{"brightness", getRoot()};
 		Slider m_screensaverTimeout{"screensaver_timeout", getRoot()};
+		LvSettingsToggle m_showConfirmationDialogs{"show_confirmation_dialogs", getRoot()};
 
 		/* Notifications */
 		LvSettingsToggle m_displayConnectedMessage{"display_connected_message", getRoot()};

@@ -45,6 +45,7 @@ constexpr StorageKey<Comm::CommunicationType> ID_DUET_COMMUNICATION_TYPE = {
 constexpr StorageKey<std::chrono::milliseconds> ID_DUET_POLL_INTERVAL = {"duet:poll_interval",
 																		 DEFAULT_PRINTER_POLL_INTERVAL};
 constexpr StorageKey<speed_t> ID_DUET_BAUD_RATE = {"duet:baud_rate", DEFAULT_BAUD_RATE};
+
 /* UI */
 constexpr StorageKey<size_t> ID_THEME = {"ui:theme", std::numeric_limits<size_t>::max()};
 constexpr StorageKey<std::string_view> ID_FONT = {"ui:font", "OpenSans"};

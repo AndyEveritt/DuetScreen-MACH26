@@ -197,6 +197,12 @@ namespace UI
 			{ StorageHelper::setData(ID_SCREENSAVER_TIMEOUT, std::chrono::seconds(static_cast<int32_t>(value))); });
 		m_screensaverTimeout.setOutOfRangeMode(Slider::OutOfRange::UPPER);
 
+		/* Show Confirmation Dialogs */
+		createRow(_("settings.show_confirmation_dialogs"), m_showConfirmationDialogs);
+		m_showConfirmationDialogs.setCheckedCallback(
+			[](bool checked) { StorageHelper::setData(ID_SHOW_CONFIRMATION_DIALOGS, checked); });
+		m_showConfirmationDialogs.setChecked(StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS));
+
 		/* Notifications */
 		createHeader(_("settings.headers.notifications"));
 

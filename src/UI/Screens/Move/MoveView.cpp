@@ -70,6 +70,11 @@ namespace UI
 		m_xyControl.setDisableMotorsCallback(
 			[this]()
 			{
+				if (!StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS))
+				{
+					m_presenter->disableMotors();
+					return;
+				}
 				m_messageBox.setTitle(_("move.disable_motors_confirm.title"));
 				m_messageBox.setText(_("move.disable_motors_confirm.text"));
 				m_messageBox.setOkCallback([this]() { m_presenter->disableMotors(); });
@@ -84,6 +89,11 @@ namespace UI
 		m_xyControl.setHomeAllCallback(
 			[this]()
 			{
+				if (!StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS))
+				{
+					m_presenter->homeAll();
+					return;
+				}
 				m_messageBox.setTitle(_("move.home_all_confirm.title"));
 				m_messageBox.setText(_("move.home_all_confirm.text"));
 				m_messageBox.setOkCallback([this]() { m_presenter->homeAll(); });
@@ -92,6 +102,12 @@ namespace UI
 		m_xyControl.setHomeXYCallback(
 			[this]()
 			{
+				if (!StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS))
+				{
+					m_presenter->homeAxis('X');
+					m_presenter->homeAxis('Y');
+					return;
+				}
 				m_messageBox.setTitle(_("move.home_xy_confirm.title"));
 				m_messageBox.setText(_("move.home_xy_confirm.text"));
 				m_messageBox.setOkCallback(
@@ -105,6 +121,11 @@ namespace UI
 		m_xyControl.setHomeXCallback(
 			[this]()
 			{
+				if (!StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS))
+				{
+					m_presenter->homeAxis('X');
+					return;
+				}
 				m_messageBox.setTitle(_("move.home_generic_confirm.title", 'X'));
 				m_messageBox.setText(_("move.home_generic_confirm.text", 'X'));
 				m_messageBox.setOkCallback([this]() { m_presenter->homeAxis('X'); });
@@ -113,6 +134,11 @@ namespace UI
 		m_xyControl.setHomeYCallback(
 			[this]()
 			{
+				if (!StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS))
+				{
+					m_presenter->homeAxis('Y');
+					return;
+				}
 				m_messageBox.setTitle(_("move.home_generic_confirm.title", 'Y'));
 				m_messageBox.setText(_("move.home_generic_confirm.text", 'Y'));
 				m_messageBox.setOkCallback([this]() { m_presenter->homeAxis('Y'); });
@@ -133,6 +159,11 @@ namespace UI
 		m_zControl.setHomeCallback(
 			[this](char axis_letter)
 			{
+				if (!StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS))
+				{
+					m_presenter->homeAxis(axis_letter);
+					return;
+				}
 				m_messageBox.setTitle(_("move.home_generic_confirm.title", axis_letter));
 				m_messageBox.setText(_("move.home_generic_confirm.text", axis_letter));
 				m_messageBox.setOkCallback([this, axis_letter]() { m_presenter->homeAxis(axis_letter); });
@@ -415,6 +446,11 @@ namespace UI
 				control->setHomeCallback(
 					[this](char axis_letter)
 					{
+						if (!StorageHelper::getData(ID_SHOW_CONFIRMATION_DIALOGS))
+						{
+							m_presenter->homeAxis(axis_letter);
+							return;
+						}
 						m_messageBox.setTitle(_("move.home_generic_confirm.title", axis_letter));
 						m_messageBox.setText(_("move.home_generic_confirm.text", axis_letter));
 						m_messageBox.setOkCallback([this, axis_letter]() { m_presenter->homeAxis(axis_letter); });

@@ -86,6 +86,7 @@ extern const StorageKey<std::string_view> ID_DUET_PASSWORD;
 extern const StorageKey<Comm::CommunicationType> ID_DUET_COMMUNICATION_TYPE;
 extern const StorageKey<std::chrono::milliseconds> ID_DUET_POLL_INTERVAL;
 extern const StorageKey<speed_t> ID_DUET_BAUD_RATE;
+
 /* UI */
 extern const StorageKey<size_t> ID_THEME;
 extern const StorageKey<std::string_view> ID_FONT;

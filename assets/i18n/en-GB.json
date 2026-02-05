@@ -271,6 +271,7 @@
       "screen": "Screen",
       "screen_header": "Screen Settings",
       "screensaver_timeout": "Screensaver Timeout (s):",
+      "show_confirmation_dialogs": "Show Confirmation Dialogs:",
       "system_logging": "Log system messages to console (might cause lag)",
       "theme": "Theme",
       "wifi": "WiFi",
