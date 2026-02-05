@@ -360,7 +360,7 @@ namespace UI
 
 			if (s_openModals.empty())
 			{
-				LOG_WARN("No open modals");
+				LOG_DBG("No open modals");
 				return false;
 			}
 
