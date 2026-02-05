@@ -175,7 +175,7 @@ Model::Model()
 	{
 		m_timers.tick = lv_timer_create(
 			[](lv_timer_t* timer) { static_cast<Model*>(lv_timer_get_user_data(timer))->post<EventType::Tick>(); },
-			MODEL_TICK_INTERVAL,
+			MODEL_TICK_INTERVAL.count(),
 			this);
 	}
 	else

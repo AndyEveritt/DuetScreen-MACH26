@@ -40,8 +40,8 @@ namespace std::chrono
 /* Duet */
 constexpr StorageKey<std::string_view> ID_DUET_IP_ADDRESS = {"duet:hostname", DEFAULT_IP_ADDRESS};
 constexpr StorageKey<std::string_view> ID_DUET_PASSWORD = {"duet:password", ""};
-constexpr StorageKey<Comm::CommunicationType> ID_DUET_COMMUNICATION_TYPE = {
-	"duet:communication_type", Comm::CommunicationType(DEFAULT_COMMUNICATION_TYPE)};
+constexpr StorageKey<Comm::CommunicationType> ID_DUET_COMMUNICATION_TYPE = {"duet:communication_type",
+																			Comm::CommunicationType::usb};
 constexpr StorageKey<std::chrono::milliseconds> ID_DUET_POLL_INTERVAL = {"duet:poll_interval",
 																		 DEFAULT_PRINTER_POLL_INTERVAL};
 constexpr StorageKey<speed_t> ID_DUET_BAUD_RATE = {"duet:baud_rate", DEFAULT_BAUD_RATE};
@@ -49,11 +49,10 @@ constexpr StorageKey<speed_t> ID_DUET_BAUD_RATE = {"duet:baud_rate", DEFAULT_BAU
 /* UI */
 constexpr StorageKey<size_t> ID_THEME = {"ui:theme", std::numeric_limits<size_t>::max()};
 constexpr StorageKey<std::string_view> ID_FONT = {"ui:font", "OpenSans"};
-constexpr StorageKey<std::string_view> ID_ICON_FOLDER = {"ui:icon_folder", "material"};
+constexpr StorageKey<std::string_view> ID_ICON_FOLDER = {"ui:icon_folder", DEFAULT_ICON_SET};
 
 constexpr StorageKey<bool> ID_SCREENSAVER_ENABLE = {"ui:screensaver_enable", true};
-constexpr StorageKey<std::chrono::seconds> ID_SCREENSAVER_TIMEOUT = {"ui:screensaver_timeout",
-																	 std::chrono::seconds(300)};
+constexpr StorageKey<std::chrono::seconds> ID_SCREENSAVER_TIMEOUT = {"ui:screensaver_timeout", DEFAULT_SCREEN_TIMEOUT};
 constexpr StorageKey<std::chrono::milliseconds> ID_NOTIFICATION_TIMEOUT = {"ui:info_timeout", std::chrono::seconds(5)};
 constexpr StorageKey<ResponseType> ID_NOTIFICATION_LEVEL = {"ui:notification_level", ResponseType::INFO};
 constexpr StorageKey<bool> ID_NOTIFICATION_AUTO_CLOSE_ERROR = {"ui:notification_auto_close_error", false};

@@ -37,9 +37,9 @@ constexpr size_t DEFAULT_LOG_FILE_SIZE = 1024 * 1024 * 5; // 5MB
 constexpr size_t DEFAULT_LOG_FILE_COUNT = 3; // 3 files
 
 /* UI */
-constexpr size_t MODEL_TICK_INTERVAL = 100; // Interval to tick the model in milliseconds
-constexpr size_t MODEL_TICK_HZ = 1000 / MODEL_TICK_INTERVAL;
-constexpr uint32_t DEFAULT_SCREEN_TIMEOUT = 5 * 60 * 1000; // milliseconds
+constexpr std::chrono::milliseconds MODEL_TICK_INTERVAL = 100ms; // Interval to tick the model in milliseconds
+constexpr size_t MODEL_TICK_HZ = 1000 / MODEL_TICK_INTERVAL.count();
+constexpr std::chrono::seconds DEFAULT_SCREEN_TIMEOUT = 5min;
 constexpr std::string_view DEFAULT_ICON_SET = "material";
 
 /* Duet */
@@ -48,12 +48,9 @@ constexpr std::string_view DEFAULT_MACROS_PATH = "0:/macros";
 constexpr std::chrono::milliseconds DEFAULT_PRINTER_POLL_INTERVAL = 250ms;
 constexpr std::chrono::milliseconds MIN_PRINTER_POLL_INTERVAL = 100ms;
 constexpr std::chrono::milliseconds PRINTER_REQUEST_TIMEOUT = 10000ms;
-constexpr int DEFAULT_COMMUNICATION_TYPE = 1;
 constexpr std::string_view DEFAULT_IP_ADDRESS = "192.168.0.";
 constexpr std::string DEFAULT_UART_PORT = "/dev/ttyS5";
 constexpr const int DEFAULT_BAUD_RATE = B115200;
-constexpr size_t MAX_IP_LENGTH = 50;
-constexpr size_t MAX_HOSTNAME_LENGTH = 64;
 constexpr std::chrono::milliseconds TIME_SYNC_INTERVAL = 10000ms; // Interval to resynchronize time with the Duet
 constexpr size_t MAX_UART_UPLOAD_SIZE = 1024;
 constexpr std::string_view DEFAULT_FILAMENTS_FILE = "filaments.csv";
@@ -93,39 +90,12 @@ constexpr unsigned int MAX_SENSORS = 32;
 constexpr unsigned int MAX_ENDSTOPS = 20;
 constexpr size_t MAX_TRACKED_OBJECTS = 40;
 
-/* Move */
-constexpr int MAX_MOVE_FEEDRATE = 10000;
-
-/* Extrusion */
-constexpr int MAX_EXTRUDE_FEEDRATE = 300;
-constexpr int MAX_EXTRUDE_DISTANCE = 500;
-
-/* Print Status */
-constexpr float DEFAULT_BABY_STEP_SIZE = 0.05f;
-
-/* Heightmap */
-constexpr double HEIGHTMAP_FIXED_MAX = 0.25;
-constexpr double HEIGHTMAP_FIXED_MIN = -0.25;
-constexpr size_t HEIGHTMAP_COLORBAR_SAMPLES = 100;
-
 /* Console */
 constexpr unsigned int MAX_COMMAND_LENGTH = 50;
-constexpr unsigned int MAX_RESPONSE_LINE_LENGTH = 80;
 constexpr unsigned int MAX_RESPONSE_LINES = 200;
 
-/* Webcam */
-constexpr size_t MAX_WEBCAMS = 20;
-constexpr int32_t DEFAULT_WEBCAM_UPDATE_INTERVAL = 500;
-constexpr int32_t MINIMUM_WEBCAM_UPDATE_INTERVAL = 100;
-
 /* Misc UI */
-constexpr bool DEFAULT_SHOW_SETUP_ON_STARTUP = true;
 constexpr std::string_view DEFAULT_LANGUAGE_CODE = "en-GB";
-
-/* Popup */
-constexpr uint32_t DEFAULT_NOTIFICATION_TIMEOUT = 5000;
-constexpr uint32_t DEFAULT_NOTIFICATION_LEVEL = 0;
-constexpr bool DEFAULT_NOTIFICATION_AUTO_CLOSE_ERROR = false;
 
 /* Alert */
 constexpr size_t ALERT_TEXT_LENGTH = 165;		 // maximum characters in the alert text
@@ -133,11 +103,5 @@ constexpr size_t ALERT_TITLE_LENGTH = 50;		 // maximum characters in the alert t
 constexpr size_t ALERT_RESPONSE_LENGTH = 50;	 // maximum characters in the alert response
 constexpr size_t ALERT_MAX_CHOICES = 40;		 // maximum number of choices in the alert
 constexpr size_t ALERT_CHOICES_TEXT_LENGTH = 50; // maximum characters in the alert choice text
-
-/* Temperature Graph */
-constexpr float DEFAULT_TEMP_GRAPH_MAX = 300;
-constexpr size_t DEFAULT_TEMP_GRAPH_TIME_RANGE = 60;
-constexpr float TEMP_GRAPH_Y_AXIS_PADDING = 10;
-constexpr size_t GRAPH_DATAPOINTS = DEFAULT_TEMP_GRAPH_TIME_RANGE * (1000 / MIN_PRINTER_POLL_INTERVAL.count());
 
 #endif /* JNI_CONFIGURATION_H_ */
