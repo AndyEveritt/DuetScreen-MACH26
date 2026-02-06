@@ -32,7 +32,7 @@ namespace UI
 		void createSpanRow(LvObj& obj);
 		void setRowVisibility(LvObj& obj, bool show);
 
-		static constexpr int32_t m_maxRowCount = 10;
+		static constexpr int32_t m_maxRowCount = 15;
 		size_t m_rowCount = 0;
 
 		std::array<std::unique_ptr<LvLabel>, m_maxRowCount> m_labels;
@@ -120,6 +120,9 @@ namespace UI
 
 		HardwareTest& getHardwareTest() { return m_hardwareTest; }
 
+		void setStorageInfo(std::uintmax_t totalStorage, std::uintmax_t usedStorage);
+		void setDuetScreenCacheSize(std::uintmax_t cacheSize, size_t fileCount);
+
 	  private:
 		static void onDebugLevelEvent(lv_event_t* e);
 #if DEBUG_BORDERS
@@ -156,6 +159,11 @@ namespace UI
 #if DEVELOPER_MODE
 		Button m_runBuildrootSetup{"run_buildroot_setup", m_controls};
 #endif
+		Button m_clearCache{"clear_duetscreen_cache", m_controls};
+
+		/* Storage */
+		LvLabel m_storageInfo{"storage_info", getRoot()};
+		LvLabel m_CacheSize{"duetscreen_cache_size", getRoot()};
 
 		HardwareTest m_hardwareTest;
 	};

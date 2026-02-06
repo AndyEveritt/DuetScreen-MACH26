@@ -51,7 +51,9 @@ namespace UI
 
 		// Actions
 		void startHardwareTest();
+		void refreshCacheInfo();
 
 	  private:
+		void onActivate() override;
 	};
 } // namespace UI

@@ -14,6 +14,7 @@
 #include "Hardware/Usb.h"
 #include "ObjectModel/Job.h"
 #include "UI/Core/Model.h"
+#include "utils/UnitSystem.h"
 #include <algorithm>
 #include <fstream>
 
@@ -41,20 +42,7 @@ namespace OM::FileSystem
 	std::string FileSystemItem::GetReadableSize() const
 	{
 		ZoneScoped;
-		const char* sizes[] = {"B", "KB", "MB", "GB", "TB"};
-		int order = 0;
-
-		if (m_size == 0)
-			return "0 B";
-
-		double len = double(m_size);
-		while (len >= 1024 && order < 4)
-		{
-			order++;
-			len /= 1024;
-		}
-
-		return fmt::format("{:g} {:s}", len, sizes[order]);
+		return Units::formatBytes(m_size);
 	}
 
 	void FileSystemItem::SetName(const std::string name)
