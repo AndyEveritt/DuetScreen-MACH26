@@ -179,7 +179,7 @@ namespace Units
 		return mm / 25.4f;
 	}
 
-	std::string formatBytes(size_t bytes)
+	std::string formatBytes(std::uintmax_t bytes)
 	{
 		ZoneScoped;
 		const char* sizes[] = {"B", "KB", "MB", "GB", "TB"};

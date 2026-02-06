@@ -6,6 +6,7 @@
  */
 
 #pragma once
+#include <cstdint>
 #include <string>
 
 namespace Units
@@ -31,5 +32,5 @@ namespace Units
 	float inchesToMm(float inches);
 	float mmToInches(float mm);
 
-	std::string formatBytes(size_t bytes);
+	std::string formatBytes(std::uintmax_t bytes);
 } // namespace Units
