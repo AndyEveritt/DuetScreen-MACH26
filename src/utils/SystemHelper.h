@@ -21,11 +21,11 @@ namespace SystemHelper
 #endif
 	};
 
-	bool startService(Services service);
-	bool stopService(Services service);
-	bool restartService(Services service);
-	bool enableService(Services service);
-	bool disableService(Services service);
-	bool isServiceRunning(Services service);
-	bool isServiceEnabled(Services service);
+	bool startService(const Services service);
+	bool stopService(const Services service);
+	bool restartService(const Services service);
+	bool enableService(const Services service);
+	bool disableService(const Services service);
+	bool isServiceRunning(const Services service);
+	bool isServiceEnabled(const Services service);
 } // namespace SystemHelper

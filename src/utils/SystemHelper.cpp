@@ -40,6 +40,8 @@ namespace SystemHelper
 		{
 		case Services::DUETSCREEN:
 			return "20DuetScreen";
+		case Services::UPGRADE:
+			return "50rootfs-upgrade";
 #if DEVELOPER_MODE
 		case Services::DUETSCREEN_MONITOR:
 			return "21DuetScreenMonitor";
@@ -50,9 +52,10 @@ namespace SystemHelper
 		case Services::SETUP:
 			return "02setup";
 #endif
-		default:
-			return "Unknown";
 		}
+
+		LOG_ERROR("Invalid service: {}", static_cast<int>(service));
+		std::unreachable();
 	}
 
 	static constexpr std::string_view getProcessName(const Services service)
@@ -61,6 +64,8 @@ namespace SystemHelper
 		{
 		case Services::DUETSCREEN:
 			return "DuetScreen";
+		case Services::UPGRADE:
+			return "rootfs-upgrade";
 #if DEVELOPER_MODE
 		case Services::DUETSCREEN_MONITOR:
 			return "DuetScreenMonitor";
@@ -71,9 +76,10 @@ namespace SystemHelper
 		case Services::SETUP:
 			return "setup";
 #endif
-		default:
-			return "";
 		}
+
+		LOG_ERROR("Invalid service: {}", static_cast<int>(service));
+		std::unreachable();
 	}
 
 	[[maybe_unused]] static std::string getServicePath(const Services service, const bool enabled)
@@ -81,7 +87,7 @@ namespace SystemHelper
 		return fmt::format("{:s}{:s}{:s}", s_systemCtrlPath, enabled ? "S" : "", getServiceName(service));
 	}
 
-	bool startService(Services service)
+	bool startService(const Services service)
 	{
 		ZoneScoped;
 		LOG_INFO("Starting service: {}", getServiceName(service));
@@ -104,7 +110,7 @@ namespace SystemHelper
 #endif
 	}
 
-	bool stopService(Services service)
+	bool stopService(const Services service)
 	{
 		ZoneScoped;
 		LOG_INFO("Stopping service: {}", getServiceName(service));
@@ -127,7 +133,7 @@ namespace SystemHelper
 #endif
 	}
 
-	bool restartService(Services service)
+	bool restartService(const Services service)
 	{
 		ZoneScoped;
 		LOG_INFO("Restarting service: {}", getServiceName(service));
@@ -144,7 +150,7 @@ namespace SystemHelper
 #endif
 	}
 
-	bool enableService(Services service)
+	bool enableService(const Services service)
 	{
 		ZoneScoped;
 		LOG_INFO("Enabling service: {}", getServiceName(service));
@@ -173,7 +179,7 @@ namespace SystemHelper
 #endif
 	}
 
-	bool disableService(Services service)
+	bool disableService(const Services service)
 	{
 		ZoneScoped;
 		LOG_INFO("Disabling service: {}", getServiceName(service));
@@ -202,7 +208,7 @@ namespace SystemHelper
 #endif
 	}
 
-	bool isServiceRunning(Services service)
+	bool isServiceRunning(const Services service)
 	{
 		ZoneScoped;
 		LOG_DBG("Checking if service is running: {}", getServiceName(service));
@@ -222,7 +228,7 @@ namespace SystemHelper
 #endif
 	}
 
-	bool isServiceEnabled(Services service)
+	bool isServiceEnabled(const Services service)
 	{
 		ZoneScoped;
 		LOG_DBG("Checking if service is enabled: {}", getServiceName(service));

@@ -111,6 +111,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(_dev_default ON)
 endif()
 set(DUETSCREEN_DEVELOPER_MODE ${_dev_default} CACHE BOOL "Enable developer mode features")
+if (DUETSCREEN_DEVELOPER_MODE)
+  message(STATUS "Developer mode enabled: enabling SSH/ADB settings and console shell")
+  set(DUETSCREEN_ENABLE_CONSOLE_SHELL ON CACHE BOOL "Enable sending shell commands via the GUI console" FORCE)
+endif()
 
 # Hardware test requires developer mode to enable ADB
 if (DUETSCREEN_HARDWARE_TEST)
@@ -318,7 +322,8 @@ target_compile_options(
           -Wuninitialized
           -Wunreachable-code
           -Wfloat-conversion
-          -Wstrict-aliasing)
+          -Wstrict-aliasing
+          -Wswitch)
 
 if(NOT APPLE)
   # I don't have a Mac and the compiler seems to generate additional warnings so it seems unfair to make Ian suffer
