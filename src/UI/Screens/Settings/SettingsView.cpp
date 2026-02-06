@@ -617,6 +617,7 @@ namespace UI
 #if DEVELOPER_MODE
 				 &m_runBuildrootSetup,
 #endif
+				 &m_clearFileInfoCache,
 			 })
 		{
 			btn->setSize(150, 100);
@@ -637,6 +638,12 @@ namespace UI
 		m_runBuildrootSetup.addClickedCallback([](lv_event_t*)
 											   { SystemHelper::restartService(SystemHelper::Services::SETUP); });
 #endif
+		m_clearFileInfoCache.setText(_("settings.clear_file_info_cache"));
+		m_clearFileInfoCache.addClickedCallback([this](lv_event_t*) {});
+
+		/* Storage */
+		createRow(_("settings.storage_info"), m_storageInfo);
+		createRow(_("settings.file_info_cache_size"), m_fileInfoCacheSize);
 
 		/* Hardware test */
 		m_hardwareTest.hide();
