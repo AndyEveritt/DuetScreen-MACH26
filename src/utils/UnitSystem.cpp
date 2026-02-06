@@ -178,4 +178,23 @@ namespace Units
 		ZoneScoped;
 		return mm / 25.4f;
 	}
+
+	std::string formatBytes(size_t bytes)
+	{
+		ZoneScoped;
+		const char* sizes[] = {"B", "KB", "MB", "GB", "TB"};
+		int order = 0;
+
+		if (bytes == 0)
+			return "0 B";
+
+		double len = static_cast<double>(bytes);
+		while (len >= 1024 && order < 4)
+		{
+			order++;
+			len /= 1024;
+		}
+
+		return fmt::format("{:.2f} {:s}", len, sizes[order]);
+	}
 } // namespace Units

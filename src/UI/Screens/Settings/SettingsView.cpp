@@ -605,7 +605,7 @@ namespace UI
 			});
 
 		createSpanRow(m_controls);
-		m_controls.setSize(LV_PCT(50), LV_PCT(40));
+		m_controls.setSize(LV_PCT(50), LV_SIZE_CONTENT);
 		m_controls.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 		m_controls.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
@@ -617,7 +617,7 @@ namespace UI
 #if DEVELOPER_MODE
 				 &m_runBuildrootSetup,
 #endif
-				 &m_clearFileInfoCache,
+				 &m_clearCache,
 			 })
 		{
 			btn->setSize(150, 100);
@@ -638,15 +638,46 @@ namespace UI
 		m_runBuildrootSetup.addClickedCallback([](lv_event_t*)
 											   { SystemHelper::restartService(SystemHelper::Services::SETUP); });
 #endif
-		m_clearFileInfoCache.setText(_("settings.clear_file_info_cache"));
-		m_clearFileInfoCache.addClickedCallback([this](lv_event_t*) {});
+		m_clearCache.setText(_("settings.clear_duetscreen_cache"));
+		m_clearCache.addClickedCallback(
+			[this](lv_event_t*)
+			{
+				if (std::filesystem::exists(NVS_FOLDER))
+					std::filesystem::remove_all(NVS_FOLDER);
+				FILEINFO_CACHE->ClearCache();
+				getPresenter()->refreshCacheInfo();
+			});
 
 		/* Storage */
 		createRow(_("settings.storage_info"), m_storageInfo);
-		createRow(_("settings.file_info_cache_size"), m_fileInfoCacheSize);
+		createRow(_("settings.duetscreen_cache_size"), m_CacheSize);
 
 		/* Hardware test */
 		m_hardwareTest.hide();
+	}
+
+	void DeveloperSettings::setStorageInfo(std::uintmax_t totalStorage, std::uintmax_t usedStorage)
+	{
+		ZoneScoped;
+#if USE_FIXED_TEST_BUILD_TIME
+		totalStorage = 16uz * 1024uz * 1024uz * 1024uz; // 16 GB
+		// totalStorage *= 1024u;					// 16 GB
+		usedStorage = 256uz * 1024uz * 1024uz; // 256 MB
+#endif
+		m_storageInfo.setText(_("settings.storage_info_format",
+								Units::formatBytes(usedStorage),
+								Units::formatBytes(totalStorage),
+								usedStorage * 100 / totalStorage));
+	}
+
+	void DeveloperSettings::setDuetScreenCacheSize(std::uintmax_t cacheSize, size_t fileCount)
+	{
+		ZoneScoped;
+#if USE_FIXED_TEST_BUILD_TIME
+		cacheSize = 10uz * 1024uz; // 10 KB
+		fileCount = 100u;
+#endif
+		m_CacheSize.setText(_("settings.duetscreen_cache_size_format", Units::formatBytes(cacheSize), fileCount));
 	}
 
 	void DeveloperSettings::onInit() {}

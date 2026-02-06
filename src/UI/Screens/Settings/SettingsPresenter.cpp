@@ -3,6 +3,7 @@
 #include "SettingsView.h"
 #include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
+#include <filesystem>
 #include <fstream>
 
 namespace UI
@@ -19,5 +20,45 @@ namespace UI
 		hardwareTest.getPresenter()->m_serialNumber = "unknown";
 		hardwareTest.getPresenter()->createLogFile();
 		hardwareTest.getPresenter()->nextTest();
+	}
+
+	void DeveloperSettingsPresenter::refreshCacheInfo()
+	{
+		ZoneScoped;
+		const auto si = std::filesystem::space("/");
+
+		/* Calculate size of NVS folder */
+		auto calcSize = [](const std::filesystem::path& path)
+		{
+			struct Stats
+			{
+				std::uintmax_t size = 0;
+				size_t fileCount = 0;
+			} stats;
+
+			if (!std::filesystem::exists(path))
+				return stats;
+
+			for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
+			{
+				if (entry.is_regular_file())
+				{
+					stats.size += entry.file_size();
+					stats.fileCount++;
+				}
+			}
+			return stats;
+		};
+
+		const auto nvsStats = calcSize(NVS_FOLDER);
+
+		getView()->setStorageInfo(si.capacity, si.capacity - si.available);
+		getView()->setDuetScreenCacheSize(nvsStats.size, nvsStats.fileCount);
+	}
+
+	void DeveloperSettingsPresenter::onActivate()
+	{
+		ZoneScoped;
+		refreshCacheInfo();
 	}
 } // namespace UI

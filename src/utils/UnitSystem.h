@@ -30,4 +30,6 @@ namespace Units
 
 	float inchesToMm(float inches);
 	float mmToInches(float mm);
+
+	std::string formatBytes(size_t bytes);
 } // namespace Units

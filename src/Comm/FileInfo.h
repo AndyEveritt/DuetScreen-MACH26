@@ -250,7 +250,6 @@ namespace Comm
 	};
 
 	tm ParseSeconds(uint32_t seconds);
-	size_t GetFileSize(const char* filepath);
 } // namespace Comm
 #define FILEINFO_CACHE Comm::FileInfoCache::get()
 

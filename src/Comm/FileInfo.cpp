@@ -1004,22 +1004,5 @@ namespace Comm
 		return time;
 	}
 
-	size_t GetFileSize(const char* filepath)
-	{
-		ZoneScoped;
-		MODEL_LOCK();
-		struct stat sb;
-		if (system(fmt::format("test -f \"{:s}\"", filepath).c_str()) == 0)
-		{
-			if (stat(filepath, &sb) == -1)
-			{
-				// File doesn't exist
-				return 0;
-			}
-			return static_cast<size_t>(sb.st_size);
-		}
-		return 0;
-	}
-
 	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache", []() { FileInfoCache::get()->Debug(); });
 } // namespace Comm
