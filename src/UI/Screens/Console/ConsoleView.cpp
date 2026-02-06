@@ -158,8 +158,11 @@ namespace UI
 			m_output.deleteSpan(std::move(spanOpt.value()));
 		}
 
-		m_output.updateLayout();
-		m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_ON);
+		if (isVisible())
+		{
+			m_output.updateLayout();
+			m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_ON);
+		}
 	}
 
 	void ConsoleView::showCommandList(bool show, bool animate)

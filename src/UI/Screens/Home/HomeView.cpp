@@ -10,6 +10,7 @@
 namespace UI
 {
 	HomeView* HomeView::s_overrideInstance = nullptr;
+	std::atomic<bool> HomeView::s_instanceInitialized = false;
 
 	static constexpr int32_t s_layoutColDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(9), LV_GRID_TEMPLATE_LAST};
 	static constexpr int32_t s_layoutRowDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -110,7 +111,11 @@ namespace UI
 		{
 			return *s_overrideInstance;
 		}
-		LOG_INFO("Initialising");
+		if (!s_instanceInitialized)
+		{
+			LOG_INFO("Initialising HomeView");
+			s_instanceInitialized = true;
+		}
 		static HomeView view;
 		return view;
 	}

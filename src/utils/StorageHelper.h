@@ -12,9 +12,9 @@
 
 template <typename T>
 concept StorageKeyType = requires(T key) {
-	// { T::storage_key_marker } -> std::same_as<void>;
+	// Identify StorageKey-like types by required members
 	{ key.id } -> std::convertible_to<std::string_view>;
-	{ key.default_value } -> std::convertible_to<typename T::value_type>;
+	typename T::value_type;
 };
 
 class StorageHelper
@@ -87,7 +87,7 @@ class StorageHelper
 			// const std::string segmentStr(segment);
 			if (!current->contains(segment))
 			{
-				return key.default_value;
+				return detail::resolve_default(key);
 			}
 			current = &(*current)[segment];
 			if (next == std::string_view::npos)
@@ -102,7 +102,7 @@ class StorageHelper
 			if constexpr (std::is_enum_v<typename T::value_type>)
 			{
 				const auto val = jval.get<std::underlying_type_t<typename T::value_type>>();
-				return magic_enum::enum_cast<typename T::value_type>(val).value_or(key.default_value);
+				return magic_enum::enum_cast<typename T::value_type>(val).value_or(detail::resolve_default(key));
 			}
 			else
 			{

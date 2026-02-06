@@ -547,7 +547,6 @@ namespace UI
 		m_enableSSH.setCheckedCallback(
 			[](bool checked)
 			{
-				StorageHelper::setData(ID_SSH_ENABLED, checked);
 				if (checked)
 				{
 					SystemHelper::enableService(SystemHelper::Services::SSH);
@@ -563,7 +562,6 @@ namespace UI
 		m_enableADB.setCheckedCallback(
 			[](bool checked)
 			{
-				StorageHelper::setData(ID_ADB_ENABLED, checked);
 				if (checked)
 				{
 					SystemHelper::enableService(SystemHelper::Services::ADB);
@@ -655,8 +653,8 @@ namespace UI
 		m_debugBorders.setChecked(Themes::isdebugBorderVisible(lv_screen_active()));
 #endif
 #if DEVELOPER_MODE
-		m_enableSSH.setChecked(StorageHelper::getData(ID_SSH_ENABLED));
-		m_enableADB.setChecked(StorageHelper::getData(ID_ADB_ENABLED));
+		m_enableSSH.setChecked(SystemHelper::isServiceEnabled(SystemHelper::Services::SSH));
+		m_enableADB.setChecked(SystemHelper::isServiceEnabled(SystemHelper::Services::ADB));
 #endif
 #if LV_USE_SYSMON
 		m_enableSystemMonitor.setChecked(StorageHelper::getData(ID_SYSTEM_MONITOR_ENABLED));

@@ -81,7 +81,8 @@ namespace Log
 			spdlog::memory_buf_t formatted;
 			spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 			std::string str(formatted.data(), formatted.size());
-			Model::get().post<EventType::LogMessage>(static_cast<DebugLevel>(msg.level), msg.time, std::move(str));
+			if (Model::isInitialized())
+				Model::get().post<EventType::LogMessage>(static_cast<DebugLevel>(msg.level), msg.time, std::move(str));
 		}
 
 		void flush_() override {}
@@ -272,7 +273,7 @@ namespace Log
 		{
 			s_uiSink = make_shared<UiSink_mt>();
 			s_uiSink->set_pattern(LOG_UI_PATTERN);
-			s_uiSink->set_level(spdlog::level::warn);
+			s_uiSink->set_level(spdlog::level::info);
 			s_logger->sinks().push_back(s_uiSink);
 		}
 		else

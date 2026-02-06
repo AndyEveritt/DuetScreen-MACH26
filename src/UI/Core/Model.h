@@ -68,8 +68,11 @@ class Model
 	{
 		ZoneScoped;
 		static Model instance;
+		s_instanceInitialized = true;
 		return instance;
 	}
+
+	static bool isInitialized() { return s_instanceInitialized; }
 
 	/**
 	 * @brief Add a `Presenter` to listen to events
@@ -199,6 +202,8 @@ class Model
 		lv_timer_t* request;
 		lv_timer_t* receive;
 	} m_timers;
+
+	static std::atomic<bool> s_instanceInitialized;
 
 	// Non-templated registration/enqueue used by thin template wrappers
 	void registerHandler(EventType e, EventHandlerFn fn, void* user, void (*deleter)(void*)) noexcept;

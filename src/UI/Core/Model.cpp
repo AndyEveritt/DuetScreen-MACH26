@@ -165,6 +165,8 @@ struct Model::EventSystem
 	std::queue<Node> queue;
 };
 
+std::atomic<bool> Model::s_instanceInitialized = false;
+
 Model::Model()
 {
 	ZoneScoped;

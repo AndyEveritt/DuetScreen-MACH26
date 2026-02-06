@@ -15,6 +15,7 @@
 #include <string_view>
 #include <termios.h>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 template <typename T>
@@ -22,14 +23,21 @@ concept StorageKeyValue = std::is_convertible_v<T, nlohmann::json> || std::is_en
 
 namespace detail
 {
+	// Primary template declaration (no definition) with optional DefaultProvider type parameter
+	template <typename K, StorageKeyValue T, typename DefaultProvider = void>
+	struct BaseStorageKey;
+
+	// Default-value specialization (no provider)
 	template <typename K, StorageKeyValue T>
-	requires std::is_convertible_v<K, std::string_view> && std::is_constructible_v<K, std::string_view>
-	struct BaseStorageKey
+		requires std::is_convertible_v<K, std::string_view> && std::is_constructible_v<K, std::string_view>
+	struct BaseStorageKey<K, T, void>
 	{
 		using storage_key_marker = void;
 		using value_type = T;
+		using default_provider_type = void;
+		static constexpr bool has_provider = false;
 
-		constexpr BaseStorageKey(std::string_view id_, const T& default_value_)
+		constexpr BaseStorageKey(std::string_view id_, const T& default_value_) noexcept
 			: id(id_)
 			, default_value(default_value_)
 		{
@@ -38,13 +46,48 @@ namespace detail
 		const K id;
 		const T default_value;
 	};
+
+	// Provider specialization (callable returning T)
+	template <typename K, StorageKeyValue T, typename DefaultProvider>
+		requires std::is_convertible_v<K, std::string_view> && std::is_constructible_v<K, std::string_view> &&
+				 std::invocable<DefaultProvider> && std::is_convertible_v<std::invoke_result_t<DefaultProvider>, T>
+	struct BaseStorageKey<K, T, DefaultProvider>
+	{
+		using storage_key_marker = void;
+		using value_type = T;
+		using default_provider_type = DefaultProvider;
+		static constexpr bool has_provider = true;
+
+		constexpr BaseStorageKey(std::string_view id_, DefaultProvider provider_) noexcept
+			: id(id_)
+			, default_provider(provider_)
+		{
+		}
+
+		const K id;
+		const DefaultProvider default_provider;
+	};
+
+	// Helper to resolve default at compile time based on provider presence
+	template <typename K, StorageKeyValue T, typename DefaultProvider>
+	[[nodiscard]] constexpr T resolve_default(const BaseStorageKey<K, T, DefaultProvider>& key) noexcept
+	{
+		if constexpr (std::is_void_v<DefaultProvider>)
+		{
+			return key.default_value;
+		}
+		else
+		{
+			return std::invoke(key.default_provider);
+		}
+	}
 } // namespace detail
 
-template <StorageKeyValue T>
-using StorageKey = detail::BaseStorageKey<std::string_view, T>;
+template <StorageKeyValue T, typename DefaultProvider = void>
+using StorageKey = detail::BaseStorageKey<std::string_view, T, DefaultProvider>;
 
-template <StorageKeyValue T>
-using StorageKeyRunTime = detail::BaseStorageKey<std::string, T>;
+template <StorageKeyValue T, typename DefaultProvider = void>
+using StorageKeyRunTime = detail::BaseStorageKey<std::string, T, DefaultProvider>;
 
 /* Forward declare types */
 
@@ -136,9 +179,6 @@ extern const StorageKey<bool> ID_DEBUG_BORDERS;
 #endif
 
 #if DEVELOPER_MODE
-/* Developer */
-extern const StorageKey<bool> ID_SSH_ENABLED;
-extern const StorageKey<bool> ID_ADB_ENABLED;
 #endif
 
 #endif /* JNI_STORAGE_H_ */

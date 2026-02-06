@@ -76,6 +76,7 @@ namespace UI
 	  private:
 		// Test seam: when set (by friend HomeViewTest), instance() returns this instead of the static singleton
 		static HomeView* s_overrideInstance;
+		static std::atomic<bool> s_instanceInitialized;
 		virtual void onShow();
 		virtual void onHide();
 

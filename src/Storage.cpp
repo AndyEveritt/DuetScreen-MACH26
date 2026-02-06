@@ -14,6 +14,7 @@
 #include "Hardware/Duet.h"					 // Comm::CommunicationType
 #include "ObjectModel/Files.h"				 // OM::FileSystem::SortBy
 #include "Subscribers/ResponseSubscribers.h" // ResponseType
+#include "utils/SystemHelper.h"				 // SystemHelper::Services
 #include "utils/UnitSystem.h"				 // Units::UnitSystem
 
 /* Convertors */
@@ -101,12 +102,9 @@ constexpr StorageKey<bool> ID_DEBUG_BORDERS = {"debug:borders", false};
 #if DEVELOPER_MODE
 /* Developer */
 #  if 0
-constexpr StorageKey<bool> ID_SSH_ENABLED = {
-	"developer:ssh_enabled", []() -> bool { return SystemHelper::isServiceEnabled(SystemHelper::Services::SSH); }};
-constexpr StorageKey<bool> ID_ADB_ENABLED = {
-	"developer:adb_enabled", []() -> bool { return SystemHelper::isServiceEnabled(SystemHelper::Services::ADB); }};
-#  else
-constexpr StorageKey<bool> ID_SSH_ENABLED = {"developer:ssh_enabled", false};
-constexpr StorageKey<bool> ID_ADB_ENABLED = {"developer:adb_enabled", false};
+constexpr StorageKey<bool, bool (*)()> ID_SSH_ENABLED = {
+	"developer:ssh_enabled", +[]() -> bool { return SystemHelper::isServiceEnabled(SystemHelper::Services::SSH); }};
+constexpr StorageKey<bool, bool (*)()> ID_ADB_ENABLED = {
+	"developer:adb_enabled", +[]() -> bool { return SystemHelper::isServiceEnabled(SystemHelper::Services::ADB); }};
 #  endif
 #endif
