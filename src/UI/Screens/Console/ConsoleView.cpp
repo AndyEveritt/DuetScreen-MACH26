@@ -354,6 +354,8 @@ namespace UI
 		ZoneScoped;
 		m_commandList.scrollToX(0, LV_ANIM_OFF);
 		m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_ON);
+		lv_group_focus_obj(
+			m_input.getRootPtr()); // make USB keyboards focus the input without the user having to tap it first
 		m_kb.hide();
 		updateBtnPos();
 	}
