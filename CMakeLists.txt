@@ -55,26 +55,26 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O2 -gline-tables-only")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -gline-tables-only")
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O2 -g1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g1")
+  endif()
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+  # Use DWARF 4 for broad GDB compatibility and -g2 (the default for -g) for
+  # full variable/type info without macro tables (-g3), keeping binary size in check.
+  # Suppress -gpubnames to avoid the huge .debug_gnu_pub{names,types} sections
+  # that inflate the binary and slow down GDB loading.
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g2 -gdwarf-4 -gno-pubnames")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g2 -gdwarf-4 -gno-pubnames")
 endif()
 
-# Reduce debug info size and speed up links in Debug/RelWithDebInfo
+# Reduce debug info size and speed up links by using split DWARF or similar features when available.
 set(PIPE ON)
 option(DUETSCREEN_SPLIT_DWARF "Split DWARF debug info for faster links" OFF)
-if(CMAKE_BUILD_TYPE MATCHES "^Debug$|^RelWithDebInfo$")
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    # Keep only line tables for fast stepping and use split DWARF if enabled
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -gline-tables-only")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gline-tables-only")
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    # Minimal debug info level that still allows backtraces
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g1")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g1")
-  endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   if(DUETSCREEN_SPLIT_DWARF AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -gsplit-dwarf")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gsplit-dwarf")

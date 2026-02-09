@@ -125,7 +125,7 @@
 			"options": {
 				"cwd": "${config:buildroot_path}"
 			},
-			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S21DuetScreenMonitor stop; start-stop-daemon -K -n DuetScreen';scp output/target/usr/bin/DuetScreen root@${config:duetscreen_ip}:/usr/bin/DuetScreen",
+			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S21DuetScreenMonitor stop; start-stop-daemon -K -n DuetScreen'; cp output/target/usr/bin/DuetScreen output/target/usr/bin/DuetScreen.stripped && output/host/bin/arm-none-linux-gnueabihf-strip output/target/usr/bin/DuetScreen.stripped && scp output/target/usr/bin/DuetScreen.stripped root@${config:duetscreen_ip}:/usr/bin/DuetScreen && rm output/target/usr/bin/DuetScreen.stripped",
 			"group": {
 				"kind": "build",
 				"isDefault": false
