@@ -278,7 +278,6 @@ namespace UI
 		lv_event_code_t code = lv_event_get_code(e);
 		switch (code)
 		{
-		case LV_EVENT_CLICKED:
 		case LV_EVENT_FOCUSED:
 		{
 			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_FOCUSED");
