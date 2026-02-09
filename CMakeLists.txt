@@ -278,11 +278,20 @@ endif()
 target_compile_definitions(DuetScreen.lib PUBLIC MULTITHREADED)
 
 if(PROCESSOR STREQUAL "T113")
+  pkg_check_modules(XKBCOMMON xkbcommon)
   target_compile_definitions(lvgl PUBLIC 
                                   LV_USE_LINUX_FBDEV=1
                                   LV_USE_EVDEV=1
                                   LV_LINUX_FBDEV_RENDER_MODE=LV_DISPLAY_RENDER_MODE_DIRECT
                                   LV_LINUX_FBDEV_BUFFER_COUNT=2)
+  if(XKBCOMMON_FOUND)
+    message(STATUS "xkbcommon found: enabling XKB support for evdev")
+    target_compile_definitions(lvgl PUBLIC LV_EVDEV_XKB=1)
+    target_link_libraries(lvgl PUBLIC ${XKBCOMMON_LIBRARIES})
+    target_include_directories(lvgl PUBLIC ${XKBCOMMON_INCLUDE_DIRS})
+  else()
+    message(STATUS "xkbcommon not found: evdev keyboard support will be disabled")
+  endif()
                                   # add_compile_definitions(T113=1)
   
   target_compile_definitions(DuetScreen.lib PUBLIC T113=1)

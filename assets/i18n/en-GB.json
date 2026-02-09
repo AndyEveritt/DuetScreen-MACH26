@@ -260,6 +260,7 @@
       "firmware_version": "Firmware Version:",
       "font": "Font",
       "icons": "Icons",
+      "keyboard_layout": "USB Keyboard Layout:",
       "language": "Language:",
       "language_en": "English",
       "notification_auto_close_error": "Do not close error messages automatically:",

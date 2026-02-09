@@ -12,31 +12,19 @@ namespace UI
 {
 	void LvDropdown::setText(const std::string& text)
 	{
+		ZoneScoped;
 		LvDropdownGen::setText(text.c_str());
 	}
 
 	void LvDropdown::clearText()
 	{
+		ZoneScoped;
 		LvDropdownGen::setText(nullptr);
-	}
-
-	void LvDropdown::setOptions(std::span<std::string> options)
-	{
-		UI_LOCK();
-		std::string opt;
-		for (const auto& option : options)
-		{
-			opt += option;
-			if (&option != &options.back())
-			{
-				opt += "\n";
-			}
-		}
-		LvDropdownGen::setOptions(opt.c_str());
 	}
 
 	bool LvDropdown::setSelected(const std::string& option)
 	{
+		ZoneScoped;
 		UI_LOCK();
 		int32_t index = getOptionIndex(option);
 		if (index < 0)
@@ -55,6 +43,7 @@ namespace UI
 
 	std::string LvDropdown::getSelectedString() const
 	{
+		ZoneScoped;
 		UI_LOCK();
 		char buf[64];
 		LvDropdownGen::getSelectedStr(buf, sizeof(buf));

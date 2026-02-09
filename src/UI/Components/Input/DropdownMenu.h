@@ -28,7 +28,13 @@ namespace UI
 		LvLabel& getLabel() { return m_label; }
 		LvDropdown& getDropdownMenu() { return m_dropdown; }
 
-		void setOptions(std::span<std::string> options);
+		template <typename T>
+			requires std::convertible_to<T, std::string_view>
+		void setOptions(std::span<T> options)
+		{
+			ZoneScoped;
+			m_dropdown.setOptions(options);
+		}
 		void addOption(const std::string& option, uint32_t pos = LV_DROPDOWN_POS_LAST);
 		void clearOptions();
 		void setSelected(uint32_t selected);

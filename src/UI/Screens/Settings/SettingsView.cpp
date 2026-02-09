@@ -13,11 +13,43 @@
 #include "utils/StorageHelper.h"
 #include "utils/SystemHelper.h"
 #include "version.h"
+#include <ranges>
 
 #define USE_MODAL_NUMBERPAD_FOR_IP_ADDRESS 1
 
 namespace UI
 {
+	struct KeyboardLayout
+	{
+		std::string_view name;
+		std::string_view code;
+		const char* variant = nullptr;
+	};
+
+	/**
+	 * @brief List of common keyboard layouts with their XKB layout codes and variants where applicable
+	 *
+	 * @note It doesn't make sense to translate the layout names since they are only relevant when the user is familar
+	 * with that language. Each layout name should be easily readable by a user familiar with the language it is
+	 * relevant to
+	 */
+	static constexpr std::array s_keyboardLayouts = {
+		KeyboardLayout{.name = "US (QWERTY)", .code = "us"},
+		KeyboardLayout{.name = "UK (QWERTY)", .code = "gb"},
+		KeyboardLayout{.name = "Deutsch (QWERTZ)", .code = "de"},
+		KeyboardLayout{.name = "Français (AZERTY)", .code = "fr"},
+		KeyboardLayout{.name = "Español", .code = "es"},
+		KeyboardLayout{.name = "Italiano", .code = "it"},
+		KeyboardLayout{.name = "Svenska", .code = "se"},
+		KeyboardLayout{.name = "Norsk", .code = "no"},
+		KeyboardLayout{.name = "Dansk", .code = "dk"},
+		KeyboardLayout{.name = "Nederlands", .code = "nl"},
+		KeyboardLayout{.name = "Português", .code = "pt"},
+		KeyboardLayout{.name = "Polski", .code = "pl"},
+		KeyboardLayout{.name = "Čeština", .code = "cz"},
+		KeyboardLayout{.name = "US Dvorak", .code = "us", .variant = "dvorak"},
+	};
+
 	static void onTextareaEvent(lv_event_t* e, TextBox& text_box, lv_keyboard_mode_t mode);
 
 	static void setSliderNumberpadLabel(Slider& slider, std::string_view label)
@@ -175,8 +207,54 @@ namespace UI
 		m_language.setHeight(LV_SIZE_CONTENT);
 		{
 			std::array languages = {_("settings.language_en")};
-			m_language.setOptions(languages);
+			m_language.setOptions<std::string>(languages);
 		}
+
+		/* Keyboard Layout */
+		createRow(_("settings.keyboard_layout"), m_keyboardLayout);
+		m_keyboardLayout.setHeight(LV_SIZE_CONTENT);
+		{
+			// Common keyboard layouts with their XKB layout codes
+			std::array<std::string_view, s_keyboardLayouts.size()> layoutNames;
+			std::ranges::transform(
+				s_keyboardLayouts, layoutNames.begin(), [](const KeyboardLayout& kl) { return kl.name; });
+			m_keyboardLayout.setOptions<std::string_view>(layoutNames);
+		}
+		m_keyboardLayout.setSelectedCallback(
+			[](uint32_t index, std::string_view /* option */)
+			{
+				if (index >= s_keyboardLayouts.size())
+					return;
+
+				std::string_view layoutCode = s_keyboardLayouts.at(index).code;
+				const char* variant = s_keyboardLayouts.at(index).variant;
+
+				LOG_INFO("Selected keyboard layout: {} (code: {}, variant: {})",
+						 s_keyboardLayouts.at(index).name,
+						 layoutCode,
+						 variant ? variant : "none");
+
+				// Save to storage
+				StorageHelper::setData(ID_KEYBOARD_LAYOUT, layoutCode);
+
+#if LV_USE_EVDEV && LV_EVDEV_XKB
+				// Apply to all keyboard input devices
+				struct xkb_rule_names names = {.rules = nullptr,
+											   .model = "pc105",
+											   .layout = layoutCode.data(),
+											   .variant = variant,
+											   .options = nullptr};
+
+				lv_indev_t* indev = nullptr;
+				while ((indev = lv_indev_get_next(indev)) != nullptr)
+				{
+					if (lv_indev_get_type(indev) == LV_INDEV_TYPE_KEYPAD)
+					{
+						lv_evdev_set_keymap(indev, names);
+					}
+				}
+#endif
+			});
 
 		/* Brightness */
 		createRow(_("settings.brightness"), m_brightness);
@@ -260,6 +338,21 @@ namespace UI
 		m_notificationLevel.setSelected(static_cast<uint32_t>(StorageHelper::getData(ID_NOTIFICATION_LEVEL)));
 		m_notificationTimeout.setValue(static_cast<float>(StorageHelper::getData(ID_NOTIFICATION_TIMEOUT).count()));
 		m_notificationAutoCloseError.setChecked(!StorageHelper::getData(ID_NOTIFICATION_AUTO_CLOSE_ERROR));
+
+		// Update keyboard layout selection
+		{
+			auto currentLayout = StorageHelper::getData(ID_KEYBOARD_LAYOUT);
+			uint32_t selectedIndex = 0;
+			for (size_t i = 0; i < s_keyboardLayouts.size(); ++i)
+			{
+				if (s_keyboardLayouts.at(i).code == currentLayout)
+				{
+					selectedIndex = static_cast<uint32_t>(i);
+					break;
+				}
+			}
+			m_keyboardLayout.setSelected(selectedIndex);
+		}
 	}
 
 	ConnectionSettings::ConnectionSettings(const std::string& name, LvObj& parent)
@@ -274,7 +367,7 @@ namespace UI
 			options.push_back(_(method.data()));
 		}
 		m_connectionMethod.setHeight(LV_SIZE_CONTENT);
-		m_connectionMethod.setOptions(options);
+		m_connectionMethod.setOptions<std::string>(options);
 		m_connectionMethod.addEventCallback(
 			[this](lv_event_t*)
 			{
@@ -306,7 +399,7 @@ namespace UI
 				_("settings.usb_mode_device"),
 				_("settings.usb_mode_internal_wifi"),
 			};
-			m_usbMode.setOptions(usbModeOptions);
+			m_usbMode.setOptions<std::string>(usbModeOptions);
 		}
 		m_usbMode.setSelectedCallback([this](uint32_t index, std::string_view /* option */)
 									  { setUsbMode(Comm::UsbMode(index)); });

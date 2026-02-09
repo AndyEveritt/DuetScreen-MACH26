@@ -83,12 +83,6 @@ namespace UI
 		m_dropdown.clearText();
 	}
 
-	void DropdownMenu::setOptions(std::span<std::string> options)
-	{
-		ZoneScoped;
-		m_dropdown.setOptions(options);
-	}
-
 	void DropdownMenu::addOption(const std::string& option, uint32_t pos)
 	{
 		ZoneScoped;

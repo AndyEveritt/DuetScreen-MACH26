@@ -32,6 +32,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(lvgl PUBLIC
                               # LV_USE_ASSERT_OBJ=1 # significantly increases unit test time and decreases frame rate
                               LV_USE_LOG=1
+                              LV_LOG_LEVEL=LV_LOG_LEVEL_WARN
                               LV_LOG_PRINTF=1
                               LV_USE_SYSMON=1
                               LV_USE_PERF_MONITOR=1

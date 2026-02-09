@@ -134,6 +134,7 @@ extern const StorageKey<speed_t> ID_DUET_BAUD_RATE;
 extern const StorageKey<size_t> ID_THEME;
 extern const StorageKey<std::string_view> ID_FONT;
 extern const StorageKey<std::string_view> ID_ICON_FOLDER;
+extern const StorageKey<std::string_view> ID_KEYBOARD_LAYOUT;
 
 extern const StorageKey<bool> ID_SCREENSAVER_ENABLE;
 extern const StorageKey<std::chrono::seconds> ID_SCREENSAVER_TIMEOUT;

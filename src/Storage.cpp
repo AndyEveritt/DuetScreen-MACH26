@@ -51,6 +51,7 @@ constexpr StorageKey<speed_t> ID_DUET_BAUD_RATE = {"duet:baud_rate", DEFAULT_BAU
 constexpr StorageKey<size_t> ID_THEME = {"ui:theme", std::numeric_limits<size_t>::max()};
 constexpr StorageKey<std::string_view> ID_FONT = {"ui:font", "OpenSans"};
 constexpr StorageKey<std::string_view> ID_ICON_FOLDER = {"ui:icon_folder", DEFAULT_ICON_SET};
+constexpr StorageKey<std::string_view> ID_KEYBOARD_LAYOUT = {"ui:keyboard_layout", "us"};
 
 constexpr StorageKey<bool> ID_SCREENSAVER_ENABLE = {"ui:screensaver_enable", true};
 constexpr StorageKey<std::chrono::seconds> ID_SCREENSAVER_TIMEOUT = {"ui:screensaver_timeout", DEFAULT_SCREEN_TIMEOUT};

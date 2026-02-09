@@ -23,7 +23,24 @@ namespace UI
 		void setText(const std::string& text);
 		void clearText();
 
-		void setOptions(std::span<std::string> options);
+		template <typename T>
+			requires std::convertible_to<T, std::string_view>
+		void setOptions(std::span<T> options)
+		{
+			ZoneScoped;
+			UI_LOCK();
+			std::string opt;
+			for (const auto& option : options)
+			{
+				opt += option;
+				if (&option != &options.back())
+				{
+					opt += "\n";
+				}
+			}
+			LvDropdownGen::setOptions(opt.c_str());
+		}
+
 		void addOption(const std::string& option, uint32_t pos) { LvDropdownGen::addOption(option.c_str(), pos); }
 		using LvDropdownGen::setSelected;
 		bool setSelected(const std::string& option);

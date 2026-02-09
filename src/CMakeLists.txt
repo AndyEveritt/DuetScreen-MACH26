@@ -7,12 +7,8 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/Debug.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/LockWrapper.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/Storage.cpp
-          ${CMAKE_CURRENT_SOURCE_DIR}/DebugCommands.cpp)
-
-if(PROCESSOR STREQUAL "Simulation")
-  target_sources(DuetScreen.lib
-                 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/mouse_cursor_icon.c)
-endif()
+          ${CMAKE_CURRENT_SOURCE_DIR}/DebugCommands.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/mouse_cursor_icon.c)
 
 add_subdirectory(Comm)
 add_subdirectory(Hardware)

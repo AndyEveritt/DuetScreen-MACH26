@@ -378,25 +378,105 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 {
 	ZoneScoped;
 	LOG_INFO("Initialising display");
+
+	lv_display_t* disp = NULL;
+	lv_group_set_default(lv_group_create());
+
 #if LV_USE_LINUX_FBDEV
 	const char* device = getenv_default("LV_LINUX_FBDEV_DEVICE", "/dev/fb0");
-	lv_display_t* disp = lv_linux_fbdev_create();
-	lv_display_set_resolution(disp, w, h);
+
+	{
+		ZoneScopedN("Framebuffer Initialization");
+		disp = lv_linux_fbdev_create();
+		lv_display_set_resolution(disp, w, h);
+	}
 
 #  if LV_USE_EVDEV
-	const char* input_device = getenv_default("LV_LINUX_EVDEV_POINTER_DEVICE", "/dev/input/event1");
-	lv_indev_t* touch = lv_evdev_create(LV_INDEV_TYPE_POINTER, input_device);
-	lv_indev_set_display(touch, disp);
+	{
+		ZoneScopedN("Input Device Initialization");
+		const char* input_device = getenv_default("LV_LINUX_EVDEV_POINTER_DEVICE", "/dev/input/event1");
+		lv_indev_t* touch = lv_evdev_create(LV_INDEV_TYPE_POINTER, input_device);
+		lv_indev_set_display(touch, disp);
+
+		lv_evdev_discovery_start(
+			[](lv_indev_t* indev, lv_evdev_type_t type, void* user_data)
+			{
+				ZoneScopedN("EVDEV Discovery Callback");
+				LOG_INFO("New evdev device discovered: type {}, user_data {}",
+						 magic_enum::enum_name(type),
+						 (uintptr_t)user_data);
+				lv_display_t* disp = (lv_display_t*)user_data;
+				if (type == LV_EVDEV_TYPE_KEY)
+				{
+					lv_indev_set_display(indev, disp);
+					lv_indev_set_group(indev, lv_group_get_default());
+
+#	if LV_EVDEV_XKB
+					// Apply stored keyboard layout
+					{
+						auto layoutCode = StorageHelper::getData(ID_KEYBOARD_LAYOUT);
+						struct xkb_rule_names names = {.rules = nullptr,
+													   .model = "pc105",
+													   .layout = layoutCode.data(),
+													   .variant = nullptr,
+													   .options = nullptr};
+						lv_evdev_set_keymap(indev, names);
+						LOG_INFO("Applied keyboard layout: {}", layoutCode);
+					}
+#	endif
+
+					lv_indev_add_event_cb(
+						indev,
+						[](lv_event_t* e)
+						{
+							lv_event_code_t code = lv_event_get_code(e);
+							[[maybe_unused]] const auto key =
+								lv_indev_get_key(static_cast<lv_indev_t*>(lv_event_get_current_target(e)));
+							return;
+						},
+						LV_EVENT_KEY,
+						nullptr);
+				}
+				if (type == LV_EVDEV_TYPE_REL)
+				{
+					{
+						ZoneScopedN("Mouse Cursor Setup");
+						LV_IMAGE_DECLARE(mouse_cursor_icon); /*Declare the image file.*/
+						lv_obj_t* cursor_obj;
+						cursor_obj = lv_image_create(lv_screen_active()); /*Create an image object for the cursor */
+						lv_obj_set_name(cursor_obj, "mouse_cursor");
+						lv_image_set_src(cursor_obj, &mouse_cursor_icon); /*Set the image source*/
+						lv_indev_set_cursor(indev, cursor_obj);			  /*Connect the image  object to the driver*/
+						lv_indev_add_event_cb(
+							indev,
+							[](lv_event_t* e)
+							{
+								ZoneScopedN("Mouse Cursor Cleanup");
+								LOG_INFO("Input device deleted, cleaning up cursor");
+								lv_obj_t* cursor =
+									lv_indev_get_cursor(static_cast<lv_indev_t*>(lv_event_get_current_target(e)));
+								if (cursor)
+								{
+									lv_obj_delete(cursor);
+								}
+							},
+							LV_EVENT_DELETE,
+							nullptr);
+					}
+					lv_indev_set_display(indev, disp);
+					lv_indev_set_group(indev, lv_group_get_default());
+				}
+			},
+			disp);
+	}
 #  endif
 
 	lv_linux_fbdev_set_file(disp, device);
 
 #elif LV_USE_SDL
 
-	lv_display_t* disp = NULL;
 	lv_indev_t* mouse = NULL;
 
-	lv_group_set_default(lv_group_create());
 	{
 		ZoneScopedN("SDL Window Creation");
 		disp = lv_sdl_window_create(w, h);

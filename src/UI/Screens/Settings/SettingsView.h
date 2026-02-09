@@ -52,6 +52,7 @@ namespace UI
 		/* General */
 		LvLabel m_buildTime{"build_time", getRoot()};
 		DropdownMenu m_language{"language", getRoot()};
+		DropdownMenu m_keyboardLayout{"keyboard_layout", getRoot()};
 		Slider m_brightness{"brightness", getRoot()};
 		Slider m_screensaverTimeout{"screensaver_timeout", getRoot()};
 		LvSettingsToggle m_showConfirmationDialogs{"show_confirmation_dialogs", getRoot()};

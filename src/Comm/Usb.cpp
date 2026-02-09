@@ -596,7 +596,8 @@ namespace Comm
 		case UsbMode::InternalWiFi:
 			setUsbHost(true);
 			setUsbMux(false);
-			setUsbState(false);
+			setUsbState(false); /* probably `false` because smart USB chargers reset the screen in wifi mode if the
+								   state pin doesn't signal device mode */
 			NetworkHelper::enable(true);
 			break;
 		default:
