@@ -68,7 +68,12 @@ namespace UI
 		m_shellToggle.setText(_("console.shell"));
 		m_shellToggle.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
 		m_shellToggle.setAlign(LV_ALIGN_TOP_RIGHT, -30, 20);
-		m_shellToggle.setCheckedCallback([this](bool checked) { getPresenter()->enableShell(checked); });
+		m_shellToggle.setCheckedCallback(
+			[this](bool checked)
+			{
+				getPresenter()->enableShell(checked);
+				focusInput();
+			});
 		m_shellToggle.setChecked(false);
 #endif
 
@@ -90,6 +95,8 @@ namespace UI
 				ConsoleView& view = *static_cast<ConsoleView*>(lv_event_get_user_data(e));
 				bool show = !view.m_commandVisibility.hasState(LV_STATE_CHECKED);
 				view.showCommandList(show, true);
+
+				view.focusInput();
 			},
 			this);
 
@@ -235,6 +242,7 @@ namespace UI
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		view->m_outputCont.scrollByBounded(0, -view->m_outputCont.getScrollBottom(), LV_ANIM_ON);
 		view->m_input.sendEvent(LV_EVENT_READY, view);
+		view->focusInput();
 	}
 
 	void ConsoleView::onClearEvent(lv_event_t* e)
@@ -243,6 +251,7 @@ namespace UI
 		UI_LOCK();
 		ConsoleView* view = static_cast<ConsoleView*>(lv_event_get_user_data(e));
 		view->clear();
+		view->focusInput();
 	}
 
 #if 0
@@ -348,14 +357,21 @@ namespace UI
 								   m_commandList.getY() + 5);
 	}
 
+	void ConsoleView::focusInput()
+	{
+		ZoneScoped;
+		const bool kbVisible = m_kb.isVisible();
+		lv_group_focus_obj(m_input.getRootPtr());
+		m_kb.setVisible(kbVisible);
+	}
+
 	void ConsoleView::onShow()
 	{
 		ZoneScoped;
 		m_commandList.scrollToX(0, LV_ANIM_OFF);
 		m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_ON);
-		lv_group_focus_obj(
-			m_input.getRootPtr()); // make USB keyboards focus the input without the user having to tap it first
 		m_kb.hide();
+		focusInput();
 		updateBtnPos();
 	}
 

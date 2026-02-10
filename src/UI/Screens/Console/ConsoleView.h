@@ -70,6 +70,7 @@ namespace UI
 		static void onKeyboardEvent(lv_event_t* e);
 
 		void updateBtnPos();
+		void focusInput();
 
 		void onShow() override;
 		void onHide() override;
