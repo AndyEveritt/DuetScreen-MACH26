@@ -32,7 +32,6 @@ namespace OM
 			NumberInt = 5,
 			NumberFloat = 6,
 			Text = 7,
-			Max
 		} mode = Mode::None;
 		uint32_t seq = 0;
 		uint32_t controls = 0;

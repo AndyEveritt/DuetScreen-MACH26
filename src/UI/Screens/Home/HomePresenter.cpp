@@ -7,6 +7,7 @@
 #include "ObjectModel/Sensor.h"
 #include "UI/Core/Navigation.h"
 #include "i18n/i18n.h"
+#include "nameof.hpp"
 #include "utils/StorageHelper.h"
 #include "utils/UpgradeHelper.h"
 #include <algorithm>
@@ -131,9 +132,6 @@ namespace UI
 		case ResponseType::ERROR:
 			msgBox->setTitle(_("msgbox.response_error"));
 			break;
-		default:
-			LOG_WARN("Unknown response type {:d}", static_cast<int>(type));
-			break;
 		}
 
 		msgBox->setCancelBtnText(_("common.close"));
@@ -213,6 +211,9 @@ namespace UI
 		uint32_t seq = alert.seq;
 		switch (alert.mode)
 		{
+		case OM::Alert::Mode::None:
+			// Already handled above, but include for completeness
+			break;
 		case OM::Alert::Mode::Info:
 		case OM::Alert::Mode::InfoClose:
 		case OM::Alert::Mode::InfoConfirm:
@@ -370,9 +371,6 @@ namespace UI
 			modalAlert.setShowKeyboardCallback([this](bool show) { m_view->showKeyboard(show); });
 			break;
 		}
-		default:
-			LOG_WARN("Unhandled alert mode {}", (int)alert.mode);
-			break;
 		}
 
 		// Handle axis controls after mode setup

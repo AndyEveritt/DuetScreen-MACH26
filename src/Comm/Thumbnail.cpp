@@ -1,6 +1,7 @@
 #include "Debug.h"
 
 #include "Thumbnail.h"
+#include "nameof.hpp"
 
 extern "C"
 {
@@ -223,7 +224,9 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 								 &pixel_decoded);
 		if (ret < 0)
 		{
-			LOG_ERROR("failed qoi decoding state {:d} {:d}.\n", (int)qoi_decode_state_get(&thumbnail.image.qoi), ret);
+			LOG_ERROR("failed qoi decoding state {:s} {:d}.\n",
+					  nameof::nameof_enum(qoi_decode_state_get(&thumbnail.image.qoi)),
+					  ret);
 			return -6;
 		}
 

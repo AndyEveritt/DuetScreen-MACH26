@@ -10,6 +10,7 @@
 #include "Configuration.h"
 #include "ThumbnailSubscribers.h"
 #include "UI/Core/Model.h"
+#include "nameof.hpp"
 
 bool ThumbnailSubscribers::fileName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
@@ -498,17 +499,17 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 		LOG_WARN("Failed to parse thumbnail err {:s}", data);
 		thumbnail->context.parseErr = Comm::ThumbnailContext::ParseErr::RrfError;
 	}
-	LOG_DBG("Thumbnail: offset({:d}), next({:d}), err({:d}), size({:d}), parseErr({:d})",
+	LOG_DBG("Thumbnail: offset({:d}), next({:d}), err({:d}), size({:d}), parseErr({:s})",
 			thumbnail->context.offset,
 			thumbnail->context.next,
 			thumbnail->context.err,
 			thumbnail->context.size,
-			static_cast<int>(thumbnail->context.parseErr));
+			nameof::nameof_enum(thumbnail->context.parseErr));
 
 	if (thumbnail->context.parseErr != Comm::ThumbnailContext::ParseErr::NoError || thumbnail->context.err != 0)
 	{
-		LOG_ERROR("thumbnail parseErr {:d} err {:d}.\n",
-				  static_cast<int>(thumbnail->context.parseErr),
+		LOG_ERROR("thumbnail parseErr {:s} err {:d}.\n",
+				  nameof::nameof_enum(thumbnail->context.parseErr),
 				  thumbnail->context.err);
 		thumbnail->context.state = Comm::ThumbnailState::Init;
 		return false;

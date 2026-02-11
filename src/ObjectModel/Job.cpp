@@ -13,6 +13,7 @@
 #include "Hardware/Duet.h"
 #include "Job.h"
 #include "ListHelpers.h"
+#include "nameof.hpp"
 
 #define ATTR_SETTR_GETTR(funcName, type, varName)                                                                      \
 	void Set##funcName(const type value)                                                                               \
@@ -67,8 +68,8 @@ namespace OM
 		case RemainingTimeType::SIMULATED:
 			s_printRemaining.simulated = printRemaining;
 			break;
-		default:
-			LOG_WARN("Unknown RemainingTimeType {:d}\n", (int)type);
+		case RemainingTimeType::AUTO:
+			LOG_WARN("AUTO is not a valid type for SetPrintRemaining\n");
 			break;
 		}
 	}
@@ -99,10 +100,10 @@ namespace OM
 				return s_printRemaining.filament;
 			}
 			return s_printRemaining.file;
-		default:
-			LOG_WARN("Unknown RemainingTimeType {:d}\n", (int)type);
-			return 0;
 		}
+
+		LOG_FATAL_THROW("Invalid RemainingTimeType: {:d}", (int)type);
+		std::unreachable();
 	}
 
 	void SetJobName(const char* name)

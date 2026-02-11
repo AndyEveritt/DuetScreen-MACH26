@@ -16,6 +16,7 @@
 #include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/Core/Model.h"
+#include "nameof.hpp"
 #include "utils/utils.h"
 #include <fstream>
 #include <sys/stat.h>
@@ -961,20 +962,20 @@ namespace Comm
 				LOG_INFO("    Thumbnail {:d}:", i);
 				LOG_INFO("      meta:");
 				LOG_INFO("        filename: {:s}", thumbnail->filename.c_str());
-				LOG_INFO("        width({:d}), height({:d}), format({:d}), offset({:d}), size({:d})",
+				LOG_INFO("        width({:d}), height({:d}), format({:s}), offset({:d}), size({:d})",
 						 thumbnail->meta.width,
 						 thumbnail->meta.height,
-						 (int)thumbnail->meta.imageFormat,
+						 nameof::nameof_enum(thumbnail->meta.imageFormat),
 						 thumbnail->meta.offset,
 						 thumbnail->meta.size);
 				LOG_INFO("      context:");
-				LOG_INFO("        err({:d}), parseErr({:d}), size({:d}), offset({:d}), next({:d}), state({:d})",
+				LOG_INFO("        err({:d}), parseErr({:s}), size({:d}), offset({:d}), next({:d}), state({:s})",
 						 thumbnail->context.err,
-						 static_cast<int>(thumbnail->context.parseErr),
+						 nameof::nameof_enum(thumbnail->context.parseErr),
 						 thumbnail->context.size,
 						 thumbnail->context.offset,
 						 thumbnail->context.next,
-						 static_cast<int>(thumbnail->context.state));
+						 nameof::nameof_enum(thumbnail->context.state));
 			}
 		}
 

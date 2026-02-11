@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Subscribers/Subscribers.h"
+#include <magic_enum/magic_enum.hpp>
 
 enum class ResponseType
 {
@@ -8,16 +9,16 @@ enum class ResponseType
 	SUCCESS,
 	WARNING,
 	ERROR,
-	NONE
 };
 
-constexpr std::string_view RESPONSE_TYPE_STRINGS[] = {"settings.severity.info",
-													  "settings.severity.success",
-													  "settings.severity.warn",
-													  "settings.severity.error",
-													  "settings.severity.none"};
+constexpr std::string_view RESPONSE_TYPE_STRINGS[] = {
+	"settings.severity.info",
+	"settings.severity.success",
+	"settings.severity.warn",
+	"settings.severity.error",
+};
 
-static_assert(std::size(RESPONSE_TYPE_STRINGS) == static_cast<size_t>(ResponseType::NONE) + 1,
+static_assert(std::size(RESPONSE_TYPE_STRINGS) == magic_enum::enum_count<ResponseType>(),
 			  "RESPONSE_TYPE_STRINGS size does not match ResponseType enum");
 
 class ResponseSubscribers : public SubscriberMap

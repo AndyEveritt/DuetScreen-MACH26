@@ -10,6 +10,7 @@
 #include "Hardware/Duet.h"
 #include "i18n/i18n.h"
 #include "lvgl/src/lvgl_private.h"
+#include "nameof.hpp"
 
 namespace UI
 {
@@ -154,7 +155,7 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		LOG_INFO("Seting mode to {:d}", (int)mode);
+		LOG_INFO("Seting mode to {:s}", nameof::nameof_enum(mode));
 		m_mode = mode;
 
 		// Hide all containers
@@ -199,9 +200,6 @@ namespace UI
 			m_input.setAcceptedChars(NULL);
 			inputVisible(true);
 			okVisible(true);
-			break;
-		default:
-			LOG_WARN("Unknown alert mode {:d}", (int)mode);
 			break;
 		}
 	}

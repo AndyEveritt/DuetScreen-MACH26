@@ -23,6 +23,7 @@
 #include "Tool.h"
 #include "UI/Core/Model.h"
 #include "Utils.h"
+#include "nameof.hpp"
 #include "utils/utils.h"
 
 namespace OM
@@ -251,7 +252,7 @@ namespace OM
 				}
 			}
 			LOG_INFO("  Printer Name: {:s}", OM::GetPrinterName().c_str());
-			LOG_INFO("  Printer State: {:s}({:d})", OM::GetStatusText(), (int)OM::GetStatus());
+			LOG_INFO("  Printer State: {:s}({})", OM::GetStatusText(), nameof::nameof_enum(OM::GetStatus()));
 
 			LOG_INFO("\n");
 		});

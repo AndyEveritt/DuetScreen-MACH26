@@ -19,6 +19,7 @@
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
 #include "UI/Core/Model.h"
+#include "nameof.hpp"
 #include "utils/StorageHelper.h"
 #include "utils/TimeHelper.h"
 #include "utils/utils.h"
@@ -85,7 +86,7 @@ namespace Comm
 		ZoneScoped;
 		if (type == m_config.communicationType)
 			return;
-		LOG_INFO("Setting communication type to {:d}", (int)type);
+		LOG_INFO("Setting communication type to {:s}", nameof::nameof_enum(type));
 		Disconnect();
 
 		m_config.communicationType = type;

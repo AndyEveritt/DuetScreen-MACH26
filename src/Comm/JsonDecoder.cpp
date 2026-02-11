@@ -199,7 +199,7 @@ namespace Comm
 		if (m_seq != nullptr)
 		{
 			m_seq->state = SeqStateOk;
-			LOG_DBG("seq {:s} {:d} DONE", m_seq->key, (int)m_seq->state);
+			LOG_DBG("seq '{:s}' DONE", m_seq->key);
 
 			if (m_seq->seqid == rcvSeqsFreq)
 			{

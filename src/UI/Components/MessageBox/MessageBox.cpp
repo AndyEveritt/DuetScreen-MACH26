@@ -12,6 +12,7 @@
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
 #include "lvgl/src/lvgl_private.h"
+#include "nameof.hpp"
 #include "utils/StorageHelper.h"
 
 namespace UI
@@ -401,9 +402,6 @@ namespace UI
 			break;
 		case ResponseType::ERROR:
 			addStyle(Themes::getLvglStyles().bg_color_error);
-			break;
-		default:
-			LOG_WARN("Unknown message box type {:d}", (int)type);
 			break;
 		}
 	}
