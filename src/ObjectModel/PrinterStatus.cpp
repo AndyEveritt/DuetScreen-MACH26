@@ -11,6 +11,7 @@
 #include "ObjectModel/Utils.h"
 #include "PrinterStatus.h"
 #include "UI/Core/Model.h"
+#include "nameof.hpp"
 #include <string>
 
 namespace OM
@@ -79,14 +80,23 @@ namespace OM
 	// This is called when the status changes
 	void SetStatus(const PrinterStatus newStatus)
 	{
+		const bool sendEvent = newStatus != s_status || newStatus == OM::PrinterStatus::connecting;
+
 		if (newStatus != s_status)
 		{
-			LOG_INFO("printer status {:d} -> {:d}\n", (int)s_status, (int)newStatus);
+			LOG_INFO("printer status '{:s}' -> '{:s}'", nameof::nameof_enum(s_status), nameof::nameof_enum(newStatus));
 			s_status = newStatus;
 			if (s_status == OM::PrinterStatus::halted)
 			{
 				Comm::DUET.SendGcode("M999\n");
 			}
+		}
+		if (sendEvent)
+		{
+			/**
+			 * We post an event even if the status didn't change, if the status is "connecting", because we want to
+			 * trigger a UI update when the connection method is changed.
+			 */
 			Model::get().post<EventType::Status>(GetStatus());
 		}
 	}

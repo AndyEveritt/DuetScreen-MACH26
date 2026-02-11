@@ -473,7 +473,7 @@ namespace OM::FileSystem
 	void ClearFileSystem()
 	{
 		ZoneScoped;
-		LOG_INFO("Clearing all file list requests");
+		LOG_DBG("Clearing all file list requests");
 		MODEL_LOCK();
 		s_fileListRequests.clear();
 		s_fileContents.reset();

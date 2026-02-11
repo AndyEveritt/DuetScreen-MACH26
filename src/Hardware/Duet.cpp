@@ -89,9 +89,6 @@ namespace Comm
 		Disconnect();
 
 		m_config.communicationType = type;
-#if 1
-		FILEINFO_CACHE->ClearCache();
-#endif
 		Connect();
 		StorageHelper::setData(ID_DUET_COMMUNICATION_TYPE, type);
 	}
@@ -926,11 +923,12 @@ namespace Comm
 	{
 		ZoneScoped;
 		Disconnect();
-		Reset();
 		bool ret = false;
 		m_connectionState = ConnectionState::CONNECTING;
 
-		LOG_DBG("Connecting to Duet, communication type: {:d}", (int)m_config.communicationType);
+		OM::SetStatus(OM::PrinterStatus::connecting);
+
+		LOG_DBG("Connecting to Duet, communication type: {:s}", nameof::nameof_enum(m_config.communicationType));
 
 		switch (m_config.communicationType)
 		{
@@ -1064,7 +1062,6 @@ namespace Comm
 		}
 
 		LOG_INFO("Disconnecting from Duet");
-		SetStatus(OM::PrinterStatus::connecting);
 
 		bool ret = false;
 		switch (m_config.communicationType)

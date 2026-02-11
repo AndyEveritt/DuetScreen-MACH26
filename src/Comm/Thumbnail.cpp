@@ -324,7 +324,7 @@ bool IsThumbnailCached(const std::filesystem::path& filepath, bool includeBlank)
 
 bool ClearAllCachedThumbnails()
 {
-	LOG_INFO("Clearing all cached thumbnails");
+	LOG_INFO("Clearing all temp cached thumbnails");
 	return std::filesystem::remove_all("/tmp/thumbnails") > 0;
 }
 
