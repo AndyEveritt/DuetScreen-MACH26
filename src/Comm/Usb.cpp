@@ -4,6 +4,7 @@
 #include "Hardware/Duet.h"
 #include "Pins.h"
 #include "Storage.h"
+#include "nameof.hpp"
 #include "tracy/Tracy.hpp"
 #include "utils/GpioHelper.h"
 #include "utils/NetworkHelper.h"
@@ -11,6 +12,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstring>
+#include <fstream>
 #include <mutex>
 #include <thread>
 
@@ -580,7 +582,7 @@ namespace Comm
 	void setUsbMode(const UsbMode mode)
 	{
 		ZoneScoped;
-		LOG_DBG("Setting USB mode to {:d}", static_cast<int>(mode));
+		LOG_DBG("Setting USB mode to {:s}", nameof::nameof_enum(mode));
 		switch (mode)
 		{
 		case UsbMode::Host:
@@ -603,7 +605,7 @@ namespace Comm
 		default:
 			LOG_FATAL_THROW("Unknown USB mode");
 		}
-		LOG_INFO("USB mode set to {:d}", static_cast<int>(mode));
+		LOG_INFO("USB mode set to {:s}", nameof::nameof_enum(mode));
 		StorageHelper::setData(ID_USB_MODE, mode);
 		s_usbMode = mode;
 	}
@@ -617,8 +619,25 @@ namespace Comm
 	static void setUsbHost(bool host)
 	{
 		ZoneScoped;
+		const std::string_view desired = host ? "usb_host" : "usb_device";
+
+		// Read current role to avoid unnecessary writes; opening the sysfs file
+		// with ofstream truncates it, which can momentarily clear the USB role
+		// and cause an unwanted device/host transition.
+		std::ifstream ifs(USB_OTG_ROLE_PATH);
+		if (ifs.is_open())
+		{
+			std::string current;
+			std::getline(ifs, current);
+			ifs.close();
+			if (current == desired)
+			{
+				return;
+			}
+		}
+
 		std::ofstream ofs(USB_OTG_ROLE_PATH);
-		ofs << (host ? "usb_host" : "usb_device");
+		ofs << desired;
 		ofs.close();
 	}
 
