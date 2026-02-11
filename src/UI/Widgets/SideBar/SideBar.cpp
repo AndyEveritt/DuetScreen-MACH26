@@ -153,6 +153,7 @@ namespace UI
 	void SideBar::animateResponse(const ResponseType /* type */)
 	{
 		ZoneScoped;
+#if SIDE_BAR_CONSOLE_BUTTON
 		LvAnim anim;
 		anim.setDuration(500);
 		anim.setValues(0, 100);
@@ -177,6 +178,7 @@ namespace UI
 		anim.setReverseDuration(200);
 		m_consoleBtn.setState(LV_STATE_USER_1, true);
 		anim.start();
+#endif
 	}
 
 	void SideBar::homeBtnEvent(lv_event_t*)

@@ -8,6 +8,7 @@
 #include "NetworkHelper.h"
 #include "Debug.h"
 #include <algorithm>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -20,21 +21,85 @@
 #include <thread>
 #include <vector>
 
+#include <atomic>
+
 #if T113
 #  include <wpa_ctrl.h>
 #endif
 
 namespace NetworkHelper
 {
-#define INTERFACE "wlan0"
 #define CTRL_PATH "/var/run/wpa_supplicant"
 #define WPA_SUPPLICANT_CONF "/etc/wpa_supplicant.conf"
 
 	static constexpr int s_timeout_ms = 10000;
+	/// Maximum time to wait for the wireless interface to appear after enabling.
+	static constexpr auto s_enableTimeout = std::chrono::seconds(15);
+	/// Polling interval while waiting for interface / wpa_supplicant readiness.
+	static constexpr auto s_enablePollInterval = std::chrono::milliseconds(500);
+	/// Time to wait for wpa_supplicant to report a connection result after SELECT_NETWORK.
+	static constexpr auto s_connectTimeout = std::chrono::seconds(15);
+	/// Polling interval while waiting for a connection result.
+	static constexpr auto s_connectPollInterval = std::chrono::milliseconds(500);
+
+	static TracyLockable(std::mutex, s_mutex);
 
 	[[maybe_unused]] static struct wpa_ctrl* s_ctrl_conn = nullptr;
 	[[maybe_unused]] static struct wpa_ctrl* s_monitor_conn = nullptr;
 	static std::vector<WiFiNetwork> s_networks;
+	/// Cached wireless interface name (e.g. "wlan0", "wlan1").
+	static std::string s_interfaceName;
+	/// Background thread used for async enable.
+	static std::thread s_enableThread;
+	/// Guard to prevent overlapping enable operations.
+	static std::atomic<bool> s_enabling{false};
+
+	/// Discover the wireless interface name from /sys/class/net.
+	/// Returns empty string if no wireless interface is found.
+	[[maybe_unused]] static std::string discoverWirelessInterface()
+	{
+		ZoneScoped;
+#if T113
+		namespace fs = std::filesystem;
+		const fs::path netClass{"/sys/class/net"};
+		if (!fs::exists(netClass))
+			return {};
+
+		for (const auto& entry : fs::directory_iterator(netClass))
+		{
+			const auto name = entry.path().filename().string();
+			// Skip loopback
+			if (name == "lo")
+				continue;
+			// A wireless interface has a "wireless" or "phy80211" subdirectory
+			if (fs::exists(entry.path() / "wireless") || fs::exists(entry.path() / "phy80211"))
+			{
+				LOG_INFO("Discovered wireless interface: {:s}", name);
+				return name;
+			}
+		}
+		LOG_WARN("No wireless interface found in /sys/class/net");
+		return {};
+#else
+		return "wlan0";
+#endif
+	}
+
+	/// Get the cached interface name, discovering it if needed.
+	static const std::string& getInterfaceName()
+	{
+		if (s_interfaceName.empty())
+		{
+			s_interfaceName = discoverWirelessInterface();
+		}
+		return s_interfaceName;
+	}
+
+	/// Build the wpa_supplicant control socket path for the current interface.
+	static std::string getCtrlPath()
+	{
+		return std::string(CTRL_PATH "/") + getInterfaceName();
+	}
 
 	[[maybe_unused]] static bool initWPAControl()
 	{
@@ -44,11 +109,11 @@ namespace NetworkHelper
 		if (s_ctrl_conn != nullptr)
 			return true;
 
-		std::string ctrl_path = CTRL_PATH "/" INTERFACE;
+		std::string ctrl_path = getCtrlPath();
 		s_ctrl_conn = wpa_ctrl_open(ctrl_path.c_str());
 		if (s_ctrl_conn == nullptr)
 		{
-			LOG_ERROR("Failed to connect to wpa_supplicant");
+			LOG_ERROR("Failed to connect to wpa_supplicant at {:s}", ctrl_path);
 			return false;
 		}
 
@@ -81,6 +146,7 @@ namespace NetworkHelper
 	{
 		ZoneScoped;
 		LOG_DBG("Closing wpa_supplicant control interface");
+		std::lock_guard<LockableBase(std::mutex)> lock(s_mutex);
 #if T113
 		if (s_monitor_conn != nullptr)
 		{
@@ -99,6 +165,7 @@ namespace NetworkHelper
 	static std::string sendCommand(const std::string& cmd)
 	{
 		ZoneScoped;
+		std::lock_guard<LockableBase(std::mutex)> lock(s_mutex);
 #if T113
 		if (!initWPAControl())
 		{
@@ -125,29 +192,160 @@ namespace NetworkHelper
 #endif
 	}
 
-	void enable(bool enable)
+	/// Query STATUS and return the value of a given key, or empty string.
+	static std::string getStatusField(const std::string& status, std::string_view key)
+	{
+		auto searchKey = std::string(key) + "=";
+		size_t pos = status.find(searchKey);
+		if (pos == std::string::npos)
+			return {};
+		size_t valStart = pos + searchKey.size();
+		size_t end = status.find('\n', valStart);
+		if (end == std::string::npos)
+			return status.substr(valStart);
+		return status.substr(valStart, end - valStart);
+	}
+
+	/// Internal blocking implementation of the enable logic.
+	/// Called from a background thread when enabling, or inline when disabling.
+	[[maybe_unused]] static bool enableBlocking(bool doEnable)
 	{
 		ZoneScoped;
-		LOG_INFO("{:s} WiFi", enable ? "Enabling" : "Disabling");
+		LOG_INFO("{:s} WiFi", doEnable ? "Enabling" : "Disabling");
 #if T113
-		std::string cmd = fmt::format("ip link set " INTERFACE " {:s}", (enable ? " up" : " down"));
-		int32_t errorCode = system(cmd.c_str());
-		if (errorCode != 0)
+		// Invalidate cached interface name so we re-discover after link changes
+		s_interfaceName.clear();
+		// Close any stale control connection so it reconnects with new interface
+		closeWPAControl();
+
+		if (!doEnable)
 		{
-			LOG_ERROR("Failed to {:s} WiFi, code={:d}", enable ? "enable" : "disable", errorCode);
+			// When disabling, try to find the interface first
+			const auto& iface = getInterfaceName();
+			if (!iface.empty())
+			{
+				std::string cmd = fmt::format("ip link set {:s} down", iface);
+				int32_t errorCode = system(cmd.c_str());
+				if (errorCode != 0)
+				{
+					LOG_ERROR("Failed to disable WiFi (ip link down), code={:d}", errorCode);
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// --- Enabling: bring the link up and wait for the interface to appear ---
+		const auto deadline = std::chrono::steady_clock::now() + s_enableTimeout;
+
+		// Try bringing up any known interface first; if none found yet, wait for it
+		for (;;)
+		{
+			ZoneScopedN("Polling for wireless interface");
+			const auto& iface = getInterfaceName();
+			if (!iface.empty())
+			{
+				std::string cmd = fmt::format("ip link set {:s} up", iface);
+				int32_t errorCode = system(cmd.c_str());
+				if (errorCode != 0)
+				{
+					LOG_WARN("ip link set {:s} up failed (code={:d}), will retry", iface, errorCode);
+				}
+				else
+				{
+					LOG_INFO("WiFi interface {:s} brought up", iface);
+					break;
+				}
+			}
+
+			if (std::chrono::steady_clock::now() >= deadline)
+			{
+				LOG_ERROR("Timed out waiting for wireless interface to appear");
+				return false;
+			}
+
+			LOG_DBG("Wireless interface not yet available, retrying...");
+			// Clear cached name so next iteration re-scans
+			s_interfaceName.clear();
+			std::this_thread::sleep_for(s_enablePollInterval);
+		}
+
+		// --- Wait for wpa_supplicant control interface to be ready ---
+		const std::string ctrlSocketPath = getCtrlPath();
+		bool wpaReady = false;
+		while (std::chrono::steady_clock::now() < deadline)
+		{
+			if (std::filesystem::exists(ctrlSocketPath))
+			{
+				wpaReady = true;
+				break;
+			}
+
+			// Start wpa_supplicant if not running
+			LOG_DBG("wpa_supplicant control socket not found, starting wpa_supplicant");
+			const auto& iface = getInterfaceName();
+			std::string cmd = fmt::format("wpa_supplicant -B -i {:s} -c " WPA_SUPPLICANT_CONF, iface);
+			int32_t errorCode = system(cmd.c_str());
+			if (errorCode != 0)
+			{
+				LOG_WARN("wpa_supplicant start returned code={:d}, will retry", errorCode);
+			}
+
+			std::this_thread::sleep_for(s_enablePollInterval);
+		}
+
+		if (!wpaReady && !std::filesystem::exists(ctrlSocketPath))
+		{
+			LOG_ERROR("wpa_supplicant control socket {:s} did not appear within timeout", ctrlSocketPath);
+			return false;
+		}
+
+		// Give wpa_supplicant a moment to fully initialise before accepting commands
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		LOG_INFO("WiFi enabled successfully, interface {:s}", getInterfaceName());
+		return true;
+#else
+		(void)doEnable;
+		return true;
+#endif
+	}
+
+	void enable(bool doEnable, std::function<void(bool)> callback)
+	{
+		ZoneScoped;
+
+		// Disabling is fast — run inline
+		if (!doEnable)
+		{
+			bool ok = enableBlocking(false);
+			if (callback)
+				callback(ok);
 			return;
 		}
 
-		if (!std::filesystem::exists(CTRL_PATH "/" INTERFACE))
+		// Prevent overlapping enable attempts
+		if (s_enabling.exchange(true))
 		{
-			errorCode = system("wpa_supplicant -B -i " INTERFACE " -c " WPA_SUPPLICANT_CONF);
-			if (errorCode != 0)
-			{
-				LOG_ERROR("Failed to start wpa_supplicant, code={:d}", errorCode);
-				return;
-			}
+			LOG_WARN("WiFi enable already in progress, ignoring duplicate request");
+			if (callback)
+				callback(false);
+			return;
 		}
-#endif
+
+		// Clean up any previous enable thread
+		if (s_enableThread.joinable())
+			s_enableThread.join();
+
+		// Launch the blocking work on a background thread
+		s_enableThread = std::thread(
+			[cb = std::move(callback)]()
+			{
+				tracy::SetThreadName("WifiEnableThread");
+				bool ok = enableBlocking(true);
+				s_enabling.store(false);
+				if (cb)
+					cb(ok);
+			});
 	}
 
 	bool isEnabled()
@@ -168,19 +366,8 @@ namespace NetworkHelper
 	std::string getIpAddress()
 	{
 		ZoneScoped;
-		std::string result;
 		std::string output = sendCommand("STATUS");
-
-		size_t pos = output.find("ip_address=");
-		if (pos != std::string::npos)
-		{
-			size_t end = output.find('\n', pos);
-			if (end != std::string::npos)
-			{
-				result = output.substr(pos + 11, end - (pos + 11));
-			}
-		}
-		return result;
+		return getStatusField(output, "ip_address");
 	}
 
 	std::vector<WiFiNetwork> getKnownWiFiNetworks()
@@ -356,7 +543,50 @@ namespace NetworkHelper
 			networks.begin(), networks.end(), [&ssid](const WiFiNetwork& network) { return network.ssid == ssid; });
 	}
 
-	void connect(std::string_view ssid)
+	/// Poll wpa_supplicant STATUS until association completes, fails, or times out.
+	static ConnectResult waitForConnectionResult()
+	{
+		ZoneScoped;
+		const auto deadline = std::chrono::steady_clock::now() + s_connectTimeout;
+
+		while (std::chrono::steady_clock::now() < deadline)
+		{
+			std::this_thread::sleep_for(s_connectPollInterval);
+
+			std::string status = sendCommand("STATUS");
+			std::string wpaState = getStatusField(status, "wpa_state");
+
+			LOG_DBG("Connection poll: wpa_state={:s}", wpaState);
+
+			if (wpaState == "COMPLETED")
+			{
+				LOG_INFO("WiFi connection completed successfully");
+				return ConnectResult::Success;
+			}
+
+			// DISCONNECTED after an attempt usually means auth failure.
+			// wpa_supplicant also sets wpa_state=DISCONNECTED when the 4-way
+			// handshake fails (wrong PSK).
+			if (wpaState == "DISCONNECTED" || wpaState == "INACTIVE")
+			{
+				// Distinguish auth failure from other disconnects by checking
+				// if there was a recent CTRL-EVENT-SSID-TEMP-DISABLED or
+				// CTRL-EVENT-DISCONNECTED reason=WRONG_KEY in the status.
+				// A simpler heuristic: if we just asked to connect and we're
+				// already DISCONNECTED, it's almost certainly an auth failure
+				// (the scan found the AP, but the handshake failed).
+				LOG_WARN("WiFi connection failed (wpa_state={:s}), likely authentication failure", wpaState);
+				return ConnectResult::AuthFailure;
+			}
+
+			// SCANNING, ASSOCIATING, 4WAY_HANDSHAKE etc. are transient — keep waiting
+		}
+
+		LOG_WARN("WiFi connection timed out");
+		return ConnectResult::Timeout;
+	}
+
+	ConnectResult connect(std::string_view ssid)
 	{
 		ZoneScoped;
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid);
@@ -367,13 +597,14 @@ namespace NetworkHelper
 			{
 				std::string cmd = fmt::format("SELECT_NETWORK {}", network.id);
 				sendCommand(cmd);
-				return;
+				return waitForConnectionResult();
 			}
 		}
 		LOG_ERROR("Network \"{:s}\" not found in known networks", ssid);
+		return ConnectResult::NetworkNotFound;
 	}
 
-	void connect(std::string_view ssid, std::string_view password)
+	ConnectResult connect(std::string_view ssid, std::string_view password)
 	{
 		ZoneScoped;
 		LOG_INFO("Connecting to WiFi network \"{:s}\"", ssid);
@@ -386,7 +617,16 @@ namespace NetworkHelper
 
 		std::string cmd = "ADD_NETWORK";
 		std::string output = sendCommand(cmd);
-		int networkId = std::stoi(output);
+		int networkId = -1;
+		try
+		{
+			networkId = std::stoi(output);
+		}
+		catch (...)
+		{
+			LOG_ERROR("Failed to parse network id from ADD_NETWORK response: {:s}", output);
+			return ConnectResult::Error;
+		}
 
 		cmd = fmt::format("SET_NETWORK {:d} ssid \"{:s}\"", networkId, ssid);
 		sendCommand(cmd);
@@ -397,11 +637,27 @@ namespace NetworkHelper
 		cmd = fmt::format("ENABLE_NETWORK {}", networkId);
 		sendCommand(cmd);
 
-		sendCommand("SAVE_CONFIG");
+		cmd = fmt::format("SELECT_NETWORK {}", networkId);
+		sendCommand(cmd);
 
-		connect(ssid);
+		ConnectResult result = waitForConnectionResult();
+
+		if (result == ConnectResult::Success)
+		{
+			sendCommand("SAVE_CONFIG");
+		}
+		else
+		{
+			// Remove the network entry if connection failed so it doesn't persist
+			// with wrong credentials
+			cmd = fmt::format("REMOVE_NETWORK {}", networkId);
+			sendCommand(cmd);
+		}
+
+		return result;
 #else
 		UNUSED(password);
+		return ConnectResult::Success;
 #endif
 	}
 

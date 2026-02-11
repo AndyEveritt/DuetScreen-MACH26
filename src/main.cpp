@@ -89,13 +89,14 @@ int main(int argc, char** argv)
 #endif
 
 	// Initialise
-	StorageHelper::load();
-	Log::Init();
-
 	{
 		ZoneScopedN("lv_init");
 		lv_init();
 	}
+
+	Model::get(); // Initialize the model instance, this creates the subscribers
+	StorageHelper::load();
+	Log::Init();
 
 	// LVGL thread needs access to both the UI and Model mutexes. It is the only thread allowed to take both otherwise
 	// deadlocks can occur
@@ -107,8 +108,6 @@ int main(int argc, char** argv)
 #endif
 	UI::FontManager::init();
 	i18n::init();
-
-	Model::get(); // Initialize the model instance, this creates the subscribers
 
 	Comm::init();
 	Comm::DUET.Init();

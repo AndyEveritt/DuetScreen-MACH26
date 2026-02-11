@@ -26,6 +26,7 @@ namespace UI
 		void setNetworkCount(size_t count);
 		void setNetworkDetails(size_t index, const std::string& ssid, int32_t signalLevel, bool known, bool connected);
 		void setIpAddress(std::string_view ip_address);
+		void setStatusMessage(std::string_view message);
 
 		void setKeyboard(LvKeyboard* keyboard);
 
@@ -50,7 +51,6 @@ namespace UI
 		  private:
 			LvLabel m_ssidLabel{"ssid", getRoot()};
 			LvLabel m_signalLabel{"signal", getRoot()};
-			LvLabel m_statusLabel{"status", getRoot()};
 			Button m_connectBtn{"connect", getRoot()};
 			Button m_forgetBtn{"forget", getRoot()};
 
@@ -64,7 +64,9 @@ namespace UI
 
 		void openPasswordModal(const std::string& ssid);
 
-		LvLabel m_ipAddress{"ip_address", getRoot()};
+		LvContainer m_header{"header", getRoot()};
+		LvLabel m_statusLabel{"status_message", m_header};
+		LvLabel m_ipAddress{"ip_address", m_header};
 		List<WifiListItem> m_list{"wifi_list", getRoot()};
 		Button m_refresh{"refresh", m_list.getHeader(), "Refresh"};
 

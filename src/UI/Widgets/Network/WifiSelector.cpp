@@ -21,6 +21,11 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
+		m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_ipAddress.setAlign(LV_ALIGN_LEFT_MID);
+		m_statusLabel.setAlign(LV_ALIGN_RIGHT_MID);
+
+		setStatusMessage("");
 		setIpAddress("-");
 
 		m_list.setSize(LV_PCT(100), LV_SIZE_CONTENT);
@@ -133,6 +138,12 @@ namespace UI
 		m_ipAddress.setText(_("settings.network.ip_address", ip_address));
 	}
 
+	void WifiSelector::setStatusMessage(std::string_view message)
+	{
+		ZoneScoped;
+		m_statusLabel.setText(message);
+	}
+
 	void WifiSelector::setKeyboard(LvKeyboard* keyboard)
 	{
 		ZoneScoped;
@@ -154,9 +165,6 @@ namespace UI
 
 		m_signalLabel.setText("0 dBm");
 		m_signalLabel.setFlexGrow(1);
-
-		m_statusLabel.setText(_("settings.network.known"));
-		m_statusLabel.setFlexGrow(1);
 
 		m_connectBtn.setFlexGrow(1);
 		m_connectBtn.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
@@ -187,7 +195,6 @@ namespace UI
 	{
 		ZoneScoped;
 		m_known = known;
-		m_statusLabel.setVisible(m_known);
 		m_forgetBtn.setVisible(m_known);
 	}
 
@@ -197,7 +204,6 @@ namespace UI
 		m_isConnected = connected;
 		if (connected)
 		{
-			m_statusLabel.setText(_("settings.network.connected"));
 			m_connectBtn.setText(_("settings.network.disconnect"));
 		}
 		else

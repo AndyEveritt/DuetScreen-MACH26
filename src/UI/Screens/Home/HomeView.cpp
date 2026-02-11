@@ -12,8 +12,13 @@ namespace UI
 	HomeView* HomeView::s_overrideInstance = nullptr;
 	std::atomic<bool> HomeView::s_instanceInitialized = false;
 
-	static constexpr int32_t s_layoutColDsc[3] = {LV_GRID_FR(1), LV_GRID_FR(9), LV_GRID_TEMPLATE_LAST};
-	static constexpr int32_t s_layoutRowDsc[3] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+	static constexpr int32_t s_layoutColDsc[] = {LV_GRID_FR(1),
+												 LV_GRID_FR(9),
+#if CONSOLE_SIDE_PANEL
+												 LV_GRID_FR(5),
+#endif
+												 LV_GRID_TEMPLATE_LAST};
+	static constexpr int32_t s_layoutRowDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
 	HomeView::HomeView()
 		: View("HomeView")
@@ -37,6 +42,9 @@ namespace UI
 		setGridCell(m_statusBar, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 0, 1);
 		setGridCell(m_sideBar, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 2);
 		setGridCell(m_mainWindow, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+#if CONSOLE_SIDE_PANEL
+		setGridCell(m_consoleView, LV_GRID_ALIGN_STRETCH, 2, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+#endif
 
 		m_statusBar.setHeight(LV_SIZE_CONTENT);
 		m_mainWindow.setFlexGrow(1);
@@ -47,7 +55,9 @@ namespace UI
 
 		// Main Window Layout
 		m_sideBar.moveToFront();
+#if !CONSOLE_SIDE_PANEL
 		m_consoleView.hide();
+#endif
 		m_controlView.hide();
 		m_files.hide();
 		m_settingsView.hide();

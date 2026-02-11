@@ -368,42 +368,44 @@ namespace UI
 		setUsbMode(Comm::UsbMode::InternalWiFi);
 
 		commandTest.appendOutput("Enabling internal WiFi...\n");
-		NetworkHelper::enable(true);
+		NetworkHelper::enable(true,
+							  [this, &commandTest](bool success)
+							  {
+								  if (!success)
+								  {
+									  commandTest.appendOutput("WiFi enable failed!\n");
+									  testFinished(TestId::WifiTest);
+									  return;
+								  }
+								  commandTest.appendOutput("WiFi enabled.\n");
 
-		std::thread(
-			[this, &commandTest]()
-			{
-				/* Wait for wifi to be enabled */
-				std::this_thread::sleep_for(std::chrono::seconds(5));
-
-				std::string result;
-				std::string cmd =
+								  std::string result;
+								  std::string cmd =
 #if SIMULATION
-					"echo '1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000\n"
-					"    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00\n"
-					"2: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq qlen 1000\n"
-					"    link/ether 00:e0:20:2f:87:9d brd ff:ff:ff:ff:ff:ff'";
+									  "echo '1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000\n"
+									  "    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00\n"
+									  "2: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq qlen 1000\n"
+									  "    link/ether 00:e0:20:2f:87:9d brd ff:ff:ff:ff:ff:ff'";
 #else
 					"ip link";
 #endif
-				FILE* pipe = ::popen(cmd.c_str(), "r");
-				if (!pipe)
-					return;
-				char buffer[256];
-				while (fgets(buffer, sizeof(buffer), pipe))
-				{
-					result.append(buffer);
-					commandTest.appendOutput(buffer);
-				}
-				::pclose(pipe);
+								  FILE* pipe = ::popen(cmd.c_str(), "r");
+								  if (!pipe)
+									  return;
+								  char buffer[256];
+								  while (fgets(buffer, sizeof(buffer), pipe))
+								  {
+									  result.append(buffer);
+									  commandTest.appendOutput(buffer);
+								  }
+								  ::pclose(pipe);
 
-				m_currentTest->output["result"] = result;
-				m_currentTest->output["mac_address"] = extractMacAddress(result);
+								  m_currentTest->output["result"] = result;
+								  m_currentTest->output["mac_address"] = extractMacAddress(result);
 
-				std::this_thread::sleep_for(std::chrono::seconds(2));
-				testFinished(TestId::WifiTest);
-			})
-			.detach();
+								  std::this_thread::sleep_for(std::chrono::seconds(2));
+								  testFinished(TestId::WifiTest);
+							  });
 	}
 
 	void HardwareTestPresenter::testUsb()

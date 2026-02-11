@@ -235,7 +235,14 @@
         "ip_address": "IP Address: {:s}",
         "known": "Known",
         "signal": "Signal",
-        "ssid": "SSID"
+        "ssid": "SSID",
+        "status_connecting": "Connecting to {:s}…",
+        "status_connected": "Connected to {:s}",
+        "status_disconnected": "Disconnected",
+        "status_auth_failure": "Incorrect password for {:s}",
+        "status_timeout": "Connection to {:s} timed out",
+        "status_not_found": "Network {:s} not found",
+        "status_error": "Failed to connect to {:s}"
       },
       "brightness": "Brightness:",
       "build_time": "{:s} - built on {:s} {:s}",

@@ -101,7 +101,7 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		LOG_INFO("Home button pressed");
+		LOG_INFO("Returning to home screen");
 		closeAllModals();
 
 		if (!s_openScreens.empty())

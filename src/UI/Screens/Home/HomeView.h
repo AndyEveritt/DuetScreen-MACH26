@@ -86,7 +86,13 @@ namespace UI
 
 		// Windows
 		Dashboard m_dashboard{"dashboard", m_mainWindow};
-		ConsoleView m_consoleView{"console", m_mainWindow};
+		ConsoleView m_consoleView{"console",
+#if CONSOLE_SIDE_PANEL
+								  getRoot()
+#else
+								  m_mainWindow
+#endif
+		};
 		ControlView m_controlView{"control", m_mainWindow};
 		TabView m_files{"files", m_mainWindow};
 		FileView m_macroView{"macros", m_files.addTab(_("file.macros"))};
