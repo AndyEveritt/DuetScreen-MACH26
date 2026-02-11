@@ -385,10 +385,8 @@
     },
     "theme": {
       "id": { /* Theme names */
-        "custom": "Custom",
-        "dark": "Dark",
+        "duetscreen": "DuetScreen",
         "grey": "Greyscale",
-        "light": "Light",
         "flat": "Flat"
       },
       "icon_sets": {

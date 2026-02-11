@@ -48,7 +48,7 @@ constexpr StorageKey<std::chrono::milliseconds> ID_DUET_POLL_INTERVAL = {"duet:p
 constexpr StorageKey<speed_t> ID_DUET_BAUD_RATE = {"duet:baud_rate", DEFAULT_BAUD_RATE};
 
 /* UI */
-constexpr StorageKey<std::string_view> ID_THEME = {"ui:theme", "dark"};
+constexpr StorageKey<std::string_view> ID_THEME = {"ui:theme", "duetscreen"};
 constexpr StorageKey<std::string_view> ID_FONT = {"ui:font", "OpenSans"};
 constexpr StorageKey<std::string_view> ID_ICON_FOLDER = {"ui:icon_folder", DEFAULT_ICON_SET};
 constexpr StorageKey<std::string_view> ID_KEYBOARD_LAYOUT = {"ui:keyboard_layout", "us"};

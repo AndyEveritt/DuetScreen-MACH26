@@ -1103,7 +1103,7 @@ namespace UI::Themes
 	Theme* getDefaultTheme()
 	{
 		ZoneScoped;
-		Theme* theme = getThemeByName("dark");
+		Theme* theme = getThemeByName("duetscreen");
 		if (theme == nullptr)
 		{
 			LOG_ERROR("Default theme not found, using first available theme");

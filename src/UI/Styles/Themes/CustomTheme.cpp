@@ -17,13 +17,6 @@
 
 namespace UI::Themes
 {
-	static FontConfigSet s_fontConfigs = {
-		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
-		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL | LV_FREETYPE_FONT_STYLE_WEIGHT(400)},
-		.emphasis = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
-		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_ITALIC | LV_FREETYPE_FONT_STYLE_WEIGHT(200)},
-	};
-
 	CustomTheme::CustomTheme(std::string_view name,
 							 FontConfigSet fontConfigSet,
 							 std::function<void(Theme* theme)> styleOverrides)
@@ -69,6 +62,4 @@ namespace UI::Themes
 
 		setColors(primaryHue, secondaryHue, chroma, darkMode);
 	}
-
-	static CustomTheme s_customTheme("custom", s_fontConfigs, []([[maybe_unused]] Theme* theme) {});
 } // namespace UI::Themes
