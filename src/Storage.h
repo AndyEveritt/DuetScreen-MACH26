@@ -131,7 +131,7 @@ extern const StorageKey<std::chrono::milliseconds> ID_DUET_POLL_INTERVAL;
 extern const StorageKey<speed_t> ID_DUET_BAUD_RATE;
 
 /* UI */
-extern const StorageKey<size_t> ID_THEME;
+extern const StorageKey<std::string_view> ID_THEME;
 extern const StorageKey<std::string_view> ID_FONT;
 extern const StorageKey<std::string_view> ID_ICON_FOLDER;
 extern const StorageKey<std::string_view> ID_KEYBOARD_LAYOUT;

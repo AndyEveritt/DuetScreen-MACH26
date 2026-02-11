@@ -528,10 +528,20 @@ namespace UI
 				theme->setThemeActive();
 				updateThemePreview();
 				LOG_DBG("Finished changing theme");
-				StorageHelper::setData(ID_THEME, index);
-				// view->getMainSettingsPresenter()->setTheme(selected);
+				StorageHelper::setData(ID_THEME, theme->getName());
 			});
-		m_theme.setSelected(static_cast<uint32_t>(StorageHelper::getData(ID_THEME)));
+		{
+			const auto& allThemes = Themes::getThemes();
+			const auto stored = StorageHelper::getData(ID_THEME);
+			for (uint32_t i = 0; i < allThemes.size(); ++i)
+			{
+				if (allThemes[i]->getName() == stored)
+				{
+					m_theme.setSelected(i);
+					break;
+				}
+			}
+		}
 
 		/* Font */
 		createRow(_("settings.font"), m_font);

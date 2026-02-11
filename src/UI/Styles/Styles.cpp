@@ -1038,21 +1038,15 @@ namespace UI::Themes
 
 		lv_theme_apply(lv_screen_active());
 
-		Theme* theme = getTheme(StorageHelper::getData(ID_THEME));
+		Theme* theme = getThemeByName(StorageHelper::getData(ID_THEME));
 		if (theme == nullptr)
 		{
 			LOG_INFO("Theme not found, using default theme");
 			theme = getDefaultTheme();
-			size_t theme_id = 0;
-			for (size_t i = 0; i < themes().size(); ++i)
+			if (theme != nullptr)
 			{
-				if (themes()[i] == theme)
-				{
-					theme_id = i;
-					break;
-				}
+				StorageHelper::setData(ID_THEME, theme->getName());
 			}
-			StorageHelper::setData(ID_THEME, theme_id);
 		}
 		if (theme != nullptr)
 		{

@@ -99,14 +99,23 @@ class StorageHelper
 
 		auto convertor = [&key](const nlohmann::json& jval) -> typename T::value_type
 		{
-			if constexpr (std::is_enum_v<typename T::value_type>)
+			try
 			{
-				const auto val = jval.get<std::underlying_type_t<typename T::value_type>>();
-				return magic_enum::enum_cast<typename T::value_type>(val).value_or(detail::resolve_default(key));
+				if constexpr (std::is_enum_v<typename T::value_type>)
+				{
+					const auto val = jval.get<std::underlying_type_t<typename T::value_type>>();
+					return magic_enum::enum_cast<typename T::value_type>(val).value_or(
+						detail::resolve_default(key));
+				}
+				else
+				{
+					return jval.get<typename T::value_type>();
+				}
 			}
-			else
+			catch (const nlohmann::json::type_error&)
 			{
-				return jval.get<typename T::value_type>();
+				LOG_WARN("Config key \"{:s}\" has incompatible type, using default", key.id);
+				return detail::resolve_default(key);
 			}
 		};
 

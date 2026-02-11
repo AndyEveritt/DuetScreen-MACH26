@@ -46,7 +46,7 @@ class TestTheme : public UiTestSuite
 
 	~TestTheme()
 	{
-		Themes::Theme* default_theme = Themes::getTheme(StorageHelper::getData(ID_THEME));
+		Themes::Theme* default_theme = Themes::getThemeByName(StorageHelper::getData(ID_THEME));
 		if (default_theme == nullptr)
 		{
 			return;
