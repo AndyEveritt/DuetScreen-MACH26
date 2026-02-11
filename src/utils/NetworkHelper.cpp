@@ -96,7 +96,7 @@ namespace NetworkHelper
 	}
 
 	/// Build the wpa_supplicant control socket path for the current interface.
-	static std::string getCtrlPath()
+	[[maybe_unused]] static std::string getCtrlPath()
 	{
 		return std::string(CTRL_PATH "/") + getInterfaceName();
 	}
