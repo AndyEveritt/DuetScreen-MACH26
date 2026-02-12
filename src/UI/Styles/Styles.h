@@ -386,7 +386,7 @@ namespace UI::Themes
 	};
 
 	void init(lv_display_t* display);
-	const std::vector<Theme*>& getThemes();
+	const std::map<std::string_view, Theme*>& getThemes();
 	Theme* getCurrentTheme();
 	Theme* getTheme(const size_t index);
 	Theme* getThemeByName(std::string_view name);

@@ -387,7 +387,11 @@
       "id": { /* Theme names */
         "duetscreen": "DuetScreen",
         "grey": "Greyscale",
-        "flat": "Flat"
+        "flat": "Flat",
+        "industrial": "Industrial",
+        "soft": "Soft",
+        "neon": "Neon",
+        "retro": "Retro"
       },
       "icon_sets": {
         "material": "Material"

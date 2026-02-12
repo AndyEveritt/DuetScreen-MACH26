@@ -24,9 +24,9 @@ namespace UI::Themes
 		return v;
 	}
 
-	static std::vector<Theme*>& themes()
+	static auto& themes()
 	{
-		static std::vector<Theme*> v;
+		static std::map<std::string_view, Theme*> v; // Ordered map to ensure consistent theme order
 		return v;
 	}
 
@@ -189,14 +189,8 @@ namespace UI::Themes
 	static bool themeExists(std::string_view name)
 	{
 		ZoneScoped;
-		for (const auto& theme : themes())
-		{
-			if (theme->getName() == name)
-			{
-				return true;
-			}
-		}
-		return false;
+		auto& t = themes();
+		return t.find(name) != t.end();
 	}
 
 	Theme::Theme(std::string_view name, FontConfigSet fontConfigSet, std::function<void(Theme* theme)> initFunc)
@@ -210,7 +204,7 @@ namespace UI::Themes
 			LOG_FATAL_THROW("Theme with name {:s} already exists", name);
 			return;
 		}
-		themes().push_back(this);
+		themes()[name] = this;
 		LOG_INFO("Theme {:s} created", name);
 	}
 
@@ -218,7 +212,7 @@ namespace UI::Themes
 	{
 		ZoneScoped;
 		LOG_INFO("Destroying theme: {:s}", m_name);
-		themes().erase(std::remove(themes().begin(), themes().end(), this), themes().end());
+		themes().erase(m_name);
 	}
 
 	void Theme::init()
@@ -1014,7 +1008,7 @@ namespace UI::Themes
 		s_componentStyles.reset();
 
 		// Initialize all themes
-		for (const auto& theme : themes())
+		for (const auto& [name, theme] : themes())
 		{
 			theme->init();
 		}
@@ -1063,7 +1057,7 @@ namespace UI::Themes
 #endif
 	}
 
-	const std::vector<Theme*>& getThemes()
+	const std::map<std::string_view, Theme*>& getThemes()
 	{
 		ZoneScoped;
 		return themes();
@@ -1083,18 +1077,18 @@ namespace UI::Themes
 			LOG_ERROR("Theme with index {:d} not found", index);
 			return nullptr;
 		}
-		return themes()[index];
+		auto it = themes().begin();
+		std::advance(it, index);
+		return it->second;
 	}
 
 	Theme* getThemeByName(std::string_view name)
 	{
 		ZoneScoped;
-		for (const auto& theme : themes())
+		auto it = themes().find(name);
+		if (it != themes().end())
 		{
-			if (theme->getName() == name)
-			{
-				return theme;
-			}
+			return it->second;
 		}
 		LOG_ERROR("Theme with name {:s} not found", name);
 		return nullptr;
@@ -1103,7 +1097,7 @@ namespace UI::Themes
 	Theme* getDefaultTheme()
 	{
 		ZoneScoped;
-		Theme* theme = getThemeByName("duetscreen");
+		Theme* theme = getThemeByName(ID_THEME.default_value);
 		if (theme == nullptr)
 		{
 			LOG_ERROR("Default theme not found, using first available theme");
@@ -1139,9 +1133,10 @@ namespace UI::Themes
 	{
 		ZoneScoped;
 		std::vector<std::string_view> names(getThemeCount());
-		for (const auto& theme : themes())
+		size_t i = 0;
+		for (const auto& [name, theme] : themes())
 		{
-			names.push_back(theme->getName());
+			names[i++] = name;
 		}
 		return names;
 	}

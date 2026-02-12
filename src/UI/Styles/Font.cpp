@@ -29,7 +29,7 @@ namespace UI::FontManager
 	Font::~Font()
 	{
 		ZoneScoped;
-		if (m_font && m_font != LV_FONT_DEFAULT)
+		if (m_font && m_font != LV_FONT_DEFAULT && s_fontManager)
 		{
 			lv_font_manager_delete_font(s_fontManager, const_cast<lv_font_t*>(m_font));
 			m_font = nullptr;
@@ -48,7 +48,7 @@ namespace UI::FontManager
 		ZoneScoped;
 		if (this != &other)
 		{
-			if (m_font && m_font != LV_FONT_DEFAULT)
+			if (m_font && m_font != LV_FONT_DEFAULT && s_fontManager)
 			{
 				lv_font_manager_delete_font(s_fontManager, const_cast<lv_font_t*>(m_font));
 			}

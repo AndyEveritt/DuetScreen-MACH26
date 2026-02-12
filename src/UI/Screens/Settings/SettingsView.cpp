@@ -512,9 +512,9 @@ namespace UI
 		/* Theme */
 		createRow(_("settings.theme"), m_theme);
 		m_theme.setHeight(LV_SIZE_CONTENT);
-		for (const auto& theme : Themes::getThemes())
+		for (const auto& [name, theme] : Themes::getThemes())
 		{
-			m_theme.addOption(_(fmt::format("theme.id.{:s}", theme->getName())));
+			m_theme.addOption(_(fmt::format("theme.id.{:s}", name)));
 		}
 		m_theme.setSelectedCallback(
 			[this](uint32_t index, std::string_view /* option */)
@@ -531,15 +531,16 @@ namespace UI
 				StorageHelper::setData(ID_THEME, theme->getName());
 			});
 		{
-			const auto& allThemes = Themes::getThemes();
 			const auto stored = StorageHelper::getData(ID_THEME);
-			for (uint32_t i = 0; i < allThemes.size(); ++i)
+			uint32_t i = 0;
+			for (const auto& [name, theme] : Themes::getThemes())
 			{
-				if (allThemes[i]->getName() == stored)
+				if (name == stored)
 				{
 					m_theme.setSelected(i);
 					break;
 				}
+				i++;
 			}
 		}
 
