@@ -168,7 +168,7 @@ namespace UI
 		if (isVisible())
 		{
 			m_output.updateLayout();
-			m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_ON);
+			m_outputCont.scrollByBounded(0, -m_outputCont.getScrollBottom(), LV_ANIM_OFF);
 		}
 	}
 
