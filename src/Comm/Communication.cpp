@@ -56,103 +56,48 @@ namespace Comm
 
 	Seq seqs[] = {
 #if FETCH_NETWORK
-		{.event = rcvOMKeyNetwork,
-		 .seqid = rcvSeqsNetwork,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "network",
-		 .flags = "v"},
+		{.seqid = rcvSeqsNetwork, .lastSeq = 0, .state = SeqStateInit, .key = "network", .flags = "v"},
 #endif
 #if FETCH_BOARDS
-		{.event = rcvOMKeyBoards,
-		 .seqid = rcvSeqsBoards,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "boards",
-		 .flags = "v"},
+		{.seqid = rcvSeqsBoards, .lastSeq = 0, .state = SeqStateInit, .key = "boards", .flags = "v"},
 #endif
 #if FETCH_MOVE
-		{.event = rcvOMKeyMove,
-		 .seqid = rcvSeqsMove,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "move",
-		 .flags = "vn"},
+		{.seqid = rcvSeqsMove, .lastSeq = 0, .state = SeqStateInit, .key = "move", .flags = "vn"},
 #endif
 #if FETCH_HEAT
-		{.event = rcvOMKeyHeat, .seqid = rcvSeqsHeat, .lastSeq = 0, .state = SeqStateInit, .key = "heat", .flags = "v"},
+		{.seqid = rcvSeqsHeat, .lastSeq = 0, .state = SeqStateInit, .key = "heat", .flags = "v"},
 #endif
 #if FETCH_TOOLS
-		{.event = rcvOMKeyTools,
-		 .seqid = rcvSeqsTools,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "tools",
-		 .flags = "v"},
+		{.seqid = rcvSeqsTools, .lastSeq = 0, .state = SeqStateInit, .key = "tools", .flags = "v"},
 #endif
 #if FETCH_SPINDLES
-		{.event = rcvOMKeySpindles,
-		 .seqid = rcvSeqsSpindles,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "spindles",
-		 .flags = "v"},
+		{.seqid = rcvSeqsSpindles, .lastSeq = 0, .state = SeqStateInit, .key = "spindles", .flags = "v"},
 #endif
 #if FETCH_DIRECTORIES
-		{.event = rcvOMKeyDirectories,
-		 .seqid = rcvSeqsDirectories,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "directories",
-		 .flags = "v"},
+		{.seqid = rcvSeqsDirectories, .lastSeq = 0, .state = SeqStateInit, .key = "directories", .flags = "v"},
 #endif
 #if FETCH_FANS
-		{.event = rcvOMKeyFans, .seqid = rcvSeqsFans, .lastSeq = 0, .state = SeqStateInit, .key = "fans", .flags = "v"},
+		{.seqid = rcvSeqsFans, .lastSeq = 0, .state = SeqStateInit, .key = "fans", .flags = "v"},
 #endif
 #if FETCH_INPUTS
-		{.event = rcvOMKeyInputs,
-		 .seqid = rcvSeqsInputs,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "inputs",
-		 .flags = "v"},
+		{.seqid = rcvSeqsInputs, .lastSeq = 0, .state = SeqStateInit, .key = "inputs", .flags = "v"},
 #endif
 #if FETCH_JOB
-		{.event = rcvOMKeyJob, .seqid = rcvSeqsJob, .lastSeq = 0, .state = SeqStateInit, .key = "job", .flags = "vn"},
+		{.seqid = rcvSeqsJob, .lastSeq = 0, .state = SeqStateInit, .key = "job", .flags = "vn"},
 #endif
 #if FETCH_SCANNER
-		{.event = rcvOMKeyScanner,
-		 .seqid = rcvSeqsScanner,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "scanner",
-		 .flags = "v"},
+		{.seqid = rcvSeqsScanner, .lastSeq = 0, .state = SeqStateInit, .key = "scanner", .flags = "v"},
 #endif
 #if FETCH_SENSORS
-		{.event = rcvOMKeySensors,
-		 .seqid = rcvSeqsSensors,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "sensors",
-		 .flags = "v"},
+		{.seqid = rcvSeqsSensors, .lastSeq = 0, .state = SeqStateInit, .key = "sensors", .flags = "v"},
 #endif
 #if FETCH_STATE
-		{.event = rcvOMKeyState,
-		 .seqid = rcvSeqsState,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "state",
-		 .flags = "vn"},
+		{.seqid = rcvSeqsState, .lastSeq = 0, .state = SeqStateInit, .key = "state", .flags = "vn"},
 #endif
 #if FETCH_VOLUMES
-		{.event = rcvOMKeyVolumes,
-		 .seqid = rcvSeqsVolumes,
-		 .lastSeq = 0,
-		 .state = SeqStateInit,
-		 .key = "volumes",
-		 .flags = "v"},
+		{.seqid = rcvSeqsVolumes, .lastSeq = 0, .state = SeqStateInit, .key = "volumes", .flags = "v"},
 #endif
-		{.event = rcvOMKeyNone, .seqid = rcvSeqsFreq, .lastSeq = 0, .state = SeqStateInit, .key = "", .flags = "d99f"}};
+		{.seqid = rcvSeqsFreq, .lastSeq = 0, .state = SeqStateInit, .key = "", .flags = "d99f"}};
 
 	Seq* g_currentReqSeq = nullptr;
 

@@ -27,7 +27,6 @@ namespace Comm
 
 	struct Seq
 	{
-		const ReceivedDataEvent event;
 		const ReceivedDataEvent seqid;
 
 		int32_t lastSeq;
