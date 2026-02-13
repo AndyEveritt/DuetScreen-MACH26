@@ -38,13 +38,13 @@ namespace SystemHelper
 	{
 		switch (service)
 		{
+		case Services::DUETSCREEN_MONITOR:
+			return "21DuetScreenMonitor";
 		case Services::DUETSCREEN:
 			return "20DuetScreen";
 		case Services::UPGRADE:
 			return "50rootfs-upgrade";
 #if DEVELOPER_MODE
-		case Services::DUETSCREEN_MONITOR:
-			return "21DuetScreenMonitor";
 		case Services::ADB:
 			return "30adbd";
 		case Services::SSH:
@@ -62,13 +62,13 @@ namespace SystemHelper
 	{
 		switch (service)
 		{
+		case Services::DUETSCREEN_MONITOR:
+			return "DuetScreenMonitor";
 		case Services::DUETSCREEN:
 			return "DuetScreen";
 		case Services::UPGRADE:
 			return "rootfs-upgrade";
 #if DEVELOPER_MODE
-		case Services::DUETSCREEN_MONITOR:
-			return "DuetScreenMonitor";
 		case Services::ADB:
 			return "adbd";
 		case Services::SSH:

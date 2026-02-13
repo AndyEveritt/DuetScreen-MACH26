@@ -10,6 +10,7 @@
 #include "UI/Components/Input/TextBox.h"
 #include "UI/Components/LVGL/LvCheckbox.h"
 #include "UI/Components/LVGL/LvSwitch.h"
+#include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Modal/Modal.h"
 #include "UI/Components/Theme/ThemePreview.h"
 #include "UI/Core/View.h"
@@ -52,6 +53,8 @@ namespace UI
 		/* General */
 		LvLabel m_buildTime{"build_time", getRoot()};
 		DropdownMenu m_language{"language", getRoot()};
+		std::vector<std::string> m_languageCodes;
+		Modal<MessageBox> m_languageConfirm{"language_confirm", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};
 		DropdownMenu m_keyboardLayout{"keyboard_layout", getRoot()};
 		Slider m_brightness{"brightness", getRoot()};
 		Slider m_screensaverTimeout{"screensaver_timeout", getRoot()};

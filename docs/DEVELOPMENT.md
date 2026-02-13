@@ -184,6 +184,9 @@ Where:
 > [!NOTE]
 > The language files are loaded at runtime without need to be compiled into the binary. When simulating on PC, the language files are loaded from the `assets/i18n/` directory in the project. When running on the Duet3D screen, the language files are loaded from the `/etc/assets/i18n/` directory.
 
+Running `python scripts/manage_translations.py` will check for missing translation keys in the language files and prompt the user to enter translations for any missing keys. This can be used to easily keep the language files up to date with the code.
+Use `python scripts/manage_translations.py --help` for more information on how to use the script.
+
 ### Adding a new icon set
 - Icon sets are located in the `assets/icons/` directory.
 - Each icon set is a subdirectory in the `assets/icons/` directory.

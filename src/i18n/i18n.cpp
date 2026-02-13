@@ -149,6 +149,22 @@ namespace i18n
 		}
 	}
 
+	int32_t getLanguageIndex(std::string_view lang)
+	{
+		ZoneScoped;
+		const auto& langs = getAvailableLanguages();
+		int32_t index = 0;
+		for (const auto& [code, readable] : langs)
+		{
+			if (code == lang)
+			{
+				return index;
+			}
+			++index;
+		}
+		return -1;
+	}
+
 	const std::vector<std::string>& getSupportedFonts()
 	{
 		ZoneScoped;
@@ -178,9 +194,6 @@ namespace i18n
 
 		// Extract supported fonts
 		s_supportedFonts = getLanguageFonts(data);
-
-		// Add to languages
-		s_languages[lang_code] = readable;
 
 		// Add to translation table
 		std::string full_key;

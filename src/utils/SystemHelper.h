@@ -11,10 +11,10 @@ namespace SystemHelper
 {
 	enum class Services
 	{
+		DUETSCREEN_MONITOR,
 		DUETSCREEN,
         UPGRADE,
 #if DEVELOPER_MODE
-		DUETSCREEN_MONITOR,
 		ADB,
 		SSH,
 		SETUP

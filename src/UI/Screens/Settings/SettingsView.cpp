@@ -206,9 +206,47 @@ namespace UI
 		createRow(_("settings.language"), m_language);
 		m_language.setHeight(LV_SIZE_CONTENT);
 		{
-			std::array languages = {_("settings.language_en")};
-			m_language.setOptions<std::string>(languages);
+			const auto& languages = i18n::getAvailableLanguages();
+			m_languageCodes.clear();
+			m_languageCodes.reserve(languages.size());
+			for (const auto& [code, readable] : languages)
+			{
+				m_language.addOption(readable);
+				m_languageCodes.push_back(code);
+			}
 		}
+		m_languageConfirm.okVisible(true);
+		m_languageConfirm.cancelVisible(true);
+		m_languageConfirm.setOkBtnText(_("common.yes"));
+		m_languageConfirm.setCancelBtnText(_("common.no"));
+		m_languageConfirm.setCancelCallback(
+			[this]()
+			{
+				const auto currentIndex = i18n::getLanguageIndex(i18n::getCurrentLanguage());
+				m_language.setSelected(currentIndex);
+			});
+
+		m_language.setSelectedCallback(
+			[this](uint32_t index, std::string_view /* option */)
+			{
+				if (index >= m_languageCodes.size())
+					return;
+
+				const auto& langCode = m_languageCodes.at(index);
+				if (langCode == i18n::getCurrentLanguage())
+					return;
+
+				LOG_INFO("Language selection changed to: {:s}", langCode);
+				m_languageConfirm.setTitle(_("settings.language_confirm.title"));
+				m_languageConfirm.setText(_("settings.language_confirm.text"));
+				m_languageConfirm.setOkCallback(
+					[langCode = std::string(langCode)]()
+					{
+						StorageHelper::setData(ID_SYS_LANG_CODE_KEY, std::string_view(langCode));
+						Restart();
+					});
+				openModal(&m_languageConfirm);
+			});
 
 		/* Keyboard Layout */
 		createRow(_("settings.keyboard_layout"), m_keyboardLayout);
@@ -332,7 +370,11 @@ namespace UI
 	{
 		ZoneScoped;
 		// Update language selection
-		m_language.setSelected(std::string(i18n::getCurrentLanguage()));
+		{
+			int32_t langIdx = i18n::getLanguageIndex(i18n::getCurrentLanguage());
+			if (langIdx >= 0)
+				m_language.setSelected(static_cast<uint32_t>(langIdx));
+		}
 		m_brightness.setValue(static_cast<float>(DisplayHelper::getBrightness()));
 		m_screensaverTimeout.setValue(static_cast<float>(StorageHelper::getData(ID_SCREENSAVER_TIMEOUT).count()));
 		m_notificationLevel.setSelected(static_cast<uint32_t>(StorageHelper::getData(ID_NOTIFICATION_LEVEL)));

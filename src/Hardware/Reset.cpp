@@ -28,7 +28,7 @@ extern "C"
 #if SIMULATION
 		exit(EXIT_SUCCESS);
 #else
-	SystemHelper::restartService(SystemHelper::Services::DUETSCREEN);
+	SystemHelper::restartService(SystemHelper::Services::DUETSCREEN_MONITOR);
 #endif
 	}
 
