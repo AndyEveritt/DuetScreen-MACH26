@@ -236,6 +236,13 @@ namespace UI::Themes
 	{
 		ZoneScoped;
 		LOG_INFO("Applying theme: {:s}", m_name);
+
+		// Lazy-initialize the theme if it hasn't been initialized yet
+		if (!m_lvgl || !m_components)
+		{
+			init();
+		}
+
 		lv_enable_style_refresh(false);
 		setLvglStyles(getLvglStyles());
 		setComponentStyles(getComponentStyles());
@@ -1011,11 +1018,8 @@ namespace UI::Themes
 		s_lvglStyles.reset();
 		s_componentStyles.reset();
 
-		// Initialize all themes
-		for (const auto& [name, theme] : themes())
-		{
-			theme->init();
-		}
+		// Defer theme initialization: only the active theme is initialized now.
+		// Other themes are lazy-initialized when first activated via setThemeActive().
 
 		// lv_theme_t* baseTheme = lv_theme_default_init(display,
 		// 											  lv_palette_main(LV_PALETTE_BLUE),

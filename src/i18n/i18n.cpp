@@ -53,8 +53,8 @@ namespace i18n
 	{
 		ZoneScoped;
 		LOG_INFO("Initialising i18n module...");
-		refreshLanguageFiles();
-
+		// Defer refreshLanguageFiles() until getAvailableLanguages() is first called.
+		// At startup we only need the active language loaded.
 		setLanguage(StorageHelper::getData(ID_SYS_LANG_CODE_KEY));
 	}
 
@@ -97,6 +97,10 @@ namespace i18n
 	const std::map<language_code_t, language_readable_t>& getAvailableLanguages()
 	{
 		ZoneScoped;
+		if (s_languages.empty())
+		{
+			refreshLanguageFiles();
+		}
 		return s_languages;
 	}
 

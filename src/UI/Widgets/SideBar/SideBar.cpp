@@ -42,6 +42,7 @@ namespace UI
 		m_homeBtn.setIcon("home.png");
 		m_homeBtn.addClickedCallback(homeBtnEvent, this);
 		m_homeBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_homeBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 
 #if SIDE_BAR_BACK_BUTTON
 		m_backBtn.setWidth(LV_PCT(100));
@@ -50,6 +51,7 @@ namespace UI
 		m_backBtn.setIcon("back.png");
 		m_backBtn.addClickedCallback(backBtnEvent, this);
 		m_backBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_backBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 #endif
 
 		m_controlBtn.setWidth(LV_PCT(100));
@@ -58,6 +60,7 @@ namespace UI
 		m_controlBtn.setIcon("control.png");
 		m_controlBtn.addClickedCallback(controlBtnEvent, this);
 		m_controlBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_controlBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 
 		m_filesBtn.setWidth(LV_PCT(100));
 		m_filesBtn.setFlexGrow(1);
@@ -65,6 +68,7 @@ namespace UI
 		m_filesBtn.setIcon("macros.png");
 		m_filesBtn.addClickedCallback(filesBtnEvent, this);
 		m_filesBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_filesBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 
 #if SIDE_BAR_APP_DRAWER
 		m_menuBtn.setWidth(LV_PCT(100));
@@ -73,6 +77,7 @@ namespace UI
 		m_menuBtn.setIcon(APP_DRAWER_ICON);
 		m_menuBtn.addClickedCallback(menuBtnEvent, this);
 		m_menuBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_menuBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 #endif
 
 #if SIDE_BAR_CONSOLE_BUTTON
@@ -83,6 +88,7 @@ namespace UI
 		m_consoleBtn.addClickedCallback(consoleBtnEvent, this);
 		m_consoleBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
 		m_consoleBtn.addStyle(Themes::getComponentStyles().console_btn_anim, LV_STATE_USER_1);
+		m_consoleBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 #endif
 
 #if SIDE_BAR_SETTINGS_BUTTON
@@ -92,6 +98,7 @@ namespace UI
 		m_settingsBtn.setIcon("settings.png");
 		m_settingsBtn.addClickedCallback(settingsBtnEvent, this);
 		m_settingsBtn.addStyle(Themes::getComponentStyles().sidebar_btn);
+		m_settingsBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 #endif
 
 		setExtDrawSize(lv_obj_get_width(getScreenPtr()));

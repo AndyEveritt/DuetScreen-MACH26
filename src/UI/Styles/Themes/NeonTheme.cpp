@@ -134,7 +134,6 @@ namespace UI::Themes
 
 								   /* Component adjustments */
 								   lv_style_set_radius(components.bar_label_bg, 3);
-								   lv_style_set_radius(components.estop, 3);
 
 								   lv_style_copy(components.folder, lvgl.btn);
 								   lv_style_merge(components.file, lvgl.btn);

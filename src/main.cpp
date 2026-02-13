@@ -106,17 +106,29 @@ int main(int argc, char** argv)
 #if LV_USE_LOG
 	lv_log_register_print_cb(lvgl_log_cb);
 #endif
-	UI::FontManager::init();
-	i18n::init();
+	{
+		ZoneScopedN("FontManager::init");
+		UI::FontManager::init();
+	}
+	{
+		ZoneScopedN("i18n::init");
+		i18n::init();
+	}
 
-	Comm::init();
-	Comm::DUET.Init();
+	{
+		ZoneScopedN("Comm::init");
+		Comm::init();
+		Comm::DUET.Init();
+	}
 
 	/*Initialize the HAL (display, input devices, tick) for LVGL*/
 	lv_display_t* display = hal_init(1024, 600);
 
 	DisplayHelper::setBrightness(StorageHelper::getData(ID_SYS_BRIGHTNESS_KEY));
-	UI::Themes::init(display);
+	{
+		ZoneScopedN("Themes::init");
+		UI::Themes::init(display);
+	}
 
 	// lv_display_set_rotation(display, LV_DISP_ROTATION_180);
 
