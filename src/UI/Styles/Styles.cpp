@@ -236,14 +236,18 @@ namespace UI::Themes
 	{
 		ZoneScoped;
 		LOG_INFO("Applying theme: {:s}", m_name);
+		lv_enable_style_refresh(false);
 		setLvglStyles(getLvglStyles());
 		setComponentStyles(getComponentStyles());
 		setTypeface(FontManager::getActiveTypefaceName());
 
 		s_currentTheme = const_cast<Theme*>(this);
 
-		lv_obj_report_style_change(NULL);
-		lv_obj_invalidate(lv_screen_active());
+		lv_enable_style_refresh(true);
+		{
+			ZoneScopedN("Refreshing styles");
+			lv_obj_refresh_style(lv_screen_active(), LV_PART_ANY, LV_STYLE_PROP_ANY);
+		}
 	}
 
 	const LvglStyles& Theme::getLvglStyles() const

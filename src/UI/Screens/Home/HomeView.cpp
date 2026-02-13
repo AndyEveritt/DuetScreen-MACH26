@@ -2,6 +2,7 @@
 
 #include "Debug.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Core/StyleRefreshGuard.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Styles/Styles.h"
 #include "i18n/i18n.h"
@@ -121,12 +122,28 @@ namespace UI
 		{
 			return *s_overrideInstance;
 		}
-		if (!s_instanceInitialized)
+
+		const bool firstInit = !s_instanceInitialized.exchange(true);
+		if (firstInit)
 		{
 			LOG_INFO("Initialising HomeView");
-			s_instanceInitialized = true;
+			// Disable global style refresh during the entire HomeView construction.
+			// The counter-based mechanism is nesting-safe, so LVGL's internal
+			// disable/enable in lv_obj_class_init_obj won't interfere.
+			lv_enable_style_refresh(false);
 		}
+
 		static HomeView view;
+
+		if (firstInit)
+		{
+			ZoneScopedN("Refreshing styles");
+			lv_enable_style_refresh(true);
+			// Single batched refresh of the entire UI tree
+			lv_obj_refresh_style(view.getRootPtr(), LV_PART_ANY, LV_STYLE_PROP_ANY);
+			LOG_INFO("HomeView initialization complete");
+		}
+
 		return view;
 	}
 

@@ -59,6 +59,7 @@ namespace UI
 		addEventCallback(
 			[](lv_event_t* e)
 			{
+				ZoneScopedN("Button label resize callback");
 				// Update the label width
 				auto& btn = *static_cast<Button*>(lv_event_get_user_data(e));
 				LvObj* parent = btn.getParent();
