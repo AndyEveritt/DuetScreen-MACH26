@@ -210,6 +210,7 @@ namespace UI::Themes
 		/* Base */
 
 		lv_style_set_bg_opa(lvgl.base, LV_OPA_TRANSP);
+		lv_style_set_border_post(lvgl.base, true);
 
 		/* Screen */
 
