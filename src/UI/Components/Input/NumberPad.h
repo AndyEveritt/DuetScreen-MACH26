@@ -59,7 +59,7 @@ namespace UI
 
 		LvLabel m_header{"header", getRoot()};
 		LvContainer m_textCont{"textcont", getRoot()};
-		TextBox m_textBox{"textarea", m_textCont};
+		LvTextarea m_textBox{"textarea", m_textCont};
 		Button m_clearBtn{"Clear", m_textCont, LV_SYMBOL_TRASH, layout_t(75, 0, 20, 80)};
 		LvButtonmatrix m_btnMatrix{"btnmatrix", getRoot()};
 

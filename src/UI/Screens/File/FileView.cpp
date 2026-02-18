@@ -30,12 +30,11 @@ namespace UI
 		setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 2, 1);
 #endif
 		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 3, 1);
-		setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 4);
+		setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 4);
 		setGridCell(m_folderIcon, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 4);
 
 		m_label.setHeight(LV_SIZE_CONTENT);
 		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
-		m_thumbnail.setHeight(LV_PCT(100));
 		m_folderIcon.setIcon("folder.png");
 
 		addEventCallback(

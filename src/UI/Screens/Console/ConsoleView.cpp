@@ -142,12 +142,12 @@ namespace UI
 		);
 		auto timeSpan = m_output.addSpan();
 		timeSpan.setText(timePrefix);
-		m_output.setSpanStyle(timeSpan, Themes::getLvglStyles().text_muted);
+		m_output.setSpanStyleStatic(timeSpan, Themes::getLvglStyles().text_muted);
 
 		auto respSpan = m_output.addSpan();
 		respSpan.setText(resp);
-		m_output.setSpanStyle(respSpan,
-							  emphasize ? Themes::getLvglStyles().text_emphasis : Themes::getLvglStyles().text);
+		m_output.setSpanStyleStatic(respSpan,
+									emphasize ? Themes::getLvglStyles().text_emphasis : Themes::getLvglStyles().text);
 
 		if (resp.length() > 0 && resp.back() != '\n')
 		{

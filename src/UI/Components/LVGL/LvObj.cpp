@@ -530,6 +530,13 @@ namespace UI
 		return lv_obj_has_state(getRootPtr(), state);
 	}
 
+	bool LvObj::hasStyle(const lv_style_t* style) const
+	{
+		ZoneScoped;
+		UI_LOCK();
+		return lv_obj_has_style(getRootPtr(), style);
+	}
+
 	bool LvObj::hasStyleProp(lv_style_prop_t prop, lv_style_selector_t selector) const
 	{
 		ZoneScoped;
@@ -565,6 +572,13 @@ namespace UI
 		lv_obj_set_local_style_prop(getRootPtr(), prop, value, selector);
 	}
 
+	bool LvObj::removeLocalStyleProp(lv_style_prop_t prop, lv_style_selector_t selector)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		return lv_obj_remove_local_style_prop(getRootPtr(), prop, selector);
+	}
+
 	void LvObj::updateLayout()
 	{
 		ZoneScoped;
@@ -584,6 +598,13 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		lv_obj_invalidate(getRootPtr());
+	}
+
+	void LvObj::markLayoutDirty()
+	{
+		ZoneScoped;
+		UI_LOCK();
+		lv_obj_mark_layout_as_dirty(getRootPtr());
 	}
 
 	static void __obj_set_ext_draw_size_cb(lv_event_t* e)

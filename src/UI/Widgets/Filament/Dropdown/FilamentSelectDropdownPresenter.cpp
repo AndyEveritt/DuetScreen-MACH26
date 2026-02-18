@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include "FilamentSelectDropdown.h"
 #include "ObjectModel/Files.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "i18n/i18n.h"
 
 namespace UI
@@ -70,6 +71,12 @@ namespace UI
 		updateFilamentList();
 	}
 
+	void FilamentSelectDropdownPresenter::newStatus(OM::PrinterStatus status)
+	{
+		ZoneScoped;
+		getView()->setFilamentDisabled(OM::IsPrintingStatus(status) && status != OM::PrinterStatus::paused);
+	}
+
 	void FilamentSelectDropdownPresenter::updateFilamentList()
 	{
 		ZoneScoped;
@@ -85,5 +92,6 @@ namespace UI
 		{
 			getView()->setFilamentSelected(m_tool->GetFilament().c_str(), true);
 		}
+		newStatus(OM::GetStatus());
 	}
 } // namespace UI

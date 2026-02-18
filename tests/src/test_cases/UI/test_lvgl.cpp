@@ -6,6 +6,7 @@
  */
 
 #include "Debug.h"
+#include "UI/Components/LVGL/LvTextarea.h"
 #include "test_utils/UiTestSuite.h"
 #include <gtest/gtest.h>
 
@@ -492,4 +493,14 @@ TEST_F(TestLvgl, DropdownSizeContent)
 
 	lv_label_set_text(label, "label");
 	EXPECT_EQUAL_SCREENSHOT("lvgl/dropdown/content_size_text2.png");
+}
+
+TEST_F(TestLvgl, TextareaOneLine)
+{
+	UI::LvTextarea textarea("textarea", screen);
+
+	textarea.setText("Type here...");
+	textarea.setWidth(100);
+	textarea.setHeight(LV_SIZE_CONTENT);
+	EXPECT_EQUAL_SCREENSHOT("lvgl/textarea/one_line.png");
 }

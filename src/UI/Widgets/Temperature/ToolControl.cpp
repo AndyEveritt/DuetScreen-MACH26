@@ -21,9 +21,9 @@ namespace UI
 		m_toolInfoCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_toolInfoCont.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
 		m_toolInfoCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		m_name.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_toolName.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_state.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-		m_name.addStyle(Themes::getLvglStyles().actionBtn);
+		m_toolName.addStyle(Themes::getLvglStyles().actionBtn);
 
 		m_toolInfoSpacer.setHeight(0);
 		m_toolInfoSpacer.setFlexGrow(1);
@@ -42,7 +42,7 @@ namespace UI
 		m_heaters.setListFlow(LV_FLEX_FLOW_COLUMN);
 		m_heaters.setListSize(LV_PCT(100), LV_SIZE_CONTENT);
 
-		m_name.addClickedCallback(
+		m_toolName.addClickedCallback(
 			[](lv_event_t* e)
 			{
 				auto& control = *(ToolControl*)lv_event_get_user_data(e);
@@ -56,7 +56,7 @@ namespace UI
 	void ToolControl::setToolName(std::string_view name)
 	{
 		ZoneScoped;
-		m_name.setText(name);
+		m_toolName.setText(name);
 	}
 
 	void ToolControl::setToolState(ToolControlPresenter::tool_state_t state, std::string_view str)
@@ -64,8 +64,14 @@ namespace UI
 		ZoneScoped;
 		bool active = state == ToolControlPresenter::tool_state_t::active;
 		setState(LV_STATE_CHECKED, active);
-		m_name.setChecked(active);
+		m_toolName.setChecked(active);
 		m_state.setText(str);
+	}
+
+	void ToolControl::setDisabled(bool disabled)
+	{
+		ZoneScoped;
+		m_toolName.setDisabled(disabled);
 	}
 
 	void ToolControl::setNumberPad(ModalNumberPad* numberPad)

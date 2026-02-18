@@ -1,6 +1,7 @@
 #include "HeaterSliderPresenter.h"
 #include "Debug.h"
 #include "HeaterSlider.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "i18n/i18n.h"
 
 namespace UI
@@ -35,6 +36,7 @@ namespace UI
 		}
 
 		newHeaterData();
+		newStatus(OM::GetStatus());
 	}
 
 	void HeaterSliderPresenter::setToolHeaterIndex(size_t toolIndex, size_t toolHeaterIndex)
@@ -291,5 +293,11 @@ namespace UI
 		m_view->setCurrentTemperature(currentTemp);
 		m_view->setActiveTemperature(activeTemp);
 		m_view->setStandbyTemperature(standbyTemp);
+	}
+
+	void HeaterSliderPresenter::newStatus(OM::PrinterStatus status)
+	{
+		ZoneScoped;
+		m_view->setDisabled(OM::IsPrintingStatus(status) && status != OM::PrinterStatus::paused);
 	}
 } // namespace UI

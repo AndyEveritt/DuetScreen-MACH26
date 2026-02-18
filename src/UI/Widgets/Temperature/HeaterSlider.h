@@ -22,6 +22,7 @@ namespace UI
 		void setCurrentTemperature(float temperature);
 		void setActiveTemperature(int32_t temperature, bool dragging = false);
 		void setStandbyTemperature(int32_t temperature, bool dragging = false);
+		void setDisabled(bool disabled);
 
 		void setNumberPad(ModalNumberPad* numberPad);
 

@@ -32,6 +32,7 @@ namespace UI
 		void clear();
 		void newToolData();
 		void newFilaments(const std::vector<std::string>& filaments);
+		void newStatus(OM::PrinterStatus status);
 		void updateFilamentList();
 
 	  protected:
@@ -39,6 +40,7 @@ namespace UI
 		{
 			registerEventListener<EventType::ToolData>(this, &FilamentSelectDropdownPresenter::newToolData);
 			registerEventListener<EventType::Filaments>(this, &FilamentSelectDropdownPresenter::newFilaments);
+			registerEventListener<EventType::Status>(this, &FilamentSelectDropdownPresenter::newStatus);
 		}
 		void onActivate() override;
 		void onDeactivate() override {}

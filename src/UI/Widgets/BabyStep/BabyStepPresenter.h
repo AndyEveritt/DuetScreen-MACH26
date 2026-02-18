@@ -35,6 +35,6 @@ namespace UI
 		void onDeactivate() override {}
 
 		void onConnect() override {}
-		void onDisconnect() override {}
+		void onDisconnect() override;
 	};
 } // namespace UI

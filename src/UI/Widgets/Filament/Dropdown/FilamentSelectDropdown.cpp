@@ -95,7 +95,7 @@ namespace UI
 		m_selection.setText(filament.empty() ? _("filament.not_loaded") : filament);
 		m_loadedFilament = filament;
 		m_changeBtn.hide();
-		m_unloadBtn.setDisabled(filament.empty());
+		m_unloadBtn.setDisabled(filament.empty() || hasState(LV_STATE_DISABLED));
 		m_changeBtn.setText(filament.empty() ? _("filament.load") : _("filament.change"));
 	}
 

@@ -14,6 +14,32 @@
 
 namespace UI::Themes
 {
+	static ColorCtx s_colors = {.primaryHue = 340,
+								.secondaryHue = 45,
+								.chroma = 0.05f,
+								.darkMode = true,
+								.customizer = [](ThemeColors& colors, [[maybe_unused]] const ColorCtx& ctx)
+								{
+									// Increase chroma to make colours pop
+									colors.primary.setC(colors.primary.getC() + 0.1f);
+									colors.secondary.setC(colors.secondary.getC() + 0.1f);
+
+									if (ctx.darkMode)
+									{
+										colors.primary.setL(colors.primary.getL() + 0.2f);
+										colors.secondary.setL(colors.secondary.getL() + 0.2f);
+
+										// Muted variants: less chroma, more lightness
+										colors.primary_muted.setC(colors.primary.getC() * 0.5f);
+										colors.primary_muted.setL(colors.primary.getL() + 0.2f);
+										colors.secondary_muted.setC(colors.secondary.getC() * 0.5f);
+										colors.secondary_muted.setL(colors.secondary.getL() + 0.2f);
+
+										// Header text: more chroma, more lightness
+										colors.text_header.setC(colors.text.getC() + 0.1f);
+										colors.text_header.setL(colors.text.getL() + 0.3f);
+									}
+								}};
 	static FontConfigSet s_fontConfigs = {
 		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
 		.normal = {.size = 13, .style = LV_FREETYPE_FONT_STYLE_NORMAL | LV_FREETYPE_FONT_STYLE_WEIGHT(400)},
@@ -22,6 +48,7 @@ namespace UI::Themes
 	};
 
 	static CustomTheme s_theme("neon",
+							   s_colors,
 							   s_fontConfigs,
 							   [](Theme* theme)
 							   {
@@ -29,6 +56,8 @@ namespace UI::Themes
 								   auto& lvgl = t->getLvglStyles();
 								   auto& components = t->getComponentStyles();
 								   auto& colors = t->getColors();
+
+								   lv_style_set_shadow_opa(lvgl.base, LV_OPA_20);
 
 								   /* Moderate rounding */
 								   lv_style_set_radius(lvgl.card, 3);
@@ -39,9 +68,10 @@ namespace UI::Themes
 								   lv_style_set_border_color(lvgl.card, colors.primary);
 								   lv_style_set_border_opa(lvgl.card, LV_OPA_40);
 								   lv_style_set_shadow_width(lvgl.card, 16);
-								   lv_style_set_shadow_spread(lvgl.card, 1);
+								   lv_style_set_shadow_spread(lvgl.card, 2);
 								   lv_style_set_shadow_color(lvgl.card, colors.primary);
-								   lv_style_set_shadow_opa(lvgl.card, LV_OPA_20);
+								   lv_style_set_shadow_offset_x(lvgl.card, 0);
+								   lv_style_set_shadow_offset_y(lvgl.card, 0);
 
 								   /* Tight padding for a dense information display */
 								   lv_style_set_pad_all(lvgl.card, 4);
@@ -56,19 +86,20 @@ namespace UI::Themes
 								   lv_style_set_text_color(lvgl.btn, colors.primary);
 								   lv_style_set_shadow_width(lvgl.btn, 10);
 								   lv_style_set_shadow_color(lvgl.btn, colors.primary);
-								   lv_style_set_shadow_opa(lvgl.btn, LV_OPA_20);
-								   lv_style_set_shadow_spread(lvgl.btn, 0);
+								   lv_style_set_shadow_opa(lvgl.btn, LV_OPA_30);
+								   lv_style_set_shadow_spread(lvgl.btn, 2);
 
 								   /* Action buttons glow in secondary colour */
 								   lv_style_set_bg_color(lvgl.actionBtn, colors.bg_light);
 								   lv_style_set_border_width(lvgl.actionBtn, 1);
 								   lv_style_set_border_color(lvgl.actionBtn, colors.secondary);
 								   lv_style_set_text_color(lvgl.actionBtn, colors.secondary);
+								   lv_style_set_shadow_color(lvgl.actionBtn, colors.secondary);
 
 								   /* Checked button: filled with glow */
 								   lv_style_set_shadow_width(lvgl.btn_checked, 14);
 								   lv_style_set_shadow_color(lvgl.btn_checked, colors.primary);
-								   lv_style_set_shadow_opa(lvgl.btn_checked, LV_OPA_30);
+								   lv_style_set_shadow_opa(lvgl.btn_checked, LV_OPA_40);
 
 								   /* Pressed: subtle brightening */
 								   lv_style_set_recolor(lvgl.pressed, lv_color_white());

@@ -11,6 +11,7 @@
 
 namespace UI::Themes
 {
+	static ColorCtx s_colors = {.primaryHue = 80, .secondaryHue = 150, .chroma = 0.0f, .darkMode = true};
 	static FontConfigSet s_fontConfigs = {
 		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(700)},
 		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL | LV_FREETYPE_FONT_STYLE_WEIGHT(400)},
@@ -19,6 +20,7 @@ namespace UI::Themes
 	};
 
 	static CustomTheme s_flatTheme("flat",
+								   s_colors,
 								   s_fontConfigs,
 								   [](Theme* theme)
 								   {
@@ -37,6 +39,7 @@ namespace UI::Themes
 									   lv_style_set_bg_color(lvgl.actionBtn, colors.secondary);
 									   lv_style_set_bg_grad_dir(lvgl.actionBtn, LV_GRAD_DIR_NONE);
 									   lv_style_set_text_color(lvgl.actionBtn, colors.text);
+									   lv_style_set_recolor(lvgl.actionBtn, colors.text);
 
 									   lv_style_set_bg_color(lvgl.card, colors.bg);
 									   lv_style_set_bg_grad_dir(lvgl.card, LV_GRAD_DIR_NONE);

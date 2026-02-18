@@ -20,6 +20,8 @@ UiTestSuiteInner::UiTestSuiteInner()
 	LOG_INFO("Setting up UI test");
 	lv_init();
 
+	Log::Init();
+
 #if LV_USE_PROFILER && LV_USE_PROFILER_BUILTIN
 	/* Disable profiler, to reduce redundant profiler log printing  */
 	lv_profiler_builtin_set_enable(false);
@@ -47,6 +49,9 @@ UiTestSuiteInner::UiTestSuiteInner()
 	i18n::setLanguage(DEFAULT_LANGUAGE_CODE);
 
 	UI::Themes::init(display);
+#if DEBUG_BORDERS
+	// UI::Themes::showDebugBorders(lv_screen_active(), true);
+#endif
 
 	lv_obj_set_style_pad_all(lv_screen_active(), 0, 0);
 	lv_obj_set_name(lv_screen_active(), "screen_active");

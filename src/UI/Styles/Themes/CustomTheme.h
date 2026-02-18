@@ -15,20 +15,25 @@ namespace UI::Themes
 	{
 	  public:
 		CustomTheme(std::string_view name,
+					ColorCtx defaultColors,
 					FontConfigSet fontConfigSet,
 					std::function<void(Theme* theme)> styleOverrides = nullptr);
 
 		void setColors(uint16_t primaryHue, uint16_t secondaryHue, float chroma, bool darkMode);
+		void resetToDefaults();
 
 		uint16_t getPrimaryHue() const { return m_primaryHue; }
 		uint16_t getSecondaryHue() const { return m_secondaryHue; }
 		float getChroma() const { return m_chroma; }
 		bool getDarkMode() const { return m_darkMode; }
+		const ColorCtx& getDefaultColors() const { return m_defaultColors; }
 
 	  protected:
 		void onInit() override;
 
 	  private:
+		ColorCtx m_defaultColors;
+
 		uint16_t m_primaryHue;
 		uint16_t m_secondaryHue;
 		float m_chroma;

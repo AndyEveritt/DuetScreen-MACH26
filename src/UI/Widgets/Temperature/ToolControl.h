@@ -31,6 +31,8 @@ namespace UI
 		FilamentSelectDropdown& getFilamentDropdown() { return m_filament; }
 		List<HeaterSlider>& getHeaters() { return m_heaters; }
 
+		void setDisabled(bool disabled);
+
 		void setNumberPad(ModalNumberPad* numberPad);
 		auto getNumberPad() { return m_numberPad; }
 
@@ -39,7 +41,7 @@ namespace UI
 
 	  private:
 		LvContainer m_toolInfoCont{"tool_info", getRoot()};
-		Button m_name{"tool_name", m_toolInfoCont};
+		Button m_toolName{"tool_name", m_toolInfoCont};
 		LvLabel m_state{"tool_state", m_toolInfoCont};
 		LvContainer m_toolInfoSpacer{"tool_info_spacer", m_toolInfoCont};
 		List<Button> m_extrusionFactors{"extrusion_factors", m_toolInfoCont};

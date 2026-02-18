@@ -163,6 +163,7 @@ namespace UI
 
 		bool hasFlag(lv_obj_flag_t flag) const;
 		bool hasState(lv_state_t state) const;
+		bool hasStyle(const lv_style_t* style) const;
 		bool hasStyleProp(lv_style_prop_t prop, lv_style_selector_t selector = LV_PART_MAIN) const;
 
 		void setParent(LvObj& parent);
@@ -197,10 +198,12 @@ namespace UI
 		void setLocalStyleProp(lv_style_prop_t prop,
 							   lv_style_value_t value,
 							   lv_style_selector_t selector = LV_PART_MAIN);
+		bool removeLocalStyleProp(lv_style_prop_t prop, lv_style_selector_t selector = LV_PART_MAIN);
 
 		void updateLayout();
 		bool refreshSelfSize();
 		void invalidate();
+		void markLayoutDirty();
 
 		void setExtDrawSize(int32_t size);
 		void setExtClickArea(int32_t size);

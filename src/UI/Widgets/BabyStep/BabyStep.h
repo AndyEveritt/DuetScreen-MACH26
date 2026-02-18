@@ -20,6 +20,7 @@ namespace UI
 
 		void setBabyStepValue(float value);
 		void setNumberPad(ModalNumberPad* numberPad) { m_buttonPanel.setNumberPad(numberPad); }
+		void setDisabled(bool disabled) { m_buttonPanel.setDisabled(disabled); }
 
 	  protected:
 		void onShow() override;

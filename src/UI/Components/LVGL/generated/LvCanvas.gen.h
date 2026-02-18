@@ -1,8 +1,8 @@
 /*
  * LvCanvas.gen.h
  *
- *  AUTO-GENERATED: 2026-02-03T12:42:00 by scripts/generate_lvgl_wrappers.py
- *  LVGL version: 9.5.0-dev
+ *  AUTO-GENERATED: 2026-02-18T18:42:10 by scripts/generate_lvgl_wrappers.py
+ *  LVGL version: 9.5.0
  */
 
 #pragma once
@@ -69,6 +69,10 @@ namespace UI
 		 *              LV_COLOR_FORMAT_I1/2/4/8, LV_COLOR_FORMAT_A8,
 		 *              LV_COLOR_FORMAT_RGB565, LV_COLOR_FORMAT_RGB888,
 		 *              LV_COLOR_FORMAT_XRGB8888, LV_COLOR_FORMAT_ARGB8888
+		 * @note    this function invalidates the canvas object every time,
+		 *      for best performance, if you're changing a lot of pixels in a loop,
+		 *      call `lv_display_enable_invalidation` before the loop starts
+		 *      so the invalidation isn't done on every call
 		 */
 		void setPx(int32_t x, int32_t y, lv_color_t color, lv_opa_t opa)
 			requires HasGetRootPtr<Derived>
@@ -76,27 +80,6 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			lv_canvas_set_px(static_cast<Derived*>(this)->getRootPtr(), x, y, color, opa);
-		}
-
-		/**
-		 * Set a pixel's color and opacity without invalidating the canvas object
-		 * In order for the canvas to be redrawn, the user is required to manually call `lv_obj_invalidate`
-		 *
-		 * @param x     X coordinate of the pixel
-		 * @param y     Y coordinate of the pixel
-		 * @param color the color
-		 * @param opa   the opacity
-		 * @note        The following color formats are supported
-		 *              LV_COLOR_FORMAT_I1/2/4/8, LV_COLOR_FORMAT_A8,
-		 *              LV_COLOR_FORMAT_RGB565, LV_COLOR_FORMAT_RGB888,
-		 *              LV_COLOR_FORMAT_XRGB8888, LV_COLOR_FORMAT_ARGB8888
-		 */
-		void setPxSkipInvalidate(int32_t x, int32_t y, lv_color_t color, lv_opa_t opa)
-			requires HasGetRootPtr<Derived>
-		{
-			ZoneScoped;
-			UI_LOCK();
-			lv_canvas_set_px_skip_invalidate(static_cast<Derived*>(this)->getRootPtr(), x, y, color, opa);
 		}
 
 		/**

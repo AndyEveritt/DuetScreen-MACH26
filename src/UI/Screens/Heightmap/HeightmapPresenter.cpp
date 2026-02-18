@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "HeightmapView.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "i18n/i18n.h"
 #include <cmath>
 #include <span>
@@ -10,6 +11,12 @@
 
 namespace UI
 {
+	/**
+	 * FIXME: #87 This class is not thread safe since m_heightmap can be accessed and set by multiple threads without
+	 * synchronization. This can cause the program to crash if for example the Duet disconnects while a heightmap is
+	 * being rendered.
+	 */
+
 	void HeightmapPresenter::setRenderMode(HeightmapRenderMode mode)
 	{
 		ZoneScoped;
@@ -102,6 +109,7 @@ namespace UI
 				auto name = fmt::format("px = {:d}", px);
 				ZoneName(name.c_str(), name.size());
 #endif
+				lv_display_enable_invalidation(NULL, false);
 				for (uint32_t py = 0; py < height; py++)
 				{
 					float x = x_min + (static_cast<float>(px) * xStep);
@@ -113,6 +121,7 @@ namespace UI
 					}
 					m_view->setPx(px, height - py - 1, static_cast<float>(value));
 				}
+				lv_display_enable_invalidation(NULL, true);
 			}
 		}
 		m_view->getHeightmap().getCanvas().invalidate();
@@ -231,6 +240,13 @@ namespace UI
 		{
 			render();
 		}
+	}
+
+	void HeightmapPresenter::newStatus(OM::PrinterStatus status)
+	{
+		ZoneScoped;
+		getView()->getControlButtons().setState(
+			LV_STATE_DISABLED, (OM::IsPrintingStatus(status) && status != OM::PrinterStatus::paused), true);
 	}
 
 	void HeightmapPresenter::updateHeightmapList()

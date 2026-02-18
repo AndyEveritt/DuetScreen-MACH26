@@ -10,6 +10,7 @@
 #include "SpeedFactorPresenter.h"
 #include "UI/Components/Input/NumberPad.h"
 #include "UI/Components/Input/Slider.h"
+#include "UI/Components/List/List.h"
 #include "UI/Core/View.h"
 
 namespace UI
@@ -22,10 +23,11 @@ namespace UI
 		void setSpeedValue(float value);
 		void setNumberPad(NumberPad* numberPad) { m_numberPad = numberPad; }
 
-		Slider& getSlider() { return m_speed; }
+		Slider& getSlider() { return *m_speed.getItem(0); }
 
 	  private:
-		Slider m_speed{"slider", getRoot()};
+		/* List because it is plausible that we might want speed control for both motion systems */
+		List<Slider> m_speed{"slider", getRoot()};
 		NumberPad* m_numberPad = nullptr;
 	};
 

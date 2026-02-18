@@ -14,16 +14,10 @@
 
 namespace UI
 {
-	static constexpr lv_coord_t s_scaleSize = 30;
-
 	static lv_color_t GetColorForPercent(double percent);
 
 	Heatmap::Heatmap(const std::string& name, LvObj& parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_rowDsc{LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_canvas("heightmap_canvas", getRoot())
-		, m_colorBar("heightmap_color_bar", getRoot())
 	{
 		ZoneScoped;
 		init();
@@ -31,10 +25,6 @@ namespace UI
 
 	Heatmap::Heatmap(const std::string& name, LvObj& parent, layout_t layout)
 		: LvObj(lv_obj_create, name, parent, layout)
-		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
-		, m_rowDsc{LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
-		, m_canvas("heightmap_canvas", getRoot())
-		, m_colorBar("heightmap_color_bar", getRoot())
 	{
 		ZoneScoped;
 		init();
@@ -53,6 +43,7 @@ namespace UI
 		m_canvas.setFlexGrow(1);
 		m_canvas.setHeight(LV_PCT(100));
 		m_colorBar.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_colorBar.getCanvas().setMinWidth(50);
 
 		addStyle(Themes::getLvglStyles().pad_zero);
 
@@ -66,6 +57,7 @@ namespace UI
 		m_colorBar.setResolution(1, 100);
 		m_colorBar.showXScale(false);
 		setValueRange(m_minValue, m_maxValue);
+		renderColorBar();
 	}
 
 	void Heatmap::showScale(const bool show)
@@ -73,7 +65,6 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		m_colorBar.setVisible(show);
-		m_columnDsc[2] = show ? LV_GRID_CONTENT : 0;
 	}
 
 	Heatmap::range_t Heatmap::getXRange() const
@@ -182,9 +173,7 @@ namespace UI
 	void Heatmap::clear()
 	{
 		ZoneScoped;
-		UI_LOCK();
 		m_canvas.clear();
-		m_colorBar.clear();
 	}
 
 	static lv_color_t GetColorForPercent(double percent)

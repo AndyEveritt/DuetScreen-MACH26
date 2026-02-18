@@ -33,12 +33,14 @@ namespace UI
 		// Observers
 		void newToolData();
 		void newToolHeaterData(size_t toolIndex);
+		void newStatus(OM::PrinterStatus status);
 
 	  protected:
 		void onInit() override
 		{
 			registerEventListener<EventType::ToolData>(this, &ToolControlPresenter::newToolData);
 			registerEventListener<EventType::ToolHeaterData>(this, &ToolControlPresenter::newToolHeaterData);
+			registerEventListener<EventType::Status>(this, &ToolControlPresenter::newStatus);
 		}
 		void onActivate() override;
 		void onDeactivate() override;

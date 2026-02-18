@@ -55,7 +55,17 @@ namespace i18n
 		LOG_INFO("Initialising i18n module...");
 		// Defer refreshLanguageFiles() until getAvailableLanguages() is first called.
 		// At startup we only need the active language loaded.
-		setLanguage(StorageHelper::getData(ID_SYS_LANG_CODE_KEY));
+		const auto lang_code = StorageHelper::getData(ID_SYS_LANG_CODE_KEY);
+		if (!setLanguage(lang_code))
+		{
+			LOG_ERROR("Failed to set language to '{:s}', falling back to '{:s}'",
+					  lang_code,
+					  ID_SYS_LANG_CODE_KEY.default_value);
+			if (!setLanguage(ID_SYS_LANG_CODE_KEY.default_value))
+			{
+				LOG_ERROR("Failed to load default language file");
+			}
+		}
 	}
 
 	std::string_view getCurrentLanguage()

@@ -65,7 +65,7 @@ namespace UI
 		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
 		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label);
 
-		m_speedFactorModal.setSize(LV_PCT(80), LV_PCT(70));
+		m_speedFactorModal.setSize(LV_PCT(80), LV_SIZE_CONTENT);
 		updateSpeed(0, 0);
 		updateSpeedMultiplier(100);
 		m_speedMultiplier.addClickedCallback([this](lv_event_t*) { openModal(&m_speedFactorModal); });
@@ -91,7 +91,7 @@ namespace UI
 		m_extruderFlowLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
 		m_extruderFlowLabel.addStyle(Themes::getComponentStyles().bar_label);
 
-		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
+		m_extrusionFactorModal.setSize(LV_PCT(80), LV_SIZE_CONTENT);
 		updateFlowMultiplier(100);
 		m_flowMultiplier.addClickedCallback([this](lv_event_t*) { openModal(&m_extrusionFactorModal); });
 

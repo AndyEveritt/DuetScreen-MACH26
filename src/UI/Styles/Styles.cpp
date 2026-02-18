@@ -251,6 +251,10 @@ namespace UI::Themes
 		s_currentTheme = const_cast<Theme*>(this);
 
 		lv_enable_style_refresh(true);
+		lv_display_t* disp = lv_display_get_default();
+		lv_area_t full_area = {
+			0, 0, lv_display_get_horizontal_resolution(disp) - 1, lv_display_get_vertical_resolution(disp) - 1};
+		lv_inv_area(disp, &full_area);
 		{
 			ZoneScopedN("Refreshing styles");
 			lv_obj_refresh_style(lv_screen_active(), LV_PART_ANY, LV_STYLE_PROP_ANY);

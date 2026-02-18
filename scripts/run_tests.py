@@ -33,6 +33,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 BUILD_ROOT = PROJECT_ROOT / "out" / "build"
 SRC_DIR = PROJECT_ROOT / "src"
 REF_IMGS_DIR = PROJECT_ROOT / "tests" / "ref_imgs"
+CWD_LVGL = PROJECT_ROOT / "libraries" / "lvgl"
+LVGL_REF_DIRS = [
+	CWD_LVGL / "tests" / "ref_imgs",
+	CWD_LVGL / "tests" / "ref_imgs_vg_lite",
+]
+CURRENT_REF_DIRS: List[Path] = [REF_IMGS_DIR]
 COVERAGE_REPORT_DIR = PROJECT_ROOT / "tests" / "report"
 COVERAGE_HTML = COVERAGE_REPORT_DIR / "index.html"
 
@@ -95,6 +101,13 @@ def clean_err_images(ref_dir: Path) -> List[Path]:
 	return removed
 
 
+def clean_err_images_in_dirs(ref_dirs: List[Path]) -> List[Path]:
+	removed: List[Path] = []
+	for d in ref_dirs:
+		removed.extend(clean_err_images(d))
+	return removed
+
+
 def snapshot_existing_refs(ref_dir: Path) -> set[str]:
 	"""Return a snapshot of existing reference image relative paths before tests run.
 
@@ -118,6 +131,13 @@ def snapshot_existing_refs(ref_dir: Path) -> set[str]:
 	return existing
 
 
+def snapshot_existing_refs_in_dirs(ref_dirs: List[Path]) -> set[str]:
+	existing: set[str] = set()
+	for d in ref_dirs:
+		existing.update(snapshot_existing_refs(d))
+	return existing
+
+
 def list_new_refs(ref_dir: Path, before: set[str]) -> List[Path]:
 	"""List reference images (recursively) that did not exist in the snapshot."""
 	created: List[Path] = []
@@ -137,6 +157,13 @@ def list_new_refs(ref_dir: Path, before: set[str]) -> List[Path]:
 	return created
 
 
+def list_new_refs_in_dirs(ref_dirs: List[Path], before: set[str]) -> List[Path]:
+	created: List[Path] = []
+	for d in ref_dirs:
+		created.extend(list_new_refs(d, before))
+	return created
+
+
 def find_build_dir() -> Optional[Path]:
 	# 1) Env override
 	env_override = os.environ.get("DUETSCREEN_BUILD_DIR")
@@ -151,6 +178,24 @@ def find_build_dir() -> Optional[Path]:
 		return build_dir
 
 	return None
+
+
+def get_cmake_preset() -> str:
+	return os.environ.get("DUETSCREEN_CMAKE_PRESET", DEFAULT_CMAKE_PRESET)
+
+
+def run_lvgl_tests(test_filter: Optional[str] = None) -> int:
+	log(f"Running lvgl tests in: {CWD_LVGL}")
+	cmd = [sys.executable, "tests/main.py"]
+	if test_filter:
+		cmd.append(f"--test-suite={test_filter}")
+	try:
+		log(" ".join(cmd))
+		result = subprocess.run(cmd, cwd=str(CWD_LVGL), check=False)
+		return result.returncode
+	except Exception as e:
+		log(f"Failed to run lvgl tests: {e}")
+		return 127
 
 
 def run_tests(build_dir: Path, test_filter: Optional[str] = None) -> int:
@@ -180,12 +225,6 @@ def run_tests(build_dir: Path, test_filter: Optional[str] = None) -> int:
 
 	log("Error: Neither ctest nor the test binary was found/executable.")
 	return 127
-
-
-def get_cmake_preset() -> str:
-	return os.environ.get("DUETSCREEN_CMAKE_PRESET", DEFAULT_CMAKE_PRESET)
-
-
 def configure_cmake(preset: Optional[str] = None) -> bool:
 	"""Run `cmake --preset <preset>` in the project root to configure the build."""
 	preset = preset or get_cmake_preset()
@@ -230,6 +269,25 @@ def list_err_images(ref_dir: Path) -> List[Path]:
 	if not ref_dir.exists():
 		return []
 	return sorted(p for p in ref_dir.rglob("*_err.png") if p.is_file())
+
+
+def list_err_images_in_dirs(ref_dirs: List[Path]) -> List[Path]:
+	items: List[Path] = []
+	for d in ref_dirs:
+		items.extend(list_err_images(d))
+	return sorted(items)
+
+
+def rel_to_active_dirs(p: Path) -> str:
+	for d in CURRENT_REF_DIRS:
+		try:
+			return p.relative_to(d).as_posix()
+		except Exception:
+			continue
+	try:
+		return p.relative_to(REF_IMGS_DIR).as_posix()
+	except Exception:
+		return p.name
 
 
 def load_images_for_compare(ref_path: Path, err_path: Path):
@@ -474,7 +532,8 @@ class UINewRefReviewer:
 
 	def _set_header(self):
 		p = self._current_path()
-		self.header_var.set(f"{self.index + 1}/{len(self.items)}  —  {p.relative_to(REF_IMGS_DIR).as_posix()}")
+		# Show path relative to the active reference dirs when possible
+		self.header_var.set(f"{self.index + 1}/{len(self.items)}  —  {rel_to_active_dirs(p)}")
 
 	def _on_resize(self, event=None):
 		self._render_image_to_label()
@@ -685,7 +744,7 @@ class UIDiffReviewer:
 	def _set_header(self):
 		ref, err = self._current_paths()
 		self.header_var.set(
-			f"{self.index + 1}/{len(self.items)}  —  {err.name}  (ref: {ref.relative_to(REF_IMGS_DIR).as_posix()})")
+			f"{self.index + 1}/{len(self.items)}  —  {err.name}  (ref: {rel_to_active_dirs(ref)})")
 
 	def _on_resize(self, event=None):
 		# Re-render scaled image to fit the available area
@@ -824,6 +883,8 @@ def parse_args(argv: List[str]):
                      help="Generate gcovr HTML coverage report (tests/report/index.html)")
 	parser.add_argument("--skip_configure", action="store_true", help="Skip CMake configure step")
 	parser.add_argument("--skip_build", action="store_true", help="Skip CMake build step")
+	parser.add_argument("--lvgl-tests", action="store_true", dest="lvgl_tests",
+                     help="Run lvgl unit tests (python tests/main.py) and use lvgl ref image dirs")
 	return parser.parse_args(argv)
 
 
@@ -887,48 +948,67 @@ def run_coverage(build_dir: Path) -> int:
 
 def main(argv: List[str]) -> int:
 	args = parse_args(argv)
+
+	# Choose which reference directories to operate on
+	global CURRENT_REF_DIRS
+	if getattr(args, "lvgl_tests", False):
+		CURRENT_REF_DIRS = LVGL_REF_DIRS
+	else:
+		CURRENT_REF_DIRS = [REF_IMGS_DIR]
+
 	log("Step 1/5: Cleaning existing *_err images…")
-	removed = clean_err_images(REF_IMGS_DIR)
+	removed = clean_err_images_in_dirs(CURRENT_REF_DIRS)
 	if removed:
-		log(f"  Removed {len(removed)} file(s) from {REF_IMGS_DIR}")
+		log(f"  Removed {len(removed)} file(s) from {', '.join(str(p) for p in CURRENT_REF_DIRS)}")
 	else:
 		log("  Nothing to remove.")
 
 	log("Step 2/5: Ensure build is configured…")
-	# Try to configure automatically using a preset
-	if args.skip_configure:
-		log("  Skipping configure step as requested.")
+	# For lvgl tests we run the lvgl test runner directly and skip CMake configure/build
+	if getattr(args, "lvgl_tests", False):
+		log("  Running lvgl unit tests; skipping CMake configure/build.")
+		build_dir = None
 	else:
-		if not configure_cmake():
-			log("Failed to configure the project. Aborting.")
+		# Try to configure automatically using a preset
+		if args.skip_configure:
+			log("  Skipping configure step as requested.")
+		else:
+			if not configure_cmake():
+				log("Failed to configure the project. Aborting.")
+				return 2
+
+		build_dir = find_build_dir()
+		if build_dir is None:
+			log("Error: Could not locate a CTest build directory after configure.")
 			return 2
 
-	build_dir = find_build_dir()
-	if build_dir is None:
-		log("Error: Could not locate a CTest build directory after configure.")
-		return 2
-
 	log("Step 3/5: Building tests…")
-	if args.skip_build:
-		log("  Skipping build step as requested.")
+	if getattr(args, "lvgl_tests", False):
+		log("  Skipping build step for lvgl tests (running test script).")
 	else:
-		brc = build_tests(build_dir)
-		if brc != 0:
-			log(f"Build failed with return code {brc}.")
-			return brc
+		if args.skip_build:
+			log("  Skipping build step as requested.")
+		else:
+			brc = build_tests(build_dir)
+			if brc != 0:
+				log(f"Build failed with return code {brc}.")
+				return brc
 
 	# Snapshot existing references before running tests so we can detect newly created ones
-	before_snapshot = snapshot_existing_refs(REF_IMGS_DIR)
+	before_snapshot = snapshot_existing_refs_in_dirs(CURRENT_REF_DIRS)
 
 	log("Step 4/5: Running tests…")
-	rc = run_tests(build_dir, test_filter=args.test_filter)
+	if getattr(args, "lvgl_tests", False):
+		rc = run_lvgl_tests(test_filter=args.test_filter)
+	else:
+		rc = run_tests(build_dir, test_filter=args.test_filter)
 	if rc != 0:
 		log(f"Tests finished with return code {rc} (there may be failures).")
 	else:
 		log("Tests completed successfully.")
 
 	# First, check for any newly created reference images (created because a reference didn't exist)
-	created_refs = list_new_refs(REF_IMGS_DIR, before_snapshot)
+	created_refs = list_new_refs_in_dirs(CURRENT_REF_DIRS, before_snapshot)
 	if created_refs:
 		log("Review newly created reference images…")
 		# Try Pillow/Tk UI first (lazy-loading inside the UI)
@@ -968,7 +1048,7 @@ def main(argv: List[str]) -> int:
 		log("No newly created reference images were detected.")
 
 	log("Step 5/5: Scanning for *_err images…")
-	err_images = list_err_images(REF_IMGS_DIR)
+	err_images = list_err_images_in_dirs(CURRENT_REF_DIRS)
 	if not err_images:
 		log("No *_err images were produced. Visual checks passed.")
 	else:

@@ -34,7 +34,7 @@ namespace UI
 		m_values.setFlexGrow(2);
 		m_values.setMinHeight(LV_SIZE_CONTENT);
 		m_values.setListFlow(LV_FLEX_FLOW_ROW);
-		m_values.getListContainer().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_values.getListContainer().setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 		m_values.getListContainer().setFlexGrow(1);
 		// m_values.getListContainer().setHeight(LV_PCT(100));
 		m_values.getListContainer().setMinHeight(LV_SIZE_CONTENT);
@@ -130,13 +130,22 @@ namespace UI
 		updateValueLabels();
 	}
 
+	void VerticalButtonPanel::setDisabled(bool disabled)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		m_increment.setDisabled(disabled);
+		m_decrement.setDisabled(disabled);
+		m_reset.setDisabled(disabled);
+	}
+
 	std::unique_ptr<Button> VerticalButtonPanel::createValueButton(size_t index, LvObj& parent)
 	{
 		ZoneScoped;
 		auto btn = std::make_unique<Button>(fmt::format("value_btn_{}", index), parent);
 		btn->getLabel().setLongMode(LV_LABEL_LONG_MODE_WRAP);
-		btn->setHeight(LV_PCT(100));
-		// btn->setMinHeight(LV_SIZE_CONTENT); // FIXME: this seems to cause a lvgl layout bug
+		btn->setSize(0, LV_PCT(100));		// width is to allow text wrapping
+		btn->setMinHeight(LV_SIZE_CONTENT); // FIXME: this seems to cause a lvgl layout bug
 		btn->setFlexGrow(1);
 		btn->setCheckable(true);
 		btn->setChecked(index == m_selectedValueIndex);

@@ -121,10 +121,10 @@ namespace UI
 	{
 		ZoneScoped;
 		setFlexFlow(LV_FLEX_FLOW_ROW);
-		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
-		m_extrusionFactor.setHeight(LV_PCT(100));
+		m_extrusionFactor.setHeight(LV_SIZE_CONTENT);
 		m_extrusionFactor.setFlexGrow(1);
 		m_extrusionFactor.setNumberPad(&m_numberPad);
 		m_extrusionFactor.setInputFocusCb(
@@ -136,7 +136,7 @@ namespace UI
 				m_presenter->configureNumberPad(index);
 			});
 
-		m_numberPad.setSize(LV_PCT(50), LV_PCT(100));
+		m_numberPad.setSize(LV_PCT(50), 400);
 
 		m_numberPad.setCloseOnConfirm(false);
 		m_numberPad.addEventCallback([this](lv_event_t*) { closeModal(this); }, LV_EVENT_READY);

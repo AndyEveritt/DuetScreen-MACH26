@@ -56,6 +56,13 @@ namespace UI
 		lv_spangroup_set_span_style(getRootPtr(), static_cast<lv_span_t*>(span), style);
 	}
 
+	void LvSpanGroup::setSpanStyleStatic(LvSpan& span, const lv_style_t* style)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		lv_spangroup_set_span_style_static(getRootPtr(), static_cast<lv_span_t*>(span), style);
+	}
+
 	void LvSpanGroup::setOverflow(lv_span_overflow_t overflow)
 	{
 		ZoneScoped;

@@ -14,6 +14,7 @@
 
 namespace UI::Themes
 {
+	static ColorCtx s_colors = {.primaryHue = 65, .secondaryHue = 115, .chroma = 0.03f, .darkMode = false};
 	static FontConfigSet s_fontConfigs = {
 		.header = {.size = 20, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(800)},
 		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL | LV_FREETYPE_FONT_STYLE_WEIGHT(500)},
@@ -22,6 +23,7 @@ namespace UI::Themes
 	};
 
 	static CustomTheme s_theme("retro",
+							   s_colors,
 							   s_fontConfigs,
 							   [](Theme* theme)
 							   {

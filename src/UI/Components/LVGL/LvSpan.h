@@ -42,7 +42,8 @@ namespace UI
         void setSpanText(LvSpan& span, const std::string& text);
         void setSpanTextStatic(LvSpan& span, const char* text);
         void setSpanStyle(LvSpan& span, const lv_style_t* style);
-        void setOverflow(lv_span_overflow_t overflow);
+		void setSpanStyleStatic(LvSpan& span, const lv_style_t* style);
+		void setOverflow(lv_span_overflow_t overflow);
         void setIndent(int32_t indent);
         void setMaxLines(int32_t lines);
         void setMode(lv_span_mode_t mode);

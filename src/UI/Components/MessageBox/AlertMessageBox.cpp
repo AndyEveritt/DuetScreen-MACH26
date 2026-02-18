@@ -48,7 +48,7 @@ namespace UI
 		// Input Container
 		m_inputCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		static const int32_t inputColDsc[] = {LV_GRID_FR(1), LV_GRID_FR(3), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-		static const int32_t inputRowDsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		static const int32_t inputRowDsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		m_inputCont.setGridDsc(inputColDsc, inputRowDsc);
 		m_inputCont.setGridCell(m_warningText, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1);
 		m_inputCont.setGridCell(m_minText, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);

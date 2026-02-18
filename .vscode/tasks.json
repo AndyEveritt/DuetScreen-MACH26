@@ -6,6 +6,11 @@
 			"type": "promptString",
 			"description": "Test filters"
 		},
+		{
+			"id": "lvgl_test_filters",
+			"type": "promptString",
+			"description": "Test filters"
+		},
 	],
 	"tasks": [
 		{
@@ -53,6 +58,19 @@
 			"type": "shell",
 			"label": "Clang Format",
 			"command": "find src/ -iname '*.h' -o -iname '*.cpp' -print | xargs clang-format -i",
+			"problemMatcher": [],
+			"group": {
+				"kind": "none",
+				"isDefault": false
+			}
+		},
+		{
+			"type": "shell",
+			"label": "LVGL Format",
+			"command": "env/bin/python scripts/code-format.py",
+			"options": {
+				"cwd": "${workspaceFolder}/libraries/lvgl"
+			},
 			"problemMatcher": [],
 			"group": {
 				"kind": "none",
@@ -237,10 +255,46 @@
 			"type": "shell",
 			"command": "./scripts/release_notes.sh",
 			"problemMatcher": []
-		}
-		,
+		},
+		{
+			"type": "cmake",
+			"label": "CMake: configure Tests",
+			"command": "configure",
+			"preset": "Test",
+			"problemMatcher": [],
+			"group": "build"
+		},
 		{
 			"label": "Run Tests",
+			"type": "shell",
+			"command": "env/bin/python scripts/run_tests.py --test_filter='${input:test_filters}' --skip_configure",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run LVGL Tests",
+			"type": "shell",
+			"command": "env/bin/python scripts/run_tests.py --test_filter='${input:lvgl_test_filters}' --lvgl-tests",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"dependsOn": [
+				"LVGL Format"
+			]
+		},
+		{
+			"label": "Configure & Run Tests",
 			"type": "shell",
 			"command": "env/bin/python scripts/run_tests.py --test_filter='${input:test_filters}'",
 			"options": {

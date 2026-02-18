@@ -326,6 +326,15 @@ TEST_F(TestHomeViewWithData, Dashboard)
 	view.getDashboard().getToolList().getTool(0)->getHeater(0)->getChildByName("active")->sendEvent(LV_EVENT_CLICKED,
 																									nullptr);
 	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/tool_list_numberpad.png");
+
+	UI::closeAllModals();
+
+	/* Test all themes */
+	for (auto& [name, theme] : UI::Themes::getThemes())
+	{
+		theme->setThemeActive();
+		EXPECT_EQUAL_SCREENSHOT(fmt::format("home_view/dashboard/theme_{:s}.png", theme->getName()).c_str());
+	}
 }
 
 TEST_F(TestHomeViewWithData, SimplePrinterDashboard)

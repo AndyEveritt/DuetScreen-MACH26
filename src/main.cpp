@@ -54,7 +54,6 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-void lvgl_log_cb(lv_log_level_t level, const char* buf);
 static lv_display_t* hal_init(int32_t w, int32_t h);
 static void http_test();
 static int usb_test();
@@ -102,10 +101,7 @@ int main(int argc, char** argv)
 	// deadlocks can occur
 	DeadlockDetector::getInstance().allowThreadToTakeMultipleLocks(Log::GetThreadId(), true);
 
-/*Initialize LVGL*/
-#if LV_USE_LOG
-	lv_log_register_print_cb(lvgl_log_cb);
-#endif
+	/*Initialize LVGL*/
 	{
 		ZoneScopedN("FontManager::init");
 		UI::FontManager::init();
@@ -352,28 +348,6 @@ int main(int argc, char** argv)
 /**********************
  *   STATIC FUNCTIONS
  **********************/
-
-void lvgl_log_cb(lv_log_level_t level, const char* buf)
-{
-	ZoneScoped;
-	switch (level)
-	{
-	case LV_LOG_LEVEL_TRACE:
-		LOG_VERBOSE("{:s}", buf);
-		break;
-	case LV_LOG_LEVEL_INFO:
-		LOG_INFO("{:s}", buf);
-		break;
-	case LV_LOG_LEVEL_WARN:
-		LOG_WARN("{:s}", buf);
-		break;
-	case LV_LOG_LEVEL_ERROR:
-		LOG_ERROR("{:s}", buf);
-		break;
-	default:
-		break;
-	}
-}
 
 static const char* getenv_default(const char* name, const char* dflt)
 {

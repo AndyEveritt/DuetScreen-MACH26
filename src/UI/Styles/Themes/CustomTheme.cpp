@@ -18,21 +18,27 @@
 namespace UI::Themes
 {
 	CustomTheme::CustomTheme(std::string_view name,
+							 ColorCtx defaultColors,
 							 FontConfigSet fontConfigSet,
 							 std::function<void(Theme* theme)> styleOverrides)
-		: DefaultTheme(name, ThemeColors(), fontConfigSet, styleOverrides)
+		: DefaultTheme(name, createThemeColors(defaultColors), fontConfigSet, styleOverrides)
+		, m_defaultColors(defaultColors)
 		, m_storageKeys{
-			  .primaryHue = {fmt::format(PRIMARY_HUE_KEY, name), 245},
-			  .secondaryHue = {fmt::format(SECONDARY_HUE_KEY, name), 50},
-			  .chroma = {fmt::format(CHROMA_KEY, name), 0.02f},
-			  .darkMode = {fmt::format(DARK_MODE_KEY, name), true},
+			  .primaryHue = {fmt::format(PRIMARY_HUE_KEY, name), defaultColors.primaryHue},
+			  .secondaryHue = {fmt::format(SECONDARY_HUE_KEY, name), defaultColors.secondaryHue},
+			  .chroma = {fmt::format(CHROMA_KEY, name), defaultColors.chroma},
+			  .darkMode = {fmt::format(DARK_MODE_KEY, name), defaultColors.darkMode},
 		  }
 	{
 	}
 
 	void CustomTheme::setColors(uint16_t primaryHue, uint16_t secondaryHue, float chroma, bool darkMode)
 	{
-		auto colors = createThemeColors(primaryHue, secondaryHue, chroma, darkMode);
+		auto colors = createThemeColors({.primaryHue = primaryHue,
+										 .secondaryHue = secondaryHue,
+										 .chroma = chroma,
+										 .darkMode = darkMode,
+										 .customizer = m_defaultColors.customizer});
 		StorageHelper::setData(m_storageKeys.primaryHue, primaryHue);
 		StorageHelper::setData(m_storageKeys.secondaryHue, secondaryHue);
 		StorageHelper::setData(m_storageKeys.chroma, chroma);
@@ -43,6 +49,12 @@ namespace UI::Themes
 		m_darkMode = darkMode;
 
 		updateColors(colors);
+	}
+
+	void CustomTheme::resetToDefaults()
+	{
+		setColors(
+			m_defaultColors.primaryHue, m_defaultColors.secondaryHue, m_defaultColors.chroma, m_defaultColors.darkMode);
 	}
 
 	void CustomTheme::onInit()

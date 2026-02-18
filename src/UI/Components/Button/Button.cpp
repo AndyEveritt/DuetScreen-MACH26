@@ -57,69 +57,53 @@ namespace UI
 		m_icon.setMinWidth(25);
 
 		addEventCallback(
-			[](lv_event_t* e)
+			[this](lv_event_t*)
 			{
 				ZoneScopedN("Button label resize callback");
 				// Update the label width
-				auto& btn = *static_cast<Button*>(lv_event_get_user_data(e));
-				LvObj* parent = btn.getParent();
 
-				if (!parent)
+				const int32_t width = lv_obj_get_style_width(getRootPtr(), LV_PART_MAIN);
+				const int32_t min_width = lv_obj_get_style_min_width(getRootPtr(), LV_PART_MAIN);
+				const bool w_layout = lv_obj_is_width_layout_positioned(getRootPtr());
+
+				// if (lv_obj_is_style_any_width_content(getRootPtr()))
+				if ((width == LV_SIZE_CONTENT && !w_layout) || min_width == LV_SIZE_CONTENT)
 				{
-					LOG_DBG("Button has no parent, cannot adjust label size");
-					return;
-				}
-
-				// while (parent != nullptr)
-				// {
-
-				// 	if (!(LV_COORD_IS_PCT(parent_width) && parent_min_width == LV_SIZE_CONTENT))
-				// 	{
-				// 		can_set_full_width = true;
-				// 		break;
-				// 	}
-
-				// 	parent = lv_obj_get_parent(parent);
-				// }
-
-				lv_layout_t parent_layout =
-					static_cast<lv_layout_t>(lv_obj_get_style_layout(parent->getRootPtr(), LV_PART_MAIN));
-				lv_flex_flow_t parent_flex_flow = lv_obj_get_style_flex_flow(parent->getRootPtr(), LV_PART_MAIN);
-#if 0
-				int32_t parent_width = lv_obj_get_style_width(parent->getRootPtr(), LV_PART_MAIN);
-				int32_t parent_height = lv_obj_get_style_height(parent->getRootPtr(), LV_PART_MAIN);
-				int32_t parent_min_width = lv_obj_get_style_min_width(parent->getRootPtr(), LV_PART_MAIN);
-				int32_t parent_min_height = lv_obj_get_style_min_height(parent->getRootPtr(), LV_PART_MAIN);
-#endif
-
-				uint8_t flex_grow = lv_obj_get_style_flex_grow(btn.getRootPtr(), LV_PART_MAIN);
-				int32_t width = lv_obj_get_style_width(btn.getRootPtr(), LV_PART_MAIN);
-				int32_t height = lv_obj_get_style_height(btn.getRootPtr(), LV_PART_MAIN);
-				int32_t min_width = lv_obj_get_style_min_width(btn.getRootPtr(), LV_PART_MAIN);
-				int32_t min_height = lv_obj_get_style_min_height(btn.getRootPtr(), LV_PART_MAIN);
-
-				if ((width != LV_SIZE_CONTENT && min_width != LV_SIZE_CONTENT) ||
-					(parent_layout == LV_LAYOUT_FLEX && parent_flex_flow == LV_FLEX_FLOW_ROW && flex_grow > 0))
-				{
-					btn.m_label.setWidth(LV_PCT(100));
+					m_label.setWidth(LV_SIZE_CONTENT);
 				}
 				else
 				{
-					btn.m_label.setWidth(LV_SIZE_CONTENT);
+					m_label.setWidth(LV_PCT(100));
 				}
 
-				if ((height != LV_SIZE_CONTENT && min_height != LV_SIZE_CONTENT) ||
-					(parent_layout == LV_LAYOUT_FLEX && parent_flex_flow == LV_FLEX_FLOW_COLUMN && flex_grow > 0))
+				if (lv_obj_is_style_any_height_content(getRootPtr()) &&
+					!lv_obj_is_height_layout_positioned(getRootPtr()))
 				{
-					btn.m_label.setMaxHeight(LV_PCT(100));
+					m_label.setMaxHeight(LV_SIZE_CONTENT);
 				}
 				else
 				{
-					btn.m_label.setMaxHeight(LV_SIZE_CONTENT);
+					m_label.setMaxHeight(LV_PCT(100));
 				}
 			},
-			static_cast<lv_event_code_t>(LV_EVENT_STYLE_CHANGED),
-			this);
+			static_cast<lv_event_code_t>(LV_EVENT_STYLE_CHANGED | LV_EVENT_SIZE_CHANGED));
+
+		addEventCallback(
+			[this](lv_event_t*)
+			{
+				const auto& actionStyle = Themes::getLvglStyles().actionBtn;
+				lv_style_value_t v;
+				const bool hasRecolor = actionStyle.getProp(LV_STYLE_RECOLOR, &v) == LV_STYLE_RES_FOUND;
+				if (hasStyle(actionStyle) && hasRecolor)
+				{
+					m_icon.setLocalStyleProp(LV_STYLE_RECOLOR, v);
+				}
+				else
+				{
+					m_icon.removeLocalStyleProp(LV_STYLE_RECOLOR);
+				}
+			},
+			LV_EVENT_STYLE_CHANGED);
 
 		m_icon.addEventCallback([this](lv_event_t*) { updateIconVisibility(); }, LV_EVENT_REFRESH);
 	}

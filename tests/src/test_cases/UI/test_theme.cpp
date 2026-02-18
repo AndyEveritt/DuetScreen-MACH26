@@ -68,7 +68,7 @@ TEST_F(TestTheme, DefaultTheme)
 		.subdued = {.size = 12, .style = LV_FREETYPE_FONT_STYLE_NORMAL},
 	};
 
-	Themes::CustomTheme theme("test_theme", fontConfigs, [](Themes::Theme* theme) {});
+	Themes::CustomTheme theme("test_theme", Themes::ColorCtx{}, fontConfigs, [](Themes::Theme* theme) {});
 	theme.init();
 	theme.setThemeActive();
 

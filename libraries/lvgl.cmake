@@ -11,6 +11,17 @@ set(LV_CONF_PATH ${PROJECT_SOURCE_DIR}/lv_conf.h
 
 # Add LVGL subdirectory
 add_subdirectory(${LIBRARIES_DIR}/lvgl)
+
+# Run LVGL code formatter before building
+find_program(LV_PYTHON_EXECUTABLE NAMES python3 python REQUIRED)
+add_custom_target(lvgl_format
+    COMMAND ${LV_PYTHON_EXECUTABLE} ${LIBRARIES_DIR}/lvgl/scripts/code-format.py
+    WORKING_DIRECTORY ${LIBRARIES_DIR}/lvgl
+    COMMENT "Running LVGL code formatter..."
+    VERBATIM
+)
+add_dependencies(lvgl lvgl_format)
+
 target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}
                                        ${SDL2_INCLUDE_DIRS}
                                        ${LIBRARIES_DIR}
@@ -32,7 +43,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(lvgl PUBLIC
                               # LV_USE_ASSERT_OBJ=1 # significantly increases unit test time and decreases frame rate
                               LV_USE_LOG=1
-                              LV_LOG_LEVEL=LV_LOG_LEVEL_WARN
+                              LV_LOG_LEVEL=LV_LOG_LEVEL_TRACE
                               LV_LOG_PRINTF=1
                               LV_USE_SYSMON=1
                               LV_USE_PERF_MONITOR=1

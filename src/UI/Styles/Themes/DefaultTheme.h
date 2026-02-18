@@ -37,11 +37,17 @@ namespace UI::Themes
 		Color error;
 	};
 
-	ThemeColors createThemeColors(uint16_t primaryHue,
-								  uint16_t secondaryHue,
-								  float chroma,
-								  bool darkMode,
-								  std::function<void(ThemeColors& colors)> customizer = nullptr);
+	struct ColorCtx
+	{
+		uint16_t primaryHue;
+		uint16_t secondaryHue;
+		float chroma;
+		bool darkMode;
+
+		std::function<void(ThemeColors& colors, const ColorCtx& base)> customizer = nullptr;
+	};
+
+	ThemeColors createThemeColors(ColorCtx base);
 
 	class DefaultTheme : public Theme
 	{

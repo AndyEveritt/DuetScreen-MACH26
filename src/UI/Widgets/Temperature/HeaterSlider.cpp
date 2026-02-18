@@ -152,6 +152,12 @@ namespace UI
 		updateLabelPosition(m_standbyTemperature, m_standbyTempValue);
 	}
 
+	void HeaterSlider::setDisabled(bool disabled)
+	{
+		ZoneScoped;
+		m_heaterName.setDisabled(disabled);
+	}
+
 	void HeaterSlider::setNumberPad(ModalNumberPad* numberPad)
 	{
 		ZoneScoped;

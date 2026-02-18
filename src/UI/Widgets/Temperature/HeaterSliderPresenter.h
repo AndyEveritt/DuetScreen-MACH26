@@ -38,11 +38,13 @@ namespace UI
 
 		// Observers
 		void newHeaterData();
+		void newStatus(OM::PrinterStatus status);
 
 	  protected:
 		void onInit() override
 		{
 			registerEventListener<EventType::HeaterData>(this, &HeaterSliderPresenter::newHeaterData);
+			registerEventListener<EventType::Status>(this, &HeaterSliderPresenter::newStatus);
 		}
 		void onActivate() override;
 		void onDeactivate() override {}

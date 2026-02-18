@@ -7,6 +7,7 @@
 
 #include "ToolControlPresenter.h"
 #include "Debug.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "ToolControl.h"
 #include "i18n/i18n.h"
 
@@ -20,6 +21,7 @@ namespace UI
 			setToolIndex(m_toolSlot);
 		}
 		newToolData();
+		newStatus(OM::GetStatus());
 	}
 
 	void ToolControlPresenter::onDeactivate()
@@ -89,35 +91,30 @@ namespace UI
 		m_view->setToolState(m_tool->status, _(fmt::format("temperature.status.{:s}", m_tool->GetStatusStr())));
 
 		auto& extrusionFactors = m_view->getExtrusionFactors();
-		extrusionFactors.setItemCount(
-			m_tool->GetExtruderCount(),
-			[&](size_t index, LvObj& parent)
-			{
-				auto btn = std::make_unique<Button>(fmt::format("extrusion_factor_{}", index), parent);
-				btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
-				//   btn->setSize(LV_SIZE_CONTENT, LV_PCT(100));
-				btn->addClickedCallback(
-					[](lv_event_t* e)
-					{
-						auto& presenter = *(static_cast<ToolControlPresenter*>(lv_event_get_user_data(e)));
-						auto control = presenter.getView();
-						auto btn = LvObj::fromPtr(lv_event_get_target_obj(e));
-						size_t extruderIndex = reinterpret_cast<uintptr_t>(btn->getUserData());
+		extrusionFactors.setItemCount(m_tool->GetExtruderCount(),
+									  [&](size_t index, LvObj& parent)
+									  {
+										  auto btn = std::make_unique<Button>(fmt::format("extrusion_factor_{}", index),
+																			  parent);
+										  btn->setUserData(reinterpret_cast<void*>(static_cast<uintptr_t>(index)));
+										  //   btn->setSize(LV_SIZE_CONTENT, LV_PCT(100));
+										  btn->addClickedCallback(
+											  [this](lv_event_t*)
+											  {
+												  auto control = getView();
 
-						auto modal = control->getExtrusionModal();
-						if (modal == nullptr)
-						{
-							LOG_DBG("No extrusion modal set for tool control");
-							return;
-						}
+												  auto modal = control->getExtrusionModal();
+												  if (modal == nullptr)
+												  {
+													  LOG_DBG("No extrusion modal set for tool control");
+													  return;
+												  }
 
-						modal->getExtrusionFactor().getPresenter()->setTool(presenter.m_tool);
-						openModal(modal);
-						modal->getPresenter()->configureNumberPad(extruderIndex);
-					},
-					this);
-				return btn;
-			});
+												  modal->getExtrusionFactor().getPresenter()->setTool(m_tool);
+												  openModal(modal);
+											  });
+										  return btn;
+									  });
 		extrusionFactors.iterateListItems(
 			[&](size_t index, Button& btn)
 			{
@@ -161,5 +158,11 @@ namespace UI
 		LOG_VERBOSE("Updating tool heaters for tool index {:d}", m_tool->index);
 		m_view->getHeaters().clear();
 		newToolData();
+	}
+
+	void ToolControlPresenter::newStatus(OM::PrinterStatus status)
+	{
+		ZoneScoped;
+		m_view->setDisabled(OM::IsPrintingStatus(status) && status != OM::PrinterStatus::paused);
 	}
 } // namespace UI

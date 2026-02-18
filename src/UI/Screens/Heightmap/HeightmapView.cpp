@@ -222,8 +222,11 @@ namespace UI
 		m_btnCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_btnCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_btnCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-		m_trueBedLevel.setHeight(LV_PCT(100));
-		m_meshBedLevel.setHeight(LV_PCT(100));
+
+		/* Need to set the width to override default LV_SIZE_CONTENT which prevents text wrapping. Value doesn't matter
+		 * since it uses flex grow */
+		m_trueBedLevel.setSize(0, LV_PCT(100));
+		m_meshBedLevel.setSize(0, LV_PCT(100));
 		m_trueBedLevel.setMinHeight(LV_SIZE_CONTENT);
 		m_meshBedLevel.setMinHeight(LV_SIZE_CONTENT);
 		m_trueBedLevel.setFlexGrow(1);

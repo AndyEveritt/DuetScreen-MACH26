@@ -42,6 +42,17 @@ namespace UI::Themes
 
 		void init();
 
+		void setProp(lv_style_prop_t prop, lv_style_value_t value) { lv_style_set_prop(&style, prop, value); }
+		lv_style_res_t getProp(lv_style_prop_t prop, lv_style_value_t* value) const
+		{
+			return lv_style_get_prop(&style, prop, value);
+		}
+		bool hasProp(lv_style_prop_t prop) const
+		{
+			lv_style_value_t v;
+			return getProp(prop, &v) == LV_STYLE_RES_FOUND;
+		}
+
 		operator lv_style_t*() { return &style; }
 		operator const lv_style_t*() const { return &style; }
 

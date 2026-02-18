@@ -26,49 +26,45 @@ namespace UI::Themes
 
 	static constexpr float s_minColorChroma = 0.1f;
 
-	ThemeColors createThemeColors(uint16_t primaryHue,
-								  uint16_t secondaryHue,
-								  float chroma,
-								  bool darkMode,
-								  std::function<void(ThemeColors& colors)> customizer)
+	ThemeColors createThemeColors(ColorCtx ctx)
 	{
 		ThemeColors colors;
-		primaryHue = std::clamp<uint16_t>(primaryHue, 0u, 360u);
-		secondaryHue = std::clamp<uint16_t>(secondaryHue, 0, 360u);
-		chroma = std::clamp<float>(chroma, 0.0f, 0.2f);
+		ctx.primaryHue = std::clamp<uint16_t>(ctx.primaryHue, 0u, 360u);
+		ctx.secondaryHue = std::clamp<uint16_t>(ctx.secondaryHue, 0, 360u);
+		ctx.chroma = std::clamp<float>(ctx.chroma, 0.0f, 0.2f);
 
-		const float bgChroma = chroma / 2;
-		const float colorChroma = std::max(s_minColorChroma, chroma);
+		const float bgChroma = ctx.chroma / 2;
+		const float colorChroma = std::max(s_minColorChroma, ctx.chroma);
 		static float mutedDiff = 0.2f;
 
-		colors.bg_dark = Color(darkMode ? 0.1f : 0.92f, bgChroma, primaryHue);
-		colors.bg = Color(darkMode ? 0.15f : 0.96f, bgChroma, primaryHue);
-		colors.bg_light = Color(darkMode ? 0.25f : 1.0f, bgChroma, primaryHue);
+		colors.bg_dark = Color(ctx.darkMode ? 0.1f : 0.92f, bgChroma, ctx.primaryHue);
+		colors.bg = Color(ctx.darkMode ? 0.15f : 0.96f, bgChroma, ctx.primaryHue);
+		colors.bg_light = Color(ctx.darkMode ? 0.25f : 1.0f, bgChroma, ctx.primaryHue);
 
-		const float colorL = darkMode ? 0.45f : 0.7f;
+		const float colorL = ctx.darkMode ? 0.45f : 0.7f;
 		const float mutedL = colorL - mutedDiff;
 
-		colors.primary = Color(colorL, colorChroma, primaryHue);
-		colors.primary_muted = Color(mutedL, colorChroma, primaryHue);
-		colors.secondary = Color(colorL, colorChroma, secondaryHue);
-		colors.secondary_muted = Color(mutedL, colorChroma, secondaryHue);
+		colors.primary = Color(colorL, colorChroma, ctx.primaryHue);
+		colors.primary_muted = Color(mutedL, colorChroma, ctx.primaryHue);
+		colors.secondary = Color(colorL, colorChroma, ctx.secondaryHue);
+		colors.secondary_muted = Color(mutedL, colorChroma, ctx.secondaryHue);
 
-		colors.text = Color(darkMode ? 0.96f : 0.15f, chroma, primaryHue);
-		colors.text_muted = Color(darkMode ? 0.82f : 0.25f, chroma, primaryHue);
-		colors.text_header = Color(darkMode ? 1.0f : 0.0f, chroma, primaryHue);
+		colors.text = Color(ctx.darkMode ? 0.96f : 0.15f, ctx.chroma, ctx.primaryHue);
+		colors.text_muted = Color(ctx.darkMode ? 0.82f : 0.25f, ctx.chroma, ctx.primaryHue);
+		colors.text_header = Color(ctx.darkMode ? 1.0f : 0.0f, ctx.chroma, ctx.primaryHue);
 
-		colors.border = Color(darkMode ? 0.40f : 0.6f, chroma, primaryHue);
-		colors.border_muted = Color(darkMode ? 0.30f : 0.7f, chroma, primaryHue);
-		colors.highlight = Color(darkMode ? 0.70f : 1.0f, chroma, primaryHue);
-		colors.shadow = Color(darkMode ? 0.2f : 0.4f, bgChroma, primaryHue);
+		colors.border = Color(ctx.darkMode ? 0.40f : 0.6f, ctx.chroma, ctx.primaryHue);
+		colors.border_muted = Color(ctx.darkMode ? 0.30f : 0.7f, ctx.chroma, ctx.primaryHue);
+		colors.highlight = Color(ctx.darkMode ? 0.70f : 1.0f, ctx.chroma, ctx.primaryHue);
+		colors.shadow = Color(ctx.darkMode ? 0.2f : 0.4f, bgChroma, ctx.primaryHue);
 
-		colors.success = Color(darkMode ? 0.6f : 0.8f, std::max(0.15f, chroma), 144);
-		colors.warning = Color(darkMode ? 0.75f : 0.85f, std::max(0.17f, chroma), 78);
-		colors.error = Color(darkMode ? 0.6f : 0.8f, std::max(0.2f, chroma), 27);
+		colors.success = Color(ctx.darkMode ? 0.6f : 0.8f, std::max(0.15f, ctx.chroma), 144);
+		colors.warning = Color(ctx.darkMode ? 0.75f : 0.85f, std::max(0.17f, ctx.chroma), 78);
+		colors.error = Color(ctx.darkMode ? 0.6f : 0.8f, std::max(0.2f, ctx.chroma), 27);
 
-		if (customizer)
+		if (ctx.customizer)
 		{
-			customizer(colors);
+			ctx.customizer(colors, ctx);
 		}
 		return colors;
 	}

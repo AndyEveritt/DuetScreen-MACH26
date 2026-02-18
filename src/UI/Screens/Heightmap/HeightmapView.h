@@ -78,6 +78,7 @@ namespace UI
 		void addMeasurementPoint(float x, float y);
 		void clear();
 
+		auto& getControlButtons() { return m_btnCont; }
 		Heatmap& getHeightmap() { return m_heightmap; }
 
 		/* Statistics */

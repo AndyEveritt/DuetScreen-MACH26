@@ -14,6 +14,7 @@
 
 namespace UI::Themes
 {
+	static ColorCtx s_colors = {.primaryHue = 250, .secondaryHue = 180, .chroma = 0.08f, .darkMode = false};
 	static FontConfigSet s_fontConfigs = {
 		.header = {.size = 18, .style = LV_FREETYPE_FONT_STYLE_BOLD | LV_FREETYPE_FONT_STYLE_WEIGHT(600)},
 		.normal = {.size = 14, .style = LV_FREETYPE_FONT_STYLE_NORMAL | LV_FREETYPE_FONT_STYLE_WEIGHT(400)},
@@ -22,6 +23,7 @@ namespace UI::Themes
 	};
 
 	static CustomTheme s_theme("soft",
+							   s_colors,
 							   s_fontConfigs,
 							   [](Theme* theme)
 							   {

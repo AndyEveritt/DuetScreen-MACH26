@@ -125,7 +125,7 @@ jobs:
           if [ "${BUILDROOT_TAG}" = "master" ]; then
             echo "Buildroot: master@${BUILDROOT_SHA} (commit: https://github.com/Duet3D/buildroot-duetscreen/commit/${BUILDROOT_SHA})" | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
           else
-            echo "Buildroot: [${BUILDROOT_TAG}](https://github.com/Duet3D/buildroot-duetscreen/tree/${BUILDROOT_TAG}) (commit: [${BUILDROOT_SHA}](https://github.com/Duet3D/buildroot-duetscreen/commit/${BUILDROOT_SHA}))" | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
+            echo "Buildroot: [${BUILDROOT_TAG}](https://github.com/Duet3D/buildroot-duetscreen/releases/tag/${BUILDROOT_TAG}) (commit: [${BUILDROOT_SHA}](https://github.com/Duet3D/buildroot-duetscreen/commit/${BUILDROOT_SHA}))" | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
           fi
           echo "" | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT
           ./scripts/release_notes.sh | tee -a $GITHUB_ENV >> $GITHUB_OUTPUT

@@ -29,7 +29,6 @@ namespace UI
 		m_buttonPanel.setWidth(LV_PCT(100));
 		// m_buttonPanel.setMinWidth(LV_SIZE_CONTENT);
 
-		setBabyStepValue(0);
 		m_buttonPanel.setIncrementIcon("babystep_increment.png");
 		m_buttonPanel.setDecrementIcon("babystep_decrement.png");
 		m_buttonPanel.setValueLabelFmt("{:g} mm");

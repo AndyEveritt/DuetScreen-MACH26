@@ -31,7 +31,7 @@ namespace UI
 		size_t getActiveTabIndex() const { return m_currentTabIndex; };
 
 		void setActiveTab(size_t index);
-		void setTabBarPosition(lv_dir_t dir, bool outer = false);
+		void setTabBarPosition(lv_dir_t dir);
 
 		bool disableTab(size_t index, bool disable);
 

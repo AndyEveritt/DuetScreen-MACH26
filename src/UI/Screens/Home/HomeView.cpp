@@ -87,7 +87,7 @@ namespace UI
 		m_updatePrompt.setMaxHeight(LV_PCT(70));
 
 		// Extrusion Factor Modal
-		m_extrusionFactorModal.setSize(LV_PCT(80), LV_PCT(70));
+		m_extrusionFactorModal.setSize(LV_PCT(80), LV_SIZE_CONTENT);
 
 		// Keyboard
 		showKeyboard(false);
@@ -128,8 +128,6 @@ namespace UI
 		{
 			LOG_INFO("Initialising HomeView");
 			// Disable global style refresh during the entire HomeView construction.
-			// The counter-based mechanism is nesting-safe, so LVGL's internal
-			// disable/enable in lv_obj_class_init_obj won't interfere.
 			lv_enable_style_refresh(false);
 		}
 

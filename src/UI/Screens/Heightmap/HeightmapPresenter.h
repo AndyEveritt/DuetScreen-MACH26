@@ -40,6 +40,7 @@ namespace UI
 		void newCompensationFile();
 		void newDirectories();
 		void newAxesData();
+		void newStatus(OM::PrinterStatus status);
 
 	  private:
 		void onActivate() override;
@@ -48,6 +49,7 @@ namespace UI
 			registerEventListener<EventType::CompensationFile>(this, &HeightmapPresenter::newCompensationFile);
 			registerEventListener<EventType::Directories>(this, &HeightmapPresenter::newDirectories);
 			registerEventListener<EventType::AxesData>(this, &HeightmapPresenter::newAxesData);
+			registerEventListener<EventType::Status>(this, &HeightmapPresenter::newStatus);
 		}
 		void onConnect() override;
 		void onDisconnect() override;

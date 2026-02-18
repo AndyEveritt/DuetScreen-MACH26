@@ -70,6 +70,10 @@ using std::vector;
 
 namespace Log
 {
+#if LV_USE_LOG
+	static void lvgl_log_cb(lv_log_level_t level, const char* buf);
+#endif
+
 	template <typename Mutex>
 	class UiSink : public spdlog::sinks::base_sink<Mutex>
 	{
@@ -207,6 +211,11 @@ namespace Log
 			EnableUiLogging(StorageHelper::getData(ID_ENABLE_UI_LOGGING));
 			spdlog::flush_every(std::chrono::seconds(1));
 			spdlog::enable_backtrace(100);
+
+#if LV_USE_LOG
+			lv_log_register_print_cb(lvgl_log_cb);
+#endif
+
 			LOG_INFO("Logger initialized");
 
 #if defined(TRACY_ENABLE) && TRACY_ENABLE
@@ -314,4 +323,31 @@ namespace Log
 		ZoneScoped;
 		return s_logger;
 	}
+
+#if LV_USE_LOG
+	static void lvgl_log_cb(lv_log_level_t level, const char* buf)
+	{
+		ZoneScoped;
+		switch (level)
+		{
+		case LV_LOG_LEVEL_TRACE:
+			LOG_VERBOSE("{:s}", buf);
+			break;
+		case LV_LOG_LEVEL_INFO:
+			LOG_DBG("{:s}", buf);
+			break;
+		case LV_LOG_LEVEL_USER:
+			LOG_INFO("{:s}", buf);
+			break;
+		case LV_LOG_LEVEL_WARN:
+			LOG_WARN("{:s}", buf);
+			break;
+		case LV_LOG_LEVEL_ERROR:
+			LOG_ERROR("{:s}", buf);
+			break;
+		default:
+			break;
+		}
+	}
+#endif
 } // namespace Log

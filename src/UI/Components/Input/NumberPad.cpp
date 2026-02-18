@@ -53,8 +53,6 @@ namespace UI
 		// setHeader(""); // Set an empty header by default
 
 		// Text Entry Layout
-		m_textCont.addStyle(Themes::getLvglStyles().no_border);
-		m_textBox.addStyle(Themes::getLvglStyles().no_border);
 		m_textCont.addStyle(Themes::getLvglStyles().pad_small);
 		m_textCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 		m_textBox.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
@@ -275,7 +273,7 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		lv_obj_t* obj = lv_event_get_target_obj(e);
-		TextBox& ta = *(TextBox*)lv_event_get_user_data(e);
+		LvTextarea& ta = *(LvTextarea*)lv_event_get_user_data(e);
 		NumberPad& np = *(NumberPad*)ta.getUserData();
 
 		uint32_t btn_id = lv_buttonmatrix_get_selected_button(obj);

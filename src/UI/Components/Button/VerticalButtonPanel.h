@@ -26,6 +26,7 @@ namespace UI
 		void setResetLabel(std::string_view label);
 		void setValueLabelFmt(std::string_view fmt);
 		void setIncrementValues(std::span<const float> values);
+		void setDisabled(bool disabled);
 
 		float getSelectedValue() const;
 		void setSelectedValueIndex(size_t index);

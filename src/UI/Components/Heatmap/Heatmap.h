@@ -66,11 +66,8 @@ namespace UI
 		void init();
 		float normalizeValue(float value) const;
 
-		int32_t m_columnDsc[4];
-		int32_t m_rowDsc[3];
-
-		Canvas m_canvas;
-		Canvas m_colorBar;
+		Canvas m_canvas{"canvas", getRoot()};
+		Canvas m_colorBar{"color_bar", getRoot()};
 
 		float m_minValue = -1.0f;
 		float m_maxValue = 1.0f;

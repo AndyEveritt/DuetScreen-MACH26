@@ -10,6 +10,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/Axis.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "utils/UnitSystem.h"
 
 namespace UI
@@ -30,12 +31,15 @@ namespace UI
 	{
 		ZoneScoped;
 		auto axis = OM::Move::GetAxisByLetter('Z');
-		if (axis == nullptr)
-		{
-			return;
-		}
+		const auto val = axis ? axis->babystep : 0.0f;
+		getView()->setDisabled(!axis || !OM::IsConnected());
+		getView()->setBabyStepValue(val);
+	}
 
-		m_view->setBabyStepValue(axis->babystep);
+	void BabyStepPresenter::onDisconnect()
+	{
+		ZoneScoped;
+		getView()->setDisabled(true);
 	}
 
 } // namespace UI

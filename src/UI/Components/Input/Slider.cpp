@@ -368,7 +368,7 @@ namespace UI
 		/* Hack to fix this issue
 		 * https://github.com/Duet3D/DuetScreen/blob/8353026c07a67cc76d88f99729db56378fcf1890/tests/ref_imgs/home_view/control_view/fan.png
 		 */
-		lv_obj_set_width(m_input.getLabel(), LV_PCT(100));
-		lv_obj_set_width(m_input.getLabel(), LV_SIZE_CONTENT);
+		// lv_obj_set_width(m_input.getLabel(), LV_PCT(100));
+		// lv_obj_set_width(m_input.getLabel(), LV_SIZE_CONTENT);
 	}
 } // namespace UI
