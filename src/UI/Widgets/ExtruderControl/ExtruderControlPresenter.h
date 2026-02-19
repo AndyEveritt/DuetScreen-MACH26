@@ -27,6 +27,7 @@ namespace UI
 
 		// Observers
 		void newToolData();
+		void newStatus(OM::PrinterStatus status);
 
 	  protected:
 		void onInit() override;

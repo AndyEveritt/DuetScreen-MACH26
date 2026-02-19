@@ -9,6 +9,7 @@
 #include "Configuration.h"
 #include "Debug.h"
 #include "ObjectModel/BedOrChamber.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Tool.h"
 #include "ToolList.h"
 #include "UI/Core/Model.h"
@@ -154,10 +155,21 @@ namespace UI
 		}
 	}
 
+	void ToolListPresenter::newStatus(OM::PrinterStatus status)
+	{
+		ZoneScoped;
+		const bool disabled = OM::IsPrintingStatus(status) && status != OM::PrinterStatus::paused;
+		getView()->getBeds().iterateListItems([disabled](size_t, ToolListBedChamber& item)
+											  { item.getHeater().setDisabled(disabled); });
+		getView()->getChambers().iterateListItems([disabled](size_t, ToolListBedChamber& item)
+												  { item.getHeater().setDisabled(disabled); });
+	}
+
 	void ToolListPresenter::onActivate()
 	{
 		ZoneScoped;
 		update();
+		newStatus(OM::GetStatus());
 	}
 
 	void ToolListPresenter::onDeactivate() {}
@@ -265,6 +277,12 @@ namespace UI
 		}
 	}
 
+	void ToolListToolPresenter::newStatus(OM::PrinterStatus status)
+	{
+		ZoneScoped;
+		getView()->setDisabled(OM::IsPrintingStatus(status) && status != OM::PrinterStatus::paused);
+	}
+
 	void ToolListToolPresenter::toggleState()
 	{
 		ZoneScoped;
@@ -280,5 +298,6 @@ namespace UI
 	{
 		ZoneScoped;
 		update();
+		newStatus(OM::GetStatus());
 	}
 } // namespace UI

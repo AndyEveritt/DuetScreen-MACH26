@@ -22,6 +22,7 @@ namespace UI
 		void newAxesData();
 		void newResponse(const ResponseType type, const std::string& response);
 		void newAlertData(const OM::Alert& alert);
+		void newStatus(OM::PrinterStatus status);
 
 	  protected:
 		void onInit() override;

@@ -29,6 +29,7 @@ namespace UI
 		void setCurrentTemp(float value);
 		void setActiveTemp(int32_t value);
 		void setStandbyTemp(int32_t value);
+		void setDisabled(bool disabled);
 
 		void setStatusCallback(status_cb_t cb) { m_statusCb = cb; }
 		void setTemperatureCallback(temperature_cb_t cb) { m_temperatureCb = cb; }
@@ -54,6 +55,7 @@ namespace UI
 
 		void setLabel(std::string_view text);
 		void setSelected(const bool selected);
+		void setDisabled(bool disabled);
 
 		size_t setHeaterCount(size_t count);
 		size_t getHeaterCount() const { return m_heaters.getItemCount(); }
@@ -94,6 +96,10 @@ namespace UI
 		size_t getToolCount() const { return m_tools.getItemCount(); }
 		size_t getBedCount() const { return m_beds.getItemCount(); }
 		size_t getChamberCount() const { return m_chambers.getItemCount(); }
+
+		auto& getTools() { return m_tools; }
+		auto& getBeds() { return m_beds; }
+		auto& getChambers() { return m_chambers; }
 
 		ToolListTool* getTool(size_t index) const { return m_tools.getItem(index); }
 		ToolListHeater* getBed(size_t index) const;

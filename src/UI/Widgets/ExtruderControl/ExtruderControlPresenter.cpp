@@ -10,13 +10,13 @@
 #include "ExtruderControl.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/Heat.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Tool.h"
 #include "UI/Core/Navigation.h"
 #include "i18n/i18n.h"
 
 namespace UI
 {
-
 	void ExtruderControlPresenter::extrude(float distance, float feedrate)
 	{
 		ZoneScoped;
@@ -27,10 +27,12 @@ namespace UI
 	{
 		ZoneScoped;
 		auto currentTool = OM::GetCurrentTool();
-		bool canExtrude = true;
-		bool canRetract = true;
 
-		if (currentTool)
+		const bool isPrinting = OM::PrintInProgress() && (OM::GetStatus() != OM::PrinterStatus::paused);
+		bool canExtrude = !isPrinting;
+		bool canRetract = !isPrinting;
+
+		if (currentTool && (canExtrude || canRetract))
 		{
 			UI_LOCK();
 
@@ -66,6 +68,12 @@ namespace UI
 
 		m_view->setExtrudeDisabled(!canExtrude);
 		m_view->setRetractDisabled(!canRetract);
+	}
+
+	void ExtruderControlPresenter::newStatus(OM::PrinterStatus /* status */)
+	{
+		ZoneScoped;
+		newToolData();
 	}
 
 	void ExtruderControlPresenter::onInit()

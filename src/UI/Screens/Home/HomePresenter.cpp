@@ -22,6 +22,7 @@ namespace UI
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
 		registerEventListener<EventType::Alert>(this, &HomePresenter::newAlertData);
+		registerEventListener<EventType::Status>(this, &HomePresenter::newStatus);
 
 		USB::UsbMonitor::getInstance().registerCallback(
 			[this](const std::string& path, bool mounted)
@@ -418,5 +419,12 @@ namespace UI
 
 		// Finally show the message box
 		modalAlert.open();
+	}
+
+	void HomePresenter::newStatus(OM::PrinterStatus status)
+	{
+		ZoneScoped;
+		/* Disable "Jobs" tab when printing to prevent changes */
+		getView()->getFileView().disableTab(1, OM::IsPrintingStatus(status));
 	}
 } // namespace UI

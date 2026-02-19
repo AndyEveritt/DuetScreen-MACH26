@@ -29,6 +29,7 @@ namespace UI
 		PRESENTER_CONSTRUCTOR(ToolListPresenter, ToolList)
 
 		void update();
+		void newStatus(OM::PrinterStatus status);
 
 		size_t getTotalHeaterCount(const bool addTools = true,
 								   const bool addBeds = true,
@@ -39,6 +40,7 @@ namespace UI
 		{
 			registerEventListener<EventType::ToolData>(this, &ToolListPresenter::update);
 			registerEventListener<EventType::HeaterData>(this, &ToolListPresenter::update);
+			registerEventListener<EventType::Status>(this, &ToolListPresenter::newStatus);
 		}
 		void onActivate() override;
 		void onDeactivate() override;
@@ -66,6 +68,7 @@ namespace UI
 		size_t getSlotIndex() const;
 
 		void update();
+		void newStatus(OM::PrinterStatus status);
 
 		void toggleState();
 
@@ -74,6 +77,7 @@ namespace UI
 		{
 			registerEventListener<EventType::ToolData>(this, &ToolListToolPresenter::update);
 			registerEventListener<EventType::HeaterData>(this, &ToolListToolPresenter::update);
+			registerEventListener<EventType::Status>(this, &ToolListToolPresenter::newStatus);
 		}
 		void onActivate() override;
 

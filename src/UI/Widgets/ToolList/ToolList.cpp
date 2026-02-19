@@ -223,6 +223,16 @@ namespace UI
 		m_selected = selected;
 	}
 
+	void ToolListTool::setDisabled(bool disabled)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		m_toolName.setDisabled(disabled);
+
+		m_heaters.iterateListItems([disabled](size_t /* index */, ToolListHeater& heater)
+								   { heater.setDisabled(disabled); });
+	}
+
 	size_t ToolListTool::setHeaterCount(size_t count)
 	{
 		ZoneScoped;
@@ -272,6 +282,13 @@ namespace UI
 	{
 		ZoneScoped;
 		m_standbyTemp.setText(fmt::format("{:d}", value));
+	}
+
+	void ToolListHeater::setDisabled(bool disabled)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		m_status.setDisabled(disabled);
 	}
 
 	void ToolListHeater::onStatusEvent(lv_event_t* e)

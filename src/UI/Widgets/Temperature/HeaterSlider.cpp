@@ -29,12 +29,16 @@ namespace UI
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_heaterInfoCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_heaterInfoCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-		m_heaterInfoCont.setSize(LV_SIZE_CONTENT, LV_PCT(100));
+		m_heaterInfoCont.setSize(LV_PCT(30), LV_PCT(100));
 		m_heaterInfoCont.setMinHeight(LV_SIZE_CONTENT);
 		m_temperatureCont.setHeight(LV_PCT(100));
 		m_temperatureCont.setMinHeight(100);
 		m_temperatureCont.setFlexGrow(1);
 		m_temperatureCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
+
+		m_heaterName.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_heaterState.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_heaterState.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 
 		m_currentTemperature.setSize(LV_PCT(100), 15);
 		// lv_coord_t
@@ -57,6 +61,7 @@ namespace UI
 		m_standbyTemperature.addEventCallback(onTemperatureLabelEvent, LV_EVENT_ALL, &m_standbyTemperature);
 
 		// Add styles
+		setStylePad(0);
 		m_heaterName.addStyle(Themes::getLvglStyles().actionBtn);
 		m_activeTemperature.addStyle(Themes::getLvglStyles().pad_normal);
 		m_standbyTemperature.addStyle(Themes::getLvglStyles().pad_normal);
@@ -330,7 +335,13 @@ namespace UI
 			marker_area.x2 = marker_area.x1 + marker_width - 1;
 			const lv_coord_t marker_pos_x = label_area.x1 + label_width * pct / 100;
 			const lv_area_t bar_area = control.m_currentTemperature.getCoords();
-			const int32_t label_radius = lv_obj_get_style_radius(label.getRootPtr(), LV_PART_MAIN);
+			int32_t label_radius = lv_obj_get_style_radius(label.getRootPtr(), LV_PART_MAIN);
+			if (label_radius == LV_RADIUS_CIRCLE)
+			{
+				int32_t whalf = label.getWidth() / 2;
+				int32_t hhalf = label.getHeight() / 2;
+				label_radius = std::min(whalf, hhalf);
+			}
 
 			marker_dsc.p[0].x = marker_pos_x;
 			marker_dsc.p[1].x = marker_pos_x + marker_width / 2;
