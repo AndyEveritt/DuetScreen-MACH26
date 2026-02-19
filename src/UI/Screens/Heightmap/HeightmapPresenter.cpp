@@ -245,8 +245,7 @@ namespace UI
 	void HeightmapPresenter::newStatus(OM::PrinterStatus status)
 	{
 		ZoneScoped;
-		getView()->getControlButtons().setState(
-			LV_STATE_DISABLED, (OM::IsPrintingStatus(status) && status != OM::PrinterStatus::paused), true);
+		getView()->getControlButtons().setState(LV_STATE_DISABLED, OM::IsPrintingStatus(status), true);
 	}
 
 	void HeightmapPresenter::updateHeightmapList()
@@ -311,6 +310,8 @@ namespace UI
 			map->LoadFromDuet([this](OM::Heightmap& /* heightmap */) { render(); });
 		}
 		setHeightmap(map);
+
+		newStatus(OM::GetStatus());
 	}
 
 	void HeightmapPresenter::onConnect()
