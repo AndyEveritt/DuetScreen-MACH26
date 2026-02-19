@@ -347,7 +347,7 @@
       "fan_speed": "Ventoinha: {:d}%",
       "flow_header": "Fluxo:",
       "flow_multiplier": "{:d}%",
-      "flow_rate": "{:.1g} mm³/s",
+      "flow_rate": "{:.1f} mm³/s",
       "extrusion_speed": "{:g} mm/s",
       "layer_number": "Camada: {:d}",
       "positions": "Posição da ferramenta:",

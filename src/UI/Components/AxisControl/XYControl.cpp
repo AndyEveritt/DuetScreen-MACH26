@@ -379,7 +379,7 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		std::string labelText = fmt::format("{}: {:g}", axisLetter, position);
+		std::string labelText = fmt::format("{}: {:.2f}", axisLetter, position);
 		label.setText(labelText);
 	}
 } // namespace UI

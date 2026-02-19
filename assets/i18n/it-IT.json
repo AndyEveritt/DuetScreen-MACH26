@@ -347,7 +347,7 @@
       "fan_speed": "Ventola: {:d}%",
       "flow_header": "Flusso:",
       "flow_multiplier": "{:d}%",
-      "flow_rate": "{:.1g} mm³/s",
+      "flow_rate": "{:.1f} mm³/s",
       "extrusion_speed": "{:g} mm/s",
       "layer_number": "Strato: {:d}",
       "positions": "Posizione utensile:",

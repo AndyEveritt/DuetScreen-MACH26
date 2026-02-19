@@ -347,7 +347,7 @@
       "fan_speed": "Ventilador: {:d}%",
       "flow_header": "Flujo:",
       "flow_multiplier": "{:d}%",
-      "flow_rate": "{:.1g} mm³/s",
+      "flow_rate": "{:.1f} mm³/s",
       "extrusion_speed": "{:g} mm/s",
       "layer_number": "Capa: {:d}",
       "positions": "Posición de herramienta:",

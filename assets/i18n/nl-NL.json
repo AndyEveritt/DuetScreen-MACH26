@@ -347,7 +347,7 @@
       "fan_speed": "Ventilator: {:d}%",
       "flow_header": "Doorvoer:",
       "flow_multiplier": "{:d}%",
-      "flow_rate": "{:.1g} mm³/s",
+      "flow_rate": "{:.1f} mm³/s",
       "extrusion_speed": "{:g} mm/s",
       "layer_number": "Laag: {:d}",
       "positions": "Gereedschapspositie:",
