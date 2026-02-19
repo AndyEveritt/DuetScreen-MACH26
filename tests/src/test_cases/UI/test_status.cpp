@@ -47,7 +47,7 @@ TEST_F(TestStatus, Header)
 {
 	view.show();
 
-	view.setFilename("test.gcode");
+	view.setFilename("test.gcode", true);
 	view.updateProgress(50);
 	view.setThumbnail(UI::Themes::getFixedIconPath("examples", "example.bmp").c_str());
 	view.updateLayout();

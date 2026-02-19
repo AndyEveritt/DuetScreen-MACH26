@@ -22,7 +22,7 @@ namespace UI
 
 		StatusView(const std::string& name, LvObj& parent);
 
-		void setFilename(std::string_view filename);
+		void setFilename(std::string_view filename, bool isInProgress);
 		void updateProgress(uint32_t percent);
 
 		void setThumbnail(const char* img);
@@ -53,6 +53,7 @@ namespace UI
 
 		// Header
 		Bar m_progress{"progress", m_header};
+		LvLabel m_printFinishedLabel{"printed_tag", m_header};
 		LvLabel m_filename{"filename", m_header};
 		LvImage m_thumbnail{"thumbnail", m_header};
 

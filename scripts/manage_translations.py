@@ -274,26 +274,31 @@ def main() -> int:
         description="Manage DuetScreen i18n translation files.",
     )
     parser.add_argument(
+        "-v",
         "--show-keys",
         action="store_true",
         help="List missing and extra keys per language file.",
     )
     parser.add_argument(
+        "-i",
         "--interactive",
         action="store_true",
         help="Prompt to enter translations for missing keys.",
     )
     parser.add_argument(
+        "-r",
         "--remove-extra",
         action="store_true",
         help="Remove keys not present in the reference file.",
     )
     parser.add_argument(
+        "-d",
         "--dry-run",
         action="store_true",
         help="Report changes without writing files.",
     )
     parser.add_argument(
+        "-f",
         "--file",
         type=str,
         default=None,

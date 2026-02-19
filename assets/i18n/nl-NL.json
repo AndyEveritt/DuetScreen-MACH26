@@ -69,7 +69,7 @@
       "fan_tab": "Ventilatoren"
     },
     "estop": {
-      "label": "\uF071",
+      "label": "",
       "prompt": "Sleep voor noodstop!",
       "message": "Noodstop, probeer opnieuw te verbinden..."
     },
@@ -352,7 +352,6 @@
       "layer_number": "Laag: {:d}",
       "positions": "Gereedschapspositie:",
       "print_height": "Hoogte: {:g} mm",
-      "printed_header": "Geprint:\n{:s}",
       "remaining_time": "Resterend: {:s}",
       "speed_detailed": "Snelheid: {:g}/{:g} mm/s",
       "speed_header": "Snelheid:",
@@ -360,7 +359,8 @@
       "requested_speed": "Gevraagde snelheid: {:g} mm/s",
       "speed_multiplier": "{:d}%",
       "speed_label": "{:g}/{:g} mm/s",
-      "z_offset": "Z-offset: {:g} mm"
+      "z_offset": "Z-offset: {:g} mm",
+      "print_finished": "Geprint:"
     },
     "temperature": {
       "bed": "Bed",
@@ -403,7 +403,7 @@
       "chroma": "Chroma",
       "dark_mode": "Donkere modus"
     },
-    "gcodes": { /* G-code descriptions */
+    "gcodes": {
       "gcode_G0_desc": "Rapid move",
       "gcode_G10_temperature_desc": "Tool Temperature Setting",
       "gcode_G10_workplace_desc": "Set workplace coordinate offset or tool offset",

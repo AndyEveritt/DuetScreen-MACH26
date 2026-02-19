@@ -69,7 +69,7 @@
       "fan_tab": "Ventoinhas"
     },
     "estop": {
-      "label": "\uF071",
+      "label": "",
       "prompt": "Arrastar para paragem de emergência!",
       "message": "Paragem de emergência, a tentar reconectar..."
     },
@@ -352,7 +352,6 @@
       "layer_number": "Camada: {:d}",
       "positions": "Posição da ferramenta:",
       "print_height": "Altura: {:g} mm",
-      "printed_header": "Impresso:\n{:s}",
       "remaining_time": "Restante: {:s}",
       "speed_detailed": "Velocidade: {:g}/{:g} mm/s",
       "speed_header": "Velocidade:",
@@ -360,7 +359,8 @@
       "requested_speed": "Velocidade solicitada: {:g} mm/s",
       "speed_multiplier": "{:d}%",
       "speed_label": "{:g}/{:g} mm/s",
-      "z_offset": "Deslocamento Z: {:g} mm"
+      "z_offset": "Deslocamento Z: {:g} mm",
+      "print_finished": "Impresso:"
     },
     "temperature": {
       "bed": "Base",
@@ -403,7 +403,7 @@
       "chroma": "Cromatismo",
       "dark_mode": "Modo escuro"
     },
-    "gcodes": { /* G-code descriptions */
+    "gcodes": {
       "gcode_G0_desc": "Rapid move",
       "gcode_G10_temperature_desc": "Tool Temperature Setting",
       "gcode_G10_workplace_desc": "Set workplace coordinate offset or tool offset",

@@ -69,7 +69,7 @@
       "fan_tab": "Ventole"
     },
     "estop": {
-      "label": "\uF071",
+      "label": "",
       "prompt": "Trascinare per arresto di emergenza!",
       "message": "Arresto di emergenza, tentativo di riconnessione..."
     },
@@ -352,7 +352,6 @@
       "layer_number": "Strato: {:d}",
       "positions": "Posizione utensile:",
       "print_height": "Altezza: {:g} mm",
-      "printed_header": "Stampato:\n{:s}",
       "remaining_time": "Rimanente: {:s}",
       "speed_detailed": "Velocità: {:g}/{:g} mm/s",
       "speed_header": "Velocità:",
@@ -360,7 +359,8 @@
       "requested_speed": "Velocità richiesta: {:g} mm/s",
       "speed_multiplier": "{:d}%",
       "speed_label": "{:g}/{:g} mm/s",
-      "z_offset": "Offset Z: {:g} mm"
+      "z_offset": "Offset Z: {:g} mm",
+      "print_finished": "Stampato:"
     },
     "temperature": {
       "bed": "Piano",
@@ -403,7 +403,7 @@
       "chroma": "Cromaticità",
       "dark_mode": "Modalità scura"
     },
-    "gcodes": { /* G-code descriptions */
+    "gcodes": {
       "gcode_G0_desc": "Rapid move",
       "gcode_G10_temperature_desc": "Tool Temperature Setting",
       "gcode_G10_workplace_desc": "Set workplace coordinate offset or tool offset",

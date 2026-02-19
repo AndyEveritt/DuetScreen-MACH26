@@ -42,14 +42,18 @@ namespace UI
 		// Header
 		static const int32_t header_col_dsc[] = {LV_GRID_FR(5), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		static const int32_t header_row_dsc[] = {
-			LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+			LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		m_header.setGridDsc(header_col_dsc, header_row_dsc);
-		m_header.setGridCell(m_filename, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
-		m_header.setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 3);
-		m_header.setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 2, 1);
+		m_header.setGridCell(m_printFinishedLabel, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
+		m_header.setGridCell(m_filename, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 1, 1);
+		m_header.setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 4);
+		m_header.setGridCell(m_progress, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 3, 1);
 
+		m_printFinishedLabel.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_printFinishedLabel.setText(_("status.print_finished"));
 		m_filename.setWidth(LV_PCT(100));
 		m_filename.setHeight(LV_SIZE_CONTENT);
+		// m_filename.setLongMode(LV_LABEL_LONG_MODE_SCROLL_CIRCULAR);
 		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 		m_thumbnail.setHeight(LV_PCT(100));
 		m_thumbnail.setMinHeight(50);
@@ -81,11 +85,12 @@ namespace UI
 				}
 
 				const int32_t aspect_ratio_100 = 100 * src_width / src_height;
-				const int32_t width = m_header.getContentHeight() * aspect_ratio_100 / 100;
+				const int32_t height = lv_obj_calc_content_height(m_header.getRootPtr());
+				const int32_t width = height * aspect_ratio_100 / 100;
 				LOG_DBG("Setting thumbnail width from {:d} to {:d} based on height", m_thumbnail.getWidth(), width);
 				m_thumbnail.setWidth(width);
 			},
-			LV_EVENT_SIZE_CHANGED);
+			LV_EVENT_CHILD_CHANGED);
 		m_thumbnail.setWidth(50);
 		m_progress.setHeight(LV_SIZE_CONTENT);
 		m_progress.setRange(0, 100);
@@ -178,12 +183,13 @@ namespace UI
 
 	void StatusView::onHide() {}
 
-	void StatusView::setFilename(std::string_view filename)
+	void StatusView::setFilename(std::string_view filename, bool isInProgress)
 	{
 		ZoneScoped;
 		UI_LOCK();
 		LOG_DBG("'{:s}'", filename);
 		m_filename.setText(filename);
+		m_printFinishedLabel.setVisible(!isInProgress);
 	}
 
 	void StatusView::updateProgress(uint32_t percent)

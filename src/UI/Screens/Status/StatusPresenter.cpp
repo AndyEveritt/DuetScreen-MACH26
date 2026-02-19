@@ -64,7 +64,7 @@ namespace UI
 	void StatusPresenter::newJobFileName(const std::string& filename)
 	{
 		ZoneScoped;
-		m_view->setFilename(filename);
+		getView()->setFilename(filename, true);
 		setOrRequestThumbnail(filename);
 	}
 
@@ -77,18 +77,18 @@ namespace UI
 			return;
 		}
 
-		m_view->setThumbnail(GetThumbnailPath(filename).c_str());
+		getView()->setThumbnail(GetThumbnailPath(filename).c_str());
 	}
 
 	void StatusPresenter::newJobLastFileName(const std::string& filename)
 	{
 		ZoneScoped;
-		m_view->setPrintAgain(filename.empty() ? StatusView::HIDDEN : StatusView::ENABLED);
+		getView()->setPrintAgain(filename.empty() ? StatusView::HIDDEN : StatusView::ENABLED);
 		if (filename.empty())
 		{
 			return;
 		}
-		m_view->setFilename(_("status.printed_header", filename));
+		getView()->setFilename(filename, false);
 		setOrRequestThumbnail(filename);
 	}
 

@@ -353,7 +353,7 @@
       "layer_number": "Layer: {:d}",
       "positions": "Tool Position:",
       "print_height": "Height: {:g} mm",
-      "printed_header": "Printed:\n{:s}",
+      "print_finished": "Printed:",
       "remaining_time": "Remaining: {:s}",
       "speed_detailed": "Speed: {:g}/{:g} mm/s",
       "speed_header": "Speed:",
