@@ -49,7 +49,7 @@ namespace UI::Themes
 								   lv_style_set_text_color(lvgl.btn, colors.primary);
 
 								   lv_style_set_bg_color(lvgl.actionBtn, colors.primary);
-								   lv_style_set_text_color(lvgl.actionBtn, colors.bg_dark);
+								   lv_style_set_text_color(lvgl.actionBtn, colors.text);
 
 								   /* Heavier padding for an industrial panel feel */
 								   lv_style_set_pad_all(lvgl.card, 8);
