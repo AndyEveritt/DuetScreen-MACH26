@@ -83,7 +83,16 @@ namespace UI
 		auto tool = OM::GetCurrentTool();
 		if (tool == nullptr)
 		{
-			m_view->updateFlowMultiplier(100);
+			uint32_t extruderCount = 0;
+			uint32_t flowMultiplier = 0;
+			OM::Move::IterateExtruderAxesWhile(
+				[&](OM::Move::ExtruderAxisPtr extruder, size_t)
+				{
+					flowMultiplier += static_cast<uint32_t>(std::lround(100 * extruder->factor));
+					extruderCount++;
+					return true;
+				});
+			m_view->updateFlowMultiplier(extruderCount > 0 ? flowMultiplier / extruderCount : 100);
 			return;
 		}
 		// TODO show all extruder multipliers
@@ -91,7 +100,7 @@ namespace UI
 		uint32_t extruderCount = 0;
 		uint32_t flowMultiplier = 0;
 		tool->IterateExtruders(
-			[&](std::shared_ptr<OM::Move::ExtruderAxis> extruder, size_t /* index */)
+			[&](OM::Move::ExtruderAxisPtr extruder, size_t /* index */)
 			{
 				flowMultiplier += static_cast<uint32_t>(std::lround(100 * extruder->factor));
 				extruderCount++;
