@@ -33,11 +33,20 @@ namespace UI
 		// Top Container
 		m_topCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_commandVisibility.setCheckable(false);
-		m_commandVisibility.setFlag(LV_OBJ_FLAG_IGNORE_LAYOUT, true);
+		m_commandVisibility.setFlag(LV_OBJ_FLAG_FLOATING, true);
 		m_commandVisibility.updateLayout();
 		m_commandList.setFlexGrow(1);
 		m_commandList.setMinWidth(0);
 		m_commandList.setHeight(LV_PCT(100));
+		m_commandVisibility.addEventCallback(
+			[this](lv_event_t*)
+			{
+				const lv_coord_t pad = m_commandList.getStyleProp(LV_STYLE_PAD_LEFT).num +
+									   m_commandList.getStyleProp(LV_STYLE_PAD_RIGHT).num;
+				m_commandList.setMinWidth(m_commandVisibility.getWidth() + pad);
+			},
+			LV_EVENT_SIZE_CHANGED);
+		m_commandVisibility.sendEvent(LV_EVENT_SIZE_CHANGED);
 
 		m_outputCont.setFlexGrow(30);
 		m_outputCont.setHeight(LV_PCT(100));
@@ -353,8 +362,10 @@ namespace UI
 	{
 		ZoneScoped;
 		m_commandList.updateLayout();
-		m_commandVisibility.setPos(m_commandList.getX2() - m_commandVisibility.getWidth() - 5,
-								   m_commandList.getY() + 5);
+		const lv_coord_t pad_right = m_commandList.getStyleProp(LV_STYLE_PAD_RIGHT).num;
+		const lv_coord_t pad_top = m_commandList.getStyleProp(LV_STYLE_PAD_TOP).num;
+		m_commandVisibility.setPos(m_commandList.getX2() - m_commandVisibility.getWidth() - pad_right,
+								   m_commandList.getY() + pad_top);
 	}
 
 	void ConsoleView::focusInput()
