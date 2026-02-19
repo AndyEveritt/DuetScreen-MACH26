@@ -109,7 +109,6 @@ namespace UI
 				auto name = fmt::format("px = {:d}", px);
 				ZoneName(name.c_str(), name.size());
 #endif
-				lv_display_enable_invalidation(NULL, false);
 				for (uint32_t py = 0; py < height; py++)
 				{
 					float x = x_min + (static_cast<float>(px) * xStep);
@@ -121,7 +120,6 @@ namespace UI
 					}
 					m_view->setPx(px, height - py - 1, static_cast<float>(value));
 				}
-				lv_display_enable_invalidation(NULL, true);
 			}
 		}
 		m_view->getHeightmap().getCanvas().invalidate();
