@@ -88,7 +88,9 @@ namespace UI
 		if (getRootPtr() != nullptr)
 		{
 			LOG_VERBOSE("Deleting obj '{:s}' ({:p})", getName(), static_cast<const void*>(getRootPtr()));
-			lv_obj_delete(getRootPtr());
+			lv_obj_t* obj = m_root;
+			m_root = nullptr;
+			lv_obj_delete(obj);
 		}
 	}
 

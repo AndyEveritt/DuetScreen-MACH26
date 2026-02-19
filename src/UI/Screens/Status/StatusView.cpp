@@ -61,6 +61,11 @@ namespace UI
 		m_header.addEventCallback(
 			[this](lv_event_t*)
 			{
+				[[unlikely]] if (m_thumbnail.getRootPtr() == nullptr)
+				{
+					/* Check if the thumbnail has been deleted */
+					return;
+				}
 				/**
 				 * This will effectively override the thumbnail grid layout so that it will always be the largest
 				 * rectangle with the same aspect ratio as the source image that can fit in the header without

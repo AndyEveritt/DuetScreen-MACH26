@@ -176,6 +176,7 @@ namespace UI
 		legendObj->setStyleBgColor(color, LV_STATE_CHECKED);
 		legendObj->addStyle(Themes::getLvglStyles().border);
 		legendObj->addStyle(Themes::getLvglStyles().bg_light, LV_STATE_DEFAULT);
+		legendObj->addStyle(Themes::getLvglStyles().text, LV_STATE_CHECKED);
 		legendObj->setCheckable(true);
 		legendObj->setChecked(true);
 		legendObj->addClickedCallback(legendEvent, this);

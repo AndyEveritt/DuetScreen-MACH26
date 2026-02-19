@@ -320,6 +320,9 @@ TEST_F(TestHomeViewWithData, Dashboard)
 		view.getDashboard().getGraph().getPresenter()->tick();
 		sensor->lastReading = (int32_t)(sensor->lastReading + 1) % 300;
 	}
+
+	view.getDashboard().getGraph().showSeries(1, false);
+
 	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/temperature_graph.png");
 
 	/* Open the tool list numberpad */
