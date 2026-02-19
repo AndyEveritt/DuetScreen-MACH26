@@ -269,7 +269,10 @@ namespace UI
 
 		m_feedrates.addStyle(Themes::getLvglStyles().no_border);
 		m_feedrates.setTitle(_("move.feedrate", Units::getDisplayedSpeedUnit()));
-		m_feedrates.getHeader().setWidth(m_distances.getHeader().getWidth());
+		m_distances.getHeader().addEventCallback(
+			[this](lv_event_t*) { m_feedrates.getHeader().setWidth(m_distances.getHeader().getWidth()); },
+			LV_EVENT_SIZE_CHANGED);
+		m_distances.getHeader().sendEvent(LV_EVENT_SIZE_CHANGED);
 		m_feedrates.getHeader().setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
 		m_feedrates.getHeader().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 		m_feedrates.getListContainer().setFlexGrow(1);
