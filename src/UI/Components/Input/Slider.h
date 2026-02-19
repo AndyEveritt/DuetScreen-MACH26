@@ -81,14 +81,16 @@ namespace UI
 	  private:
 		void onShow() override;
 
-		LvLabel m_label{"label", getRoot()};
+		LvContainer m_header{"header", getRoot()};
 		LvContainer m_sliderCont{"slider_cont", getRoot()};
+
+		LvLabel m_label{"label", m_header};
+		Button m_reset{"reset", m_header};
 
 		Button m_decrement{"decrement", m_sliderCont};
 		LvSlider m_slider{"slider", m_sliderCont};
 		Button m_increment{"increment", m_sliderCont};
 		LvTextarea m_input{"input", m_sliderCont};
-		Button m_reset{"reset", getRoot()};
 
 		float m_incrementValue = 1;
 		ModalNumberPad* m_numberPad = nullptr;

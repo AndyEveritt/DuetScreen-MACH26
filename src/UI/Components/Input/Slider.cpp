@@ -23,15 +23,19 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
+		setStylePad(0, LV_PART_MAIN, Padding::ROW);
+
+		m_header.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_header.setStylePad(0);
+
 		m_label.hide(); // will be shown if `setLabel()` is called
 		m_label.setSize(LV_PCT(100), LV_SIZE_CONTENT);
-		m_sliderCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 
 		m_reset.setText(_("slider.reset"));
-		m_reset.setFlag(LV_OBJ_FLAG_FLOATING, true);
-		m_reset.setAlign(LV_ALIGN_TOP_RIGHT, -5, 5);
+		m_reset.setAlign(LV_ALIGN_RIGHT_MID, 0, 0);
 		m_reset.setVisible(false);
 
+		m_sliderCont.setSize(LV_PCT(100), LV_SIZE_CONTENT);
 		m_sliderCont.setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_sliderCont.setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 

@@ -463,6 +463,8 @@ TEST_F(TestHomeViewWithData, StatusView)
 	UI::LvObj* extrusion_factor = statusView.getChildByName("print_info.flow_cont.flow_multiplier");
 	ASSERT_NE(extrusion_factor, nullptr);
 	extrusion_factor->sendEvent(LV_EVENT_CLICKED, nullptr);
+	OM::Move::SetExtruderFactor(0, 1.2f);
+	Model::get().post<EventType::ExtruderData>();
 	EXPECT_EQUAL_SCREENSHOT("home_view/status_view/extrusion_factor_numberpad.png")
 
 	UI::closeAllModals();

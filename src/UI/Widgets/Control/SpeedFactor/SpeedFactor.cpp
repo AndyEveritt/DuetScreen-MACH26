@@ -12,6 +12,7 @@
 namespace UI
 {
 	static constexpr float SPEED_FACTOR_MIN = 1.0f;
+	static constexpr float SPEED_FACTOR_MAX = 10000.0f;
 
 	SpeedFactor::SpeedFactor(const std::string& name, LvObj& parent)
 		: View(name, parent)
@@ -36,8 +37,8 @@ namespace UI
 							return;
 						m_numberPad->setHeader(slider->getLabelText());
 						m_numberPad->setValue(slider->getValue());
-						m_numberPad->setMinValue(slider->getMin());
-						m_numberPad->setMaxValue(slider->getMax());
+						m_numberPad->setMinValue(SPEED_FACTOR_MIN);
+						m_numberPad->setMaxValue(SPEED_FACTOR_MAX);
 						slider->getInput().sendEvent(LV_EVENT_DEFOCUSED, nullptr);
 						m_numberPad->setConfirmCallback([this, slider](float value) { slider->setValue(value); });
 					});
@@ -93,8 +94,8 @@ namespace UI
 					return;
 
 				m_numberPad.setValue(m_speedFactor.getSlider().getValue());
-				m_numberPad.setMinValue(m_speedFactor.getSlider().getMin());
-				m_numberPad.setMaxValue(m_speedFactor.getSlider().getMax());
+				m_numberPad.setMinValue(SPEED_FACTOR_MIN);
+				m_numberPad.setMaxValue(SPEED_FACTOR_MAX);
 				m_speedFactor.getSlider().getInput().sendEvent(LV_EVENT_DEFOCUSED, nullptr);
 				m_numberPad.setConfirmCallback(
 					[this](float value)
