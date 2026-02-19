@@ -39,6 +39,7 @@ namespace UI
 		static int32_t speedColDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		static int32_t speedRowDsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		m_speedCont.setHeight(LV_SIZE_CONTENT);
+		m_speedCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 		m_speedCont.setGridDsc(speedColDsc, speedRowDsc);
 		m_speedCont.setGridCell(m_speedHeader, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
 		m_speedCont.setGridCell(m_speedMultiplier, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
@@ -74,6 +75,7 @@ namespace UI
 		static int32_t flowColDsc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 		static int32_t flowRowDsc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 		m_flowCont.setHeight(LV_SIZE_CONTENT);
+		m_flowCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 		m_flowCont.setGridDsc(flowColDsc, flowRowDsc);
 		m_flowCont.setGridCell(m_flowHeader, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
 		m_flowCont.setGridCell(m_flowMultiplier, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
