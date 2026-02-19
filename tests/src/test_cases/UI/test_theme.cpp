@@ -330,6 +330,7 @@ TEST_F(TestTheme, Widgets)
 	/* Axis Control */
 	LvContainer axis_cont("axis_cont", cont);
 	axis_cont.setSize(LV_PCT(25), LV_PCT(100));
+	axis_cont.setMinWidth(LV_SIZE_CONTENT);
 	axis_cont.setFlexFlow(LV_FLEX_FLOW_ROW);
 	axis_cont.addStyle(Themes::getLvglStyles().pad_zero);
 
@@ -340,6 +341,7 @@ TEST_F(TestTheme, Widgets)
 
 	GenericAxisControl generic_axis("generic_axis", axis_cont);
 	generic_axis.setSize(LV_PCT(25), LV_PCT(100));
+	generic_axis.setMinWidth(LV_SIZE_CONTENT);
 	generic_axis.setAxisLetter('Z');
 	generic_axis.setAxisPosition(100.0f);
 	generic_axis.setDisabled(true);
