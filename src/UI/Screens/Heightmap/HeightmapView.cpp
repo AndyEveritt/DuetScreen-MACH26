@@ -61,6 +61,7 @@ namespace UI
 			// m_load.setCheckable(true);
 
 			m_load.setSize(70, LV_SIZE_CONTENT);
+			m_load.setMinWidth(LV_SIZE_CONTENT);
 			addStyle(Themes::getLvglStyles().bg_color_primary, LV_STATE_CHECKED);
 			m_load.addStyle(Themes::getLvglStyles().actionBtn, 0);
 		}
