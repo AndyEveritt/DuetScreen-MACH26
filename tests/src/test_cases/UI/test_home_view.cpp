@@ -388,6 +388,9 @@ TEST_F(TestHomeViewWithData, ControlView)
 
 	openScreen(&control);
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move.png");
+
+	load_model_data_from_file("tests/object_model/test_bench/model_10_axes.json");
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move_10_axes.png");
 	{
 		auto btn =
 			control.getMoveView().getChildByName("central_row.babystep.button_panel.value_list.list.value_btn_1");
@@ -415,7 +418,7 @@ TEST_F(TestHomeViewWithData, ControlView)
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/fan.png");
 
 	control.showMoveView();
-	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move.png");
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move_10_axes.png");
 }
 
 TEST_F(TestHomeViewWithData, MacroView)

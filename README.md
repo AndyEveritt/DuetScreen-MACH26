@@ -56,7 +56,7 @@ Multiple methods are available to connect the Duet3D screen to a mainboard. The 
 2. In the GUI, select the USB connection method.
 
 > [!NOTE]
-> When the Duet3D screen detects a USB connection to a Duet3D mainboard, it will automatically send `M575 P0 S0` to configure the mainboard for USB communication.
+> When the Duet3D screen detects a USB connection to a Duet3D mainboard, it will automatically send `M575 P0 S4` to configure the mainboard for USB communication.
 
 ### WiFi
 > [!NOTE]
@@ -79,7 +79,7 @@ Multiple methods are available to connect the Duet3D screen to a mainboard. The 
 1. Connect the Duet3D screen to the mainboard using a UART cable.
     - Use connector `UART Duet` on the screen.
 2. In the GUI, select the UART connection method.
-3. Set the baud rate on the mainboard to `115200`. use `M575 P1 S1 B115200` in config.g, this is similar to connecting a PanelDue, other than the default baud rate is 115200
+3. Set the baud rate on the mainboard to `115200`. use `M575 P1 S4 B115200` in config.g, this is similar to connecting a PanelDue, other than the default baud rate is 115200
 
 #### Wiring
 For a Duet3 IO0 port for UART is as follows:

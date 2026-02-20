@@ -29,6 +29,7 @@ namespace Comm
 		rcvSeqsHeat,
 		rcvSeqsInputs,
 		rcvSeqsJob,
+		rcvSeqsLimits,
 		rcvSeqsMove,
 		rcvSeqsNetwork,
 		rcvSeqsReply,

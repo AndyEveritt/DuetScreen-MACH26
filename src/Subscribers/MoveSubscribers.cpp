@@ -1,5 +1,6 @@
 #include "Debug.h"
 
+#include "Hardware/Duet.h"
 #include "MoveSubscribers.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/Heightmap.h"
@@ -340,6 +341,19 @@ bool MoveSubscribers::axesArrayEnd(Comm::JsonDecoder* decoder, const size_t indi
 {
 	ZoneScoped;
 	UNUSED(decoder);
+	const Comm::Seq* seq = decoder->GetSeq();
+	if (seq && seq->seqid == Comm::rcvSeqsMove && indices[0] >= MAX_REPORTED_AXES)
+	{
+		/**
+		 * There might be more axes available
+		 *
+		 * TODO: this won't handle the case where the single `move.axes` request still doesn't return all axes but it
+		 * can handle 10 currently. Will need to check the `next` field in the response to handle more than that.
+		 * Likely I will postpone handling that until the Duet comms are reworked to handle request/response IDs (#69)
+		 */
+		Comm::DUET.RequestModel("move.axes", "vna0");
+		return true;
+	}
 	OM::Move::RemoveAxis(indices[0], true);
 	Model::get().post<EventType::AxesData>();
 	return true;

@@ -152,6 +152,7 @@ namespace Comm
 			}
 		}
 
+		LOG_WARN("Received key '{:s}' does not match any known seq", key);
 		return nullptr;
 	}
 

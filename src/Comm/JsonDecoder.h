@@ -108,6 +108,7 @@ namespace Comm
 		size_t m_arrayIndices[MAX_ARRAY_NESTING];
 		size_t m_arrayDepth;
 		Seq* m_seq = nullptr;
+		String<50> m_key; // for OM responses
 	};
 } // namespace Comm
 #endif /* JNI_COMM_JSONDECODER_H_ */

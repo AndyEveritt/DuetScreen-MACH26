@@ -174,6 +174,7 @@ namespace Comm
 		m_fieldPrefix.Clear();
 		m_fieldId.Clear();
 		m_fieldVal.Clear();
+		m_key.Clear();
 		m_state = jsBegin;
 		m_lastState = jsBegin;
 		m_serialIoErrors = 0;
@@ -208,6 +209,8 @@ namespace Comm
 			m_seq = nullptr;
 		}
 
+		m_key.Clear();
+
 		responseType = ResponseType::unknown;
 		responseData = nullptr;
 	}
@@ -216,7 +219,7 @@ namespace Comm
 	void JsonDecoder::ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
 		ZoneScoped;
-		LOG_VERBOSE("{:s} (indices [{:d}|{:d}|{:d}|{:d}]) = '{:s}'",
+		LOG_VERBOSE("'{:s}' (indices [{:d}|{:d}|{:d}|{:d}]) = '{:s}'",
 					id.c_str(),
 					indices[0],
 					indices[1],
@@ -233,9 +236,9 @@ namespace Comm
 			// modifier)
 
 			id.Erase(0, 6);
-			if (m_seq != nullptr && strcasecmp(m_seq->key, "") != 0)
+			if (!m_key.IsEmpty())
 			{
-				id.Prepend(m_seq->key);
+				id.Prepend(m_key.c_str());
 			}
 			else
 			{
@@ -269,6 +272,8 @@ namespace Comm
 			{
 				m_seq = FindSeqByKey(data);
 			}
+			m_key.copy(data);
+			m_key.ReplaceAll('.', ':');
 			break;
 		}
 
@@ -358,7 +363,7 @@ namespace Comm
 	void JsonDecoder::RemoveLastId()
 	{
 		ZoneScoped;
-		// LOG_VERBOSE("{:s}, len: {:d}", m_fieldId.c_str(), m_fieldId.strlen());
+		LOG_VERBOSE("{:s}, len: {:d}", m_fieldId.c_str(), m_fieldId.strlen());
 		size_t index = m_fieldId.strlen();
 		while (index != 0 && m_fieldId[index - 1] != '^' && m_fieldId[index - 1] != ':')
 		{
@@ -366,7 +371,7 @@ namespace Comm
 		}
 		m_fieldId.Truncate(index);
 
-		// LOG_VERBOSE("{:s}, len: {:d}", m_fieldId.c_str(), m_fieldId.strlen());
+		LOG_VERBOSE("{:s}, len: {:d}", m_fieldId.c_str(), m_fieldId.strlen());
 	}
 
 	void JsonDecoder::RemoveLastIdChar()
