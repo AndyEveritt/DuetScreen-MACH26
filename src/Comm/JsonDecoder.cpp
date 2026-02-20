@@ -242,6 +242,12 @@ namespace Comm
 			}
 			m_seq = nullptr;
 		}
+
+		m_key.Clear();
+		m_flags.Clear();
+
+		responseType = ResponseType::unknown;
+		responseData = nullptr;
 	}
 
 	// Public functions called by the SerialIo module
@@ -655,9 +661,9 @@ namespace Comm
 	{
 		ZoneScoped;
 		LOG_DBG("checking {:d} chars", len);
-		LOG_VERBOSE("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
+		LOG_DBG("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
 
-		Reset();
+		m_nextOut = 0;
 		while (m_nextOut < len)
 		{
 			char c = rxBuffer[m_nextOut];
