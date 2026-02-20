@@ -63,6 +63,9 @@ namespace UI::Themes
 								   lv_style_set_shadow_color(lvgl.btn, colors.border);
 								   lv_style_set_shadow_opa(lvgl.btn, LV_OPA_COVER);
 
+								   lv_style_set_border_color(lvgl.btn_checked, colors.secondary);
+								   lv_style_set_border_width(lvgl.btn_checked, 3);
+
 								   /* Pressed: collapse shadow for "pushed" effect */
 								   lv_style_set_recolor(lvgl.pressed, lv_color_black());
 								   lv_style_set_recolor_opa(lvgl.pressed, 30);
