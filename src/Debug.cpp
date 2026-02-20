@@ -185,6 +185,7 @@ namespace Log
 			auto file_sink = make_shared<spdlog::sinks::rotating_file_sink_mt>(
 				std::string(StorageHelper::getData(ID_LOG_FILE)), DEFAULT_LOG_FILE_SIZE, DEFAULT_LOG_FILE_COUNT - 1);
 			file_sink->set_pattern(LOG_FILE_PATTERN);
+			file_sink->set_level(spdlog::level::debug);
 
 #if TRACE_LOG_MESSAGES
 			auto tracy_sink = make_shared<TracySink_mt>();

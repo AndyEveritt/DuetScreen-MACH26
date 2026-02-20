@@ -186,10 +186,13 @@ namespace UI
 			{
 				LOG_DBG("Resizing list \"{:s}\" up from {:d} to {:d}", getName(), currentCount, count);
 				m_list.reserve(count);
+				const bool isVisible = m_listCont.isVisible();
+				m_listCont.hide(); // this is to prevent layout calculations for every item added
 				for (size_t i = currentCount; i < count; i++)
 				{
 					m_list.emplace_back(std::invoke(constructor, i, m_listCont));
 				}
+				m_listCont.setVisible(isVisible);
 			}
 
 			return count > currentCount ? count - currentCount : 0;
@@ -218,10 +221,13 @@ namespace UI
 			{
 				LOG_DBG("Resizing list \"{:s}\" up from {:d} to {:d}", getName(), currentCount, count);
 				m_list.reserve(count);
+				const bool isVisible = m_listCont.isVisible();
+				m_listCont.hide(); // this is to prevent layout calculations for every item added
 				for (size_t i = currentCount; i < count; i++)
 				{
 					m_list.emplace_back((instance->*constructor)(i, m_listCont, std::forward<Args>(args)...));
 				}
+				m_listCont.setVisible(isVisible);
 			}
 
 			return count > currentCount ? count - currentCount : 0;
@@ -248,10 +254,13 @@ namespace UI
 			{
 				LOG_DBG("Resizing list \"{:s}\" up from {:d} to {:d}", getName(), currentCount, count);
 				m_list.reserve(count);
+				const bool isVisible = m_listCont.isVisible();
+				m_listCont.hide(); // this is to prevent layout calculations for every item added
 				for (size_t i = currentCount; i < count; i++)
 				{
 					m_list.emplace_back(std::make_unique<T>(i, m_listCont, std::forward<Args>(args)...));
 				}
+				m_listCont.setVisible(isVisible);
 			}
 
 			return count > currentCount ? count - currentCount : 0;

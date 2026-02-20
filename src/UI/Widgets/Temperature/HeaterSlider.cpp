@@ -422,7 +422,7 @@ namespace UI
 		lv_coord_t label_width = label.getWidth();
 		lv_coord_t bar_width = m_currentTemperature.getWidth();
 
-		lv_coord_t label_offset_pct = percentage * label_width / bar_width;
+		lv_coord_t label_offset_pct = bar_width == 0 ? 0 : percentage * label_width / bar_width;
 
 		label.setX(LV_PCT(percentage - label_offset_pct));
 	}
