@@ -31,12 +31,14 @@ namespace UI
 		setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
 		m_btns.setSize(LV_PCT(100), LV_PCT(100));
+		m_btns.setMinWidth(LV_SIZE_CONTENT);
 		m_btns.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_btns.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 		m_btns.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);
 
 		m_homeBtn.setWidth(LV_PCT(100));
+		m_homeBtn.setMinWidth(LV_SIZE_CONTENT);
 		m_homeBtn.setFlexGrow(1);
 		m_homeBtn.setText(_("side_bar.home"));
 		m_homeBtn.setIcon("home.png");
@@ -46,6 +48,7 @@ namespace UI
 
 #if SIDE_BAR_BACK_BUTTON
 		m_backBtn.setWidth(LV_PCT(100));
+		m_backBtn.setMinWidth(LV_SIZE_CONTENT);
 		m_backBtn.setFlexGrow(1);
 		m_backBtn.setText(_("side_bar.back"));
 		m_backBtn.setIcon("back.png");
@@ -55,6 +58,7 @@ namespace UI
 #endif
 
 		m_controlBtn.setWidth(LV_PCT(100));
+		m_controlBtn.setMinWidth(LV_SIZE_CONTENT);
 		m_controlBtn.setFlexGrow(1);
 		m_controlBtn.setText(_("side_bar.control"));
 		m_controlBtn.setIcon("control.png");
@@ -63,6 +67,7 @@ namespace UI
 		m_controlBtn.getLabel().setLongMode(LV_LABEL_LONG_MODE_CLIP);
 
 		m_filesBtn.setWidth(LV_PCT(100));
+		m_filesBtn.setMinWidth(LV_SIZE_CONTENT);
 		m_filesBtn.setFlexGrow(1);
 		m_filesBtn.setText(_("side_bar.files"));
 		m_filesBtn.setIcon("macros.png");
@@ -72,6 +77,7 @@ namespace UI
 
 #if SIDE_BAR_APP_DRAWER
 		m_menuBtn.setWidth(LV_PCT(100));
+		m_menuBtn.setMinWidth(LV_SIZE_CONTENT);
 		m_menuBtn.setFlexGrow(1);
 		m_menuBtn.setText(_("side_bar.menu"));
 		m_menuBtn.setIcon(APP_DRAWER_ICON);
@@ -82,6 +88,7 @@ namespace UI
 
 #if SIDE_BAR_CONSOLE_BUTTON
 		m_consoleBtn.setWidth(LV_PCT(100));
+		m_consoleBtn.setMinWidth(LV_SIZE_CONTENT);
 		m_consoleBtn.setFlexGrow(1);
 		m_consoleBtn.setText(_("side_bar.console"));
 		m_consoleBtn.setIcon("console.png");
@@ -93,6 +100,7 @@ namespace UI
 
 #if SIDE_BAR_SETTINGS_BUTTON
 		m_settingsBtn.setWidth(LV_PCT(100));
+		m_settingsBtn.setMinWidth(LV_SIZE_CONTENT);
 		m_settingsBtn.setFlexGrow(1);
 		m_settingsBtn.setText(_("side_bar.settings"));
 		m_settingsBtn.setIcon("settings.png");

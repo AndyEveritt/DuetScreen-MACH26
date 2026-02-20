@@ -129,5 +129,7 @@ namespace UI::Themes
 								   lv_style_merge(components.file, lvgl.bg_light);
 								   lv_style_set_pad_hor(components.file, 16);
 								   lv_style_set_pad_ver(components.file, 14);
+
+								   lv_style_set_pad_all(components.sidebar_btn, 16);
 							   });
 } // namespace UI::Themes
