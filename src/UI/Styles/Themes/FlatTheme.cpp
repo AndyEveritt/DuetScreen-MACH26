@@ -36,6 +36,8 @@ namespace UI::Themes
 									   lv_style_set_bg_grad_dir(lvgl.btn, LV_GRAD_DIR_NONE);
 									   lv_style_set_text_color(lvgl.btn, colors.primary);
 
+									   lv_style_set_border_color(lvgl.btn_checked, colors.primary);
+
 									   lv_style_set_bg_color(lvgl.actionBtn, colors.secondary);
 									   lv_style_set_bg_grad_dir(lvgl.actionBtn, LV_GRAD_DIR_NONE);
 									   lv_style_set_text_color(lvgl.actionBtn, colors.text);
