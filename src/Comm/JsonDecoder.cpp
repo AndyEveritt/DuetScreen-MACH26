@@ -661,7 +661,7 @@ namespace Comm
 	{
 		ZoneScoped;
 		LOG_DBG("checking {:d} chars", len);
-		LOG_DBG("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
+		LOG_VERBOSE("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
 
 		m_nextOut = 0;
 		while (m_nextOut < len)
