@@ -441,7 +441,7 @@ namespace UI
 			[this](size_t i, LvObj& parent)
 			{
 				auto control = std::make_unique<GenericAxisControl>(fmt::format("{}", i), parent);
-				lv_coord_t width = m_zControl.getStyleProp(LV_STYLE_WIDTH).num;
+				lv_coord_t width = m_zControl.getWidth();
 				control->setSize(width, LV_PCT(100));
 				control->setMinWidth(LV_SIZE_CONTENT);
 				control->setJogCallback(

@@ -73,6 +73,10 @@ namespace Comm
 			responseType = ResponseType::unknown;
 			responseData = nullptr;
 		}
+
+		bool hasFlags() const { return !m_flags.IsEmpty(); }
+		size_t GetArrayStartIndex() const;
+
 		ResponseType responseType = ResponseType::unknown;
 		std::variant<void*,
 					 OM::FileSystem::FileListRequestWeakPtr,
@@ -109,6 +113,7 @@ namespace Comm
 		size_t m_arrayDepth;
 		Seq* m_seq = nullptr;
 		String<50> m_key; // for OM responses
+		String<10> m_flags; // e.g. "vna0"
 	};
 } // namespace Comm
 #endif /* JNI_COMM_JSONDECODER_H_ */

@@ -175,6 +175,7 @@ namespace Comm
 		m_fieldId.Clear();
 		m_fieldVal.Clear();
 		m_key.Clear();
+		m_flags.Clear();
 		m_state = jsBegin;
 		m_lastState = jsBegin;
 		m_serialIoErrors = 0;
@@ -185,6 +186,39 @@ namespace Comm
 		{
 			i = 0;
 		}
+
+		responseType = ResponseType::unknown;
+		responseData = nullptr;
+	}
+
+	/**
+	 * @brief Find the array start index in the flags string. This will be the number after the 'a' character in the
+	 * flags string, or if there is no 'a' character it will be 0
+	 * @return the array start index
+	 */
+	size_t JsonDecoder::GetArrayStartIndex() const
+	{
+		size_t i = 0;
+		size_t start = 0;
+		size_t len = 0;
+		while (i < m_flags.strlen())
+		{
+			if (start > 0)
+			{
+				if (m_flags[i] < '0' || m_flags[i] > '9')
+				{
+					break;
+				}
+				len++;
+			}
+			if (m_flags[i] == 'a')
+			{
+				start = i + 1;
+			}
+			++i;
+		}
+		std::string_view num = std::string_view(m_flags.c_str() + start, len);
+		return num.empty() ? 0 : std::stoul(num.data(), nullptr, 10);
 	}
 
 	void JsonDecoder::StartReceivedMessage()
@@ -208,11 +242,6 @@ namespace Comm
 			}
 			m_seq = nullptr;
 		}
-
-		m_key.Clear();
-
-		responseType = ResponseType::unknown;
-		responseData = nullptr;
 	}
 
 	// Public functions called by the SerialIo module
@@ -274,6 +303,11 @@ namespace Comm
 			}
 			m_key.copy(data);
 			m_key.ReplaceAll('.', ':');
+			break;
+		}
+		case rcvFlags:
+		{
+			m_flags.copy(data);
 			break;
 		}
 
@@ -622,7 +656,8 @@ namespace Comm
 		ZoneScoped;
 		LOG_DBG("checking {:d} chars", len);
 		LOG_VERBOSE("rxBuffer: {:s}", std::string_view(reinterpret_cast<const char*>(rxBuffer), len));
-		m_nextOut = 0;
+
+		Reset();
 		while (m_nextOut < len)
 		{
 			char c = rxBuffer[m_nextOut];

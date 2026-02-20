@@ -18,6 +18,7 @@ class MoveSubscribers : public SubscriberMap
 		addSubscriber("move:axes^:speed", axisMaxSpeed);
 		addSubscriber("move:axes^:visible", axisVisible);
 		addSubscriber("move:axes^:workplaceOffsets^", axisWorkplaceOffset);
+		// addSubscriber("move:axes:next", axisNext);
 		addSubscriber("move:extruders^:factor", extrusionFactor);
 		addSubscriber("move:extruders^:filamentDiameter", extruderFilamentDiameter);
 		addSubscriber("move:extruders^:filament", extruderFilamentName);
@@ -52,6 +53,7 @@ class MoveSubscribers : public SubscriberMap
 	static bool axisMaxSpeed(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[]);
 	static bool axisVisible(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[]);
 	static bool axisWorkplaceOffset(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
+	static bool axisNext(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[]);
 	static bool extrusionFactor(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool extruderFilamentDiameter(Comm::JsonDecoder* decoder, const float& data, const size_t indices[]);
 	static bool extruderFilamentName(Comm::JsonDecoder* decoder, const char* data, const size_t indices[]);

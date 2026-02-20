@@ -26,6 +26,7 @@ namespace Comm
 	FieldTableEntry g_fieldTable[] = {
 		// M409 common fields
 		{rcvKey, "key"},
+		{rcvFlags, "flags"},
 
 		// M409 K"seqs" response
 		{rcvSeqsBoards, "seqs:boards"},

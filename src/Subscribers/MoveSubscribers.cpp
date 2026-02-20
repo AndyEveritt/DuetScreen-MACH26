@@ -6,13 +6,19 @@
 #include "ObjectModel/Heightmap.h"
 #include "UI/Core/Model.h"
 
+static size_t getAxisIndex(Comm::JsonDecoder* decoder, const size_t indices[])
+{
+	ZoneScoped;
+	return decoder->GetArrayStartIndex() + indices[0];
+}
+
 bool MoveSubscribers::acceleration(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAcceleration(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAcceleration(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->babystep = {:d}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->babystep = {:d}", index, data);
 		return false;
 	}
 	return true;
@@ -21,10 +27,10 @@ bool MoveSubscribers::acceleration(Comm::JsonDecoder* decoder, const uint32_t& d
 bool MoveSubscribers::babyStep(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetBabystepOffset(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetBabystepOffset(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->babystep = {:g}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->babystep = {:g}", index, data);
 		return false;
 	}
 	return true;
@@ -33,10 +39,10 @@ bool MoveSubscribers::babyStep(Comm::JsonDecoder* decoder, const float& data, co
 bool MoveSubscribers::axisHomed(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisHomedStatus(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisHomedStatus(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->homed = {:d}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->homed = {:d}", index, data);
 		return false;
 	}
 	return true;
@@ -45,10 +51,10 @@ bool MoveSubscribers::axisHomed(Comm::JsonDecoder* decoder, const bool& data, co
 bool MoveSubscribers::axisLetter(Comm::JsonDecoder* decoder, const char* data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisLetter(indices[0], data[0]))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisLetter(index, data[0]))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->letter = {:s}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->letter = {:s}", index, data);
 		return false;
 	}
 	return true;
@@ -57,10 +63,10 @@ bool MoveSubscribers::axisLetter(Comm::JsonDecoder* decoder, const char* data, c
 bool MoveSubscribers::axisMachinePosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisMachinePosition(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisMachinePosition(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->machinePosition = {:g}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->machinePosition = {:g}", index, data);
 		return false;
 	}
 	return true;
@@ -69,10 +75,10 @@ bool MoveSubscribers::axisMachinePosition(Comm::JsonDecoder* decoder, const floa
 bool MoveSubscribers::axisMinPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisMinPosition(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisMinPosition(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->min = {:g}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->min = {:g}", index, data);
 		return false;
 	}
 	return true;
@@ -81,10 +87,10 @@ bool MoveSubscribers::axisMinPosition(Comm::JsonDecoder* decoder, const float& d
 bool MoveSubscribers::axisMaxPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisMaxPosition(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisMaxPosition(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->max = {:g}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->max = {:g}", index, data);
 		return false;
 	}
 	return true;
@@ -93,10 +99,10 @@ bool MoveSubscribers::axisMaxPosition(Comm::JsonDecoder* decoder, const float& d
 bool MoveSubscribers::axisUserPosition(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisUserPosition(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisUserPosition(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->userPosition = {:g}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->userPosition = {:g}", index, data);
 		return false;
 	}
 	return true;
@@ -105,10 +111,10 @@ bool MoveSubscribers::axisUserPosition(Comm::JsonDecoder* decoder, const float& 
 bool MoveSubscribers::axisMaxSpeed(Comm::JsonDecoder* decoder, const int32_t& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisMaxSpeed(indices[0], data / 60))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisMaxSpeed(index, data / 60))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->maxSpeed = {:d}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->maxSpeed = {:d}", index, data);
 		return false;
 	}
 	return true;
@@ -117,10 +123,10 @@ bool MoveSubscribers::axisMaxSpeed(Comm::JsonDecoder* decoder, const int32_t& da
 bool MoveSubscribers::axisVisible(Comm::JsonDecoder* decoder, const bool& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisVisible(indices[0], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisVisible(index, data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->visible = {:d}", indices[0], data);
+		LOG_ERROR("Failed to set axis[{:d}]->visible = {:d}", index, data);
 		return false;
 	}
 	return true;
@@ -129,10 +135,10 @@ bool MoveSubscribers::axisVisible(Comm::JsonDecoder* decoder, const bool& data, 
 bool MoveSubscribers::axisWorkplaceOffset(Comm::JsonDecoder* decoder, const float& data, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
-	if (!OM::Move::SetAxisWorkplaceOffset(indices[0], indices[1], data))
+	const size_t index = getAxisIndex(decoder, indices);
+	if (!OM::Move::SetAxisWorkplaceOffset(index, indices[1], data))
 	{
-		LOG_ERROR("Failed to set axis[{:d}]->workplaceOffset[{:d}] = {:g}", indices[0], indices[1], data);
+		LOG_ERROR("Failed to set axis[{:d}]->workplaceOffset[{:d}] = {:g}", index, indices[1], data);
 		return false;
 	}
 	return true;
@@ -340,7 +346,7 @@ bool MoveSubscribers::distanceUnit(Comm::JsonDecoder* decoder, const char* data,
 bool MoveSubscribers::axesArrayEnd(Comm::JsonDecoder* decoder, const size_t indices[])
 {
 	ZoneScoped;
-	UNUSED(decoder);
+	const size_t index = getAxisIndex(decoder, indices);
 	const Comm::Seq* seq = decoder->GetSeq();
 	if (seq && seq->seqid == Comm::rcvSeqsMove && indices[0] >= MAX_REPORTED_AXES)
 	{
@@ -351,11 +357,25 @@ bool MoveSubscribers::axesArrayEnd(Comm::JsonDecoder* decoder, const size_t indi
 		 * can handle 10 currently. Will need to check the `next` field in the response to handle more than that.
 		 * Likely I will postpone handling that until the Duet comms are reworked to handle request/response IDs (#69)
 		 */
-		Comm::DUET.RequestModel("move.axes", "vna0");
+		Comm::DUET.RequestModel("move.axes", fmt::format("vna{:d}", index));
 		return true;
 	}
-	OM::Move::RemoveAxis(indices[0], true);
+	OM::Move::RemoveAxis(index, true);
 	Model::get().post<EventType::AxesData>();
+	return true;
+}
+
+/* Not used */
+bool MoveSubscribers::axisNext(Comm::JsonDecoder* decoder, const uint32_t& data, const size_t indices[])
+{
+	ZoneScoped;
+	const size_t index = getAxisIndex(decoder, indices);
+	LOG_DBG("Next axis index: {:d} (current index: {:d})", data, index);
+	if (data != 0)
+	{
+		// This means there are more axes to come, so we should request the next one
+		Comm::DUET.RequestModel("move.axes", fmt::format("vna{:d}", data));
+	}
 	return true;
 }
 
