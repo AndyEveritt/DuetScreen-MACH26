@@ -36,15 +36,14 @@ namespace OM::Move
 
 	static auto convertAxisLetterToGcode(const char letter)
 	{
-		String<3> result;
+		std::string result;
 		if (std::islower(letter))
 		{
-			result[0] = '\'';
-			result[1] = letter;
+			result = "'" + std::string(1, letter);
 		}
 		else
 		{
-			result[0] = letter;
+			result = letter;
 		}
 		return result;
 	}
@@ -65,7 +64,7 @@ namespace OM::Move
 
 	void Axis::Home()
 	{
-		Comm::DUET.SendGcodef("G28 {:s}\n", convertAxisLetterToGcode(letter[0]).c_str());
+		Comm::DUET.SendGcodef("G28 {:s}\n", convertAxisLetterToGcode(letter[0]));
 	}
 
 	/**
@@ -78,7 +77,7 @@ namespace OM::Move
 	void Axis::MoveAbsolute(float position, uint32_t feedrate)
 	{
 		Comm::DUET.SendGcodef("M120\nG90\nG1 {:s}{:g} F{:g}\nM121\n",
-							  convertAxisLetterToGcode(letter[0]).c_str(),
+							  convertAxisLetterToGcode(letter[0]),
 							  Units::convertDisplayedDistanceToDuetUnits(position),
 							  Units::convertDisplayedSpeedToDuetUnits(static_cast<float>(feedrate)));
 	}
@@ -93,7 +92,7 @@ namespace OM::Move
 	void Axis::MoveRelative(float distance, uint32_t feedrate)
 	{
 		Comm::DUET.SendGcodef("M120\nG91\nG1 {:s}{:g} F{:g}\nM121\n",
-							  convertAxisLetterToGcode(letter[0]).c_str(),
+							  convertAxisLetterToGcode(letter[0]),
 							  Units::convertDisplayedDistanceToDuetUnits(distance),
 							  Units::convertDisplayedSpeedToDuetUnits(static_cast<float>(feedrate)));
 	}
