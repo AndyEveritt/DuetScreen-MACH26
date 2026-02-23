@@ -335,7 +335,7 @@ bool DeleteCachedThumbnail(std::string_view filepath)
 {
 	LOG_INFO("Deleting thumbnail for {:s}", filepath);
 	bool ret = true;
-	ret &= std::filesystem::remove(GetThumbnailPath(filepath, false));
+	// ret &= std::filesystem::remove(GetThumbnailPath(filepath, false));
 	ret &= std::filesystem::remove(GetThumbnailPath(filepath, true));
 	return ret;
 }

@@ -464,7 +464,27 @@ namespace Comm
 		}
 	}
 
-	// Look for combining characters in the string value and convert them if possible
+	/**
+	 * @brief Convert Unicode combining characters in the string value to their precomposed equivalents if possible.
+	 *
+	 * Some text editors save accented characters as a combination of a base character and a combining diacritical mark.
+	 * For example, "á" might be saved as "a" followed by a combining acute accent. This function looks for such
+	 * combinations in the string value and converts them to their precomposed equivalents if possible. This is done by
+	 * looking for UTF-8 encoded Unicode characters in the string value and checking if they are combining diacritical
+	 * marks that we handle. If they are, we look at the previous character and see if it can be combined with the
+	 * diacritical mark to form a precomposed character. If it can, we replace the previous character with the
+	 * precomposed character and remove the diacritical mark from the string.
+	 *
+	 * @note This function is causes significant slow downs when processing large JSON responses (SBC thumbnails). It is
+	 * currently disabled since LVGL has some limited support for rendering multi codepoint graphemes, and the main
+	 * issue with not converting is that some diacritical marks are rendered as separate characters instead of being
+	 * combined with the previous character. If this becomes a bigger issue, we could consider only converting certain
+	 * common combinations of characters and diacritical marks, or we could look into optimizing the function to reduce
+	 * the performance impact.
+	 *
+	 * @note Since the Json parser is due to be reworked anyway. It will be disabled until then unless there is an
+	 * explicit complaint.
+	 */
 	void JsonDecoder::ConvertUnicode()
 	{
 		ZoneScoped;
@@ -852,7 +872,7 @@ namespace Comm
 					switch (c)
 					{
 					case '"':
-						ConvertUnicode();
+						// ConvertUnicode();
 						ProcessField();
 						m_state = jsEndVal;
 						break;

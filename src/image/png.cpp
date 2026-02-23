@@ -2,7 +2,9 @@
 
 #include "png.h"
 #include <algorithm>
+#include <errno.h>
 #include <stdio.h>
+#include <unistd.h>
 
 PNG::PNG()
 	: m_imageFileName(nullptr)
@@ -46,6 +48,22 @@ bool PNG::Close()
 		return true;
 	}
 	LOG_DBG("Closing file {:s}", m_imageFileName);
+	if (fflush(m_imageFile) != 0)
+	{
+		LOG_ERROR("Failed to fflush file {:s}: {}", m_imageFileName, errno);
+		/* attempt to continue to close */
+	}
+
+	int fd = fileno(m_imageFile);
+	if (fd != -1)
+	{
+		if (fsync(fd) != 0)
+		{
+			LOG_ERROR("Failed to fsync file {:s}: {}", m_imageFileName, errno);
+			/* attempt to continue to close */
+		}
+	}
+
 	if (fclose(m_imageFile) != 0)
 	{
 		LOG_ERROR("Failed to close file {:s}", m_imageFileName);
@@ -62,6 +80,27 @@ size_t PNG::appendData(unsigned char data[], int size)
 		LOG_WARN("File {:s} not open", m_imageFileName);
 		return 0;
 	}
-	dataSize += size;
-	return fwrite(data, 1, size, m_imageFile);
+	if (size <= 0)
+	{
+		return 0;
+	}
+
+	size_t totalWritten = 0;
+	while (totalWritten < static_cast<size_t>(size))
+	{
+		size_t toWrite = static_cast<size_t>(size) - totalWritten;
+		size_t written = fwrite(data + totalWritten, 1, toWrite, m_imageFile);
+		if (written == 0)
+		{
+			if (ferror(m_imageFile))
+			{
+				LOG_ERROR("Failed to write PNG data to {:s}: {}", m_imageFileName, errno);
+			}
+			break;
+		}
+		totalWritten += written;
+	}
+
+	dataSize += totalWritten;
+	return totalWritten;
 }
