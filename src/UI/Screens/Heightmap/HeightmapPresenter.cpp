@@ -11,12 +11,6 @@
 
 namespace UI
 {
-	/**
-	 * FIXME: #87 This class is not thread safe since m_heightmap can be accessed and set by multiple threads without
-	 * synchronization. This can cause the program to crash if for example the Duet disconnects while a heightmap is
-	 * being rendered.
-	 */
-
 	void HeightmapPresenter::setRenderMode(HeightmapRenderMode mode)
 	{
 		ZoneScoped;
@@ -27,8 +21,11 @@ namespace UI
 	void HeightmapPresenter::setHeightmap(const std::shared_ptr<OM::Heightmap>& heightmap)
 	{
 		ZoneScoped;
-		m_heightmap = heightmap;
-		if (m_heightmap == nullptr)
+		{
+			std::unique_lock lock(m_heightmapMutex);
+			m_heightmap = heightmap;
+		}
+		if (heightmap == nullptr)
 		{
 			m_view->clear();
 		}
@@ -42,21 +39,27 @@ namespace UI
 			return;
 		}
 
-		if (m_heightmap == nullptr)
+		std::shared_ptr<OM::Heightmap> heightmap;
+		{
+			std::shared_lock lock(m_heightmapMutex);
+			heightmap = m_heightmap;
+		}
+
+		if (heightmap == nullptr)
 		{
 			m_view->clear();
 			return;
 		}
 
-		if (!m_heightmap->IsValid())
+		if (!heightmap->IsValid())
 		{
 			LOG_WARN("Heightmap is not valid");
 			m_view->clear();
 			return;
 		}
 
-		auto axis0 = m_heightmap->meta.GetAxis(0);
-		auto axis1 = m_heightmap->meta.GetAxis(1);
+		auto axis0 = heightmap->meta.GetAxis(0);
+		auto axis1 = heightmap->meta.GetAxis(1);
 
 		if (axis0 == nullptr || axis1 == nullptr)
 		{
@@ -64,9 +67,9 @@ namespace UI
 			return;
 		}
 
-		LOG_DBG("Rendering heightmap {:s}", m_heightmap->GetFileName());
+		LOG_DBG("Rendering heightmap {:s}", heightmap->GetFileName());
 
-		m_view->setShownHeightmapName(m_heightmap->GetFileName());
+		m_view->setShownHeightmapName(heightmap->GetFileName());
 		m_view->setXRange({static_cast<int32_t>(axis0->minPosition), static_cast<int32_t>(axis0->maxPosition)});
 		m_view->setYRange({static_cast<int32_t>(axis1->minPosition), static_cast<int32_t>(axis1->maxPosition)});
 
@@ -79,8 +82,8 @@ namespace UI
 			m_view->setValueRange(-0.25f, 0.25f);
 			break;
 		case HeightmapRenderMode::Auto:
-			m_view->setValueRange(static_cast<float>(m_heightmap->GetMinError()),
-								  static_cast<float>(m_heightmap->GetMaxError()));
+			m_view->setValueRange(static_cast<float>(heightmap->GetMinError()),
+								  static_cast<float>(heightmap->GetMaxError()));
 			break;
 		}
 
@@ -113,7 +116,7 @@ namespace UI
 				{
 					float x = x_min + (static_cast<float>(px) * xStep);
 					float y = y_min + (static_cast<float>(py) * yStep);
-					double value = m_heightmap->GetInterpolatedPoint(x, y);
+					double value = heightmap->GetInterpolatedPoint(x, y);
 					if (std::isnan(value))
 					{
 						continue;
@@ -126,7 +129,7 @@ namespace UI
 		m_view->renderColorBar();
 
 #if RENDER_MEASUREMENT_POINTS
-		const auto& measurements = m_heightmap->GetPoints();
+		const auto& measurements = heightmap->GetPoints();
 		for (size_t i = 0; i < measurements.size(); i++)
 		{
 			const auto& point = measurements[i];
@@ -134,12 +137,12 @@ namespace UI
 		}
 #endif
 
-		m_view->setStatistics(m_heightmap->GetPointCount(),
-							  m_heightmap->GetArea() / 100,
-							  m_heightmap->GetMinError(),
-							  m_heightmap->GetMaxError(),
-							  m_heightmap->GetMeanError(),
-							  m_heightmap->GetStdDev());
+		m_view->setStatistics(heightmap->GetPointCount(),
+							  heightmap->GetArea() / 100,
+							  heightmap->GetMinError(),
+							  heightmap->GetMaxError(),
+							  heightmap->GetMeanError(),
+							  heightmap->GetStdDev());
 	}
 
 	void HeightmapPresenter::setActiveHeightmap(const size_t index)
@@ -153,8 +156,15 @@ namespace UI
 
 		const std::string& name = m_heightmapFiles[index]->GetName();
 		LOG_INFO("Loading heightmap {:s}", name);
-		m_heightmap = OM::GetHeightmapData(name);
-		m_heightmap->LoadFromDuet([this](OM::Heightmap& /* heightmap */) { render(); });
+		auto map = OM::GetHeightmapData(name);
+		{
+			std::unique_lock lock(m_heightmapMutex);
+			m_heightmap = map;
+		}
+		if (map)
+		{
+			map->LoadFromDuet([this](OM::Heightmap& /* heightmap */) { render(); });
+		}
 	}
 
 	void HeightmapPresenter::toggleHeightmap(const size_t index)
@@ -212,14 +222,19 @@ namespace UI
 	{
 		ZoneScoped;
 		LOG_DBG("New axes data");
-		if (m_heightmap == nullptr)
+		std::shared_ptr<OM::Heightmap> heightmap;
+		{
+			std::shared_lock lock(m_heightmapMutex);
+			heightmap = m_heightmap;
+		}
+		if (heightmap == nullptr)
 		{
 			LOG_DBG("Heightmap is not set, skipping axis range update");
 			return;
 		}
 
-		auto axis0 = m_heightmap->meta.GetAxis(0);
-		auto axis1 = m_heightmap->meta.GetAxis(1);
+		auto axis0 = heightmap->meta.GetAxis(0);
+		auto axis1 = heightmap->meta.GetAxis(1);
 
 		if (axis0 == nullptr || axis1 == nullptr)
 		{
@@ -234,7 +249,7 @@ namespace UI
 			return;
 		}
 
-		if (m_heightmap != nullptr && m_heightmap->IsValid())
+		if (heightmap != nullptr && heightmap->IsValid())
 		{
 			render();
 		}
@@ -323,11 +338,14 @@ namespace UI
 	{
 		ZoneScoped;
 		LOG_DBG("Disconnect");
-		if (m_heightmap != nullptr)
 		{
-			m_heightmap = nullptr;
-			m_view->clear();
-			m_view->setHeightmapCount(0);
+			std::unique_lock lock(m_heightmapMutex);
+			if (m_heightmap != nullptr)
+			{
+				m_heightmap = nullptr;
+			}
 		}
+		m_view->clear();
+		m_view->setHeightmapCount(0);
 	}
 } // namespace UI

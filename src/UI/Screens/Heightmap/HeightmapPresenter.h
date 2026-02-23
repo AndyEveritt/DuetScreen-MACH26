@@ -2,6 +2,8 @@
 
 #include "ObjectModel/Heightmap.h"
 #include "UI/Core/Presenter.h"
+#include "tracy/Tracy.hpp"
+#include <shared_mutex>
 
 namespace UI
 {
@@ -58,6 +60,7 @@ namespace UI
 		bool checkMode();
 
 		std::shared_ptr<OM::Heightmap> m_heightmap;
+		TracySharedLockable(std::shared_mutex, m_heightmapMutex);
 		OM::FileSystem::ItemList m_heightmapFiles;
 		HeightmapRenderMode m_mode = HeightmapRenderMode::Fixed;
 		AxisRange m_axis0Range;
