@@ -274,9 +274,24 @@ int main(int argc, char** argv)
 				first_run = false;
 			}
 #endif
-			uint32_t inactive_time = lv_display_get_inactive_time(NULL);
-			uint32_t timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT).count() * 1000;
-			if (timeout > 0 && inactive_time > timeout)
+			std::chrono::milliseconds inactive_time(lv_display_get_inactive_time(NULL));
+			const auto timeout = StorageHelper::getData(ID_SCREENSAVER_TIMEOUT);
+			const OM::PrinterStatus printerStatus = OM::GetStatus();
+
+			/**
+			 * Screen saver will not activate while the printer is `busy` since this is likely when the user will be
+			 * interacting with the screen or DWC.
+			 *
+			 * The status will also be `busy` when a `M291` modal is open.
+			 *
+			 * It is currently intentional that the screen saver can activate while the status is one of the printing
+			 * states since the printer may be in a location where having the screen on full brightness is undesirable,
+			 * and the user can easily disable the screen saver in settings if this isn't desired behaviour. This may be
+			 * revisited in the future if it is found that users want the screen saver to be disabled during printing as
+			 * well.
+			 */
+			if (timeout > std::chrono::seconds(0) && inactive_time > timeout &&
+				(printerStatus != OM::PrinterStatus::busy))
 			{
 				if (!screensaver_enabled)
 				{
@@ -446,6 +461,15 @@ static lv_display_t* hal_init(int32_t w, int32_t h)
 								}
 							},
 							LV_EVENT_DELETE,
+							nullptr);
+						lv_obj_add_event_cb(
+							cursor_obj,
+							[](lv_event_t* e)
+							{
+								ZoneScopedN("Mouse Activity Callback");
+								lv_display_trigger_activity(NULL); // Reset screensaver timer on mouse activity
+							},
+							LV_EVENT_STYLE_CHANGED, /* XY pos counts as a style change */
 							nullptr);
 					}
 					lv_indev_set_display(indev, disp);

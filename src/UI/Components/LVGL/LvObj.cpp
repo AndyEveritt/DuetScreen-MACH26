@@ -972,6 +972,7 @@ namespace UI
 
 		setFlag(LV_OBJ_FLAG_HIDDEN, false);
 		showInner();
+		lv_display_trigger_activity(NULL); // Reset screensaver timer
 	}
 
 	void LvObj::showInner()
