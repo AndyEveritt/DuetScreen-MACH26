@@ -59,7 +59,7 @@
 #define LV_USE_LODEPNG 1
 #define LV_USE_LIBPNG 1
 #define LV_USE_BMP 1
-#define LV_USE_FFMPEG 0 /* Not used by DuetScreen; saves startup time and binary size */
+#define LV_USE_FFMPEG 1 /* Needed to render the QOI (converted to BMP) thumbnails */
 
 /* Don't build unnecessary components */
 #define LV_BUILD_EXAMPLES 0
