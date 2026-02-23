@@ -9,6 +9,8 @@
 #include "utils/StorageHelper.h"
 #include "utils/TimeHelper.h"
 
+#define AUTO_HIDE_KEYBOARD_ON_DEFOCUS 0
+
 namespace UI
 {
 	static constexpr lv_coord_t s_gcodeWidth = 50;
@@ -302,12 +304,14 @@ namespace UI
 			view->showKeyboard(true);
 			break;
 		}
+#if AUTO_HIDE_KEYBOARD_ON_DEFOCUS
 		case LV_EVENT_DEFOCUSED:
 		{
 			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_DEFOCUSED");
 			view->showKeyboard(false);
 			break;
 		}
+#endif
 		case LV_EVENT_VALUE_CHANGED:
 		{
 			ZoneScopedN("ConsoleView::onKeyboardEvent:LV_EVENT_VALUE_CHANGED");
