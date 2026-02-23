@@ -32,4 +32,10 @@ namespace UI
 			break;
 		}
 	}
+
+	void DashboardPresenter::newJobFileName(const std::string& /* filename */)
+	{
+		ZoneScoped;
+		getView()->showStatusTab();
+	}
 } // namespace UI

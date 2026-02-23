@@ -18,8 +18,6 @@ namespace UI
 
 	Dashboard::Dashboard(const std::string& name, LvObj& parent)
 		: View(name, parent, layout_t(0, 0, 100, 100))
-		, m_fileView("files", m_tabs.addTab(_("app_drawer.files")))
-		, m_statusView("status", m_tabs.addTab(_("app_drawer.status")))
 	{
 		ZoneScoped;
 		setStylePad(0);
@@ -28,6 +26,7 @@ namespace UI
 		m_toolList.addStyle(Themes::getLvglStyles().card);
 		m_graph.addStyle(Themes::getLvglStyles().card);
 		m_fileView.addStyle(Themes::getLvglStyles().card);
+		m_macroView.addStyle(Themes::getLvglStyles().card);
 
 		setLayoutStyle(LV_LAYOUT_GRID);
 		setGridDsc(s_mainWindowLayoutColDsc, s_mainWindowLayoutRowDsc);
@@ -48,7 +47,7 @@ namespace UI
 
 		/* Tabs (Jobs & Status) */
 		m_tabs.setActiveTab(0);
-		// m_tabs.setTabBarPosition(LV_DIR_TOP, true);
+		m_macroView.getPresenter()->setBaseFolder(FilePresenter::BaseFolder::MACROS);
 	}
 
 	void Dashboard::disableJobsTab(bool disable)

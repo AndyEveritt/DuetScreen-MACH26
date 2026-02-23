@@ -27,9 +27,14 @@ namespace UI
 
 		// Observers
 		void newStatus(const OM::PrinterStatus& status);
+		void newJobFileName(const std::string& filename);
 
 	  protected:
-		void onInit() override { registerEventListener<EventType::Status>(this, &DashboardPresenter::newStatus); }
+		void onInit() override
+		{
+			registerEventListener<EventType::Status>(this, &DashboardPresenter::newStatus);
+			registerEventListener<EventType::JobFileName>(this, &DashboardPresenter::newJobFileName);
+		}
 		void onActivate() override {}
 		void onDeactivate() override {}
 

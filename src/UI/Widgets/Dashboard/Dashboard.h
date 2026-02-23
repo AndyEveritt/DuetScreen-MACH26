@@ -29,7 +29,7 @@ namespace UI
 		StatusView& getStatusView() { return m_statusView; }
 
 		void showJobsTab() { m_tabs.setActiveTab(0); }
-		void showStatusTab() { m_tabs.setActiveTab(1); }
+		void showStatusTab() { m_tabs.setActiveTab(2); }
 		void disableJobsTab(bool disable);
 
 		void setNumberPad(ModalNumberPad* np);
@@ -41,7 +41,8 @@ namespace UI
 		TemperatureGraph m_graph{"graph", getRoot()};
 
 		TabView m_tabs{"tabs", getRoot()};
-		FileView m_fileView;
-		StatusView m_statusView;
+		FileView m_fileView{"files", m_tabs.addTab(_("file.jobs"))};
+		FileView m_macroView{"macros", m_tabs.addTab(_("file.macros"))};
+		StatusView m_statusView{"status", m_tabs.addTab(_("app_drawer.status"))};
 	};
 } // namespace UI
