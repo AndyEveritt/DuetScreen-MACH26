@@ -17,6 +17,7 @@ namespace UI
 		void newDuetName();
 		void newStatus(const OM::PrinterStatus& status);
 		void newTime();
+		void newHeaterData();
 
 	  protected:
 		void onInit() override
@@ -24,6 +25,7 @@ namespace UI
 			registerEventListener<EventType::NetworkName>(this, &StatusBarPresenter::newDuetName);
 			registerEventListener<EventType::Status>(this, &StatusBarPresenter::newStatus);
 			registerEventListener<EventType::Time>(this, &StatusBarPresenter::newTime);
+			registerEventListener<EventType::HeaterData>(this, &StatusBarPresenter::newHeaterData);
 		}
 		void onActivate() override;
 		void onDeactivate() override {}

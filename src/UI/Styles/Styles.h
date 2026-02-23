@@ -91,6 +91,7 @@ namespace UI::Themes
 		Style text_muted;
 		Style text_emphasis;
 		Style text_header;
+		Style text_warning;
 
 		/* Border */
 		Style border;

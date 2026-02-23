@@ -18,12 +18,17 @@ namespace UI
 		class LvSpan
 		{
 		  public:
-			LvSpan(lv_span_t& span)
-				: m_span(span)
+			LvSpan(LvSpanGroup& spangroup, lv_span_t& span)
+				: m_spangroup(spangroup)
+				, m_span(span)
 			{
 			}
-            void setText(const std::string& text);
+
+			void setText(const std::string& text);
 			void setTextStatic(const char* text);
+
+			void setStyle(const lv_style_t* style);
+			void setStyleStatic(const lv_style_t* style);
 
 			std::string_view getText() const;
             const lv_style_t* getStyle() const;
@@ -31,6 +36,7 @@ namespace UI
             operator lv_span_t*() { return &m_span; }
 
 		  private:
+			LvSpanGroup& m_spangroup;
 			lv_span_t& m_span;
 		};
 
@@ -38,10 +44,11 @@ namespace UI
 
         LvSpan addSpan();
         void deleteSpan(LvSpan&& span);
+		size_t removeSpansFromIndex(size_t index, bool allFollowing = false);
 
-        void setSpanText(LvSpan& span, const std::string& text);
-        void setSpanTextStatic(LvSpan& span, const char* text);
-        void setSpanStyle(LvSpan& span, const lv_style_t* style);
+		void setSpanText(LvSpan& span, const std::string& text);
+		void setSpanTextStatic(LvSpan& span, const char* text);
+		void setSpanStyle(LvSpan& span, const lv_style_t* style);
 		void setSpanStyleStatic(LvSpan& span, const lv_style_t* style);
 		void setOverflow(lv_span_overflow_t overflow);
         void setIndent(int32_t indent);
@@ -49,6 +56,7 @@ namespace UI
         void setMode(lv_span_mode_t mode);
 
 		std::optional<LvSpan> getSpanByIndex(int32_t index);
+		LvSpan getOrCreateSpanByIndex(size_t index);
 		uint32_t getSpanCount() const;
         lv_span_overflow_t getOverflow() const;
         int32_t getIndent() const;

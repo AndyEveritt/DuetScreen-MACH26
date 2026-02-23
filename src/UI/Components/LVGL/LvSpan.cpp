@@ -25,7 +25,7 @@ namespace UI
 		{
 			throw std::runtime_error("Failed to add span");
 		}
-		return LvSpan(*span);
+		return LvSpan(*this, *span);
 	}
 
 	void LvSpanGroup::deleteSpan(LvSpan&& span)
@@ -33,6 +33,25 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		lv_spangroup_delete_span(getRootPtr(), static_cast<lv_span_t*>(span));
+	}
+
+	size_t LvSpanGroup::removeSpansFromIndex(size_t index, bool allFollowing)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		size_t spanCount = getSpanCount();
+		if (index >= spanCount)
+		{
+			return 0;
+		}
+
+		size_t countToRemove = allFollowing ? (spanCount - index) : 1;
+		for (size_t i = 0; i < countToRemove; i++)
+		{
+			deleteSpan(getSpanByIndex(static_cast<int32_t>(index)).value());
+		}
+
+		return countToRemove;
 	}
 
 	void LvSpanGroup::setSpanText(LvSpan& span, const std::string& text)
@@ -100,7 +119,20 @@ namespace UI
 		{
 			return std::nullopt;
 		}
-		return LvSpan(*span);
+		return LvSpan(*this, *span);
+	}
+
+	LvSpanGroup::LvSpan LvSpanGroup::getOrCreateSpanByIndex(size_t index)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		auto spanOpt = getSpanByIndex(static_cast<int32_t>(index));
+		if (spanOpt.has_value())
+		{
+			return spanOpt.value();
+		}
+
+		return addSpan();
 	}
 
 	uint32_t LvSpanGroup::getSpanCount() const
@@ -175,7 +207,7 @@ namespace UI
 		{
 			return std::nullopt;
 		}
-		return LvSpan(*span);
+		return LvSpan(const_cast<LvSpanGroup&>(*this), *span);
 	}
 
 	void LvSpanGroup::refresh()
@@ -197,6 +229,18 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		lv_span_set_text_static(&m_span, text);
+	}
+
+	void LvSpanGroup::LvSpan::setStyle(const lv_style_t* style)
+	{
+		ZoneScoped;
+		m_spangroup.setSpanStyle(*this, style);
+	}
+
+	void LvSpanGroup::LvSpan::setStyleStatic(const lv_style_t* style)
+	{
+		ZoneScoped;
+		m_spangroup.setSpanStyleStatic(*this, style);
 	}
 
 	std::string_view LvSpanGroup::LvSpan::getText() const

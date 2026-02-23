@@ -149,6 +149,9 @@ namespace UI::Themes
 		lv_style_set_text_color(lvgl.text_header, m_colors.text_header);
 		lv_style_set_text_font(lvgl.text_header, &fonts.header);
 
+		lv_style_set_text_color(lvgl.text_warning, m_colors.error);
+		lv_style_set_text_font(lvgl.text_warning, &fonts.emphasis);
+
 		lv_style_set_text_line_space(lvgl.line_space_large, LV_DPX_CALC(lv_display_get_dpi(NULL), 20));
 
 		lv_style_set_text_align(lvgl.text_align_center, LV_TEXT_ALIGN_CENTER);

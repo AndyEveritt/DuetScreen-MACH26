@@ -73,6 +73,13 @@ namespace OM
 			void UpdatePwm(const float value) { avgPwm = value; }
 			void UpdateMin(const float value) { this->min = value; }
 			void UpdateMax(const float value) { this->max = value; }
+
+			int32_t GetTargetTemp() const
+			{
+				return (status == HeaterStatus::active)	   ? activeTemp
+					   : (status == HeaterStatus::standby) ? standbyTemp
+														   : 0;
+			}
 		};
 
 		using HeaterPtr = std::shared_ptr<Heater>;
