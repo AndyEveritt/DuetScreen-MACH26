@@ -339,10 +339,41 @@ def main() -> int:
         )
         any_issues = any_issues or issues
 
+    # In interactive mode, re-check for issues after possible user edits
+    if args.interactive and not args.dry_run:
+        # Reload and re-validate all files
+        post_issues = False
+        for lang_path in lang_files:
+            if lang_path.name == REFERENCE_FILE:
+                continue
+            lang_data = load_jsonc(lang_path)
+            translations = lang_data.get("translations", {})
+            lang_flat = flatten_keys(translations)
+            ref_keys = set(ref_flat.keys())
+            lang_keys = set(lang_flat.keys())
+            extra_keys = lang_keys - ref_keys
+            missing_keys = ref_keys - lang_keys
+            brace_mismatches = []
+            for key in ref_keys & lang_keys:
+                ref_count = count_format_braces(ref_flat[key])
+                lang_count = count_format_braces(lang_flat[key])
+                if ref_count != lang_count:
+                    brace_mismatches.append((key, ref_count, lang_count))
+            if extra_keys or missing_keys or brace_mismatches:
+                post_issues = True
+        if not post_issues:
+            print("\nAll translation files are in sync after interactive edits.")
+            return 0
+        else:
+            print("\nTranslation file issues remain after interactive edits.")
+            return 1
+
     if not any_issues:
         print("\nAll translation files are in sync.")
-
-    return 0
+        return 0
+    else:
+        print("\nTranslation file issues detected.")
+        return 1
 
 
 if __name__ == "__main__":

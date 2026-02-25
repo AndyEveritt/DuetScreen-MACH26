@@ -1,0 +1,39 @@
+# GitHub Action: Verify i18n Translation Files
+#
+# This workflow runs on pull requests and pushes to main, and checks that all translation files
+# are in sync with the reference (en-GB.json) using the manage_translations.py script.
+#
+# Fails if any translation file is missing keys, has extra keys, or has format mismatches.
+
+name: Verify i18n Translations
+
+on:
+  pull_request:
+    paths:
+      - 'assets/i18n/*.json'
+      - 'scripts/manage_translations.py'
+  push:
+    paths:
+      - 'assets/i18n/*.json'
+      - 'scripts/manage_translations.py'
+
+jobs:
+  check-translations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Check translation files
+        run: |
+          python scripts/manage_translations.py --show-keys
