@@ -289,6 +289,7 @@
       "screen": "Screen",
       "screen_header": "Screen Settings",
       "screensaver_timeout": "Screensaver Timeout (s):",
+      "send_config_to_duet": "Upload config to Duet",
       "show_confirmation_dialogs": "Show Confirmation Dialogs:",
       "storage_info": "Used Storage: ",
       "storage_info_format": "{:s} / {:s} ({:d}%)",

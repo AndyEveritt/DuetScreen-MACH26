@@ -165,6 +165,7 @@ namespace UI
 		Button m_runBuildrootSetup{"run_buildroot_setup", m_controls};
 #endif
 		Button m_clearCache{"clear_duetscreen_cache", m_controls};
+		Button m_sendConfigJson{"send_config_json", m_controls};
 
 		/* Storage */
 		LvLabel m_storageInfo{"storage_info", getRoot()};

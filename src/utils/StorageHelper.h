@@ -123,6 +123,8 @@ class StorageHelper
 		return value;
 	}
 
+	static std::string dump();
+
   private:
 	inline static nlohmann::json data_;
 };

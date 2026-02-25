@@ -282,9 +282,7 @@ namespace Comm
 	bool Duet::Post(std::string_view subUrl, HttpResponse& r, hv::QueryParams& queryParameters, std::string_view data)
 	{
 		ZoneScoped;
-#if 0
-		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
-			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		if (!IsConnected())
 		{
 			if (!Connect())
 			{
@@ -292,23 +290,36 @@ namespace Comm
 				return false;
 			}
 		}
-		if (!Comm::Post(GetBaseUrl(), subUrl, r, queryParameters, data, m_sessionKey))
+
+		HttpRequest req;
+		req.method = HTTP_POST;
+		req.host = GetBaseUrl();
+		req.path = subUrl;
+		req.headers["Connection"] = "keep-alive";
+		req.headers["Accept"] = "application/json";
+		req.headers["Content-Type"] = "application/json";
+		if (m_sessionKey != sm_noSessionKey)
 		{
-			if (r.code == 401 || r.code == 403)
-			{
-				LOG_ERROR("HTTP error {:d}: Likely invalid sessionKey {:d}. Running rr_connect", (int)r.code, m_sessionKey);
-				Connect();
-				return Comm::Post(GetBaseUrl(), subUrl, r, queryParameters, data, m_sessionKey);
-			}
+			// req.headers["X-Session-Key"] = fmt::format("{:d}", m_sessionKey).c_str();
+		}
+		req.query_params = queryParameters;
+		req.timeout = HTTP_TIMEOUT;
+		req.body = data;
+
+		req.DumpUrl();
+
+		hv::HttpClient cli;
+		cli.send(&req, &r); // `send()` is not thread safe if using the same client so client is created on stack
+
+		LOG_DBG("Response (post): {:s} {:s}", req.url.c_str(), r.status_message());
+
+		if (r.status_code != HTTP_STATUS_OK)
+		{
+			LOG_ERROR("HTTP error {:d}: Likely invalid sessionKey {:d}.", (int)r.status_code, m_sessionKey);
 			return false;
 		}
-		m_lastRequestTime = TimeHelper::getCurrentTime();
-#else
-		UNUSED(subUrl);
-		UNUSED(r);
-		UNUSED(queryParameters);
-		UNUSED(data);
-#endif
+		LOG_VERBOSE("{:s}", r.body.c_str());
+		m_lastRequestTime = TimeHelper::getRunningTime();
 		return true;
 	}
 

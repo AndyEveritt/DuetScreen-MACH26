@@ -766,6 +766,7 @@ namespace UI
 #if DEVELOPER_MODE
 				 &m_runBuildrootSetup,
 #endif
+				 &m_sendConfigJson,
 				 &m_clearCache,
 			 })
 		{
@@ -776,6 +777,14 @@ namespace UI
 		m_eraseAndRestart.setText(_("settings.erase_and_restart"));
 		m_reboot.setText(_("settings.reboot"));
 		m_startHardwareTest.setText(_("settings.start_hardware_test"));
+		m_sendConfigJson.setText(_("settings.send_config_to_duet"));
+		m_sendConfigJson.addClickedCallback(
+			[this](lv_event_t*)
+			{
+				std::string config = StorageHelper::dump();
+				Comm::DUET.UploadFile(fmt::format("{:s}/duetscreen.json", OM::Directories::GetSystemDirectory()),
+									  config);
+			});
 
 		m_restart.addClickedCallback([](lv_event_t*) { Restart(); });
 		m_eraseAndRestart.addClickedCallback([](lv_event_t*) { EraseAndRestart(); });

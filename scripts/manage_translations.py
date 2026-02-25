@@ -76,7 +76,11 @@ def load_jsonc(path: Path) -> dict:
     """Load a JSONC file, stripping comments before parsing."""
     raw = path.read_text(encoding="utf-8")
     cleaned = strip_jsonc_comments(raw)
-    return json.loads(cleaned)
+    try:
+        return json.loads(cleaned)
+    except json.decoder.JSONDecodeError as e:
+        print(f"\n[ERROR] Failed to parse JSON in '{path}': {e}\n", file=sys.stderr)
+        return None
 
 
 def save_json(path: Path, data: dict) -> None:
@@ -163,14 +167,18 @@ def process_file(
     dry_run: bool,
 ) -> bool:
     """Process a single translation file. Returns True if any issues found."""
+
     lang_data = load_jsonc(lang_path)
+    if lang_data is None:
+        print(f"[SKIP] Skipping file due to JSON error: {lang_path}")
+        return True
     translations = lang_data.get("translations", {})
     lang_flat = flatten_keys(translations)
     ref_keys = set(ref_flat.keys())
     lang_keys = set(lang_flat.keys())
 
     extra_keys = sorted(lang_keys - ref_keys)
-    missing_keys = sorted(ref_keys - lang_keys)
+    missing_keys = sorted(ref_flat.keys() - lang_flat.keys())
 
     # --- Format-brace validation ---
     brace_mismatches: list[tuple[str, int, int]] = []

@@ -225,6 +225,7 @@
         "notifications": "Duet-meldingen",
         "screen_networking": "Schermnetwerk"
       },
+      "send_config_to_duet": "Configuratie naar Duet uploaden",
       "network": {
         "available_wifi": "Beschikbare WiFi-netwerken",
         "connect": "Verbinden",

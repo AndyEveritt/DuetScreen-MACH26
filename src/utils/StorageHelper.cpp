@@ -87,3 +87,10 @@ bool StorageHelper::clear()
 	data_.clear();
 	return save();
 }
+
+std::string StorageHelper::dump()
+{
+	ZoneScoped;
+	nlohmann::json j(data_);
+	return j.dump(2);
+}
