@@ -214,11 +214,4 @@ namespace UI
 		m_alert.setMaxHeight(show ? LV_PCT(45) : LV_PCT(70));
 		m_kb.setVisible(show, true);
 	}
-
-	void HomeView::showUpdatePrompt(bool show)
-	{
-		ZoneScoped;
-		UI_LOCK();
-		m_updatePrompt.setVisible(show);
-	}
 } // namespace UI

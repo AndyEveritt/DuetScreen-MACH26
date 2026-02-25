@@ -9,6 +9,8 @@
 
 #include "DebugCommands.h"
 #include "utils.h"
+#include <fstream>
+#include <sstream>
 
 namespace utils
 {
@@ -113,5 +115,19 @@ namespace utils
 			pos++;
 		}
 		return pos;
+	}
+
+	std::string readFileToString(std::filesystem::path file)
+	{
+		ZoneScoped;
+		std::ifstream t(file);
+		if (!t.is_open())
+		{
+			LOG_ERROR("Failed to open file: {:s}", file.string());
+			return "";
+		}
+		std::stringstream buffer;
+		buffer << t.rdbuf();
+		return buffer.str();
 	}
 } // namespace utils

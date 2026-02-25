@@ -52,6 +52,7 @@ namespace UI
 
 		/* General */
 		LvLabel m_buildTime{"build_time", getRoot()};
+		LvLabel m_buildrootVersion{"buildroot_version", getRoot()};
 		DropdownMenu m_language{"language", getRoot()};
 		std::vector<std::string> m_languageCodes;
 		Modal<MessageBox> m_languageConfirm{"language_confirm", getRoot(), layout_t(0, 0, 70, LV_SIZE_CONTENT)};

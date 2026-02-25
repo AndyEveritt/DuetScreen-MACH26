@@ -155,6 +155,13 @@
       "update_available_text": "Confirmar para instalar a atualização",
       "update_cancel": "Cancelar",
       "update_confirm": "Atualizar"
+      ,
+      "update_buildroot_error_text": "Versão do buildroot incompatível. Por favor, regrave o cartão SD.\nVersão atual do buildroot: {:s}\nVersão necessária do buildroot: {:s}",
+      "update_buildroot_warning": "Atualizar Buildroot",
+      "update_buildroot_warning_text": "Atualização bem-sucedida.\nVersão DuetScreen: {:s}\n\nExiste um patch de buildroot disponível, recomenda-se que regrave o cartão SD com o sdcard.img mais recente\nVersão atual do buildroot: {:s}\nVersão recomendada do buildroot: {:s}",
+      "update_failed": "Falha na atualização",
+      "update_successful": "Atualização bem-sucedida",
+      "update_successful_text": "A atualização foi bem-sucedida.\nVersão DuetScreen: {:s}\nVersão buildroot: {:s}"
     },
     "msgbox": {
       "response_success": "Sucesso",
@@ -248,6 +255,7 @@
       "connectivity_header": "Conectividade",
       "debug_borders": "Ativar bordas de depuração",
       "debug_level": "Nível de depuração",
+      "buildroot_version": "Versão do Buildroot:",
       "dev_header": "Desenvolvedor",
       "developer": "Desenvolvedor",
       "display_connected_message": "Mostrar mensagem de conexão:",

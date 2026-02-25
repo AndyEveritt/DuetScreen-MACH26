@@ -11,6 +11,25 @@
 
 namespace UpgradeHelper
 {
+	enum class UpgradeResult
+	{
+		Success = 0,
+		BuildrootVersionError,
+		BuildrootVersionWarning,
+	};
+
+	struct UpgradeInfo
+	{
+		UpgradeResult result;
+		std::string currentVersion;
+		std::string currentBuildrootVersion;
+		std::string updateBuildrootVersion;
+	};
+
 	bool upgradeFromUSB(const std::string& filePath);
 	bool upgradeFromDuet();
+
+	// Start monitoring for upgrade failure/warning files
+	void startMonitoringUpgradeStatus();
+	std::string_view getBuildrootVersion();
 } // namespace UpgradeHelper

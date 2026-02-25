@@ -19,6 +19,7 @@ namespace UI
 		void update();
 
 		void newUpdateAvailable(const std::string& file);
+		void handleUpdateResult(const UpgradeHelper::UpgradeInfo& info);
 		void newAxesData();
 		void newResponse(const ResponseType type, const std::string& response);
 		void newAlertData(const OM::Alert& alert);

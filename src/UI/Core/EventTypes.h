@@ -17,6 +17,11 @@ namespace OM
 
 enum class ResponseType;
 
+namespace UpgradeHelper
+{
+	struct UpgradeInfo;
+} // namespace UpgradeHelper
+
 namespace Log
 {
 	enum class DebugLevel;
@@ -29,6 +34,7 @@ namespace Log
 	XX(Connected)                                                                                                      \
 	XX(Disconnected)                                                                                                   \
 	XX(UpdateAvailable, std::string)                                                                                   \
+	XX(UpdateResult, UpgradeHelper::UpgradeInfo)                                                                       \
 	XX(FanData)                                                                                                        \
 	XX(BedHeaterData)                                                                                                  \
 	XX(ChamberHeaterData)                                                                                              \

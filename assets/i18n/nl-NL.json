@@ -154,7 +154,13 @@
       "update_available": "Update beschikbaar",
       "update_available_text": "Bevestig om de update te installeren",
       "update_cancel": "Annuleren",
-      "update_confirm": "Bijwerken"
+      "update_confirm": "Bijwerken",
+      "update_buildroot_error_text": "Incompatibele buildroot-versie. Gelieve de SD-kaart opnieuw te flashen.\nHuidige buildroot-versie: {:s}\nVereiste buildroot-versie: {:s}",
+      "update_buildroot_warning": "Buildroot bijwerken",
+      "update_buildroot_warning_text": "Update geslaagd.\nDuetScreen-versie: {:s}\n\nEr is een buildroot-patch beschikbaar, het is aanbevolen om de SD-kaart opnieuw te flashen met de nieuwste sdcard.img\nHuidige buildroot-versie: {:s}\nAanbevolen buildroot-versie: {:s}",
+      "update_failed": "Update mislukt",
+      "update_successful": "Update geslaagd",
+      "update_successful_text": "De update is geslaagd.\nDuetScreen-versie: {:s}\nBuildroot-versie: {:s}"
     },
     "msgbox": {
       "response_success": "Geslaagd",
@@ -248,6 +254,7 @@
       "connectivity_header": "Connectiviteit",
       "debug_borders": "Debugranden inschakelen",
       "debug_level": "Debugniveau",
+      "buildroot_version": "Buildroot-versie:",
       "dev_header": "Ontwikkelaar",
       "developer": "Ontwikkelaar",
       "display_connected_message": "Verbindingsbericht weergeven:",

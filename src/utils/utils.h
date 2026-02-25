@@ -9,6 +9,7 @@
 #define JNI_LOGIC_UTILS_H_
 
 #include <cstdarg>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -38,6 +39,8 @@ namespace utils
 	void replaceSubstring(std::string& nString, const std::string& target, const std::string& replacement);
 	std::vector<std::string> splitString(const std::string& str, const std::string& delimiter);
 	size_t findInstance(std::string_view str, std::string_view target, size_t instance);
+
+	std::string readFileToString(std::filesystem::path file);
 } // namespace utils
 
 #endif /* JNI_LOGIC_UTILS_H_ */

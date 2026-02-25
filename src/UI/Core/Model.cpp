@@ -25,6 +25,7 @@
 // Ensure ResponseType and OM types are complete for payload sizing in this TU
 #include "ObjectModel/Alert.h"
 #include "Subscribers/ResponseSubscribers.h"
+#include "utils/UpgradeHelper.h"
 
 // Define common payload storage privately in this TU to avoid
 // instantiating payload tuples with incomplete types in headers.

@@ -12,6 +12,7 @@
 #include "utils/DisplayHelper.h"
 #include "utils/StorageHelper.h"
 #include "utils/SystemHelper.h"
+#include "utils/UpgradeHelper.h"
 #include "version.h"
 #include <ranges>
 
@@ -201,6 +202,8 @@ namespace UI
 #else
 		m_buildTime.setText(_("settings.build_time", FIRMWARE_VERSION, BuildDateText, BuildTimeSuffix));
 #endif
+		createRow(_("settings.buildroot_version"), m_buildrootVersion);
+		m_buildrootVersion.setText(UpgradeHelper::getBuildrootVersion());
 
 		/* Language */
 		createRow(_("settings.language"), m_language);

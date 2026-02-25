@@ -10,9 +10,18 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
+#include "UI/Core/Model.h"
 #include "utils/StorageHelper.h"
 #include "utils/SystemHelper.h"
+#include "version.h"
 #include <sys/stat.h>
+
+#include <atomic>
+#include <cstring>
+#include <fcntl.h>
+#include <sys/inotify.h>
+#include <thread>
+#include <unistd.h>
 
 #define USB_BASE_DIR "/media/usb"
 #define UPGRADE_EXT ".tar.gz"
@@ -23,6 +32,139 @@ static constexpr size_t UPGRADE_EXT_SIZE = sizeof(UPGRADE_EXT) - 1;
 
 namespace UpgradeHelper
 {
+	static std::string readFileToString(const char* path);
+	static void postUpdateResult(UpgradeResult result);
+
+	namespace
+	{
+		constexpr const char* kUpgradeSuccessPath = "/tmp/rootfs_upgrade_success";
+		constexpr const char* kBuildrootVersionFile = "/etc/buildroot_version";
+		constexpr const char* kUpgradeBuildrootVersionFile = "/tmp/update_buildroot_version";
+		constexpr const char* kUpgradeFailedPath = "/tmp/rootfs_upgrade_failed";
+		constexpr const char* kUpgradePatchWarningPath = "/tmp/rootfs_upgrade_patch_warning";
+		std::atomic<bool> g_monitoring{false};
+		std::thread g_monitorThread;
+	} // namespace
+
+	void startMonitoringUpgradeStatus()
+	{
+		if (g_monitoring.exchange(true))
+		{
+			// Already running
+			return;
+		}
+
+		if (std::filesystem::exists(kUpgradePatchWarningPath))
+		{
+			LOG_WARN("Upgrade patch warning file exists: {:s}", kUpgradePatchWarningPath);
+			postUpdateResult(UpgradeResult::BuildrootVersionWarning);
+		}
+		else if (std::filesystem::exists(kUpgradeSuccessPath))
+		{
+			LOG_INFO("Upgrade successful");
+			std::filesystem::remove(kUpgradeSuccessPath);
+			postUpdateResult(UpgradeResult::Success);
+		}
+
+		g_monitorThread = std::thread(
+			[]
+			{
+				tracy::SetThreadName("Upgrade Result Monitor");
+
+				int inotifyFd = inotify_init1(IN_NONBLOCK);
+				if (inotifyFd < 0)
+				{
+					LOG_ERROR("inotify_init1 failed: {:s}", strerror(errno));
+					return;
+				}
+				int wd1 = inotify_add_watch(inotifyFd, kUpgradeFailedPath, IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE);
+				int wd2 =
+					inotify_add_watch(inotifyFd, kUpgradePatchWarningPath, IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE);
+				if (wd1 < 0 && wd2 < 0)
+				{
+					LOG_ERROR("inotify_add_watch failed for both files");
+					close(inotifyFd);
+					return;
+				}
+				constexpr size_t bufLen = 1024;
+				char buf[bufLen]{};
+				while (g_monitoring.load())
+				{
+					ssize_t len = read(inotifyFd, buf, bufLen);
+					if (len > 0)
+					{
+						ZoneScopedN("Upgrade Result Monitor - inotify event");
+						ssize_t i = 0;
+						while (i < len)
+						{
+							struct inotify_event* event = reinterpret_cast<struct inotify_event*>(&buf[i]);
+							if (event->wd == wd1)
+							{
+								LOG_WARN("Upgrade failed: file appeared or changed: {:s}", kUpgradeFailedPath);
+								postUpdateResult(UpgradeResult::BuildrootVersionError);
+							}
+							else if (event->wd == wd2)
+							{
+								LOG_WARN("Upgrade patch warning: file appeared or changed: {:s}",
+										 kUpgradePatchWarningPath);
+								postUpdateResult(UpgradeResult::BuildrootVersionWarning);
+							}
+							i += sizeof(struct inotify_event) + event->len;
+						}
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				}
+				if (wd1 >= 0)
+					inotify_rm_watch(inotifyFd, wd1);
+				if (wd2 >= 0)
+					inotify_rm_watch(inotifyFd, wd2);
+				close(inotifyFd);
+			});
+		g_monitorThread.detach();
+	}
+
+	std::string_view getBuildrootVersion()
+	{
+#if SIMULATION
+		return "Simulation";
+#endif
+
+		static std::string version;
+		if (!version.empty())
+		{
+			return version;
+		}
+
+		version = readFileToString(kBuildrootVersionFile);
+		return version;
+	}
+
+	static std::string readFileToString(const char* path)
+	{
+		std::ifstream f(path);
+		if (!f.is_open())
+			return {};
+		std::string s;
+		std::getline(f, s);
+		return s;
+	}
+
+	static void postUpdateResult(UpgradeResult result)
+	{
+		UpgradeInfo info;
+		info.result = result;
+		info.currentVersion = FIRMWARE_VERSION;
+		info.currentBuildrootVersion = getBuildrootVersion();
+		info.updateBuildrootVersion = readFileToString(kUpgradeBuildrootVersionFile);
+		LOG_DBG("Upgrade result: '{:s}', current version: '{:s}', current buildroot version: '{:s}', update buildroot "
+				"version: '{:s}'",
+				nameof::nameof_enum(result),
+				info.currentVersion,
+				info.currentBuildrootVersion,
+				info.updateBuildrootVersion);
+		Model::get().post<EventType::UpdateResult>(std::move(info));
+	}
+
 	static bool removeTmpFile()
 	{
 		ZoneScoped;

@@ -50,6 +50,7 @@ if [[ "$SKIP_BINARY" -eq 0 ]]; then
     echo "Including DuetScreen binary..."
     mkdir -p out/update/usr/bin
     cp ../buildroot-duetscreen/output/target/usr/bin/DuetScreen out/update/usr/bin
+    cp ../buildroot-duetscreen/output/target/etc/buildroot_version out/update/
 fi
 
 # Copy assets

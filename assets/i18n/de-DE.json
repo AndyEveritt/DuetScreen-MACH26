@@ -154,7 +154,13 @@
       "update_available": "Update verfügbar",
       "update_available_text": "Bestätigen, um das Update zu installieren",
       "update_cancel": "Abbrechen",
-      "update_confirm": "Aktualisieren"
+      "update_confirm": "Aktualisieren",
+      "update_buildroot_error_text": "Inkompatible Buildroot-Version. Bitte SD-Karte neu flashen.\nAktuelle Buildroot-Version: {:s}\nErforderliche Buildroot-Version: {:s}",
+      "update_buildroot_warning": "Buildroot aktualisieren",
+      "update_buildroot_warning_text": "Update erfolgreich.\nDuetScreen-Version: {:s}\n\nEs ist ein Buildroot-Patch verfügbar, bitte flashen Sie die SD-Karte mit dem neuesten sdcard.img\nAktuelle Buildroot-Version: {:s}\nEmpfohlene Buildroot-Version: {:s}",
+      "update_failed": "Update fehlgeschlagen",
+      "update_successful": "Update erfolgreich",
+      "update_successful_text": "Das Update war erfolgreich.\nDuetScreen-Version: {:s}\nBuildroot-Version: {:s}"
     },
     "msgbox": {
       "response_success": "Erfolg",
@@ -248,6 +254,7 @@
       "connectivity_header": "Konnektivität",
       "debug_borders": "Debug-Rahmen aktivieren",
       "debug_level": "Debug-Level",
+      "buildroot_version": "Buildroot-Version:",
       "dev_header": "Entwickler",
       "developer": "Entwickler",
       "display_connected_message": "Verbindungsmeldung anzeigen:",

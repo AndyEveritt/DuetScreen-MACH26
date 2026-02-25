@@ -19,6 +19,7 @@ namespace UI
 	{
 		ZoneScoped;
 		registerEventListener<EventType::UpdateAvailable>(this, &HomePresenter::newUpdateAvailable);
+		registerEventListener<EventType::UpdateResult>(this, &HomePresenter::handleUpdateResult);
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
 		registerEventListener<EventType::Alert>(this, &HomePresenter::newAlertData);
@@ -37,7 +38,7 @@ namespace UI
 					return;
 				}
 				m_updateFile.clear();
-				m_view->showUpdatePrompt(false);
+				m_view->getUpdatePrompt().close();
 			});
 	}
 
@@ -65,7 +66,52 @@ namespace UI
 	{
 		ZoneScoped;
 		m_updateFile = file.c_str();
-		m_view->showUpdatePrompt(true);
+
+		auto& updatePrompt = m_view->getUpdatePrompt();
+
+		updatePrompt.setTitle(_("message.update_available"));
+		updatePrompt.setText(_("message.update_available_text"));
+		updatePrompt.setOkBtnText(_("message.update_confirm"));
+		updatePrompt.setCancelBtnText(_("message.update_cancel"));
+		updatePrompt.setOkCallback([this]() { update(); });
+		updatePrompt.okVisible(true);
+		updatePrompt.cancelVisible(true);
+		updatePrompt.open();
+	}
+
+	void HomePresenter::handleUpdateResult(const UpgradeHelper::UpgradeInfo& info)
+	{
+		ZoneScoped;
+
+		auto& updatePrompt = m_view->getUpdatePrompt();
+
+		updatePrompt.okVisible(true);
+		updatePrompt.cancelVisible(false);
+		updatePrompt.setOkBtnText(_("common.ok"));
+		updatePrompt.setOkCallback(nullptr);
+
+		switch (info.result)
+		{
+		case UpgradeHelper::UpgradeResult::Success:
+			updatePrompt.setTitle(_("message.update_successful"));
+			updatePrompt.setText(
+				_("message.update_successful_text", info.currentVersion, info.currentBuildrootVersion));
+			break;
+		case UpgradeHelper::UpgradeResult::BuildrootVersionError:
+			updatePrompt.setTitle(_("message.update_failed"));
+			updatePrompt.setText(
+				_("message.update_buildroot_error_text", info.currentBuildrootVersion, info.updateBuildrootVersion));
+			break;
+		case UpgradeHelper::UpgradeResult::BuildrootVersionWarning:
+			updatePrompt.setTitle(_("message.update_buildroot_warning"));
+			updatePrompt.setText(_("message.update_buildroot_warning_text",
+								   info.currentVersion,
+								   info.currentBuildrootVersion,
+								   info.updateBuildrootVersion));
+			break;
+		}
+
+		updatePrompt.open();
 	}
 
 	void HomePresenter::newAxesData()

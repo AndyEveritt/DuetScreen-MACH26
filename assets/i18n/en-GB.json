@@ -155,7 +155,13 @@
       "update_available": "Update Available",
       "update_available_text": "Confirm to install the update",
       "update_cancel": "Cancel",
-      "update_confirm": "Update"
+      "update_confirm": "Update",
+      "update_successful": "Update Successful",
+      "update_successful_text": "The update was successful.\nDuetScreen version: {:s}\nBuildroot version: {:s}",
+      "update_failed": "Update Failed",
+      "update_buildroot_error_text": "Incompatible buildroot version. Please reflash the SD card.\nCurrent buildroot version: {:s}\nRequired buildroot version: {:s}",
+      "update_buildroot_warning": "Update Buildroot",
+      "update_buildroot_warning_text": "Update successful.\nDuetScreen version: {:s}\n\nThere is a buildroot patch available, it is recommended that you reflash the SD card with the latest sdcard.img\nCurrent buildroot version: {:s}\nRecommended buildroot version: {:s}"
     },
     "msgbox": { /* Generic message box */
       "response_success": "Success",
@@ -265,6 +271,7 @@
       "enable_system_monitor": "Enable System Monitor",
       "erase_and_restart": "Erase and Restart",
       "firmware_version": "Firmware Version:",
+      "buildroot_version": "Buildroot Version:",
       "font": "Font",
       "icons": "Icons",
       "keyboard_layout": "USB Keyboard Layout:",

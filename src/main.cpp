@@ -170,6 +170,7 @@ int main(int argc, char** argv)
 			}
 		});
 	USB::UsbMonitor::getInstance().startMonitoring();
+	UpgradeHelper::startMonitoringUpgradeStatus();
 
 	// Create a thread to handle requesting data from Duet
 #if MULTITHREADED

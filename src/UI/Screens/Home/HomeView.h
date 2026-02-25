@@ -64,10 +64,9 @@ namespace UI
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
 #endif
 
+		auto& getUpdatePrompt() { return m_updatePrompt; }
 		ModalExtrusionFactor& getExtrusionFactorModal() { return m_extrusionFactorModal; }
 		ModalNumberPad& getNumberPad() { return m_numberpad; }
-
-		void showUpdatePrompt(bool show);
 
 		HomeView();
 		~HomeView();

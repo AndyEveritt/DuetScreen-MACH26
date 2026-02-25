@@ -154,7 +154,13 @@
       "update_available": "Mise à jour disponible",
       "update_available_text": "Confirmer pour installer la mise à jour",
       "update_cancel": "Annuler",
-      "update_confirm": "Mettre à jour"
+      "update_confirm": "Mettre à jour",
+      "update_buildroot_error_text": "Version de buildroot incompatible. Veuillez reflasher la carte SD.\nVersion actuelle de buildroot : {:s}\nVersion requise de buildroot : {:s}",
+      "update_buildroot_warning": "Mettre à jour Buildroot",
+      "update_buildroot_warning_text": "Mise à jour réussie.\nVersion DuetScreen : {:s}\n\nUn patch buildroot est disponible, il est recommandé de reflasher la carte SD avec le dernier sdcard.img\nVersion actuelle de buildroot : {:s}\nVersion recommandée de buildroot : {:s}",
+      "update_failed": "Échec de la mise à jour",
+      "update_successful": "Mise à jour réussie",
+      "update_successful_text": "La mise à jour a réussi.\nVersion DuetScreen : {:s}\nVersion buildroot : {:s}"
     },
     "msgbox": {
       "response_success": "Succès",
@@ -248,6 +254,7 @@
       "connectivity_header": "Connectivité",
       "debug_borders": "Activer les bordures de débogage",
       "debug_level": "Niveau de débogage",
+      "buildroot_version": "Version de Buildroot :",
       "dev_header": "Développeur",
       "developer": "Développeur",
       "display_connected_message": "Afficher le message de connexion :",
