@@ -1,5 +1,6 @@
 set(BUILD_SHARED OFF CACHE BOOL "Build shared library")
 set(BUILD_STATIC ON CACHE BOOL "Build static library")
+set(WITH_OPENSSL ON CACHE BOOL "For HTTPS support" FORCE)
 
 FetchContent_Declare(
   hv

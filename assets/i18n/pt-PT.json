@@ -299,6 +299,8 @@
       "system_logging": "Registar mensagens do sistema na consola (pode causar atrasos)",
       "theme": "Tema",
       "wifi": "WiFi",
+      "upgrade_from_github": "Atualizar a partir da última versão do GitHub",
+      "upgrade_from_github_failed": "Falha ao atualizar a partir da versão do GitHub.\nPor favor, verifique a sua conexão de rede e tente novamente.",
       "usb_mode": "Modo USB-C:",
       "usb_mode_device": "USB-C Dispositivo",
       "usb_mode_host": "USB-C Host",

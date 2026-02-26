@@ -298,6 +298,8 @@
       "system_logging": "Journaliser les messages système dans la console (peut causer des ralentissements)",
       "theme": "Thème",
       "wifi": "WiFi",
+      "upgrade_from_github": "Mettre à jour depuis la dernière version GitHub",
+      "upgrade_from_github_failed": "Échec de la mise à jour depuis la version GitHub.\nVeuillez vérifier votre connexion réseau et réessayer.",
       "usb_mode": "Mode USB-C :",
       "usb_mode_device": "USB-C Périphérique",
       "usb_mode_host": "USB-C Hôte",

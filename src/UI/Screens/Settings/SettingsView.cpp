@@ -768,6 +768,7 @@ namespace UI
 #endif
 				 &m_sendConfigJson,
 				 &m_clearCache,
+				 &m_upgradeFromGithub,
 			 })
 		{
 			btn->setSize(150, 100);
@@ -785,6 +786,9 @@ namespace UI
 				Comm::DUET.UploadFile(fmt::format("{:s}/duetscreen.json", OM::Directories::GetSystemDirectory()),
 									  config);
 			});
+
+		m_upgradeFromGithub.setText(_("settings.upgrade_from_github"));
+		m_upgradeFromGithub.addClickedCallback([this](lv_event_t*) { getPresenter()->upgradeFromGithubLatest(); });
 
 		m_restart.addClickedCallback([](lv_event_t*) { Restart(); });
 		m_eraseAndRestart.addClickedCallback([](lv_event_t*) { EraseAndRestart(); });

@@ -298,6 +298,8 @@
       "system_logging": "Systeemberichten naar console loggen (kan vertraging veroorzaken)",
       "theme": "Thema",
       "wifi": "WiFi",
+      "upgrade_from_github": "Upgrade vanaf laatste GitHub-release",
+      "upgrade_from_github_failed": "Fout bij het upgraden vanaf de GitHub-release.\nControleer uw netwerkverbinding en probeer het opnieuw.",
       "usb_mode": "USB-C modus:",
       "usb_mode_device": "USB-C Apparaat",
       "usb_mode_host": "USB-C Host",

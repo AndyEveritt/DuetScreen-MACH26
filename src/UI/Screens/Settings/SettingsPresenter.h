@@ -53,6 +53,9 @@ namespace UI
 		void startHardwareTest();
 		void refreshCacheInfo();
 
+		// Trigger GitHub latest release download + upgrade
+		void upgradeFromGithubLatest();
+
 	  private:
 		void onActivate() override;
 	};

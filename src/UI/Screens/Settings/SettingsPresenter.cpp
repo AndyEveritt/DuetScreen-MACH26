@@ -3,6 +3,7 @@
 #include "SettingsView.h"
 #include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
+#include "utils/UpgradeHelper.h"
 #include <filesystem>
 #include <fstream>
 
@@ -60,5 +61,16 @@ namespace UI
 	{
 		ZoneScoped;
 		refreshCacheInfo();
+	}
+
+	void DeveloperSettingsPresenter::upgradeFromGithubLatest()
+	{
+		ZoneScoped;
+		LOG_INFO("User requested upgrade from GitHub latest release");
+		if (!UpgradeHelper::upgradeFromGithubLatest())
+		{
+			LOG_ERROR("Upgrade from GitHub latest failed to start");
+			Model::get().post<EventType::Response>(ResponseType::ERROR, _("settings.upgrade_from_github_failed"));
+		}
 	}
 } // namespace UI

@@ -16,6 +16,9 @@
 #include "version.h"
 #include <sys/stat.h>
 
+#include <hv/requests.h>
+#include <nlohmann/json.hpp>
+
 #include <atomic>
 #include <cstring>
 #include <fcntl.h>
@@ -249,6 +252,12 @@ namespace UpgradeHelper
 	static bool upgradeFromTmp()
 	{
 		ZoneScoped;
+#if SIMULATION
+		LOG_INFO("Simulating upgrade...");
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		postUpdateResult(UpgradeResult::Success);
+		return true;
+#endif
 		if (!moveTmpFileToBoot())
 		{
 			LOG_ERROR("Failed to move file to boot partition");
@@ -309,5 +318,120 @@ namespace UpgradeHelper
 		}
 
 		return true;
+	}
+
+	bool upgradeFromGithubLatest()
+	{
+		ZoneScoped;
+		LOG_INFO("Attempting upgrade from GitHub latest release");
+
+		removeTmpFile();
+
+		// Query GitHub releases API for releases list and pick the newest prerelease
+		HttpRequest req;
+		req.method = HTTP_GET;
+		req.scheme = "https";
+		req.host = "api.github.com";
+		req.path = "/repos/Duet3D/DuetScreen/releases"; // returns array, newest first
+		req.headers["Accept"] = "application/vnd.github.v3+json";
+		req.headers["User-Agent"] = "DuetScreenUpgradeHelper";
+		req.timeout = HTTP_TIMEOUT;
+
+		req.DumpUrl();
+
+		hv::HttpClient cli;
+		HttpResponse r;
+		cli.send(&req, &r);
+		if (r.status_code != HTTP_STATUS_OK)
+		{
+			LOG_ERROR("Failed to fetch releases list: HTTP {:d}", (int)r.status_code);
+			return false;
+		}
+
+		auto body = nlohmann::json::parse(r.body, nullptr, false);
+		if (body.is_discarded() || !body.is_array())
+		{
+			LOG_ERROR("Failed to parse GitHub releases response or unexpected format");
+			return false;
+		}
+
+		std::string downloadUrl;
+		// Find the first release marked as prerelease that contains the desired asset
+		for (const auto& release : body)
+		{
+			if (!release.is_object())
+				continue;
+#if 0
+			bool isPrerelease = false;
+			if (release.contains("prerelease") && release["prerelease"].is_boolean())
+				isPrerelease = release["prerelease"].get<bool>();
+#endif
+			if (!release.contains("assets") || !release["assets"].is_array())
+				continue;
+			for (const auto& asset : release["assets"])
+			{
+				if (!asset.is_object() || !asset.contains("name"))
+					continue;
+				std::string name = asset["name"].get<std::string>();
+				if (name == UPGRADE_FILE)
+				{
+					if (asset.contains("browser_download_url") && asset["browser_download_url"].is_string())
+						downloadUrl = asset["browser_download_url"].get<std::string>();
+					break;
+				}
+			}
+			if (!downloadUrl.empty())
+				break; // found in newest prerelease
+		}
+
+		if (downloadUrl.empty())
+		{
+			LOG_ERROR("No asset named {:s} found in latest release", UPGRADE_FILE);
+			return false;
+		}
+
+		// Parse download URL (expecting https://host/path)
+		const std::string httpsPrefix = "https://";
+		if (downloadUrl.rfind(httpsPrefix, 0) == 0)
+			downloadUrl = downloadUrl.substr(httpsPrefix.size());
+		auto slashPos = downloadUrl.find('/');
+		if (slashPos == std::string::npos)
+		{
+			LOG_ERROR("Invalid download URL: {:s}", downloadUrl);
+			return false;
+		}
+		std::string host = downloadUrl.substr(0, slashPos);
+		std::string path = downloadUrl.substr(slashPos);
+
+		HttpRequest req2;
+		req2.method = HTTP_GET;
+		req2.scheme = "https";
+		req2.host = host;
+		req2.path = path;
+		req2.headers["User-Agent"] = "DuetScreenUpgradeHelper";
+		req2.timeout = HTTP_TIMEOUT * 6; // give more time for download
+
+		req2.DumpUrl();
+
+		HttpResponse r2;
+		hv::HttpClient cli2;
+		cli2.send(&req2, &r2);
+		if (r2.status_code != HTTP_STATUS_OK)
+		{
+			LOG_ERROR("Failed to download asset: HTTP {:d}", (int)r2.status_code);
+			return false;
+		}
+
+		std::ofstream file(TMP_FILEPATH, std::ios::binary);
+		if (!file.is_open())
+		{
+			LOG_ERROR("Failed to create file \"" TMP_FILEPATH "\"");
+			return false;
+		}
+		file.write(r2.body.data(), r2.body.size());
+		file.close();
+		LOG_DBG("Downloaded asset to " TMP_FILEPATH);
+
+		return upgradeFromTmp();
 	}
 } // namespace UpgradeHelper

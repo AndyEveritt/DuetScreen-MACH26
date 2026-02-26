@@ -298,6 +298,7 @@
       "system_logging": "Systemmeldungen in Konsole ausgeben (kann Verzögerungen verursachen)",
       "theme": "Design",
       "wifi": "WLAN",
+      "upgrade_from_github": "Upgrade von der neuesten GitHub-Version",
       "usb_mode": "USB-C Modus:",
       "usb_mode_device": "USB-C Gerät",
       "usb_mode_host": "USB-C Host",

@@ -299,6 +299,8 @@
       "system_logging": "Log system messages to console (might cause lag)",
       "theme": "Theme",
       "wifi": "WiFi",
+      "upgrade_from_github": "Upgrade from latest GitHub release",
+      "upgrade_from_github_failed": "Failed to upgrade from GitHub release.\nPlease check your network connection and try again.",
       "usb_mode": "USB-C Mode:",
       "usb_mode_device": "USB-C Device",
       "usb_mode_host": "USB-C Host",

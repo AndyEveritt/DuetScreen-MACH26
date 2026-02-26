@@ -28,6 +28,7 @@ namespace UpgradeHelper
 
 	bool upgradeFromUSB(const std::string& filePath);
 	bool upgradeFromDuet();
+	bool upgradeFromGithubLatest();
 
 	// Start monitoring for upgrade failure/warning files
 	void startMonitoringUpgradeStatus();
