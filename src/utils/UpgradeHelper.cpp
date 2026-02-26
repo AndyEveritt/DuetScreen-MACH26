@@ -22,7 +22,9 @@
 #include <atomic>
 #include <cstring>
 #include <fcntl.h>
-#include <sys/inotify.h>
+#include <poll.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <thread>
 #include <unistd.h>
 
@@ -36,17 +38,104 @@ static constexpr size_t UPGRADE_EXT_SIZE = sizeof(UPGRADE_EXT) - 1;
 namespace UpgradeHelper
 {
 	static std::string readFileToString(const char* path);
-	static void postUpdateResult(UpgradeResult result);
+	static void postUpdateResult(UpgradeResult result, const std::string& updateBuildrootVersion);
 
 	namespace
 	{
-		constexpr const char* kUpgradeSuccessPath = "/tmp/rootfs_upgrade_success";
 		constexpr const char* kBuildrootVersionFile = "/etc/buildroot_version";
-		constexpr const char* kUpgradeBuildrootVersionFile = "/tmp/update_buildroot_version";
-		constexpr const char* kUpgradeFailedPath = "/tmp/rootfs_upgrade_failed";
-		constexpr const char* kUpgradePatchWarningPath = "/tmp/rootfs_upgrade_patch_warning";
+		constexpr std::string_view kUpgradeStatusFileName = "upgrade_status.json";
+#if SIMULATION
+		constexpr const char* kUpgradeStatusSocketPath = "/tmp/duetscreen_upgrade.sock";
+#else
+		constexpr const char* kUpgradeStatusSocketPath = "/run/duetscreen/upgrade.sock";
+#endif
 		std::atomic<bool> g_monitoring{false};
 		std::thread g_monitorThread;
+		std::atomic<uint64_t> g_lastProcessedSequence{0};
+
+		struct UpgradeStatusMessage
+		{
+			UpgradeResult result;
+			std::string updateBuildrootVersion;
+			uint64_t sequence;
+		};
+
+		bool parseUpgradeStatusMessage(const nlohmann::json& payload, UpgradeStatusMessage& msg)
+		{
+			if (!payload.is_object())
+			{
+				return false;
+			}
+
+			const std::string result = payload.value("result", "");
+			if (result == "success")
+			{
+				msg.result = UpgradeResult::Success;
+			}
+			else if (result == "warning")
+			{
+				msg.result = UpgradeResult::BuildrootVersionWarning;
+			}
+			else if (result == "error")
+			{
+				msg.result = UpgradeResult::BuildrootVersionError;
+			}
+			else
+			{
+				LOG_ERROR("Invalid upgrade status result '{:s}'", result);
+				return false;
+			}
+
+			msg.sequence = payload.value("sequence", 0ULL);
+			msg.updateBuildrootVersion =
+				payload.value("target_buildroot", payload.value("update_buildroot_version", std::string{}));
+			return true;
+		}
+
+		void postUpdateResultFromMessage(const UpgradeStatusMessage& msg)
+		{
+			if (msg.sequence != 0)
+			{
+				const uint64_t lastSeq = g_lastProcessedSequence.load();
+				if (msg.sequence <= lastSeq)
+				{
+					LOG_DBG("Ignoring stale upgrade status message, sequence {:d} <= {:d}", msg.sequence, lastSeq);
+					return;
+				}
+				g_lastProcessedSequence.store(msg.sequence);
+			}
+
+			postUpdateResult(msg.result, msg.updateBuildrootVersion);
+		}
+
+		void checkAndPostExistingUpgradeStatus()
+		{
+			ZoneScoped;
+			const std::filesystem::path statusPath = std::filesystem::path(NVS_FOLDER) / kUpgradeStatusFileName;
+			std::ifstream statusFile(statusPath);
+			if (!statusFile.is_open())
+			{
+				return;
+			}
+
+			const std::string content{std::istreambuf_iterator<char>(statusFile), std::istreambuf_iterator<char>()};
+			nlohmann::json statusJson = nlohmann::json::parse(content, nullptr, false);
+			if (statusJson.is_discarded())
+			{
+				LOG_ERROR("Failed to parse upgrade status file: {:s}", statusPath.string());
+				return;
+			}
+
+			UpgradeStatusMessage msg{};
+			if (!parseUpgradeStatusMessage(statusJson, msg))
+			{
+				LOG_ERROR("Invalid upgrade status file: {:s}", statusPath.string());
+				return;
+			}
+
+			postUpdateResultFromMessage(msg);
+		}
+
 	} // namespace
 
 	void startMonitoringUpgradeStatus()
@@ -57,71 +146,99 @@ namespace UpgradeHelper
 			return;
 		}
 
-		if (std::filesystem::exists(kUpgradePatchWarningPath))
-		{
-			LOG_WARN("Upgrade patch warning file exists: {:s}", kUpgradePatchWarningPath);
-			postUpdateResult(UpgradeResult::BuildrootVersionWarning);
-		}
-		else if (std::filesystem::exists(kUpgradeSuccessPath))
-		{
-			LOG_INFO("Upgrade successful");
-			std::filesystem::remove(kUpgradeSuccessPath);
-			postUpdateResult(UpgradeResult::Success);
-		}
+		checkAndPostExistingUpgradeStatus();
 
 		g_monitorThread = std::thread(
 			[]
 			{
 				tracy::SetThreadName("Upgrade Result Monitor");
 
-				int inotifyFd = inotify_init1(IN_NONBLOCK);
-				if (inotifyFd < 0)
+				std::filesystem::path socketPath = kUpgradeStatusSocketPath;
+				std::error_code ec;
+				std::filesystem::create_directories(socketPath.parent_path(), ec);
+				if (ec)
 				{
-					LOG_ERROR("inotify_init1 failed: {:s}", strerror(errno));
+					LOG_ERROR("Failed to create upgrade status socket directory {:s}: {:s}",
+							  socketPath.parent_path().string(),
+							  ec.message());
+					g_monitoring.store(false);
 					return;
 				}
-				int wd1 = inotify_add_watch(inotifyFd, kUpgradeFailedPath, IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE);
-				int wd2 =
-					inotify_add_watch(inotifyFd, kUpgradePatchWarningPath, IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE);
-				if (wd1 < 0 && wd2 < 0)
+
+				std::filesystem::remove(socketPath, ec);
+
+				const int socketFd = socket(AF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+				if (socketFd < 0)
 				{
-					LOG_ERROR("inotify_add_watch failed for both files");
-					close(inotifyFd);
+					LOG_ERROR(
+						"Failed to create upgrade status socket {:s}: {:s}", kUpgradeStatusSocketPath, strerror(errno));
+					g_monitoring.store(false);
 					return;
 				}
-				constexpr size_t bufLen = 1024;
+
+				sockaddr_un addr{};
+				addr.sun_family = AF_UNIX;
+				if (socketPath.string().size() >= sizeof(addr.sun_path))
+				{
+					LOG_ERROR("Upgrade status socket path too long: {:s}", socketPath.string());
+					close(socketFd);
+					g_monitoring.store(false);
+					return;
+				}
+				std::strncpy(addr.sun_path, socketPath.c_str(), sizeof(addr.sun_path) - 1);
+
+				if (bind(socketFd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0)
+				{
+					LOG_ERROR("Failed to bind upgrade status socket {:s}: {:s}", socketPath.string(), strerror(errno));
+					close(socketFd);
+					g_monitoring.store(false);
+					return;
+				}
+
+				constexpr size_t bufLen = 2048;
 				char buf[bufLen]{};
 				while (g_monitoring.load())
 				{
-					ssize_t len = read(inotifyFd, buf, bufLen);
-					if (len > 0)
+					pollfd pfd{};
+					pfd.fd = socketFd;
+					pfd.events = POLLIN;
+					const int pollResult = poll(&pfd, 1, 250);
+					if (pollResult <= 0 || (pfd.revents & POLLIN) == 0)
 					{
-						ZoneScopedN("Upgrade Result Monitor - inotify event");
-						ssize_t i = 0;
-						while (i < len)
-						{
-							struct inotify_event* event = reinterpret_cast<struct inotify_event*>(&buf[i]);
-							if (event->wd == wd1)
-							{
-								LOG_WARN("Upgrade failed: file appeared or changed: {:s}", kUpgradeFailedPath);
-								postUpdateResult(UpgradeResult::BuildrootVersionError);
-							}
-							else if (event->wd == wd2)
-							{
-								LOG_WARN("Upgrade patch warning: file appeared or changed: {:s}",
-										 kUpgradePatchWarningPath);
-								postUpdateResult(UpgradeResult::BuildrootVersionWarning);
-							}
-							i += sizeof(struct inotify_event) + event->len;
-						}
+						continue;
 					}
-					std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+					const ssize_t len = recv(socketFd, buf, bufLen - 1, 0);
+					if (len <= 0)
+					{
+						continue;
+					}
+
+					buf[len] = '\0';
+					nlohmann::json statusJson = nlohmann::json::parse(buf, nullptr, false);
+					if (statusJson.is_discarded())
+					{
+						LOG_ERROR("Failed to parse upgrade status socket payload: {:s}", buf);
+						continue;
+					}
+
+					UpgradeStatusMessage msg{};
+					if (!parseUpgradeStatusMessage(statusJson, msg))
+					{
+						continue;
+					}
+
+					ZoneScopedN("Upgrade Result Monitor - status message");
+					postUpdateResultFromMessage(msg);
 				}
-				if (wd1 >= 0)
-					inotify_rm_watch(inotifyFd, wd1);
-				if (wd2 >= 0)
-					inotify_rm_watch(inotifyFd, wd2);
-				close(inotifyFd);
+
+				close(socketFd);
+				std::filesystem::remove(socketPath, ec);
+				if (ec)
+				{
+					LOG_ERROR("Failed to remove upgrade status socket {:s}: {:s}", socketPath.string(), ec.message());
+				}
+				g_monitoring.store(false);
 			});
 		g_monitorThread.detach();
 	}
@@ -152,13 +269,16 @@ namespace UpgradeHelper
 		return s;
 	}
 
-	static void postUpdateResult(UpgradeResult result)
+	static void postUpdateResult(UpgradeResult result, const std::string& updateBuildrootVersion)
 	{
 		UpgradeInfo info;
 		info.result = result;
 		info.currentVersion = FIRMWARE_VERSION;
 		info.currentBuildrootVersion = getBuildrootVersion();
-		info.updateBuildrootVersion = readFileToString(kUpgradeBuildrootVersionFile);
+		if (!updateBuildrootVersion.empty())
+		{
+			info.updateBuildrootVersion = updateBuildrootVersion;
+		}
 		LOG_DBG("Upgrade result: '{:s}', current version: '{:s}', current buildroot version: '{:s}', update buildroot "
 				"version: '{:s}'",
 				nameof::nameof_enum(result),
@@ -217,11 +337,10 @@ namespace UpgradeHelper
 	static bool moveTmpFileToBoot()
 	{
 		ZoneScoped;
-		struct stat sb;
 		std::filesystem::remove(BOOT_FILEPATH);
-		if (stat(TMP_FILEPATH, &sb) == -1)
+		if (!std::filesystem::exists(TMP_FILEPATH))
 		{
-			LOG_ERROR("Failed to get file stats for " TMP_FILEPATH);
+			LOG_ERROR("Temporary upgrade file " TMP_FILEPATH " does not exist");
 			return false;
 		}
 		std::filesystem::copy_file(TMP_FILEPATH, BOOT_FILEPATH);
@@ -255,7 +374,7 @@ namespace UpgradeHelper
 #if SIMULATION
 		LOG_INFO("Simulating upgrade...");
 		std::this_thread::sleep_for(std::chrono::seconds(2));
-		postUpdateResult(UpgradeResult::Success);
+		postUpdateResult(UpgradeResult::Success, {});
 		return true;
 #endif
 		if (!moveTmpFileToBoot())

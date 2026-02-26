@@ -64,6 +64,7 @@ cp -r assets out/update/etc
 
 cp scripts/pre-update out/update/pre-update
 cp scripts/post-update out/update/post-update
+chmod +x out/update/pre-update out/update/post-update
 
 echo "Creating upgrade archive..."
 cd out/update
