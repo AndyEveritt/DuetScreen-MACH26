@@ -299,6 +299,7 @@
       "theme": "Design",
       "wifi": "WLAN",
       "upgrade_from_github": "Upgrade von der neuesten GitHub-Version",
+      "upgrade_from_github_failed": "Fehler beim Upgrade von der GitHub-Version.\nBitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
       "usb_mode": "USB-C Modus:",
       "usb_mode_device": "USB-C Gerät",
       "usb_mode_host": "USB-C Host",
