@@ -9,12 +9,14 @@
 #include "utils/GpioHelper.h"
 #include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
+#include <algorithm>
 #include <atomic>
 #include <condition_variable>
 #include <cstring>
 #include <fstream>
 #include <mutex>
 #include <thread>
+#include <vector>
 
 namespace Comm
 {
@@ -30,7 +32,7 @@ namespace Comm
 	using product_id_t = uint16_t;
 
 	static const std::unordered_map<vendor_id_t, std::unordered_map<product_id_t, std::string_view>> s_devices = {
-		{0x1d50, {{0x60ec, "Duet 2"}, {0x60ed, "Duet 2 Maestro"}, {0x60ee, "Duet 3"}}},
+		{0x1d50, {{0x60ec, "Duet 2"}, {0x60ed, "Duet 2 Maestro"}, {0x60ee, "Duet 3"}, {0x60ef, "Duet"}}},
 		{0x16c0, {{0x27dd, "CDC-ACM Device"}}}};
 
 	static TracyLockable(std::recursive_mutex, s_usbMutex);
@@ -46,6 +48,10 @@ namespace Comm
 		, m_inEndpoint(0)
 		, m_outEndpoint(0)
 		, m_packetSize(0)
+		, m_dataInterfaceNumber(0xFF)
+		, m_controlInterfaceNumber(0xFF)
+		, m_claimedInterfaceCount(0)
+		, m_claimedInterfaces{0xFF, 0xFF}
 	{
 		ZoneScoped;
 	}
@@ -85,8 +91,15 @@ namespace Comm
 				m_eventLoopThread.join();
 			}
 
-			LOG_DBG("Releasing interface");
-			libusb_release_interface(m_handle, 0);
+			for (std::size_t i = 0; i < m_claimedInterfaceCount; ++i)
+			{
+				if (m_claimedInterfaces[i] == 0xFF)
+				{
+					continue;
+				}
+				LOG_DBG("Releasing interface {}", m_claimedInterfaces[i]);
+				libusb_release_interface(m_handle, m_claimedInterfaces[i]);
+			}
 			libusb_close(m_handle);
 			m_handle = nullptr;
 		}
@@ -100,6 +113,11 @@ namespace Comm
 		m_inEndpoint = 0;
 		m_outEndpoint = 0;
 		m_packetSize = 0;
+		m_dataInterfaceNumber = 0xFF;
+		m_controlInterfaceNumber = 0xFF;
+		m_claimedInterfaceCount = 0;
+		m_claimedInterfaces[0] = 0xFF;
+		m_claimedInterfaces[1] = 0xFF;
 	}
 
 	bool UsbDevice::connect()
@@ -122,15 +140,57 @@ namespace Comm
 			return false;
 		}
 
-		// Detach the kernel driver if necessary
-		if (libusb_kernel_driver_active(m_handle, 0) == 1)
+		auto detachAndClaimInterface = [&](uint8_t interfaceNumber) -> bool
 		{
-			r = libusb_detach_kernel_driver(m_handle, 0);
+			if (interfaceNumber == 0xFF)
+			{
+				return true;
+			}
+
+			for (std::size_t i = 0; i < m_claimedInterfaceCount; ++i)
+			{
+				if (m_claimedInterfaces[i] == interfaceNumber)
+				{
+					return true;
+				}
+			}
+
+			if (m_claimedInterfaceCount >= std::size(m_claimedInterfaces))
+			{
+				LOG_ERROR("Too many USB interfaces to claim");
+				return false;
+			}
+
+			if (libusb_kernel_driver_active(m_handle, interfaceNumber) == 1)
+			{
+				r = libusb_detach_kernel_driver(m_handle, interfaceNumber);
+				if (r < 0)
+				{
+					LOG_ERROR(
+						"Cannot detach kernel driver for interface {}: {:s}", interfaceNumber, libusb_error_name(r));
+					return false;
+				}
+			}
+
+			r = libusb_claim_interface(m_handle, interfaceNumber);
 			if (r < 0)
 			{
-				LOG_ERROR("Cannot detach kernel driver: {:s}", libusb_error_name(r));
-				goto close_handle;
+				LOG_ERROR("Cannot claim interface {}: {:s}", interfaceNumber, libusb_error_name(r));
+				return false;
 			}
+
+			m_claimedInterfaces[m_claimedInterfaceCount++] = interfaceNumber;
+			return true;
+		};
+
+		if (!detachAndClaimInterface(m_dataInterfaceNumber))
+		{
+			goto close_handle;
+		}
+
+		if (!detachAndClaimInterface(m_controlInterfaceNumber))
+		{
+			goto close_handle;
 		}
 
 		r = setDtr(true);
@@ -149,14 +209,6 @@ namespace Comm
 			goto close_handle;
 		}
 #endif
-
-		// Claim interface 0 (replace with your interface number)
-		r = libusb_claim_interface(m_handle, 0);
-		if (r < 0)
-		{
-			LOG_ERROR("Cannot claim interface: {:s}\nClosing device", libusb_error_name(r));
-			goto close_handle;
-		}
 
 		m_eventThreadRunning = true;
 		m_eventLoopThread = std::thread(&UsbDevice::eventLoop, this);
@@ -253,7 +305,7 @@ namespace Comm
 								static_cast<uint8_t>(LIBUSB_RECIPIENT_INTERFACE);
 		uint8_t bRequest = 0x20; // SET_LINE_CODING
 		uint16_t wValue = 0;
-		uint16_t wIndex = 0; // Control interface number; current implementation uses interface 0
+		uint16_t wIndex = m_controlInterfaceNumber != 0xFF ? m_controlInterfaceNumber : m_dataInterfaceNumber;
 		unsigned int timeoutMs = 1000;
 
 		int err = libusb_control_transfer(m_handle,
@@ -322,7 +374,7 @@ namespace Comm
 			static_cast<uint8_t>(LIBUSB_REQUEST_TYPE_CLASS) | static_cast<uint8_t>(LIBUSB_RECIPIENT_INTERFACE);
 		uint8_t request = 0x22;				  // SET_CONTROL_LINE_STATE (commonly used for DTR/RTS)
 		uint16_t value = state ? 0x01 : 0x00; // DTR set high (bit 0)
-		uint16_t index = 0;					  // Interface number (adjust if necessary)
+		uint16_t index = m_controlInterfaceNumber != 0xFF ? m_controlInterfaceNumber : m_dataInterfaceNumber;
 		int err = libusb_control_transfer(m_handle, request_type, request, value, index, nullptr, 0, 1000);
 		if (err < 0)
 		{
@@ -338,12 +390,32 @@ namespace Comm
 	bool UsbDevice::getDeviceInterface()
 	{
 		ZoneScoped;
+		static constexpr uint8_t s_invalidInterface = 0xFF;
+		static constexpr int s_dataClassScore = 1000;
+		static constexpr int s_controlInterfaceScore = 500;
+
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		libusb_config_descriptor* config_desc;
-		libusb_get_active_config_descriptor(m_device, &config_desc);
+		int configResult = libusb_get_active_config_descriptor(m_device, &config_desc);
+		if (configResult < 0)
+		{
+			LOG_ERROR("Failed to get active config descriptor: {:s}", libusb_error_name(configResult));
+			return false;
+		}
 
-		bool foundIn = false;
-		bool foundOut = false;
+		struct Candidate
+		{
+			uint8_t dataInterface = s_invalidInterface;
+			uint8_t controlInterface = s_invalidInterface;
+			uint8_t inEndpoint = 0;
+			uint8_t outEndpoint = 0;
+			uint16_t packetSize = 0;
+			uint8_t interfaceClass = 0;
+		};
+
+		std::unordered_map<uint8_t, uint8_t> controlInterfaceByDataInterface;
+		std::vector<Candidate> candidates;
+		candidates.reserve(static_cast<std::size_t>(config_desc->bNumInterfaces));
 
 		for (int i = 0; i < config_desc->bNumInterfaces; i++)
 		{
@@ -351,6 +423,40 @@ namespace Comm
 			for (int j = 0; j < interface.num_altsetting; j++)
 			{
 				const libusb_interface_descriptor& altsetting = interface.altsetting[j];
+				if (altsetting.bInterfaceClass != LIBUSB_CLASS_COMM)
+				{
+					continue;
+				}
+				for (int k = 0; k < altsetting.extra_length - 4; ++k)
+				{
+					const uint8_t* extra = reinterpret_cast<const uint8_t*>(altsetting.extra + k);
+					if (extra[0] < 5 || (k + extra[0]) > altsetting.extra_length)
+					{
+						continue;
+					}
+					if (extra[1] == 0x24 && extra[2] == 0x06)
+					{
+						const uint8_t controlInterface = altsetting.bInterfaceNumber;
+						for (int slaveIndex = 4; slaveIndex < extra[0]; ++slaveIndex)
+						{
+							controlInterfaceByDataInterface.emplace(extra[slaveIndex], controlInterface);
+						}
+					}
+					k += static_cast<int>(extra[0]) - 1;
+				}
+			}
+		}
+
+		for (int i = 0; i < config_desc->bNumInterfaces; i++)
+		{
+			const libusb_interface& interface = config_desc->interface[i];
+			for (int j = 0; j < interface.num_altsetting; j++)
+			{
+				const libusb_interface_descriptor& altsetting = interface.altsetting[j];
+
+				uint8_t inEndpoint = 0;
+				uint8_t outEndpoint = 0;
+				uint16_t packetSize = 0;
 				for (int k = 0; k < altsetting.bNumEndpoints; k++)
 				{
 					const libusb_endpoint_descriptor& ep_desc = altsetting.endpoint[k];
@@ -358,22 +464,91 @@ namespace Comm
 					{
 						if (ep_desc.bEndpointAddress & LIBUSB_ENDPOINT_IN)
 						{
-							m_inEndpoint = ep_desc.bEndpointAddress;
-							m_packetSize = ep_desc.wMaxPacketSize;
-							LOG_DBG("Found IN endpoint: {:#x}", m_inEndpoint);
-							foundIn = true;
+							inEndpoint = ep_desc.bEndpointAddress;
+							packetSize = ep_desc.wMaxPacketSize;
 						}
 						else
 						{
-							m_outEndpoint = ep_desc.bEndpointAddress;
-							LOG_DBG("Found OUT endpoint: {:#x}", m_outEndpoint);
-							foundOut = true;
+							outEndpoint = ep_desc.bEndpointAddress;
 						}
 					}
 				}
+
+				if (inEndpoint != 0 && outEndpoint != 0)
+				{
+					Candidate candidate{};
+					candidate.dataInterface = altsetting.bInterfaceNumber;
+					candidate.inEndpoint = inEndpoint;
+					candidate.outEndpoint = outEndpoint;
+					candidate.packetSize = packetSize;
+					candidate.interfaceClass = altsetting.bInterfaceClass;
+
+					auto controlInterfaceIt = controlInterfaceByDataInterface.find(candidate.dataInterface);
+					if (controlInterfaceIt != controlInterfaceByDataInterface.end())
+					{
+						candidate.controlInterface = controlInterfaceIt->second;
+					}
+
+					candidates.push_back(candidate);
+				}
 			}
 		}
-		return foundIn && foundOut;
+
+		if (candidates.empty())
+		{
+			libusb_free_config_descriptor(config_desc);
+			LOG_ERROR("Failed to find a valid USB bulk IN/OUT endpoint pair");
+			return false;
+		}
+
+		auto scoreCandidate = [](const Candidate& candidate) -> int
+		{
+			int score = 0;
+			if (candidate.interfaceClass == LIBUSB_CLASS_DATA)
+			{
+				score += s_dataClassScore;
+			}
+			if (candidate.controlInterface != s_invalidInterface)
+			{
+				score += s_controlInterfaceScore;
+			}
+			score += candidate.packetSize;
+			score -= candidate.dataInterface;
+			return score;
+		};
+
+		auto selectedIt = std::max_element(candidates.begin(),
+										   candidates.end(),
+										   [&](const Candidate& lhs, const Candidate& rhs)
+										   { return scoreCandidate(lhs) < scoreCandidate(rhs); });
+		const Candidate& selected = *selectedIt;
+		const int selectedScore = scoreCandidate(selected);
+
+		m_dataInterfaceNumber = selected.dataInterface;
+		m_inEndpoint = selected.inEndpoint;
+		m_outEndpoint = selected.outEndpoint;
+		m_packetSize = selected.packetSize;
+		m_controlInterfaceNumber = selected.controlInterface;
+
+		if (m_controlInterfaceNumber == s_invalidInterface)
+		{
+			m_controlInterfaceNumber =
+				m_dataInterfaceNumber > 0 ? static_cast<uint8_t>(m_dataInterfaceNumber - 1) : m_dataInterfaceNumber;
+		}
+
+		LOG_DBG("Selected USB candidate on interface {} (score {}, class {})",
+				m_dataInterfaceNumber,
+				selectedScore,
+				selected.interfaceClass);
+		LOG_DBG("Using data interface {}, IN endpoint {:#x}, OUT endpoint {:#x}, packet {}",
+				m_dataInterfaceNumber,
+				m_inEndpoint,
+				m_outEndpoint,
+				m_packetSize);
+		LOG_DBG("Using control interface {}", m_controlInterfaceNumber);
+
+		libusb_free_config_descriptor(config_desc);
+		return true;
 	}
 
 	void LIBUSB_CALL UsbDevice::sendTransferCallback(struct libusb_transfer* transfer)

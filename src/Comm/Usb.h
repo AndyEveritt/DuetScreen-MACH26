@@ -1,6 +1,8 @@
 #pragma once
 
 #include <atomic>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <libusb-1.0/libusb.h>
 #include <string>
@@ -70,6 +72,10 @@ namespace Comm
 		uint8_t m_inEndpoint;
 		uint8_t m_outEndpoint;
 		uint16_t m_packetSize;
+		uint8_t m_dataInterfaceNumber;
+		uint8_t m_controlInterfaceNumber;
+		std::size_t m_claimedInterfaceCount;
+		uint8_t m_claimedInterfaces[2];
 
 		std::atomic<bool> m_eventThreadRunning;
 		std::thread m_eventLoopThread;
