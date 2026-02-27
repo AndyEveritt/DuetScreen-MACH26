@@ -7,6 +7,7 @@
 
 #include "NetworkHelper.h"
 #include "Debug.h"
+#include <arpa/inet.h>
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
@@ -14,10 +15,14 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <ifaddrs.h>
 #include <iostream>
 #include <memory>
+#include <netinet/in.h>
 #include <sstream>
 #include <string>
+#include <string_view>
+#include <sys/socket.h>
 #include <thread>
 #include <vector>
 
@@ -99,6 +104,86 @@ namespace NetworkHelper
 	[[maybe_unused]] static std::string getCtrlPath()
 	{
 		return std::string(CTRL_PATH "/") + getInterfaceName();
+	}
+
+	/// Discover an ethernet interface from /sys/class/net.
+	/// Returns empty string if no likely ethernet interface is found.
+	static std::string discoverEthernetInterface()
+	{
+		ZoneScoped;
+#if T113
+		namespace fs = std::filesystem;
+		const fs::path netClass{"/sys/class/net"};
+		if (!fs::exists(netClass))
+			return {};
+
+		std::string fallbackInterface;
+		for (const auto& entry : fs::directory_iterator(netClass))
+		{
+			const auto name = entry.path().filename().string();
+			if (name == "lo")
+				continue;
+
+			const bool isWireless = fs::exists(entry.path() / "wireless") || fs::exists(entry.path() / "phy80211");
+			if (isWireless)
+				continue;
+
+			if (name.rfind("eth", 0) == 0 || name.rfind("en", 0) == 0)
+			{
+				LOG_INFO("Discovered ethernet interface: {:s}", name);
+				return name;
+			}
+
+			if (fallbackInterface.empty())
+				fallbackInterface = name;
+		}
+
+		if (!fallbackInterface.empty())
+		{
+			LOG_INFO("Using fallback ethernet interface: {:s}", fallbackInterface);
+			return fallbackInterface;
+		}
+
+		LOG_WARN("No ethernet interface found in /sys/class/net");
+		return {};
+#else
+		return "eth0";
+#endif
+	}
+
+	/// Get the IPv4 address currently assigned to a specific network interface.
+	static std::string getIpv4AddressForInterface(std::string_view interfaceName)
+	{
+		if (interfaceName.empty())
+			return {};
+
+		struct ifaddrs* ifaddr = nullptr;
+		if (getifaddrs(&ifaddr) == -1)
+		{
+			LOG_ERROR("getifaddrs failed while checking {:s}", interfaceName);
+			return {};
+		}
+
+		std::string ipAddress;
+		for (struct ifaddrs* p = ifaddr; p != nullptr; p = p->ifa_next)
+		{
+			if (p->ifa_addr == nullptr || p->ifa_addr->sa_family != AF_INET)
+				continue;
+
+			if (interfaceName != p->ifa_name)
+				continue;
+
+			char buffer[INET_ADDRSTRLEN] = {0};
+			auto* addrIn = reinterpret_cast<struct sockaddr_in*>(p->ifa_addr);
+			if (inet_ntop(AF_INET, &addrIn->sin_addr, buffer, sizeof(buffer)) != nullptr)
+			{
+				ipAddress = buffer;
+				break;
+			}
+		}
+
+		freeifaddrs(ifaddr);
+		return ipAddress;
 	}
 
 	[[maybe_unused]] static bool initWPAControl()
@@ -367,7 +452,16 @@ namespace NetworkHelper
 	{
 		ZoneScoped;
 		std::string output = sendCommand("STATUS");
-		return getStatusField(output, "ip_address");
+		if (auto ipAddress = getStatusField(output, "ip_address"); !ipAddress.empty())
+		{
+			return ipAddress;
+		}
+
+		const auto ethernetInterface = discoverEthernetInterface();
+		if (ethernetInterface.empty())
+			return {};
+
+		return getIpv4AddressForInterface(ethernetInterface);
 	}
 
 	std::vector<WiFiNetwork> getKnownWiFiNetworks()
