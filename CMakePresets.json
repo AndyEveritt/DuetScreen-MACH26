@@ -49,6 +49,8 @@
             "hidden": true,
             "description": "Configure the project to be run locally on the host machine",
             "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc-15",
+                "CMAKE_CXX_COMPILER": "g++-15",
                 "PROCESSOR": "Simulation"
             }
         },

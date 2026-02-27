@@ -17,6 +17,13 @@ git clone --recursive git@github.com:Duet3D/DuetScreen.git
 > [!WARNING]
 > The project uses Git Submodules. When cloning the project or checking out a branch/commit, make sure to run `git submodule update --init --recursive` to ensure that the submodules are checked out to the correct commit.
 
+The recommended compiler is `gcc-15`. The toolchain is entirely managed by buildroot if you are building for the T113 so you only need to worry about it if you are building the simulation. It might be possible to use other compilers but this is not officially supported.
+
+There is an install script to install `gcc-15` on Ubuntu 24.04 LTS since it is not available in the default repositories. Run the following command to install `gcc-15`:
+```bash
+./scripts/install_gcc15.sh
+```
+
 ## Setting up VSCode
 
 The project is setup to use VSCode as the development environment. The project uses CMake and is possible to build entirely from a CLI. However, using VSCode makes it easier to debug and develop the code.
