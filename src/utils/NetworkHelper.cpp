@@ -7,8 +7,8 @@
 
 #include "NetworkHelper.h"
 #include "Debug.h"
-#include <arpa/inet.h>
 #include <algorithm>
+#include <arpa/inet.h>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
