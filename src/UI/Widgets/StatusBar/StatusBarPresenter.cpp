@@ -34,6 +34,7 @@ namespace UI
 		getView()->setDuetStatus(
 			fmt::format("{:s} - {:s}", _(Comm::DUET.GetCommunicationTypeName()), _("state.disconnected")));
 		getView()->setDuetName("");
+		newHeaterData();
 	}
 
 	void StatusBarPresenter::newDuetName()
