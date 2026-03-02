@@ -504,3 +504,58 @@ TEST_F(TestLvgl, TextareaOneLine)
 	textarea.setHeight(LV_SIZE_CONTENT);
 	EXPECT_EQUAL_SCREENSHOT("lvgl/textarea/one_line.png");
 }
+
+TEST_F(TestLvgl, ScaleSize)
+{
+	lv_obj_t* cont = lv_obj_create(screen.getRootPtr());
+	lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+	lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
+
+	auto createScale = [&](std::string_view name, lv_scale_mode_t mode)
+	{
+		lv_obj_t* scale = lv_scale_create(cont);
+		lv_obj_set_name(scale, name.data());
+		switch (mode)
+		{
+		case LV_SCALE_MODE_HORIZONTAL_TOP:
+		case LV_SCALE_MODE_HORIZONTAL_BOTTOM:
+			lv_obj_set_height(scale, LV_SIZE_CONTENT);
+			break;
+		case LV_SCALE_MODE_VERTICAL_LEFT:
+		case LV_SCALE_MODE_VERTICAL_RIGHT:
+			lv_obj_set_width(scale, LV_SIZE_CONTENT);
+			break;
+		default:
+			break;
+		}
+		lv_scale_set_mode(scale, mode);
+		lv_scale_set_label_show(scale, true);
+		lv_obj_set_style_border_width(scale, 2, LV_PART_MAIN);
+		lv_obj_set_style_border_color(scale, lv_color_white(), LV_PART_MAIN);
+
+		return scale;
+	};
+
+	lv_obj_t* scale = createScale("scale_horizontal_top", LV_SCALE_MODE_HORIZONTAL_TOP);
+	lv_obj_t* scale2 = createScale("scale_horizontal_bottom", LV_SCALE_MODE_HORIZONTAL_BOTTOM);
+	lv_obj_t* scale3 = createScale("scale_vertical_left", LV_SCALE_MODE_VERTICAL_LEFT);
+	lv_obj_t* scale4 = createScale("scale_vertical_right", LV_SCALE_MODE_VERTICAL_RIGHT);
+
+	auto setTickLength = [&](lv_obj_t* scale, int32_t major_len, int32_t minor_len)
+	{
+		lv_obj_set_style_length(scale, major_len, LV_PART_INDICATOR);
+		lv_obj_set_style_length(scale, minor_len, LV_PART_ITEMS);
+		return scale;
+	};
+
+	lv_obj_t* scale6 =
+		setTickLength(createScale("scale_horizontal_top_long_tick", LV_SCALE_MODE_HORIZONTAL_TOP), 30, 5);
+	lv_obj_set_flag(scale6, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK, true);
+	lv_obj_t* scale7 =
+		setTickLength(createScale("scale_horizontal_bottom_long_tick", LV_SCALE_MODE_HORIZONTAL_BOTTOM), 30, 5);
+	lv_obj_t* scale8 = setTickLength(createScale("scale_vertical_left_long_tick", LV_SCALE_MODE_VERTICAL_LEFT), 30, 5);
+	lv_obj_t* scale9 =
+		setTickLength(createScale("scale_vertical_right_long_tick", LV_SCALE_MODE_VERTICAL_RIGHT), 30, 5);
+
+	EXPECT_EQUAL_SCREENSHOT("lvgl/scale_size.png");
+}

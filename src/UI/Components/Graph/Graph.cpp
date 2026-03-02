@@ -11,7 +11,6 @@
 
 namespace UI
 {
-	static constexpr lv_coord_t s_scaleSize = 30;
 	static lv_color_t s_hiddenColor = lv_color_darken(lv_color_white(), 50);
 
 	Graph::Graph(const std::string& name, LvObj& parent)
@@ -30,28 +29,26 @@ namespace UI
 		setFlexFlow(LV_FLEX_FLOW_ROW);
 		m_chartCont.setSize(LV_PCT(100), LV_PCT(100));
 		m_chartCont.setFlexGrow(1);
-		m_chartCont.setStylePad(20, LV_PART_MAIN, Padding::TOP);
-		m_chartCont.setStylePad(20, LV_PART_MAIN, Padding::RIGHT);
-		m_chartCont.setStylePad(10, LV_PART_MAIN, Padding::LEFT);
-		m_chartCont.setStylePad(5, LV_PART_MAIN, Padding::BOTTOM);
 
 		m_legend.setSize(LV_SIZE_CONTENT, LV_PCT(100));
 		m_legend.addStyle(Themes::getComponentStyles().graph_legend);
 
-		m_columnDsc = {s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-		m_rowDsc = {LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST};
+		m_columnDsc = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+		m_rowDsc = {LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
 
 		m_chartCont.setGridDsc(m_columnDsc, m_rowDsc);
-		m_chartCont.setGridCell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
-		m_chartCont.setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		m_chartCont.setGridCell(m_vScale, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+		m_chartCont.setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 1, 1);
 		m_chartCont.setGridCell(m_chart, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
 
 		/* Chart */
 		// Horizontal scale
+		m_hScale.setHeight(LV_SIZE_CONTENT);
 		m_hScale.setMode(LV_SCALE_MODE_HORIZONTAL_BOTTOM);
 		m_hScale.setLabelShow(true);
 
 		// Vertical scale
+		m_vScale.setWidth(LV_SIZE_CONTENT);
 		m_vScale.setMode(LV_SCALE_MODE_VERTICAL_LEFT);
 		m_vScale.setLabelShow(true);
 		m_vScale.setTotalTickCount(21);

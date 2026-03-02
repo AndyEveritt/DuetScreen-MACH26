@@ -35,7 +35,8 @@ namespace OM
 
 	bool IsConnected()
 	{
-		return s_status != OM::PrinterStatus::connecting && s_status != OM::PrinterStatus::off;
+		return s_status != OM::PrinterStatus::connecting && s_status != OM::PrinterStatus::off &&
+			   s_status != OM::PrinterStatus::disconnected;
 	}
 
 	// Return true if sending a command or file list request to the printer now is a good idea.

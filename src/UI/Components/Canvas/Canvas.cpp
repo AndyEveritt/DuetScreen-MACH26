@@ -14,12 +14,10 @@ namespace UI
 #define DEFAULT_CANVAS_WIDTH 100
 #define DEFAULT_CANVAS_HEIGHT 100
 
-	static constexpr lv_coord_t s_scaleSize = 30;
-
 	Canvas::Canvas(const std::string& name, LvObj& parent)
 		: LvObj(lv_obj_create, name, parent)
-		, m_columnDsc{s_scaleSize, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
-		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), s_scaleSize, LV_GRID_TEMPLATE_LAST}
+		, m_columnDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
+		, m_rowDsc{LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST}
 	{
 		ZoneScoped;
 		init();
@@ -44,14 +42,9 @@ namespace UI
 		// Layout
 		setGridDsc(m_columnDsc, m_rowDsc);
 		setGridCell(m_title, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 1);
-		setGridCell(m_vScale, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 2, 1);
+		setGridCell(m_vScale, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
+		setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 		setGridCell(m_canvas, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-
-		setStylePad(10, LV_PART_MAIN, Padding::TOP);
-		setStylePad(20, LV_PART_MAIN, Padding::RIGHT);
-		setStylePad(10, LV_PART_MAIN, Padding::LEFT);
-		setStylePad(5, LV_PART_MAIN, Padding::BOTTOM);
 
 		// Title
 		m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
@@ -62,6 +55,7 @@ namespace UI
 		m_hScale.setLabelShow(true);
 		m_hScale.setTotalTickCount(17);
 		m_hScale.setMajorTickEvery(4);
+		setExtDrawSize(100); // To prevent clipping of labels
 
 		// Vertical scale
 		m_vScale.setWidth(LV_SIZE_CONTENT);
@@ -92,7 +86,6 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		m_hScale.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
-		m_rowDsc[2] = show ? s_scaleSize : 0;
 	}
 
 	void Canvas::showYScale(const bool show)
@@ -100,7 +93,6 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		m_vScale.setFlag(LV_OBJ_FLAG_HIDDEN, !show);
-		m_columnDsc[0] = show ? s_scaleSize : 0;
 	}
 
 	Canvas::range_t Canvas::getXRange() const

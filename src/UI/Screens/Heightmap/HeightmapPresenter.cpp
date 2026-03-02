@@ -27,17 +27,13 @@ namespace UI
 		}
 		if (heightmap == nullptr)
 		{
-			m_view->clear();
+			getView()->clear();
 		}
 	}
 
 	void HeightmapPresenter::render()
 	{
 		ZoneScoped;
-		if (!checkMode())
-		{
-			return;
-		}
 
 		std::shared_ptr<OM::Heightmap> heightmap;
 		{
@@ -47,14 +43,14 @@ namespace UI
 
 		if (heightmap == nullptr)
 		{
-			m_view->clear();
+			getView()->clear();
 			return;
 		}
 
 		if (!heightmap->IsValid())
 		{
 			LOG_WARN("Heightmap is not valid");
-			m_view->clear();
+			getView()->clear();
 			return;
 		}
 
@@ -69,9 +65,9 @@ namespace UI
 
 		LOG_DBG("Rendering heightmap {:s}", heightmap->GetFileName());
 
-		m_view->setShownHeightmapName(heightmap->GetFileName());
-		m_view->setXRange({static_cast<int32_t>(axis0->minPosition), static_cast<int32_t>(axis0->maxPosition)});
-		m_view->setYRange({static_cast<int32_t>(axis1->minPosition), static_cast<int32_t>(axis1->maxPosition)});
+		getView()->setShownHeightmapName(heightmap->GetFileName());
+		getView()->setXRange({static_cast<int32_t>(axis0->minPosition), static_cast<int32_t>(axis0->maxPosition)});
+		getView()->setYRange({static_cast<int32_t>(axis1->minPosition), static_cast<int32_t>(axis1->maxPosition)});
 
 		m_axis0Range = {axis0->minPosition, axis0->maxPosition};
 		m_axis1Range = {axis1->minPosition, axis1->maxPosition};
@@ -79,24 +75,24 @@ namespace UI
 		switch (m_mode)
 		{
 		case HeightmapRenderMode::Fixed:
-			m_view->setValueRange(-0.25f, 0.25f);
+			getView()->setValueRange(-0.25f, 0.25f);
 			break;
 		case HeightmapRenderMode::Auto:
-			m_view->setValueRange(static_cast<float>(heightmap->GetMinError()),
-								  static_cast<float>(heightmap->GetMaxError()));
+			getView()->setValueRange(static_cast<float>(heightmap->GetMinError()),
+									 static_cast<float>(heightmap->GetMaxError()));
 			break;
 		}
 
-		m_view->drawGrid();
+		getView()->drawGrid();
 
 		uint32_t width, height;
-		m_view->getResolution(width, height);
+		getView()->getResolution(width, height);
 
 		{
 			ZoneScopedN("Heightmap Render Loop");
 			float x_min, y_min, x_max, y_max;
-			m_view->pxToPos(0, 0, x_min, y_min);
-			m_view->pxToPos(width - 1, height - 1, x_max, y_max);
+			getView()->pxToPos(0, 0, x_min, y_min);
+			getView()->pxToPos(width - 1, height - 1, x_max, y_max);
 			float xStep = (x_max - x_min) / static_cast<float>(width - 1);
 			float yStep = (y_max - y_min) / static_cast<float>(height - 1);
 
@@ -121,28 +117,28 @@ namespace UI
 					{
 						continue;
 					}
-					m_view->setPx(px, height - py - 1, static_cast<float>(value));
+					getView()->setPx(px, height - py - 1, static_cast<float>(value));
 				}
 			}
 		}
-		m_view->getHeightmap().getCanvas().invalidate();
-		m_view->renderColorBar();
+		getView()->getHeightmap().getCanvas().invalidate();
+		getView()->renderColorBar();
 
 #if RENDER_MEASUREMENT_POINTS
 		const auto& measurements = heightmap->GetPoints();
 		for (size_t i = 0; i < measurements.size(); i++)
 		{
 			const auto& point = measurements[i];
-			m_view->addMeasurementPoint(point.x, point.y);
+			getView()->addMeasurementPoint(point.x, point.y);
 		}
 #endif
 
-		m_view->setStatistics(heightmap->GetPointCount(),
-							  heightmap->GetArea() / 100,
-							  heightmap->GetMinError(),
-							  heightmap->GetMaxError(),
-							  heightmap->GetMeanError(),
-							  heightmap->GetStdDev());
+		getView()->setStatistics(heightmap->GetPointCount(),
+								 heightmap->GetArea() / 100,
+								 heightmap->GetMinError(),
+								 heightmap->GetMaxError(),
+								 heightmap->GetMeanError(),
+								 heightmap->GetStdDev());
 	}
 
 	void HeightmapPresenter::setActiveHeightmap(const size_t index)
@@ -258,57 +254,13 @@ namespace UI
 	void HeightmapPresenter::newStatus(OM::PrinterStatus status)
 	{
 		ZoneScoped;
-		getView()->getControlButtons().setState(LV_STATE_DISABLED, OM::IsPrintingStatus(status), true);
+		getView()->getControlButtons().setState(
+			LV_STATE_DISABLED, OM::IsPrintingStatus(status) || !OM::IsConnected(), true);
 	}
 
-	void HeightmapPresenter::updateHeightmapList()
+	void HeightmapPresenter::requestHeightmaps()
 	{
 		ZoneScoped;
-		OM::FileSystem::SortFilesBy(m_heightmapFiles, OM::FileSystem::SortBy::NAME, false);
-		m_view->setHeightmapCount(m_heightmapFiles.size());
-
-		bool selected = false;
-		for (size_t i = 0; i < m_heightmapFiles.size(); i++)
-		{
-			m_view->setHeightmapName(i, m_heightmapFiles[i]->GetName());
-			if (m_heightmapFiles[i]->GetName() == OM::GetCurrentHeightmap())
-			{
-				selected = true;
-				m_view->setSelectedHeightmap(i);
-			}
-		}
-		if (!selected)
-		{
-			m_view->setSelectedHeightmap(-1);
-		}
-	}
-
-	bool HeightmapPresenter::checkMode()
-	{
-		ZoneScoped;
-#if 0
-		if (Comm::DUET.GetCommunicationType() != Comm::CommunicationType::network)
-		{
-			LOG_WARN("Heightmap not supported in this mode");
-			uint32_t width, height;
-			m_view->getResolution(width, height);
-			m_view->clear();
-			m_view->drawLabel(width / 2,
-							  height / 2,
-							  _("heightmap.not_supported", _(Comm::DUET.GetCommunicationTypeName())),
-							  lv_palette_main(LV_PALETTE_RED),
-							  LV_OPA_100);
-			return false;
-		}
-#endif
-
-		return true;
-	}
-
-	void HeightmapPresenter::onActivate()
-	{
-		ZoneScoped;
-		LOG_DBG("activate");
 		OM::RequestHeightmapFiles(
 			[this](const OM::FileSystem::ItemList& files)
 			{
@@ -323,6 +275,35 @@ namespace UI
 			map->LoadFromDuet([this](OM::Heightmap& /* heightmap */) { render(); });
 		}
 		setHeightmap(map);
+	}
+
+	void HeightmapPresenter::updateHeightmapList()
+	{
+		ZoneScoped;
+		OM::FileSystem::SortFilesBy(m_heightmapFiles, OM::FileSystem::SortBy::NAME, false);
+		getView()->setHeightmapCount(m_heightmapFiles.size());
+
+		bool selected = false;
+		for (size_t i = 0; i < m_heightmapFiles.size(); i++)
+		{
+			getView()->setHeightmapName(i, m_heightmapFiles[i]->GetName());
+			if (m_heightmapFiles[i]->GetName() == OM::GetCurrentHeightmap())
+			{
+				selected = true;
+				getView()->setSelectedHeightmap(i);
+			}
+		}
+		if (!selected)
+		{
+			getView()->setSelectedHeightmap(-1);
+		}
+	}
+
+	void HeightmapPresenter::onActivate()
+	{
+		ZoneScoped;
+		LOG_DBG("activate");
+		requestHeightmaps();
 
 		newStatus(OM::GetStatus());
 	}
@@ -331,7 +312,7 @@ namespace UI
 	{
 		ZoneScoped;
 		LOG_DBG("Connected");
-		checkMode();
+		requestHeightmaps();
 	}
 
 	void HeightmapPresenter::onDisconnect()
@@ -345,7 +326,7 @@ namespace UI
 				m_heightmap = nullptr;
 			}
 		}
-		m_view->clear();
-		m_view->setHeightmapCount(0);
+		getView()->clear();
+		getView()->setHeightmapCount(0);
 	}
 } // namespace UI

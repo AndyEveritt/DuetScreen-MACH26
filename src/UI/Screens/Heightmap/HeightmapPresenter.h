@@ -56,8 +56,8 @@ namespace UI
 		void onConnect() override;
 		void onDisconnect() override;
 
+		void requestHeightmaps();
 		void updateHeightmapList();
-		bool checkMode();
 
 		std::shared_ptr<OM::Heightmap> m_heightmap;
 		TracySharedLockable(std::shared_mutex, m_heightmapMutex);

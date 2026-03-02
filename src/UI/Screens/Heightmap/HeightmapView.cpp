@@ -322,6 +322,8 @@ namespace UI
 		setShownHeightmapName("");
 		drawGrid();
 		setStatistics(0, 0.0, 0.0, 0.0, 0.0, 0.0);
+
+		m_heightmapList.clear();
 	}
 
 	void HeightmapView::setStatistics(
