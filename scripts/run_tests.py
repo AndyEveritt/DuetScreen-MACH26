@@ -25,6 +25,7 @@ import sys
 import subprocess
 import argparse
 import shutil
+import re
 from pathlib import Path
 from typing import List, Optional, Tuple, Any
 
@@ -916,6 +917,8 @@ def run_coverage(build_dir: Path) -> int:
 		log("Coverage: could not determine build directory, skipping coverage generation.")
 		return 1
 
+	gcov_executable = detect_gcov_executable(build_dir)
+
 	cmd = [
 		"gcovr",
 		build_dir.as_posix(),
@@ -928,6 +931,10 @@ def run_coverage(build_dir: Path) -> int:
 		'--html-title', 'DuetScreen Test Coverage',
 		'--html-theme', 'github.dark-green'
 	]
+
+	if gcov_executable is not None:
+		cmd.extend(["--gcov-executable", gcov_executable])
+		log(f"Coverage: using gcov executable '{gcov_executable}'")
 
 	log("Coverage: running gcovr to produce HTML report…")
 	log("Coverage: " + " ".join(cmd))
@@ -944,6 +951,48 @@ def run_coverage(build_dir: Path) -> int:
 	except Exception as e:
 		log(f"Coverage: unexpected error invoking gcovr: {e}")
 		return 1
+
+
+def detect_gcov_executable(build_dir: Path) -> Optional[str]:
+	"""Choose a gcov executable matching the compiler used in the build directory.
+
+	Returns a gcov executable name/path suitable for gcovr (e.g. gcov-15),
+	or None if no better match than plain `gcov` can be determined.
+	"""
+	cache_path = build_dir / "CMakeCache.txt"
+	if not cache_path.exists():
+		return None
+
+	try:
+		cache_text = cache_path.read_text(encoding="utf-8", errors="ignore")
+	except Exception as e:
+		log(f"Coverage: failed reading {cache_path}: {e}")
+		return None
+
+	compiler_value: Optional[str] = None
+	for key in ("CMAKE_C_COMPILER", "CMAKE_CXX_COMPILER"):
+		match = re.search(rf"^{key}:[^=]*=(.+)$", cache_text, flags=re.MULTILINE)
+		if match:
+			compiler_value = match.group(1).strip()
+			if compiler_value:
+				break
+
+	if not compiler_value:
+		return None
+
+	major_match = re.search(r"(?:gcc|g\+\+)(?:-([0-9]+))?$", compiler_value)
+	if not major_match:
+		return None
+
+	major = major_match.group(1)
+	if not major:
+		return None
+
+	candidate = f"gcov-{major}"
+	if shutil.which(candidate) is not None:
+		return candidate
+
+	return None
 
 
 def main(argv: List[str]) -> int:
