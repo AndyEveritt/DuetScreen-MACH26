@@ -38,7 +38,27 @@ jobs:
             - name: Run Coverage
               run: |
                 mkdir -p tests/report
-                gcovr out/build/Test --root . --filter src --xml tests/report/coverage.xml -j $(nproc) --print-summary
+                GCOV_EXE="gcov"
+                COMPILER=$(sed -n -E 's/^CMAKE_CXX_COMPILER:[^=]*=(.*)$/\1/p' out/build/Test/CMakeCache.txt | head -n 1)
+                if [ -z "$COMPILER" ]; then
+                  COMPILER=$(sed -n -E 's/^CMAKE_C_COMPILER:[^=]*=(.*)$/\1/p' out/build/Test/CMakeCache.txt | head -n 1)
+                fi
+
+                if [ -n "$COMPILER" ]; then
+                  COMPILER_BASENAME=$(basename "$COMPILER")
+                  MAJOR=$(echo "$COMPILER_BASENAME" | sed -n -E 's/.*-(\d+)$/\1/p')
+
+                  if [ -z "$MAJOR" ] && command -v "$COMPILER" >/dev/null 2>&1; then
+                    MAJOR=$("$COMPILER" -dumpfullversion -dumpversion 2>/dev/null | cut -d. -f1)
+                  fi
+
+                  if [ -n "$MAJOR" ] && command -v "gcov-$MAJOR" >/dev/null 2>&1; then
+                    GCOV_EXE="gcov-$MAJOR"
+                  fi
+                fi
+
+                echo "Using gcov executable: $GCOV_EXE"
+                gcovr out/build/Test --root . --filter src --xml tests/report/coverage.xml -j $(nproc) --print-summary --gcov-executable "$GCOV_EXE"
 
             - name: Code Coverage Report
               uses: irongut/CodeCoverageSummary@v1.3.0
