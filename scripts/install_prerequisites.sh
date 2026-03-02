@@ -23,6 +23,8 @@ sudo apt-get install -y \
     python3-pip \
     python3-venv
 
+./scripts/install_gcc15.sh
+
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt

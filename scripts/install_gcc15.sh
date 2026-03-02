@@ -20,9 +20,14 @@ package_available() {
     apt-cache show "$1" >/dev/null 2>&1
 }
 
+add_toolchain_ppa_and_update() {
+    echo "GCC 15 apt package not found. Adding ubuntu-toolchain-r/test PPA and updating package lists..."
+    sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test
+}
+
 install_from_apt() {
-    echo "Installing GCC 15 and G++ 15 from apt (amd64 only, no recommends)..."
-    if ! sudo apt-get install -y --no-install-recommends gcc-15:amd64 g++-15:amd64; then
+    echo "Installing GCC 15 and G++ 15 from apt (no recommends)..."
+    if ! sudo apt-get install -y --no-install-recommends gcc-15 g++-15; then
         echo "apt-based install failed; falling back to source build."
         install_from_source
     fi
@@ -74,7 +79,13 @@ if ! command -v gcc-15 >/dev/null 2>&1 || ! command -v g++-15 >/dev/null 2>&1; t
     if package_available gcc-15; then
         install_from_apt
     else
-        install_from_source
+        add_toolchain_ppa_and_update
+
+        if package_available gcc-15; then
+            install_from_apt
+        else
+            install_from_source
+        fi
     fi
 fi
 
