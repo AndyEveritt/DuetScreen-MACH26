@@ -165,7 +165,7 @@ namespace Comm
 			{
 				if (seqs[i].lastSeq != val)
 				{
-					LOG_DBG("{:s} {:d} -> {:d}\n", seqs[i].key, seqs[i].lastSeq, val);
+					LOG_DBG("Seq {:s} {:d} -> {:d}\n", seqs[i].key, seqs[i].lastSeq, val);
 					seqs[i].lastSeq = val;
 					seqs[i].state = SeqStateUpdate;
 				}

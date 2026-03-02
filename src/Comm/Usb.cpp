@@ -45,15 +45,14 @@ namespace Comm
 		: m_name("")
 		, m_device(nullptr)
 		, m_handle(nullptr)
-		, m_inEndpoint(0)
-		, m_outEndpoint(0)
-		, m_packetSize(0)
-		, m_dataInterfaceNumber(0xFF)
-		, m_controlInterfaceNumber(0xFF)
+		, m_channels{}
+		, m_channelCount(0)
 		, m_claimedInterfaceCount(0)
-		, m_claimedInterfaces{0xFF, 0xFF}
+		, m_claimedInterfaces{}
+		, m_receiveContexts{}
 	{
 		ZoneScoped;
+		m_claimedInterfaces.fill(0xFF);
 	}
 
 	UsbDevice::~UsbDevice()
@@ -110,14 +109,13 @@ namespace Comm
 			m_device = nullptr;
 		}
 		m_name = "";
-		m_inEndpoint = 0;
-		m_outEndpoint = 0;
-		m_packetSize = 0;
-		m_dataInterfaceNumber = 0xFF;
-		m_controlInterfaceNumber = 0xFF;
+		for (auto& channel : m_channels)
+		{
+			channel = ChannelConfig{};
+		}
+		m_channelCount = 0;
 		m_claimedInterfaceCount = 0;
-		m_claimedInterfaces[0] = 0xFF;
-		m_claimedInterfaces[1] = 0xFF;
+		m_claimedInterfaces.fill(0xFF);
 	}
 
 	bool UsbDevice::connect()
@@ -183,36 +181,42 @@ namespace Comm
 			return true;
 		};
 
-		if (!detachAndClaimInterface(m_dataInterfaceNumber))
+		for (std::size_t channelIndex = 0; channelIndex < m_channelCount; ++channelIndex)
 		{
-			goto close_handle;
+			if (!detachAndClaimInterface(m_channels[channelIndex].dataInterfaceNumber))
+			{
+				goto close_handle;
+			}
+
+			if (!detachAndClaimInterface(m_channels[channelIndex].controlInterfaceNumber))
+			{
+				goto close_handle;
+			}
 		}
 
-		if (!detachAndClaimInterface(m_controlInterfaceNumber))
+		if (!setBaud(115200))
 		{
+			LOG_ERROR("Failed to set CDC line coding");
 			goto close_handle;
 		}
 
 		r = setDtr(true);
 		if (r < 0)
 		{
-			LOG_ERROR("Failed to set DTR: {:s}", libusb_error_name(r));
+			LOG_ERROR("Failed to set DTR on all channels");
 			goto close_handle;
 		}
-
-#if 0
-		/* This shouldn't do anything since we are using bulk usb transfers */
-		r = setBaud(115200);
-		if (r < 0)
-		{
-			LOG_ERROR("Failed to set baud rate: {:s}", libusb_error_name(r));
-			goto close_handle;
-		}
-#endif
 
 		m_eventThreadRunning = true;
 		m_eventLoopThread = std::thread(&UsbDevice::eventLoop, this);
-		receive(s_usbTimeoutMs);
+		for (std::size_t channelIndex = 0; channelIndex < m_channelCount; ++channelIndex)
+		{
+			if (receive(channelIndex, s_usbTimeoutMs) != receive_err_t::NONE)
+			{
+				LOG_ERROR("Failed to start receive transfer for channel {}", channelIndex);
+				goto close_handle;
+			}
+		}
 
 		return true;
 
@@ -223,14 +227,27 @@ namespace Comm
 		return false;
 	}
 
-	bool UsbDevice::send(std::string_view data, unsigned int timeoutMs)
+	bool UsbDevice::send(std::string_view data, std::size_t channelIndex, unsigned int timeoutMs)
 	{
 		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
 			LOG_WARN("No USB device handle");
-			return -1;
+			return false;
+		}
+
+		if (m_channelCount == 0)
+		{
+			LOG_WARN("No USB data channel available");
+			return false;
+		}
+
+		const std::size_t resolvedChannelIndex = m_channelCount == 1 ? 0 : channelIndex;
+		if (resolvedChannelIndex >= m_channelCount)
+		{
+			LOG_WARN("Invalid USB channel {} requested (available: {})", resolvedChannelIndex, m_channelCount);
+			return false;
 		}
 
 		struct libusb_transfer* transfer = libusb_alloc_transfer(0);
@@ -240,14 +257,15 @@ namespace Comm
 			return false;
 		}
 
+		LOG_DBG("Submitting USB transfer on channel {:d}, {:d} bytes: '{:s}'", resolvedChannelIndex, data.size(), data);
+
 		TransferData* transferData = new TransferData();
 		transferData->buffer.assign(data.begin(), data.end());
-		transferData->device = this;
 
 		// Fill bulk transfer structure
 		libusb_fill_bulk_transfer(transfer,
 								  m_handle,
-								  m_outEndpoint,
+								  m_channels[resolvedChannelIndex].outEndpoint,
 								  transferData->buffer.data(),
 								  static_cast<int>(transferData->buffer.size()),
 								  sendTransferCallback,
@@ -281,6 +299,7 @@ namespace Comm
 	bool UsbDevice::setLineCoding(uint32_t baud, uint8_t stopBits, uint8_t parity, uint8_t dataBits)
 	{
 		ZoneScoped;
+		static constexpr uint8_t s_invalidInterface = 0xFF;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
@@ -305,27 +324,73 @@ namespace Comm
 								static_cast<uint8_t>(LIBUSB_RECIPIENT_INTERFACE);
 		uint8_t bRequest = 0x20; // SET_LINE_CODING
 		uint16_t wValue = 0;
-		uint16_t wIndex = m_controlInterfaceNumber != 0xFF ? m_controlInterfaceNumber : m_dataInterfaceNumber;
-		unsigned int timeoutMs = 1000;
-
-		int err = libusb_control_transfer(m_handle,
-										  bmRequestType,
-										  bRequest,
-										  wValue,
-										  wIndex,
-										  reinterpret_cast<unsigned char*>(&lc),
-										  static_cast<uint16_t>(sizeof(lc)),
-										  timeoutMs);
-		if (err < 0)
+		if (m_channelCount == 0)
 		{
-			LOG_ERROR("Failed to set line coding: {:s}", libusb_error_name(err));
+			LOG_WARN("No USB channel available for line coding");
 			return false;
 		}
-		LOG_DBG("CDC line coding set: {} bps, {} stop, parity {}, {} bits", baud, stopBits, parity, dataBits);
-		return true;
+
+		std::array<uint16_t, s_maxChannelCount> configuredInterfaces{};
+		configuredInterfaces.fill(s_invalidInterface);
+		std::size_t configuredCount = 0;
+		bool success = true;
+		unsigned int timeoutMs = 1000;
+
+		for (std::size_t channelIndex = 0; channelIndex < m_channelCount; ++channelIndex)
+		{
+			const ChannelConfig& channel = m_channels[channelIndex];
+			const uint16_t wIndex = channel.controlInterfaceNumber != s_invalidInterface
+										? channel.controlInterfaceNumber
+										: channel.dataInterfaceNumber;
+
+			// Multiple data channels can reference the same control interface.
+			// Send class-control requests once per unique interface index.
+			bool alreadyConfigured = false;
+			for (std::size_t i = 0; i < configuredCount; ++i)
+			{
+				if (configuredInterfaces[i] == wIndex)
+				{
+					alreadyConfigured = true;
+					break;
+				}
+			}
+			if (alreadyConfigured)
+			{
+				continue;
+			}
+
+			const int err = libusb_control_transfer(m_handle,
+													bmRequestType,
+													bRequest,
+													wValue,
+													wIndex,
+													reinterpret_cast<unsigned char*>(&lc),
+													static_cast<uint16_t>(sizeof(lc)),
+													timeoutMs);
+			if (err < 0)
+			{
+				LOG_ERROR("Failed to set line coding for channel {} (if={}): {:s}",
+						  channelIndex,
+						  wIndex,
+						  libusb_error_name(err));
+				success = false;
+				continue;
+			}
+
+			configuredInterfaces[configuredCount++] = wIndex;
+			LOG_DBG("CDC line coding set for channel {} (if={}): {} bps, {} stop, parity {}, {} bits",
+					channelIndex,
+					wIndex,
+					baud,
+					stopBits,
+					parity,
+					dataBits);
+		}
+
+		return success;
 	}
 
-	UsbDevice::receive_err_t UsbDevice::receive(unsigned int timeoutMs)
+	UsbDevice::receive_err_t UsbDevice::receive(std::size_t channelIndex, unsigned int timeoutMs)
 	{
 		ZoneScoped;
 		if (!m_handle)
@@ -341,13 +406,24 @@ namespace Comm
 			return receive_err_t::FAILED_TO_ALLOCATE_TRANSFER;
 		}
 
+		if (m_channelCount == 0 || channelIndex >= m_channelCount)
+		{
+			libusb_free_transfer(transfer);
+			LOG_ERROR("Invalid USB receive channel {}", channelIndex);
+			return receive_err_t::OTHER_ERROR;
+		}
+
+		ReceiveTransferContext* receiveContext = &m_receiveContexts[channelIndex];
+		receiveContext->device = this;
+		receiveContext->channelIndex = channelIndex;
+
 		libusb_fill_bulk_transfer(transfer,
 								  m_handle,
-								  m_inEndpoint,
-								  m_receiveBuffer,
+								  m_channels[channelIndex].inEndpoint,
+								  m_receiveBuffers[channelIndex],
 								  s_receiveBufferSize,
 								  receiveTransferCallback,
-								  this,
+								  receiveContext,
 								  timeoutMs);
 
 		int r = libusb_submit_transfer(transfer);
@@ -364,6 +440,7 @@ namespace Comm
 	int UsbDevice::setDtr(bool state)
 	{
 		ZoneScoped;
+		static constexpr uint8_t s_invalidInterface = 0xFF;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
 		if (!m_handle)
 		{
@@ -374,17 +451,56 @@ namespace Comm
 			static_cast<uint8_t>(LIBUSB_REQUEST_TYPE_CLASS) | static_cast<uint8_t>(LIBUSB_RECIPIENT_INTERFACE);
 		uint8_t request = 0x22;				  // SET_CONTROL_LINE_STATE (commonly used for DTR/RTS)
 		uint16_t value = state ? 0x01 : 0x00; // DTR set high (bit 0)
-		uint16_t index = m_controlInterfaceNumber != 0xFF ? m_controlInterfaceNumber : m_dataInterfaceNumber;
-		int err = libusb_control_transfer(m_handle, request_type, request, value, index, nullptr, 0, 1000);
-		if (err < 0)
+		if (m_channelCount == 0)
 		{
-			LOG_ERROR("Failed to set DTR: {:s}", libusb_error_name(err));
+			LOG_WARN("No USB channel available for DTR control");
+			return -1;
 		}
-		else
+
+		std::array<uint16_t, s_maxChannelCount> configuredInterfaces{};
+		configuredInterfaces.fill(s_invalidInterface);
+		std::size_t configuredCount = 0;
+		int firstError = 0;
+
+		for (std::size_t channelIndex = 0; channelIndex < m_channelCount; ++channelIndex)
 		{
-			LOG_DBG("DTR set successfully.");
+			const ChannelConfig& channel = m_channels[channelIndex];
+			const uint16_t index = channel.controlInterfaceNumber != s_invalidInterface ? channel.controlInterfaceNumber
+																						: channel.dataInterfaceNumber;
+
+			// Multiple data channels can reference the same control interface.
+			// Send class-control requests once per unique interface index.
+			bool alreadyConfigured = false;
+			for (std::size_t i = 0; i < configuredCount; ++i)
+			{
+				if (configuredInterfaces[i] == index)
+				{
+					alreadyConfigured = true;
+					break;
+				}
+			}
+			if (alreadyConfigured)
+			{
+				continue;
+			}
+
+			const int err = libusb_control_transfer(m_handle, request_type, request, value, index, nullptr, 0, 1000);
+			if (err < 0)
+			{
+				LOG_ERROR(
+					"Failed to set DTR for channel {} (if={}): {:s}", channelIndex, index, libusb_error_name(err));
+				if (firstError == 0)
+				{
+					firstError = err;
+				}
+				continue;
+			}
+
+			configuredInterfaces[configuredCount++] = index;
+			LOG_DBG("DTR set for channel {} (if={})", channelIndex, index);
 		}
-		return err;
+
+		return firstError;
 	}
 
 	bool UsbDevice::getDeviceInterface()
@@ -473,7 +589,6 @@ namespace Comm
 						}
 					}
 				}
-
 				if (inEndpoint != 0 && outEndpoint != 0)
 				{
 					Candidate candidate{};
@@ -489,7 +604,7 @@ namespace Comm
 						candidate.controlInterface = controlInterfaceIt->second;
 					}
 
-					candidates.push_back(candidate);
+					candidates.push_back(std::move(candidate));
 				}
 			}
 		}
@@ -517,36 +632,87 @@ namespace Comm
 			return score;
 		};
 
-		auto selectedIt = std::max_element(candidates.begin(),
-										   candidates.end(),
-										   [&](const Candidate& lhs, const Candidate& rhs)
-										   { return scoreCandidate(lhs) < scoreCandidate(rhs); });
-		const Candidate& selected = *selectedIt;
-		const int selectedScore = scoreCandidate(selected);
+		std::sort(candidates.begin(),
+				  candidates.end(),
+				  [&](const Candidate& lhs, const Candidate& rhs)
+				  {
+					  const int lhsScore = scoreCandidate(lhs);
+					  const int rhsScore = scoreCandidate(rhs);
+					  if (lhsScore != rhsScore)
+					  {
+						  return lhsScore > rhsScore;
+					  }
+					  return lhs.dataInterface < rhs.dataInterface;
+				  });
 
-		m_dataInterfaceNumber = selected.dataInterface;
-		m_inEndpoint = selected.inEndpoint;
-		m_outEndpoint = selected.outEndpoint;
-		m_packetSize = selected.packetSize;
-		m_controlInterfaceNumber = selected.controlInterface;
-
-		if (m_controlInterfaceNumber == s_invalidInterface)
+		m_channelCount = 0;
+		for (auto& channel : m_channels)
 		{
-			m_controlInterfaceNumber =
-				m_dataInterfaceNumber > 0 ? static_cast<uint8_t>(m_dataInterfaceNumber - 1) : m_dataInterfaceNumber;
+			channel = ChannelConfig{};
 		}
 
-		LOG_DBG("Selected USB candidate on interface {} (score {}, class {})",
-				m_dataInterfaceNumber,
-				selectedScore,
-				selected.interfaceClass);
-		LOG_DBG("Using data interface {}, IN endpoint {:#x}, OUT endpoint {:#x}, packet {}",
-				m_dataInterfaceNumber,
-				m_inEndpoint,
-				m_outEndpoint,
-				m_packetSize);
-		LOG_DBG("Using control interface {}", m_controlInterfaceNumber);
+		for (const Candidate& candidate : candidates)
+		{
+			if (m_channelCount >= s_maxChannelCount)
+			{
+				break;
+			}
 
+			// Multiple altsettings can describe the same data interface. Keep only
+			// the highest-ranked candidate for each data interface number.
+			bool alreadySelected = false;
+			for (std::size_t channelIndex = 0; channelIndex < m_channelCount; ++channelIndex)
+			{
+				if (m_channels[channelIndex].dataInterfaceNumber == candidate.dataInterface)
+				{
+					alreadySelected = true;
+					break;
+				}
+			}
+
+			if (alreadySelected)
+			{
+				continue;
+			}
+
+			ChannelConfig& channel = m_channels[m_channelCount];
+			channel.dataInterfaceNumber = candidate.dataInterface;
+			channel.controlInterfaceNumber = candidate.controlInterface;
+			channel.inEndpoint = candidate.inEndpoint;
+			channel.outEndpoint = candidate.outEndpoint;
+			channel.packetSize = candidate.packetSize;
+
+			if (channel.controlInterfaceNumber == s_invalidInterface)
+			{
+				channel.controlInterfaceNumber = channel.dataInterfaceNumber > 0
+													 ? static_cast<uint8_t>(channel.dataInterfaceNumber - 1)
+													 : channel.dataInterfaceNumber;
+			}
+
+			LOG_DBG("Selected USB channel {} on interface {} (score {}, class {})",
+					m_channelCount,
+					channel.dataInterfaceNumber,
+					scoreCandidate(candidate),
+					candidate.interfaceClass);
+			LOG_DBG("Using channel {} data interface {}, IN endpoint {:#x}, OUT endpoint {:#x}, packet {}",
+					m_channelCount,
+					channel.dataInterfaceNumber,
+					channel.inEndpoint,
+					channel.outEndpoint,
+					channel.packetSize);
+			LOG_DBG("Using channel {} control interface {}", m_channelCount, channel.controlInterfaceNumber);
+
+			++m_channelCount;
+		}
+
+		if (m_channelCount == 0)
+		{
+			libusb_free_config_descriptor(config_desc);
+			LOG_ERROR("Failed to select any USB data channels");
+			return false;
+		}
+
+		LOG_INFO("Configured {} USB data channel(s)", m_channelCount);
 		libusb_free_config_descriptor(config_desc);
 		return true;
 	}
@@ -582,7 +748,9 @@ namespace Comm
 	void LIBUSB_CALL UsbDevice::receiveTransferCallback(struct libusb_transfer* transfer)
 	{
 		ZoneScoped;
-		auto device = static_cast<UsbDevice*>(transfer->user_data);
+		auto* receiveContext = static_cast<ReceiveTransferContext*>(transfer->user_data);
+		auto* device = receiveContext->device;
+		const std::size_t channelIndex = receiveContext->channelIndex;
 
 		// Notify completion for any pending transfers
 		std::unique_lock<LockableBase(std::mutex)> lock(s_transferMutex);
@@ -592,7 +760,7 @@ namespace Comm
 			// Data successfully transferred, invoke the callback
 			if (device->m_receiveCallback)
 			{
-				device->m_receiveCallback(transfer->buffer, transfer->actual_length);
+				device->m_receiveCallback(transfer->buffer, transfer->actual_length, channelIndex);
 			}
 		}
 		else if (transfer->status == LIBUSB_TRANSFER_TIMED_OUT)
@@ -608,7 +776,10 @@ namespace Comm
 			LOG_ERROR("Transfer failed: {}", libusb_error_name(transfer->status));
 		}
 
-		device->receive(s_usbTimeoutMs);
+		if (device->m_eventThreadRunning.load(std::memory_order_relaxed) && device->m_handle)
+		{
+			device->receive(channelIndex, s_usbTimeoutMs);
+		}
 
 		libusb_free_transfer(transfer);		// Free the transfer after processing
 		s_completionCondition.notify_all(); // Notify event loop about completion
@@ -723,11 +894,11 @@ namespace Comm
 
 		s_currentUsbDevice.init(device_name,
 								device,
-								[](unsigned char* buf, size_t len)
+								[](unsigned char* buf, size_t len, size_t channelIndex)
 								{
 									ZoneScopedN("USB Receive Callback");
-									static Comm::JsonDecoder s_decoder;
-									s_decoder.CheckInput(buf, len);
+									static std::array<Comm::JsonDecoder, Comm::UsbDevice::s_maxChannelCount> s_decoder;
+									s_decoder[channelIndex].CheckInput(buf, len);
 								});
 
 		if (!s_currentUsbDevice.connect())
@@ -742,7 +913,7 @@ namespace Comm
 		return ret;
 	}
 
-	ssize_t sendUsbData(std::string_view data)
+	ssize_t sendUsbData(std::string_view data, std::size_t channelIndex)
 	{
 		ZoneScoped;
 		std::lock_guard<LockableBase(std::recursive_mutex)> lock(s_usbMutex);
@@ -751,7 +922,7 @@ namespace Comm
 			LOG_WARN("USB device not connected");
 			return -1;
 		}
-		return s_currentUsbDevice.send(data);
+		return s_currentUsbDevice.send(data, channelIndex);
 	}
 
 	void setUsbMode(const UsbMode mode)

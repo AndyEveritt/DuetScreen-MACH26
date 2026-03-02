@@ -339,10 +339,33 @@ namespace Comm
 		case CommunicationType::usb:
 		{
 			std::lock_guard<LockableBase(std::mutex)> lock(m_sendLock);
+			std::size_t usbChannel = 0;
+#if ENABLE_SECOND_USB_CHANNEL
+			if (m_config.communicationType == CommunicationType::usb)
+			{
+				std::string_view command = gcode;
+				if (const std::size_t first = command.find_first_not_of(" \t\r\n"); first != std::string_view::npos)
+				{
+					command.remove_prefix(first);
+				}
+				static constexpr std::string_view channelOneCommands[] = {
+					"M409", "M112", "M999", "M111", "M122", "M108", "M25"};
+				for (const std::string_view channelOneCommand : channelOneCommands)
+				{
+					if (command.starts_with(channelOneCommand))
+					{
+						usbChannel = 1;
+						break;
+					}
+				}
+			}
+#endif
 			CRC16 crc;
 			size_t len = 0;
 			std::string_view line;
-			auto send_cb = m_config.communicationType == CommunicationType::uart ? SerialIo::Send : sendUsbData;
+			const bool useUart = m_config.communicationType == CommunicationType::uart;
+			auto send_cb = [useUart, usbChannel](std::string_view payload)
+			{ return useUart ? SerialIo::Send(payload) : sendUsbData(payload, usbChannel); };
 
 			for (size_t i = 0; i < gcode.length(); i++)
 			{

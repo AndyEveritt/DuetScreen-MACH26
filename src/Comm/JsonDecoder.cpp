@@ -872,7 +872,7 @@ namespace Comm
 					switch (c)
 					{
 					case '"':
-						// ConvertUnicode();
+						ConvertUnicode();
 						ProcessField();
 						m_state = jsEndVal;
 						break;

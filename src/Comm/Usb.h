@@ -1,12 +1,15 @@
 #pragma once
 
+#include <array>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <libusb-1.0/libusb.h>
 #include <string>
+#include <string_view>
 #include <thread>
+#include <vector>
 
 namespace Comm
 {
@@ -14,19 +17,20 @@ namespace Comm
 
 	// Define a structure to pass user data to the callback
 	using transfer_cb_t = std::function<void(const std::vector<unsigned char>&)>;
-	using receive_cb_t = std::function<void(unsigned char* buf, size_t len)>;
+	using receive_cb_t = std::function<void(unsigned char* buf, size_t len, size_t channelIndex)>;
 	struct TransferData
 	{
 		std::vector<unsigned char> buffer;
 		transfer_cb_t callback = nullptr;
 		bool completed = false; // Flag for transfer completion
-		bool receiving = false;
-		UsbDevice* device = nullptr; // Pointer to the UsbDevice instance
 	};
 
 	class UsbDevice
 	{
 	  public:
+		static constexpr std::size_t s_maxChannelCount = 2;
+		static constexpr std::size_t s_maxClaimedInterfaceCount = s_maxChannelCount * 2;
+
 		enum class receive_err_t
 		{
 			NONE = 0,
@@ -46,7 +50,7 @@ namespace Comm
 		bool init(const char* name, libusb_device* device, receive_cb_t callback = nullptr);
 		bool connect();
 		void reset();
-		bool send(std::string_view data, unsigned int timeoutMs = 0);
+		bool send(std::string_view data, std::size_t channelIndex = 0, unsigned int timeoutMs = 0);
 		bool isConnected() const { return m_handle != nullptr; }
 
 	  private:
@@ -63,33 +67,45 @@ namespace Comm
 		static void LIBUSB_CALL sendTransferCallback(struct libusb_transfer* transfer);
 		static void LIBUSB_CALL receiveTransferCallback(struct libusb_transfer* transfer);
 		void eventLoop();
-		receive_err_t receive(unsigned int timeoutMs = 0);
+		receive_err_t receive(std::size_t channelIndex, unsigned int timeoutMs = 0);
+
+		struct ChannelConfig
+		{
+			uint8_t inEndpoint = 0;
+			uint8_t outEndpoint = 0;
+			uint16_t packetSize = 0;
+			uint8_t dataInterfaceNumber = 0xFF;
+			uint8_t controlInterfaceNumber = 0xFF;
+		};
+
+		struct ReceiveTransferContext
+		{
+			UsbDevice* device = nullptr;
+			std::size_t channelIndex = 0;
+		};
 
 		const char* m_name;
 		libusb_device* m_device;
 		libusb_device_handle* m_handle;
 
-		uint8_t m_inEndpoint;
-		uint8_t m_outEndpoint;
-		uint16_t m_packetSize;
-		uint8_t m_dataInterfaceNumber;
-		uint8_t m_controlInterfaceNumber;
+		std::array<ChannelConfig, s_maxChannelCount> m_channels;
+		std::size_t m_channelCount;
 		std::size_t m_claimedInterfaceCount;
-		uint8_t m_claimedInterfaces[2];
+		std::array<uint8_t, s_maxClaimedInterfaceCount> m_claimedInterfaces;
 
 		std::atomic<bool> m_eventThreadRunning;
 		std::thread m_eventLoopThread;
 
-		TransferData m_receiveTransferData;
+		std::array<ReceiveTransferContext, s_maxChannelCount> m_receiveContexts;
 		receive_cb_t m_receiveCallback;
 		static constexpr size_t s_receiveBufferSize = 4096;
-		unsigned char m_receiveBuffer[s_receiveBufferSize];
+		unsigned char m_receiveBuffers[s_maxChannelCount][s_receiveBufferSize];
 	};
 
 	int usbInit();
 	bool connectUsbDevice();
 	UsbDevice& getCurrentUsbDevice();
-	ssize_t sendUsbData(std::string_view data);
+	ssize_t sendUsbData(std::string_view data, std::size_t channelIndex = 0);
 
 	enum class UsbMode
 	{
