@@ -26,7 +26,7 @@ bool StorageHelper::save()
 {
 	ZoneScoped;
 	nlohmann::json j(data_);
-	auto json_string = j.dump();
+	auto json_string = j.dump(2);
 	LOG_DBG("Saving config.json:\n{:s}", json_string);
 
 	FILE* file = fopen(filename_.c_str(), "w");

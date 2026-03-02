@@ -61,12 +61,12 @@ constexpr StorageKey<bool> ID_NOTIFICATION_AUTO_CLOSE_ERROR = {"ui:notification_
 
 constexpr StorageKey<bool> ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED = {"ui:console_command_list_collapsed", false};
 
-// TODO: these can be constexpr with std::span (or std::vector) when we have C++26 with GCC 15, then make the
-// constructor consteval
-
-const StorageKey<std::vector<float>> ID_BABYSTEP_AMOUNT = {"ui:baby_step_amount", {0.01f, 0.05f}};
-const StorageKey<std::vector<float>> ID_MOVE_DISTANCES = {"ui:move:distances", {0.1f, 0.5f, 1, 5, 10, 25, 50}};
-const StorageKey<std::vector<uint32_t>> ID_MOVE_FEEDRATES = {"ui:move:feedrates", {5, 10, 25, 50, 100, 200, 300}};
+constexpr StorageKey<std::vector<float>, std::vector<float> (*)()> ID_BABYSTEP_AMOUNT = {
+	"ui:baby_step_amount", +[]() -> std::vector<float> { return {0.01f, 0.05f}; }};
+constexpr StorageKey<std::vector<float>, std::vector<float> (*)()> ID_MOVE_DISTANCES = {
+	"ui:move:distances", +[]() -> std::vector<float> { return {0.1f, 0.5f, 1, 5, 10, 25, 50}; }};
+constexpr StorageKey<std::vector<uint32_t>, std::vector<uint32_t> (*)()> ID_MOVE_FEEDRATES = {
+	"ui:move:feedrates", +[]() -> std::vector<uint32_t> { return {5, 10, 25, 50, 100, 200, 300}; }};
 
 constexpr StorageKey<bool> ID_SHOW_CONFIRMATION_DIALOGS = {"ui:show_confirmation_dialogs", true};
 

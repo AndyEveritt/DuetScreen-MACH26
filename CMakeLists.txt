@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.25)
 project(DuetScreen C CXX)
 include(FetchContent)
 include(ExternalProject)
@@ -19,8 +19,8 @@ else()
 endif()
 
 # Set C and C++ standards
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
@@ -106,6 +106,7 @@ option(DUETSCREEN_ENABLE_LV_PROFILING "Enable lvgl profiling" ${DUETSCREEN_ENABL
 option(DUETSCREEN_USE_FIXED_TEST_STRINGS "Use fixed strings for UI labels like build date/time for unit tests" OFF)
 option(DUETSCREEN_USE_LV_ANIMATION "Enable LVGL animations" ON)
 option(DUETSCREEN_CONSOLE_SIDE_PANEL "Show console in side panel next to main window" OFF)
+option(DUETSCREEN_ENABLE_SECOND_USB_CHANNEL "Enable support for the second USB channel used by RRF3.7+ firmware" OFF)
 
 set(_dev_default OFF)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

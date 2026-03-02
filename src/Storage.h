@@ -37,7 +37,15 @@ namespace detail
 		using default_provider_type = void;
 		static constexpr bool has_provider = false;
 
+		consteval BaseStorageKey(std::string_view id_, const T& default_value_) noexcept
+			requires std::same_as<K, std::string_view>
+			: id(id_)
+			, default_value(default_value_)
+		{
+		}
+
 		constexpr BaseStorageKey(std::string_view id_, const T& default_value_) noexcept
+			requires(!std::same_as<K, std::string_view>)
 			: id(id_)
 			, default_value(default_value_)
 		{
@@ -58,7 +66,15 @@ namespace detail
 		using default_provider_type = DefaultProvider;
 		static constexpr bool has_provider = true;
 
+		consteval BaseStorageKey(std::string_view id_, DefaultProvider provider_) noexcept
+			requires std::same_as<K, std::string_view>
+			: id(id_)
+			, default_provider(provider_)
+		{
+		}
+
 		constexpr BaseStorageKey(std::string_view id_, DefaultProvider provider_) noexcept
+			requires(!std::same_as<K, std::string_view>)
 			: id(id_)
 			, default_provider(provider_)
 		{
@@ -144,9 +160,9 @@ extern const StorageKey<bool> ID_NOTIFICATION_AUTO_CLOSE_ERROR;
 
 extern const StorageKey<bool> ID_UI_CONSOLE_COMMAND_LIST_COLLAPSED;
 
-extern const StorageKey<std::vector<float>> ID_BABYSTEP_AMOUNT;
-extern const StorageKey<std::vector<float>> ID_MOVE_DISTANCES;
-extern const StorageKey<std::vector<uint32_t>> ID_MOVE_FEEDRATES;
+extern const StorageKey<std::vector<float>, std::vector<float> (*)()> ID_BABYSTEP_AMOUNT;
+extern const StorageKey<std::vector<float>, std::vector<float> (*)()> ID_MOVE_DISTANCES;
+extern const StorageKey<std::vector<uint32_t>, std::vector<uint32_t> (*)()> ID_MOVE_FEEDRATES;
 
 extern const StorageKey<bool> ID_SHOW_CONFIRMATION_DIALOGS;
 
