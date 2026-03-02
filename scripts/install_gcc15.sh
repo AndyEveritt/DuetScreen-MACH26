@@ -98,9 +98,7 @@ cat <<'EOF'
 GCC 15 is installed.
 
 To configure DuetScreen with GCC 15:
-  cmake --preset Simulation \
-    -DCMAKE_C_COMPILER=gcc-15 \
-    -DCMAKE_CXX_COMPILER=g++-15
+  cmake --preset Simulation
 
 To build:
   cmake --build --preset Simulation

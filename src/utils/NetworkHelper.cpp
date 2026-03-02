@@ -451,6 +451,10 @@ namespace NetworkHelper
 	std::string getIpAddress()
 	{
 		ZoneScoped;
+#if USE_FIXED_TEST_STRINGS
+		return "192.168.1.100";
+#endif
+
 		std::string output = sendCommand("STATUS");
 		if (auto ipAddress = getStatusField(output, "ip_address"); !ipAddress.empty())
 		{

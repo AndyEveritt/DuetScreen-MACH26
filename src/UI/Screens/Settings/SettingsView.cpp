@@ -197,7 +197,7 @@ namespace UI
 		ZoneScoped;
 		/* Firmware version */
 		createRow(_("settings.firmware_version"), m_buildTime);
-#if USE_FIXED_TEST_BUILD_TIME
+#if USE_FIXED_TEST_STRINGS
 		m_buildTime.setText(_("settings.build_time", "vX.Y.Z", "YYYY-MM-DD", "HH:mm::ss"));
 #else
 		m_buildTime.setText(_("settings.build_time", FIRMWARE_VERSION, BuildDateText, BuildTimeSuffix));
@@ -821,7 +821,7 @@ namespace UI
 	void DeveloperSettings::setStorageInfo(std::uintmax_t totalStorage, std::uintmax_t usedStorage)
 	{
 		ZoneScoped;
-#if USE_FIXED_TEST_BUILD_TIME
+#if USE_FIXED_TEST_STRINGS
 		totalStorage = 16uz * 1024uz * 1024uz * 1024uz; // 16 GB
 		// totalStorage *= 1024u;					// 16 GB
 		usedStorage = 256uz * 1024uz * 1024uz; // 256 MB
@@ -835,7 +835,7 @@ namespace UI
 	void DeveloperSettings::setDuetScreenCacheSize(std::uintmax_t cacheSize, size_t fileCount)
 	{
 		ZoneScoped;
-#if USE_FIXED_TEST_BUILD_TIME
+#if USE_FIXED_TEST_STRINGS
 		cacheSize = 10uz * 1024uz; // 10 KB
 		fileCount = 100u;
 #endif

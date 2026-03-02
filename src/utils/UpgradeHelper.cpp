@@ -148,6 +148,7 @@ namespace UpgradeHelper
 
 		checkAndPostExistingUpgradeStatus();
 
+#if T113
 		g_monitorThread = std::thread(
 			[]
 			{
@@ -241,6 +242,8 @@ namespace UpgradeHelper
 				g_monitoring.store(false);
 			});
 		g_monitorThread.detach();
+
+#endif
 	}
 
 	std::string_view getBuildrootVersion()

@@ -130,12 +130,12 @@ namespace UI
 	void ConsoleView::addResponse(const std::string& resp, const bool emphasize)
 	{
 		ZoneScoped;
-#if !USE_FIXED_TEST_BUILD_TIME
+#if !USE_FIXED_TEST_STRINGS
 		const auto now = std::chrono::system_clock::now();
 #endif
 
 		const auto timePrefix = fmt::format("[{:02}:{:02}:{:02}]   ",
-#if USE_FIXED_TEST_BUILD_TIME
+#if USE_FIXED_TEST_STRINGS
 											12,
 											34,
 											56
