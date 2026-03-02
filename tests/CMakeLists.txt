@@ -1,7 +1,21 @@
 # Unit tests for DuetScreen using GoogleTest
 
 # Find GoogleTest
-find_package(GTest REQUIRED)
+# On macOS with GNU toolchain, Homebrew's prebuilt gtest is commonly built
+# with clang/libc++, which is ABI-incompatible with libstdc++.
+# Build gtest from source in this case so it matches the active compiler.
+if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
+  )
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
+else()
+  find_package(GTest REQUIRED)
+endif()
 
 enable_testing()
 
