@@ -511,7 +511,7 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 		LOG_ERROR("thumbnail parseErr {:s} err {:d}.\n",
 				  nameof::nameof_enum(thumbnail->context.parseErr),
 				  thumbnail->context.err);
-		thumbnail->context.state = Comm::ThumbnailState::Init;
+		request->Complete(true);
 		return false;
 	}
 
@@ -525,7 +525,7 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 	if (!ThumbnailDataIsValid(thumbnailBuf))
 	{
 		LOG_ERROR("thumbnail meta or data invalid.\n");
-		thumbnail->context.state = Comm::ThumbnailState::Init;
+		request->Complete(true);
 		return false;
 	}
 
@@ -533,7 +533,7 @@ bool ThumbnailSubscribers::thumbnailErr(Comm::JsonDecoder* decoder, const char* 
 	if (ret < 0)
 	{
 		LOG_ERROR("failed to decode thumbnail chunk {:d}.\n", ret);
-		thumbnail->context.state = Comm::ThumbnailState::Init;
+		request->Complete(true);
 		return false;
 	}
 	if (thumbnail->context.next == 0)
@@ -563,7 +563,8 @@ bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const 
 	Comm::FileInfoPtr fileInfo = request->GetData();
 	if (!fileInfo)
 		return false;
-	fileInfo->ClearThumbnails(indices[0]);
+	fileInfo->ClearThumbnails(indices[0]); // remove any extra thumbnails (ie if the file has been overwritten with
+										   // fewer thumbnails)
 	if (!FILEINFO_CACHE->IsThumbnailCached(fileInfo->filename.c_str(), fileInfo->lastModified.c_str()))
 	{
 		FILEINFO_CACHE->QueueThumbnailRequest(fileInfo->filename.c_str());
@@ -571,7 +572,7 @@ bool ThumbnailSubscribers::thumbnailsArrayEnd(Comm::JsonDecoder* decoder, const 
 	LOG_INFO("FileInfo: filename({:s}) thumbnails({:d})", fileInfo->filename.c_str(), fileInfo->GetThumbnailCount());
 	for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 	{
-		Comm::ThumbnailPtr thumbnail = fileInfo->GetOrCreateThumbnail(i);
+		Comm::ThumbnailPtr thumbnail = fileInfo->GetThumbnail(i);
 		LOG_DBG("Thumbnail {:d}: filename({:s}) offset({:d}) size({:d}) width({:d}) height({:d}) format({:d})",
 				i,
 				thumbnail->filename.c_str(),

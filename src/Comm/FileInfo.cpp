@@ -345,10 +345,11 @@ namespace Comm
 				FileInfoRequestPtr request = *it;
 				it++;
 
-				if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+				if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT) || request->IsFailed())
 				{
 					LOG_WARN("File info request timed out for {:s}", request->GetData()->filename.c_str());
 					request->Complete(true);
+					m_fileInfoRequestQueue.remove(request);
 #if 0
 				LOG_WARN("Requeuing failed file info request for {:s}", request->GetData()->filename.c_str());
 				QueueFileInfoRequest(request->GetData()->filename.c_str());
@@ -371,16 +372,24 @@ namespace Comm
 					continue;
 				}
 
-				if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT))
+				if (request->HasTimedOut(FILE_CACHE_REQUEST_TIMEOUT) || request->IsFailed())
 				{
 #if DEBUG
 					ThumbnailPtr t = request->GetData();
 #endif
-					LOG_WARN("Thumbnail request timed out for {:s}", request->GetData()->filename.c_str());
+					if (request->IsFailed())
+					{
+						LOG_WARN("Thumbnail request failed for {:s}", request->GetData()->filename.c_str());
+					}
+					else
+					{
+						LOG_WARN("Thumbnail request timed out for {:s}", request->GetData()->filename.c_str());
+					}
 
 					request->Complete(true);
-					std::string filename = request->GetData()->filename.c_str();
-					DeleteCachedThumbnail(filename.c_str());
+					std::string_view filename = request->GetData()->filename.c_str();
+					DeleteCachedThumbnail(filename);
+					m_thumbnailRequestQueue.remove(request);
 #if 0
 				LOG_WARN("Requeuing thumbnail request for {:s}", request->GetData()->filename.c_str());
 				QueueThumbnailRequest(filename);
@@ -457,8 +466,6 @@ namespace Comm
 					LOG_DBG("Updating thumbnail {:s}", thumbnail->filename.c_str());
 					ThumbnailRequestComplete(thumbnail->filename.c_str());
 					Model::get().post<EventType::ThumbnailData>(std::string(thumbnail->filename.c_str()));
-					break;
-				default:
 					break;
 				}
 
