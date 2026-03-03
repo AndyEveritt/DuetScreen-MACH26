@@ -218,6 +218,13 @@
 			"isBackground": true
 		},
 		{
+			"label": "Start DuetScreenMonitor on remote",
+			"type": "shell",
+			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S21DuetScreenMonitor stop; start-stop-daemon -K -n DuetScreen; /etc/init.d/S21DuetScreenMonitor start'",
+			"problemMatcher": [],
+			"isBackground": true
+		},
+		{
 			"label": "Stop DuetScreen on remote",
 			"type": "shell",
 			"command": "command ssh root@${config:duetscreen_ip} '/etc/init.d/S21DuetScreenMonitor stop; start-stop-daemon -K -n DuetScreen'",

@@ -6,10 +6,12 @@
  */
 
 #include "Debug.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Screens/Home/HomeView.h"
 #include "test_utils/UiTestSuite.h"
 #include "utils/StorageHelper.h"
+#include "utils/UpgradeHelper.h"
 #include <gtest/gtest.h>
 
 class TestHomeView : public UiTestSuite
@@ -142,6 +144,78 @@ TEST_F(TestHomeView, ErrorResponse)
 {
 	view.getPresenter()->newResponse(ResponseType::ERROR, "This is an error message from the Duet");
 	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/response_error.png");
+}
+
+TEST_F(TestHomeView, HandleUpdateResultSuccess)
+{
+	UpgradeHelper::UpgradeInfo info{.result = UpgradeHelper::UpgradeResult::Success,
+									.currentVersion = "v1.2.3",
+									.currentBuildrootVersion = "v1.0.0",
+									.updateBuildrootVersion = "v1.0.0"};
+
+	view.getPresenter()->handleUpdateResult(info);
+
+	auto& prompt = view.getUpdatePrompt();
+	EXPECT_TRUE(prompt.isVisible());
+	EXPECT_TRUE(prompt.getOkBtn().isVisible());
+	EXPECT_FALSE(prompt.getCancelBtn().isVisible());
+	EXPECT_NE(std::string(prompt.getTitle().getText()), "");
+	EXPECT_NE(std::string(prompt.getText().getText()), "");
+
+	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/update_success.png");
+	prompt.close();
+}
+
+TEST_F(TestHomeView, HandleUpdateResultBuildrootError)
+{
+	UpgradeHelper::UpgradeInfo info{.result = UpgradeHelper::UpgradeResult::BuildrootVersionError,
+									.currentVersion = "v1.2.3",
+									.currentBuildrootVersion = "v0.1.0",
+									.updateBuildrootVersion = "v1.0.0"};
+
+	view.getPresenter()->handleUpdateResult(info);
+
+	auto& prompt = view.getUpdatePrompt();
+	EXPECT_TRUE(prompt.isVisible());
+	EXPECT_TRUE(prompt.getOkBtn().isVisible());
+	EXPECT_FALSE(prompt.getCancelBtn().isVisible());
+	EXPECT_NE(std::string(prompt.getTitle().getText()), "");
+	EXPECT_NE(std::string(prompt.getText().getText()), "");
+
+	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/update_failed.png");
+	prompt.close();
+}
+
+TEST_F(TestHomeView, HandleUpdateResultBuildrootWarning)
+{
+	UpgradeHelper::UpgradeInfo info{.result = UpgradeHelper::UpgradeResult::BuildrootVersionWarning,
+									.currentVersion = "v1.2.3",
+									.currentBuildrootVersion = "v1.0.0",
+									.updateBuildrootVersion = "v1.0.1"};
+
+	view.getPresenter()->handleUpdateResult(info);
+
+	auto& prompt = view.getUpdatePrompt();
+	EXPECT_TRUE(prompt.isVisible());
+	EXPECT_TRUE(prompt.getOkBtn().isVisible());
+	EXPECT_FALSE(prompt.getCancelBtn().isVisible());
+	EXPECT_NE(std::string(prompt.getTitle().getText()), "");
+	EXPECT_NE(std::string(prompt.getText().getText()), "");
+
+	EXPECT_EQUAL_SCREENSHOT("home_view/dashboard/update_warning.png");
+	prompt.close();
+}
+
+TEST_F(TestHomeView, NewStatusDisablesAndEnablesJobsTab)
+{
+	auto& files = view.getFileView();
+	ASSERT_NE(files.getTabButton(1), nullptr);
+
+	view.getPresenter()->newStatus(OM::PrinterStatus::processing);
+	EXPECT_TRUE(files.getTabButton(1)->hasState(LV_STATE_DISABLED));
+
+	view.getPresenter()->newStatus(OM::PrinterStatus::idle);
+	EXPECT_FALSE(files.getTabButton(1)->hasState(LV_STATE_DISABLED));
 }
 
 TEST_F(TestHomeView, AlertS0)
