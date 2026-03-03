@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 
 namespace UpgradeHelper
@@ -29,6 +30,7 @@ namespace UpgradeHelper
 	bool upgradeFromUSB(const std::string& filePath);
 	bool upgradeFromDuet();
 	bool upgradeFromGithubLatest();
+	[[nodiscard]] std::optional<std::string> checkForUpdate();
 
 	// Start monitoring for upgrade failure/warning files
 	void startMonitoringUpgradeStatus();

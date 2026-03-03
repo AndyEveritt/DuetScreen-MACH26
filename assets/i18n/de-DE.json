@@ -155,6 +155,7 @@
       "disconnected": "Verbindung zum Duet getrennt",
       "update_available": "Update verfügbar",
       "update_available_text": "Bestätigen, um das Update zu installieren",
+      "update_available_github_text": "Eine neuere DuetScreen-Version ist verfügbar.\nNeueste: {:s}\nInstalliert: {:s}\n\nMöchten Sie jetzt aktualisieren?",
       "update_cancel": "Abbrechen",
       "update_confirm": "Aktualisieren",
       "update_buildroot_error_text": "Inkompatible Buildroot-Version. Bitte SD-Karte neu flashen.\nAktuelle Buildroot-Version: {:s}\nErforderliche Buildroot-Version: {:s}",

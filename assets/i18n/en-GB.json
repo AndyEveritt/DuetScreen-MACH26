@@ -156,6 +156,7 @@
       "disconnected": "Disconnected from Duet",
       "update_available": "Update Available",
       "update_available_text": "Confirm to install the update",
+      "update_available_github_text": "A newer DuetScreen release is available.\nLatest: {:s}\nInstalled: {:s}\n\nWould you like to update now?",
       "update_cancel": "Cancel",
       "update_confirm": "Update",
       "update_successful": "Update Successful",

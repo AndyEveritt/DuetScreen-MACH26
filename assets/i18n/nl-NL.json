@@ -155,6 +155,7 @@
       "disconnected": "Verbinding met Duet verbroken",
       "update_available": "Update beschikbaar",
       "update_available_text": "Bevestig om de update te installeren",
+      "update_available_github_text": "Er is een nieuwere DuetScreen-versie beschikbaar.\nNieuwste: {:s}\nGeïnstalleerd: {:s}\n\nWilt u nu bijwerken?",
       "update_cancel": "Annuleren",
       "update_confirm": "Bijwerken",
       "update_buildroot_error_text": "Incompatibele buildroot-versie. Gelieve de SD-kaart opnieuw te flashen.\nHuidige buildroot-versie: {:s}\nVereiste buildroot-versie: {:s}",

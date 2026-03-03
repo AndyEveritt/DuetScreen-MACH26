@@ -17,8 +17,10 @@ namespace UI
 		void clear();
 
 		void update();
+		void updateFromGithub();
 
 		void newUpdateAvailable(const std::string& file);
+		void newGithubUpdateAvailable(const std::string& latestVersion);
 		void handleUpdateResult(const UpgradeHelper::UpgradeInfo& info);
 		void newAxesData();
 		void newResponse(const ResponseType type, const std::string& response);

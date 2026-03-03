@@ -10,6 +10,7 @@
 #include "nameof.hpp"
 #include "utils/StorageHelper.h"
 #include "utils/UpgradeHelper.h"
+#include "version.h"
 #include <algorithm>
 #include <regex>
 
@@ -19,6 +20,7 @@ namespace UI
 	{
 		ZoneScoped;
 		registerEventListener<EventType::UpdateAvailable>(this, &HomePresenter::newUpdateAvailable);
+		registerEventListener<EventType::GithubUpdateAvailable>(this, &HomePresenter::newGithubUpdateAvailable);
 		registerEventListener<EventType::UpdateResult>(this, &HomePresenter::handleUpdateResult);
 		registerEventListener<EventType::AxesData>(this, &HomePresenter::newAxesData);
 		registerEventListener<EventType::Response>(this, &HomePresenter::newResponse);
@@ -62,6 +64,12 @@ namespace UI
 		UpgradeHelper::upgradeFromUSB(m_updateFile);
 	}
 
+	void HomePresenter::updateFromGithub()
+	{
+		ZoneScoped;
+		UpgradeHelper::upgradeFromGithubLatest();
+	}
+
 	void HomePresenter::newUpdateAvailable(const std::string& file)
 	{
 		ZoneScoped;
@@ -74,6 +82,21 @@ namespace UI
 		updatePrompt.setOkBtnText(_("message.update_confirm"));
 		updatePrompt.setCancelBtnText(_("message.update_cancel"));
 		updatePrompt.setOkCallback([this]() { update(); });
+		updatePrompt.okVisible(true);
+		updatePrompt.cancelVisible(true);
+		updatePrompt.open();
+	}
+
+	void HomePresenter::newGithubUpdateAvailable(const std::string& latestVersion)
+	{
+		ZoneScoped;
+
+		auto& updatePrompt = m_view->getUpdatePrompt();
+		updatePrompt.setTitle(_("message.update_available"));
+		updatePrompt.setText(_("message.update_available_github_text", latestVersion, FIRMWARE_VERSION));
+		updatePrompt.setOkBtnText(_("message.update_confirm"));
+		updatePrompt.setCancelBtnText(_("message.update_cancel"));
+		updatePrompt.setOkCallback([this]() { updateFromGithub(); });
 		updatePrompt.okVisible(true);
 		updatePrompt.cancelVisible(true);
 		updatePrompt.open();

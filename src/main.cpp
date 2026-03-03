@@ -24,6 +24,7 @@
 #include "tracy/Tracy.hpp"
 #include "utils/DisplayHelper.h"
 #include "utils/GpioHelper.h"
+#include "utils/NetworkHelper.h"
 #include "utils/StorageHelper.h"
 #include "utils/UpgradeHelper.h"
 #include <filesystem>
@@ -65,6 +66,7 @@ static int set_thread_priority(pthread_t thread_id, int policy, int priority);
 static std::thread s_responseThread;
 static std::thread s_requestThread;
 static std::thread s_thumbnailThread;
+static std::thread s_internetMonitorThread;
 
 /**********************
  *      MACROS
@@ -171,6 +173,29 @@ int main(int argc, char** argv)
 		});
 	USB::UsbMonitor::getInstance().startMonitoring();
 	UpgradeHelper::startMonitoringUpgradeStatus();
+
+	s_internetMonitorThread = std::thread(
+		[]()
+		{
+			tracy::SetThreadName("Internet Monitor Thread");
+			bool wasOnline = false;
+			while (1)
+			{
+				const bool isOnline = !NetworkHelper::getIpAddress().empty();
+				if (isOnline && !wasOnline)
+				{
+					LOG_INFO("Internet connection detected, checking for newer DuetScreen release");
+					UpgradeHelper::checkForUpdate().transform(
+						[](const std::string& tag)
+						{
+							Model::get().post<EventType::GithubUpdateAvailable>(tag);
+							return tag;
+						});
+				}
+				wasOnline = isOnline;
+				std::this_thread::sleep_for(std::chrono::seconds(5));
+			}
+		});
 
 	// Create a thread to handle requesting data from Duet
 #if MULTITHREADED

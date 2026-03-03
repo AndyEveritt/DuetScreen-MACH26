@@ -34,6 +34,7 @@ namespace Log
 	XX(Connected)                                                                                                      \
 	XX(Disconnected)                                                                                                   \
 	XX(UpdateAvailable, std::string)                                                                                   \
+	XX(GithubUpdateAvailable, std::string)                                                                             \
 	XX(UpdateResult, UpgradeHelper::UpgradeInfo)                                                                       \
 	XX(FanData)                                                                                                        \
 	XX(BedHeaterData)                                                                                                  \

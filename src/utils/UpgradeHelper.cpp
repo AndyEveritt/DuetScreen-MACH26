@@ -19,14 +19,19 @@
 #include <hv/requests.h>
 #include <nlohmann/json.hpp>
 
+#include <algorithm>
 #include <atomic>
+#include <cctype>
+#include <cstdint>
 #include <cstring>
 #include <fcntl.h>
+#include <optional>
 #include <poll.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <thread>
 #include <unistd.h>
+#include <vector>
 
 #define USB_BASE_DIR "/media/usb"
 #define UPGRADE_EXT ".tar.gz"
@@ -42,6 +47,253 @@ namespace UpgradeHelper
 
 	namespace
 	{
+		enum class VersionSuffixKind : uint8_t
+		{
+			Alpha = 0,
+			Beta,
+			Rc,
+			Other,
+			Release,
+			Numeric,
+		};
+
+		struct ParsedVersion
+		{
+			std::vector<int> core;
+			VersionSuffixKind suffixKind = VersionSuffixKind::Release;
+			int suffixNumber = 0;
+		};
+
+		struct GithubReleaseInfo
+		{
+			std::string tag;
+			std::string downloadUrl;
+		};
+
+		static std::optional<ParsedVersion> parseVersionComponents(std::string_view version)
+		{
+			if (!version.empty() && (version.front() == 'v' || version.front() == 'V'))
+			{
+				version.remove_prefix(1);
+			}
+
+			ParsedVersion parsed;
+			parsed.core.reserve(4);
+
+			int value = 0;
+			bool hasDigit = false;
+			size_t suffixStart = version.size();
+			for (size_t i = 0; i < version.size(); ++i)
+			{
+				const char c = version[i];
+				if (std::isdigit(static_cast<unsigned char>(c)) != 0)
+				{
+					hasDigit = true;
+					value = value * 10 + (c - '0');
+					continue;
+				}
+
+				if (c == '.')
+				{
+					if (!hasDigit)
+					{
+						return std::nullopt;
+					}
+					parsed.core.push_back(value);
+					value = 0;
+					hasDigit = false;
+					continue;
+				}
+
+				if (c == '-')
+				{
+					suffixStart = i + 1;
+					break;
+				}
+
+				break;
+			}
+
+			if (hasDigit)
+			{
+				parsed.core.push_back(value);
+			}
+
+			if (parsed.core.empty())
+			{
+				return std::nullopt;
+			}
+
+			if (suffixStart < version.size())
+			{
+				const size_t suffixEnd = version.find('-', suffixStart);
+				std::string_view suffixToken = version.substr(
+					suffixStart,
+					suffixEnd == std::string_view::npos ? std::string_view::npos : suffixEnd - suffixStart);
+
+				if (!suffixToken.empty())
+				{
+					auto parseTrailingNumber = [](std::string_view token, int defaultValue) -> int
+					{
+						size_t digitStart = token.size();
+						while (digitStart > 0 && std::isdigit(static_cast<unsigned char>(token[digitStart - 1])) != 0)
+						{
+							--digitStart;
+						}
+
+						if (digitStart == token.size())
+						{
+							return defaultValue;
+						}
+
+						int parsedValue = 0;
+						for (size_t i = digitStart; i < token.size(); ++i)
+						{
+							parsedValue = parsedValue * 10 + (token[i] - '0');
+						}
+						return parsedValue;
+					};
+
+					const bool tokenNumericOnly =
+						std::all_of(suffixToken.begin(),
+									suffixToken.end(),
+									[](const char c) { return std::isdigit(static_cast<unsigned char>(c)) != 0; });
+
+					if (tokenNumericOnly)
+					{
+						parsed.suffixKind = VersionSuffixKind::Numeric;
+						parsed.suffixNumber = parseTrailingNumber(suffixToken, 0);
+					}
+					else if (suffixToken.rfind("alpha", 0) == 0)
+					{
+						parsed.suffixKind = VersionSuffixKind::Alpha;
+						parsed.suffixNumber = parseTrailingNumber(suffixToken, 0);
+					}
+					else if (suffixToken.rfind("beta", 0) == 0)
+					{
+						parsed.suffixKind = VersionSuffixKind::Beta;
+						parsed.suffixNumber = parseTrailingNumber(suffixToken, 0);
+					}
+					else if (suffixToken.rfind("rc", 0) == 0)
+					{
+						parsed.suffixKind = VersionSuffixKind::Rc;
+						parsed.suffixNumber = parseTrailingNumber(suffixToken, 0);
+					}
+					else
+					{
+						parsed.suffixKind = VersionSuffixKind::Other;
+						parsed.suffixNumber = parseTrailingNumber(suffixToken, 0);
+					}
+				}
+			}
+
+			return parsed;
+		}
+
+		static int compareVersions(const ParsedVersion& lhs, const ParsedVersion& rhs)
+		{
+			const size_t maxSize = std::max(lhs.core.size(), rhs.core.size());
+			for (size_t i = 0; i < maxSize; ++i)
+			{
+				const int left = i < lhs.core.size() ? lhs.core[i] : 0;
+				const int right = i < rhs.core.size() ? rhs.core[i] : 0;
+				if (left < right)
+				{
+					return -1;
+				}
+				if (left > right)
+				{
+					return 1;
+				}
+			}
+
+			if (lhs.suffixKind != rhs.suffixKind)
+			{
+				return lhs.suffixKind < rhs.suffixKind ? -1 : 1;
+			}
+
+			if (lhs.suffixNumber != rhs.suffixNumber)
+			{
+				return lhs.suffixNumber < rhs.suffixNumber ? -1 : 1;
+			}
+
+			return 0;
+		}
+
+		static std::optional<GithubReleaseInfo> getNewestGithubReleaseWithUpgradeAsset()
+		{
+			HttpRequest req;
+			req.method = HTTP_GET;
+			req.scheme = "https";
+			req.host = "api.github.com";
+			req.path = "/repos/Duet3D/DuetScreen/releases"; // includes releases and prereleases, newest first
+			req.headers["Accept"] = "application/vnd.github.v3+json";
+			req.headers["User-Agent"] = "DuetScreenUpgradeHelper";
+			req.timeout = HTTP_TIMEOUT;
+
+			req.DumpUrl();
+
+			hv::HttpClient cli;
+			HttpResponse response;
+			cli.send(&req, &response);
+			if (response.status_code != HTTP_STATUS_OK)
+			{
+				LOG_WARN("Failed to fetch GitHub releases list: HTTP {:d}", (int)response.status_code);
+				return std::nullopt;
+			}
+
+			auto payload = nlohmann::json::parse(response.body, nullptr, false);
+			if (payload.is_discarded() || !payload.is_array())
+			{
+				LOG_WARN("Failed to parse GitHub releases response or unexpected format");
+				return std::nullopt;
+			}
+
+			for (const auto& release : payload)
+			{
+				if (!release.is_object())
+				{
+					continue;
+				}
+
+				if (!release.contains("tag_name") || !release["tag_name"].is_string())
+				{
+					continue;
+				}
+
+				if (!release.contains("assets") || !release["assets"].is_array())
+				{
+					continue;
+				}
+
+				for (const auto& asset : release["assets"])
+				{
+					if (!asset.is_object() || !asset.contains("name") || !asset["name"].is_string())
+					{
+						continue;
+					}
+
+					if (asset["name"].get<std::string>() != UPGRADE_FILE)
+					{
+						continue;
+					}
+
+					if (!asset.contains("browser_download_url") || !asset["browser_download_url"].is_string())
+					{
+						continue;
+					}
+
+					GithubReleaseInfo info;
+					info.tag = release["tag_name"].get<std::string>();
+					info.downloadUrl = asset["browser_download_url"].get<std::string>();
+					return info;
+				}
+			}
+
+			LOG_WARN("No release asset named {:s} found in GitHub releases", UPGRADE_FILE);
+			return std::nullopt;
+		}
+
 		constexpr const char* kBuildrootVersionFile = "/etc/buildroot_version";
 		constexpr std::string_view kUpgradeStatusFileName = "upgrade_status.json";
 #if SIMULATION
@@ -60,7 +312,7 @@ namespace UpgradeHelper
 			uint64_t sequence;
 		};
 
-		bool parseUpgradeStatusMessage(const nlohmann::json& payload, UpgradeStatusMessage& msg)
+		static bool parseUpgradeStatusMessage(const nlohmann::json& payload, UpgradeStatusMessage& msg)
 		{
 			if (!payload.is_object())
 			{
@@ -92,7 +344,7 @@ namespace UpgradeHelper
 			return true;
 		}
 
-		void postUpdateResultFromMessage(const UpgradeStatusMessage& msg)
+		static void postUpdateResultFromMessage(const UpgradeStatusMessage& msg)
 		{
 			if (msg.sequence != 0)
 			{
@@ -108,7 +360,7 @@ namespace UpgradeHelper
 			postUpdateResult(msg.result, msg.updateBuildrootVersion);
 		}
 
-		void checkAndPostExistingUpgradeStatus()
+		static void checkAndPostExistingUpgradeStatus()
 		{
 			ZoneScoped;
 			const std::filesystem::path statusPath = std::filesystem::path(NVS_FOLDER) / kUpgradeStatusFileName;
@@ -450,68 +702,14 @@ namespace UpgradeHelper
 
 		removeTmpFile();
 
-		// Query GitHub releases API for releases list and pick the newest prerelease
-		HttpRequest req;
-		req.method = HTTP_GET;
-		req.scheme = "https";
-		req.host = "api.github.com";
-		req.path = "/repos/Duet3D/DuetScreen/releases"; // returns array, newest first
-		req.headers["Accept"] = "application/vnd.github.v3+json";
-		req.headers["User-Agent"] = "DuetScreenUpgradeHelper";
-		req.timeout = HTTP_TIMEOUT;
-
-		req.DumpUrl();
-
-		hv::HttpClient cli;
-		HttpResponse r;
-		cli.send(&req, &r);
-		if (r.status_code != HTTP_STATUS_OK)
+		auto releaseInfo = getNewestGithubReleaseWithUpgradeAsset();
+		if (!releaseInfo.has_value())
 		{
-			LOG_ERROR("Failed to fetch releases list: HTTP {:d}", (int)r.status_code);
+			LOG_ERROR("Unable to determine latest GitHub release asset");
 			return false;
 		}
 
-		auto body = nlohmann::json::parse(r.body, nullptr, false);
-		if (body.is_discarded() || !body.is_array())
-		{
-			LOG_ERROR("Failed to parse GitHub releases response or unexpected format");
-			return false;
-		}
-
-		std::string downloadUrl;
-		// Find the first release marked as prerelease that contains the desired asset
-		for (const auto& release : body)
-		{
-			if (!release.is_object())
-				continue;
-#if 0
-			bool isPrerelease = false;
-			if (release.contains("prerelease") && release["prerelease"].is_boolean())
-				isPrerelease = release["prerelease"].get<bool>();
-#endif
-			if (!release.contains("assets") || !release["assets"].is_array())
-				continue;
-			for (const auto& asset : release["assets"])
-			{
-				if (!asset.is_object() || !asset.contains("name"))
-					continue;
-				std::string name = asset["name"].get<std::string>();
-				if (name == UPGRADE_FILE)
-				{
-					if (asset.contains("browser_download_url") && asset["browser_download_url"].is_string())
-						downloadUrl = asset["browser_download_url"].get<std::string>();
-					break;
-				}
-			}
-			if (!downloadUrl.empty())
-				break; // found in newest prerelease
-		}
-
-		if (downloadUrl.empty())
-		{
-			LOG_ERROR("No asset named {:s} found in latest release", UPGRADE_FILE);
-			return false;
-		}
+		std::string downloadUrl = releaseInfo->downloadUrl;
 
 		// Parse download URL (expecting https://host/path)
 		const std::string httpsPrefix = "https://";
@@ -556,5 +754,32 @@ namespace UpgradeHelper
 		LOG_DBG("Downloaded asset to " TMP_FILEPATH);
 
 		return upgradeFromTmp();
+	}
+
+	std::optional<std::string> checkForUpdate()
+	{
+		ZoneScoped;
+
+		auto releaseInfo = getNewestGithubReleaseWithUpgradeAsset();
+		if (!releaseInfo.has_value())
+		{
+			return std::nullopt;
+		}
+
+		const std::string& latestTag = releaseInfo->tag;
+		auto installedVersion = parseVersionComponents(FIRMWARE_VERSION);
+		auto latestVersion = parseVersionComponents(latestTag);
+		if (!installedVersion.has_value() || !latestVersion.has_value())
+		{
+			LOG_WARN("Unable to compare versions, installed='{:s}', latest='{:s}'", FIRMWARE_VERSION, latestTag);
+			return std::nullopt;
+		}
+
+		if (compareVersions(*latestVersion, *installedVersion) > 0)
+		{
+			return latestTag;
+		}
+
+		return std::nullopt;
 	}
 } // namespace UpgradeHelper

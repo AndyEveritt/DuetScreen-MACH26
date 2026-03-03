@@ -155,6 +155,7 @@
       "disconnected": "Desconectado do Duet",
       "update_available": "Atualização disponível",
       "update_available_text": "Confirmar para instalar a atualização",
+      "update_available_github_text": "Está disponível uma versão mais recente do DuetScreen.\nMais recente: {:s}\nInstalada: {:s}\n\nPretende atualizar agora?",
       "update_cancel": "Cancelar",
       "update_confirm": "Atualizar"
       ,
