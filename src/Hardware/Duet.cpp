@@ -447,18 +447,42 @@ namespace Comm
 				return false;
 			}
 
-			SendGcodef("M28 \"{:s}\"\n", filename);
+			/**
+			 * TODO once DSF support M559, we should use that as it will be more efficient than echo which opens,
+			 * writes, and closes the file for each line.
+			 *
+			 * Will need to find a way to prevent other gcode commands from being interleaved with the upload if using
+			 * M559, possibly by pausing the screen from sending any other commands while the file upload is in
+			 * progress.
+			 */
+
+			SendGcodef("M30 \"{:s}\"\n", filename); // delete file
 			size_t prevPosition = 0;
 			size_t position = contents.find("\n"); // Find the first occurrence of \n
 			std::string line;
-			while (position != std::string::npos)
+			while (prevPosition <= contents.size())
 			{
-				line = contents.substr(prevPosition, position - prevPosition);
+				if (position == std::string::npos)
+				{
+					line = contents.substr(prevPosition);
+				}
+				else
+				{
+					line = contents.substr(prevPosition, position - prevPosition);
+				}
+
+				utils::replaceSubstring(line, "\"", "\"\"");
+				SendGcodef("echo >>\"{:s}\" \"{:s}\"\n", filename, line);
+
+				if (position == std::string::npos)
+				{
+					break;
+				}
+
 				prevPosition = position + 1;
-				position = contents.find("\n", position + 1); // Find the next occurrence, if any
-				SendGcode(line.c_str());
+				position = contents.find("\n", prevPosition); // Find the next occurrence, if any
 			}
-			SendGcode("M29\n");
+			// SendGcode("M29\n");
 			break;
 		}
 		case CommunicationType::network:
