@@ -120,6 +120,7 @@ namespace UpgradeHelper
 
 			const std::string content{std::istreambuf_iterator<char>(statusFile), std::istreambuf_iterator<char>()};
 			nlohmann::json statusJson = nlohmann::json::parse(content, nullptr, false);
+			std::filesystem::remove(statusPath);
 			if (statusJson.is_discarded())
 			{
 				LOG_ERROR("Failed to parse upgrade status file: {:s}", statusPath.string());
