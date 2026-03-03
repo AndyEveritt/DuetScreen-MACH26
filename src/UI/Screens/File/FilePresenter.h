@@ -24,6 +24,7 @@ namespace UI
 		std::string_view getBaseFolderPath() const;
 		void setFolder(std::string_view folder);
 		void itemClicked(const size_t index);
+		void deleteSelectedItem();
 		void startPrint();
 		void runMacro();
 		void requestFiles();

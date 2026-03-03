@@ -109,6 +109,8 @@
       "run_macro_title": "Makro ausführen",
       "start_print_title": "Druck starten",
       "folder": "Ordner",
+        "delete_title": "Datei löschen",
+        "delete_message": "Möchtest du {:s} wirklich löschen?",
       "refresh": "Aktualisieren",
       "sort_by_date": "Datum",
       "sort_by_name": "Name",

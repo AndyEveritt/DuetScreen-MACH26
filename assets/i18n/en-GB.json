@@ -109,6 +109,8 @@
       "run_macro_message": "Do you want to run {}?",
       "run_macro_title": "Run Macro",
       "start_print_title": "Start Print",
+      "delete_title": "Delete File",
+      "delete_message": "Are you sure you want to delete {:s}?",
       "folder": "Folder",
       "refresh": "Refresh",
       "sort_by_date": "Date",

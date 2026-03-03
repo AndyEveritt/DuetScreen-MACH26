@@ -108,6 +108,8 @@
       "run_macro_message": "Wilt u {} uitvoeren?",
       "run_macro_title": "Macro uitvoeren",
       "start_print_title": "Print starten",
+      "delete_title": "Bestand verwijderen",
+      "delete_message": "Weet je zeker dat je {:s} wilt verwijderen?",
       "folder": "Map",
       "refresh": "Vernieuwen",
       "sort_by_date": "Datum",

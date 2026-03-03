@@ -202,6 +202,17 @@ namespace UI
 		m_printTimeLabel.addStyle(Themes::getLvglStyles().text_muted);
 		m_heightLabel.addStyle(Themes::getLvglStyles().text_muted);
 		m_layerHeightLabel.addStyle(Themes::getLvglStyles().text_muted);
+
+		m_deleteBtn.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		m_deleteBtn.addClickedCallback(
+			[this](lv_event_t*)
+			{
+				if (m_deleteCb)
+				{
+					m_deleteCb();
+				}
+			});
+		m_deleteBtn.setVisible(false);
 	}
 
 	void FileView::StartPrintModal::setFile(std::string_view value)
@@ -444,6 +455,20 @@ namespace UI
 		m_presenter->itemClicked(index);
 	}
 
+	void FileView::confirmDelete(std::string_view filename)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		m_startPrint.setTitle(_("file.delete_title"));
+		m_startPrint.setText(_("file.delete_message", filename));
+		m_startPrint.setOkCallback([this]() { m_presenter->deleteSelectedItem(); });
+		m_startPrint.deleteVisible(false);
+		m_startPrint.setDeleteCallback(nullptr);
+		m_startPrint.setImage(nullptr);
+		m_startPrint.getFileInfo().hide();
+		openModal(&m_startPrint);
+	}
+
 	bool FileView::cancelStartPrint()
 	{
 		ZoneScoped;
@@ -463,6 +488,9 @@ namespace UI
 		m_startPrint.setTitle(_("file.start_print_title"));
 		m_startPrint.setText(_("file.start_print.file", filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->startPrint(); });
+		m_startPrint.setDeleteCallback([this, capturedFilename = std::string(filename)]()
+									   { confirmDelete(capturedFilename); });
+		m_startPrint.deleteVisible(true);
 		m_startPrint.setImage(IsThumbnailCached(thumbnail) ? thumbnail.c_str() : nullptr);
 		openModal(&m_startPrint);
 	}
@@ -471,6 +499,8 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
+		m_startPrint.deleteVisible(false);
+		m_startPrint.setDeleteCallback(nullptr);
 		m_startPrint.setTitle(_("file.run_macro_title"));
 		m_startPrint.setText(_("file.run_macro_message", filename));
 		m_startPrint.setOkCallback([this]() { m_presenter->runMacro(); });

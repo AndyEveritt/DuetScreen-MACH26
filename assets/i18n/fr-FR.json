@@ -108,6 +108,8 @@
       "run_macro_message": "Voulez-vous exécuter {} ?",
       "run_macro_title": "Exécuter la macro",
       "start_print_title": "Démarrer l'impression",
+      "delete_title": "Supprimer le fichier",
+      "delete_message": "Voulez-vous vraiment supprimer {:s} ?",
       "folder": "Dossier",
       "refresh": "Actualiser",
       "sort_by_date": "Date",

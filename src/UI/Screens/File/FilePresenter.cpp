@@ -135,6 +135,24 @@ namespace UI
 		}
 	}
 
+	void FilePresenter::deleteSelectedItem()
+	{
+		ZoneScoped;
+		if (m_gcodePath.empty())
+		{
+			LOG_WARN("No file selected for deletion");
+			return;
+		}
+
+		if (!Comm::DUET.DeleteFile(m_gcodePath))
+		{
+			LOG_WARN("Failed to delete file {:s}", m_gcodePath);
+			return;
+		}
+
+		requestFiles();
+	}
+
 	void FilePresenter::startPrint()
 	{
 		ZoneScoped;

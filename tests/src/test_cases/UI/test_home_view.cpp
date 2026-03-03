@@ -8,6 +8,7 @@
 #include "Debug.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/Core/Navigation.h"
+#include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Home/HomeView.h"
 #include "test_utils/UiTestSuite.h"
 #include "utils/StorageHelper.h"
@@ -81,6 +82,77 @@ TEST_F(TestHomeView, BlankJobView)
 	openScreen(&files, false);
 	files.setActiveTab(1);
 	EXPECT_EQUAL_SCREENSHOT("home_view/files_view/jobs_blank.png");
+}
+
+TEST_F(TestHomeView, JobModalShowsDeleteButton)
+{
+	auto& files = view.getFileView();
+	openScreen(&files, false);
+	files.setActiveTab(1);
+
+	auto* tab = files.getTab(1);
+	ASSERT_NE(tab, nullptr);
+	auto& jobsView = static_cast<UI::FileView&>(*tab->getChild(0));
+
+	jobsView.confirmStartPrint("test.gcode", std::filesystem::path{});
+	auto& modal = jobsView.getConfirmModal();
+
+	EXPECT_TRUE(modal.isVisible());
+	auto* deleteBtn = modal.getChildByName("footer.delete");
+	ASSERT_NE(deleteBtn, nullptr);
+	EXPECT_TRUE(deleteBtn->isVisible());
+	EXPECT_EQUAL_SCREENSHOT("home_view/files_view/start_print_modal.png");
+
+	modal.cancel();
+}
+
+TEST_F(TestHomeView, MacroModalHidesDeleteButton)
+{
+	auto& files = view.getFileView();
+	openScreen(&files, false);
+	files.setActiveTab(0);
+
+	auto* tab = files.getTab(0);
+	ASSERT_NE(tab, nullptr);
+	auto& macrosView = static_cast<UI::FileView&>(*tab->getChild(0));
+
+	macrosView.confirmRunMacro("test.g");
+	auto& modal = macrosView.getConfirmModal();
+
+	EXPECT_TRUE(modal.isVisible());
+	auto* deleteBtn = modal.getChildByName("footer.delete");
+	ASSERT_NE(deleteBtn, nullptr);
+	EXPECT_FALSE(deleteBtn->isVisible());
+	EXPECT_EQUAL_SCREENSHOT("home_view/files_view/run_macro_modal.png");
+
+	modal.cancel();
+}
+
+TEST_F(TestHomeView, DeleteButtonOpensDeleteConfirmationModal)
+{
+	auto& files = view.getFileView();
+	openScreen(&files, false);
+	files.setActiveTab(1);
+
+	auto* tab = files.getTab(1);
+	ASSERT_NE(tab, nullptr);
+	auto& jobsView = static_cast<UI::FileView&>(*tab->getChild(0));
+
+	jobsView.confirmStartPrint("test.gcode", std::filesystem::path{});
+	auto& modal = jobsView.getConfirmModal();
+
+	auto* deleteBtn = modal.getChildByName("footer.delete");
+	ASSERT_NE(deleteBtn, nullptr);
+	ASSERT_TRUE(deleteBtn->isVisible());
+
+	deleteBtn->sendEvent(LV_EVENT_CLICKED, nullptr);
+
+	EXPECT_EQ(std::string(modal.getTitle().getText()), "Delete File");
+	EXPECT_EQ(std::string(modal.getText().getText()), "Are you sure you want to delete test.gcode?");
+	EXPECT_FALSE(deleteBtn->isVisible());
+	EXPECT_EQUAL_SCREENSHOT("home_view/files_view/confirm_delete_modal.png");
+
+	modal.cancel();
 }
 
 TEST_F(TestHomeView, BlankStatusView)

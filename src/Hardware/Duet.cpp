@@ -104,10 +104,6 @@ namespace Comm
 	{
 		ZoneScoped;
 		CommunicationType type = m_config.communicationType;
-		if (type >= CommunicationType::COUNT || type <= CommunicationType::none)
-		{
-			return "connection_method.unknown";
-		}
 		return duetCommunicationTypeNames[(int)type];
 	}
 
@@ -228,7 +224,7 @@ namespace Comm
 		// `sendAsync()` requires the client to still be alive later and does appear to be thread safe using a single
 		// client
 
-		AsyncGetInner(req, callback);
+		AsyncGetInner(req, std::move(callback));
 		return true;
 	}
 
@@ -417,8 +413,6 @@ namespace Comm
 					 });
 			break;
 		}
-		default:
-			break;
 		}
 	}
 
@@ -497,8 +491,6 @@ namespace Comm
 			}
 			break;
 		}
-		default:
-			break;
 		}
 		return true;
 	}
@@ -544,6 +536,49 @@ namespace Comm
 		default:
 			LOG_WARN("Communication type not supported for downloading files");
 			return false;
+		}
+		return true;
+	}
+
+	bool Duet::DeleteFile(std::string_view filename)
+	{
+		ZoneScoped;
+		if (!IsConnected())
+		{
+			LOG_DBG("Not connected to Duet, cannot delete file {:s}", filename);
+			return false;
+		}
+
+		LOG_INFO("Deleting file {}", filename);
+		switch (m_config.communicationType)
+		{
+		case CommunicationType::uart:
+		case CommunicationType::usb:
+			SendGcodef("M30 \"{:s}\"\n", filename);
+			break;
+		case CommunicationType::network:
+		{
+			HttpResponse r;
+			hv::QueryParams query;
+			query["name"] = filename;
+			if (!AsyncGet("/rr_delete",
+						  query,
+						  [filename](const HttpResponsePtr& r)
+						  {
+							  if (r->status_code != HTTP_STATUS_OK)
+							  {
+								  LOG_ERROR(
+									  "HTTP error {:d}: Failed to delete file: {}", (int)r->status_code, filename);
+								  return false;
+							  }
+							  return true;
+						  }))
+			{
+				LOG_ERROR("Failed to delete file {:s}", filename);
+				return false;
+			}
+			break;
+		}
 		}
 		return true;
 	}
@@ -596,8 +631,6 @@ namespace Comm
 #endif
 			break;
 		}
-		default:
-			break;
 		}
 	}
 
@@ -654,8 +687,6 @@ namespace Comm
 #endif
 			break;
 		}
-		default:
-			break;
 		}
 		return;
 	}
@@ -700,9 +731,6 @@ namespace Comm
 						   });
 			break;
 		}
-		default:
-			LOG_WARN("Communication type not supported for requesting file list");
-			break;
 		}
 		return ret;
 	}
@@ -861,8 +889,6 @@ namespace Comm
 			break;
 #endif
 		}
-		default:
-			return false;
 		}
 		return ret;
 	}
@@ -909,8 +935,6 @@ namespace Comm
 #endif
 			break;
 		}
-		default:
-			return false;
 		}
 		return ret;
 	}
@@ -1093,8 +1117,6 @@ namespace Comm
 			}
 			break;
 		}
-		default:
-			break;
 		}
 
 		if (!ret)
@@ -1159,8 +1181,6 @@ namespace Comm
 			ret = true;
 			break;
 		}
-		default:
-			break;
 		}
 
 		Reset();

@@ -88,6 +88,8 @@ namespace UI
 			void setPrintTime(std::string_view value);
 			void setHeight(float value);
 			void setLayerHeight(float value);
+			void setDeleteCallback(std::function<void()> cb) { m_deleteCb = std::move(cb); }
+			void deleteVisible(bool visible) { m_deleteBtn.setVisible(visible); }
 
 			auto& getFileInfo() { return m_fileInfoCont; }
 
@@ -110,6 +112,8 @@ namespace UI
 
 			LvLabel m_layerHeightLabel{"layer_height_label", m_fileInfoCont};
 			LvLabel m_layerHeightValue{"layer_height_value", m_fileInfoCont};
+			Button m_deleteBtn{"delete", getFooter(), LV_SYMBOL_TRASH};
+			std::function<void()> m_deleteCb;
 		};
 
 		FileView(const std::string& name, LvObj& parent);
@@ -123,6 +127,7 @@ namespace UI
 		bool cancelStartPrint();
 		void confirmStartPrint(std::string_view filename, const std::filesystem::path& thumbnail);
 		void confirmRunMacro(std::string_view filename);
+		void confirmDelete(std::string_view filename);
 		auto& getConfirmModal() { return m_startPrint; }
 
 		void showSort(FilePresenter::SortBy by, bool descending);

@@ -113,6 +113,8 @@
       "sort_by_date": "Fecha",
       "sort_by_name": "Nombre",
       "sort_by_size": "Tamaño",
+        "delete_title": "Eliminar archivo",
+        "delete_message": "¿Seguro que quieres eliminar {:s}?",
       "start_print": {
         "file": "Archivo: {:s}",
         "date": "Fecha: ",

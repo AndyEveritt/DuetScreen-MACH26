@@ -108,6 +108,8 @@
       "run_macro_message": "Vuoi eseguire {}?",
       "run_macro_title": "Esegui macro",
       "start_print_title": "Avvia stampa",
+      "delete_title": "Elimina file",
+      "delete_message": "Sei sicuro di voler eliminare {:s}?",
       "folder": "Cartella",
       "refresh": "Aggiorna",
       "sort_by_date": "Data",

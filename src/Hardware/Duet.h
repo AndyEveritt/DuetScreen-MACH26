@@ -16,6 +16,7 @@
 #include "utils/utils.h"
 #include <fmt/format.h>
 #include <hv/requests.h>
+#include <magic_enum/magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <thread>
 
@@ -47,12 +48,13 @@ namespace Comm
 
 	enum class CommunicationType
 	{
-		none = -1,
 		usb,
 		network,
 		uart,
-		COUNT
 	};
+
+	static_assert(magic_enum::enum_count<CommunicationType>() == std::size(duetCommunicationTypeNames),
+				  "duetCommunicationTypeNames must have the same number of elements as CommunicationType");
 
 	struct DuetConfig
 	{
@@ -101,6 +103,7 @@ namespace Comm
 
 		bool UploadFile(std::string_view filename, const std::string& contents);
 		bool DownloadFile(std::string_view filename, std::function<void(const std::string&)> onComplete);
+		bool DeleteFile(std::string_view filename);
 
 		void RequestModel(std::string_view flags = "d99f");
 		void RequestModel(std::string_view key, std::string_view flags);
