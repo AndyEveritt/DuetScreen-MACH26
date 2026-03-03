@@ -203,6 +203,8 @@ namespace UI
 		m_heightLabel.addStyle(Themes::getLvglStyles().text_muted);
 		m_layerHeightLabel.addStyle(Themes::getLvglStyles().text_muted);
 
+		m_okBtn.addStyle(Themes::getLvglStyles().actionBtn);
+
 		m_deleteBtn.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_deleteBtn.addClickedCallback(
 			[this](lv_event_t*)
@@ -213,6 +215,7 @@ namespace UI
 				}
 			});
 		m_deleteBtn.setVisible(false);
+		m_deleteBtn.moveToIndex(0); // position on the left
 	}
 
 	void FileView::StartPrintModal::setFile(std::string_view value)
