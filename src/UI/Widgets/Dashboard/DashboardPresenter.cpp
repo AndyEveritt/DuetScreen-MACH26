@@ -15,27 +15,14 @@ namespace UI
 	void DashboardPresenter::newStatus(const OM::PrinterStatus& status)
 	{
 		ZoneScoped;
-		switch (status)
-		{
-		case OM::PrinterStatus::cancelling:
-		case OM::PrinterStatus::paused:
-		case OM::PrinterStatus::pausing:
-		case OM::PrinterStatus::processing:
-		case OM::PrinterStatus::resuming:
-		case OM::PrinterStatus::simulating:
-			getView()->disableJobsTab(true);
-			break;
-		case OM::PrinterStatus::idle:
-			getView()->disableJobsTab(false);
-			break;
-		default:
-			break;
-		}
+		getView()->disableJobsTab(OM::IsPrintingStatus(status));
 	}
 
-	void DashboardPresenter::newJobFileName(const std::string& /* filename */)
+	void DashboardPresenter::newJobFileName(const std::string& filename)
 	{
 		ZoneScoped;
+		if (filename.empty())
+			return;
 		getView()->showStatusTab();
 	}
 } // namespace UI
