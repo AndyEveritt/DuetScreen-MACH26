@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils/utils.h"
 #include <chrono>
 #include <ctime>
 #include <errno.h>
