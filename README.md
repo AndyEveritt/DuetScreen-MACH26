@@ -1,10 +1,10 @@
 # DuetScreen
 
-This project is a GUI for the Duet3D screen. It is based on the LittlevGL (LVGL) library. The program can be compiled to run on the Duet3D screen or on a PC. The PC version is useful for development and testing purposes.
+DuetScreen is the touchscreen UI for Duet3D displays, built with LVGL. It runs on [Duet3D screen hardware](https://docs.duet3d.com/Duet3D_hardware/Accessories/DuetScreen) and can also be compiled for x86/Arm on Linux and macOS to support development and testing.
 
 ## UI preview
 
-The screenshots below are taken from the repository test references in `tests/ref_imgs`.
+The screenshots below are taken from the repository test references in [tests/ref_imgs](tests/ref_imgs).
 
 ### Home and dashboard
 
