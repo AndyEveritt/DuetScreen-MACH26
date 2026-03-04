@@ -31,6 +31,7 @@ from typing import List, Optional, Tuple, Any
 
 DEFAULT_CMAKE_PRESET = "Test"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+CMAKE_EXE = PROJECT_ROOT / "env" / "bin" / "cmake"
 BUILD_ROOT = PROJECT_ROOT / "out" / "build"
 SRC_DIR = PROJECT_ROOT / "src"
 REF_IMGS_DIR = PROJECT_ROOT / "tests" / "ref_imgs"
@@ -231,7 +232,7 @@ def configure_cmake(preset: Optional[str] = None) -> bool:
 	preset = preset or get_cmake_preset()
 	log(f"Configuring CMake preset: {preset}")
 	try:
-		result = subprocess.run(["cmake", "--preset", preset], cwd=str(PROJECT_ROOT), check=False)
+		result = subprocess.run([CMAKE_EXE, "--preset", preset], cwd=str(PROJECT_ROOT), check=False)
 		if result.returncode != 0:
 			log(f"CMake configure failed with code {result.returncode}")
 			return False
@@ -248,7 +249,7 @@ def build_tests(build_dir: Path) -> int:
 	try:
 		result = subprocess.run(
 			[
-				"cmake",
+				CMAKE_EXE,
 				"--build",
 				str(build_dir),
 				"--target",
