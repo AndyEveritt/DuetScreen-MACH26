@@ -2,21 +2,73 @@
 
 This project is a GUI for the Duet3D screen. It is based on the LittlevGL (LVGL) library. The program can be compiled to run on the Duet3D screen or on a PC. The PC version is useful for development and testing purposes.
 
+## UI preview
+
+The screenshots below are taken from the repository test references in `tests/ref_imgs`.
+
+### Home and dashboard
+
+| View | Screenshot |
+| --- | --- |
+| Home dashboard | ![Home dashboard](tests/ref_imgs/home_view/dashboard/temperature_graph.png) |
+
+### Control workflows
+
+| Capability | Screenshot |
+| --- | --- |
+| Move controls | ![Move controls](tests/ref_imgs/home_view/control_view/move.png) |
+| Temperature controls | ![Temperature controls](tests/ref_imgs/home_view/control_view/temperature.png) |
+| Bed levelling | ![Bed levelling](tests/ref_imgs/home_view/control_view/heightmap.png) |
+| Fans | ![Fans](tests/ref_imgs/home_view/control_view/fan.png) |
+
+### File and macro workflows
+
+| Capability | Screenshot |
+| --- | --- |
+| Macro listing | ![Macro list](tests/ref_imgs/home_view/files_view/macros.png) |
+
+### Console
+
+| Capability | Screenshot |
+| --- | --- |
+| Console | ![Console](tests/ref_imgs/home_view/console_view/duet_responses.png)
+
+### Settings and navigation
+
+| Capability | Screenshot |
+| --- | --- |
+| General settings | ![General settings](tests/ref_imgs/home_view/settings_view/general.png) |
+| Connection settings | ![Connection settings](tests/ref_imgs/home_view/settings_view/connection.png) |
+| Display settings | ![Display settings](tests/ref_imgs/home_view/settings_view/display.png) |
+| Developer settings | ![Developer settings](tests/ref_imgs/home_view/settings_view/developer.png) |
+
+### Themes
+
+| Theme | Screenshot |
+| --- | --- |
+| DuetScreen | ![DuetScreen](tests/ref_imgs/home_view/dashboard/theme_duetscreen.png) |
+| Flat | ![Flat](tests/ref_imgs/home_view/dashboard/theme_flat.png) |
+| Industrial | ![Industrial](tests/ref_imgs/home_view/dashboard/theme_industrial.png) |
+| Neon | ![Neon](tests/ref_imgs/home_view/dashboard/theme_neon.png) |
+| Retro | ![Retro](tests/ref_imgs/home_view/dashboard/theme_retro.png) |
+| Soft | ![Soft](tests/ref_imgs/home_view/dashboard/theme_soft.png) |
+
 ## Getting started
 
 ### Flashing a new Duet3D screen
 1. Download the latest `sdcard.img` from the release page.
 2. Flash a microSD card with the image
-    - use [balenaEtcher](https://www.balena.io/etcher/) on Windows
+    - use [balenaEtcher](https://www.balena.io/etcher/) or [rufus](https://rufus.ie/) on Windows
     - use `dd` on Linux
         - ```bash
             sudo dd if=sdcard.img of=/dev/sdX bs=4M
             ```
+        - replace `sdX` with the correct device name for your microSD card. Be very careful when using `dd`, as it can overwrite any drive on your system if you specify the wrong one.
 3. Insert the microSD card into the Duet3D screen and power it on.
 
 
 ### Connecting the Duet3D screen to a WiFi network
-There are a few methods to connect the Duet3D screen to a WiFi network. The recommended method is to use the `wpa_supplicant.conf` file. This file should be placed on the microSD card after it has been flashed.
+There are a few methods to connect the Duet3D screen to a WiFi network:
 
 1. You can copy a file called `wpa_supplicant.conf` to the root of the microSD card. This file should contain the WiFi credentials in the following format:
     ```
@@ -31,9 +83,10 @@ There are a few methods to connect the Duet3D screen to a WiFi network. The reco
     }
     ```
     - This method is the easiest if you are setting up multiple screens, or you know the WiFi credentials in advance.
+    - This file should be placed on the microSD card after it has been flashed and before the first boot. The screen will read this file on the first boot and connect to the WiFi network automatically. After the first boot, this file is ignored for security reasons.
 2. Alternatively, you can connect to a network using the “Settings” page in the GUI.
     - This method is useful if you are setting up a single screen and you do not know the WiFi credentials in advance.
-    - The GUI is currently a placeholder and has some known issues.
+    - This method can be used after first boot if you do not want to pre-seed `wpa_supplicant.conf`.
 
 
 ## Powering the Duet3D screen
@@ -101,6 +154,8 @@ Several methods are available to update the Duet3D screen.
     - If the update is successful, the screen will automatically reboot. This will appear as a brief flash and the GUI will return to the home screen.
     - The update will create an empty file called `upgraded` in the root directory of the USB flash drive. This file is used to indicate that the update was successful.
 
+    The screen will automatically check for updates when if it connects to the internet. If an update is available, you will be asked if you want to install the update. Installing will typically take a couple seconds and the screen will automatically restart if the update is successful.
+
 2. **Force Update**
     - If the GUI is not working, you can force an update by renaming the update file to `update.tar.gz` and placing it in the **root directory of the USB flash drive OR microSD** card.
     - Insert the USB flash drive or microSD card into the Duet3D screen.
@@ -114,6 +169,14 @@ Several methods are available to update the Duet3D screen.
 > ![Buildroot Version](docs/images/buildroot_version.png)
 >
 > In this case, follow the instructions in the [Flashing a new Duet3D screen](#flashing-a-new-duet3d-screen) section above.
+
+After updating the screen, it will show an update success or update failed message next time the screen starts up.
+
+| Update status | Screenshot |
+| --- | --- |
+| Success | ![Update success](tests/ref_imgs/home_view/dashboard/update_success.png) |
+| Failed | ![Update failed](tests/ref_imgs/home_view/dashboard/update_failed.png) |
+| Recommend updating buildroot | ![Recommend updating buildroot](tests/ref_imgs/home_view/dashboard/update_warning.png) |
 
 ## USB Ports
 The Duet3D screen has two USB ports:
@@ -135,7 +198,7 @@ Notes on how to build the project are found in [DEVELOPMENT.md](docs/DEVELOPMENT
 ## Configuring Screen Settings
 It is possible to configure the screen settings without using the GUI. This is done by creating a file called `duetscreen.json`. This file stores the non-volatile settings for the screen.
 
-For information on what settings are available, look at [Storage.h](src/Storage.h) to find all the supported keys. Key names are split by `:` to indicate hierarchy. For example the key `ui:move:selected_feedrate` would refer to:
+For information on what settings are available, look at [Storage.cpp](src/Storage.cpp) to find all the supported keys, there are a few dynamically named keys which can be found by searching the code for `StorageKeyRunTime` if needed (mainly used for themes). Key names are split by `:` to indicate hierarchy. For example the key `ui:move:selected_feedrate` would refer to:
 ```json
 {
   "ui": {
@@ -145,6 +208,7 @@ For information on what settings are available, look at [Storage.h](src/Storage.
   }
 }
 ```
+Any key not defined in the `duetscreen.json` file will use the default value defined in [Storage.cpp](src/Storage.cpp).
 
 This file should be placed in the root directory of the microSD card. When the screen first boots, it will read this file and apply the settings.
 
