@@ -1,5 +1,8 @@
 # DuetScreen
 
+[![C/C++ CI](https://github.com/Duet3D/DuetScreen/actions/workflows/test.yml/badge.svg)](https://github.com/Duet3D/DuetScreen/actions/workflows/test.yml)
+[![Verify i18n Translations](https://github.com/Duet3D/DuetScreen/actions/workflows/check-i18n.yml/badge.svg)](https://github.com/Duet3D/DuetScreen/actions/workflows/check-i18n.yml)
+
 DuetScreen is the touchscreen UI for Duet3D displays, built with LVGL. It runs on [Duet3D screen hardware](https://docs.duet3d.com/Duet3D_hardware/Accessories/DuetScreen) and can also be compiled for x86/Arm on Linux and macOS to support development and testing.
 
 ## UI preview
