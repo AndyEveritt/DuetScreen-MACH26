@@ -10,7 +10,6 @@ target_sources(
 # force-load only theme registration objects (not the full DuetScreen.lib).
 add_library(DuetScreen.themes STATIC)
 
-# Order defines the order in the dropdown menu
 target_sources(
   DuetScreen.themes
   PRIVATE
@@ -23,6 +22,4 @@ target_sources(
   ${CMAKE_CURRENT_SOURCE_DIR}/RetroTheme.cpp
 )
 
-# Reuse DuetScreen.lib usage requirements (include dirs/defines/libs) for
-# compiling theme translation units without duplicating settings.
 target_link_libraries(DuetScreen.themes PRIVATE DuetScreen.lib)
