@@ -6,8 +6,12 @@ on:
 
 jobs:
     test:
-        name: Run CTest
-        runs-on: ubuntu-latest
+        name: Run CTest (${{ matrix.os }})
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, macos-latest]
 
         steps:
             - name: Checkout code
@@ -18,7 +22,7 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Install dependencies
-              run: sudo apt-get update && ./scripts/install_prerequisites.sh
+              run: ./scripts/install_prerequisites.sh
 
             - name: Update Version
               run: |
@@ -26,7 +30,12 @@ jobs:
                 echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
 
             - name: Configure project
-              run: cmake --preset Test
+              run: |
+                if [ "${{ runner.os }}" = "macOS" ]; then
+                  cmake --preset Test -D ENABLE_COVERAGE=OFF
+                else
+                  cmake --preset Test
+                fi
 
             - name: Build project
               run: cmake --build --preset Test
@@ -36,6 +45,7 @@ jobs:
               run: ctest --test-dir out/build/Test --output-on-failure
             
             - name: Run Coverage
+              if: runner.os == 'Linux'
               run: |
                 mkdir -p tests/report
                 GCOV_EXE="gcov"
@@ -61,6 +71,7 @@ jobs:
                 gcovr out/build/Test --root . --filter src --xml tests/report/coverage.xml -j $(nproc) --print-summary --gcov-executable "$GCOV_EXE"
 
             - name: Code Coverage Report
+              if: runner.os == 'Linux'
               uses: irongut/CodeCoverageSummary@v1.3.0
               with:
                 filename: tests/report/coverage.xml
@@ -74,8 +85,8 @@ jobs:
                 thresholds: '60 80'
             
             - name: Add Coverage PR Comment
+              if: runner.os == 'Linux' && github.event_name == 'pull_request'
               uses: marocchino/sticky-pull-request-comment@v2
-              if: github.event_name == 'pull_request'
               with:
                 recreate: true
                 path: code-coverage-results.md
