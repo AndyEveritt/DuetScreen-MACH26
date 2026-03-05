@@ -62,7 +62,8 @@ namespace UI
 		  public:
 			LazyFileItem(FileView& fileView);
 
-			lv_coord_t getSize() const override;
+			lv_coord_t getWidth() const override;
+			lv_coord_t getHeight() const override;
 			void update(size_t index, FileItem& obj) override;
 
 			std::string_view m_filename;

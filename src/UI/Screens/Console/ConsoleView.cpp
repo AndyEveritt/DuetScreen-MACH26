@@ -427,7 +427,13 @@ namespace UI
 		ZoneScoped;
 	}
 
-	lv_coord_t ConsoleView::LazyGcodeItem::getSize() const
+	lv_coord_t ConsoleView::LazyGcodeItem::getWidth() const
+	{
+		ZoneScoped;
+		return 0;
+	}
+
+	lv_coord_t ConsoleView::LazyGcodeItem::getHeight() const
 	{
 		ZoneScoped;
 		return 30;

@@ -129,11 +129,17 @@ namespace UI
 		ZoneScoped;
 	}
 
-	lv_coord_t FileView::LazyFileItem::getSize() const
+	lv_coord_t FileView::LazyFileItem::getWidth() const
 	{
 		ZoneScoped;
 		UI_LOCK();
-		// Return a fixed size for now
+		return 0;
+	}
+
+	lv_coord_t FileView::LazyFileItem::getHeight() const
+	{
+		ZoneScoped;
+		UI_LOCK();
 		return 90;
 	}
 

@@ -38,7 +38,8 @@ namespace UI
 		  public:
 			LazyGcodeItem(size_t index, ConsoleView& view);
 
-			lv_coord_t getSize() const override;
+			lv_coord_t getWidth() const override;
+			lv_coord_t getHeight() const override;
 			void update(size_t index, GcodeItem& obj) override;
 			bool isVisible() const override { return m_visible; }
 
