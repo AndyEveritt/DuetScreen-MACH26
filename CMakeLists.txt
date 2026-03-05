@@ -467,22 +467,20 @@ if (ENABLE_COVERAGE)
 endif()
 
 # Link the executable with the DuetScreen core library.
-# There is some static initialisation in some translation units so force linker to include everything.
+# Force-load only the themes archive so static theme registration objects are retained
+# without whole-archiving the full DuetScreen.lib.
 if(APPLE)
-  # macOS linker doesn't support --whole-archive; use -force_load on the static library instead
-  target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
-  target_link_options(DuetScreen PRIVATE "-Wl,-force_load,$<TARGET_FILE:DuetScreen.lib>")
+  target_link_libraries(DuetScreen PRIVATE DuetScreen.lib DuetScreen.themes)
+  target_link_options(DuetScreen PRIVATE "-Wl,-force_load,$<TARGET_FILE:DuetScreen.themes>")
 elseif(MSVC)
-  # MSVC equivalent of forcing all objects from a static library
-  target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
-  target_link_options(DuetScreen PRIVATE "/WHOLEARCHIVE:$<TARGET_FILE:DuetScreen.lib>")
+  target_link_libraries(DuetScreen PRIVATE DuetScreen.lib DuetScreen.themes)
+  target_link_options(DuetScreen PRIVATE "/WHOLEARCHIVE:$<TARGET_FILE:DuetScreen.themes>")
 else()
-  # GNU ld/Gold/LLD on ELF platforms
   target_link_libraries(DuetScreen PRIVATE
-      -Wl,--whole-archive DuetScreen.lib -Wl,--no-whole-archive
+      DuetScreen.lib
+      -Wl,--whole-archive DuetScreen.themes -Wl,--no-whole-archive
   )
 endif()
-# target_link_libraries(DuetScreen PRIVATE DuetScreen.lib)
 
 # Custom target to show binary size (GNU vs macOS compatibility)
 if(APPLE)

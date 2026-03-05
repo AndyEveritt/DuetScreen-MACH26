@@ -57,20 +57,17 @@ target_link_libraries(DuetScreen.tests PRIVATE
     GTest::gtest_main
 )
 
-# Link the executable with the DuetScreen core library.
-# There is some static initialisation in some translation units so force linker to include everything.
+# Link tests with core library and force-load only theme registration archive.
 if(APPLE)
-  # macOS linker doesn't support --whole-archive; use -force_load on the static library instead
-  target_link_libraries(DuetScreen.tests PRIVATE DuetScreen.lib)
-  target_link_options(DuetScreen.tests PRIVATE "-Wl,-force_load,$<TARGET_FILE:DuetScreen.lib>")
+  target_link_libraries(DuetScreen.tests PRIVATE DuetScreen.lib DuetScreen.themes)
+  target_link_options(DuetScreen.tests PRIVATE "-Wl,-force_load,$<TARGET_FILE:DuetScreen.themes>")
 elseif(MSVC)
-  # MSVC equivalent of forcing all objects from a static library
-  target_link_libraries(DuetScreen.tests PRIVATE DuetScreen.lib)
-  target_link_options(DuetScreen.tests PRIVATE "/WHOLEARCHIVE:$<TARGET_FILE:DuetScreen.lib>")
+  target_link_libraries(DuetScreen.tests PRIVATE DuetScreen.lib DuetScreen.themes)
+  target_link_options(DuetScreen.tests PRIVATE "/WHOLEARCHIVE:$<TARGET_FILE:DuetScreen.themes>")
 else()
-  # GNU ld/Gold/LLD on ELF platforms
   target_link_libraries(DuetScreen.tests PRIVATE
-      -Wl,--whole-archive DuetScreen.lib -Wl,--no-whole-archive
+      DuetScreen.lib
+      -Wl,--whole-archive DuetScreen.themes -Wl,--no-whole-archive
   )
 endif()
 
