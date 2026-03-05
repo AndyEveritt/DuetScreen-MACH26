@@ -885,6 +885,11 @@ def parse_args(argv: List[str]):
                      help="Generate gcovr HTML coverage report (tests/report/index.html)")
 	parser.add_argument("--skip_configure", action="store_true", help="Skip CMake configure step")
 	parser.add_argument("--skip_build", action="store_true", help="Skip CMake build step")
+	parser.add_argument(
+		"--compare-only",
+		action="store_true",
+		help="Do not clean/build/run tests; only compare existing *_err images against references",
+	)
 	parser.add_argument("--lvgl-tests", action="store_true", dest="lvgl_tests",
                      help="Run lvgl unit tests (python tests/main.py) and use lvgl ref image dirs")
 	return parser.parse_args(argv)
@@ -998,6 +1003,8 @@ def detect_gcov_executable(build_dir: Path) -> Optional[str]:
 
 def main(argv: List[str]) -> int:
 	args = parse_args(argv)
+	rc = 0
+	build_dir = None
 
 	# Choose which reference directories to operate on
 	global CURRENT_REF_DIRS
@@ -1006,96 +1013,99 @@ def main(argv: List[str]) -> int:
 	else:
 		CURRENT_REF_DIRS = [REF_IMGS_DIR]
 
-	log("Step 1/5: Cleaning existing *_err images…")
-	removed = clean_err_images_in_dirs(CURRENT_REF_DIRS)
-	if removed:
-		log(f"  Removed {len(removed)} file(s) from {', '.join(str(p) for p in CURRENT_REF_DIRS)}")
+	if getattr(args, "compare_only", False):
+		log("Compare-only mode: skipping clean/build/test steps and reviewing existing *_err images.")
 	else:
-		log("  Nothing to remove.")
-
-	log("Step 2/5: Ensure build is configured…")
-	# For lvgl tests we run the lvgl test runner directly and skip CMake configure/build
-	if getattr(args, "lvgl_tests", False):
-		log("  Running lvgl unit tests; skipping CMake configure/build.")
-		build_dir = None
-	else:
-		# Try to configure automatically using a preset
-		if args.skip_configure:
-			log("  Skipping configure step as requested.")
+		log("Step 1/5: Cleaning existing *_err images…")
+		removed = clean_err_images_in_dirs(CURRENT_REF_DIRS)
+		if removed:
+			log(f"  Removed {len(removed)} file(s) from {', '.join(str(p) for p in CURRENT_REF_DIRS)}")
 		else:
-			if not configure_cmake():
-				log("Failed to configure the project. Aborting.")
+			log("  Nothing to remove.")
+
+	if not getattr(args, "compare_only", False):
+		log("Step 2/5: Ensure build is configured…")
+		# For lvgl tests we run the lvgl test runner directly and skip CMake configure/build
+		if getattr(args, "lvgl_tests", False):
+			log("  Running lvgl unit tests; skipping CMake configure/build.")
+		else:
+			# Try to configure automatically using a preset
+			if args.skip_configure:
+				log("  Skipping configure step as requested.")
+			else:
+				if not configure_cmake():
+					log("Failed to configure the project. Aborting.")
+					return 2
+
+			build_dir = find_build_dir()
+			if build_dir is None:
+				log("Error: Could not locate a CTest build directory after configure.")
 				return 2
 
-		build_dir = find_build_dir()
-		if build_dir is None:
-			log("Error: Could not locate a CTest build directory after configure.")
-			return 2
-
-	log("Step 3/5: Building tests…")
-	if getattr(args, "lvgl_tests", False):
-		log("  Skipping build step for lvgl tests (running test script).")
-	else:
-		if args.skip_build:
-			log("  Skipping build step as requested.")
+		log("Step 3/5: Building tests…")
+		if getattr(args, "lvgl_tests", False):
+			log("  Skipping build step for lvgl tests (running test script).")
 		else:
-			brc = build_tests(build_dir)
-			if brc != 0:
-				log(f"Build failed with return code {brc}.")
-				return brc
+			if args.skip_build:
+				log("  Skipping build step as requested.")
+			else:
+				brc = build_tests(build_dir)
+				if brc != 0:
+					log(f"Build failed with return code {brc}.")
+					return brc
 
-	# Snapshot existing references before running tests so we can detect newly created ones
-	before_snapshot = snapshot_existing_refs_in_dirs(CURRENT_REF_DIRS)
+		# Snapshot existing references before running tests so we can detect newly created ones
+		before_snapshot = snapshot_existing_refs_in_dirs(CURRENT_REF_DIRS)
 
-	log("Step 4/5: Running tests…")
-	if getattr(args, "lvgl_tests", False):
-		rc = run_lvgl_tests(test_filter=args.test_filter)
-	else:
-		rc = run_tests(build_dir, test_filter=args.test_filter)
-	if rc != 0:
-		log(f"Tests finished with return code {rc} (there may be failures).")
-	else:
-		log("Tests completed successfully.")
+		log("Step 4/5: Running tests…")
+		if getattr(args, "lvgl_tests", False):
+			rc = run_lvgl_tests(test_filter=args.test_filter)
+		else:
+			rc = run_tests(build_dir, test_filter=args.test_filter)
+		if rc != 0:
+			log(f"Tests finished with return code {rc} (there may be failures).")
+		else:
+			log("Tests completed successfully.")
 
-	# First, check for any newly created reference images (created because a reference didn't exist)
-	created_refs = list_new_refs_in_dirs(CURRENT_REF_DIRS, before_snapshot)
-	if created_refs:
-		log("Review newly created reference images…")
-		# Try Pillow/Tk UI first (lazy-loading inside the UI)
-		pil_ok = True
-		try:
-			reviewer_nr = UINewRefReviewer(created_refs)
-			reviewer_nr.run()
-		except Exception as e:
-			log(f"Failed to open Tk UI for new references: {e}")
-			pil_ok = False
+		# First, check for any newly created reference images (created because a reference didn't exist)
+		created_refs = list_new_refs_in_dirs(CURRENT_REF_DIRS, before_snapshot)
+		if created_refs:
+			log("Review newly created reference images…")
+			# Try Pillow/Tk UI first (lazy-loading inside the UI)
+			pil_ok = True
+			try:
+				reviewer_nr = UINewRefReviewer(created_refs)
+				reviewer_nr.run()
+			except Exception as e:
+				log(f"Failed to open Tk UI for new references: {e}")
+				pil_ok = False
 
-		if not pil_ok:
-			# Fallback to CLI flow
-			apply_all = False
-			for p in created_refs:
-				log("")
-				log(f"New reference image created: {p.name}")
-				if apply_all:
-					choice = "y"
-				else:
-					choice = ask_yes_no("Keep this new reference image?", default="n")
-					if choice == "a":
-						apply_all = True
+			if not pil_ok:
+				# Fallback to CLI flow
+				apply_all = False
+				for p in created_refs:
+					log("")
+					log(f"New reference image created: {p.name}")
+					if apply_all:
 						choice = "y"
-					if choice == "q":
-						log("Aborting by user request.")
-						return 130
-				if choice == "y":
-					log("  Kept.")
-				else:
-					try:
-						p.unlink()
-						log("  Deleted.")
-					except Exception as e:
-						log(f"  Failed to delete: {e}")
-	else:
-		log("No newly created reference images were detected.")
+					else:
+						choice = ask_yes_no("Keep this new reference image?", default="n")
+						if choice == "a":
+							apply_all = True
+							choice = "y"
+						if choice == "q":
+							log("Aborting by user request.")
+							return 130
+					if choice == "y":
+						log("  Kept.")
+					else:
+						try:
+							p.unlink()
+							log("  Deleted.")
+						except Exception as e:
+							log(f"  Failed to delete: {e}")
+		else:
+			log("No newly created reference images were detected.")
 
 	log("Step 5/5: Scanning for *_err images…")
 	err_images = list_err_images_in_dirs(CURRENT_REF_DIRS)
