@@ -11,6 +11,7 @@
 #include <cstdarg>
 #include <filesystem>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #ifndef ARRAY_SIZE
@@ -39,6 +40,7 @@ namespace utils
 	void replaceSubstring(std::string& nString, const std::string& target, const std::string& replacement);
 	std::vector<std::string> splitString(const std::string& str, const std::string& delimiter);
 	size_t findInstance(std::string_view str, std::string_view target, size_t instance);
+	std::string formatFloat(double value, int maxDecimals = 6);
 
 	std::string readFileToString(std::filesystem::path file);
 } // namespace utils

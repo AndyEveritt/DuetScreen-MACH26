@@ -9,6 +9,8 @@
 
 #include "DebugCommands.h"
 #include "utils.h"
+#include <array>
+#include <charconv>
 #include <fstream>
 #include <sstream>
 
@@ -115,6 +117,40 @@ namespace utils
 			pos++;
 		}
 		return pos;
+	}
+
+	std::string formatFloat(double value, int maxDecimals)
+	{
+		ZoneScoped;
+		if (maxDecimals < 0)
+		{
+			maxDecimals = 0;
+		}
+
+		std::array<char, 128> buffer{};
+		auto [endPtr, errorCode] =
+			std::to_chars(buffer.data(), buffer.data() + buffer.size(), value, std::chars_format::fixed, maxDecimals);
+
+		if (errorCode != std::errc{})
+		{
+			return "0";
+		}
+
+		std::string_view text(buffer.data(), static_cast<size_t>(endPtr - buffer.data()));
+		while (!text.empty() && text.back() == '0')
+		{
+			text.remove_suffix(1);
+		}
+		if (!text.empty() && text.back() == '.')
+		{
+			text.remove_suffix(1);
+		}
+		if (text == "-0")
+		{
+			return "0";
+		}
+
+		return std::string(text);
 	}
 
 	std::string readFileToString(std::filesystem::path file)

@@ -251,8 +251,12 @@ namespace UI
 			{
 				slider->m_numberPad->setHeader(slider->getLabelText());
 				slider->m_numberPad->setValue(slider->getValue());
-				slider->m_numberPad->setMinValue(slider->getMin());
-				slider->m_numberPad->setMaxValue(slider->getMax());
+
+				auto outOfRangeMode = slider->m_outOfRangeMode;
+				slider->m_numberPad->setMinValue(
+					outOfRangeMode & OutOfRange::LOWER ? std::numeric_limits<float>::lowest() : slider->getMin());
+				slider->m_numberPad->setMaxValue(outOfRangeMode & OutOfRange::UPPER ? std::numeric_limits<float>::max()
+																					: slider->getMax());
 				slider->m_numberPad->setConfirmCallback([slider](float value) { slider->setValue(value); });
 				slider->getInput().sendEvent(LV_EVENT_DEFOCUSED, nullptr); // stop cursor blinking
 				openModal(slider->m_numberPad);
@@ -367,12 +371,6 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		m_input.setText(fmt::format("{:g}", getValue()));
-
-		/* Hack to fix this issue
-		 * https://github.com/Duet3D/DuetScreen/blob/8353026c07a67cc76d88f99729db56378fcf1890/tests/ref_imgs/home_view/control_view/fan.png
-		 */
-		// lv_obj_set_width(m_input.getLabel(), LV_PCT(100));
-		// lv_obj_set_width(m_input.getLabel(), LV_SIZE_CONTENT);
+		m_input.setText(utils::formatFloat(getValue()));
 	}
 } // namespace UI

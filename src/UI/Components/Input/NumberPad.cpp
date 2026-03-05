@@ -170,7 +170,7 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		m_textBox.setText(fmt::format("{:g}", value));
+		m_textBox.setText(utils::formatFloat(value));
 		m_textBox.setCursorPos(LV_TEXTAREA_CURSOR_LAST);
 		validateInput();
 	}
@@ -178,7 +178,16 @@ namespace UI
 	float NumberPad::getValue() const
 	{
 		ZoneScoped;
-		return static_cast<float>(atof(m_textBox.getText().data()));
+		double value = atof(m_textBox.getText().data());
+		if (value > static_cast<double>(std::numeric_limits<float>::max()))
+		{
+			return std::numeric_limits<float>::max();
+		}
+		else if (value < static_cast<double>(std::numeric_limits<float>::lowest()))
+		{
+			return std::numeric_limits<float>::lowest();
+		}
+		return static_cast<float>(value);
 	}
 
 	void NumberPad::setText(const std::string& text)

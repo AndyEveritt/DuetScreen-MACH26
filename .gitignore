@@ -556,6 +556,7 @@ authorized_keys
 tests/ref_imgs/**/*_err.png
 tests/report
 # !tests/config*.json
+cmake_test_discovery*
 
 # Tools
 !tools/win32/tracy-profiler.exe
