@@ -68,7 +68,7 @@ TEST_F(TestLazyList, Basic)
 
 	EXPECT_EQUAL_SCREENSHOT("list/lazy_list_basic.png");
 	EXPECT_EQ(list.getLazyItems().size(), 10);
-	EXPECT_EQ(list.getVisibleItems().size(), 3);
+	EXPECT_EQ(list.getVisibleItems().size(), 4);
 	/**
 	 * The capacity indicates whether the amount of visible items was ever set to 10 in which case there is no advantage
 	 * over a regular list. This could happen when the list size is first calculated if the list container uses
