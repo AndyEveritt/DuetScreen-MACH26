@@ -560,3 +560,6 @@ cmake_test_discovery*
 
 # Tools
 !tools/win32/tracy-profiler.exe
+
+# Assets
+assets/splash.png

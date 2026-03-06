@@ -57,6 +57,9 @@ fi
 echo "Including assets..."
 mkdir -p out/update/etc/assets
 cp -r assets out/update/etc
+if [ -f out/update/etc/assets/splash.png ]; then
+    mv out/update/etc/assets/splash.png out/update/etc/splash.png
+fi
 
 # Copy libraries
 # mkdir -p out/update/usr/lib
