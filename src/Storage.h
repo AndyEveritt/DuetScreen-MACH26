@@ -171,9 +171,6 @@ extern const StorageKey<bool> ID_SHOW_CONFIRMATION_DIALOGS;
 extern const std::string_view ID_MVS_EXTRUSION_FEEDRATES;
 extern const std::string_view ID_MVS_EXTRUSION_DISTANCES;
 
-extern const StorageKey<OM::FileSystem::SortBy> ID_FILE_SORT_BY;
-extern const StorageKey<bool> ID_FILE_SORT_DESCENDING;
-
 extern const StorageKey<Units::UnitSystem> ID_UNIT_SYSTEM;
 
 /* System */

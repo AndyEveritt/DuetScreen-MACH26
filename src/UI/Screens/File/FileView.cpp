@@ -23,21 +23,19 @@ namespace UI
 		setWidth(LV_PCT(100));
 		// setMaxWidth(400);
 
-		setLayoutStyle(LV_LAYOUT_GRID);
-		setGridDsc(m_layoutColDsc, m_layoutRowDsc);
-		setGridCell(m_label, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
-#if SHOW_FILE_ITEM_SIZE
-		setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 2, 1);
-#endif
-		setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 3, 1);
-		setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 4);
-		setGridCell(m_folderIcon, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 4);
+		setType(false);
+		setDisplayMode(DisplayMode::List);
 
 		m_label.setHeight(LV_SIZE_CONTENT);
+		m_label.setWidth(LV_PCT(100));
+		m_label.setLongMode(LV_LABEL_LONG_DOT);
+		m_label.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
+
 		m_thumbnail.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
 		m_folderIcon.setIcon("folder.png");
-		m_thumbnail.setHeight(LV_PCT(100));
-		m_folderIcon.setHeight(LV_PCT(100));
+		m_thumbnail.setHeight(72);
+		m_thumbnail.setWidth(72);
+		m_folderIcon.setSize(72, 72);
 
 		addEventCallback(
 			[this](lv_event_t*)
@@ -53,6 +51,58 @@ namespace UI
 		addStyle(Themes::getComponentStyles().folder, LV_STATE_CHECKED);
 		m_label.addStyle(Themes::getLvglStyles().text_emphasis, LV_STATE_CHECKED);
 		m_date.addStyle(Themes::getLvglStyles().text_muted);
+	}
+
+	void FileView::FileItem::setDisplayMode(DisplayMode mode)
+	{
+		ZoneScoped;
+		UI_LOCK();
+
+		m_displayMode = mode;
+		switch (mode)
+		{
+		case DisplayMode::Tile:
+		{
+			setLayoutStyle(LV_LAYOUT_FLEX);
+			setFlexFlow(LV_FLEX_FLOW_COLUMN);
+			setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+			setSize(150, 170);
+
+			m_thumbnail.setWidth(LV_PCT(100));
+			m_folderIcon.setWidth(LV_PCT(100));
+			m_thumbnail.setFlexGrow(1);
+			m_folderIcon.setFlexGrow(1);
+			m_label.setLongMode(LV_LABEL_LONG_DOT);
+			m_label.setFlexGrow(1);
+			m_label.setMaxHeight(LV_SIZE_CONTENT);
+			m_label.setStyleTextAlign(LV_TEXT_ALIGN_CENTER);
+			m_date.setVisible(false);
+			break;
+		}
+		case DisplayMode::List:
+		{
+			setLayoutStyle(LV_LAYOUT_GRID);
+			setGridDsc(m_layoutColDsc, m_layoutRowDsc);
+			setGridCell(m_label, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_START, 0, 1);
+#if SHOW_FILE_ITEM_SIZE
+			setGridCell(m_size, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 2, 1);
+#endif
+			setGridCell(m_date, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_END, 3, 1);
+			setGridCell(m_thumbnail, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 4);
+			setGridCell(m_folderIcon, LV_GRID_ALIGN_END, 1, 1, LV_GRID_ALIGN_START, 0, 4);
+
+			setWidth(LV_PCT(100));
+			setHeight(90);
+			m_thumbnail.setHeight(LV_PCT(100));
+			m_folderIcon.setHeight(LV_PCT(100));
+			m_thumbnail.setWidth(m_thumbnail.getHeight());
+			m_folderIcon.setWidth(m_folderIcon.getHeight());
+			m_label.setHeight(LV_SIZE_CONTENT);
+			m_label.setStyleTextAlign(LV_TEXT_ALIGN_LEFT);
+			m_date.setVisible(true);
+			break;
+		}
+		}
 	}
 
 	void FileView::FileItem::setFileLabel(std::string_view name)
@@ -83,7 +133,15 @@ namespace UI
 		ZoneScoped;
 		UI_LOCK();
 		m_thumbnail.setSrc(thumbnail);
-		m_thumbnail.setWidth(thumbnail == nullptr ? 0 : m_thumbnail.getHeight());
+		switch (m_displayMode)
+		{
+		case DisplayMode::Tile:
+			m_thumbnail.setWidth(LV_PCT(100));
+			break;
+		case DisplayMode::List:
+			m_thumbnail.setWidth(thumbnail == nullptr ? 0 : m_thumbnail.getHeight());
+			break;
+		}
 	}
 
 	void FileView::FileItem::setType(const bool isFolder)
@@ -98,6 +156,15 @@ namespace UI
 		m_label.setState(LV_STATE_CHECKED, isFolder);
 		m_folderIcon.setVisible(isFolder);
 		m_thumbnail.setVisible(!isFolder);
+		switch (m_displayMode)
+		{
+		case DisplayMode::List:
+			m_date.setVisible(true);
+			break;
+		case DisplayMode::Tile:
+			m_date.setVisible(false);
+			break;
+		}
 	}
 
 	std::string_view FileView::FileItem::getLabel() const
@@ -133,14 +200,30 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		return 0;
+		switch (m_fileView.getDisplayMode())
+		{
+		case DisplayMode::Tile:
+			return 150;
+		case DisplayMode::List:
+			return 0;
+		}
+
+		std::unreachable();
 	}
 
 	lv_coord_t FileView::LazyFileItem::getHeight() const
 	{
 		ZoneScoped;
 		UI_LOCK();
-		return 90;
+		switch (m_fileView.getDisplayMode())
+		{
+		case DisplayMode::Tile:
+			return 170;
+		case DisplayMode::List:
+			return 90;
+		}
+
+		std::unreachable();
 	}
 
 	void FileView::LazyFileItem::update(size_t index, FileItem& obj)
@@ -150,15 +233,31 @@ namespace UI
 
 		obj.setFileView(&m_fileView);
 		obj.setIndex(index);
-		obj.setFileLabel(m_filename);
+		if (obj.getDisplayMode() != m_fileView.getDisplayMode())
+		{
+			obj.setDisplayMode(m_fileView.getDisplayMode());
+		}
+		if (m_filename != obj.getLabel())
+		{
+			obj.setFileLabel(m_filename);
+		}
 		std::string date(m_date);
 		std::replace(date.begin(), date.end(), 'T', ' ');
-		obj.setFileDate(date);
+		if (date != obj.getDate())
+		{
+			obj.setFileDate(date);
+		}
 #if SHOW_FILE_ITEM_SIZE
 		obj.setFileSize(m_size);
 #endif
-		obj.setThumbnail(m_thumbnail.empty() ? nullptr : m_thumbnail.c_str());
-		obj.setType(m_isFolder);
+		if (m_thumbnail != (obj.getThumbnail()))
+		{
+			obj.setThumbnail(m_thumbnail.empty() ? nullptr : m_thumbnail.c_str());
+		}
+		if (m_isFolder != obj.isFolder())
+		{
+			obj.setType(m_isFolder);
+		}
 	}
 
 	FileView::StartPrintModal::StartPrintModal(const std::string& name, LvObj& parent)
@@ -266,8 +365,9 @@ namespace UI
 		m_layerHeightValue.setText(fmt::format("{:g} {:s}", value, Units::getDisplayedDistanceUnit()));
 	}
 
-	FileView::FileView(const std::string& name, LvObj& parent)
+	FileView::FileView(const std::string& name, LvObj& parent, StorageKeys storageKeys)
 		: View(name, parent, layout_t(0, 0, 100, 100))
+		, m_storageKeys(std::move(storageKeys))
 	{
 		ZoneScoped;
 		UI_LOCK();
@@ -283,11 +383,13 @@ namespace UI
 		m_sortSize.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_pad.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_pad.setFlexGrow(1);
+		m_displayModeBtn.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_refresh.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 		m_sortDate.setText(_("file.sort_by_name"));
 		m_sortName.setText(_("file.sort_by_date"));
 		m_sortSize.setText(_("file.sort_by_size"));
+		m_displayModeBtn.setText(LV_SYMBOL_IMAGE);
 		m_refresh.setText(_("file.refresh"));
 
 		// Header (from List) becomes breadcrumb container
@@ -319,6 +421,7 @@ namespace UI
 		m_sortName.setCheckable(true);
 		m_sortDate.setCheckable(true);
 		m_sortSize.setCheckable(true);
+		m_displayModeBtn.setCheckable(true);
 
 		// Footer
 		m_footer.hide();
@@ -337,6 +440,9 @@ namespace UI
 		m_sortName.addClickedCallback(onSortClicked, this);
 		m_sortDate.addClickedCallback(onSortClicked, this);
 		m_sortSize.addClickedCallback(onSortClicked, this);
+		m_displayModeBtn.addClickedCallback(onDisplayModeClicked, this);
+
+		setDisplayMode(StorageHelper::getData(m_storageKeys.displayMode));
 	}
 
 	void FileView::setFileCount(const size_t count)
@@ -573,6 +679,61 @@ namespace UI
 			forward = !forward;
 		}
 		view->m_presenter->setSort(sort, forward);
+	}
+
+	void FileView::onDisplayModeClicked(lv_event_t* e)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		FileView* view = static_cast<FileView*>(lv_event_get_user_data(e));
+		switch (view->m_displayMode)
+		{
+		case DisplayMode::List:
+			view->setDisplayMode(DisplayMode::Tile);
+			break;
+		case DisplayMode::Tile:
+			view->setDisplayMode(DisplayMode::List);
+			break;
+		}
+	}
+
+	void FileView::setDisplayMode(DisplayMode mode)
+	{
+		ZoneScoped;
+		UI_LOCK();
+
+		m_displayMode = mode;
+		switch (mode)
+		{
+		case DisplayMode::Tile:
+			m_fileList.setListFlow(LV_FLEX_FLOW_ROW_WRAP);
+			StorageHelper::setData(m_storageKeys.displayMode, mode);
+			break;
+		case DisplayMode::List:
+			m_fileList.setListFlow(LV_FLEX_FLOW_COLUMN);
+			StorageHelper::setData(m_storageKeys.displayMode, mode);
+			break;
+		}
+
+		updateDisplayModeButton();
+		m_fileList.refresh();
+	}
+
+	void FileView::updateDisplayModeButton()
+	{
+		ZoneScoped;
+		UI_LOCK();
+		switch (m_displayMode)
+		{
+		case DisplayMode::Tile:
+			m_displayModeBtn.setChecked(true);
+			m_displayModeBtn.setText(LV_SYMBOL_LIST);
+			break;
+		case DisplayMode::List:
+			m_displayModeBtn.setChecked(false);
+			m_displayModeBtn.setText(LV_SYMBOL_IMAGE);
+			break;
+		}
 	}
 
 	bool FileView::back()

@@ -75,9 +75,6 @@ constexpr StorageKey<bool> ID_SHOW_CONFIRMATION_DIALOGS = {"ui:show_confirmation
 constexpr std::string_view ID_MVS_EXTRUSION_FEEDRATES = "ui:extrusion:feedrates";
 constexpr std::string_view ID_MVS_EXTRUSION_DISTANCES = "ui:extrusion:distances";
 
-constexpr StorageKey<OM::FileSystem::SortBy> ID_FILE_SORT_BY = {"ui:file:sort_by", OM::FileSystem::SortBy::DATE};
-constexpr StorageKey<bool> ID_FILE_SORT_DESCENDING = {"ui:file:sort_descending", true};
-
 constexpr StorageKey<Units::UnitSystem> ID_UNIT_SYSTEM = {"ui:units", Units::UnitSystem::Metric};
 
 /* System */

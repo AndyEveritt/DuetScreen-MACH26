@@ -41,8 +41,19 @@ namespace UI
 		TemperatureGraph m_graph{"graph", getRoot()};
 
 		TabView m_tabs{"tabs", getRoot()};
-		FileView m_fileView{"files", m_tabs.addTab(_("file.jobs"))};
-		FileView m_macroView{"macros", m_tabs.addTab(_("file.macros"))};
+		FileView m_fileView{
+			"files",
+			m_tabs.addTab(_("file.jobs")),
+			FileView::StorageKeys{.sortBy = {"ui:dashboard:file:jobs:sort_by", OM::FileSystem::SortBy::DATE},
+								  .sortDescending = {"ui:dashboard:file:jobs:sort_descending", true},
+								  .displayMode = {"ui:dashboard:file:jobs:display_mode", FileView::DisplayMode::List}}};
+		FileView m_macroView{
+			"macros",
+			m_tabs.addTab(_("file.macros")),
+			FileView::StorageKeys{
+				.sortBy = {"ui:dashboard:file:macros:sort_by", OM::FileSystem::SortBy::NAME},
+				.sortDescending = {"ui:dashboard:file:macros:sort_descending", false},
+				.displayMode = {"ui:dashboard:file:macros:display_mode", FileView::DisplayMode::List}}};
 		StatusView m_statusView{"status", m_tabs.addTab(_("app_drawer.status"))};
 	};
 } // namespace UI

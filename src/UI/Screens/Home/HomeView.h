@@ -94,8 +94,18 @@ namespace UI
 		};
 		ControlView m_controlView{"control", m_mainWindow};
 		TabView m_files{"files", m_mainWindow};
-		FileView m_macroView{"macros", m_files.addTab(_("file.macros"))};
-		FileView m_jobView{"jobs", m_files.addTab(_("file.jobs"))};
+		FileView m_macroView{
+			"macros",
+			m_files.addTab(_("file.macros")),
+			FileView::StorageKeys{.sortBy = {"ui:home:file:macros:sort_by", OM::FileSystem::SortBy::NAME},
+								  .sortDescending = {"ui:home:file:macros:sort_descending", false},
+								  .displayMode = {"ui:home:file:macros:display_mode", FileView::DisplayMode::List}}};
+		FileView m_jobView{
+			"jobs",
+			m_files.addTab(_("file.jobs")),
+			FileView::StorageKeys{.sortBy = {"ui:home:file:jobs:sort_by", OM::FileSystem::SortBy::DATE},
+								  .sortDescending = {"ui:home:file:jobs:sort_descending", true},
+								  .displayMode = {"ui:home:file:jobs:display_mode", FileView::DisplayMode::Tile}}};
 		SettingsView m_settingsView{"settings", m_mainWindow};
 #if SIDE_BAR_APP_DRAWER
 		MoveView m_moveView{"move", m_mainWindow};

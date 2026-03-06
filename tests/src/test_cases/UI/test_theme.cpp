@@ -234,7 +234,11 @@ TEST_F(TestTheme, Widgets)
 	file_folder_cont.setFlexGrow(1);
 	file_folder_cont.setFlexFlow(LV_FLEX_FLOW_ROW);
 
-	FileView file_view("files", file_folder_cont);
+	FileView file_view("files",
+					   file_folder_cont,
+					   FileView::StorageKeys{.sortBy = {"file_sort_by", FilePresenter::SortBy::DATE},
+											 .sortDescending = {"file_sort_descending", true},
+											 .displayMode = {"file_display_mode", FileView::DisplayMode::List}});
 	file_view.hide();
 
 	FileView::FileItem file_item("file_item", file_folder_cont);

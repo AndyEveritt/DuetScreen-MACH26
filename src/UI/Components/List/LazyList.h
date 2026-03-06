@@ -442,7 +442,12 @@ namespace UI
 			}
 
 			// Iterate visible indices
-			m_items.resize(visibleItems.size());
+			if (visibleItems.size() > m_items.size())
+			{
+				LOG_DBG(
+					"Increasing '{:s}' visible items: {:d} -> {:d}", getName(), m_items.size(), visibleItems.size());
+				m_items.resize(visibleItems.size());
+			}
 			for (size_t i = 0; i < visibleItems.size(); ++i)
 			{
 				item_info_t info = visibleItems[i]; // index in m_pool
@@ -475,7 +480,19 @@ namespace UI
 						objPtr->setHeight(info.crossSize);
 					}
 				}
+				objPtr->setFlag(LV_OBJ_FLAG_HIDDEN, false);
 				lazyObj.update(info.index, *objPtr);
+			}
+			for (size_t i = visibleItems.size(); i < m_items.size(); ++i)
+			{
+				TPtr& objPtr = m_items.at(i);
+
+				if (!objPtr)
+				{
+					continue;
+				}
+				LOG_DBG("Hiding item {:d}", i);
+				objPtr->setFlag(LV_OBJ_FLAG_HIDDEN, true);
 			}
 		}
 

@@ -249,8 +249,8 @@ namespace UI
 		ZoneScoped;
 		m_sortBy = by;
 		m_sortOrder = descending;
-		StorageHelper::setData(ID_FILE_SORT_BY, by);
-		StorageHelper::setData(ID_FILE_SORT_DESCENDING, descending);
+		StorageHelper::setData(m_view->getStorageKeys().sortBy, by);
+		StorageHelper::setData(m_view->getStorageKeys().sortDescending, descending);
 		sortFiles();
 		displayFiles();
 	}
@@ -327,7 +327,8 @@ namespace UI
 		ZoneScoped;
 		registerEventListener<EventType::ThumbnailData>(this, &FilePresenter::newThumbnailData);
 		registerEventListener<EventType::PrinterUniqueId>([this]() { setFolder(""); });
-		setSort(StorageHelper::getData(ID_FILE_SORT_BY), StorageHelper::getData(ID_FILE_SORT_DESCENDING));
+		setSort(StorageHelper::getData(m_view->getStorageKeys().sortBy),
+				StorageHelper::getData(m_view->getStorageKeys().sortDescending));
 	}
 
 	void FilePresenter::onActivate()

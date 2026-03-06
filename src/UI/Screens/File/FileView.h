@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FilePresenter.h"
+#include "Storage.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/Icon/Icon.h"
 #include "UI/Components/LVGL/LvContainer.h"
@@ -19,10 +20,24 @@ namespace UI
 	class FileView : public View<FilePresenter>
 	{
 	  public:
+		enum class DisplayMode
+		{
+			List,
+			Tile
+		};
+
+		struct StorageKeys
+		{
+			StorageKey<FilePresenter::SortBy> sortBy;
+			StorageKey<bool> sortDescending;
+			StorageKey<DisplayMode> displayMode;
+		};
+
 		class FileItem : public LvContainer
 		{
 		  public:
 			FileItem(const std::string& name, LvObj& parent);
+			void setDisplayMode(DisplayMode mode);
 			void setFileLabel(std::string_view name);
 			void setFileDate(std::string_view date);
 #if SHOW_FILE_ITEM_SIZE
@@ -31,30 +46,39 @@ namespace UI
 			void setThumbnail(const char* thumbnail);
 			void setType(const bool isFolder);
 
+			DisplayMode getDisplayMode() const { return m_displayMode; }
 			std::string_view getLabel() const;
 			std::string_view getDate() const;
+			std::string_view getThumbnail() const
+			{
+				const void* src = m_thumbnail.getSrc();
+				return src == nullptr ? "" : static_cast<const char*>(src);
+			}
+			bool isFolder() const { return m_isFolder; }
 #if SHOW_FILE_ITEM_SIZE
 			std::string_view getSize() const;
 #endif
 
 			void setFileView(FileView* fileView) { m_fileView = fileView; }
 			void setIndex(size_t index) { m_index = index; }
+			size_t getIndex() const { return m_index; }
 
 		  private:
 			int32_t m_layoutColDsc[3];
 			int32_t m_layoutRowDsc[5];
 
+			LvImage m_thumbnail{"thumb", getRoot()};
+			Icon m_folderIcon{"folder_icon", getRoot()};
 			LvLabel m_label{"label", getRoot()};
 #if SHOW_FILE_ITEM_SIZE
 			LvLabel m_size{"size", getRoot()};
 #endif
 			LvLabel m_date{"date", getRoot()};
-			LvImage m_thumbnail{"thumb", getRoot()};
-			Icon m_folderIcon{"folder_icon", getRoot()};
 
 			FileView* m_fileView = nullptr;
-			size_t m_index = 0;
+			size_t m_index = -1;
 			bool m_isFolder = false;
+			DisplayMode m_displayMode = DisplayMode::List;
 		};
 
 		class LazyFileItem : public LazyObj<FileItem>
@@ -117,7 +141,7 @@ namespace UI
 			std::function<void()> m_deleteCb;
 		};
 
-		FileView(const std::string& name, LvObj& parent);
+		FileView(const std::string& name, LvObj& parent, StorageKeys storageKeys);
 
 		auto& getList() { return m_fileList; }
 		size_t getFileCount() const { return m_fileList.getLazyItemCount(); }
@@ -132,6 +156,8 @@ namespace UI
 		auto& getConfirmModal() { return m_startPrint; }
 
 		void showSort(FilePresenter::SortBy by, bool descending);
+		DisplayMode getDisplayMode() const { return m_displayMode; }
+		const StorageKeys& getStorageKeys() const { return m_storageKeys; }
 
 		void onItemClicked(size_t index, bool isFolder);
 
@@ -140,7 +166,11 @@ namespace UI
 	  private:
 		static void onRefreshClicked(lv_event_t* e);
 		static void onSortClicked(lv_event_t* e);
+		static void onDisplayModeClicked(lv_event_t* e);
 		static void onBreadcrumbClicked(lv_event_t* e);
+
+		void setDisplayMode(DisplayMode mode);
+		void updateDisplayModeButton();
 
 		void onInit() override;
 		void onShow() override;
@@ -152,6 +182,7 @@ namespace UI
 		Button m_sortDate{"sort_date", m_sideBar};
 		Button m_sortSize{"sort_size", m_sideBar};
 		LvContainer m_pad{"pad", m_sideBar};
+		Button m_displayModeBtn{"display_mode", m_sideBar};
 		Button m_refresh{"refresh", m_sideBar};
 		LvLabel m_footer{"footer", getRoot()};
 
@@ -162,5 +193,7 @@ namespace UI
 		std::vector<std::unique_ptr<LvLabel>> m_breadcrumbLabels;
 
 		StartPrintModal m_startPrint{"messageBox", getRoot()};
+		StorageKeys m_storageKeys;
+		DisplayMode m_displayMode = DisplayMode::List;
 	};
 } // namespace UI
