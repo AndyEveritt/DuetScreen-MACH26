@@ -19,7 +19,7 @@ git clone --recursive git@github.com:Duet3D/DuetScreen.git
 
 The recommended compiler is `gcc-15`. The toolchain is entirely managed by buildroot if you are building for the T113 so you only need to worry about it if you are building the simulation. It might be possible to use other compilers but this is not officially supported.
 
-There is an install script to install `gcc-15` on Ubuntu 24.04 LTS since it is not available in the default repositories. Run the following command to install `gcc-15`:
+There is an install script to install `gcc-15`. On Ubuntu 24.04 LTS it will try the `ubuntu-toolchain-r/test` PPA first; on Debian-based systems such as Raspberry Pi OS it falls back to building GCC from source when `gcc-15` is not available from apt. Run the following command to install `gcc-15`:
 ```bash
 ./scripts/install_gcc15.sh
 ```

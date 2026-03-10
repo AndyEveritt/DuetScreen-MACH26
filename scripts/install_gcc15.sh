@@ -5,6 +5,8 @@ set -euo pipefail
 GCC_VERSION="${GCC_VERSION:-15.2.0}"
 INSTALL_PREFIX="${INSTALL_PREFIX:-/opt/gcc-15}"
 BUILD_ROOT="${BUILD_ROOT:-/tmp/gcc15-build}"
+DISTRO_ID=""
+DISTRO_NAME=""
 
 if ! command -v apt-get >/dev/null 2>&1; then
     echo "This script currently supports apt-based Linux distributions only." >&2
@@ -18,6 +20,21 @@ fi
 
 package_available() {
     apt-cache show "$1" >/dev/null 2>&1
+}
+
+detect_distro() {
+    if [[ -r /etc/os-release ]]; then
+        # shellcheck disable=SC1091
+        source /etc/os-release
+        DISTRO_ID="${ID:-}"
+        DISTRO_NAME="${PRETTY_NAME:-${NAME:-unknown}}"
+    else
+        DISTRO_NAME="unknown"
+    fi
+}
+
+is_ubuntu_like() {
+    [[ "${DISTRO_ID}" == "ubuntu" ]]
 }
 
 add_toolchain_ppa_and_update() {
@@ -72,18 +89,28 @@ install_from_source() {
 }
 
 echo "Installing prerequisites for GCC 15 setup..."
+detect_distro
+
 sudo apt-get update
-sudo apt-get install -y software-properties-common
+
+if is_ubuntu_like; then
+    sudo apt-get install -y software-properties-common
+fi
 
 if ! command -v gcc-15 >/dev/null 2>&1 || ! command -v g++-15 >/dev/null 2>&1; then
     if package_available gcc-15; then
         install_from_apt
     else
-        add_toolchain_ppa_and_update
+        if is_ubuntu_like; then
+            add_toolchain_ppa_and_update
 
-        if package_available gcc-15; then
-            install_from_apt
+            if package_available gcc-15; then
+                install_from_apt
+            else
+                install_from_source
+            fi
         else
+            echo "gcc-15 apt packages are not available on ${DISTRO_NAME}; building from source instead."
             install_from_source
         fi
     fi
