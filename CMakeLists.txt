@@ -92,6 +92,26 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU" AND PIPE AND NOT DUETSCREEN_SAVE_TE
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe")
 endif()
 
+# When using a non-system GCC toolchain, make the resulting binaries prefer that
+# toolchain's runtime libraries so they do not pick an older system libstdc++.
+set(_DUETSCREEN_GCC_RUNTIME_DIRS "")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  foreach(_duetscreen_runtime_lib IN ITEMS libstdc++.so libgcc_s.so.1)
+    execute_process(
+      COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=${_duetscreen_runtime_lib}
+      OUTPUT_VARIABLE _duetscreen_runtime_path
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if(_duetscreen_runtime_path AND NOT _duetscreen_runtime_path STREQUAL _duetscreen_runtime_lib)
+      get_filename_component(_duetscreen_runtime_dir "${_duetscreen_runtime_path}" DIRECTORY)
+      list(APPEND _DUETSCREEN_GCC_RUNTIME_DIRS "${_duetscreen_runtime_dir}")
+    endif()
+  endforeach()
+
+  list(REMOVE_DUPLICATES _DUETSCREEN_GCC_RUNTIME_DIRS)
+endif()
+
 # --------------------------------------------------------------------------------------------------------
 # Options. These are mirrored as PUBLIC DuetScreen.lib compile definitions without the DUETSCREEN_ prefix.
 # --------------------------------------------------------------------------------------------------------
@@ -149,6 +169,17 @@ endif()
 
 add_library(DuetScreen.lib)
 add_executable(DuetScreen)
+
+if(_DUETSCREEN_GCC_RUNTIME_DIRS)
+  set_target_properties(
+    DuetScreen.lib
+    PROPERTIES BUILD_RPATH "${_DUETSCREEN_GCC_RUNTIME_DIRS}"
+               INSTALL_RPATH "${_DUETSCREEN_GCC_RUNTIME_DIRS}")
+  set_target_properties(
+    DuetScreen
+    PROPERTIES BUILD_RPATH "${_DUETSCREEN_GCC_RUNTIME_DIRS}"
+               INSTALL_RPATH "${_DUETSCREEN_GCC_RUNTIME_DIRS}")
+endif()
 
 # Optionally save preprocessed/assembly temps for investigation (OFF by default)
 option(DUETSCREEN_SAVE_TEMPS "Save intermediate compile outputs for analysis" OFF)
