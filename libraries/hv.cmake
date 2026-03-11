@@ -1,5 +1,9 @@
 set(BUILD_SHARED OFF CACHE BOOL "Build shared library")
 set(BUILD_STATIC ON CACHE BOOL "Build static library")
+
+# UpgradeHelper performs HTTPS requests via libhv, so OpenSSL headers and
+# libraries are a hard requirement for this dependency.
+find_package(OpenSSL REQUIRED)
 set(WITH_OPENSSL ON CACHE BOOL "For HTTPS support" FORCE)
 
 FetchContent_Declare(

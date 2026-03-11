@@ -11,6 +11,7 @@ if [[ "${OS_NAME}" == "Linux" ]]; then
         libsdl2-dev \
         cmake \
         ninja-build \
+        libssl-dev \
         libusb-1.0-0-dev \
         pkg-config \
         libavcodec-dev \
@@ -42,6 +43,7 @@ elif [[ "${OS_NAME}" == "Darwin" ]]; then
         gcc \
         cmake \
         ninja \
+        openssl \
         sdl2 \
         libusb \
         pkg-config \
