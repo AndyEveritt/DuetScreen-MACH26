@@ -186,6 +186,14 @@ namespace UI
 		m_reset.setVisible(hasDefaultValue() && getValue() != m_defaultValue);
 	}
 
+	void Slider::setDisplayDecimals(int decimals)
+	{
+		ZoneScoped;
+		UI_LOCK();
+		m_displayDecimals = decimals;
+		updateText();
+	}
+
 	void Slider::onValueChanged(lv_event_t* e)
 	{
 		ZoneScoped;
@@ -371,6 +379,6 @@ namespace UI
 	{
 		ZoneScoped;
 		UI_LOCK();
-		m_input.setText(utils::formatFloat(getValue()));
+		m_input.setText(utils::formatFloat(getValue(), m_displayDecimals));
 	}
 } // namespace UI

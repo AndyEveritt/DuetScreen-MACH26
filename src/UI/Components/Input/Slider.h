@@ -59,6 +59,7 @@ namespace UI
 		void setRange(float min, float max);
 		void setValue(float value);
 		void setDefaultValue(float value);
+		void setDisplayDecimals(int decimals);
 		void setSendMode(SendMode mode) { m_sendMode = mode; }
 		void setLongPressedEnabled(bool enabled) { m_longPressEnabled = enabled; }
 		void setNumberPad(ModalNumberPad* numberPad) { m_numberPad = numberPad; }
@@ -99,6 +100,7 @@ namespace UI
 		float m_max;
 		float m_value;
 		float m_defaultValue = std::numeric_limits<float>::quiet_NaN();
+		int m_displayDecimals = 2;
 		bool m_focused = false;
 		bool m_longPressEnabled = true;
 		SendMode m_sendMode = SendMode::VALUE_CONFIRMED;
