@@ -21,6 +21,7 @@ namespace UI
 
 		// Actions
 		void setBaseFolder(BaseFolder folder) { m_baseFolder = folder; }
+		static std::string_view getDisplayName(std::string_view name, BaseFolder baseFolder);
 		std::string_view getBaseFolderPath() const;
 		void setFolder(std::string_view folder);
 		void itemClicked(const size_t index);

@@ -9,10 +9,32 @@
 #include "UI/Screens/Home/HomeView.h"
 #include "i18n/i18n.h"
 #include "utils/StorageHelper.h"
+#include <cctype>
 
 namespace UI
 {
 	static std::string s_emptyStr = "";
+
+	static std::string_view stripMacroDisplayPrefix(std::string_view name)
+	{
+		if (name.empty() || !std::isdigit(static_cast<unsigned char>(name.front())))
+		{
+			return name;
+		}
+
+		size_t prefixEnd = 0;
+		while (prefixEnd < name.size() && std::isdigit(static_cast<unsigned char>(name[prefixEnd])))
+		{
+			prefixEnd++;
+		}
+
+		if (prefixEnd == 0 || prefixEnd >= name.size() || name[prefixEnd] != '_')
+		{
+			return name;
+		}
+
+		return name.substr(prefixEnd + 1);
+	}
 
 	static OM::Directories::DirectoryType getBaseFolderType(FilePresenter::BaseFolder folder)
 	{
@@ -27,6 +49,16 @@ namespace UI
 			LOG_ERROR("Invalid base folder type");
 			return OM::Directories::DirectoryType::GCODES;
 		}
+	}
+
+	std::string_view FilePresenter::getDisplayName(std::string_view name, BaseFolder baseFolder)
+	{
+		if (baseFolder != BaseFolder::MACROS)
+		{
+			return name;
+		}
+
+		return stripMacroDisplayPrefix(name);
 	}
 
 	std::string_view FilePresenter::getBaseFolderPath() const
@@ -131,7 +163,7 @@ namespace UI
 		}
 		else if (m_gcodePath.starts_with(OM::Directories::GetMacrosDirectory()))
 		{
-			m_view->confirmRunMacro(item->GetName().c_str());
+			m_view->confirmRunMacro(getDisplayName(item->GetName(), m_baseFolder));
 		}
 	}
 
@@ -187,7 +219,7 @@ namespace UI
 				continue;
 			}
 
-			item->m_filename = file->GetName();
+			item->m_filename = getDisplayName(file->GetName(), m_baseFolder);
 			item->m_date = file->GetDate();
 #if SHOW_FILE_ITEM_SIZE
 			item->m_size = file->GetReadableSize();
