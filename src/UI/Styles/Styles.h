@@ -298,6 +298,11 @@ namespace UI::Themes
 		Style bar_label_bg;
 		Style bar_label;
 
+		/* Object cancel */
+		Style object_cancel_base;	   // Base style for object cancel list items
+		Style object_cancel_current;   // Style for the current object label in the object cancel view
+		Style object_cancel_cancelled; // Style for the cancelled object label in the object cancel view
+
 #if DEBUG_BORDERS
 		Style debug_borders;
 #endif

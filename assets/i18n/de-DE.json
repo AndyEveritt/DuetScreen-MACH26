@@ -66,6 +66,7 @@
       "move_tab": "Bewegen",
       "temperature_tab": "Werkzeug / Temperatur",
       "heightmap_tab": "Bettnivellierung",
+      "object_cancel_tab": "Objekt abbrechen",
       "fan_tab": "Lüfter"
     },
     "estop": {
@@ -109,8 +110,8 @@
       "run_macro_title": "Makro ausführen",
       "start_print_title": "Druck starten",
       "folder": "Ordner",
-        "delete_title": "Datei löschen",
-        "delete_message": "Möchtest du {:s} wirklich löschen?",
+      "delete_title": "Datei löschen",
+      "delete_message": "Möchtest du {:s} wirklich löschen?",
       "refresh": "Aktualisieren",
       "sort_by_date": "Datum",
       "sort_by_name": "Name",
@@ -149,6 +150,19 @@
       "unload": "Entladen",
       "mesh_bed_level": "Mesh Bettnivellierung (G29)",
       "true_bed_level": "Echte Bettnivellierung (G32)"
+    },
+    "object_cancel": {
+      "title": "Objekt abbrechen",
+      "objects_header": "Objekte",
+      "current_object_prefix": "Aktuelles Objekt:",
+      "current_object_none": "Keines",
+      "cancel_current": "Aktuelles Objekt abbrechen",
+      "confirm_cancel_current_title": "Aktuelles Objekt abbrechen",
+      "confirm_cancel_current_text": "Aktuelles Objekt '{:s}' abbrechen?",
+      "confirm_cancel_title": "Objekt abbrechen",
+      "confirm_cancel_text": "'{:s}' abbrechen?",
+      "confirm_uncancel_title": "Abbruch rückgängig",
+      "confirm_uncancel_text": "Abbruch von '{:s}' rückgängig machen?"
     },
     "message": {
       "connected": "Verbunden mit Duet",

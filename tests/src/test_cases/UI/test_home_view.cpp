@@ -6,10 +6,13 @@
  */
 
 #include "Debug.h"
+#include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "Storage.h"
 #include "UI/Core/Navigation.h"
 #include "UI/Screens/File/FileView.h"
 #include "UI/Screens/Home/HomeView.h"
+#include "i18n/i18n.h"
 #include "test_utils/UiTestSuite.h"
 #include "utils/StorageHelper.h"
 #include "utils/UpgradeHelper.h"
@@ -55,11 +58,61 @@ TEST_F(TestHomeView, BlankControlView)
 	control.showHeightmapView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/heightmap_blank.png");
 
+	control.showObjectCancelView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/object_cancel_blank.png");
+
 	control.showFanView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/fan_blank.png");
 
 	control.showMoveView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move_blank.png");
+}
+
+TEST_F(TestHomeView, ObjectCancelCanvasTitleTracksCurrentObject)
+{
+	auto& control = view.getControlView();
+	openScreen(&control);
+	control.showObjectCancelView();
+
+	auto& objectCancel = control.getObjectCancelView();
+
+	objectCancel.setCurrentObjectName("gear (Instance 5)");
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/object_cancel/set_object_name.png");
+
+	objectCancel.setCurrentObjectName("");
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/object_cancel/clear_object_name.png");
+}
+
+TEST_F(TestHomeView, ObjectCancelCurrentButtonRespectsConfirmationSetting)
+{
+	auto& control = view.getControlView();
+	openScreen(&control);
+	control.showObjectCancelView();
+
+	auto& objectCancel = control.getObjectCancelView();
+	auto& modal = objectCancel.getConfirmModal();
+
+	OM::ClearJobObjects();
+	auto object = OM::GetOrCreateJobObject(0);
+	ASSERT_NE(object, nullptr);
+	object->index = 0;
+	object->name = "gear (Instance 1)";
+	OM::SetCurrentJobObject(0);
+
+	StorageHelper::setData(ID_SHOW_CONFIRMATION_DIALOGS, true);
+	objectCancel.getCancelCurrentButton().sendEvent(LV_EVENT_CLICKED, nullptr);
+	EXPECT_TRUE(modal.isVisible());
+	EXPECT_EQ(std::string(modal.getTitle().getText()), _("object_cancel.confirm_cancel_current_title"));
+	EXPECT_NE(std::string(modal.getText().getText()).find("gear (Instance 1)"), std::string::npos);
+	modal.close();
+
+	StorageHelper::setData(ID_SHOW_CONFIRMATION_DIALOGS, false);
+	objectCancel.getCancelCurrentButton().sendEvent(LV_EVENT_CLICKED, nullptr);
+	EXPECT_FALSE(modal.isVisible());
+
+	StorageHelper::setData(ID_SHOW_CONFIRMATION_DIALOGS, true);
+	OM::SetCurrentJobObject(-1);
+	OM::ClearJobObjects();
 }
 
 TEST_F(TestHomeView, BlankConsoleView)
@@ -562,6 +615,19 @@ TEST_F(TestHomeViewWithData, ControlView)
 
 	control.showFanView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/fan.png");
+
+	load_model_data_from_file("tests/object_model/job/model_job_objects.json");
+	{
+		auto x = OM::Move::GetAxisByLetter('X');
+		x->minPosition = -200.0f;
+		x->maxPosition = 100.0f;
+
+		auto y = OM::Move::GetAxisByLetter('Y');
+		y->minPosition = -100.0f;
+		y->maxPosition = 100.0f;
+	}
+	control.showObjectCancelView();
+	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/object_cancel.png");
 
 	control.showMoveView();
 	EXPECT_EQUAL_SCREENSHOT("home_view/control_view/move_10_axes.png");

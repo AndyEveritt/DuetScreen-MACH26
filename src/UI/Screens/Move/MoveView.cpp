@@ -60,6 +60,7 @@ namespace UI
 		m_messageBox.setCancelBtnText(_("common.no"));
 		m_messageBox.okVisible(true);
 		m_messageBox.cancelVisible(true);
+		m_messageBox.getOkBtn().addStyle(Themes::getLvglStyles().actionBtn);
 
 		/* Axis Control */
 		m_axisControlCont.setFlag(LV_OBJ_FLAG_SCROLLABLE, false);

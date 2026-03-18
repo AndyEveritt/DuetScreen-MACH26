@@ -88,7 +88,7 @@ constexpr unsigned int MAX_FANS = 12;
 constexpr unsigned int MAX_HEATERS = 32;
 constexpr unsigned int MAX_SENSORS = 32;
 constexpr unsigned int MAX_ENDSTOPS = 20;
-constexpr size_t MAX_TRACKED_OBJECTS = 40;
+constexpr size_t MAX_TRACKED_OBJECTS = 64;
 constexpr size_t MAX_REPORTED_AXES =
 	5; // RRF only reports 5 axes in the `move` object, need to request `move.axes` to get the rest
 

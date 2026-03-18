@@ -66,6 +66,7 @@
       "move_tab": "Verplaatsen",
       "temperature_tab": "Gereedschap / Temperatuur",
       "heightmap_tab": "Bednivellering",
+      "object_cancel_tab": "Object annuleren",
       "fan_tab": "Ventilatoren"
     },
     "estop": {
@@ -149,6 +150,19 @@
       "unload": "Ontladen",
       "mesh_bed_level": "Mesh-bedcompensatie (G29)",
       "true_bed_level": "Echte bednivellering (G32)"
+    },
+    "object_cancel": {
+      "title": "Object annuleren",
+      "objects_header": "Objecten",
+      "current_object_prefix": "Huidig object:",
+      "current_object_none": "Geen",
+      "cancel_current": "Huidig object annuleren",
+      "confirm_cancel_current_title": "Huidig object annuleren",
+      "confirm_cancel_current_text": "Huidig object '{:s}' annuleren?",
+      "confirm_cancel_title": "Object annuleren",
+      "confirm_cancel_text": "'{:s}' annuleren?",
+      "confirm_uncancel_title": "Object hervatten",
+      "confirm_uncancel_text": "'{:s}' hervatten?"
     },
     "message": {
       "connected": "Verbonden met Duet",

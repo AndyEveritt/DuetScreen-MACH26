@@ -82,6 +82,14 @@ namespace UI
 				 &HomeView::instance().getControlView(),
 #endif
 			 .icon = "heightmap.png"},
+			{.name = _("app_drawer.object_cancel"),
+			 .screen =
+#if SIDE_BAR_APP_DRAWER
+				 &HomeView::instance().getObjectCancelView(),
+#else
+				 &HomeView::instance().getControlView(),
+#endif
+			 .icon = "cancel.png"},
 			{.name = _("app_drawer.settings"),
 			 .screen = &HomeView::instance().getSettingsView(),
 			 .icon = "settings.png"},

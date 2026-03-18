@@ -66,6 +66,7 @@
       "move_tab": "Déplacer",
       "temperature_tab": "Outil / Température",
       "heightmap_tab": "Nivellement du plateau",
+      "object_cancel_tab": "Annuler objet",
       "fan_tab": "Ventilateurs"
     },
     "estop": {
@@ -149,6 +150,19 @@
       "unload": "Décharger",
       "mesh_bed_level": "Compensation de maillage du plateau (G29)",
       "true_bed_level": "Nivellement réel du plateau (G32)"
+    },
+    "object_cancel": {
+      "title": "Annulation d'objet",
+      "objects_header": "Objets",
+      "current_object_prefix": "Objet courant :",
+      "current_object_none": "Aucun",
+      "cancel_current": "Annuler l'objet actuel",
+      "confirm_cancel_current_title": "Annuler l'objet actuel",
+      "confirm_cancel_current_text": "Annuler l'objet actuel '{:s}' ?",
+      "confirm_cancel_title": "Annuler l'objet",
+      "confirm_cancel_text": "Annuler '{:s}' ?",
+      "confirm_uncancel_title": "Réactiver l'objet",
+      "confirm_uncancel_text": "Réactiver '{:s}' ?"
     },
     "message": {
       "connected": "Connecté au Duet",

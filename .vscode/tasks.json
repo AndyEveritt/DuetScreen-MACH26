@@ -400,6 +400,15 @@
 				"isDefault": false
 			},
 			"problemMatcher": []
+		},
+		{
+			"label": "Verify i18n translations",
+			"type": "shell",
+			"command": "env/bin/python scripts/manage_translations.py",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": []
 		}
 	]
 }

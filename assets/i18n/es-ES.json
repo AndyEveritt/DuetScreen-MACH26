@@ -66,6 +66,7 @@
       "move_tab": "Mover",
       "temperature_tab": "Herramienta / Temperatura",
       "heightmap_tab": "Nivelación de cama",
+      "object_cancel_tab": "Cancelar objeto",
       "fan_tab": "Ventiladores"
     },
     "estop": {
@@ -113,8 +114,8 @@
       "sort_by_date": "Fecha",
       "sort_by_name": "Nombre",
       "sort_by_size": "Tamaño",
-        "delete_title": "Eliminar archivo",
-        "delete_message": "¿Seguro que quieres eliminar {:s}?",
+      "delete_title": "Eliminar archivo",
+      "delete_message": "¿Seguro que quieres eliminar {:s}?",
       "start_print": {
         "file": "Archivo: {:s}",
         "date": "Fecha: ",
@@ -149,6 +150,19 @@
       "unload": "Descargar",
       "mesh_bed_level": "Compensación de malla de cama (G29)",
       "true_bed_level": "Nivelación real de cama (G32)"
+    },
+    "object_cancel": {
+      "title": "Cancelar objeto",
+      "objects_header": "Objetos",
+      "current_object_prefix": "Objeto actual:",
+      "current_object_none": "Ninguno",
+      "cancel_current": "Cancelar objeto actual",
+      "confirm_cancel_current_title": "Cancelar objeto actual",
+      "confirm_cancel_current_text": "¿Cancelar el objeto actual '{:s}'?",
+      "confirm_cancel_title": "Cancelar objeto",
+      "confirm_cancel_text": "¿Cancelar '{:s}'?",
+      "confirm_uncancel_title": "Reactivar objeto",
+      "confirm_uncancel_text": "¿Reactivar '{:s}'?"
     },
     "message": {
       "connected": "Conectado al Duet",

@@ -47,6 +47,8 @@ namespace UI
 		bool posToPx(float x, float y, int32_t& px, int32_t& py) const;
 		bool posToPx(float x, float y, lv_point_t& p) const;
 
+		LvContainer& getHeader() { return m_header; }
+		LvLabel& getTitle() { return m_title; }
 		void setTitle(std::string_view title);
 
 		void showTitle(const bool show);
@@ -83,7 +85,8 @@ namespace UI
 
 		lv_draw_buf_t* m_buf = nullptr;
 
-		LvLabel m_title{"title", getRoot()};
+		LvContainer m_header{"header", getRoot()};
+		LvLabel m_title{"title", m_header};
 		LvCanvas m_canvas{"canvas", getRoot()};
 		LvScale m_vScale{"vscale", getRoot()};
 		LvScale m_hScale{"hscale", getRoot()};

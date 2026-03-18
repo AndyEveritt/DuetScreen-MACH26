@@ -67,6 +67,7 @@
       "move_tab": "Move",
       "temperature_tab": "Tool / Temperature",
       "heightmap_tab": "Bed Levelling",
+      "object_cancel_tab": "Object Cancel",
       "fan_tab": "Fans"
     },
     "estop": { /* Estop widget */
@@ -150,6 +151,19 @@
       "unload": "Unload",
       "mesh_bed_level": "Mesh Bed Compensation (G29)",
       "true_bed_level": "True Bed Level (G32)"
+    },
+    "object_cancel": { /* Object Cancel screen */
+      "title": "Object Cancel",
+      "objects_header": "Objects",
+      "current_object_prefix": "Current object:",
+      "current_object_none": "None",
+      "cancel_current": "Cancel Current Object",
+      "confirm_cancel_current_title": "Cancel Current Object",
+      "confirm_cancel_current_text": "Cancel current object '{:s}'?",
+      "confirm_cancel_title": "Cancel Object",
+      "confirm_cancel_text": "Cancel '{:s}'?",
+      "confirm_uncancel_title": "Uncancel Object",
+      "confirm_uncancel_text": "Uncancel '{:s}'?"
     },
     "message": { /* Messages specific to the screen */
       "connected": "Connected to Duet",

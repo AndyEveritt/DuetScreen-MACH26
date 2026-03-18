@@ -157,6 +157,7 @@ bool JobSubscribers::objectCancelled(Comm::JsonDecoder* decoder, const bool& dat
 	if (jobObject == nullptr)
 	{
 		LOG_WARN("Job object {:d} not found", indices[0]);
+		return false;
 	}
 	jobObject->cancelled = data;
 	return true;
@@ -170,6 +171,7 @@ bool JobSubscribers::objectName(Comm::JsonDecoder* decoder, const char* data, co
 	if (jobObject == nullptr)
 	{
 		LOG_WARN("Job object {:d} not found", indices[0]);
+		return false;
 	}
 	jobObject->name = data;
 	return true;
@@ -183,6 +185,7 @@ bool JobSubscribers::objectX(Comm::JsonDecoder* decoder, const int32_t& data, co
 	if (jobObject == nullptr)
 	{
 		LOG_WARN("Job object {:d} not found", indices[0]);
+		return false;
 	}
 	if (indices[1] >= 2)
 	{
@@ -201,6 +204,7 @@ bool JobSubscribers::objectY(Comm::JsonDecoder* decoder, const int32_t& data, co
 	if (jobObject == nullptr)
 	{
 		LOG_WARN("Job object {:d} not found", indices[0]);
+		return false;
 	}
 	if (indices[1] >= 2)
 	{

@@ -66,6 +66,7 @@
       "move_tab": "Sposta",
       "temperature_tab": "Utensile / Temperatura",
       "heightmap_tab": "Livellamento piano",
+      "object_cancel_tab": "Annulla oggetto",
       "fan_tab": "Ventole"
     },
     "estop": {
@@ -149,6 +150,19 @@
       "unload": "Scarica",
       "mesh_bed_level": "Compensazione mesh del piano (G29)",
       "true_bed_level": "Livellamento reale del piano (G32)"
+    },
+    "object_cancel": {
+      "title": "Annulla oggetto",
+      "objects_header": "Oggetti",
+      "current_object_prefix": "Oggetto corrente:",
+      "current_object_none": "Nessuno",
+      "cancel_current": "Annulla oggetto corrente",
+      "confirm_cancel_current_title": "Annulla oggetto corrente",
+      "confirm_cancel_current_text": "Annullare l'oggetto corrente '{:s}'?",
+      "confirm_cancel_title": "Annulla oggetto",
+      "confirm_cancel_text": "Annullare '{:s}'?",
+      "confirm_uncancel_title": "Riattiva oggetto",
+      "confirm_uncancel_text": "Riattivare '{:s}'?"
     },
     "message": {
       "connected": "Connesso al Duet",

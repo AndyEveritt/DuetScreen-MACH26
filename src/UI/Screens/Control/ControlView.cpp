@@ -17,5 +17,6 @@ namespace UI
 		m_moveView.setStylePad(0);
 		m_temperatureView.setStylePad(0);
 		m_heightmapView.setStylePad(0);
+		m_objectCancelView.setStylePad(0);
 	}
 } // namespace UI

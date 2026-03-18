@@ -41,12 +41,15 @@ namespace UI
 
 		// Layout
 		setGridDsc(m_columnDsc, m_rowDsc);
-		setGridCell(m_title, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 1);
+		setGridCell(m_header, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
 		setGridCell(m_vScale, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 		setGridCell(m_hScale, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 		setGridCell(m_canvas, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
-		// Title
+		// Header
+		m_header.setStylePad(0);
+		m_header.setFlexFlow(LV_FLEX_FLOW_ROW_WRAP);
+		m_header.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 		m_title.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 
 		// Horizontal scale

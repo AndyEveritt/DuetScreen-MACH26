@@ -14,6 +14,7 @@
 #include "UI/Screens/Fan/FanView.h"
 #include "UI/Screens/Heightmap/HeightmapView.h"
 #include "UI/Screens/Move/MoveView.h"
+#include "UI/Screens/ObjectCancel/ObjectCancelView.h"
 #include "UI/Screens/Settings/SettingsView.h"
 #include "UI/Screens/Status/FineTune.h"
 #include "UI/Screens/Temperature/TemperatureView.h"
@@ -62,6 +63,7 @@ namespace UI
 		FanView& getFanView() { return m_fanView; }
 		FineTune& getFineTuneView() { return m_fineTuneView; }
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
+		ObjectCancelView& getObjectCancelView() { return m_objectCancelView; }
 #endif
 
 		auto& getUpdatePrompt() { return m_updatePrompt; }
@@ -113,6 +115,7 @@ namespace UI
 		FanView m_fanView{"fan", m_mainWindow};
 		FineTune m_fineTuneView{"fine_tune", m_mainWindow};
 		HeightmapView m_heightmapView{"heightmap", m_mainWindow};
+		ObjectCancelView m_objectCancelView{"object_cancel", m_mainWindow};
 #endif
 
 		// Message box

@@ -643,6 +643,16 @@ namespace UI::Themes
 		lv_style_set_radius(components.bar_label_bg, RADIUS_DEFAULT);
 		lv_style_set_pad_hor(components.bar_label_bg, PAD_DEF);
 
+		lv_style_copy(components.object_cancel_base, lvgl.card);
+		lv_style_set_bg_color(components.object_cancel_base, m_colors.bg_light);
+		lv_style_set_bg_opa(components.object_cancel_base, LV_OPA_50);
+
+		lv_style_set_bg_color(components.object_cancel_cancelled, m_colors.error);
+		lv_style_set_bg_opa(components.object_cancel_cancelled, LV_OPA_COVER);
+
+		lv_style_set_bg_color(components.object_cancel_current, m_colors.primary);
+		lv_style_set_bg_opa(components.object_cancel_current, LV_OPA_COVER);
+
 #if DEBUG_BORDERS
 		lv_style_set_outline_color(components.debug_borders, m_colors.text);
 		lv_style_set_outline_width(components.debug_borders, 1);
