@@ -22,6 +22,7 @@ The screenshots below are taken from the repository test references in [tests/re
 | Move controls | ![Move controls](tests/ref_imgs/home_view/control_view/move.png) |
 | Temperature controls | ![Temperature controls](tests/ref_imgs/home_view/control_view/temperature.png) |
 | Bed levelling | ![Bed levelling](tests/ref_imgs/home_view/control_view/heightmap.png) |
+| Object Cancel | ![Object Cancel](tests/ref_imgs/home_view/control_view/object_cancel.png) |
 | Fans | ![Fans](tests/ref_imgs/home_view/control_view/fan.png) |
 
 ### File and macro workflows
