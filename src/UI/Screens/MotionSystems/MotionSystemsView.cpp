@@ -34,10 +34,19 @@ namespace UI
 		m_header.addStyle(Themes::getLvglStyles().text_header);
 
 		m_systems[0].setTitle(_("motion_system.system_1"));
-		m_systems[0].setTool(_("motion_system.tool_none"));
+		m_systems[0].setToolCount(4);
+		m_systems[0].setToolInfo(0, "Tool 1", nullptr);
+		m_systems[0].setToolInfo(1, "Tool 2", nullptr);
+		m_systems[0].setToolInfo(2, "Tool 3", nullptr);
+		m_systems[0].setToolInfo(3, "Tool 4", nullptr);
+		m_systems[0].setTool(-1);
 
 		m_systems[1].setTitle(_("motion_system.system_2"));
-		m_systems[1].setTool(_("motion_system.tool_pending"));
+		m_systems[1].setToolCount(3);
+		m_systems[1].setToolInfo(0, "Tool 5", nullptr);
+		m_systems[1].setToolInfo(1, "Tool 6", nullptr);
+		m_systems[1].setToolInfo(2, "Tool 7", nullptr);
+		m_systems[1].setTool(1);
 		m_systems[1].setSpeedFactor(75);
 		m_systems[1].setSpeeds(75.0f, 100.0f);
 

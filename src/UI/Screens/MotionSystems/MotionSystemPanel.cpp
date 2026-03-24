@@ -14,6 +14,9 @@
 
 namespace UI
 {
+	static Themes::Style raisedShadowStyle;
+	static Themes::Style loweredShadowStyle;
+
 	MotionSystemPanel::MotionSystemPanel(const std::string& name, LvObj& parent)
 		: LvContainer(name, parent)
 	{
@@ -33,23 +36,34 @@ namespace UI
 		m_speedCont.setFlexFlow(LV_FLEX_FLOW_COLUMN);
 		m_speedCont.setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-		static Themes::Style shadowStyle;
+		lv_style_set_radius(raisedShadowStyle, 3);
+		lv_style_set_border_width(raisedShadowStyle, 5);
+		lv_style_set_border_color(raisedShadowStyle, lv_color_white());
+		lv_style_set_border_opa(raisedShadowStyle, LV_OPA_30);
+		lv_style_set_border_side(raisedShadowStyle, LV_BORDER_SIDE_TOP);
+		lv_style_set_shadow_color(raisedShadowStyle, lv_color_black());
+		lv_style_set_shadow_offset_y(raisedShadowStyle, 5);
+		lv_style_set_shadow_opa(raisedShadowStyle, LV_OPA_30);
+		lv_style_set_shadow_width(raisedShadowStyle, 10);
 
-		lv_style_set_radius(shadowStyle, 3);
-		lv_style_set_border_width(shadowStyle, 5);
-		lv_style_set_border_color(shadowStyle, lv_color_white());
-		lv_style_set_border_opa(shadowStyle, LV_OPA_30);
-		lv_style_set_border_side(shadowStyle, LV_BORDER_SIDE_TOP);
-		lv_style_set_shadow_color(shadowStyle, lv_color_black());
-		lv_style_set_shadow_offset_y(shadowStyle, 5);
-		lv_style_set_shadow_opa(shadowStyle, LV_OPA_30);
-		lv_style_set_shadow_width(shadowStyle, 10);
+		lv_style_set_shadow_width(loweredShadowStyle, 6);
+		lv_style_set_shadow_color(loweredShadowStyle, lv_color_black());
+		lv_style_set_shadow_opa(loweredShadowStyle, LV_OPA_30);
+		lv_style_set_shadow_offset_y(loweredShadowStyle, -3);
 
 		m_headerCont.addStyle(Themes::getLvglStyles().bg_light);
 		m_speedCont.addStyle(Themes::getLvglStyles().bg_light);
-		m_headerCont.addStyle(shadowStyle);
-		m_speedCont.addStyle(shadowStyle);
+		m_headerCont.addStyle(raisedShadowStyle);
+		m_speedCont.addStyle(raisedShadowStyle);
 		m_title.addStyle(Themes::getLvglStyles().text_emphasis);
+
+		m_tools.setSize(LV_PCT(100), LV_SIZE_CONTENT);
+		m_tools.setListFlow(LV_FLEX_FLOW_ROW);
+		m_tools.getListContainer().setFlexAlign(LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+		m_tools.addStyle(Themes::getLvglStyles().bg);
+		m_tools.addStyle(loweredShadowStyle);
+
+		m_tool.hide();
 
 		m_speedFactorLabel.setText("Speed Multiplier:");
 		m_speedFactorArc.setWidth(LV_PCT(100));
@@ -94,6 +108,7 @@ namespace UI
 		m_speedFactorValue.addStyle(Themes::getLvglStyles().text_emphasis);
 
 		m_speedBarLabel.setText("Speed:");
+		m_speedBar.addStyle(raisedShadowStyle);
 		m_speedBar.setSize(LV_PCT(100), 50);
 		m_speedBar.setRange(0, 600);
 		m_speedBar.setValues(0, 0, LV_ANIM_OFF);
@@ -107,10 +122,33 @@ namespace UI
 		m_title.setText(title);
 	}
 
-	void MotionSystemPanel::setTool(std::string_view toolName)
+	void MotionSystemPanel::setTool(size_t toolIdx)
 	{
 		ZoneScoped;
-		m_tool.setText(toolName);
+		const std::string_view toolName =
+			toolIdx >= m_tools.getItemCount() ? "-" : m_tools.getItem(toolIdx)->getLabel().getText();
+		m_tool.setText(fmt::format("Current Tool: {:s}", toolName));
+
+		m_tools.iterateListItems([toolIdx](size_t idx, auto& item)
+								 { item.getRoot().setState(LV_STATE_CHECKED, idx == toolIdx); });
+	}
+
+	void MotionSystemPanel::setToolCount(size_t count)
+	{
+		ZoneScoped;
+		m_tools.setItemCount(count);
+	}
+
+	void MotionSystemPanel::setToolInfo(size_t toolIdx, std::string_view name, const void* iconSrc)
+	{
+		ZoneScoped;
+		if (toolIdx >= m_tools.getItemCount())
+		{
+			return;
+		}
+		auto toolIcon = m_tools.getItem(toolIdx);
+		toolIcon->setName(name);
+		toolIcon->setIcon(iconSrc);
 	}
 
 	void MotionSystemPanel::setSpeedFactor(uint32_t speedFactorPercent)
@@ -140,5 +178,24 @@ namespace UI
 		}
 
 		return std::max(0, static_cast<int32_t>(std::lround(value)));
+	}
+
+	MotionSystemPanel::ToolIcon::ToolIcon(size_t index, LvObj& parent)
+		: ListItem(index, parent)
+	{
+		ZoneScoped;
+		setFlexFlow(LV_FLEX_FLOW_COLUMN);
+		setFlexAlign(LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+		setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+		addStyle(Themes::getLvglStyles().bg_light);
+		addStyle(raisedShadowStyle);
+
+		m_icon.setSize(LV_PCT(100), 32);
+		m_icon.setMinWidth(32);
+		m_icon.setInnerAlign(LV_IMAGE_ALIGN_CONTAIN);
+		m_label.setText("Tool");
+
+		addStyle(Themes::getLvglStyles().outline_primary, LV_STATE_CHECKED);
 	}
 } // namespace UI

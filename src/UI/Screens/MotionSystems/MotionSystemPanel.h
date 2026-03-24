@@ -9,18 +9,40 @@
 #include "UI/Components/Bar/CurrentTargetBar.h"
 #include "UI/Components/LVGL/LvArc.h"
 #include "UI/Components/LVGL/LvContainer.h"
+#include "UI/Components/LVGL/LvImage.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/LVGL/LvScale.h"
+#include "UI/Components/List/List.h"
 
 namespace UI
 {
 	class MotionSystemPanel : public LvContainer
 	{
 	  public:
+		class ToolIcon : public ListItem
+		{
+		  public:
+			ToolIcon(size_t index, LvObj& parent);
+
+			void setName(std::string_view name) { m_label.setText(name); }
+			void setIcon(const void* src) { m_icon.setSrc(src); }
+
+			auto& getIcon() { return m_icon; }
+			auto& getLabel() { return m_label; }
+
+		  private:
+			LvImage m_icon{"icon", getRoot()};
+			LvLabel m_label{"label", getRoot()};
+		};
+
 		MotionSystemPanel(const std::string& name, LvObj& parent);
 
 		void setTitle(std::string_view title);
-		void setTool(std::string_view toolName);
+
+		void setTool(size_t toolIdx);
+		void setToolCount(size_t count);
+		void setToolInfo(size_t toolIdx, std::string_view name, const void* iconSrc);
+
 		void setSpeedFactor(uint32_t speedFactorPercent);
 		void setSpeeds(float currentSpeed, float targetSpeed);
 
@@ -29,17 +51,18 @@ namespace UI
 
 		static int32_t sanitizeBarValue(float value);
 
-        LvContainer m_headerCont{"header_cont", getRoot()};
+		LvContainer m_headerCont{"header_cont", getRoot()};
 		LvLabel m_title{"title", m_headerCont};
+		List<ToolIcon> m_tools{"tools", m_headerCont};
 		LvLabel m_tool{"tool", m_headerCont};
 
-        LvContainer m_speedCont{"speed_cont", getRoot()};
-        LvLabel m_speedFactorLabel{"speed_factor_label", m_speedCont};
+		LvContainer m_speedCont{"speed_cont", getRoot()};
+		LvLabel m_speedFactorLabel{"speed_factor_label", m_speedCont};
 		LvArc m_speedFactorArc{"speed_factor_arc", m_speedCont};
-        LvScale m_scale{"scale", m_speedFactorArc};
+		LvScale m_scale{"scale", m_speedFactorArc};
 		LvLabel m_speedFactorValue{"speed_factor_value", m_speedFactorArc};
 
-        LvLabel m_speedBarLabel{"speed_bar_label", m_speedCont};
+		LvLabel m_speedBarLabel{"speed_bar_label", m_speedCont};
 		CurrentTargetBar m_speedBar{"speed_bar", m_speedCont};
 	};
 } // namespace UI
