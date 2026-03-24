@@ -5,6 +5,7 @@
 #include "UI/Core/View.h"
 #include "UI/Screens/Fan/FanView.h"
 #include "UI/Screens/Heightmap/HeightmapView.h"
+#include "UI/Screens/MotionSystems/MotionSystemsView.h"
 #include "UI/Screens/Move/MoveView.h"
 #include "UI/Screens/ObjectCancel/ObjectCancelView.h"
 #include "UI/Screens/Temperature/TemperatureView.h"
@@ -22,12 +23,14 @@ namespace UI
 		void showHeightmapView() { m_tabs.setActiveTab(2); }
 		void showObjectCancelView() { m_tabs.setActiveTab(3); }
 		void showFanView() { m_tabs.setActiveTab(4); }
+		void showMotionSystemsView() { m_tabs.setActiveTab(5); }
 
 		MoveView& getMoveView() { return m_moveView; }
 		TemperatureView& getTemperatureView() { return m_temperatureView; }
 		HeightmapView& getHeightmapView() { return m_heightmapView; }
 		ObjectCancelView& getObjectCancelView() { return m_objectCancelView; }
 		FanView& getFanView() { return m_fanView; }
+		MotionSystemsView& getMotionSystemsView() { return m_motionSystemsView; }
 
 	  private:
 		TabView m_tabs{"tabs", getRoot()};
@@ -36,5 +39,6 @@ namespace UI
 		HeightmapView m_heightmapView{"heightmap", m_tabs.addTab(_("control.heightmap_tab"))};
 		ObjectCancelView m_objectCancelView{"object_cancel", m_tabs.addTab(_("control.object_cancel_tab"))};
 		FanView m_fanView{"fan", m_tabs.addTab(_("control.fan_tab"))};
+		MotionSystemsView m_motionSystemsView{"motion_systems", m_tabs.addTab(_("control.motion_systems_tab"))};
 	};
 } // namespace UI

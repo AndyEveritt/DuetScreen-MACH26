@@ -68,7 +68,14 @@
       "temperature_tab": "Tool / Temperature",
       "heightmap_tab": "Bed Levelling",
       "object_cancel_tab": "Object Cancel",
-      "fan_tab": "Fans"
+      "fan_tab": "Fans",
+      "motion_systems_tab": "Motion Systems"
+    },
+    "motion_system": {
+      "system_1": "Motion System 1",
+      "system_2": "Motion System 2",
+      "tool_none": "Tool -",
+      "tool_pending": "Tool N/A"
     },
     "estop": { /* Estop widget */
       "label": "\uF071", /* Warning symbol */

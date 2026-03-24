@@ -8,7 +8,7 @@
 #pragma once
 
 #include "PrintInfoPresenter.h"
-#include "UI/Components/Bar/Bar.h"
+#include "UI/Components/Bar/CurrentTargetBar.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/LVGL/LvLabel.h"
 #include "UI/Components/List/List.h"
@@ -53,9 +53,7 @@ namespace UI
 		LvContainer m_speedCont{"speed_cont", getRoot()};
 		LvLabel m_speedHeader{"speed_header", m_speedCont};
 		Button m_speedMultiplier{"speed_multiplier", m_speedCont};
-		LvBar m_requestedSpeed{"requested_speed", m_speedCont};
-		LvBar m_currentSpeed{"current_speed", m_speedCont};
-		LvLabel m_speedLabel{"speed_label", m_currentSpeed};
+		CurrentTargetBar m_speedBar{"speed_bar", m_speedCont};
 
 		LvContainer m_flowCont{"flow_cont", getRoot()};
 		LvLabel m_flowHeader{"flow_header", m_flowCont};

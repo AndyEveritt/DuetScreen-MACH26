@@ -1,7 +1,7 @@
 /*
  * LvWin.gen.h
  *
- *  AUTO-GENERATED: 2026-02-18T18:42:11 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-03-24T16:40:05 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0
  */
 

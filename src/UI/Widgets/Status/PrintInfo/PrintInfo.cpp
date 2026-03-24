@@ -43,28 +43,14 @@ namespace UI
 		m_speedCont.setGridDsc(speedColDsc, speedRowDsc);
 		m_speedCont.setGridCell(m_speedHeader, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 0, 1);
 		m_speedCont.setGridCell(m_speedMultiplier, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-		m_speedCont.setGridCell(m_currentSpeed, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		m_speedCont.setGridCell(m_requestedSpeed, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
-		// m_speedCont.setGridCell(m_speedLabel, LV_GRID_ALIGN_END, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+		m_speedCont.setGridCell(m_speedBar, LV_GRID_ALIGN_STRETCH, 1, 1, LV_GRID_ALIGN_STRETCH, 1, 1);
 
 		m_speedHeader.setText(_("status.speed_header"));
 		m_speedHeader.addStyle(Themes::getLvglStyles().bg_color_header);
 		m_speedHeader.addStyle(Themes::getLvglStyles().pad_normal);
 		m_speedHeader.addStyle(Themes::getLvglStyles().text_emphasis);
 		m_speedMultiplier.setSize(LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-
-		m_currentSpeed.setHeight(LV_SIZE_CONTENT);
-		// m_currentSpeed.setLabelFormat("{} mm/s");
-		m_currentSpeed.setStyleBgOpa(LV_OPA_0);
-
-		m_requestedSpeed.setHeight(LV_SIZE_CONTENT);
-		// m_requestedSpeed.setLabelFormat("{} mm/s");
-		m_requestedSpeed.addStyle(Themes::getLvglStyles().bg_color_primary_muted, LV_PART_INDICATOR);
-		m_requestedSpeed.addStyle(Themes::getLvglStyles().anim_fast);
-
-		m_speedLabel.setAlign(LV_ALIGN_LEFT_MID, 10, 0);
-		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label_bg);
-		m_speedLabel.addStyle(Themes::getComponentStyles().bar_label);
+		m_speedBar.setHeight(LV_SIZE_CONTENT);
 
 		m_speedFactorModal.setSize(LV_PCT(80), LV_SIZE_CONTENT);
 		updateSpeed(0, 0);
@@ -188,8 +174,7 @@ namespace UI
 	void PrintInfo::setMaxSpeed(int32_t max_speed)
 	{
 		ZoneScoped;
-		m_currentSpeed.setMaxValue(max_speed);
-		m_requestedSpeed.setMaxValue(max_speed);
+		m_speedBar.setRange(0, max_speed);
 	}
 
 	void PrintInfo::setMaxExtrusionRate(int32_t max_extrusion_rate)
@@ -209,10 +194,9 @@ namespace UI
 	void PrintInfo::updateSpeed(float topSpeed, float requestedSpeed)
 	{
 		ZoneScoped;
-		m_currentSpeed.setValue(static_cast<int32_t>(std::round(topSpeed)), LV_ANIM_ON);
-		m_requestedSpeed.setValue(static_cast<int32_t>(std::round(requestedSpeed)), LV_ANIM_ON);
-
-		m_speedLabel.setText(_("status.speed_label", topSpeed, requestedSpeed));
+		m_speedBar.setValues(
+			static_cast<int32_t>(std::round(topSpeed)), static_cast<int32_t>(std::round(requestedSpeed)), LV_ANIM_ON);
+		m_speedBar.setLabel(_("status.speed_label", topSpeed, requestedSpeed));
 	}
 
 	void PrintInfo::updateFlowMultiplier(uint32_t multiplier)

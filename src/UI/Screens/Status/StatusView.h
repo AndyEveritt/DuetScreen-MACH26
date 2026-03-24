@@ -2,6 +2,7 @@
 
 #include "FineTune.h"
 #include "StatusPresenter.h"
+#include "UI/Components/Bar/Bar.h"
 #include "UI/Components/Button/Button.h"
 #include "UI/Components/MessageBox/MessageBox.h"
 #include "UI/Components/Modal/Modal.h"

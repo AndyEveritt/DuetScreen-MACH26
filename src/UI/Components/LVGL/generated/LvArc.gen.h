@@ -1,7 +1,7 @@
 /*
  * LvArc.gen.h
  *
- *  AUTO-GENERATED: 2026-02-18T18:42:10 by scripts/generate_lvgl_wrappers.py
+ *  AUTO-GENERATED: 2026-03-24T16:40:04 by scripts/generate_lvgl_wrappers.py
  *  LVGL version: 9.5.0
  */
 
@@ -193,6 +193,20 @@ namespace UI
 		}
 
 		/**
+		 * Set how the arc circle is aligned within the object bounds.
+		 * This controls where the center of the arc is placed when the object
+		 * is not square. Defaults to LV_ALIGN_DEFAULT (top-left behaviour).
+		 * @param align     an LV_ALIGN_* value (OUT variants are not supported)
+		 */
+		void setCenterAlign(lv_align_t align)
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			lv_arc_set_center_align(static_cast<Derived*>(this)->getRootPtr(), align);
+		}
+
+		/**
 		 * Get the start angle of an arc.
 		 * @return          the start angle [0..360]  (if `LV_USE_FLOAT` is enabled it can be fractional too.)
 		 */
@@ -310,6 +324,18 @@ namespace UI
 			ZoneScoped;
 			UI_LOCK();
 			return lv_arc_get_knob_offset(static_cast<const Derived*>(this)->getRootPtr());
+		}
+
+		/**
+		 * Get the current arc center alignment within the object bounds.
+		 * @return          the current center alignment
+		 */
+		lv_align_t getCenterAlign() const
+			requires HasGetRootPtr<Derived>
+		{
+			ZoneScoped;
+			UI_LOCK();
+			return lv_arc_get_center_align(static_cast<const Derived*>(this)->getRootPtr());
 		}
 
 		/**
