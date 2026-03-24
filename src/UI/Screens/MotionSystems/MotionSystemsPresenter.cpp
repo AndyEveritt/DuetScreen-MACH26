@@ -14,6 +14,10 @@
 
 namespace UI
 {
+	static std::array<size_t, 2> motionSystemTools{
+		-1u,
+		-1u,
+	};
 	static std::array<uint32_t, 2> speedFactors{100, 100};
 	static std::array<float, 2> currentSpeeds{0.0f, 0.0f};
 
@@ -32,6 +36,13 @@ namespace UI
 			float& currentSpeed = currentSpeeds[idx];
 			currentSpeed += std::min(targetSpeed - currentSpeed, 50.0f);
 			panel.setSpeeds(currentSpeed, targetSpeed);
+
+			if (rand() % 20 == 0)
+			{
+				size_t& toolIdx = motionSystemTools[idx];
+				toolIdx = rand() % (panel.getToolList().getItemCount() + 1u) - 1u;
+				panel.setTool(toolIdx);
+			}
 		}
 	}
 

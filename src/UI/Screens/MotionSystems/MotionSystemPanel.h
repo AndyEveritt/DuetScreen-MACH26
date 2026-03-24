@@ -46,6 +46,8 @@ namespace UI
 		void setSpeedFactor(uint32_t speedFactorPercent);
 		void setSpeeds(float currentSpeed, float targetSpeed);
 
+		auto& getToolList() { return m_tools; }
+
 	  private:
 		static constexpr int32_t SpeedFactorArcMax = 100;
 

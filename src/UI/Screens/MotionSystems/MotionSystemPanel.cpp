@@ -89,8 +89,16 @@ namespace UI
 		m_speedFactorArc.setFlag(LV_OBJ_FLAG_CLICKABLE, false);
 		m_speedFactorArc.setFlag(LV_OBJ_FLAG_CLICK_FOCUSABLE, false);
 		m_speedFactorArc.setStyleBgOpa(LV_OPA_0, LV_PART_KNOB);
+		m_speedFactorArc.addStyle(Themes::getLvglStyles().bg);
+		m_speedFactorArc.addStyle(loweredShadowStyle);
+		{
+			lv_obj_t* obj = m_speedFactorArc.getRootPtr();
+			lv_obj_set_style_drop_shadow_color(obj, lv_color_black(), LV_PART_INDICATOR);
+			lv_obj_set_style_drop_shadow_opa(obj, LV_OPA_30, LV_PART_INDICATOR);
+			lv_obj_set_style_drop_shadow_offset_y(obj, 2, LV_PART_INDICATOR);
+		}
 
-		m_scale.setAlign(LV_ALIGN_CENTER);
+		m_scale.setAlign(LV_ALIGN_CENTER, 0, m_speedFactorArc.getStyleProp(LV_STYLE_DROP_SHADOW_OFFSET_Y).num / 2);
 		m_scale.setCenterAlign(LV_ALIGN_CENTER);
 		m_scale.setMode(LV_SCALE_MODE_ROUND_INNER);
 		m_speedFactorArc.addEventCallback(
